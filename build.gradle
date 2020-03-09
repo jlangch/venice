@@ -50,8 +50,8 @@
 //   - Commit the changes
 //   - Update the new Git Id for the cheatsheet URLs in 'README.md' 
 //   - Commit the 'README.md' change
-//   - Build: ./gradlew bundle
-//   - Upload to maven
+//   - Build the Maven upload bundle: ./gradlew bundle
+//   - Upload to Maven
 //   - Create a Git tag 'v1.x.y' for the release
 //   - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //   
