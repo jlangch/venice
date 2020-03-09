@@ -52,7 +52,6 @@
 //   - Commit the 'README.md' change
 //   - Build the Maven upload bundle: ./gradlew bundle
 //   - Upload to Maven
-//   - Create a Git tag 'v1.x.y' for the release
 //   - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //   
 // Open new development cycle (after creating a Venice release):
