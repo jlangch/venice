@@ -53,6 +53,7 @@
 //   - Build the Maven upload bundle: ./gradlew bundle
 //   - Upload to Maven
 //   - Draft a new release in Git (https://github.com/jlangch/venice/releases)
+//     This will create the release tag
 //   
 // Open new development cycle (after creating a Venice release):
 //   - Change version in 'gradle.properties' to '1.x.y-snapshot'
