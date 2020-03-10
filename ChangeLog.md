@@ -35,7 +35,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- macro `with-err-str` macro that returns the captured text from stderr
+- macro `with-err-str` that returns the captured text from stderr
 - stderr support for functions `print`, `println`, `printf`, `newline`, and `flush`
 - stderr support for REPL. While stdout text is printed in grey stderr text 
   is printed in light red
