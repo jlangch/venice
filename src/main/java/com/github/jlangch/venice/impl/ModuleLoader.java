@@ -91,6 +91,7 @@ public class ModuleLoader {
 							"benchmark", 
 							"core", 
 							"crypt", 
+							"fam", 
 							"geoip", 
 							"http", 
 							"jackson", 
