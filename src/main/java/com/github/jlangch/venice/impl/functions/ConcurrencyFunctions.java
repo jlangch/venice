@@ -201,7 +201,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("deref", args, 1, 3);
+				assertArity("deref?", args, 1);
 
 				final VncVal first = args.first();
 
