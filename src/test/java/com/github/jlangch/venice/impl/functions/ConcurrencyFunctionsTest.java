@@ -82,6 +82,17 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_atom_dereferenceable() {
+		final Venice venice = new Venice();
+
+		final String script = "(deref? (atom 100))";
+
+		final Object result = venice.eval(script);
+		
+		assertTrue((Boolean)result);
+	}
+
+	@Test
 	public void test_atom_compareAndSet() {
 		final Venice venice = new Venice();
 
@@ -141,6 +152,17 @@ public class ConcurrencyFunctionsTest {
 		
 		assertEquals(101L, result);
 	}
+	
+	@Test
+	public void test_volatile_dereferenceable() {
+		final Venice venice = new Venice();
+
+		final String script = "(deref? (volatile 100))";
+
+		final Object result = venice.eval(script);
+		
+		assertTrue((Boolean)result);
+	}
 
 	@Test
 	public void test_agent() {
@@ -154,6 +176,17 @@ public class ConcurrencyFunctionsTest {
 		final Object result = venice.eval(script);
 		
 		assertEquals(Long.valueOf(100), result);
+	}
+	
+	@Test
+	public void test_agent_dereferenceable() {
+		final Venice venice = new Venice();
+
+		final String script = "(deref? (agent 100))";
+
+		final Object result = venice.eval(script);
+		
+		assertTrue((Boolean)result);
 	}
 
 	@Test
@@ -481,6 +514,17 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_delay_dereferenceable() {
+		final Venice venice = new Venice();
+
+		final String script = "(deref? (delay 100))";
+
+		final Object result = venice.eval(script);
+		
+		assertTrue((Boolean)result);
+	}
+
+	@Test
 	public void test_promise() {
 		final Venice venice = new Venice();
 
@@ -497,6 +541,17 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertEquals(Long.valueOf(123), venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_dereferenceable() {
+		final Venice venice = new Venice();
+
+		final String script = "(deref? (promise))";
+
+		final Object result = venice.eval(script);
+		
+		assertTrue((Boolean)result);
 	}
 
 	@Test
@@ -553,6 +608,17 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
+	}
+	
+	@Test
+	public void test_future_dereferenceable() {
+		final Venice venice = new Venice();
+
+		final String script = "(deref? (future (fn [] 10)))";
+
+		final Object result = venice.eval(script);
+		
+		assertTrue((Boolean)result);
 	}
 
 	@Test

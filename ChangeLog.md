@@ -27,7 +27,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- function `deref?` to test if a value is dereferenceable to get the 'boxed' 
+  value
 
 
 

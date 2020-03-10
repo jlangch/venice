@@ -184,6 +184,43 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction deref_Q = 
+		new VncFunction(
+				"deref?", 
+				VncFunction
+					.meta()
+					.arglists("(deref? x)")		
+					.doc("Returns true if x is dereferencable.")
+					.examples(
+						"(deref? (atom 10))",
+						"(deref? (delay 100))",
+						"(deref? (promise))",
+						"(deref? (future (fn [] 10)))",
+						"(deref? (volatile 100))",
+						"(deref? (agent 100))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("deref", args, 1, 3);
+
+				final VncVal first = args.first();
+
+				if (Types.isIDeref(first)) {
+					return True;
+				}
+				else if (Types.isVncJavaObject(first)) {
+					final Object delegate = ((VncJavaObject)first).getDelegate();
+					if (delegate instanceof Future || Types.isIDeref(delegate)) {
+						return True;
+					}
+				}
+	
+				return False;
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction realized_Q = 
 		new VncFunction(
 				"realized?", 
@@ -1693,6 +1730,7 @@ public class ConcurrencyFunctions {
 			new VncHashMap
 					.Builder()		
 					.add(deref)
+					.add(deref_Q)
 					.add(realized_Q)
 					
 					.add(add_watch)

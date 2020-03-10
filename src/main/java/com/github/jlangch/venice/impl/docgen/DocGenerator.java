@@ -957,6 +957,7 @@ public class DocGenerator {
 		early.addItem(getDocItem("reduced"));
 		early.addItem(getDocItem("reduced?"));
 		early.addItem(getDocItem("deref"));
+		early.addItem(getDocItem("deref?"));
 		
 		return section;
 	}
@@ -972,6 +973,7 @@ public class DocGenerator {
 		atoms.addItem(getDocItem("atom"));
 		atoms.addItem(getDocItem("atom?"));
 		atoms.addItem(getDocItem("deref"));
+		atoms.addItem(getDocItem("deref?"));
 		atoms.addItem(getDocItem("reset!"));
 		atoms.addItem(getDocItem("swap!"));
 		atoms.addItem(getDocItem("compare-and-set!"));
@@ -988,6 +990,7 @@ public class DocGenerator {
 		futures.addItem(getDocItem("futures-fork"));
 		futures.addItem(getDocItem("futures-wait"));
 		futures.addItem(getDocItem("deref"));
+		futures.addItem(getDocItem("deref?"));
 		futures.addItem(getDocItem("realized?"));
 
 		final DocSection promises = new DocSection("Promises");
@@ -1002,6 +1005,7 @@ public class DocGenerator {
 		delay.addItem(getDocItem("delay"));
 		delay.addItem(getDocItem("delay?"));
 		delay.addItem(getDocItem("deref"));
+		delay.addItem(getDocItem("deref?"));
 		delay.addItem(getDocItem("force"));
 		delay.addItem(getDocItem("realized?"));
 
@@ -1034,6 +1038,7 @@ public class DocGenerator {
 		volatiles.addItem(getDocItem("volatile"));
 		volatiles.addItem(getDocItem("volatile?"));
 		volatiles.addItem(getDocItem("deref"));
+		volatiles.addItem(getDocItem("deref?"));
 		volatiles.addItem(getDocItem("reset!"));
 		volatiles.addItem(getDocItem("swap!"));
 		
