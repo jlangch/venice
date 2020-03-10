@@ -179,32 +179,26 @@ task updateReleaseVersion {
 	doLast {	    
 	    println "Updating version ${project.version} -> 'pom.xml'"
 	    ant.replaceregexp(
-	    		match:   "<version>${version_regex}</version>", 
-	    		replace: "<version>${project.version}</version>"
+	    		match:   "<version>${version_regex}", 
+	    		replace: "<version>${project.version}"
 	    ) {
 	        fileset(dir: '.', includes: 'pom.xml')
 	    }
 
 	    println "Updating version ${project.version} -> 'maven-central.svg'"
 	    ant.replaceregexp(
-	    		match:   ">v${version_regex}</text>", 
-	    		replace: ">v${project.version}</text>", 
- 	    		flags:   'g', 
-	    		byline:  true
+	    		match:   "v${version_regex}", 
+	    		replace: "v${project.version}", 
+ 	    		flags:   'g'
 	    ) {
 	        fileset(dir: 'doc', includes: 'maven-central.svg')
 	    }
 	    
 	    println "Updating version ${project.version} -> 'build-dependencies.md'"
 	    ant.replaceregexp(
-	    		match:   "venice:${version_regex}'", 
-	    		replace: "venice:${project.version}'"
-	    ) {
-	        fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
-	    }
-	    ant.replaceregexp(
-	    		match:   "<version>${version_regex}</version>", 
-	    		replace: "<version>${project.version}</version>"
+	    		match:   "${version_regex}", 
+	    		replace: "${project.version}", 
+ 	    		flags:   'g'
 	    ) {
 	        fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
 	    }
