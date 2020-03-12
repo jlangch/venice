@@ -33,6 +33,7 @@ public class IOFnBlacklisted {
 				Arrays.asList(
 					// print
 					"print",
+					"printf",
 					"println",
 					"newline",
 
