@@ -110,7 +110,72 @@ public class Sandbox_VeniceFunction_Test {
 		assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
 	}
 
-	
+
+	// ------------------------------------------------------------------------
+	// Blacklisted/whitelisted IO
+	// ------------------------------------------------------------------------
+
+	@Test
+	public void test_black_white_println_1() {
+		final Interceptor interceptor = new AcceptAllInterceptor();
+
+		// allowed
+		new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+	}
+
+
+	@Test
+	public void test_black_white_println_2() {
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.rejectVeniceFunctions("*io*"));
+
+		// denied
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+		});
+	}
+
+	@Test
+	public void test_black_white_println_3() {
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.rejectVeniceFunctions("*io*")
+								.whitelistVeniceFunctions("println", "newline"));
+
+		// allowed
+		new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+	}
+
+	@Test
+	public void test_black_white_println_4() {
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.whitelistVeniceFunctions("println", "newline")
+								.rejectVeniceFunctions("*io*"));
+
+		// denied
+		assertThrows(SecurityException.class, () -> {
+			new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+		});
+	}
+
+	@Test
+	public void test_black_white_println_5() {
+		final Interceptor interceptor = 
+				new SandboxInterceptor(
+						new SandboxRules()
+								.whitelistVeniceFunctions("println", "newline")
+								.rejectVeniceFunctions("*io*")
+								.whitelistVeniceFunctions("println")
+								.whitelistVeniceFunctions("newline"));
+
+		// allowed
+		new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+	}
 	
 	// ------------------------------------------------------------------------
 	// Helpers
@@ -134,6 +199,7 @@ public class Sandbox_VeniceFunction_Test {
 			tempFile = null;
 		}
 	}
+
 
 	
 	private File tempFile;

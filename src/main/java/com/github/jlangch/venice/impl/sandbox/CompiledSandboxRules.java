@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.sandbox;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -75,12 +74,12 @@ public class CompiledSandboxRules {
 		this.maxFutureThreadPoolSize = maxFutureThreadPoolSize;
 	}
 	
-	public static CompiledSandboxRules compile(final SandboxRules whiteList) {
-		if (whiteList == null) {
+	public static CompiledSandboxRules compile(final SandboxRules sandbox) {
+		if (sandbox == null) {
 			return new CompiledSandboxRules(null, null, null, null, null, null, null, null, null);
 		}
 		
-		final List<String> filtered = whiteList
+		final List<String> rules = sandbox
 										.getRules()
 										.stream()
 										.filter(s -> s != null)
@@ -90,7 +89,7 @@ public class CompiledSandboxRules {
 		
 		return new CompiledSandboxRules(
 				// whitelisted classes
-				filtered
+				rules
 					.stream()
 					.filter(s -> s.startsWith("class:"))
 					.map(s -> s.substring("class:".length()))
@@ -99,7 +98,7 @@ public class CompiledSandboxRules {
 					.collect(Collectors.toList()),
 					
 				// whitelisted methods
-				filtered
+				rules
 					.stream()
 					.filter(s -> s.startsWith("class:"))
 					.map(s -> s.substring("class:".length()))
@@ -108,7 +107,7 @@ public class CompiledSandboxRules {
 					.collect(Collectors.toList()),
 					
 				// whitelisted classpath resources
-				filtered
+				rules
 					.stream()
 					.filter(s -> s.startsWith("classpath:"))
 					.map(s -> s.substring("classpath:".length()))
@@ -116,41 +115,35 @@ public class CompiledSandboxRules {
 					.collect(Collectors.toList()),
 					
 				// blacklisted venice functions
-				filtered
-					.stream()
-					.filter(s -> s.startsWith("blacklist:venice:func:"))
-					.map(s -> s.substring("blacklist:venice:func:".length()))
-					.map(s -> s.equals("*io*") ? IOFnBlacklisted.getIoFunctions() : toSet(s))
-					.flatMap(Set::stream)
-					.collect(Collectors.toSet()),
+				blacklistedVeniceFunctions(rules),
 					
 				// whitelisted venice modules
-				filtered
+				rules
 					.stream()
 					.filter(s -> s.startsWith("venice:module:"))
 					.map(s -> s.substring("venice:module:".length()))
 					.collect(Collectors.toSet()),
 					
 				// whitelisted system properties
-				allowAccessToAllSystemProperties(filtered)
+				allowAccessToAllSystemProperties(rules)
 					? null
-					: filtered
+					: rules
 						.stream()
 						.filter(s -> s.startsWith("system.property:"))
 						.map(s -> s.substring("system.property:".length()))
 						.collect(Collectors.toSet()),
 
 				// whitelisted system environment variables
-				allowAccessToAllSystemEnvs(filtered)
+				allowAccessToAllSystemEnvs(rules)
 					? null
-					: filtered
+					: rules
 						.stream()
 						.filter(s -> s.startsWith("system.env:"))
 						.map(s -> s.substring("system.env:".length()))
 						.collect(Collectors.toSet()),
 
-				whiteList.getMaxExecTimeSeconds(),
-				whiteList.getMaxFutureThreadPoolSize());
+				sandbox.getMaxExecTimeSeconds(),
+				sandbox.getMaxFutureThreadPoolSize());
 	}
 	
 	/**
@@ -290,9 +283,35 @@ public class CompiledSandboxRules {
 	private static boolean allowAccessToAllSystemEnvs(final List<String> rules) {
 		return rules.stream().anyMatch(s -> s.equals("system.env:*"));
 	}
-
-	private static Set<String> toSet(final String... args) {
-		return new HashSet<>(Arrays.asList(args));
+	
+	private static Set<String> blacklistedVeniceFunctions(final List<String> rules) {
+		final Set<String> blacklisted = new HashSet<>();
+		
+		for(String rule : rules) {
+			if (rule.startsWith("blacklist:venice:func:")) {
+				final String r = rule.substring("blacklist:venice:func:".length());
+				if (r.equals("*io*")) {
+					blacklisted.addAll(IOFnBlacklisted.getIoFunctions());
+				}
+				else {			
+					blacklisted.add(r);
+				}
+			}
+			else if (rule.startsWith("whitelist:venice:func:")) {
+				final String r = rule.substring("whitelist:venice:func:".length());
+				if (r.equals("*io*")) {
+					blacklisted.removeAll(IOFnBlacklisted.getIoFunctions());
+				}
+				else {			
+					blacklisted.remove(r);
+				}
+			}
+			else {
+				// skip
+			}
+		}
+		
+		return blacklisted;
 	}
 	
 	

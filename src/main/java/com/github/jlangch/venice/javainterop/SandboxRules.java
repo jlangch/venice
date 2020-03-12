@@ -332,6 +332,50 @@ public class SandboxRules {
 		return this;
 	}
 
+
+	/**
+	 * Whitelist Venice function rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g:
+	 * <ul>
+	 *   <li>print</li>
+	 *   <li>println</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules whitelistVeniceFunctions(final String... rules) {
+		if (rules != null) {
+			whitelistVeniceFunctions(Arrays.asList(rules));
+		}
+		return this;
+	}
+	
+	/**
+	 * Whitelist Venice function rules to the sandbox.
+	 * 
+	 * <p>
+	 * E.g:
+	 * <ul>
+	 *   <li>print</li>
+	 *   <li>println</li>
+	 * </ul>
+	 * 
+	 * @param rules rules
+	 * @return this <code>SandboxRules</code>
+	 */
+	public SandboxRules whitelistVeniceFunctions(final Collection<String> rules) {
+		if (rules != null) {
+			this.rules.addAll(
+				rules.stream()
+				 	 .map(r -> r.startsWith("whitelist:venice:func:") ? r : "whitelist:venice:func:" + r)
+					 .collect(Collectors.toList()));
+		}
+		return this;
+	}
+
 	/**
 	 * Add rules for whitelisted Venice modules.
 	 * 
@@ -490,8 +534,8 @@ public class SandboxRules {
 	/**
 	 * @return the rules of this <code>SandboxRules</code>
 	 */
-	public Set<String> getRules() {
-		return Collections.unmodifiableSet(rules);
+	public List<String> getRules() {
+		return Collections.unmodifiableList(rules);
 	}
 	
 	/**
@@ -654,7 +698,7 @@ public class SandboxRules {
 				new HashSet<>());
 	
 
-	private final Set<String> rules = new HashSet<>();
+	private final List<String> rules = new ArrayList<>();
 	private Integer maxExecTimeSeconds = null;
 	private Integer maxFutureThreadPoolSize = null;
 }
