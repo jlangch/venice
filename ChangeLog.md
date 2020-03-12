@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - function `deref?` to test if a value is dereferenceable to get the 'boxed' 
   value
+- enhancements to the sandbox to allow blacklisted venice functions sets to 
+  be opened by specific functions. 
+  E.g.: blacklist all IO functions but allow 'print', 'printf', 'println', 
+  and 'newline'.
 
 
 
