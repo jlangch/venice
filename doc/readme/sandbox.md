@@ -82,6 +82,14 @@ final IInterceptor interceptor =
               .rejectVeniceFunctions(
                 "time/date",
                 "time/zone-ids")
+                
+              // Venice functions: whitelist rules to offset 
+              // blacklist rules by individual functions
+              .whitelistVeniceFunctions(
+                 "print", 
+                 "printf", 
+                 "println", 
+                 "newline")
 
               // Generic rules	
               .withMaxFutureThreadPoolSize(20)
@@ -120,6 +128,9 @@ venice.eval("(. :java.lang.System :exit 0)");
 
 // => FAIL (invoking blacklisted Venice I/O function)
 venice.eval("(io/slurp \"/tmp/file\")"); 
+
+// => OK (invoking whitelisted Venice I/O function 'println')
+venice.eval("(println 100)"); 
 
 // => FAIL exceeded max exec time of 5s
 venice.eval("(sleep 30000)"); 
