@@ -100,23 +100,37 @@ public class ConcurrencyFunctions {
 						"   @counter)                      ",
 	
 						"(do                             \n" +
-						"   (def task (fn [] 100))       \n" +
+						"   (defn task [] 100)           \n" +
 						"   (let [f (future task)]       \n" +
-						"        (deref f)))               ",
+						"      (deref f)))                 ",
 	
 						"(do                             \n" +
-						"   (def task (fn [] 100))       \n" +
+						"   (defn task [] 100)           \n" +
 						"   (let [f (future task)]       \n" +
-						"        @f))                      ",
+						"      @f))                        ",
 	
 						"(do                             \n" +
-						"   (def task (fn [] 100))       \n" +
+						"   (defn task [] 100)           \n" +
 						"   (let [f (future task)]       \n" +
-						"        (deref f 300 :timeout)))  ",
+						"      (deref f 300 :timeout)))    ",
 	
 						"(do                                              \n" +
 						"   (def x (delay (println \"working...\") 100))  \n" +
-						"   @x)                                             ")
+						"   @x)                                             ",
+						
+						"(do                             \n" +
+						"   (def p (promise))            \n" +
+						"   (deliver p 10)               \n" +
+						"   @p)                            ",
+
+						"(do                             \n" +
+						"   (def x (agent 100))          \n" +
+						"   @x)                            ",
+
+						"(do                             \n" +
+						"   (def counter (volatile 10))  \n" +
+						"   @counter)                      ")
+
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1029,7 +1043,9 @@ public class ConcurrencyFunctions {
 					.examples(
 						"(do                   \n" +
 						"   (def p (promise))  \n" +
-						"   (deliver p 123))")
+						"   (deliver p 10)     \n" +
+						"   (deliver p 20)     \n" +
+						"   @p)                  ")
 					.build()
 		) {
 			@SuppressWarnings("unchecked")
@@ -1066,15 +1082,19 @@ public class ConcurrencyFunctions {
 						"subsequent derefs will return the same delivered value without " + 
 						"blocking.")
 					.examples(
-						"(do                                        \n" +
-						"   (def p (promise))                       \n" +
-						"   (def task (fn []                        \n" +
-						"                 (do                       \n" +
-						"                    (sleep 500)            \n" +
-						"                    (deliver p 123))))     \n" +
-						"                                           \n" +
-						"   (future task)                           \n" +
-						"   (deref p))")
+						"(do                   \n" +
+						"   (def p (promise))  \n" +
+						"   (deliver p 10)     \n" +
+						"   (deliver p 20)     \n" +
+						"   @p)                  ",
+					
+						"(do                                            \n" +
+						"   (def p (promise))                           \n" +
+						"   (defn task1 [] (sleep 500) (deliver p 10))  \n" +
+						"   (defn task2 [] (sleep 800) (deliver p 20))  \n" +
+						"   (future task1)                              \n" +
+						"   (future task2)                              \n" +
+						"   @p)                                           ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
