@@ -73,7 +73,7 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/blank? s)")
-					.doc("True if s is blank.")
+					.doc("True if s is nil, empty, or contains only whitespace.")
 					.examples(
 						"(str/blank? nil)",
 						"(str/blank? \"\")",
