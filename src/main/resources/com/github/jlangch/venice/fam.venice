@@ -143,10 +143,10 @@
 (defmethod fapply :fam.Atom [applicative functor]
   (fam/fmap (deref applicative) functor))
 
-(defmethod fmap :fam.Volatile [applicative functor]
+(defmethod fapply :fam.Volatile [applicative functor]
   (fam/fmap (deref applicative) functor))
 
-(defmethod fmap :fam.Dereferenceable [applicative functor]
+(defmethod fapply :fam.Dereferenceable [applicative functor]
   (fam/fmap (deref applicative) functor))
 
 
@@ -172,8 +172,8 @@
 ;;           (bind (just 3) half)             ; => nil
 ;;           (bind (just 4) half)             ; => (just 2)
 ;;           (bind nil half)                  ; => nil
-;;           (bind (just 20) half half half)  ; => nil
 ;;           (bind (just 20) half half)       ; => (just 5)
+;;           (bind (just 20) half half half)  ; => nil
 ;; -----------------------------------------------------------------------------
 
 (defmulti bind (fn [monad & fs] (fam/box-type monad)))
@@ -185,4 +185,4 @@
   (case (count fs)
       0     nil
       1     ((first fs) (fam/unwrap monad))
-      :else (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
