@@ -119,7 +119,7 @@ public class MultiMethodTest {
 				"(do                                                             \n" +
 				"   (import :java.lang.IllegalArgumentException)                 \n" +
 				"                                                                \n" +
-				"   (defmulti greeting (fn[x] (x \"language\")))                 \n" +
+				"   (defmulti greeting (fn [x] (x \"language\")))                \n" +
 				"                                                                \n" +
 				"   (defmethod greeting \"English\" [params] \"Hello!\")         \n" +
 				"   (defmethod greeting \"French\" [params] \"Bonjour!\")        \n" +
@@ -139,7 +139,7 @@ public class MultiMethodTest {
 				"(do                                                             \n" +
 				"   (import :java.lang.IllegalArgumentException)                 \n" +
 				"                                                                \n" +
-				"   (defmulti greeting (fn[x] (x \"language\")))                 \n" +
+				"   (defmulti greeting (fn [x] (x \"language\")))                \n" +
 				"                                                                \n" +
 				"   (defmethod greeting \"English\" [params] \"Hello!\")         \n" +
 				"   (defmethod greeting \"French\" [params] \"Bonjour!\")        \n" +
@@ -159,7 +159,7 @@ public class MultiMethodTest {
 				"(do                                                             \n" +
 				"   (import :java.lang.IllegalArgumentException)                 \n" +
 				"                                                                \n" +
-				"   (defmulti greeting (fn[x] (x \"language\")))                 \n" +
+				"   (defmulti greeting (fn [x] (x \"language\")))                \n" +
 				"                                                                \n" +
 				"   (defmethod greeting \"English\" [params] \"Hello!\")         \n" +
 				"   (defmethod greeting \"French\" [params] \"Bonjour!\")        \n" +
@@ -186,7 +186,7 @@ public class MultiMethodTest {
 
 		final String s = 
 				"(do                                                                       \n" +
-				"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
+				"   (defmulti salary (fn [amount] (amount :t)))                            \n" +
 				"                                                                          \n" +
 				"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
 				"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
@@ -206,7 +206,7 @@ public class MultiMethodTest {
 
 		final String s = 
 				"(do                                                \n" +
-				"   (defmulti test (fn[x y & xs] (count xs)))       \n" +
+				"   (defmulti test (fn [x y & xs] (count xs)))      \n" +
 				"                                                   \n" +
 				"   (defmethod test 0 [x y & xs] 2)                 \n" +
 				"   (defmethod test 1 [x y & xs] 3)                 \n" +
