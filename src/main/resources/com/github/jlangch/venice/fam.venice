@@ -23,6 +23,8 @@
 ;;;;
 ;;;; See: http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html
 ;;;;
+;;;; http://leonardoborges.com/writings/2012/11/30/monads-in-small-bites-part-i-functors/
+;;;;
 ;;;; Fluokitten:
 ;;;;    https://fluokitten.uncomplicate.org/articles/functors_applicatives_monads_in_pictures.html
 ;;;;    https://github.com/uncomplicate/fluokitten/
@@ -54,9 +56,26 @@
     :else         (type x)))
 
 
-;; --------------------------------------------------------------------------
+
+;; -----------------------------------------------------------------------------
 ;; Functors
-;; --------------------------------------------------------------------------
+;;
+;; A Functor is any type that defines how fmap applies to it.
+;;
+;; the types nil, just, list, set, map vector, atom, volatile, future,
+;; delay, and promise are functors
+;;
+;; functors:  applying a function to a wrapped value using fmap
+;;
+;; fmap:      takes a function and a functor and returns a functor
+;;
+;; example:   (fmap (partial + 3) (just 2))  ; => (just 5)
+;;            (fmap (partial + 3) nil)       ; => nil
+;;            (fmap (partial + 3) [2 4 6])   ; => [5 7 9]
+;;            (do
+;;              (def foo (fmap (partial + 3) (partial + 2))))
+;;              (foo 10))  ; => 15
+;; -----------------------------------------------------------------------------
 
 (defmulti fmap (fn [f functor] (fam/box-type functor)))
 
@@ -91,39 +110,79 @@
 
 
 
-;; --------------------------------------------------------------------------
+;; -----------------------------------------------------------------------------
 ;; Applicatives
-;; --------------------------------------------------------------------------
+;;
+;; A Applicative is any type that defines how fapply applies to it.
+;;
+;; the types nil, just, list, vector, atom, volatile, future, delay, and
+;; promise are applicatives
+;;
+;; applicatives:  applying a wrapped function to a wrapped value using fapply
+;;
+;; fapply:        takes an applicative and a functor and returns a functor
+;;
+;; example:       (fapply (just (partial + 3)) (just 2))   ; => (just 5)
+;;                (fapply [(partial * 2) (partial + 3)] [1 2]) ; => [2 4 4 5]
+;; -----------------------------------------------------------------------------
 
-(defmulti fapply (fn [f-functor functor] (fam/box-type f-functor)))
+(defmulti fapply (fn [applicative functor] (fam/box-type applicative)))
 
-(defmethod fapply :fam.Nil [f-functor functor]
+(defmethod fapply :fam.Nil [applicative functor]
   nil)
 
-(defmethod fapply :fam.Just [f-functor functor]
-  (fam/fmap (fam/unwrap f-functor) functor))
+(defmethod fapply :fam.Just [applicative functor]
+  (fam/fmap (fam/unwrap applicative) functor))
 
-(defmethod fapply :fam.List [f-functor functor]
-  (flatten (map #(fam/fmap % functor) f-functor)))
+(defmethod fapply :fam.List [applicative functor]
+  (flatten (map #(fam/fmap % functor) applicative)))
 
-(defmethod fapply :fam.Vector [f-functor functor]
-  (flatten (map #(fam/fmap % functor) f-functor)))
+(defmethod fapply :fam.Vector [applicative functor]
+  (flatten (map #(fam/fmap % functor) applicative)))
 
-(defmethod fapply :fam.Atom [f-functor functor]
-  (fam/fmap (deref f-functor) functor))
+(defmethod fapply :fam.Atom [applicative functor]
+  (fam/fmap (deref applicative) functor))
 
-(defmethod fmap :fam.Volatile [f functor]
-  (fam/fmap (deref f-functor) functor))
+(defmethod fmap :fam.Volatile [applicative functor]
+  (fam/fmap (deref applicative) functor))
 
-(defmethod fmap :fam.Dereferenceable [f functor]
-  (fam/fmap (deref f-functor) functor))
+(defmethod fmap :fam.Dereferenceable [applicative functor]
+  (fam/fmap (deref applicative) functor))
 
 
 
-;; --------------------------------------------------------------------------
+;; -----------------------------------------------------------------------------
 ;; Monads
-;; --------------------------------------------------------------------------
+;;
+;; A Monad is any type that defines how bind applies to it.
+;;
+;; the types nil and just are monads
+;;
+;; monads:   applying a function that returns a wrapped value, to a wrapped
+;;           value using bind
+;;
+;; bind:     takes a monad and a function that returns a monad and returns a
+;;           monad
+;;
+;; example:  (defn half [x]
+;;                  (if (even? x)
+;;                    (just (/ x 2))
+;;                    nil)))
+;;
+;;           (bind (just 3) half)             ; => nil
+;;           (bind (just 4) half)             ; => (just 2)
+;;           (bind nil half)                  ; => nil
+;;           (bind (just 20) half half half)  ; => nil
+;;           (bind (just 20) half half)       ; => (just 5)
+;; -----------------------------------------------------------------------------
 
-(defn bind
-  ([functor f] (when (some? functor) (f (fam/unwrap functor))))
-  ([functor f & fs] (apply fam/bind (fam/bind functor f) fs)))
+(defmulti bind (fn [monad & fs] (fam/box-type monad)))
+
+(defmethod bind :fam.Nil [monad & fs]
+  nil)
+
+(defmethod bind :fam.Just [monad & fs]
+  (case (count fs)
+      0     nil
+      1     ((first fs) (fam/unwrap monad))
+      :else (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
