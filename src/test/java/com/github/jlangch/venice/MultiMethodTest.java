@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 
-public class MultiFnTest {
+public class MultiMethodTest {
 
 	@Test
 	public void test_defmulti_simple() {
