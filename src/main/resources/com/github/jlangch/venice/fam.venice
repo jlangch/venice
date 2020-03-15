@@ -33,15 +33,6 @@
 (ns fam)
 
 
-(defn just [x] { :type :just, :value x })
-
-(defn just? [x] (and (map? x) (= :just (:type x))))
-
-(defn unwrap [x]
-  { :pre [(or (nil? x) (fam/just? x))] }
-  (if (nil? x) nil (:value x)))
-
-
 (defn- box-type [x]
   (cond
     (nil? x)      :fam.Nil
@@ -83,7 +74,7 @@
   nil)
 
 (defmethod fmap :fam.Just [f functor]
-  (fam/just (f (fam/unwrap functor))))
+  (just (f @functor)))
 
 (defmethod fmap :fam.List [f functor]
   (map f functor))
@@ -132,7 +123,7 @@
   nil)
 
 (defmethod fapply :fam.Just [applicative functor]
-  (fam/fmap (fam/unwrap applicative) functor))
+  (fam/fmap @applicative functor))
 
 (defmethod fapply :fam.List [applicative functor]
   (flatten (map #(fam/fmap % functor) applicative)))
@@ -141,13 +132,13 @@
   (flatten (map #(fam/fmap % functor) applicative)))
 
 (defmethod fapply :fam.Atom [applicative functor]
-  (fam/fmap (deref applicative) functor))
+  (fam/fmap @applicative functor))
 
 (defmethod fapply :fam.Volatile [applicative functor]
-  (fam/fmap (deref applicative) functor))
+  (fam/fmap @applicative functor))
 
 (defmethod fapply :fam.Dereferenceable [applicative functor]
-  (fam/fmap (deref applicative) functor))
+  (fam/fmap @applicative functor))
 
 
 
@@ -156,7 +147,8 @@
 ;;
 ;; A Monad is any type that defines how bind applies to it.
 ;;
-;; the types nil and just are monads
+;; the types nil, just, atom, volatile, future, delay, and
+;; promise are monads
 ;;
 ;; monads:   applying a function that returns a wrapped value, to a wrapped
 ;;           value using bind
@@ -184,5 +176,23 @@
 (defmethod bind :fam.Just [monad & fs]
   (case (count fs)
       0     nil
-      1     ((first fs) (fam/unwrap monad))
+      1     ((first fs) @monad)
+      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+
+(defmethod bind :fam.Atom [monad & fs]
+  (case (count fs)
+      0     nil
+      1     ((first fs) @monad)
+      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+
+(defmethod bind :fam.Volatile [monad & fs]
+  (case (count fs)
+      0     nil
+      1     ((first fs) @monad)
+      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+
+(defmethod bind :fam.Dereferenceable [monad & fs]
+  (case (count fs)
+      0     nil
+      1     ((first fs) @monad)
       (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
