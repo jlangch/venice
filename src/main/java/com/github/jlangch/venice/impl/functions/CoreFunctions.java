@@ -799,10 +799,11 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(just x)")
-					.doc("Creates a wrapped x")
+					.doc("Creates a wrapped x, that is dereferenceable")
 					.examples(
-						"(just 1)",
-						"(just \"1\")")
+						"(just 10)",
+						"(just \"10\")",
+						"(deref (just 10))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

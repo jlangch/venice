@@ -362,6 +362,11 @@ public class DocGenerator {
 		symbols.addItem(getDocItem("symbol?"));
 		symbols.addItem(getDocItem("symbol"));
 
+		final DocSection just = new DocSection("Just");
+		other.addSection(just);
+		just.addItem(getDocItem("just"));
+		just.addItem(getDocItem("just?"));
+
 		final DocSection boolean_ = new DocSection("Boolean");
 		other.addSection(boolean_);
 		boolean_.addItem(getDocItem("boolean"));
