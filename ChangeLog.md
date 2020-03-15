@@ -33,6 +33,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   be opened by specific functions. 
   E.g.: blacklist all IO functions but allow `print`, `println`, `printf`, 
   and `newline`.
+- module `fam` to support functors, applicatives, and monads
 
 
 
