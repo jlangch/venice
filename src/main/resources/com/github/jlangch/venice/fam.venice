@@ -156,10 +156,7 @@
 ;; bind:     takes a monad and a function that returns a monad and returns a
 ;;           monad
 ;;
-;; example:  (defn half [x]
-;;                  (if (even? x)
-;;                    (just (/ x 2))
-;;                    nil)))
+;; example:  (defn half [x] (if (even? x) (just (/ x 2)) nil)))
 ;;
 ;;           (bind (just 3) half)             ; => nil
 ;;           (bind (just 4) half)             ; => (just 2)
@@ -174,25 +171,21 @@
   nil)
 
 (defmethod bind :fam.Just [monad & fs]
-  (case (count fs)
-      0     nil
-      1     ((first fs) @monad)
-      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+  (if (== 1 (count fs))
+    ((first fs) @monad)
+    (reduce (fn [m f] (fam/bind m f)) monad fs)))
 
 (defmethod bind :fam.Atom [monad & fs]
-  (case (count fs)
-      0     nil
-      1     ((first fs) @monad)
-      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+  (if (== 1 (count fs))
+    ((first fs) @monad)
+    (reduce (fn [m f] (fam/bind m f)) monad fs)))
 
 (defmethod bind :fam.Volatile [monad & fs]
-  (case (count fs)
-      0     nil
-      1     ((first fs) @monad)
-      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+  (if (== 1 (count fs))
+    ((first fs) @monad)
+    (reduce (fn [m f] (fam/bind m f)) monad fs)))
 
 (defmethod bind :fam.Dereferenceable [monad & fs]
-  (case (count fs)
-      0     nil
-      1     ((first fs) @monad)
-      (apply fam/bind (fam/bind monad (first fs)) (rest fs))))
+  (if (== 1 (count fs))
+    ((first fs) @monad)
+    (reduce (fn [m f] (fam/bind m f)) monad fs)))
