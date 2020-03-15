@@ -211,7 +211,8 @@ public class ConcurrencyFunctions {
 						"(deref? (promise))",
 						"(deref? (future (fn [] 10)))",
 						"(deref? (volatile 100))",
-						"(deref? (agent 100))")
+						"(deref? (agent 100))",
+						"(deref? (just 100))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
