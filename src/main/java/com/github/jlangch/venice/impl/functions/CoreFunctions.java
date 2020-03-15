@@ -59,6 +59,7 @@ import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -787,6 +788,53 @@ public class CoreFunctions {
 		};
 
 
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Just functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction just =
+		new VncFunction(
+				"just",
+				VncFunction
+					.meta()
+					.arglists("(just x)")
+					.doc("Creates a wrapped x")
+					.examples(
+						"(just 1)",
+						"(just \"1\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("just", args, 1);
+
+				return new VncJust(args.first());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction just_Q =
+		new VncFunction(
+				"just?",
+				VncFunction
+					.meta()
+					.arglists("(just? x)")
+					.doc("Returns true if x is of type just")
+					.examples("(just? (just 1))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("just?", args, 1);
+
+				return Types.isVncJust(args.first()) ? True : False;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+				
+				
 	///////////////////////////////////////////////////////////////////////////
 	// Number functions
 	///////////////////////////////////////////////////////////////////////////
@@ -5995,6 +6043,9 @@ public class CoreFunctions {
 				.add(keyword_Q)
 				.add(fn_Q)
 				.add(macro_Q)
+
+				.add(just)
+				.add(just_Q)
 
 				.add(pr_str)
 				.add(str)

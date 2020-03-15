@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
@@ -135,6 +136,10 @@ public class Types {
 
 	public static boolean isVncNumber(final VncVal val) {
 		return val != null && (isVncLong(val) || isVncInteger(val) || isVncDouble(val) || isVncBigDecimal(val));
+	}
+
+	public static boolean isVncJust(final VncVal val) {
+		return val != null && (val instanceof VncJust);
 	}
 
 	public static boolean isVncByteBuffer(final VncVal val) {
