@@ -81,7 +81,7 @@ Quantization step width: 4,757 µs
 Saved chart to 'benchmark.png'.
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/benchmark1.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/benchmark/benchmark1.png" width="300">
 
 
 #### Long warm-up phase
@@ -109,7 +109,7 @@ Quantization step width: 288 ns
 Saved chart to 'benchmark.png'.
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/benchmark2.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/benchmark/benchmark2.png" width="300">
 
 
 ### References

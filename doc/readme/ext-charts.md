@@ -17,7 +17,7 @@ Examples:
 
 #### Line Chart Example
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/line-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart.png" width="300">
 
 
 ```clojure
@@ -40,7 +40,7 @@ Examples:
 
 #### Area Chart Example
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/area-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/area-chart.png" width="300">
 
 ```clojure
 (do
@@ -68,7 +68,7 @@ Examples:
 
 #### Scatter Chart Example
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/scatter-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/scatter-chart.png" width="300">
 
 ```clojure
 (do
@@ -95,7 +95,7 @@ Examples:
 
 #### Bubble Chart Example
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/bubble-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/bubble-chart.png" width="300">
 
 ```clojure
 (do
@@ -132,7 +132,7 @@ Examples:
 
 #### Bar Chart Example
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/bar-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/bar-chart.png" width="300">
 
 ```clojure
 (do
@@ -153,7 +153,7 @@ Examples:
 
 #### Pie Chart Example
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/pie-chart.png" width="300">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/pie-chart.png" width="300">
 
 ```clojure
 (do

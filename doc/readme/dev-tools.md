@@ -22,4 +22,4 @@ config.json (via the Atom -> Config... menu). Specify a pattern to match for the
 
 **Editing a Venice file and verifying parenthesis**
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/atom-editor.png">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/atom-editor.png">
