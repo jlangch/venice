@@ -9,6 +9,23 @@ This tutorial is a Venice version of the article [Functors, Applicatives and Mon
 
 ## Functors
 
+Here's a simple value:
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value.png">
+
+
+And we know how to apply a function to this value: 
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value_apply.png">
+
+Simple enough. Lets extend this by saying that any value can be in a context. 
+For now you can think of a context as a box that you can put a value in:
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value_and_context.png">
+
+_TODO_
+
+
 ## Applicatives
 
 ## Monads
