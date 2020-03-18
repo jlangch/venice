@@ -53,7 +53,7 @@ run this snippet from a REPL.
 The MindMax country database does not include GPS location data. Venice uses Google's free
 country database to map the countries' ISO codes to latitude, longitude coordinates.
 
-https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv
+[Google Country Database](https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv)
 
 
 ## IP Risk Level
@@ -99,7 +99,6 @@ IP lookup:
       (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
      
   (defn lookup-ip [ip] (@resolver ip))
-
 
   (when-not (io/exists-file? maxmind-country-zip)
     (throw (. :VncException :new 
@@ -194,7 +193,7 @@ markers on a world map.
     
   (visualize "91.223.55.1" "220.100.34.45" "167.120.90.10"))
 ```
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-example.png">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/geoip/geoip-example.png">
 
 
 
@@ -370,4 +369,4 @@ venice> (lookup-ip "41.216.186.131")
 venice> (run "./ip-map.png" "localhost_access_log.2019-12.zip")
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/charts/geoip-tomcat.png">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/geoip/geoip-tomcat.png">
