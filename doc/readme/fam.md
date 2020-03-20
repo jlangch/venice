@@ -5,7 +5,7 @@
 * [Monads](#monads)
 
 
-This tutorial is a Venice version of the article [Functors, Applicatives and Monads in Pictures](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html). The original article was written in Haskell, and is an excellent introduction to the very basics of functors, applicatives, and monads. Due to the differences in typing, data structures, support for varargs and currying, there are differences in how the concepts that the original article explains are implemented in Haskell and Venice.
+This tutorial is the Venice version of the article [Functors, Applicatives and Monads in Pictures](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html). The original article was written in Haskell, and is an excellent introduction to the very basics of functors, applicatives, and monads. Due to the differences in typing, data structures, support for varargs and currying, there are differences in how the concepts that the original article explains are implemented in Haskell and Venice.
 
 
 ## Introduction
@@ -24,7 +24,7 @@ Functions are applied to values returning a new value as the result:
 
 ### Currying
 
-Venice does not support automatic currying, `(+ 3)` would result in applying `+` to `3`, 
+Venice does not support automatic currying, therefore `(+ 3)` would result in applying `+` to `3`, 
 resulting in the number `3` instead of a function that adds `3` as in Haskell. Venice 
 provides `partial` to get the equivalent behaviour.
 
