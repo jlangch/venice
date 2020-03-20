@@ -10,9 +10,21 @@ This tutorial is the Venice version of the article [Functors, Applicatives and M
 
 ## Introduction
 
-### Values
+Here's a simple value:
 
-Functions are applied to values returning a new value as the result:
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value.png">
+
+And we know how to apply a function to this value: 
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value_apply.png">
+
+Simple enough. Lets extend this by saying that any value can be in a context. 
+For now you can think of a context as a box that you can put a value in:
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value_and_context.png">
+
+
+### Values
 
 ```clojure
 2
@@ -39,7 +51,7 @@ provides `partial` to get the equivalent behaviour.
 ### Boxes
 
 Boxes are containers for values. Lists, vectors, and other data structures are 
-kinds of "boxes" that contain other values. Haskell provides two simple boxes 
+kinds of "boxes" that contain other values. Haskell provides two simple boxes:
 
 - Just - contains just some value
 - Nothing - representing that no value is available
@@ -73,19 +85,6 @@ applicative functor, monad etc. (there are more, but this tutorial cover these t
 
 ## Functors
 
-Here's a simple value:
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value.png">
-
-
-And we know how to apply a function to this value: 
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value_apply.png">
-
-Simple enough. Lets extend this by saying that any value can be in a context. 
-For now you can think of a context as a box that you can put a value in:
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/value_and_context.png">
 
 _TODO_
 
