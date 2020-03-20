@@ -89,12 +89,16 @@ When a value is wrapped in a context, you can't apply a normal function to it:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/fam/no_fmap_ouch.png">
 
+```clojure
+> ((partial + 3) (just 2))
+;=> throws VncException because operand two for the function '+' is not a number
+```
+
 This is where `fmap` comes in. `fmap` is from the street, `fmap` is hip to contexts. 
 `fmap` knows how to apply functions to values that are wrapped in a context. For 
 example, suppose you want to apply `(+3)` to `Just 2`. Use `fmap`:
 
 ```clojure
-> (load-module :fam)
 > (fam/fmap (partial + 3) (just 2))
 ;=> (just 5)
 ```
