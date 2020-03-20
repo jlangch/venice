@@ -8,7 +8,7 @@
 This tutorial is the Venice version of the article [Functors, Applicatives and Monads in Pictures](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html). The original article was written in Haskell, and is an excellent introduction to the very basics of functors, applicatives, and monads. Due to the differences in typing, data structures, support for varargs and currying, there are differences in how the concepts that the original article explains are implemented in Haskell and Venice.
 
 
-## Introduction
+## Basics
 
 Here's a simple value:
 
