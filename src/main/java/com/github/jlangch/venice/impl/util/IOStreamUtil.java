@@ -32,7 +32,9 @@ import java.nio.charset.Charset;
 
 public class IOStreamUtil {
 
-	public static byte[] copyIStoByteArray(final InputStream is) throws IOException{
+	public static byte[] copyIStoByteArray(
+			final InputStream is
+	) throws IOException {
 		if (is == null) {
 			return null;
 		}
@@ -65,13 +67,16 @@ public class IOStreamUtil {
         int offset = 0;
         int read;
 
-        while (offset < numBytesToCopy && (read = input.read(data, offset, numBytesToCopy - offset)) != -1) {
+        while (offset < numBytesToCopy 
+        		&& (read = input.read(data, offset, numBytesToCopy - offset)) != -1
+        ) {
             offset += read;
         }
 
         if (offset != numBytesToCopy) {
             throw new IOException(
-            		"Unexpected read size. current: " + offset + ", expected: " + numBytesToCopy);
+            		"Unexpected read size. current: " + offset 
+            			+ ", expected: " + numBytesToCopy);
         }
 
         return data;
