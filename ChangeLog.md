@@ -35,6 +35,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   and `newline`.
 - module `fam` to support functors, applicatives, and monads
 
+### Fixed
+
+- `send-off` to be called without fn args
+
 
 
 ## [1.7.20] - 2020-03-09

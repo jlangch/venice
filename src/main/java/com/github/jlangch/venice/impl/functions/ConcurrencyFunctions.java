@@ -396,7 +396,11 @@ public class ConcurrencyFunctions {
 						"(do                       \n" +
 						"  (def counter (atom 0))  \n" +
 						"  (swap! counter inc)     \n" +
-						"  (deref counter))          ")
+						"  (deref counter))          ",
+						"(do                       \n" +
+						"  (def counter (atom 0))  \n" +
+						"  (reset! counter 9)      \n" +
+						"  @counter)                 ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -570,6 +574,10 @@ public class ConcurrencyFunctions {
 						"(do                           \n" +
 						"  (def counter (volatile 0))  \n" +
 						"  (swap! counter inc)         \n" +
+						"  (deref counter))              ",
+						"(do                           \n" +
+						"  (def counter (volatile 0))  \n" +
+						"  (reset! counter 9)          \n" +
 						"  @counter)                     ")
 					.build()
 		) {		
@@ -653,11 +661,12 @@ public class ConcurrencyFunctions {
 						"The state of the agent will be set to the value of:\n" + 
 						" (apply action-fn state-of-agent args)")
 					.examples(
-						"(do                         \n" +
-						"   (def x (agent 100))      \n" +
-						"   (send x + 5)             \n" +
-						"   (sleep 100)              \n" +
-						"   (deref x))                 ")
+						"(do                           \n" +
+						"   (def x (agent 100))        \n" +
+						"   (send x + 5)               \n" +
+						"   (send x (partial + 7))     \n" +
+						"   (sleep 100)                \n" +
+						"   (deref x))                   ")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -693,15 +702,16 @@ public class ConcurrencyFunctions {
 						"the value of:\n" + 
 						" (apply action-fn state-of-agent args)")
 					.examples(
-						"(do                         \n" +
-						"   (def x (agent 100))      \n" +
-						"   (send-off x + 5)         \n" +
-						"   (sleep 100)              \n" +
-						"   (deref x))                 ")
+						"(do                           \n" +
+						"   (def x (agent 100))        \n" +
+						"   (send-off x + 5)           \n" +
+						"   (send-off x (partial + 7)) \n" +
+						"   (sleep 100)                \n" +
+						"   (deref x))                   ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("send-off", args, 3);
+				assertMinArity("send-off", args, 2);
 				
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -874,10 +884,15 @@ public class ConcurrencyFunctions {
 						"Blocks the current thread (indefinitely) until all actions dispatched " + 
 						"thus far (from this thread or agent) to the agents have occurred. ")
 					.examples(
-						"(do                           \n" +
-						"   (def x1 (agent 100))       \n" +
-						"   (def x2 (agent 100))       \n" +
-						"   (await x1 x2))               ")
+						"(do                                              \n" +
+						"   (def x1 (agent 100))                          \n" +
+						"   (def x2 (agent {}))                           \n" +
+						"   (send-off x1 + 5)                             \n" +
+						"   (send-off x2 (fn [state]                      \n" +
+					    "                  (sleep 100)                    \n" +
+					    "                  (assoc state :done true)))     \n" +
+					    "   ;; blocks till the agent actions are finished \n" +
+						"   (await x1 x2))                                 ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -908,10 +923,15 @@ public class ConcurrencyFunctions {
 						"timeout (in milliseconds) has elapsed. Returns logical false if " + 
 						"returning due to timeout, logical true otherwise.")
 					.examples(
-						"(do                           \n" +
-						"   (def x1 (agent 100))       \n" +
-						"   (def x2 (agent 100))       \n" +
-						"   (await-for 500 x1 x2))       ")
+						"(do                                              \n" +
+						"   (def x1 (agent 100))                          \n" +
+						"   (def x2 (agent {}))                           \n" +
+						"   (send-off x1 + 5)                             \n" +
+						"   (send-off x2 (fn [state]                      \n" +
+					    "                  (sleep 100)                    \n" +
+					    "                  (assoc state :done true)))     \n" +
+					    "   ;; blocks till the agent actions are finished \n" +
+						"   (await-for 500 x1 x2))                          ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
