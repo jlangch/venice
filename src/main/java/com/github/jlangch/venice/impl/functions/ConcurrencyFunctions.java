@@ -395,6 +395,7 @@ public class ConcurrencyFunctions {
 					.examples(
 						"(do                       \n" +
 						"  (def counter (atom 0))  \n" +
+						"  (swap! counter inc)     \n" +
 						"  (deref counter))          ")
 					.build()
 		) {		
@@ -434,15 +435,22 @@ public class ConcurrencyFunctions {
 				"reset!", 
 				VncFunction
 					.meta()
-					.arglists("(reset! atom newval)")		
+					.arglists("(reset! box newval)")		
 					.doc(
-						"Sets the value of atom to newval without regard for the " + 
-						"current value. Returns newval.")
+						"Sets the value of an atom or a volatile to newval without " + 
+						"regard for the current value. Returns newval.")
 					.examples(
-						"(do                       \n" +
-						"  (def counter (atom 0))  \n" +
-						"  (reset! counter 99)     \n" +
-						"  (deref counter))          ")
+						"(do                           \n" +
+						"  (def counter (atom 0))      \n" +
+						"  (reset! counter 99)         \n" +
+						"  @counter)                     ",
+						"(do                           \n" +
+						"  (def counter (atom 0))      \n" +
+						"  (reset! counter 99))          ",
+						"(do                           \n" +
+						"  (def counter (volatile 0))  \n" +
+						"  (reset! counter 99)         \n" +
+						"  @counter)                     ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -471,17 +479,24 @@ public class ConcurrencyFunctions {
 				"swap!", 
 				VncFunction
 					.meta()
-					.arglists("(swap! atom f & args)")		
+					.arglists("(swap! box f & args)")		
 					.doc(
-						"Atomically swaps the value of atom to be: " + 
-						"(apply f current-value-of-atom args). Note that f may be called " + 
+						"Atomically swaps the value of an atom or a volatile to be: " + 
+						"(apply f current-value-of-boxargs). Note that f may be called " + 
 						"multiple times, and thus should be free of side effects.  Returns " + 
 						"the value that was swapped in.")
 					.examples(
-						"(do                       \n" +
-						"   (def counter (atom 0)) \n" +
-						"   (swap! counter inc)    \n" +
-						"   (deref counter))         ")
+						"(do                           \n" +
+						"   (def counter (atom 0))     \n" +
+						"   (swap! counter inc)        \n" +
+						"   @counter)                    ",
+						"(do                           \n" +
+						"   (def counter (atom 0))     \n" +
+						"   (swap! counter inc))         ",
+						"(do                               \n" +
+						"   (def counter (volatile 0))     \n" +
+						"   (swap! counter (partial + 6))  \n" +
+						"   @counter)                        ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -554,7 +569,8 @@ public class ConcurrencyFunctions {
 					.examples(
 						"(do                           \n" +
 						"  (def counter (volatile 0))  \n" +
-						"  (deref counter))              ")
+						"  (swap! counter inc)         \n" +
+						"  @counter)                     ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
