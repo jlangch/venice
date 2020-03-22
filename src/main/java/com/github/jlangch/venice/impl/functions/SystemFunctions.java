@@ -176,7 +176,10 @@ public class SystemFunctions {
 					.examples(
 						"(format-nano-time 203)",
 						"(format-nano-time 20389.0 :precision 2)",
-						"(format-nano-time 203898888)",
+						"(format-nano-time 20389 :precision 2)",
+						"(format-nano-time 20389 :precision 0)",
+						"(format-nano-time 203867669)",
+						"(format-nano-time 20386766988 :precision 2)",
 						"(format-nano-time 20386766988 :precision 6)")
 					.build()
 		) {
