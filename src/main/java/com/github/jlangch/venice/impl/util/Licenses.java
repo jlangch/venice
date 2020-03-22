@@ -32,17 +32,18 @@ public class Licenses {
 	public static Map<String,String> lics() {
 		final Map<String,String> lics = new LinkedHashMap<>();
 			
-		lics.put("VAVR", loadLicense("LICENSE-Vavr.txt"));
-		lics.put("JLine3", loadLicense("LICENSE-JLine3.txt"));
-		lics.put("nanojson", loadLicense("LICENSE-nanojson.txt"));
-		lics.put("Open Font", loadLicense("LICENSE-OFL.txt"));
+		lics.put("Venice", loadLicense("LICENSE-Vavr.txt"));
+		lics.put("3rd Party: VAVR", loadLicense("LICENSE-Vavr.txt"));
+		lics.put("3rd Party: JLine3", loadLicense("LICENSE-JLine3.txt"));
+		lics.put("3rd Party: nanojson", loadLicense("LICENSE-nanojson.txt"));
+		lics.put("3rd Party: Open Font", loadLicense("LICENSE-OFL.txt"));
 		
 		return lics;
 	}
 
 	
 	private static String loadLicense(final String name) {
-		final String path = getVeniceBasePath() + "3rdparty-licenses/" + name;		
+		final String path = getVeniceBasePath() + "licenses/" + name;		
 		return new ClassPathResource(path).getResourceAsString("UTF-8");
 	}
 }
