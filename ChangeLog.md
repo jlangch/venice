@@ -37,7 +37,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- `send-off` to be called without fn args
+- `send-off` to be optionally called without fn args
 
 
 
