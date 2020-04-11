@@ -23,7 +23,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.7.21] - 2020-03-xx
+## [1.7.21] - 2020-04-11
 
 ### Added
 
@@ -38,6 +38,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Fixed
 
 - `send-off` to be optionally called without fn args
+
+### Changed
+
+- JLine3 lib to actual version 3.14.1
+- build to Gradle 6.3
 
 
 
