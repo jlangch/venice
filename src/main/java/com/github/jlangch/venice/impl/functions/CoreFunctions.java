@@ -4568,14 +4568,19 @@ public class CoreFunctions {
 							? VncTinyVector.empty()
 							: new VncVector(vec.getList().subList(0, n));
 				}
-				else if (Types.isVncList(coll) 
-							|| Types.isVncJavaList(coll) 
-							|| Types.isVncMutableList(coll)) {
+				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncList list = (VncList)args.first();
 					n = Math.max(0, Math.min(list.size(), n));
 					return list.isEmpty()
 							? VncTinyList.empty()
 							: new VncList(list.getList().subList(0, n));
+				}
+				else if (Types.isVncMutableList(coll)) {
+					final VncMutableList list = (VncMutableList)args.first();
+					n = Math.max(0, Math.min(list.size(), n));
+					return list.isEmpty()
+							? new VncMutableList()
+							: new VncMutableList(list.getList().subList(0, n));
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();
@@ -4628,14 +4633,19 @@ public class CoreFunctions {
 							? VncTinyVector.empty()
 							: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 				}
-				else if (Types.isVncList(coll) 
-							|| Types.isVncJavaList(coll) 
-							|| Types.isVncMutableList(coll)) {
+				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncList list = (VncList)args.first();
 					n = Math.max(0, Math.min(list.size(),n));
 					return list.isEmpty()
 							? VncTinyList.empty()
 							: new VncList(list.getList().subList(list.size()-n, list.size()));
+				}
+				else if (Types.isVncMutableList(coll)) {
+					final VncMutableList list = (VncMutableList)args.first();
+					n = Math.max(0, Math.min(list.size(),n));
+					return list.isEmpty()
+							? new VncMutableList()
+							: new VncMutableList(list.getList().subList(list.size()-n, list.size()));
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();
