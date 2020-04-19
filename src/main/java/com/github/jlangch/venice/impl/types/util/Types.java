@@ -61,6 +61,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
@@ -172,6 +173,10 @@ public class Types {
 	
 	public static boolean isVncList(final VncVal val) {
 		return val != null && (val instanceof VncList);
+	}
+	
+	public static boolean isVncMutableList(final VncVal val) {
+		return val != null && (val instanceof VncMutableList);
 	}
 
 	public static boolean isVncVector(final VncVal val) {
@@ -314,6 +319,9 @@ public class Types {
 		}
 		else if (Types.isVncList(val)) {
 			return new VncKeyword("venice.List");
+		}
+		else if (Types.isVncMutableList(val)) {
+			return new VncKeyword("venice.MutableList");
 		}
 		else if (Types.isVncHashSet(val)) {
 			return new VncKeyword("venice.HashSet");

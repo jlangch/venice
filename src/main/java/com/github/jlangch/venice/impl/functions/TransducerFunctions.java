@@ -49,6 +49,7 @@ import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncTinyList;
@@ -329,11 +330,8 @@ public class TransducerFunctions {
 
 					List<VncVal> items;
 					
-					if (Types.isVncList(coll)) {
-						items = ((VncList)coll).getList();
-					}
-					else if (Types.isVncVector(coll)) {
-						items = ((VncVector)coll).getList();
+					if (Types.isVncSequence(coll)) {
+						items = ((VncSequence)coll).getList();
 					}
 					else if (Types.isVncSet(coll)) {
 						items = ((VncSet)coll).getList();
@@ -1144,6 +1142,9 @@ public class TransducerFunctions {
 					else if (Types.isVncList(coll)) {
 						return reverseList(((VncList)coll).getList());
 					}
+					else if (Types.isVncMutableList(coll)) {
+						return reverseMutableList(((VncMutableList)coll).getList());
+					}
 					else if (Types.isVncVector(coll)) {
 						return reverseVector(((VncVector)coll).getList());
 					}
@@ -1352,6 +1353,12 @@ public class TransducerFunctions {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.reverse(copy);
 		return new VncList(copy);
+	}
+
+	private static VncMutableList reverseMutableList(final List<VncVal> list) {
+		final List<VncVal> copy = new ArrayList<>(list);
+		Collections.reverse(copy);
+		return new VncMutableList(copy);
 	}
 
 	private static VncVector reverseVector(final List<VncVal> list) {

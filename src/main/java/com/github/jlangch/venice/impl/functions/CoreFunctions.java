@@ -74,6 +74,7 @@ import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
@@ -1495,10 +1496,6 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	static public boolean list_Q(VncVal mv) {
-		return Types.isVncList(mv);
-	}
-
 	public static VncFunction list_Q =
 		new VncFunction(
 				"list?",
@@ -1512,13 +1509,57 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("list?", args, 1);
 
-				return list_Q(args.first()) ? True : False;
+				return Types.isVncList(args.first()) ? True : False;
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Mutable List functions
+	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction new_mutable_list =
+		new VncFunction(
+				"mutable-list",
+				VncFunction
+					.meta()
+					.arglists("(mutable-list & items)")
+					.doc("Creates a new mutable threadsafe list containing the items.")
+					.examples(
+						"(mutable-list )", 
+						"(mutable-list 1 2 3)", 
+						"(mutable-list 1 2 3 [:a :b])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				return new VncMutableList(args.getList());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction mutable_list_Q =
+			new VncFunction(
+					"mutable-list?",
+					VncFunction
+						.meta()
+						.arglists("(mutable-list? obj)")
+						.doc("Returns true if obj is a mutable list")
+						.examples("(mutable-list? (mutable-list 1 2))")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					assertArity("mutable-list?", args, 1);
+
+					return Types.isVncMutableList(args.first()) ? True : False;
+				}
+
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// Vector functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1704,8 +1745,7 @@ public class CoreFunctions {
 				}
 				else {
 					throw new VncException(
-							"Function 'reverse' requires a list, vector, set, " +
-							"map, or string as coll argument.");
+							"Function 'shuffle' requires a list, vector, or string as coll argument.");
 				}
 			}
 
@@ -3200,6 +3240,9 @@ public class CoreFunctions {
 				else if (Types.isVncList(to)) {
 					return ((VncList)to).addAllAtStart(from.toVncList());
 				}
+				else if (Types.isVncMutableList(to)) {
+					return ((VncMutableList)to).addAllAtStart(from.toVncList());
+				}
 				else if (Types.isVncHashSet(to) || Types.isVncSortedSet(to)) {
 					return ((VncHashSet)to).addAll(from.toVncList());
 				}
@@ -3778,7 +3821,7 @@ public class CoreFunctions {
 				if (Types.isVncVector(coll)) {
 					return ((VncVector)coll).addAtStart(args.first());
 				}
-				if (Types.isVncList(coll)) {
+				else if (Types.isVncList(coll)) {
 					return ((VncList)coll).addAtStart(args.first());
 				}
 				else if (Types.isVncHashSet(coll)) {
@@ -3811,6 +3854,92 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction conj =
+		new VncFunction(
+				"conj",
+				VncFunction
+					.meta()
+					.arglists(
+						"(conj)",
+						"(conj x)",
+						"(conj coll x)",
+						"(conj coll x & xs)")
+					.doc(
+						"Returns a new collection with the x, xs 'added'. (conj nil item) " +
+						"returns (item). For list, vectors and ordered maps the values are " +
+						"added at the end. For all other sets and maps the position is undefined.")
+					.examples(
+						"(conj [1 2 3] 4)",
+						"(conj [1 2 3] 4 5)",
+						"(conj [1 2 3] [4 5])",
+						"(conj '(1 2 3) 4)",
+						"(conj '(1 2 3) 4 5)",
+						"(conj '(1 2 3) '(4 5))",
+						"(conj (set 1 2 3) 4)",
+						"(conj {:a 1 :b 2} [:c 3])",
+						"(conj {:a 1 :b 2} {:c 3})",
+						"(conj {:a 1 :b 2} (map-entry :c 3))",
+						"(conj )",
+						"(conj 4)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				if (args.isEmpty()) {
+					return VncTinyVector.empty();
+				}
+				else if (args.size() == 1) {
+					return args.first();
+				}
+				else {
+					VncVal coll = args.first();
+					if (coll == Nil) {
+						coll = VncTinyList.empty();
+					}
+
+					if (Types.isVncVector(coll)) {
+						return ((VncVector)coll).addAllAtEnd(args.rest());
+					}
+					else if (Types.isVncList(coll)) {
+						return ((VncList)coll).addAllAtEnd(args.rest());
+					}
+					else if (Types.isVncSet(coll)) {
+						return ((VncSet)coll).addAll(args.rest());
+					}
+					else if (Types.isVncMap(coll)) {
+						VncMap map = (VncMap)coll;
+						for(VncVal v : args.rest().getList()) {
+							if (Types.isVncSequence(v) && ((VncSequence)v).size() == 2) {
+								map = map.assoc(
+											VncList.of(
+												((VncSequence)v).first(),
+												((VncSequence)v).second()));
+							}
+							else if (Types.isVncMapEntry(v)) {
+								final VncMapEntry entry = (VncMapEntry)v;
+								map = map.assoc(entry.getKey(), entry.getValue());
+							}
+							else if (Types.isVncMap(v)) {
+								map = map.putAll((VncMap)v);
+							}
+							else {
+								throw new VncException(String.format(
+										"Invalid x %s while calling function 'conj'",
+										Types.getType(v)));
+							}
+						}
+						return map;
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid coll %s while calling function 'conj'",
+								Types.getType(coll)));
+					}
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction cons_BANG =
 		new VncFunction(
 				"cons!",
@@ -3820,6 +3949,7 @@ public class CoreFunctions {
 					.doc(
 						"Adds x to the mutable coll")
 					.examples(
+						"(cons! 1 (mutable-list 2 3))",
 						"(cons! 3 (mutable-set 1 2))",
 						"(cons! {:c 3} (mutable-map :a 1 :b 2))",
 						"(cons! (map-entry :c 3) (mutable-map :a 1 :b 2))")
@@ -3830,7 +3960,10 @@ public class CoreFunctions {
 
 				final VncVal coll = args.second();
 
-				if (Types.isVncMutableSet(coll)) {
+				if (Types.isVncMutableList(coll)) {
+					return ((VncMutableList)coll).addAtStart(args.first());
+				}
+				else if (Types.isVncMutableSet(coll)) {
 					return ((VncMutableSet)coll).add(args.first());
 				}
 				else if (Types.isVncMutableMap(coll)) {
@@ -3851,6 +3984,87 @@ public class CoreFunctions {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'cons!'",
 							Types.getType(coll)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
+	public static VncFunction conj_BANG =
+		new VncFunction(
+				"conj!",
+				VncFunction
+					.meta()
+					.arglists(
+						"(conj!)",
+						"(conj! x)",
+						"(conj! coll x)",
+						"(conj! coll x & xs)")
+					.doc(
+						"Returns a new mutable collection with the x, xs 'added'. (conj! nil item) " +
+						"returns (item). For mutable list the values are added at the end. For all " +
+						"mutable sets and maps the position is undefined.")
+					.examples(
+						"(conj! (mutable-list 1 2 3) 4)",
+						"(conj! (mutable-list 1 2 3) 4 5)",
+						"(conj! (mutable-list 1 2 3) '(4 5))",
+						"(conj! (mutable-set 1 2 3) 4)",
+						"(conj! (mutable-map :a 1 :b 2) [:c 3])",
+						"(conj! (mutable-map :a 1 :b 2) {:c 3})",
+						"(conj! (mutable-map :a 1 :b 2) (map-entry :c 3))",
+						"(conj! )",
+						"(conj! 4)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				if (args.isEmpty()) {
+					return new VncMutableList();
+				}
+				else if (args.size() == 1) {
+					return args.first();
+				}
+				else {
+					VncVal coll = args.first();
+					if (coll == Nil) {
+						coll = new VncMutableList();
+					}
+
+					if (Types.isVncMutableList(coll)) {
+						return ((VncMutableList)coll).addAllAtEnd(args.rest());
+					}
+					else if (Types.isVncMutableSet(coll)) {
+						return ((VncMutableSet)coll).addAll(args.rest());
+					}
+					else if (Types.isVncMutableMap(coll)) {
+						VncMutableMap map = (VncMutableMap)coll;
+						for(VncVal v : args.rest().getList()) {
+							if (Types.isVncSequence(v) && ((VncSequence)v).size() == 2) {
+								map = map.assoc(
+											VncList.of(
+												((VncSequence)v).first(),
+												((VncSequence)v).second()));
+							}
+							else if (Types.isVncMapEntry(v)) {
+								final VncMapEntry entry = (VncMapEntry)v;
+								map = map.assoc(entry.getKey(), entry.getValue());
+							}
+							else if (Types.isVncMap(v)) {
+								map = map.putAll((VncMap)v);
+							}
+							else {
+								throw new VncException(String.format(
+										"Invalid x %s while calling function 'conj!'",
+										Types.getType(v)));
+							}
+						}
+						return map;
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid coll %s while calling function 'conj!'",
+								Types.getType(coll)));
+					}
 				}
 			}
 
@@ -4243,14 +4457,8 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					return Nil;
 				}
-				else if (Types.isVncVector(coll)) {
-					return ((VncVector)coll).rest();
-				}
-				else if (Types.isVncList(coll)) {
-					return ((VncList)coll).rest();
-				}
-				else if (Types.isVncJavaList(coll)) {
-					return ((VncJavaList)coll).rest();
+				else if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).rest();
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();
@@ -4360,7 +4568,9 @@ public class CoreFunctions {
 							? VncTinyVector.empty()
 							: new VncVector(vec.getList().subList(0, n));
 				}
-				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
+				else if (Types.isVncList(coll) 
+							|| Types.isVncJavaList(coll) 
+							|| Types.isVncMutableList(coll)) {
 					final VncList list = (VncList)args.first();
 					n = Math.max(0, Math.min(list.size(), n));
 					return list.isEmpty()
@@ -4418,7 +4628,9 @@ public class CoreFunctions {
 							? VncTinyVector.empty()
 							: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 				}
-				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
+				else if (Types.isVncList(coll) 
+							|| Types.isVncJavaList(coll) 
+							|| Types.isVncMutableList(coll)) {
 					final VncList list = (VncList)args.first();
 					n = Math.max(0, Math.min(list.size(),n));
 					return list.isEmpty()
@@ -4527,11 +4739,11 @@ public class CoreFunctions {
 				if (Types.isVncString(arg)) {
 					return ((VncString)arg).getValue().isEmpty() ? Nil : arg;
 				}
-				else if (Types.isVncVector(arg)) {
-					return ((VncVector)arg).isEmpty() ? Nil : arg;
+				else if (Types.isVncSequence(arg)) {
+					return ((VncSequence)arg).isEmpty() ? Nil : arg;
 				}
-				else if (Types.isVncList(arg)) {
-					return ((VncList)arg).isEmpty() ? Nil : arg;
+				else if (Types.isVncSet(arg)) {
+					return ((VncSet)arg).isEmpty() ? Nil : arg;
 				}
 				else if (Types.isVncMap(arg)) {
 					return ((VncMap)arg).isEmpty() ? Nil : arg;
@@ -5495,146 +5707,60 @@ public class CoreFunctions {
 		};
 
 	public static VncFunction merge_with =
-			new VncFunction(
-					"merge-with",
-					VncFunction
-						.meta()
-						.arglists("(merge-with f & maps)")
-						.doc(
-							"Returns a map that consists of the rest of the maps conj-ed onto\n" + 
-							"the first. If a key occurs in more than one map, the mapping(s)\n" + 
-							"from the latter (left-to-right) will be combined with the mapping in\n" + 
-							"the result by calling (f val-in-result val-in-latter).")
-						.examples(
-							"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0})",
-							"(merge-with into {:a [1] :b [2]} {:b [3 4] :c [5 6]})")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					assertMinArity("merge-with", args, 1);
-
-					final List<VncMap> rest = args.rest()
-												  .stream()
-												  .filter(v -> v != Nil)
-												  .map(v -> Coerce.toVncMap(v))
-												  .collect(Collectors.toList());
-
-					if (rest.isEmpty()) {
-						return new VncHashMap();
-					}
-					else if (rest.size() == 1) {
-						return rest.get(0);
-					}
-
-					final VncFunction f = Coerce.toVncFunction(args.first());
-
-					final Map<VncVal,VncVal> map = new HashMap<>();
-					
-					for(VncMap m : rest) {
-						for(VncMapEntry e : m.entries()) {
-							final VncVal key = e.getKey();
-							final VncVal val1 = map.get(key);
-							final VncVal val2 = e.getValue();
-							
-							if (val1 == null) {
-								map.put(key, f.apply(VncList.of(val2)));
-							}
-							else if (val2 == null) {
-								map.put(key, f.apply(VncList.of(val1)));
-							}
-							else {
-								map.put(key, f.apply(VncList.of(val1, val2)));
-							}
-						}
-					}
-
-					return new VncHashMap(map);
-				}
-
-				private static final long serialVersionUID = -1848883965231344442L;
-			};
-
-	public static VncFunction conj =
 		new VncFunction(
-				"conj",
+				"merge-with",
 				VncFunction
 					.meta()
-					.arglists(
-						"(conj)",
-						"(conj x)",
-						"(conj coll x)",
-						"(conj coll x & xs)")
+					.arglists("(merge-with f & maps)")
 					.doc(
-						"Returns a new collection with the x, xs 'added'. (conj nil item) " +
-						"returns (item). For list, vectors an ordered maps the values are " +
-						"added at the end. For all other sets and maps the position is undefined.")
+						"Returns a map that consists of the rest of the maps conj-ed onto\n" + 
+						"the first. If a key occurs in more than one map, the mapping(s)\n" + 
+						"from the latter (left-to-right) will be combined with the mapping in\n" + 
+						"the result by calling (f val-in-result val-in-latter).")
 					.examples(
-						"(conj [1 2 3] 4)",
-						"(conj [1 2 3] 4 5)",
-						"(conj [1 2 3] [4 5])",
-						"(conj '(1 2 3) 4)",
-						"(conj '(1 2 3) 4 5)",
-						"(conj '(1 2 3) '(4 5))",
-						"(conj (set 1 2 3) 4)",
-						"(conj {:a 1 :b 2} [:c 3])",
-						"(conj {:a 1 :b 2} {:c 3})",
-						"(conj {:a 1 :b 2} (map-entry :c 3))",
-						"(conj )",
-						"(conj 4)")
+						"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0})",
+						"(merge-with into {:a [1] :b [2]} {:b [3 4] :c [5 6]})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				if (args.isEmpty()) {
-					return VncTinyVector.empty();
-				}
-				else if (args.size() == 1) {
-					return args.first();
-				}
-				else {
-					VncVal coll = args.first();
-					if (coll == Nil) {
-						coll = VncTinyList.empty();
-					}
+				assertMinArity("merge-with", args, 1);
 
-					if (Types.isVncVector(coll)) {
-						return ((VncVector)coll).addAllAtEnd(args.rest());
-					}
-					else if (Types.isVncList(coll)) {
-						return ((VncList)coll).addAllAtEnd(args.rest());
-					}
-					else if (Types.isVncSet(coll)) {
-						return ((VncSet)coll).addAll(args.rest());
-					}
-					else if (Types.isVncMap(coll)) {
-						VncMap map = (VncMap)coll;
-						for(VncVal v : args.rest().getList()) {
-							if (Types.isVncSequence(v) && ((VncSequence)v).size() == 2) {
-								map = map.assoc(
-											VncList.of(
-												((VncSequence)v).first(),
-												((VncSequence)v).second()));
-							}
-							else if (Types.isVncMapEntry(v)) {
-								final VncMapEntry entry = (VncMapEntry)v;
-								map = map.assoc(entry.getKey(), entry.getValue());
-							}
-							else if (Types.isVncMap(v)) {
-								map = map.putAll((VncMap)v);
-							}
-							else {
-								throw new VncException(String.format(
-										"Invalid x %s while calling function 'conj'",
-										Types.getType(v)));
-							}
+				final List<VncMap> rest = args.rest()
+											  .stream()
+											  .filter(v -> v != Nil)
+											  .map(v -> Coerce.toVncMap(v))
+											  .collect(Collectors.toList());
+
+				if (rest.isEmpty()) {
+					return new VncHashMap();
+				}
+				else if (rest.size() == 1) {
+					return rest.get(0);
+				}
+
+				final VncFunction f = Coerce.toVncFunction(args.first());
+
+				final Map<VncVal,VncVal> map = new HashMap<>();
+				
+				for(VncMap m : rest) {
+					for(VncMapEntry e : m.entries()) {
+						final VncVal key = e.getKey();
+						final VncVal val1 = map.get(key);
+						final VncVal val2 = e.getValue();
+						
+						if (val1 == null) {
+							map.put(key, f.apply(VncList.of(val2)));
 						}
-						return map;
-					}
-					else {
-						throw new VncException(String.format(
-								"Invalid coll %s while calling function 'conj'",
-								Types.getType(coll)));
+						else if (val2 == null) {
+							map.put(key, f.apply(VncList.of(val1)));
+						}
+						else {
+							map.put(key, f.apply(VncList.of(val1, val2)));
+						}
 					}
 				}
+
+				return new VncHashMap(map);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -5699,11 +5825,8 @@ public class CoreFunctions {
 								.map(e -> VncVector.of(e.getKey(), e.getValue()))
 								.collect(Collectors.toList()));
 				}
-				else if (Types.isVncVector(val)) {
-					return ((VncVector)val).isEmpty() ? Nil : ((VncVector)val).toVncList();
-				}
-				else if (Types.isVncList(val)) {
-					return ((VncList)val).isEmpty() ? Nil :  val;
+				else if (Types.isVncSequence(val)) {
+					return ((VncSequence)val).isEmpty() ? Nil : ((VncSequence)val).toVncList();
 				}
 				else if (Types.isVncString(val)) {
 					final VncString s = (VncString)val;
@@ -5767,7 +5890,6 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("repeatedly", args, 2);
-
 
 				final long repeat = Coerce.toVncLong(args.first()).getValue();
 				final IVncFunction fn = Coerce.toIVncFunction(args.second());
@@ -6077,6 +6199,8 @@ public class CoreFunctions {
 				.add(new_list)
 				.add(new_list_ASTERISK)
 				.add(list_Q)
+				.add(new_mutable_list)
+				.add(mutable_list_Q)
 				.add(new_vector)
 				.add(vector_Q)
 				.add(map_Q)
@@ -6133,6 +6257,8 @@ public class CoreFunctions {
 				.add(coll_Q)
 				.add(cons)
 				.add(cons_BANG)
+				.add(conj)
+				.add(conj_BANG)
 				.add(concat)
 				.add(interpose)
 				.add(interleave)
@@ -6184,7 +6310,6 @@ public class CoreFunctions {
 
 				.add(merge)
 				.add(merge_with)
-				.add(conj)
 				.add(disj)
 				.add(seq)
 				.add(repeat)

@@ -44,9 +44,9 @@ import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
-import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncQueue;
@@ -297,11 +297,8 @@ public class Coerce {
 		if (val == null || Types.isVncList(val)) {
 			return (VncList)val;
 		}
-		else if (Types.isVncVector(val)) {
-			return ((VncVector)val).toVncList();
-		}
-		else if (val instanceof VncJavaList) {
-			return ((VncJavaList)val).toVncList();
+		else if (Types.isVncSequence(val)) {
+			return ((VncSequence)val).toVncList();
 		}
 		else {
 			throw new VncException(String.format(
@@ -315,15 +312,27 @@ public class Coerce {
 		if (val == null || Types.isVncVector(val)) {
 			return (VncVector)val;
 		}
-		else if (Types.isVncList(val)) {
-			return ((VncList)val).toVncVector();
-		}
-		else if (val instanceof VncJavaList) {
-			return ((VncJavaList)val).toVncVector();
+		else if (Types.isVncSequence(val)) {
+			return ((VncSequence)val).toVncVector();
 		}
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to vector. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
+	public static VncMutableList toVncMutableList(final VncVal val) {
+		if (val == null || val instanceof VncMutableList) {
+			return (VncMutableList)val;
+		}
+		else if (Types.isVncSequence(val)) {
+			return new VncMutableList(((VncSequence)val).getList());
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to mutable-set. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

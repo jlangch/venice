@@ -442,6 +442,7 @@ public class DocGenerator {
 		list_create.addItem(getDocItem("()"));
 		list_create.addItem(getDocItem("list"));
 		list_create.addItem(getDocItem("list*"));
+		list_create.addItem(getDocItem("mutable-list"));
 
 		final DocSection list_access = new DocSection("Access");
 		lists.addSection(list_access);
@@ -482,6 +483,7 @@ public class DocGenerator {
 		final DocSection list_test = new DocSection("Test");
 		lists.addSection(list_test);
 		list_test.addItem(getDocItem("list?"));
+		list_test.addItem(getDocItem("mutable-list?"));
 		list_test.addItem(getDocItem("every?"));
 		list_test.addItem(getDocItem("not-every?"));
 		list_test.addItem(getDocItem("any?"));
@@ -565,6 +567,7 @@ public class DocGenerator {
 		set_modify.addItem(getDocItem("cons"));
 		set_modify.addItem(getDocItem("cons!"));
 		set_modify.addItem(getDocItem("conj"));
+		set_modify.addItem(getDocItem("conj!"));
 		set_modify.addItem(getDocItem("disj"));
 		set_modify.addItem(getDocItem("difference"));
 		set_modify.addItem(getDocItem("union"));
