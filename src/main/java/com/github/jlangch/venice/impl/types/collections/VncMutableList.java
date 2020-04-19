@@ -119,7 +119,7 @@ public class VncMutableList extends VncSequence {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a list of size %d. %s", 
+						"nth: index %d out of range for a mutable list of size %d. %s", 
 						idx, 
 						size(),
 						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
