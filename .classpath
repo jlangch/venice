@@ -7,10 +7,10 @@
 	<classpathentry kind="src" path="src/jmh/java"/>
 	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-core-9.1.20.jar" sourcepath="lib/eclipse/flying-saucer-core-9.1.20-sources.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/flying-saucer-pdf-openpdf-9.1.20.jar" sourcepath="lib/eclipse/flying-saucer-pdf-openpdf-9.1.20-sources.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/openpdf-1.3.13.jar" sourcepath="lib/eclipse/openpdf-1.3.13-sources.jar"/>
-	<classpathentry kind="lib" path="lib/eclipse/pdf-toolbox-1.3.13.jar" sourcepath="lib/eclipse/pdf-toolbox-1.3.13-sources.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/openpdf-1.3.15.jar" sourcepath="lib/eclipse/openpdf-1.3.15-sources.jar"/>
+	<classpathentry kind="lib" path="lib/eclipse/pdf-toolbox-1.3.15.jar" sourcepath="lib/eclipse/pdf-toolbox-1.3.15-sources.jar"/>
 	<classpathentry kind="lib" path="lib/eclipse/javax.servlet-api-4.0.1.jar" sourcepath="lib/eclipse/javax.servlet-api-4.0.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/provided/jline-3.14.0.jar" sourcepath="lib/provided/jline-3.14.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/provided/jline-3.14.1.jar" sourcepath="lib/provided/jline-3.14.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/provided/vavr-0.10.2.jar" sourcepath="lib/provided/vavr-0.10.2-sources.jar"/>
 	<classpathentry kind="lib" path="src/main/resources"/>
 	<classpathentry kind="lib" path="lib/eclipse/jmh-core-1.23.jar" sourcepath="lib/eclipse/jmh-core-1.23-sources.jar"/>

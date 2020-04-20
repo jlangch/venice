@@ -35,6 +35,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - predicates with the functions `every?`, `filter-k`, and `filter-kv` to work with
   sets too
 
+### Changed
+
+- OpenPDF lib to actual version 1.3.15
+
 
 
 ## [1.7.21] - 2020-04-11
