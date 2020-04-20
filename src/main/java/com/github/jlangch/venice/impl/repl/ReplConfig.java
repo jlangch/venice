@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -128,7 +129,9 @@ public class ReplConfig {
 
 		if (fileJson.isFile()) {
 			System.out.println("Loading REPL config from " + fileJson + "...");
-			return (JsonObject)JsonParser.object().from(new FileReader(fileJson));
+			try (Reader reader = new FileReader(fileJson)) {
+				return (JsonObject)JsonParser.object().from(reader);
+			}
 		}
 		else {
 			return (JsonObject)JsonParser.object().from(getRawClasspathConfig());
