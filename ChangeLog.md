@@ -31,7 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- functions `keep` and `remove` work now with sets as predicate functions too
+- functions `keep` and `remove` to work with sets as predicate functions too
 - predicates with the functions `every?`, `filter-k`, and `filter-kv` to work with
   sets too
 
