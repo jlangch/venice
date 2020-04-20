@@ -309,6 +309,55 @@ public class IOFunctionsTest {
 	}
 	
 	@Test
+	public void test_io_slurp_lines_file() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                     " +
+				"   (let [file (io/temp-file \"test-\", \".txt\")]       " +
+				"      (io/spit file \"123\n456\n789\" :append true)     " +
+				"      (io/delete-file-on-exit file)                     " +
+				"      (pr-str (io/slurp-lines file))))                  " +
+				")";
+				
+		assertEquals("(\"123\" \"456\" \"789\")", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_io_slurp_lines_stream() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                      " +
+				"   (import :java.io.FileInputStream)                     " +
+				"   (let [file (io/temp-file \"test-\", \".txt\")]        " +
+				"      (io/spit file \"123\n456\n789\" :append true)      " +
+				"      (io/delete-file-on-exit file)                      " +
+				"      (try-with [is (. :FileInputStream :new file)]      " +
+				"         (pr-str (io/slurp-lines is))))                  " +
+				")";
+				
+		assertEquals("(\"123\" \"456\" \"789\")", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_io_slurp_lines_reader() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                      " +
+				"   (import :java.io.FileReader)                          " +
+				"   (let [file (io/temp-file \"test-\", \".txt\")]        " +
+				"      (io/spit file \"123\n456\n789\" :append true)      " +
+				"      (io/delete-file-on-exit file)                      " +
+				"      (try-with [rd (. :FileReader :new file)]           " +
+				"         (pr-str (io/slurp-lines rd))))                  " +
+				")";
+				
+		assertEquals("(\"123\" \"456\" \"789\")", venice.eval(script));					
+	}
+	
+	@Test
 	public void test_io_spit_stream() {
 		final Venice venice = new Venice();
 

@@ -1008,14 +1008,16 @@ public class IOFunctions {
 						final VncVal encVal = options.get(new VncKeyword("encoding"));
 						final String encoding = encoding(encVal);
 
-						final BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding));
-						return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+						try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding))) {
+							return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+						}
 					}
 					else if (Types.isVncJavaObject(arg, Reader.class)) {
-						final BufferedReader rd = new BufferedReader(
-														(Reader)(Coerce.toVncJavaObject(args.first()).getDelegate()));
-
-						return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
+												
+						try (BufferedReader brd = new BufferedReader(rd)) {
+							return new VncList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+						}
 					}
 					else {
 						throw new VncException(String.format(
@@ -1090,18 +1092,20 @@ public class IOFunctions {
 						}
 					}
 					else if (Types.isVncJavaObject(arg, Reader.class)) {
-						final BufferedReader rd = new BufferedReader(
-														(Reader)(Coerce.toVncJavaObject(args.first()).getDelegate()));
-						final String s = rd.lines().collect(Collectors.joining(System.lineSeparator()));
-
-						if (binary == True) {
-							final VncVal encVal = options.get(new VncKeyword("encoding"));
-							final String encoding = encoding(encVal);
-
-							return new VncByteBuffer(s.getBytes(encoding));
-						}
-						else {
-							return new VncString(s);
+						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						
+						try (BufferedReader brd = new BufferedReader(rd)) {
+							final String s = brd.lines().collect(Collectors.joining(System.lineSeparator()));
+	
+							if (binary == True) {
+								final VncVal encVal = options.get(new VncKeyword("encoding"));
+								final String encoding = encoding(encVal);
+	
+								return new VncByteBuffer(s.getBytes(encoding));
+							}
+							else {
+								return new VncString(s);
+							}
 						}
 					}
 					else {
