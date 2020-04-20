@@ -512,6 +512,22 @@ public class CoreFunctionsTest {
 
 		// Set
 		assertEquals("#{1 2 3}", venice.eval("(str (cons! 3 (mutable-set 1 2)))"));
+
+		// List
+		assertEquals("(1 2 3)", venice.eval("(str (cons! 1 (mutable-list 2 3)))"));
+	}
+	
+	@Test
+	public void test_conj_BANG() {
+		final Venice venice = new Venice();
+
+		// Set
+		assertEquals("#{1 2 3}", venice.eval("(str (conj! (mutable-set 1 2) 3))"));
+		assertEquals("#{1 2 3 4}", venice.eval("(str (conj! (mutable-set 1 2) 3 4))"));
+
+		// List
+		assertEquals("(1 2 3)", venice.eval("(str (conj! (mutable-list 1 2) 3))"));
+		assertEquals("(1 2 3 4)", venice.eval("(str (conj! (mutable-list 1 2) 3 4))"));
 	}
 	
 	@Test

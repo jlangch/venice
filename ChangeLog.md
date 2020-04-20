@@ -29,6 +29,12 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Fixed
+
+- functions `keep` and `remove` work now with sets as predicate functions too
+- predicates with the functions `every?`, `filter-k`, and `filter-kv` to work with
+  sets too
+
 
 
 ## [1.7.21] - 2020-04-11

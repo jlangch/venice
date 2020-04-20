@@ -3394,7 +3394,10 @@ public class CoreFunctions {
 					return coll.toVncList()
 							   .getList()
 							   .stream()
-							   .allMatch(v -> pred.apply(VncList.of(v)) == True) ? True : False;
+							   .allMatch(v -> { 
+								   final VncVal r = pred.apply(VncList.of(v));
+								   return r != Nil && r != False; }) 
+							 ? True : False;
 				}
 			}
 
@@ -3463,7 +3466,10 @@ public class CoreFunctions {
 					return coll.toVncList()
 							   .getList()
 							   .stream()
-							   .anyMatch(v -> pred.apply(VncList.of(v)) == True) ? True : False;
+							   .anyMatch(v -> { 
+								   final VncVal r = pred.apply(VncList.of(v));
+								   return r != Nil && r != False; }) 
+							 ? True : False;
 				}
 			}
 
@@ -5047,7 +5053,9 @@ public class CoreFunctions {
 				return sort(
 						"sort",
 						coll,
-						(x,y) -> Coerce.toVncLong(compfn.apply(VncList.of(x,y))).getIntValue());
+						(x,y) -> Coerce
+									.toVncLong(compfn.apply(VncList.of(x,y)))
+									.getIntValue());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -5099,13 +5107,13 @@ public class CoreFunctions {
 				return sort(
 						"sort-by",
 						args.last(),
-						(x,y) -> Coerce.toVncLong(
-									compfn.apply(
-											VncList.of(
-												keyfn.apply(VncList.of(x)),
-												keyfn.apply(VncList.of(y)))
-											)
-								 ).getIntValue());
+						(x,y) -> Coerce
+									.toVncLong(
+										compfn.apply(
+												VncList.of(
+													keyfn.apply(VncList.of(x)),
+													keyfn.apply(VncList.of(y)))))
+									.getIntValue());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -5512,7 +5520,8 @@ public class CoreFunctions {
 				}
 				else {
 					for(VncVal key : map.keys().getList()) {
-						if (filterFn.apply(VncList.of(key)) == False) {
+						final VncVal r = filterFn.apply(VncList.of(key));
+						if (r == Nil || r == False) {
 							map = map.dissoc(key);
 						}
 					}
@@ -5553,7 +5562,8 @@ public class CoreFunctions {
 						final VncVal key = entry.getKey();
 						final VncVal val = entry.getValue();
 
-						if (filterFn.apply(VncList.of(key, val)) == True) {
+						final VncVal r = filterFn.apply(VncList.of(key, val));
+						if (r != Nil && r != False) {
 							filtered.put(key, val);
 						}
 					}
