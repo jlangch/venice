@@ -748,14 +748,15 @@ public class TransducerFunctions {
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(keep even? (range 1 4))",
-						"(keep (fn [x] (if (odd? x) x)) (range 4))")
+						"(keep (fn [x] (if (odd? x) x)) (range 4))",
+						"(keep #{3 5 7} '(1 3 5 7 9))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("keep", args, 1, 2);
 
 				if (args.size() == 1) {
-					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final IVncFunction fn = Coerce.toIVncFunction(args.first());
 
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("keep:transducer:wrapped")) {
@@ -780,7 +781,7 @@ public class TransducerFunctions {
 										final VncVal input = args.second();
 
 										final VncVal val = fn.apply(VncList.of(input));
-										return val == Nil ? result : rf.apply(VncList.of(result, input));
+										return val == Nil || val == False ? result : rf.apply(VncList.of(result, input));
 									}
 								}
 
@@ -895,13 +896,14 @@ public class TransducerFunctions {
 						"(predicate item) returns logical false. " +
 						"Returns a transducer when no collection is provided.")
 					.examples(
-						"(remove even? [1 2 3 4 5 6 7])")
+						"(remove even? [1 2 3 4 5 6 7])",
+						"(remove #{3 5} '(1 3 5 7 9))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("remove", args, 1, 2);
 
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
 				if (args.size() == 1) {
 					// return a transducer
@@ -916,12 +918,11 @@ public class TransducerFunctions {
 				}
 				else {
 					final VncSequence coll = coerceToSequence(args.second());
-
 					final List<VncVal> items = new ArrayList<>();
-					for(int i=0; i<coll.size(); i++) {
-						final VncVal val = coll.nth(i);
+					
+					for(VncVal val : coll.getList()) {
 						final VncVal keep = predicate.apply(VncList.of(val));
-						if (keep == False) {
+						if (keep == Nil || keep == False) {
 							items.add(val);
 						}
 					}

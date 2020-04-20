@@ -877,6 +877,8 @@ public class TransducerFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("(false true false)", venice.eval("(pr-str (keep even? (range 1 4)))"));
+		
+		assertEquals("(3 5 7)", venice.eval("(pr-str (keep #{3 5 7} '(1 3 5 7 9)))"));
 	}
 	
 	@Test
@@ -903,6 +905,8 @@ public class TransducerFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("(1 3 5 7 9)", venice.eval("(pr-str (remove even? (range 1 10 1)))"));
+		
+		assertEquals("(1 7 9)", venice.eval("(pr-str (remove #{3 5} '(1 3 5 7 9)))"));
 	}
 
 	@Test
