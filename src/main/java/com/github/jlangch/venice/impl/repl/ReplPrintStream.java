@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.repl;
 
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 
 import org.jline.terminal.Terminal;
 
@@ -34,7 +33,7 @@ public class ReplPrintStream extends PrintStream {
 	public ReplPrintStream(
 			final Terminal terminal,
 			final String colorEscape
-	) throws UnsupportedEncodingException {
+	) {
 		super(new NullOutputStream());
 		this.terminal = terminal;
 		this.colorEscape = colorEscape;
@@ -43,12 +42,7 @@ public class ReplPrintStream extends PrintStream {
 	
 	@Override
 	public PrintStream append(final CharSequence csq) {
-		if (csq == null) {
-			print("null");
-		}
-		else {
-			print(csq.toString());
-		}
+		print(csq == null ? "null" : csq.toString());
 		return this;
 	}
 	
@@ -156,13 +150,13 @@ public class ReplPrintStream extends PrintStream {
 	}
 
 	@Override
-	public void write(byte buf[], int off, int len) {
+	public void write(final byte buf[], final int off, final int len) {
 		throw new RuntimeException(
 				"Method write(byte[],int,int) is not supported");
 	}
 	
 	@Override
-	public void write(int b) {
+	public void write(final int b) {
 		throw new RuntimeException(
 				"Method write(int) is not supported");
 	}
@@ -175,6 +169,7 @@ public class ReplPrintStream extends PrintStream {
 	public void flush() {
 	}
 
+	
 	private void printToTerminal(final String s) {
 		if (colorEscape != null) terminal.writer().print(colorEscape);
 		
