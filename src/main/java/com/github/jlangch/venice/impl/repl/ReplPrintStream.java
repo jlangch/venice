@@ -26,29 +26,156 @@ import java.io.UnsupportedEncodingException;
 
 import org.jline.terminal.Terminal;
 
+import com.github.jlangch.venice.util.NullOutputStream;
+
 
 public class ReplPrintStream extends PrintStream {
 
 	public ReplPrintStream(
-			final String encoding,
-			final PrintStream ps,
 			final Terminal terminal,
 			final String colorEscape
 	) throws UnsupportedEncodingException {
-		super(ps, true, encoding);
+		super(new NullOutputStream());
 		this.terminal = terminal;
 		this.colorEscape = colorEscape;
 	}
 
+	
+	@Override
+	public PrintStream append(final CharSequence csq) {
+		if (csq == null) {
+			print("null");
+		}
+		else {
+			print(csq.toString());
+		}
+		return this;
+	}
+	
+	@Override
+	public PrintStream append(final CharSequence csq, final int start, final int end) {
+		CharSequence cs = (csq == null ? "null" : csq);
+		print(cs.subSequence(start, end).toString());
+		return this;
+	}
+
+	@Override
+	public PrintStream append(final char c) {
+		print(c);
+		return this;
+	}
+
+	@Override
+	public void print(final boolean x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final int x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final long x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final float x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final double x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final char x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final char[] x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final Object x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
 	public void print(final String s) {
-		write(s);
+		printToTerminal(s);
 	}
 
+	@Override
+	public void println(final boolean x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final int x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final long x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final float x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final double x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final char x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final char[] x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final Object x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
 	public void println(final String s) {
-		write(s + "\n");
+		printToTerminal(s + "\n");
 	}
 
-	private void write(final String s) {
+	@Override
+	public void write(byte buf[], int off, int len) {
+		throw new RuntimeException(
+				"Method write(byte[],int,int) is not supported");
+	}
+	
+	@Override
+	public void write(int b) {
+		throw new RuntimeException(
+				"Method write(int) is not supported");
+	}
+	
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public void flush() {
+	}
+
+	private void printToTerminal(final String s) {
 		if (colorEscape != null) terminal.writer().print(colorEscape);
 		
 		terminal.writer().print(s);

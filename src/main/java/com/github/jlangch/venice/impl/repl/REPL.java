@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.PrintStream;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,16 +110,12 @@ public class REPL {
  
 		final PrintStream ps_out = config.useColors() 
 										? new ReplPrintStream(
-												Charset.defaultCharset().name(), 
-												System.out, 
 												terminal, 
 												config.getColor("colors.stdout"))
 										: System.out;
 
 		final PrintStream ps_err = config.useColors() 
 										? new ReplPrintStream(
-												Charset.defaultCharset().name(), 
-												System.out, 
 												terminal, 
 												config.getColor("colors.stderr"))
 										: System.out;
