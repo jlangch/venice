@@ -171,13 +171,15 @@ public class ReplPrintStream extends PrintStream {
 
 	
 	private void printToTerminal(final String s) {
-		if (colorEscape != null) terminal.writer().print(colorEscape);
-		
-		terminal.writer().print(s);
-		
-		if (colorEscape != null) terminal.writer().print(ReplConfig.ANSI_RESET);
-		
-		terminal.flush();
+		synchronized (this) {
+			if (colorEscape != null) terminal.writer().print(colorEscape);
+			
+			terminal.writer().print(s);
+			
+			if (colorEscape != null) terminal.writer().print(ReplConfig.ANSI_RESET);
+			
+			terminal.flush();
+		}
 	}
     
     
