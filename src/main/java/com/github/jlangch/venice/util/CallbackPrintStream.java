@@ -152,7 +152,7 @@ public class CallbackPrintStream extends PrintStream {
 	public void println(final String s) {
 		synchronized (this) {
 			sb.append(s).append("\n");		
-			flush();
+			if (autoFlush) flush();
 		}
 	}
 
