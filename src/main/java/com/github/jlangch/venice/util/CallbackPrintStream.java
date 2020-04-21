@@ -46,7 +46,7 @@ public class CallbackPrintStream extends PrintStream {
 	
 	@Override
 	public PrintStream append(final CharSequence csq, final int start, final int end) {
-		CharSequence cs = (csq == null ? "null" : csq);
+		final CharSequence cs = (csq == null ? "null" : csq);
 		print(cs.subSequence(start, end).toString());
 		return this;
 	}
