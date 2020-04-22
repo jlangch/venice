@@ -1523,7 +1523,7 @@ public class DocGenerator {
 				.filter(e -> !StringUtil.isEmpty(e))
 				.forEach(e -> {
 					if (run) {
-						final CapturingPrintStream ps_out = CapturingPrintStream.create();
+						final CapturingPrintStream ps_out = new CapturingPrintStream();
 						
 						try {
 							final String result = (String)runner.eval(

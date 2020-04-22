@@ -21,12 +21,7 @@
  */
 package com.github.jlangch.venice.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 
 /**
@@ -34,59 +29,80 @@ import java.nio.charset.Charset;
  */
 public class CapturingPrintStream extends PrintStream {
 
-	private CapturingPrintStream(
-			final String encoding,
-			final LimitedByteArrayOutputStream boas
-	) throws UnsupportedEncodingException {
-		super(boas, true, encoding);
-		this.encoding = encoding;
-		this.boas = boas;
+	/**
+	 * Creates a new <tt>CapturingPrintStream</tt> and a default capturing limit 
+	 * of 10MB.
+	 * 
+	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * if the bytes written to the stream exceed the specified limit. 
+	 */
+	public CapturingPrintStream() {
+		this(DEFAULT_LIMIT);
+	}
+
+	/**
+	 * Creates a new <tt>CapturingPrintStream</tt> with the given capturing limit.
+	 * 
+	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * if the bytes written to the stream exceed the specified limit. 
+	 * 
+	 * @param limit A capturing limit
+	 */
+	public CapturingPrintStream(final int limit) {
+		super(new NullOutputStream());
+		
+		this.limit = limit;
 	}
 
 	/**
 	 * Creates a new <tt>CapturingPrintStream</tt> with the system's default
-	 * charset and Venice's default capturing limit of 10MB.
+	 * capturing limit.
 	 * 
 	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
+	 * @param limit A capturing limit
 	 * @return a <tt>CapturingPrintStream</tt>
+	 * 
+	 * @deprecated Use new CapturingPrintStream(limit)
 	 */
 	public static CapturingPrintStream create() {
-		return create(Charset.defaultCharset().name(), DEFAULT_LIMIT);
+		return new CapturingPrintStream();
 	}
 	
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the system's default
-	 * charset and the given capturing limit.
+	 * Creates a new <tt>CapturingPrintStream</tt> with the given capturing limit.
 	 * 
 	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
 	 * @param limit A capturing limit
 	 * @return a <tt>CapturingPrintStream</tt>
+	 * 
+	 * @deprecated Use new CapturingPrintStream(limit)
 	 */
 	public static CapturingPrintStream create(final int limit) {
-		return create(Charset.defaultCharset().name(), limit);
+		return new CapturingPrintStream(limit);
 	}
 	
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the given encoding
-	 * and Venice's default capturing limit of 10MB.
+	 * Creates a new <tt>CapturingPrintStream</tt> with the default capturing 
+	 * limit of 10MB.
 	 * 
 	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
 	 * @param encoding A charset encoding
 	 * @return a <tt>CapturingPrintStream</tt>
+	 * 
+	 * @deprecated Use new CapturingPrintStream()
 	 */
 	public static CapturingPrintStream create(final String encoding) {
-		return create(encoding, DEFAULT_LIMIT);		
+		return new CapturingPrintStream();
 	}
 	
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the given encoding
-	 * and capturing limit.
+	 * Creates a new <tt>CapturingPrintStream</tt> with the given capturing limit.
 	 * 
 	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
 	 * if the bytes written to the stream exceed the specified limit. 
@@ -94,97 +110,187 @@ public class CapturingPrintStream extends PrintStream {
 	 * @param encoding A charset encoding
 	 * @param limit A capturing limit
 	 * @return a <tt>CapturingPrintStream</tt>
+	 * 
+	 * @deprecated Use new CapturingPrintStream(limit)
 	 */
 	public static CapturingPrintStream create(final String encoding, final int limit) {
-		try {
-			return new CapturingPrintStream(encoding, new LimitedByteArrayOutputStream(limit));
-		}
-		catch(UnsupportedEncodingException ex) {
-			throw new RuntimeException("Unsupported encoding: " + encoding, ex);
-		}		
+		return new CapturingPrintStream(limit);
+	}
+
+	@Override
+	public PrintStream append(final CharSequence csq) {
+		print(csq == null ? "null" : csq.toString());
+		return this;
+	}
+	
+	@Override
+	public PrintStream append(final CharSequence csq, final int start, final int end) {
+		final CharSequence cs = (csq == null ? "null" : csq);
+		print(cs.subSequence(start, end).toString());
+		return this;
+	}
+
+	@Override
+	public PrintStream append(final char c) {
+		print(c);
+		return this;
+	}
+
+	@Override
+	public void print(final boolean x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final int x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final long x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final float x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final double x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final char x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final char[] x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final Object x) {
+		print(String.valueOf(x));
+	}
+
+	@Override
+	public void print(final String s) {
+		appendToBuffer(s);
+	}
+
+	@Override
+	public void println(final boolean x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final int x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final long x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final float x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final double x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final char x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final char[] x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final Object x) {
+		println(String.valueOf(x));
+	}
+
+	@Override
+	public void println(final String s) {
+		appendToBuffer(s);
+		appendToBuffer("\n");
+	}
+
+	@Override
+	public void write(final byte buf[], final int off, final int len) {
+		throw new RuntimeException(
+				"Method write(byte[],int,int) is not supported");
+	}
+	
+	@Override
+	public void write(final int b) {
+		throw new RuntimeException(
+				"Method write(int) is not supported");
+	}
+	
+	@Override
+	public void close() {
+	}
+
+	@Override
+	public void flush() {
 	}
 
 	public void reset() {
-		boas.reset();
+		synchronized (this) {
+			sb.setLength(0);
+		}
 	}
 
 	public boolean isEmpty() {
-		return boas.size() == 0;
+		synchronized (this) {
+			return sb.length() == 0;
+		}
 	}
 
 	public String getOutput() {
-		try {
-			return boas.toString(encoding);
-		}
-		catch(UnsupportedEncodingException ex) {
-			throw new RuntimeException("Unsupported encoding: " + encoding, ex);
+		synchronized (this) {
+			return sb.toString();
 		}
 	}
 	
-	public byte[] getOutputAsBytes() {
-		return boas.toByteArray();
-	}
-	
-	
-	private static class LimitedByteArrayOutputStream extends ByteArrayOutputStream {
-
-		public LimitedByteArrayOutputStream(final int limit) {
-			this.limit = limit;
-		}
-
-
-		public synchronized void write(int b) {
-			validateGrowth(1);
-			super.write(b);
-			count += 1;
-		}
-
-		public synchronized void write(byte b[], int off, int len) {
-			validateGrowth(len);
-			super.write(b, off, len);
-			count += len;
-		}
-
-		public synchronized void writeTo(OutputStream out) throws IOException {
-			super.writeTo(out);
-		}
-
-		public synchronized void reset() {
-			super.reset();
-			count = 0;
-		}
-
-		public synchronized byte toByteArray()[] {
-			return super.toByteArray();
-		}
-
-		public synchronized int size() {
-			return count;
-		}
-
-		public synchronized String toString() {
-			return super.toString();
-		}
-
-		public synchronized String toString(String charsetName) throws UnsupportedEncodingException {
-			return super.toString(charsetName);
-		}
-		
-		private void validateGrowth(final int len) {
-			if (count + len > limit) {
+	private void appendToBuffer(final String s) {
+		synchronized (this) {
+			final int left = limit - sb.length();
+			
+			if (left <= 0) {
 				throw new SecurityException(String.format(
-						"CapturingPrintStream exceeded the limit of %d bytes",
+						"CapturingPrintStream exceeded the limit of %d chars",
+						limit));
+			}
+			else if (s.length() <= left) {
+				sb.append(s);		
+			}
+			else {
+				sb.append(s.substring(0, left));
+				
+				throw new SecurityException(String.format(
+						"CapturingPrintStream exceeded the limit of %d chars",
 						limit));
 			}
 		}
-
-		private final int limit;
-		private int count = 0;
+		
 	}
 	
 	
 	public static final int DEFAULT_LIMIT = 1024 * 1024 * 10;
 	
-	private final String encoding;
-	private final LimitedByteArrayOutputStream boas;
+	private final int limit;
+	private final StringBuilder sb = new StringBuilder();
 }

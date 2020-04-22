@@ -123,7 +123,7 @@ public class VeniceTest {
 
 	@Test
 	public void test_CapturingPrintStream() {
-		try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+		try(CapturingPrintStream ps = new CapturingPrintStream()) {
 			final Venice venice = new Venice();
 			
 			venice.eval("(print 10)", Parameters.of("*out*", ps));
@@ -138,7 +138,7 @@ public class VeniceTest {
 
 	@Test
 	public void test_CapturingPrintStream_BelowLimit() {
-		try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+		try(CapturingPrintStream ps = new CapturingPrintStream()) {
 			final Venice venice = new Venice();
 			
 			venice.eval("(range 1 10000)", Parameters.of("*out*", ps));
@@ -148,7 +148,7 @@ public class VeniceTest {
 
 	@Test
 	public void test_CapturingPrintStream_Limit() {
-		try(CapturingPrintStream ps = CapturingPrintStream.create(10000)) {
+		try(CapturingPrintStream ps = new CapturingPrintStream(10000)) {
 			final Venice venice = new Venice();
 	
 			assertThrows(SecurityException.class, () -> {
@@ -159,7 +159,7 @@ public class VeniceTest {
 
 	@Test
 	public void test_CapturingPrintStream_PreserveResult() {
-		try(CapturingPrintStream ps = CapturingPrintStream.create()) {
+		try(CapturingPrintStream ps = new CapturingPrintStream()) {
 			final Venice venice = new Venice();
 			
 			final Object result = venice.eval(

@@ -106,7 +106,7 @@ public class SpecialForms_TryTest {
 
 	@Test
 	public void test_try_throw_2() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 
 		final Venice venice = new Venice();
 
@@ -149,7 +149,7 @@ public class SpecialForms_TryTest {
 
 	@Test
 	public void test_try_throw_4() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 
 		final Venice venice = new Venice();
 
@@ -481,7 +481,7 @@ public class SpecialForms_TryTest {
 	
 	@Test
 	public void test_try_finally_2() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 
@@ -506,7 +506,7 @@ public class SpecialForms_TryTest {
 
 	@Test
 	public void test_try_throw_finally_1() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 
@@ -529,7 +529,7 @@ public class SpecialForms_TryTest {
 	
 	@Test
 	public void test_try_throw_finally_2() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 
@@ -559,7 +559,7 @@ public class SpecialForms_TryTest {
 
 	@Test
 	public void test_try_catch_finally_1() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 
@@ -580,7 +580,7 @@ public class SpecialForms_TryTest {
 
 	@Test
 	public void test_try_catch_finally_2() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 

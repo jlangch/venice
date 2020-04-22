@@ -168,7 +168,7 @@ public class SpecialFormsTest {
 
 	@Test
 	public void test_doc() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 		

@@ -48,7 +48,7 @@ public class SpecialForms_TryWithTest {
 	
 	@Test
 	public void test_try_with_2() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 
@@ -76,7 +76,7 @@ public class SpecialForms_TryWithTest {
 	
 	@Test
 	public void test_try_with_3() {
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 		
 		final Venice venice = new Venice();
 

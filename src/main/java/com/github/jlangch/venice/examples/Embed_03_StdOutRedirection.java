@@ -41,8 +41,8 @@ public class Embed_03_StdOutRedirection {
            venice.eval("(with-out-str (println [1 2]))"));
 
         // case 3: capturing stdout/stderr preserving the script result
-        try(CapturingPrintStream ps_out = CapturingPrintStream.create();
-        	CapturingPrintStream ps_err = CapturingPrintStream.create()
+        try(CapturingPrintStream ps_out = new CapturingPrintStream();
+        	CapturingPrintStream ps_err = new CapturingPrintStream()
         ) {
            final Object result = venice.eval(
                                    "(do (println [1 2]) 100)", 

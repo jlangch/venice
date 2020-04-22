@@ -113,7 +113,7 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile("test", "(print 23)");
 		
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 
 		venice.eval(precomp, Parameters.of("*out*", ps));
 		
@@ -126,7 +126,7 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile("test", "(with-out-str (print 23))");
 		
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 
 		assertEquals("23", venice.eval(precomp, Parameters.of("*out*", ps)));
 	}

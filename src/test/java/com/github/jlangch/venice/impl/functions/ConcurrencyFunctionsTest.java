@@ -480,7 +480,7 @@ public class ConcurrencyFunctionsTest {
 				"   (println \"end\")                               \n" +
 				"   (deref x))                                     ";
 
-		final CapturingPrintStream ps = CapturingPrintStream.create();
+		final CapturingPrintStream ps = new CapturingPrintStream();
 
 		final Object result = venice.eval(script, Parameters.of("*out*", ps));
 		
