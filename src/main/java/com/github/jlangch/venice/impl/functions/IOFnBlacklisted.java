@@ -46,7 +46,6 @@ public class IOFnBlacklisted {
 					// system
 					"gc",
 					"shutdown-hook",
-					"sleep",
 					"sh",
 					"system-prop",
 					
