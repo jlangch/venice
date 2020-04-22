@@ -180,8 +180,10 @@ public class CallbackPrintStream extends PrintStream {
 	@Override
 	public void flush() {
 		synchronized (this) {
-			printer.accept(sb.toString());
-			sb.setLength(0);
+			if (sb.length() > 0) {
+				printer.accept(sb.toString());
+				sb.setLength(0);
+			}
 		}
 	}
 

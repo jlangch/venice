@@ -61,7 +61,6 @@ public class CapturingPrintStream extends PrintStream {
 	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
-	 * @param limit A capturing limit
 	 * @return a <tt>CapturingPrintStream</tt>
 	 * 
 	 * @deprecated Use new CapturingPrintStream(limit)

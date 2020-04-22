@@ -601,6 +601,7 @@ public class SandboxRules {
 				"class:" + BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
 				
 				"class:" + BASE + ".util.CapturingPrintStream:*",
+				"class:" + BASE + ".util.CallbackPrintStream:*",
 				
 				"class:" + BASE + ".impl.VeniceInterpreter$1",
 				"class:" + BASE + ".impl.ValueException:*",
