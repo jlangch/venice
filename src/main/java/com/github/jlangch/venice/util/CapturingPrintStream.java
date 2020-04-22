@@ -182,6 +182,11 @@ public class CapturingPrintStream extends PrintStream {
 	}
 
 	@Override
+	public void println() {
+		println("");
+	}
+
+	@Override
 	public void println(final boolean x) {
 		println(String.valueOf(x));
 	}
