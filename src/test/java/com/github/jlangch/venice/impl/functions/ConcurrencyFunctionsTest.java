@@ -340,7 +340,7 @@ public class ConcurrencyFunctionsTest {
 				"   (defn log* [msg]                              \n" +
 				"      (send logger #(cons %2 %1) msg))           \n" +
 				"                                                 \n" +
-				"   (def x (agent 100))                           \n" +
+				"   (def a (agent 100))                           \n" +
 				"                                                 \n" +
 				"   (defn err-handler-fn [ag ex]                  \n" +
 				"      (log* (str \"error occured: \"             \n" +
@@ -349,8 +349,8 @@ public class ConcurrencyFunctionsTest {
 				"                @ag)))                           \n" +
 				"                                                 \n" +
 				"   (set-error-handler! x err-handler-fn)         \n" +
-				"   (send x (fn [x] (/ x 0)))                     \n" +
-				"   (sleep 800)                                   \n" +
+				"   (send a (fn [x] (/ x 0)))                     \n" +
+				"   (sleep 500)                                   \n" +
 				"   (with-out-str (print @logger)))                 ";
 
 		assertEquals(
@@ -364,11 +364,11 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                              \n" +
-				"   (def x (agent 100 :error-mode :fail))         \n" +
+				"   (def a (agent 100 :error-mode :fail))         \n" +
 				"                                                 \n" +
-				"   (send x (fn [x] (/ x 0)))                     \n" +
-				"   (sleep 800)                                   \n" +
-				"   (:message (agent-error x)))                     ";
+				"   (send a (fn [x] (/ x 0)))                     \n" +
+				"   (sleep 500)                                   \n" +
+				"   (:message (agent-error a)))                     ";
 
 		assertEquals("/ by zero", venice.eval(script));
 	}
