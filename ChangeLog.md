@@ -27,7 +27,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- `CallbackPrintStream` class to simplify stdout/stderr capturing in some
+  Java integration scenarios
 
 ### Fixed
 
