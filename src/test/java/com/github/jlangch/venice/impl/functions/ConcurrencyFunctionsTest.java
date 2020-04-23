@@ -368,7 +368,7 @@ public class ConcurrencyFunctionsTest {
 				"                                                 \n" +
 				"   (send a (fn [x] (/ x 0)))                     \n" +
 				"   (sleep 500)                                   \n" +
-				"   (:message (agent-error a)))                     ";
+				"   (:message (agent-error a)))                     "; 
 
 		assertEquals("/ by zero", venice.eval(script));
 	}
