@@ -348,7 +348,7 @@ public class ConcurrencyFunctionsTest {
 				"                \" and we still have value \"    \n" +
 				"                @ag)))                           \n" +
 				"                                                 \n" +
-				"   (set-error-handler! x err-handler-fn)         \n" +
+				"   (set-error-handler! a err-handler-fn)         \n" +
 				"   (send a (fn [x] (/ x 0)))                     \n" +
 				"   (sleep 500)                                   \n" +
 				"   (with-out-str (print @logger)))                 ";
