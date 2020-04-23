@@ -25,7 +25,7 @@ import java.io.OutputStream;
 
 
 /**
- * The <tt>NullOutputStream</tt> discards all bytes written to this
+ * The {@link NullOutputStream} discards all bytes written to this
  * output stream.
  */
 public class NullOutputStream extends OutputStream {

@@ -80,7 +80,7 @@ public interface IInterceptor {
 	) throws SecurityException;
 
 	/**
-	 * Gets a <tt>Java Bean</tt> property
+	 * Gets a <i>Java Bean</i> property
 	 * 
 	 * @param invoker	the invoker
 	 * @param receiver	an object
@@ -95,7 +95,7 @@ public interface IInterceptor {
 	) throws SecurityException;
 
 	/**
-	 * Sets a <tt>Java Bean</tt> property
+	 * Sets a <i>Java Bean</i> property
 	 * 
 	 * @param invoker	the invoker
 	 * @param receiver	an object

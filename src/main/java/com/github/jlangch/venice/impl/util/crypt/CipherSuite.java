@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * Encrypts and decrypts text messages using a passphrase based on a 
  * specific cypher
  * 
- * <p>Note: <tt>CipherSuite</tt> is THREAD SAFE</p>
+ * <p>Note: {@link CipherSuite} is <b>THREAD SAFE</b></p>
  */
 public class CipherSuite {
 	

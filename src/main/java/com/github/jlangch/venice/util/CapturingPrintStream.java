@@ -25,15 +25,15 @@ import java.io.PrintStream;
 
 
 /**
- * Captures the output written to this <tt>PrintStream</tt>.
+ * Captures the output written to this {@link java.io.PrintStream}.
  */
 public class CapturingPrintStream extends PrintStream {
 
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> and a default capturing limit 
+	 * Creates a new {@link CapturingPrintStream} and a default capturing limit 
 	 * of 10MB.
 	 * 
-	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
 	 * if the bytes written to the stream exceed the specified limit. 
 	 */
 	public CapturingPrintStream() {
@@ -41,9 +41,9 @@ public class CapturingPrintStream extends PrintStream {
 	}
 
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the given capturing limit.
+	 * Creates a new {@link CapturingPrintStream} with the given capturing limit.
 	 * 
-	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
 	 * @param limit A capturing limit
@@ -55,62 +55,62 @@ public class CapturingPrintStream extends PrintStream {
 	}
 
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the system's default
+	 * Creates a new {@link CapturingPrintStream} with the system's default
 	 * capturing limit.
 	 * 
-	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
-	 * @return a <tt>CapturingPrintStream</tt>
+	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use new CapturingPrintStream(limit)
+	 * @deprecated Use: <code>new CapturingPrintStream()</code>
 	 */
 	public static CapturingPrintStream create() {
 		return new CapturingPrintStream();
 	}
 	
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the given capturing limit.
+	 * Creates a new {@link CapturingPrintStream} with the given capturing limit.
 	 * 
-	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
 	 * @param limit A capturing limit
-	 * @return a <tt>CapturingPrintStream</tt>
+	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use new CapturingPrintStream(limit)
+	 * @deprecated Use: <code>new CapturingPrintStream(limit)</code>
 	 */
 	public static CapturingPrintStream create(final int limit) {
 		return new CapturingPrintStream(limit);
 	}
 	
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the default capturing 
+	 * Creates a new {@link CapturingPrintStream} with the default capturing 
 	 * limit of 10MB.
 	 * 
-	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
 	 * @param encoding A charset encoding
-	 * @return a <tt>CapturingPrintStream</tt>
+	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use new CapturingPrintStream()
+	 * @deprecated Use: <code>new CapturingPrintStream()</code>
 	 */
 	public static CapturingPrintStream create(final String encoding) {
 		return new CapturingPrintStream();
 	}
 	
 	/**
-	 * Creates a new <tt>CapturingPrintStream</tt> with the given capturing limit.
+	 * Creates a new {@link CapturingPrintStream} with the given capturing limit.
 	 * 
-	 * <p>The <tt>CapturingPrintStream</tt> throws a <tt>SecurityException</tt>
+	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
 	 * if the bytes written to the stream exceed the specified limit. 
 	 * 
 	 * @param encoding A charset encoding
 	 * @param limit A capturing limit
-	 * @return a <tt>CapturingPrintStream</tt>
+	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use new CapturingPrintStream(limit)
+	 * @deprecated Use: <code>new CapturingPrintStream(limit)</code>
 	 */
 	public static CapturingPrintStream create(final String encoding, final int limit) {
 		return new CapturingPrintStream(limit);

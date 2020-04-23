@@ -47,7 +47,7 @@ public class HexFormatter {
 	 * @param	delimiter An optional delimiter
 	 * 
 	 * @return	The hex formatted string or an empty string if the 
-	 * 			<tt>binary</tt> is <tt>null</tt> or empty
+	 * 			<code>binary</code> is <code>null</code> or empty
 	 */
 	public static String toHex(final byte[] binary, final String delimiter) {
 		return toHex(binary, delimiter, false);
@@ -68,7 +68,7 @@ public class HexFormatter {
 	 * @param	prefixWith0x prefix every byte with '0x'
 	 * 
 	 * @return	The hex formatted string or an empty string if the 
-	 * 			<tt>binary</tt> is <tt>null</tt> or empty
+	 * 			<code>binary</code> is <code>null</code> or empty
 	 */
 	public static String toHex(
 			final byte[] binary, 

@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.util;
 import org.xml.sax.Attributes;
 
 /**
- * Wraps <tt>org.xml.sax.Attributes</tt> to allow reflective access
+ * Wraps {@link org.xml.sax.Attributes} to allow reflective access
  * without "illegal reflective access operations" warnings on Java 9+
  */
 public class XmlAttributesWrapper implements Attributes {

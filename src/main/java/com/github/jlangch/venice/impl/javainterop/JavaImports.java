@@ -52,7 +52,7 @@ public class JavaImports implements Serializable {
 	 * Looks up a class name
 	 * 
 	 * @param simpleClassName A simple class name like 'Math'
-	 * @return the class name e.g.: 'java.lang.Math' or <tt>null</tt> if not found
+	 * @return the class name e.g.: 'java.lang.Math' or <code>null</code> if not found
 	 */
 	public String lookupClassName(final String simpleClassName) {
 		return imports.get(simpleClassName);

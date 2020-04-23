@@ -32,22 +32,22 @@ import java.util.stream.StreamSupport;
 public class StreamUtil {
 
 	/**
-	 * Returns a <tt>Stream</tt> from an <tt>Iterable</tt>
+	 * Returns a {@link java.util.stream.Stream} from an {@link Iterable}
 	 * 
 	 * @param <T> the type of the stream elements
-	 * @param in An iterable
-	 * @return A stream
+	 * @param in An {@link Iterable}
+	 * @return A {@link java.util.stream.Stream}
 	 */
 	public static <T> Stream<T> stream(final Iterable<T> in) {
 		return StreamSupport.stream(in.spliterator(), false);
 	}
 
 	/**
-	 * Returns a <tt>Stream</tt> from an <tt>Iterator</tt>
+	 * Returns a {@link java.util.stream.Stream} from an {@link Iterable}
 	 * 
 	 * @param <T> the type of the stream elements
-	 * @param in An iterator
-	 * @return A stream
+	 * @param in An {@link Iterable}
+	 * @return A {@link java.util.stream.Stream}
 	 */
 	public static <T> Stream<T> stream(final Iterator<T> in) {
 		return StreamSupport.stream(
@@ -58,11 +58,11 @@ public class StreamUtil {
 	}
 
 	/**
-	 * Returns a <tt>Stream</tt> from an <tt>Enumeration</tt>
+	 * Returns a {@link java.util.stream.Stream} from an {@link Enumeration}
 	 * 
 	 * @param <T> the type of the stream elements
-	 * @param e An iterable
-	 * @return A stream
+	 * @param e An {@link Enumeration}
+	 * @return A {@link java.util.stream.Stream}
 	 */
 	public static <T> Stream<T> stream(final Enumeration<T> e) {
 		return StreamSupport.stream(

@@ -37,7 +37,7 @@ public class StringUtil {
 	 * 
 	 * @param text	a string
 	 * 
-	 * @return the lines (maybe empty if the text was <tt>null</tt> or empty
+	 * @return the lines (maybe empty if the text was <code>null</code> or empty
 	 */
 	public static List<String> splitIntoLines(final String text) {
 		if (text == null || text.isEmpty()) {

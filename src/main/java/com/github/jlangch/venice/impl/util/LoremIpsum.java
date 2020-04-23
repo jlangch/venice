@@ -35,7 +35,7 @@ public class LoremIpsum {
 	 * 
 	 * @param	length
 	 * 				The length of the text to be created. Returns an empty
-	 * 				string if the <tt>length</tt> is lower than 1
+	 * 				string if the <code>length</code> is lower than 1
 	 * 
 	 * @return	The created <i>Lorem Ipsum</i> text
 	 */
@@ -70,7 +70,7 @@ public class LoremIpsum {
 	 * 
 	 * @param	paragraphs
 	 * 				The number of paragraphs (limited to 100). Returns an empty
-	 * 				string if the <tt>paragraphs</tt> is lower than 1
+	 * 				string if the <code>paragraphs</code> is lower than 1
 	 * 
 	 * @return	The created <i>Lorem Ipsum</i> text
 	 */
