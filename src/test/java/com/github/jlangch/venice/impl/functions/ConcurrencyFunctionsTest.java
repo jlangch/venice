@@ -350,7 +350,7 @@ public class ConcurrencyFunctionsTest {
 				"                                                 \n" +
 				"   (set-error-handler! a err-handler-fn)         \n" +
 				"   (send a (fn [x] (/ x 0)))                     \n" +
-				"   (sleep 1500)                                   \n" +
+				"   (sleep 500)                                   \n" +
 				"   (with-out-str (print @logger)))                 ";
 
 		assertEquals(
@@ -367,7 +367,7 @@ public class ConcurrencyFunctionsTest {
 				"   (def a (agent 100 :error-mode :fail))         \n" +
 				"                                                 \n" +
 				"   (send a (fn [x] (/ x 0)))                     \n" +
-				"   (sleep 1500)                                   \n" +
+				"   (sleep 500)                                   \n" +
 				"   (:message (agent-error a)))                     "; 
 
 		assertEquals("/ by zero", venice.eval(script));
