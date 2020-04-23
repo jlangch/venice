@@ -25,6 +25,12 @@ import java.io.PrintStream;
 import java.util.function.Consumer;
 
 
+/**
+ * Sends the text written to this <tt>PrintStream</tt> to the supplied
+ * consumer. If <tt>autoFlush</tt> is enabled sends the text whenever a
+ * line-feed is encountered or <tt>flush</tt> is called, else only sends
+ * on <tt>flush</tt>.
+ */
 public class CallbackPrintStream extends PrintStream {
 
 	public CallbackPrintStream(
