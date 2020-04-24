@@ -1,2 +1,2 @@
 tasks:
-  - init: ./gradlew build
+  - init: ./gradlew --warning-mode all clean shadowJar
