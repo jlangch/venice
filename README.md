@@ -2,6 +2,8 @@
 [![](https://github.com/jlangch/venice/blob/master/doc/maven-central.svg)](https://search.maven.org/search?q=a:venice)
 ![Java CI](https://github.com/jlangch/venice/workflows/Java%20CI/badge.svg?branch=master)
 
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice) 
+
 # Venice
 
 Venice is a Clojure inspired sandboxed Lisp dialect with excellent Java 
