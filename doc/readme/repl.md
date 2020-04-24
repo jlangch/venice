@@ -35,7 +35,7 @@ a sample 'repl.json' that can be modified.
 
 ## Built-in documentation
 
-The documentation for a function can printed from the REPL:
+The documentation for a function can be printed from the REPL:
 
 ```text
 venice> (doc map)
