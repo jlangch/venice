@@ -75,8 +75,8 @@ public class VncMultiArityFunction extends VncFunction {
 		return fn.apply(params);
 	}
 	
-	@Override public int typeRank() {
-		return 101;
+	@Override public TypeRank typeRank() {
+		return TypeRank.MULTI_ARITY_FUNCTION;
 	}
 	
 	public VncList getFunctions() {

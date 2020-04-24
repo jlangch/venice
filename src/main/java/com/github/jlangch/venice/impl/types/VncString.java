@@ -99,8 +99,8 @@ public class VncString extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 5;
+	public TypeRank typeRank() {
+		return TypeRank.STRING;
 	}
 	
 	@Override

@@ -121,8 +121,8 @@ public class VncThreadLocal extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 11;
+	public TypeRank typeRank() {
+		return TypeRank.THREADLOCAL;
 	}
 
 	@Override

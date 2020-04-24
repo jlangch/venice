@@ -63,8 +63,8 @@ public class VncDouble extends VncVal {
 	}
 
 	@Override 
-	public int typeRank() {
-		return 3;
+	public TypeRank typeRank() {
+		return TypeRank.DOUBLE;
 	}
 	
 	@Override

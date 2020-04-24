@@ -212,8 +212,8 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 9;
+	public TypeRank typeRank() {
+		return TypeRank.JAVAOBJECT;
 	}
 
 	@Override

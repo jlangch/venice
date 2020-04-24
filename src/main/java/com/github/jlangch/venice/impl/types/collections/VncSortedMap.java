@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -236,8 +237,8 @@ public class VncSortedMap extends VncMap {
 		return value.isEmpty();
 	}
 	
-	@Override public int typeRank() {
-		return 210;
+	@Override public TypeRank typeRank() {
+		return TypeRank.SORTEDMAP;
 	}
 	
 	@Override

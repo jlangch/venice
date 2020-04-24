@@ -84,8 +84,8 @@ public class VncMultiFunction extends VncFunction {
 		return findMethod(dispatchVal).apply(params);
 	}
 
-	@Override public int typeRank() {
-		return 102;
+	@Override public TypeRank typeRank() {
+		return TypeRank.MULTI_FUNCTION;
 	}
 	
 	@Override 

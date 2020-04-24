@@ -56,8 +56,8 @@ public class VncChar extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 5;
+	public TypeRank typeRank() {
+		return TypeRank.CHAR;
 	}
 	
 	@Override

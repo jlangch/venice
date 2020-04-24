@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -60,8 +61,8 @@ public class VncMapEntry extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 207;
+	public TypeRank typeRank() {
+		return TypeRank.MAPENTRY;
 	}
 
 	@Override

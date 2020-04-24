@@ -72,8 +72,8 @@ public class VncByteBuffer extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 8;
+	public TypeRank typeRank() {
+		return TypeRank.BYTEBUFFER;
 	}
 
 	@Override

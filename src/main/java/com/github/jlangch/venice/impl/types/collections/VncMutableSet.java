@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -161,8 +162,8 @@ public class VncMutableSet extends VncSet {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 206;
+	public TypeRank typeRank() {
+		return TypeRank.MUTABLESET;
 	}
 
 	@Override

@@ -55,8 +55,8 @@ public class VncVolatile extends VncVal implements IDeref {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 10;
+	public TypeRank typeRank() {
+		return TypeRank.VOLATILE;
 	}
 
 	@Override

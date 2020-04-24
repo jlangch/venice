@@ -90,8 +90,8 @@ public class VncKeyword extends VncString implements IVncFunction {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 6;
+	public TypeRank typeRank() {
+		return TypeRank.KEYWORD;
 	}
 
 	@Override 

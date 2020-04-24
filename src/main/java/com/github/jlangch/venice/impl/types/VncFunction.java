@@ -145,8 +145,8 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 100;
+	public TypeRank typeRank() {
+		return TypeRank.FUNCTION;
 	}
 
 	@Override

@@ -57,8 +57,8 @@ public class VncSymbol extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 7;
+	public TypeRank typeRank() {
+		return TypeRank.SYMBOL;
 	}
 	
 	@Override

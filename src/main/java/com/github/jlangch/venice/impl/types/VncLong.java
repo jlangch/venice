@@ -59,8 +59,8 @@ public class VncLong extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 2;
+	public TypeRank typeRank() {
+		return TypeRank.LONG;
 	}
 	
 	@Override

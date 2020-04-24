@@ -50,8 +50,8 @@ public class VncJust extends VncVal implements IDeref {
 	}
 
 	@Override 
-	public int typeRank() {
-		return 5;
+	public TypeRank typeRank() {
+		return TypeRank.JUST;
 	}
 	
 	@Override

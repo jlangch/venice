@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
+import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -209,8 +210,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 211;
+	public TypeRank typeRank() {
+		return TypeRank.JAVAMAP;
 	}
 
 	@Override

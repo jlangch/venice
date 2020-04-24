@@ -44,8 +44,8 @@ public class VncConstant extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 1;
+	public TypeRank typeRank() {
+		return TypeRank.CONSTANT;
 	}
 
 	@Override

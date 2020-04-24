@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -117,8 +118,8 @@ public class VncQueue extends VncCollection {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 203;
+	public TypeRank typeRank() {
+		return TypeRank.QUEUE;
 	}
 
 	@Override

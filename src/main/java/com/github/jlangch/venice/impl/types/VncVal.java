@@ -42,7 +42,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	
 	abstract public VncVal withMeta(final VncVal meta);
 		
-	abstract public int typeRank();
+	abstract public TypeRank typeRank();
 
 	public boolean isVncCollection() {
 		return false;
@@ -83,7 +83,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	@Override
 	public int compareTo(final VncVal o) {
-		final int c = Integer.valueOf(typeRank()).compareTo(Integer.valueOf(o.typeRank()));
+		final int c = Integer.valueOf(typeRank().getRank()).compareTo(Integer.valueOf(o.typeRank().getRank()));
 		return c != 0 ? c : -1;
 	}
 

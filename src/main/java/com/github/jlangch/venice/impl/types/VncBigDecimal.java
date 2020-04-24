@@ -62,8 +62,8 @@ public class VncBigDecimal extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 4;
+	public TypeRank typeRank() {
+		return TypeRank.BIGDECIMAL;
 	}
 	
 	@Override

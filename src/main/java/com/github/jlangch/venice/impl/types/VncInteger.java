@@ -59,8 +59,8 @@ public class VncInteger extends VncVal {
 	}
 	
 	@Override 
-	public int typeRank() {
-		return 12;
+	public TypeRank typeRank() {
+		return TypeRank.INTEGER;
 	}
 	
 	@Override
