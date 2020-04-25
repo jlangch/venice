@@ -567,16 +567,17 @@
          :or {width 640 height 500}
          :as styling}]
        (let [chart (. :XYChart :new width height)
+             styler (cast :XYStyler (. chart :getStyler))
              styling (xchart/set-legend! styling)]
 
           (xchart/doto-cond
-             (cast :XYStyler (. chart :getStyler))
+             styler
              theme        (. :setTheme (get xchart/themes theme theme))
              render-style (. :setDefaultSeriesRenderStyle (get xchart/xy-render-styles render-style)))
 
           (docoll (fn [[s-name data]] (xchart/xy-chart-add-series! chart s-name data)) series)
 
-          (doto (. chart :getStyler)
+          (doto styler
                 (xchart/set-default-style! styling)
                 (xchart/set-axes-style! styling))
 
@@ -661,19 +662,20 @@
          :as styling}]
 
        (let [chart (. :CategoryChart :new width height)
+             styler (cast :CategoryStyler (. chart :getStyler))
              styling (xchart/attach-default-font styling)]
 
           (docoll (fn [[s-name data]] (xchart/category-add-series! chart s-name data)) series)
 
           (xchart/doto-cond
-             (cast :CategoryStyler (. chart :getStyler))
+             styler
              theme                 (. :setTheme (get xchart/themes theme theme))
              render-style          (. :setDefaultSeriesRenderStyle (get xchart/category-render-styles render-style))
              available-space-fill  (. :setAvailableSpaceFill available-space-fill)
              (not (nil? overlap?)) (. :setOverlapped overlap?)
              (not (nil? stacked?)) (. :setStacked stacked?))
 
-          (doto (. chart :getStyler)
+          (doto styler
                 (xchart/set-default-style! styling)
                 (xchart/set-axes-style! styling))
 
@@ -735,16 +737,17 @@
          :as styling}]
 
        (let [chart (. :BubbleChart :new width height)
+             styler (cast :BubbleStyler (. chart :getStyler))
              styling (xchart/attach-default-font styling)]
 
           (docoll (fn [[s-name data]] (xchart/bubble-add-series! chart s-name data)) series)
 
           (xchart/doto-cond
-             (cast :BubbleStyler (. chart :getStyler))
+             styler
              theme        (. :setTheme (get xchart/themes theme theme))
              render-style (. :setDefaultSeriesRenderStyle (get xchart/bubble-render-styles render-style)))
 
-          (doto (. chart :getStyler)
+          (doto styler
                 (xchart/set-default-style! styling)
                 (xchart/set-axes-style! styling))
 
@@ -787,6 +790,7 @@
          :or {width 640 height 500}
          :as styling}]
        (let [chart (. :PieChart :new width height)
+             styler (cast :PieStyler (. chart :getStyler))
              styling (-> styling
                          xchart/attach-default-font
                          xchart/attach-default-annotation-distance)
@@ -795,7 +799,7 @@
           (docoll (fn [[s-name data]] (xchart/pie-chart-add-series! chart s-name data)) series)
 
           (xchart/doto-cond
-             (cast :PieStyler (. chart :getStyler))
+             styler
              theme                              (. :setTheme (get xchart/themes theme theme))
              render-style                       (. :setDefaultSeriesRenderStyle (get xchart/pie-render-styles render-style))
              (not (nil? circular?))             (. :setCircular circular?)
@@ -805,7 +809,7 @@
              start-angle                        (. :setStartAngleInDegrees start-angle)
              annotation-type                    (. :setAnnotationType (get xchart/pie-annotation-types annotation-type)))
 
-          (xchart/set-default-style! (. chart :getStyler) styling)
+          (xchart/set-default-style! styler styling)
 
           (xchart/doto-cond
               chart

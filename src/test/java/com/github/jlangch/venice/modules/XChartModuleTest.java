@@ -92,7 +92,7 @@ public class XChartModuleTest {
 			"(do                                                                               \n" +
 			"   (load-module :xchart)                                                          \n" +
 			"                                                                                  \n" +
-			"   (def my-red (. :Color :getHSBColor 0.0 0.8 0.9))                               \n" +
+			"   (def my-red (. :java.awt.Color :getHSBColor 0.0 0.8 0.9))                      \n" +
 			"   (def my-darker-red (. my-red :darker ))                                        \n" +
 			"                                                                                  \n" +
 			"   (xchart/swing-view-chart                                                       \n" +
