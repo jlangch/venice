@@ -153,7 +153,7 @@ public class ReflectionAccessor {
 		try {
 			final Class<?> clazz = targetFormalType == null ? target.getClass() : targetFormalType;
 			final List<Method> methods = memoizedInstanceMethod(clazz, methodName, args.length, true);
-			return invokeMatchingMethod(methodName, methods, target, args);
+			return invokeMatchingMethod(methodName, methods, targetFormalType, target, args);
 		}
 		catch (JavaMethodInvocationException ex) {
 			throw ex;
@@ -191,7 +191,7 @@ public class ReflectionAccessor {
 			try {
 				final List<Method> methods = memoizedStaticMethod(clazz, methodName, args.length, true);
 	
-				return invokeMatchingMethod(methodName, methods, null, args);
+				return invokeMatchingMethod(methodName, methods, null, null, args);
 			}
 			catch (JavaMethodInvocationException ex) {
 				throw ex;
@@ -397,6 +397,7 @@ public class ReflectionAccessor {
 	private static ReturnValue invokeMatchingMethod(
 			final String methodName, 
 			final List<Method> methods, 
+			final Class<?> targetFormalType,
 			final Object target,
 			final Object[] args
 	) {
@@ -428,26 +429,18 @@ public class ReflectionAccessor {
 				}
 			}
 		}
-		
-		final String candidates =
-				methods
-					.stream()
-					.map(m -> formatArgTypes(m.getParameterTypes()))
-					.map(s -> String.format("- %s(%s)", methodName, s))
-					.collect(Collectors.joining("\n"));
-
-		final String candidatesInfo =
-				methods.isEmpty()
-					? String.format("No candidate methods with %d args", args.length)
-					: String.format("\nCandidate methods:\n%s", candidates);
-						
+								
 		final String errMsg = 
 				String.format(
-					"No matching public method found: %s(%s) for target '%s'. %s",
+					"No matching public method found: %s(%s) for target '%s'%s",
 					methodName,
 					formatArgTypes(args),
-					target == null ? "<null>" : target.getClass().getName(),
-					candidatesInfo);
+					target == null 
+						? "<null>" 
+						: target.getClass().getName(),
+					targetFormalType == null 
+						? "" 
+						: String.format(" as formal type '%s'", targetFormalType.getName()));
 
 		throw new JavaMethodInvocationException(errMsg);
 	}
@@ -463,7 +456,7 @@ public class ReflectionAccessor {
 			}
 			else {
 				return new ReturnValue(
-							method.invoke(target, args),
+							method.invoke(target, args), 
 							method.getReturnType());
 			}
 		} 
