@@ -659,7 +659,7 @@ public class ReflectionAccessor {
 	private static String formatArgTypes(final Object[] args) {
 		return Arrays
 				.stream(args)
-				.map(o -> o == null ? "null" : o.getClass().getSimpleName())
+				.map(o -> o == null ? "null" : o.getClass().getName())
 				.collect(Collectors.joining(", "));
 	}
 	
@@ -667,7 +667,7 @@ public class ReflectionAccessor {
 	private static String formatMethodArgTypes(final Class<?>[] args) {
 		return Arrays
 				.stream(args)
-				.map(o -> o.getSimpleName())
+				.map(o -> o.getName())
 				.collect(Collectors.joining(", "));
 	}
 
