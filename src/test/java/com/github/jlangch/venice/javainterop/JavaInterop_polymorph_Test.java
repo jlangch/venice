@@ -146,11 +146,15 @@ public class JavaInterop_polymorph_Test {
 		}
 	}
 
+	public static interface IValidate {
+		public void validate();
+	}
+
 	public static interface IScalable {
 		public IScalable scale(double factor);
 	}
 	
-	public static interface IShape extends IScalable {
+	public static interface IShape extends IScalable, IValidate  {
 		public double area();
 	}
 	
@@ -184,6 +188,9 @@ public class JavaInterop_polymorph_Test {
 		public IScalable scale(final double factor) {
 			return new Circle(getWidth() * factor);
 		}
+		
+		public void validate() {
+		}
 	}
 
 	public static class Triangle extends Shape {
@@ -198,6 +205,9 @@ public class JavaInterop_polymorph_Test {
 		public IScalable scale(final double factor) {
 			return new Triangle(getWidth() * factor, getHeight() * factor);
 		}
+		
+		public void validate() {
+		}
 	}
 
 	public static class Rectangle extends Shape {
@@ -211,6 +221,9 @@ public class JavaInterop_polymorph_Test {
 		
 		public IScalable scale(final double factor) {
 			return new Rectangle(getWidth() * factor, getHeight() * factor);
+		}
+		
+		public void validate() {
 		}
 	}
 
