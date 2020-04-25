@@ -38,7 +38,6 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   (Venice 1.7.17) the chart stylers need explicit casts, to circumvent
   a flaw in the XChart API.
 
-
 ### Changed
 
 - OpenPDF lib to actual version 1.3.15
