@@ -29,14 +29,13 @@ import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 
 public class VeniceScriptEngine 
 	extends AbstractScriptEngine 
-	implements ScriptEngine, Compilable, Invocable {
+	implements Compilable, Invocable {
 
 	public VeniceScriptEngine() {
 		this.factory = null;
