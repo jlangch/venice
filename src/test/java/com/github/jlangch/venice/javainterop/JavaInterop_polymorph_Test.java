@@ -141,25 +141,25 @@ public class JavaInterop_polymorph_Test {
 		public Geometry() {
 		}
 		
-		public double area(final Shape shape) {
-			return shape.area();
-		}
-		
-		public double areaTriangel(final Triangle shape) {
+		public double area(final IShape shape) {
 			return shape.area();
 		}
 	}
 
+	public static interface IScalable {
+		public IScalable scale(double factor);
+	}
 	
-	public static abstract class Shape {
+	public static interface IShape extends IScalable {
+		public double area();
+	}
+	
+	public static abstract class Shape implements IShape {
 		public Shape(final double width, final double height) {
 			this.width = width;
 			this.height = height;
 		}
 		
-		public abstract double area();
-		
-
 		public double getWidth() {
 			return width;
 		}
@@ -180,6 +180,10 @@ public class JavaInterop_polymorph_Test {
 		public double area() {
 			return getWidth() * getWidth() * Math.PI;
 		}
+		
+		public IScalable scale(final double factor) {
+			return new Circle(getWidth() * factor);
+		}
 	}
 
 	public static class Triangle extends Shape {
@@ -190,6 +194,10 @@ public class JavaInterop_polymorph_Test {
 		public double area() {
 			return getWidth() * getHeight() / 2.0;
 		}
+		
+		public IScalable scale(final double factor) {
+			return new Triangle(getWidth() * factor, getHeight() * factor);
+		}
 	}
 
 	public static class Rectangle extends Shape {
@@ -199,6 +207,10 @@ public class JavaInterop_polymorph_Test {
 		
 		public double area() {
 			return getWidth() * getHeight();
+		}
+		
+		public IScalable scale(final double factor) {
+			return new Rectangle(getWidth() * factor, getHeight() * factor);
 		}
 	}
 
