@@ -400,15 +400,12 @@ public class ReflectionAccessor {
 			final Object target,
 			final Object[] args
 	) {
-		if (methods.isEmpty()) {
-			throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target, args));
-		} 
-		else if (methods.size() == 1) {
+		if (methods.size() == 1) {
 			final Method m = (Method)methods.get(0);
 			final Object[] boxedArgs = Boxing.boxArgs(m.getParameterTypes(), args);
 			return invoke(m, target, boxedArgs);
 		} 
-		else { 
+		else if (methods.size() > 1){ 
 			// overloaded
 			
 			// try exact match first
@@ -432,7 +429,22 @@ public class ReflectionAccessor {
 			}
 		}
 		
-		throw new JavaMethodInvocationException(noMatchingMethodErrMsg(methodName, target, args));
+		final String candidates =
+				methods
+					.stream()
+					.map(m -> formatArgTypes(m.getParameterTypes()))
+					.map(s -> String.format("   %s(%s)", methodName, s))
+					.collect(Collectors.joining("\n"));
+		
+		final String errMsg = 
+				String.format(
+					"No matching public method found: %s(%s) for target '%s'. \nCandidate methods:\n%s",
+					methodName,
+					formatArgTypes(args),
+					target == null ? "<null>" : target.getClass().getName(),
+					candidates);
+
+		throw new JavaMethodInvocationException(errMsg);
 	}
 	
 	private static ReturnValue invoke(final Method method, final Object target, final Object[] args) {
@@ -552,13 +564,6 @@ public class ReflectionAccessor {
 				target == null ? "<null>" : target.getClass().getName());
 	}
 
-	private static String noMatchingMethodErrMsg(final String methodName, final Object target, final Object... methodArgs) {
-		return String.format(
-				"No matching public method found: %s(%s) for target '%s'",
-				methodName,
-				formatArgTypes(methodArgs),
-				target == null ? "<null>" : target.getClass().getName());
-	}
 
 	private static String noMatchingConstructorErrMsg(final Class<?> clazz, final Object[] args) {
 		return new StringBuilder()
