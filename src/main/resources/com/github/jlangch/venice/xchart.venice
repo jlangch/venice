@@ -44,6 +44,10 @@
 (import :org.knowm.xchart.BitmapEncoder$BitmapFormat)
 
 (import :org.knowm.xchart.style.Styler)
+(import :org.knowm.xchart.style.PieStyler)
+(import :org.knowm.xchart.style.BubbleStyler)
+(import :org.knowm.xchart.style.CategoryStyler)
+(import :org.knowm.xchart.style.XYStyler)
 (import :org.knowm.xchart.style.AxesChartStyler)
 (import :org.knowm.xchart.style.Styler$LegendPosition)
 (import :org.knowm.xchart.style.Styler$LegendLayout)
@@ -566,7 +570,7 @@
              styling (xchart/set-legend! styling)]
 
           (xchart/doto-cond
-             (. chart :getStyler)
+             (cast :XYStyler (. chart :getStyler))
              theme        (. :setTheme (get xchart/themes theme theme))
              render-style (. :setDefaultSeriesRenderStyle (get xchart/xy-render-styles render-style)))
 
@@ -662,7 +666,7 @@
           (docoll (fn [[s-name data]] (xchart/category-add-series! chart s-name data)) series)
 
           (xchart/doto-cond
-             (. chart :getStyler)
+             (cast :CategoryStyler (. chart :getStyler))
              theme                 (. :setTheme (get xchart/themes theme theme))
              render-style          (. :setDefaultSeriesRenderStyle (get xchart/category-render-styles render-style))
              available-space-fill  (. :setAvailableSpaceFill available-space-fill)
@@ -736,7 +740,7 @@
           (docoll (fn [[s-name data]] (xchart/bubble-add-series! chart s-name data)) series)
 
           (xchart/doto-cond
-             (. chart :getStyler)
+             (cast :BubbleStyler (. chart :getStyler))
              theme        (. :setTheme (get xchart/themes theme theme))
              render-style (. :setDefaultSeriesRenderStyle (get xchart/bubble-render-styles render-style)))
 
@@ -791,7 +795,7 @@
           (docoll (fn [[s-name data]] (xchart/pie-chart-add-series! chart s-name data)) series)
 
           (xchart/doto-cond
-             (. chart :getStyler)
+             (cast :PieStyler (. chart :getStyler))
              theme                              (. :setTheme (get xchart/themes theme theme))
              render-style                       (. :setDefaultSeriesRenderStyle (get xchart/pie-render-styles render-style))
              (not (nil? circular?))             (. :setCircular circular?)
