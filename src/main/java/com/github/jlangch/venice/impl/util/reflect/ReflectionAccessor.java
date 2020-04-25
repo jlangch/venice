@@ -91,7 +91,8 @@ public class ReflectionAccessor {
 			} 
 			else if (ctors.size() == 1) {
 				final Constructor<?> ctor = (Constructor<?>)ctors.get(0);
-				return new ReturnValue(ctor.newInstance(Boxing.boxArgs(ctor.getParameterTypes(), args)));
+				final Object[] boxedArgs = Boxing.boxArgs(ctor.getParameterTypes(), args);
+				return new ReturnValue(ctor.newInstance(boxedArgs));
 			} 
 			else {
 				// overloaded
@@ -101,7 +102,7 @@ public class ReflectionAccessor {
 					final Class<?>[] params = ctor.getParameterTypes();
 					
 					if (ArgTypeMatcher.isCongruent(params, args, true, ctor.isVarArgs())) {
-						Object[] boxedArgs = Boxing.boxArgs(params, args);
+						final Object[] boxedArgs = Boxing.boxArgs(params, args);
 						return new ReturnValue(ctor.newInstance(boxedArgs));
 					}
 				}
@@ -111,7 +112,7 @@ public class ReflectionAccessor {
 					final Class<?>[] params = ctor.getParameterTypes();
 										
 					if (ArgTypeMatcher.isCongruent(params, args, false, ctor.isVarArgs())) {
-						Object[] boxedArgs = Boxing.boxArgs(params, args);
+						final Object[] boxedArgs = Boxing.boxArgs(params, args);
 						return new ReturnValue(ctor.newInstance(boxedArgs));
 					}
 				}
