@@ -73,12 +73,24 @@
 //      $> cd test
 //      $> gradle init
 // -----------------------------------------------------------------------------
-
+// Gradle project configuration for Eclipse IDE
+//
+//    Requires the plugin 'eclipse' in the build.gradle
+//
+//    1.  Move to your projects path (where gradle or gradlew is found)
+//    2.  Unix: ./gradlew cleaneclipse    Win: gradlew cleaneclipse
+//    3.  Refresh your Project in Eclipse
+//    4.  After that for Unix: ./gradlew eclipse      Win: gradlew eclipse
+//    5.  Refresh your Project in Eclipse
+//
+//    Repeat step 4) whenever the Gradle build changes
+// -----------------------------------------------------------------------------
 
 
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'eclipse'
 }
 
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-snapshot)?'
@@ -112,8 +124,6 @@ sourceSets {
         }
         resources {
             srcDirs = ['src/main/resources']
-            exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
-            exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
         }
     }
 }
@@ -124,6 +134,8 @@ test {
 }
 
 jar {
+	exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
+	exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
 }
 
 shadowJar {
@@ -350,6 +362,10 @@ dependencies {
     testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.20'
     testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20'
     testRuntimeOnly 'com.github.librepdf:openpdf:1.3.15'
+    testRuntimeOnly 'org.knowm.xchart:xchart:3.6.2'
+    
+    compileOnly 'org.openjdk.jmh:jmh-core:1.23'
+	compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
 
     // required for cheatsheet generation
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.20'
