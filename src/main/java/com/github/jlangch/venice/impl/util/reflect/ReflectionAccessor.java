@@ -433,16 +433,21 @@ public class ReflectionAccessor {
 				methods
 					.stream()
 					.map(m -> formatArgTypes(m.getParameterTypes()))
-					.map(s -> String.format("   %s(%s)", methodName, s))
+					.map(s -> String.format("- %s(%s)", methodName, s))
 					.collect(Collectors.joining("\n"));
-		
+
+		final String candidatesInfo =
+				methods.isEmpty()
+					? String.format("No candidate methods with %d args", args.length)
+					: String.format("\nCandidate methods:\n%s", candidates);
+						
 		final String errMsg = 
 				String.format(
-					"No matching public method found: %s(%s) for target '%s'. \nCandidate methods:\n%s",
+					"No matching public method found: %s(%s) for target '%s'. %s",
 					methodName,
 					formatArgTypes(args),
 					target == null ? "<null>" : target.getClass().getName(),
-					candidates);
+					candidatesInfo);
 
 		throw new JavaMethodInvocationException(errMsg);
 	}
