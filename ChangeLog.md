@@ -23,7 +23,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.7.22] - 2020-04-xx
+## [1.7.22] - 2020-04-26
 
 ### Added
 
@@ -34,6 +34,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - functions `keep`, `remove`, `every?`, `filter-k`, and `filter-kv` to work 
   with sets as predicate functions too
+- a bug in the  _xchart_  module. With the introduction of formal types
+  (Venice 1.7.17) the chart stylers need explicit casts, to circumvent
+  a flaw in the XChart API.
+
 
 ### Changed
 
