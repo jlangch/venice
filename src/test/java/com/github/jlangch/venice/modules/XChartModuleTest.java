@@ -280,7 +280,7 @@ public class XChartModuleTest {
 			"      200 (p 200)                                                  \n" +
 			"      300 (p 300))                                                 \n" +
 			"                                                                   \n" +
-			"   (macroexpand (xchart/doto-cond 100 200 (p 200) 300 (p 300)))    \n" +
+			"   (macroexpand '(xchart/doto-cond 100 200 (p 200) 300 (p 300)))   \n" +
 			") ";
 
 		System.out.println(venice.eval("(str " + script + ")"));
