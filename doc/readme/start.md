@@ -59,7 +59,7 @@ Start a new terminal (menu Terminal -> New Terminal)
 Within the terminal launch the REPL
 
 ```text
-gitpod /workspace/venice $ java -jar build/libs/venice-*.jar -colors-darkmode
+$ java -jar build/libs/venice-*.jar -colors-darkmode
 ```
 
 Type an expression like `(+ 1 1)` followed by a `<CR>`
