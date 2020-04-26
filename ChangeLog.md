@@ -29,6 +29,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - dark mode support for the REPL. Launch the REPL with the command line option 
   '-colors-darkmode'
+  
+### Fixed
+
+- accidentally bundled OpenSans and SourceCodePro fonts with the Venice 1.7.22 
+  Jar 
 
 
 
