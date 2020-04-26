@@ -50,13 +50,13 @@ venice>
 
 ### 4. Start a Venice REPL from a GitPod instance
 
-Fire up a Venice GitPod instance in your browser: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice)
+Alternatively the first steps can be done without any local installation. Just fire up a Venice GitPod workspace in your browser: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice)
 
-Wait until the workspace has been built
+Wait until the workspace has been built ...
 
-Start a new terminal (menu Terminal -> New Terminal)
+start a new terminal (menu Terminal -> New Terminal) ...
 
-Within the terminal launch the REPL
+and launch the REPL within the terminal
 
 ```text
 $ java -jar build/libs/venice-*.jar -colors-darkmode
