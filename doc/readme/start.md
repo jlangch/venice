@@ -26,13 +26,13 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL with `java -jar venice-1.7.21.jar -colors`
 
 ```text
-jupiter> java -jar venice-1.7.21.jar -colors
+foo> java -jar venice-1.7.21.jar -colors
 ```
 
 The REPL prompts for input:
 
 ```text
-jupiter> java -jar venice-1.7.21.jar -colors
+foo> java -jar venice-1.7.21.jar -colors
 Venice REPL: V1.7.21
 Loading REPL config from repl.json...
 Type '!' for help.
@@ -48,7 +48,12 @@ venice>
 ```
 
 
-### 4. Where to head next
+### 4. Start a Venice REPL from a GitPod instance
+
+Fire up a Venice GitPod instance in your browser: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice)
+
+
+### 5. Where to head next
 
 - browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md)
 - see the cheatsheet and use it as a quick reference
