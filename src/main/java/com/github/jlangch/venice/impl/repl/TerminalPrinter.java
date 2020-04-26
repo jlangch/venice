@@ -49,7 +49,7 @@ public class TerminalPrinter {
 			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		final String color = config.getColor("colors." + colorID);
+		final String color = config.getColor(colorID);
 		if (color != null) {
 			terminal.writer().print(color);
 		}

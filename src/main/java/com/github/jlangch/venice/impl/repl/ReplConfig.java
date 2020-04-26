@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
@@ -52,7 +53,7 @@ public class ReplConfig {
 		final Map<String,String> config = new HashMap<>();
 		
 		// use colors
-		config.put("colors.use", cli.switchPresent("-colors") ? "true" : "false");
+		config.put("colors.mode", getColorMode(cli));
 		
 		// load module
 		final String file = cli.switchValue("-load-file");
@@ -66,10 +67,17 @@ public class ReplConfig {
 			config.put("secondary-prompt", (String)jsonObj.get("secondary-prompt"));
 			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
 
-			final JsonObject colObj = (JsonObject)jsonObj.get("colors");
+			JsonObject colObj = (JsonObject)jsonObj.get("colors");
 			if (colObj != null) {
-				for(String cname : Arrays.asList("result", "stdout", "stderr", "error", "system", "interrupt", "prompt")) {
+				for(String cname : COLOR_NAMES) {
 					config.put("colors." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
+				}
+			}
+
+			colObj = (JsonObject)jsonObj.get("colors-darkmode");
+			if (colObj != null) {
+				for(String cname : COLOR_NAMES) {
+					config.put("colors-darkmode." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
 				}
 			}
 
@@ -81,7 +89,11 @@ public class ReplConfig {
 	}
 	
 	public String getColor(final String key) {
-		return useColors() ? get(key) : null;
+		switch(config.get("colors.mode")) {
+			case "light": return get("colors." + key);
+			case "dark":  return get("colors-darkmode." + key);
+			default:      return null;
+		}
 	}
 
 	public String get(final String key) {
@@ -93,26 +105,22 @@ public class ReplConfig {
 		return val == null ? defaultValue : val;
 	}
 
-	public boolean useColors() {
-		return "true".equals(config.get("colors.use"));
-	}
-
 	public String getLoadFile() {
 		return config.get("load.file");
 	}
 
 	public String getPrompt() {
 		final String prompt = getOrDefault("prompt", DEFAULT_PROMPT);
-		return !useColors() || get("colors.prompt") == null
+		return getColor("prompt") == null
 				? prompt
-				: get("colors.prompt") + prompt + ReplConfig.ANSI_RESET;
+				: getColor("prompt") + prompt + ReplConfig.ANSI_RESET;
 	}
 
 	public String getSecondaryPrompt() {
 		final String prompt = getOrDefault("secondary-prompt", DEFAULT_SECONDARY_PROMPT);
-		return !useColors() || get("colors.secondary-prompt") == null
+		return getColor("secondary-prompt") == null
 				? prompt
-				: get("colors.secondary-prompt") + prompt + ReplConfig.ANSI_RESET;
+				: getColor("secondary-prompt") + prompt + ReplConfig.ANSI_RESET;
 	}
 
 	public String getResultPrefix() {
@@ -138,12 +146,36 @@ public class ReplConfig {
 		}
 	}
 	
+	private static String getColorMode(final CommandLineArgs cli) {
+		if (cli.switchPresent("-colors")) {
+			return "light";
+		}
+		else if (cli.switchPresent("-colors-lightmode")) {
+			return "light";
+		}
+		else if (cli.switchPresent("-colors-darkmode")) {
+			return "dark";
+		}
+		else {
+			return "none";
+		}
+	}
+	
 
 	public static final String ANSI_RESET = "\u001b[0m";
 
 	private static final String DEFAULT_PROMPT = "venice> ";
 	private static final String DEFAULT_SECONDARY_PROMPT = "| ";
 	private static final String DEFAULT_RESULT_PREFIX = "=> ";
+	
+	private static final List<String> COLOR_NAMES = Arrays.asList(
+														"result", 
+														"stdout", 
+														"stderr", 
+														"error", 
+														"system", 
+														"interrupt", 
+														"prompt");
 
 	private final Map<String,String> config;
 }

@@ -27,7 +27,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- dark mode support for the REPL. Launch the REPL with the command line option 
+  '-colors-darkmode'
 
 
 

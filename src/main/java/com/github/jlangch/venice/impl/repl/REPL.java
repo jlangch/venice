@@ -108,16 +108,16 @@ public class REPL {
 									 })
 									.build();
  
-		final PrintStream ps_out = config.useColors() 
+		final PrintStream ps_out = config.getColor("stdout") != null 
 										? new ReplPrintStream(
 												terminal, 
-												config.getColor("colors.stdout"))
+												config.getColor("stdout"))
 										: System.out;
 
-		final PrintStream ps_err = config.useColors() 
+		final PrintStream ps_err = config.getColor("stderr") != null 
 										? new ReplPrintStream(
 												terminal, 
-												config.getColor("colors.stderr"))
+												config.getColor("stderr"))
 										: System.out;
 
 		printer = new TerminalPrinter(config, terminal, false);
