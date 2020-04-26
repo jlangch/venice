@@ -54,7 +54,7 @@ Fire up a Venice GitPod instance in your browser: [![Gitpod Ready-to-Code](https
 
 Wait until the workspace has been built
 
-Start a new terminal (menue Terminal -> New Terminal)
+Start a new terminal (menu Terminal -> New Terminal)
 
 Within the terminal launch the REPL
 
