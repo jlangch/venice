@@ -7,7 +7,7 @@ build
 # Eclipse IDE #
 ###############
 bin
-.settings
+.settings/org.eclipse.jdt.core.prefs
 .classpath
 .project
 
