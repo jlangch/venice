@@ -1,8 +1,23 @@
 .gradle
 target
 build
-bin
 
+
+###############
+# Eclipse IDE #
+###############
+bin
+.classpath
+.project
+
+
+############
+# Idea IDE #
+############
+.idea
+
+
+###################
 # Compiled source #
 ###################
 *.com
@@ -10,10 +25,14 @@ bin
 *.o
 *.so
 
+
+###################
 # Temporary files #
 ###################
 .~*
 
+
+######################
 # OS generated files #
 ######################
 .DS_Store
