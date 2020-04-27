@@ -35,6 +35,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - accidentally bundled OpenSans and SourceCodePro fonts with the Venice 1.7.22 
   Jar 
 - functions `nfirst` and `nlast` to work with Java based lists too
+- default sandbox rules to include Venice exception types
+
 
 
 
