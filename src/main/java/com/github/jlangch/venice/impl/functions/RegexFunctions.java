@@ -292,7 +292,7 @@ public class RegexFunctions {
 					VncFunction
 						.meta()
 						.arglists("(regex/find-all-groups matcher)")		
-						.doc("Returns the all regex matchws and returns the groups")
+						.doc("Returns the all regex matches and returns the groups")
 						.examples(
 							"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
 							"  (regex/find-all-groups m))                              \n")
