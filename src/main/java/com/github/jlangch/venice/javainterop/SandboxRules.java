@@ -597,11 +597,19 @@ public class SandboxRules {
 			
 	private static final List<String> SYSTEM_CLASS_RULES = 
 			Arrays.asList(
-				// Dynamic proxies based on venice' DynamicInvocationHandler
-				"class:" + BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
+				"class:" + BASE + ".*Exception:*",
+				"class:" + BASE + ".*Error:*",				
 				
 				"class:" + BASE + ".util.CapturingPrintStream:*",
 				"class:" + BASE + ".util.CallbackPrintStream:*",
+				"class:" + BASE + ".util.*XMLHandler*:*",
+
+				"class:" + BASE + ".servlet.*:*",
+
+				"class:" + BASE + ".impl.util.crypt.*:*",
+
+				// Dynamic proxies based on venice' DynamicInvocationHandler
+				"class:" + BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
 				
 				"class:" + BASE + ".impl.VeniceInterpreter$1",
 				"class:" + BASE + ".impl.ValueException:*",
