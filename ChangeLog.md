@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Changed
+
+- optional OpenPDF dependency to version 1.3.16
+
 
 
 ## [1.7.23] - 2020-04-27
