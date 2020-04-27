@@ -2308,6 +2308,18 @@ public class CoreFunctionsTest {
 		assertEquals("ab",  venice.eval("(nfirst \"abc\" 2)"));
 		assertEquals("abc", venice.eval("(nfirst \"abc\" 3)"));
 		assertEquals("abc", venice.eval("(nfirst \"abc\" 4)"));
+		
+		// with java lists
+		assertEquals(
+				"(1 2)", 
+				venice.eval(
+						"(str (nfirst                                 " +
+						"        (doto (. :java.util.ArrayList :new)  " +
+						"	           (. :add 1)                     " +
+						"	           (. :add 2)                     " +
+						"	           (. :add 3)                     " +
+						"	           (. :add 4))                    " +
+						"	     2))                                  "));
 	}
 
 	@Test
@@ -2344,6 +2356,18 @@ public class CoreFunctionsTest {
 		assertEquals("bc",  venice.eval("(nlast \"abc\" 2)"));
 		assertEquals("abc", venice.eval("(nlast \"abc\" 3)"));
 		assertEquals("abc", venice.eval("(nlast \"abc\" 4)"));
+		
+		// with java lists
+		assertEquals(
+				"(3 4)", 
+				venice.eval(
+						"(str (nlast                                  " +
+						"        (doto (. :java.util.ArrayList :new)  " +
+						"	           (. :add 1)                     " +
+						"	           (. :add 2)                     " +
+						"	           (. :add 3)                     " +
+						"	           (. :add 4))                    " +
+						"	     2))                                  "));
 	}
 	
 	@Test

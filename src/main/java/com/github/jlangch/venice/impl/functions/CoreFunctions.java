@@ -4575,7 +4575,7 @@ public class CoreFunctions {
 							: new VncVector(vec.getList().subList(0, n));
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
-					final VncList list = (VncList)args.first();
+					final VncSequence list = (VncSequence)args.first();
 					n = Math.max(0, Math.min(list.size(), n));
 					return list.isEmpty()
 							? VncTinyList.empty()
@@ -4640,7 +4640,7 @@ public class CoreFunctions {
 							: new VncVector(vec.getList().subList(vec.size()-n, vec.size()));
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
-					final VncList list = (VncList)args.first();
+					final VncSequence list = (VncSequence)args.first();
 					n = Math.max(0, Math.min(list.size(),n));
 					return list.isEmpty()
 							? VncTinyList.empty()
