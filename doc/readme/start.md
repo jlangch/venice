@@ -51,8 +51,8 @@ venice>
 ### 4. Start a REPL from a Venice GitPod workspace
 
 Alternatively a REPL can be run without local installation in a GitPod workspace. 
-Just fire up a Venice GitPod workspace in your browser: 
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice)
+Just fire up a Venice GitPod workspace in your browser
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice) GitPod will ask you to login to GitHub.
 
 Wait until the workspace has been built ...
 
