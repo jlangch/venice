@@ -57,17 +57,23 @@ Just fire up a Venice GitPod workspace in your browser by clicking this button:
 
 Wait until the workspace has been built ...
 
-start a new terminal (menu Terminal -> New Terminal) ...
+The workspace will start a fresh REPL in a terminal
 
-and launch the REPL within the terminal:
+Type an expression like `(+ 1 1)` followed by a `<CR>`
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
+
+
+#### Manually create a new REPL terminal
+
+Start a new terminal (menu Terminal -> New Terminal) ...
+
+launch the REPL within the terminal:
 
 ```text
 $ java -jar build/libs/venice-*.jar -colors-darkmode
 ```
 
-Type an expression like `(+ 1 1)` followed by a `<CR>`
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
 
 
 ### 5. Where to head next
