@@ -6,6 +6,8 @@ Venice can run on any operating system for which a Java VM is available,
 like Linux, MacOSX, or Windows.
 
 
+## Venice Local Setup
+
 ### 1. Install Java
 
 Venice requires Java 8 or higher.
@@ -48,7 +50,9 @@ venice>
 ```
 
 
-### 4. Start a REPL from a Venice GitPod workspace
+## Venice GitPod workspace 
+
+### Start a REPL from a Venice GitPod workspace
 
 Alternatively a REPL can be run without local installation in a [GitPod](https://gitpod.io/) workspace. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
 
@@ -64,7 +68,7 @@ If you see the Venice REP prompt `venice> ` type an expression like `(+ 100 1)` 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
 
 
-#### Manually create a new REPL terminal
+### Manually create a new REPL terminal in the workspace
 
 Start a new terminal (menu Terminal -> New Terminal) ...
 
@@ -76,7 +80,7 @@ $ java -jar build/libs/venice-*.jar -colors-darkmode
 
 
 
-### 5. Where to head next
+## Where to head next
 
 - browse through the [readme](https://github.com/jlangch/venice/blob/master/README.md)
 - see the cheatsheet and use it as a quick reference
