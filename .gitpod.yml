@@ -1,4 +1,4 @@
 tasks:
   - init: ./gradlew --warning-mode all clean shadowJar
-  - command: java -jar build/libs/venice-*.jar -colors-darkmode
+    command: java -jar build/libs/venice-*.jar -colors-darkmode
     name: REPL
