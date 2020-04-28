@@ -31,7 +31,7 @@ can easily add it as standalone .jar to your classpath.
 
 Venice requires Java 8 or newer.
 
-Eager to try Venice in a REPL? [Try it on GitPod](https://github.com/jlangch/venice/blob/master/doc/readme/start.md#venice-gitpod-workspace)
+Eager to try Venice in a REPL? [Test it on GitPod](https://github.com/jlangch/venice/blob/master/doc/readme/start.md#venice-gitpod-workspace)
  
 ## Cheat Sheet
 
