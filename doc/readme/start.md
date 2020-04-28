@@ -59,7 +59,7 @@ Wait until the workspace has been built ...
 
 The workspace will start a fresh REPL in a terminal
 
-Type an expression like `(+ 1 1)` followed by a `<CR>`
+If you see the Venice REP prompt `venice> ` type an expression like `(+ 100 1)` followed by a `<CR>`
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
 
