@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+import com.github.jlangch.venice.impl.repl.AppREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -99,6 +100,11 @@ public class Launcher {
 				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", stripVeniceFileExt(mainFile));
 
 				runApp(cli, macroexpand, interceptor, appBootstrap, appName, appFile);
+			}
+			else if (cli.switchPresent("-app-repl")) {
+				final String file = cli.switchValue("-app-repl");
+					
+				new AppREPL(interceptor, loadPaths, new File(file)).run(args);
 			}
 			else if (cli.switchPresent("-repl")) {
 				new REPL(interceptor, loadPaths).run(args);
