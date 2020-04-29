@@ -54,11 +54,11 @@ public class AppREPL {
 	public AppREPL(
 			final IInterceptor interceptor, 
 			final List<String> loadPaths,
-			final File script
+			final File app
 	) {
 		this.interceptor = interceptor;
 		this.loadPaths = loadPaths;
-		this.script = script;
+		this.app = app;
 	}
 	
 	public void run(final String[] args) {
@@ -77,6 +77,11 @@ public class AppREPL {
 	
 	public void setHandler(final Consumer<String> handler) {
 		this.cmdHandler = handler;
+	}
+	
+	public void setPrompt(final String prompt) {
+		this.prompt = prompt;
+		this.secondaryPrompt = "";
 	}
 	
 	public void setPrompt(final String prompt, final String secondaryPrompt) {
@@ -118,11 +123,11 @@ public class AppREPL {
 												config.getColor("stderr"))
 										: System.out;
 
-		printer = new TerminalPrinter(config, terminal, false);
+		final TerminalPrinter printer = new TerminalPrinter(config, terminal, false);
 		
-		venice = new VeniceInterpreter(interceptor, loadPaths);
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 		
-		Env env = loadEnv(cli, ps_out, ps_err);
+		final Env env = loadEnv(venice, cli, ps_out, ps_err);
 		
 		final History history = new DefaultHistory();
 		
@@ -137,13 +142,13 @@ public class AppREPL {
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
 		try {
-			printer.println("stdout", "loading file \"" + script.getPath() + "\"");
-			venice.RE("(load-file \"" + script.getPath() + "\")" , "user", env);
+			printer.println("stdout", "loading file \"" + app.getPath() + "\"");
+			venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);
 		}
-		
+
 		// REPL loop
 		while (true) {
 			resultHistory.mergeToEnv(env);
@@ -178,6 +183,7 @@ public class AppREPL {
 	}
 
 	private Env loadEnv(
+			final VeniceInterpreter venice,
 			final CommandLineArgs cli,
 			final PrintStream ps_out,
 			final PrintStream ps_err
@@ -192,14 +198,12 @@ public class AppREPL {
 	
 
 	private final List<String> loadPaths;
-	private final File script;
+	private final File app;
 
 	private String prompt;
 	private String secondaryPrompt;
 	private Consumer<String> cmdHandler;
 	private ReplConfig config;
 	private IInterceptor interceptor;
-	private VeniceInterpreter venice;
-	private TerminalPrinter printer;
 	private boolean macroexpand = false;
 }
