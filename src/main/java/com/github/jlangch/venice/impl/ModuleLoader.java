@@ -107,6 +107,7 @@ public class ModuleLoader {
 							"test",
 							"tomcat", 
 							"tomcat-util", 
+							"tput",
 							"webdav", 
 							"xchart", 
 							"xml")));
