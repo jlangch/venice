@@ -21,11 +21,45 @@
 
 ;;;; tput utilities
 
+;;;; see: http://linuxcommand.org/lc3_adv_tput.php
 
 (ns tput)
 
 
 (load-module :shell)
+
+
+;; ---------------------------------------------------------------------------
+;; constants
+;; ---------------------------------------------------------------------------
+
+(def colors
+   { :black    0
+     :red      1
+     :green    2
+     :yellow   3
+     :blue     4
+     :magenta  5
+     :cyan     6
+     :white    7
+     :not-used 8
+     :default  9 })
+
+
+
+;; -----------------------------------------------------------------------------
+;; Reading Terminal Attributes
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(name)")
+     :doc "Full name of the terminal type"
+     :examples '("(tput/name)") }
+
+  name []
+
+  (shell/require-mac-or-linux)
+  (str/trim (:out (core/sh "tput" "longname" :throw-ex true))))
 
 
 (defn
@@ -51,14 +85,349 @@
 
 
 (defn
-  ^{ :arglists '("(cup x y)")
-     :doc "Positions the cursor in the terminal. (0,0) is the upper left corner."
-     :examples '("(tput/cup 0 10)") }
+  ^{ :arglists '("(colors)")
+     :doc "Number of colors available"
+     :examples '("(tput/colors)") }
 
-  cup [x y]
+  colors []
 
   (shell/require-mac-or-linux)
-  (core/sh "tput" "cup" y x)
+  (long (str/trim (:out (core/sh "tput" "colors" :throw-ex true)))))
+
+;; -----------------------------------------------------------------------------
+;; Controlling The Cursor
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(save-cursor-pos)")
+     :doc "Save the cursor position."
+     :examples '("(tput/save-cursor-pos)") }
+
+  save-cursor-pos []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "sc")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(restore-cursor-pos)")
+     :doc "Restore the cursor position."
+     :examples '("(tput/restore-cursor-pos)") }
+
+  restore-cursor-pos []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "rc" )
+  nil)
+
+
+(defn
+  ^{ :arglists '("(home)")
+     :doc "Move the cursor to upper left corner (0,0)."
+     :examples '("(tput/home)") }
+
+  home []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "home" )
+  nil)
+
+
+(defn
+  ^{ :arglists '("(cursor-pos row col)")
+     :doc "Positions the cursor in the terminal. (0,0) is the upper left corner."
+     :examples '("(tput/cursor-pos 10 0)") }
+
+  cursor-pos [row col]
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "cup" row col)
+  nil)
+
+
+(defn
+  ^{ :arglists '("(cursor-down)")
+     :doc "Move the cursor down 1 line."
+     :examples '("(tput/cud1)") }
+
+  cursor-down []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "cud1")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(cursor-up)")
+     :doc "Move the cursor up 1 line"
+     :examples '("(tput/cursor-up)") }
+
+  cursor-up []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "cuu1")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(hide-cursor)")
+     :doc "Hide the cursor."
+     :examples '("(tput/hide-cursor)") }
+
+  hide-cursor []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "civis")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(show-cursor)")
+     :doc "Show the cursor."
+     :examples '("(tput/show-cursor)") }
+
+  show-cursor []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "cnorm")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(reset-cursor)")
+     :doc "Reset cursor."
+     :examples '("(tput/reset-cursor)") }
+
+  blink []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "sgr0")
+  nil)
+
+
+;; -----------------------------------------------------------------------------
+;; Text Effects
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(bold)")
+     :doc "Start bold text."
+     :examples '("(tput/bold)") }
+
+  bold []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "bold")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(start-underline)")
+     :doc "Start underlined text."
+     :examples '("(tput/start-underline)") }
+
+  start-underline []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "smul")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(end-underline)")
+     :doc "End underlined text."
+     :examples '("(tput/end-underline)") }
+
+  end-underline []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "rmul")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(reverse)")
+     :doc "Start reverse video."
+     :examples '("(tput/reverse)") }
+
+  reverse []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "rev")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(blink)")
+     :doc "Start blinking text."
+     :examples '("(tput/blink)") }
+
+  blink []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "blink")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(invisible)")
+     :doc "Start invisible text."
+     :examples '("(tput/invisible)") }
+
+  invisible []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "invis")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(start-standout)")
+     :doc " Start 'standout' mode."
+     :examples '("(tput/start-standout)") }
+
+  start-standout []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "smso")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(end-standout)")
+     :doc "End invisible text."
+     :examples '("(tput/end-standout)") }
+
+  end-standout []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "rmso")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(start-italic)")
+     :doc "Start italic text."
+     :examples '("(tput/start-italic)") }
+
+  start-italic []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "sitm")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(end-italic)")
+     :doc "End italic text."
+     :examples '("(tput/end-italic)") }
+
+  end-italic []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "ritm")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(turn-off-all-attributes)")
+     :doc "Turn off all attributes."
+     :examples '("(tput/turn-off-all-attributes)") }
+
+  turn-off-all-attributes []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "sgr0")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(foreground value)")
+     :doc "Set foreground color."
+     :examples '("(tput/foreground :blue)") }
+
+  foreground [value]
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "setaf" value)
+  nil)
+
+
+(defn
+  ^{ :arglists '("(background value)")
+     :doc "Set background color."
+     :examples '("(tput/background :white)") }
+
+  background [value]
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "setab" value)
+  nil)
+
+
+
+;; -----------------------------------------------------------------------------
+;; Clearing The Screen
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(save-screen)")
+     :doc "Save screen contents."
+     :examples '("(tput/save-screen)") }
+
+  save-screen []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "smcup")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(restore-screen)")
+     :doc "Restore screen contents."
+     :examples '("(tput/restore-screen)") }
+
+  restore-screen []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "rmcup")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(clear-to-eol)")
+     :doc "Clear from the cursor to the end of the line."
+     :examples '("(tput/clear-to-eol)") }
+
+  clear-to-eol []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "el")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(clear-to-bol)")
+     :doc "Clear from the cursor to the beginning of the line."
+     :examples '("(tput/clear-to-bol)") }
+
+  clear-to-bol []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "el1")
+  nil)
+
+
+(defn
+  ^{ :arglists '("(clear-to-eos)")
+     :doc "Clear from the cursor to the end of the screen."
+     :examples '("(tput/clear-to-eos)") }
+
+  clear-to-eos []
+
+  (shell/require-mac-or-linux)
+  (core/sh "tput" "ed")
   nil)
 
 
