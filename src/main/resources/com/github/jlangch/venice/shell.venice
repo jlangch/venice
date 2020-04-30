@@ -124,5 +124,5 @@
   tput-clear []
 
   (require-mac-or-linux)
-  (sh "tput" "cup" y x)
+  (sh "tput" "clear")
   nil)

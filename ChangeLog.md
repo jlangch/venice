@@ -28,6 +28,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - ...
+  
+### Fixed
+
+- function `shell/tput-clear`
 
 ### Changed
 
