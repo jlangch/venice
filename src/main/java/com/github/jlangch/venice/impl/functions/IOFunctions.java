@@ -30,6 +30,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
@@ -68,6 +70,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
@@ -1202,7 +1205,11 @@ public class IOFunctions {
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
 						"  :user-agent agent - e.g :user-agent \"Mozilla\", defaults to nil \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8\n\n" +
+						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8\n" +
+						"  :progress-fn fn - a progress function that takes 3 args \n" +
+						"                        [1] bytes downloaded \n" +
+						"                        [2] total bytes (may be -1 if unknown) \n" +
+						"                        [3] status {:start :progress :end :failed}\n\n" +
 						"If the server returns a 403 (access denied) sending a user-agent\n" +
 						"may fool the website.")
 					.build()
@@ -1217,21 +1224,85 @@ public class IOFunctions {
 					final VncVal binary = options.get(new VncKeyword("binary"));
 					final VncVal useragent = options.get(new VncKeyword("user-agent"));
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
+					final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
+					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-
+					final VncFunction progressFn = progressVal == Nil 
+										? new VncFunction("io/progress-default") {
+											private static final long serialVersionUID = 1L;
+											public VncVal apply(final VncList args) { return Nil; }
+										  }
+										: Coerce.toVncFunction(progressVal);
 					
 				    final URLConnection conn = (URLConnection)new URL(uri).openConnection();
 				    if (Types.isVncString(useragent)) {
 				    	conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
 				    }
-					
-					try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
-						byte data[] = IOStreamUtil.copyIStoByteArray(is);
+				    
+				    conn.connect();
+						
+				    try {
+					    if (conn instanceof HttpURLConnection) {
+						    int responseCode = ((HttpURLConnection)conn).getResponseCode();
+						    if (responseCode != HttpURLConnection.HTTP_OK) {
+								throw new VncException(
+										"No file to download. Server replied HTTP code: " + responseCode);
+						    }
+					    }
+					    
+					    final long contentLength = conn.getContentLengthLong();
+	
+					    progressFn.apply(VncTinyList.of(
+					    					new VncLong(0L), 
+					    					new VncLong(contentLength),
+					    					new VncKeyword("start")));
+					    
+						try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
+							final ByteArrayOutputStream output = new ByteArrayOutputStream();							
+							try {
+								final byte[] buffer = new byte[16 * 1024];
+								int n;
+								int total = 0;
+								while (-1 != (n = is.read(buffer))) {
+									output.write(buffer, 0, n);
+									total += n;
+								}
 
-						return binary == True
-								? new VncByteBuffer(ByteBuffer.wrap(data))
-								: new VncString(new String(data, encoding));
-					}
+							    progressFn.apply(VncTinyList.of(
+							    					new VncLong(total), 
+							    					new VncLong(contentLength),
+							    					new VncKeyword("progress")));
+
+								byte data[] = output.toByteArray();
+
+							    progressFn.apply(VncTinyList.of(
+				    					new VncLong(total), 
+				    					new VncLong(contentLength),
+				    					new VncKeyword("end")));
+
+
+								return binary == True
+										? new VncByteBuffer(ByteBuffer.wrap(data))
+										: new VncString(new String(data, encoding));
+							}
+							finally {
+								output.close();
+							}
+						}
+				    }
+				    catch(Exception ex) {
+					    progressFn.apply(VncTinyList.of(
+		    					new VncLong(-1L), 
+		    					new VncLong(-1L),
+		    					new VncKeyword("failed")));
+
+				    	throw ex;
+				    }
+				    finally {
+				    	if (conn instanceof HttpURLConnection) {
+				    		((HttpURLConnection)conn).disconnect();
+				    	}
+				    }
 				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
