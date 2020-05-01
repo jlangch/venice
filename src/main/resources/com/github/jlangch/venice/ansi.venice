@@ -181,6 +181,6 @@
 
   ansi [style]
 
-  (if *use-ansi*)
-    (str "\\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES)))
+  (if *use-ansi*
+    (str "\u001B" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES)))
     ""))
