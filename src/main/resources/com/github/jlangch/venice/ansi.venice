@@ -1,0 +1,170 @@
+;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2020 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; ansi utilities
+
+;;;; see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
+
+(ns ansi)
+
+
+(def-dynamic *use-ansi* true)
+
+;; ---------------------------------------------------------------------------
+;; constants
+;; ---------------------------------------------------------------------------
+
+(def ANSI-CODES
+  { ;; decorations
+    :reset              "[0m"
+    :bold               "[1m"
+    :blink-slow         "[5m"
+    :underline          "[4m"
+    :underline-off      "[24m"
+    :inverse            "[7m"
+    :inverse-off        "[27m"
+    :strikethrough      "[9m"
+    :strikethrough-off  "[29m"
+
+    ;; default color
+    :default "[39m"
+
+    ;; basic 8 foreground colors
+    :black   "[30m"
+    :red     "[31m"
+    :green   "[32m"
+    :yellow  "[33m"
+    :blue    "[34m"
+    :magenta "[35m"
+    :cyan    "[36m"
+    :white   "[37m"
+
+    ;; bright 8 foreground colors
+    :bright-black   "[30m;1"
+    :bright-red     "[31m;1"
+    :bright-green   "[32m;1"
+    :bright-yellow  "[33m;1"
+    :bright-blue    "[34m;1"
+    :bright-magenta "[35m;1"
+    :bright-cyan    "[36m;1"
+    :bright-white   "[37m;1"
+
+    ;; basic 8 background colors
+    :bg-black   "[40m"
+    :bg-red     "[41m"
+    :bg-green   "[42m"
+    :bg-yellow  "[43m"
+    :bg-blue    "[44m"
+    :bg-magenta "[45m"
+    :bg-cyan    "[46m"
+    :bg-white   "[47m"
+    :bg-default "[49m"
+
+   ;; bright 8 background colors
+    :bg-bright-black   "[40m;1"
+    :bg-bright-red     "[41m;1"
+    :bg-bright-green   "[42m;1"
+    :bg-bright-yellow  "[43m;1"
+    :bg-bright-blue    "[44m;1"
+    :bg-bright-magenta "[45m;1"
+    :bg-bright-cyan    "[46m;1"
+    :bg-bright-white   "[47m;1"
+
+  })
+
+
+;; -----------------------------------------------------------------------------
+;; Cursor Navigation
+;; -----------------------------------------------------------------------------
+
+(defn cursor-up [rows] (str "[" rows "A"))
+(defn cursor-down [rows] (str "[" rows "B"))
+(defn cursor-right [cols] (str "[" cols "C"))
+(defn cursor-left [cols] (str "[" cols "D"))
+
+
+(defn
+  ^{ :arglists '("(ext-color code")
+     :doc "Defines an extended color from the 256-color extended color set."
+     :examples '("(ansi/ext-color 197)") }
+
+  ext-color [code]
+
+  (str "[38;5;" n "m"))
+
+
+(defmacro
+  ^{ :arglists '("(with-ansi & forms)")
+     :doc """
+          Runs the given forms with the *use-ansi* variable temporarily bound
+          to true, to enable the production of any ANSI color codes specified
+          in the forms.
+          """
+     :examples '("""(ansi/with-ansi )""") }
+
+  with-ansi [& forms]
+
+  `(binding [*use-ansi* true] (do ~@forms)))
+
+
+(defmacro
+  ^{ :arglists '("(without-ansi & forms)")
+     :doc """
+          Runs the given forms with the *use-ansi* variable temporarily bound
+          to false, to suppress the production of any ANSI color codes
+          specified in the forms.
+          """
+     :examples '("(ansi/without-ansi )") }
+
+  without-ansi [& forms]
+
+  `(binding [*use-ansi* false] (do ~@forms)))
+
+
+(defn
+  ^{ :arglists '("(style text styles)")
+     :doc """
+          Applies ANSI color and style to a text string.
+          """
+     :examples '("""(ansi/style "foo" :blue)"""
+                 """(ansi/style "foo" :blue :underline)"""
+                 """(ansi/style "foo" :blue :bg-white :underline)""") }
+
+  style [text & styles]
+
+  (str (apply str (map ansi/ansi styles)) text (ansi :reset)))
+
+
+(defn
+  ^{ :arglists '("(ansi style)")
+     :doc """
+          Output an ANSI escape code using a style key.
+          If *use-ansi* is bound to false, outputs an empty string instead of an
+          ANSI code.
+          """
+     :examples '("(ansi/ansi :blue)"
+                 "(ansi/ansi :underline)") }
+
+  ansi [style]
+
+  (if *use-ansi*)
+    (str "\\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES)))
+    ""))
