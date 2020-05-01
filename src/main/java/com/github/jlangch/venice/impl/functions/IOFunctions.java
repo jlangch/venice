@@ -1204,12 +1204,18 @@ public class IOFunctions {
 						"or binary (bytebuf). \n\n" +
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :user-agent agent - e.g :user-agent \"Mozilla\", defaults to nil \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8\n" +
-						"  :progress-fn fn - a progress function that takes 3 args \n" +
-						"                        [1] bytes downloaded \n" +
-						"                        [2] total bytes (may be -1 if unknown) \n" +
-						"                        [3] status {:start :progress :end :failed}\n\n" +
+						"  :user-agent agent  - e.g :user-agent \"Mozilla\", defaults to nil \n" +
+						"  :encoding enc      - e.g :encoding :utf-8, defaults to :utf-8\n" +
+						"  :conn-timeout val  - e.g :conn-timeout 10000, \n" +
+						"                           connection timeout in milli seconds. \n" +
+						"                           0 is interpreted as an infinite timeout. \n" +
+						"  :read-timeout val  - e.g :read-timeout 10000, \n" +
+						"                           read timeout in milli seconds. \n" +
+						"                           0 is interpreted as an infinite timeout. \n" +
+						"  :progress-fn fn    - a progress function that takes 3 args \n" +
+						"                           [1] progress (0..100%) \n" +
+						"                           [2] total bytes (may be -1 if unknown) \n" +
+						"                           [3] status {:start :progress :end :failed}\n\n" +
 						"If the server returns a 403 (access denied) sending a user-agent\n" +
 						"may fool the website.")
 					.build()
@@ -1225,6 +1231,8 @@ public class IOFunctions {
 					final VncVal useragent = options.get(new VncKeyword("user-agent"));
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
+					final VncVal connTimeoutMillisVal = options.get(new VncKeyword("conn-timeout"));
+					final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
 					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
 					final VncFunction progressFn = progressVal == Nil 
@@ -1234,52 +1242,57 @@ public class IOFunctions {
 										  }
 										: Coerce.toVncFunction(progressVal);
 					
-				    final URLConnection conn = (URLConnection)new URL(uri).openConnection();
-				    if (Types.isVncString(useragent)) {
-				    	conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
-				    }
-				    
-				    conn.connect();
+					final URLConnection conn = (URLConnection)new URL(uri).openConnection();
+					if (Types.isVncString(useragent)) {
+						conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
+					}
+
+					if (connTimeoutMillisVal != Nil) {
+						conn.setConnectTimeout(Coerce.toVncLong(connTimeoutMillisVal).getIntValue());
+					}
+					if (readTimeoutMillisVal != Nil) {
+						conn.setReadTimeout(Coerce.toVncLong(readTimeoutMillisVal).getIntValue());
+					}
+
+					conn.connect();
 						
-				    try {
-					    if (conn instanceof HttpURLConnection) {
-						    int responseCode = ((HttpURLConnection)conn).getResponseCode();
-						    if (responseCode != HttpURLConnection.HTTP_OK) {
+					try {
+						if (conn instanceof HttpURLConnection) {
+							final int responseCode = ((HttpURLConnection)conn).getResponseCode();
+							if (responseCode != HttpURLConnection.HTTP_OK) {
 								throw new VncException(
 										"No file to download. Server replied HTTP code: " + responseCode);
-						    }
-					    }
-					    
-					    final long contentLength = conn.getContentLengthLong();
+							}
+						}
+
+						final long contentLength = conn.getContentLengthLong();
 	
-					    progressFn.apply(VncTinyList.of(
-					    					new VncLong(0L), 
-					    					new VncLong(contentLength),
-					    					new VncKeyword("start")));
-					    
+						updateDownloadProgress(progressFn, 0L, contentLength, "start");
+
 						try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
 							final ByteArrayOutputStream output = new ByteArrayOutputStream();							
 							try {
 								final byte[] buffer = new byte[16 * 1024];
 								int n;
-								int total = 0;
+								long total = 0L;
+								long progressLast = 0L;
 								while (-1 != (n = is.read(buffer))) {
 									output.write(buffer, 0, n);
 									total += n;
+
+									// progress: 0..99%
+									long progress = Math.max(0, Math.min(99, total * 100 / contentLength));
+
+									if (progress != progressLast) {
+										updateDownloadProgress(progressFn, progress, contentLength, "progress");
+									}
+
+									progressLast = progress;
 								}
 
-							    progressFn.apply(VncTinyList.of(
-							    					new VncLong(total), 
-							    					new VncLong(contentLength),
-							    					new VncKeyword("progress")));
+								updateDownloadProgress(progressFn, 100L, contentLength, "end");
 
 								byte data[] = output.toByteArray();
-
-							    progressFn.apply(VncTinyList.of(
-				    					new VncLong(total), 
-				    					new VncLong(contentLength),
-				    					new VncKeyword("end")));
-
 
 								return binary == True
 										? new VncByteBuffer(ByteBuffer.wrap(data))
@@ -1289,20 +1302,16 @@ public class IOFunctions {
 								output.close();
 							}
 						}
-				    }
-				    catch(Exception ex) {
-					    progressFn.apply(VncTinyList.of(
-		    					new VncLong(-1L), 
-		    					new VncLong(-1L),
-		    					new VncKeyword("failed")));
-
-				    	throw ex;
-				    }
-				    finally {
-				    	if (conn instanceof HttpURLConnection) {
-				    		((HttpURLConnection)conn).disconnect();
-				    	}
-				    }
+					}
+					catch(Exception ex) {
+						updateDownloadProgress(progressFn, 0L, -1L, "failed");
+						throw ex;
+					}
+					finally {
+						if (conn instanceof HttpURLConnection) {
+							((HttpURLConnection)conn).disconnect();
+						}
+					}
 				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -1821,7 +1830,24 @@ public class IOFunctions {
 	}
 
 
+	private static void updateDownloadProgress(
+			final VncFunction fn,
+			final long percentage,
+			final long contentLength,
+			final String status
+	) {
+		try {
+			fn.apply(VncTinyList.of(
+					new VncLong(percentage), 
+					new VncLong(contentLength),
+					new VncKeyword(status)));
+		}
+		catch(Exception ex) {
+			// do nothing
+		}
+	}
 
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
