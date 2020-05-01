@@ -34,6 +34,7 @@
 
 (load-module :shell)
 (load-module :semver)
+(load-module :ansi)
 
 
 (def-dynamic tc-archive "http://archive.apache.org/dist/tomcat")
@@ -323,6 +324,15 @@
 
     (println "Tomcat deploying webapp done.")))
 
+(defn tc-download-progress [percent size status]
+  (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
+        clean     (fn []     (draw (str/repeat " " 30)))
+        overprint (fn [text] (do (clean) (draw text)))]
+    (case status
+      "start"    (print "Download started.")
+      "progress" (overprint (str percent "%"))
+      "end"      (overprint "Download ok\n")
+      "failed"   (overprint "Download failed\n"))))
 
 (defn
   ^{ :arglists '("(install install-dir tc-version & options)")
@@ -335,9 +345,11 @@
                 Removes the Windows scripts. Defaults to false.
             :remove-system-webapps true/false
                 Removes the system web apps. Defaults to false.
+            :show-progress true/false
+                If true show download progress. Defaults to false.
           """
      :examples '(
-          "(tc-util/install \"/Users/tools\" \"9.0.26\" :remove-system-webapps true)") }
+          "(tc-util/install \"/Users/tools\" \"9.0.34\" :remove-system-webapps true)") }
 
   install [install-dir tc-version & options]
 
@@ -346,7 +358,8 @@
         dir-name         (str "apache-tomcat-" tc-version)
         tc-dir           (io/file install-base-dir dir-name)
         tc-dir-bin       (io/file tc-dir "bin")
-        tc-dir-webapps   (io/file tc-dir "webapps")]
+        tc-dir-webapps   (io/file tc-dir "webapps")
+        show-progress    (:show-progress options false)]
 
     (when-not (io/exists-dir? install-base-dir)
       (throw (venice-exception (str
@@ -360,8 +373,14 @@
     (let [target (io/file install-base-dir "tc.zip")
           uri (tc-download-url tc-version)]
       (io/delete-file target)
-      (io/spit target (io/download uri :binary true))
-      (println "Downloading ok.")
+      (io/spit target (io/download uri
+                                   :binary true
+                                   :user-agent "Mozilla"
+                                   :progress-fn (if show-progress
+                                                  tc-download-progress
+                                                  nil)))
+      (if (not show-progress)
+        (println "Download ok."))
 
       (println "Unpacking Tomcat archive ...")
       (io/unzip-to-dir target install-base-dir)
