@@ -102,13 +102,29 @@
 
 
 (defn
-  ^{ :arglists '("(ext-color code")
-     :doc "Defines an extended color from the 256-color extended color set."
-     :examples '("(ansi/ext-color 197)") }
+  ^{ :arglists '("(fg-color code")
+     :doc """
+          Defines an extended foreground color from the 256-color extended
+          color set. The code ranges from 0 to 255.
+          """
+     :examples '("(ansi/fg-color 197)") }
 
-  ext-color [code]
+  fg-color [code]
 
   (str "[38;5;" n "m"))
+
+
+(defn
+  ^{ :arglists '("(bg-color code")
+     :doc """
+          Defines an extended background color from the 256-color extended
+          color set. The code ranges from 0 to 255.
+          """
+     :examples '("(ansi/bg-color 197)") }
+
+  bg-color [code]
+
+  (str "[48;5;" n "m"))
 
 
 (defmacro
