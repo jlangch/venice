@@ -111,7 +111,7 @@
 
   fg-color [code]
 
-  (str "[38;5;" n "m"))
+  (str "[38;5;" code "m"))
 
 
 (defn
@@ -124,7 +124,7 @@
 
   bg-color [code]
 
-  (str "[48;5;" n "m"))
+  (str "[48;5;" code "m"))
 
 
 (defmacro
@@ -160,9 +160,12 @@
      :doc """
           Applies ANSI color and style to a text string.
           """
-     :examples '("""(ansi/style "foo" :blue)"""
-                 """(ansi/style "foo" :blue :underline)"""
-                 """(ansi/style "foo" :blue :bg-white :underline)""") }
+     :examples '(
+          """(ansi/style "foo" :blue)"""
+          """(ansi/style "foo" :blue :underline)"""
+          """(ansi/style "foo" :blue :bg-white :underline)"""
+          """(ansi/style "foo" (ansi/fg-color 21) (ansi/bg-color 221)) :underline"""
+        ) }
 
   style [text & styles]
 
@@ -177,10 +180,13 @@
           ANSI code.
           """
      :examples '("(ansi/ansi :blue)"
-                 "(ansi/ansi :underline)") }
+                 "(ansi/ansi :underline)"
+                 "(ansi/ansi (ansi/fg-color 21))") }
 
   ansi [style]
 
   (if *use-ansi*
-    (str "\u001B" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES)))
+    (if (string? style)
+      (str "\u001b" style)
+      (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES))))
     ""))
