@@ -31,7 +31,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Changed
 
-- function `io/download` to accept a progress function as option
+- function `io/download` to accept a progress function, a connection timeout 
+   and a read timeout as option
 - optional OpenPDF dependency to version 1.3.16
 
 
