@@ -190,3 +190,107 @@
       (str "\u001b" style)
       (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES))))
     ""))
+
+
+;; -----------------------------------------------------------------------------
+;; Progress utils
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(progress & options)")
+     :doc """
+          Returns a progress handler function that takes three args
+            [1] progress (0..100%)
+            [2] total bytes (may be -1 if unknown)
+            [3] status {:start :progress :end :failed}
+          that renders the progress as a percentage string.
+
+          E.g: 54%
+
+          Options:
+            :start-msg msg
+                A start message. Defaults to 'started'.
+            :end-msg msg
+                An end message. Defaults to 'ok'.
+            :failed-msg msg
+                A failed message. Defaults to 'failed'.
+          """
+     :examples '("""
+                 (io/download "https://foo.org/image.png"
+                              :binary true
+                              :user-agent "Mozilla"
+                              :progress-fn (ansi/progress
+                                              :start-msg   "Download started"
+                                              :end-msg     "Download ok"
+                                              :failed-msg  "Download failed"))
+                 """) }
+
+  progress [& options]
+
+  (let [options    (apply hash-map options)
+        start-msg  (:start-msg options "started")
+        end-msg    (:end-msg options "ok")
+        failed-msg (:failed-msg options "failed")]
+    (fn progress-handler [percent size status])
+        (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
+              clean     (fn []     (draw (str/repeat " " (max 30 (count start-msg)))))
+              overprint (fn [text] (do (clean) (draw text)))]
+          (case status
+            "start"    (print start-msg)
+            "progress" (overprint (str percent "%"))
+            "end"      (overprint (str end-msg "\n"))
+            "failed"   (overprint (str failed-msg "\n"))
+                       (overprint (str "Invalid status '" status "'\n"))))))
+
+
+(defn
+  ^{ :arglists '("(progress-bar & options)")
+     :doc """
+          Returns a progress handler function that takes three args
+            [1] progress (0..100%)
+            [2] total bytes (may be -1 if unknown)
+            [3] status {:start :progress :end :failed}
+          that renders the progress as a percentage bar.
+
+          E.g: [#################        ]
+
+          Options:
+            :width val
+                The width of the bar in chars. Defaults to 25.
+            :start-msg msg
+                A start message. Defaults to 'started'.
+            :end-msg msg
+                An end message. Defaults to 'ok'.
+            :failed-msg msg
+                A failed message. Defaults to 'failed'.
+          """
+     :examples '("""
+                 (io/download "https://foo.org/image.png"
+                              :binary true
+                              :user-agent "Mozilla"
+                              :progress-fn (ansi/progress-bar
+                                              :start-msg   "Download started"
+                                              :end-msg     "Download ok"
+                                              :failed-msg  "Download failed"))
+                 """) }
+
+  progress-bar [& options]
+
+  (let [options    (apply hash-map options)
+        width      (min (max (:width options 25) 10) 100)
+        start-msg  (:start-msg options "started")
+        end-msg    (:end-msg options "ok")
+        failed-msg (:failed-msg options "failed")]
+    (fn progress-handler [percent size status]
+      (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
+            clean     (fn []     (draw (str/repeat " " (max width (count start-msg)))))
+            overprint (fn [text] (do (clean) (draw text)))
+            bar       (fn [perc] (let [w1 (/ (* percent width) 100)
+                                       w2 (- width w)]
+                                   (str "[" (str/repeat "#" w1) (str/repeat " " w2) "]")))]
+        (case status
+          "start"    (print start-msg)
+          "progress" (overprint (bar percent))
+          "end"      (overprint (str end-msg "\n"))
+          "failed"   (overprint (str failed-msg "\n"))
+                     (overprint (str "Invalid status '" status "'\n")))))))
