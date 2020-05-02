@@ -21,15 +21,20 @@
 
 ;;;; ansi utilities
 
+;;;; ANSI escape codes
 ;;;; see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors
+;;;;
+;;;; 256 Color Mode
+;;;; see: https://i.stack.imgur.com/KTSQa.png
+
 
 (ns ansi)
 
-
 (def-dynamic *use-ansi* true)
 
+
 ;; ---------------------------------------------------------------------------
-;; constants
+;; Constants
 ;; ---------------------------------------------------------------------------
 
 (def ANSI-CODES
@@ -57,15 +62,15 @@
     :cyan    "[36m"
     :white   "[37m"
 
-    ;; bold 8 foreground colors
-    :bold-black   "[30;1m"
-    :bold-red     "[31;1m"
-    :bold-green   "[32;1m"
-    :bold-yellow  "[33;1m"
-    :bold-blue    "[34;1m"
-    :bold-magenta "[35;1m"
-    :bold-cyan    "[36;1m"
-    :bold-white   "[37;1m"
+    ;; bright 8 foreground colors
+    :bright-black   "[30;1m"
+    :bright-red     "[31;1m"
+    :bright-green   "[32;1m"
+    :bright-yellow  "[33;1m"
+    :bright-blue    "[34;1m"
+    :bright-magenta "[35;1m"
+    :bright-cyan    "[36;1m"
+    :bright-white   "[37;1m"
 
     ;; basic 8 background colors
     :bg-black   "[40m"
@@ -78,15 +83,15 @@
     :bg-white   "[47m"
     :bg-default "[49m"
 
-    ;; bold 8 background colors
-    :bg-bold-black   "[40;1m"
-    :bg-bold-red     "[41;1m"
-    :bg-bold-green   "[42;1m"
-    :bg-bold-yellow  "[43;1m"
-    :bg-bold-blue    "[44;1m"
-    :bg-bold-magenta "[45;1m"
-    :bg-bold-cyan    "[46;1m"
-    :bg-bold-white   "[47;1m"
+    ;; bright 8 background colors
+    :bg-bright-black   "[40;1m"
+    :bg-bright-red     "[41;1m"
+    :bg-bright-green   "[42;1m"
+    :bg-bright-yellow  "[43;1m"
+    :bg-bright-blue    "[44;1m"
+    :bg-bright-magenta "[45;1m"
+    :bg-bright-cyan    "[46;1m"
+    :bg-bright-white   "[47;1m"
 
   })
 
@@ -100,6 +105,21 @@
 (defn cursor-right [cols] (str "[" cols "C"))
 (defn cursor-left [cols] (str "[" cols "D"))
 
+(defn cursor-col [col] (str "[" col "G"))
+(defn cursor-pos [row col] (str "[" row ";" col "H"))
+
+(defn clear-screen [] "[2J")
+(defn clear-screen-to-start [] "[1J")
+(defn clear-screen-to-end [] "[0J")
+
+(defn clear-line [] "[2K")
+(defn clear-line-to-start [] "[1K")
+(defn clear-line-to-end [] "[0K")
+
+
+;; -----------------------------------------------------------------------------
+;; Extended Colors
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '("(fg-color code")
@@ -109,9 +129,10 @@
           """
      :examples '("(ansi/fg-color 197)") }
 
-  fg-color [code]
+  fg-color
 
-  (str "[38;5;" code "m"))
+  ([code] (str "[38;5;" code "m"))
+  ([r g b] (str "[38;2;" r ";" g ";" b "m")))  ;; supported by some terminals
 
 
 (defn
@@ -122,38 +143,15 @@
           """
      :examples '("(ansi/bg-color 197)") }
 
-  bg-color [code]
+  bg-color
 
-  (str "[48;5;" code "m"))
-
-
-(defmacro
-  ^{ :arglists '("(with-ansi & forms)")
-     :doc """
-          Runs the given forms with the *use-ansi* variable temporarily bound
-          to true, to enable the production of any ANSI color codes specified
-          in the forms.
-          """
-     :examples '("""(ansi/with-ansi )""") }
-
-  with-ansi [& forms]
-
-  `(binding [*use-ansi* true] (do ~@forms)))
+  ([code] (str "[48;5;" code "m"))
+  ([r g b] (str "[48;2;" r ";" g ";" b "m")))  ;; supported by some terminals
 
 
-(defmacro
-  ^{ :arglists '("(without-ansi & forms)")
-     :doc """
-          Runs the given forms with the *use-ansi* variable temporarily bound
-          to false, to suppress the production of any ANSI color codes
-          specified in the forms.
-          """
-     :examples '("(ansi/without-ansi )") }
-
-  without-ansi [& forms]
-
-  `(binding [*use-ansi* false] (do ~@forms)))
-
+;; -----------------------------------------------------------------------------
+;; Styling
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '("(style text styles)")
@@ -161,10 +159,10 @@
           Applies ANSI color and style to a text string.
           """
      :examples '(
-          """(ansi/style "foo" :blue)"""
-          """(ansi/style "foo" :blue :underline)"""
-          """(ansi/style "foo" :blue :bg-white :underline)"""
-          """(ansi/style "foo" (ansi/fg-color 21) (ansi/bg-color 221)) :underline"""
+          """(println (ansi/style "foo" :blue))"""
+          """(println (ansi/style "foo" :blue :underline))"""
+          """(println (ansi/style "foo" :blue :bg-white :underline))"""
+          """(println (ansi/style "foo" (ansi/fg-color 21) (ansi/bg-color 221)) :underline)"""
         ) }
 
   style [text & styles]
@@ -179,9 +177,11 @@
           If *use-ansi* is bound to false, outputs an empty string instead of an
           ANSI code.
           """
-     :examples '("(ansi/ansi :blue)"
-                 "(ansi/ansi :underline)"
-                 "(ansi/ansi (ansi/fg-color 21))") }
+     :examples '(
+          """(println (ansi/ansi :blue) "foo")"""
+          """(println (ansi/ansi :underline) "foo")"""
+          """(println (ansi/ansi (ansi/fg-color 21)) "foo")"""
+        ) }
 
   ansi [style]
 
@@ -190,6 +190,42 @@
       (str "\u001b" style)
       (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES))))
     ""))
+
+
+;; -----------------------------------------------------------------------------
+;; Macros
+;; -----------------------------------------------------------------------------
+
+(defmacro
+  ^{ :arglists '("(with-ansi & forms)")
+     :doc """
+          Runs the given forms with the *use-ansi* variable temporarily bound
+          to true, to enable the production of any ANSI color codes specified
+          in the forms.
+          """
+     :examples '(
+          """(ansi/with-ansi (println (ansi/style "foo" :blue)))"""
+        ) }
+
+  with-ansi [& forms]
+
+  `(binding [*use-ansi* true] (do ~@forms)))
+
+
+(defmacro
+  ^{ :arglists '("(without-ansi & forms)")
+     :doc """
+          Runs the given forms with the *use-ansi* variable temporarily bound
+          to false, to suppress the production of any ANSI color codes
+          specified in the forms.
+          """
+     :examples '(
+          """(ansi/without-ansi (println (ansi/style "foo" :blue)))"""
+        ) }
+
+  without-ansi [& forms]
+
+  `(binding [*use-ansi* false] (do ~@forms)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -321,15 +357,15 @@
   (let [colors-fg [
             :black :red     :green :yellow
             :blue  :magenta :cyan  :white ]
-        colors-fg-bold [
-            :bold-black :bold-red     :bold-green :bold-yellow
-            :bold-blue  :bold-magenta :bold-cyan  :bold-white ]
+        colors-fg-bright [
+            :bright-black :bright-red     :bright-green :bright-yellow
+            :bright-blue  :bright-magenta :bright-cyan  :bright-white ]
         colors-bg [
             :bg-black :bg-red     :bg-green :bg-yellow
             :bg-blue  :bg-magenta :bg-cyan  :bg-white ]
-        colors-bg-bold [
-            :bg-bold-black :bg-bold-red     :bg-bold-green :bg-bold-yellow
-            :bg-bold-blue  :bg-bold-magenta :bg-bold-cyan  :bg-bold-white ]
+        colors-bg-bright [
+            :bg-bright-black :bg-bright-red     :bg-bright-green :bg-bright-yellow
+            :bg-bright-blue  :bg-bright-magenta :bg-bright-cyan  :bg-bright-white ]
         labels [ "A", "B", "C", "D", "E", "F", "G", "H"]]
 
     (println "8 basic text and background colors")
@@ -345,14 +381,14 @@
     (println)
 
 
-    (println "8 basic bold/bright text and background colors")
+    (println "8 basic bright text and background colors")
     (docoll #(print (ansi/style (str " " (first %) " ") (second %)))
-            (partition 2 (interleave labels colors-fg-bold)))
+            (partition 2 (interleave labels colors-fg-bright)))
     (print (ansi/style "" :reset))
     (println)
 
     (docoll #(print (ansi/style (str " " (first %) " ") (second %)))
-            (partition 2 (interleave labels colors-bg-bold)))
+            (partition 2 (interleave labels colors-bg-bright)))
     (print (ansi/style "" :reset))
     (println)))
 
@@ -390,6 +426,20 @@
   (println)
 )
 
+
+(defn demo-cursor []
+  (let [text1  "hello world"
+        text2  "HELLO WORLD"
+        len    (count text1)]
+    (print text1)
+    (print (ansi/style "" (ansi/cursor-left 1)))
+    (dotimes [n len]
+      (do
+        (print (ansi/style (nth text2 (- len n 1)) :reverse))
+        (print (ansi/style "" (ansi/cursor-left 2)))
+        (sleep 200)))
+    (ansi/cursor-right len)
+    (println)))
 
 (defn demo-progress []
   (let [pg (ansi/progress
