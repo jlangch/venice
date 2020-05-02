@@ -49,9 +49,9 @@ import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
-public class AppREPL {
+public class CustomREPL {
 	
-	public AppREPL(
+	public CustomREPL(
 			final IInterceptor interceptor, 
 			final List<String> loadPaths,
 			final File app
@@ -65,7 +65,7 @@ public class AppREPL {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
 		try {
-			System.out.println("Venice REPL: V" + Venice.getVersion());
+			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			config = ReplConfig.load(cli);
 			
 			repl(cli);
