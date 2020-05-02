@@ -371,14 +371,19 @@
 
     (println (str "Downloading Tomcat " tc-version " ..."))
     (let [target (io/file install-base-dir "tc.zip")
-          uri (tc-download-url tc-version)]
+          uri (tc-download-url tc-version)
+          progress-fn (if show-progress
+                         (ansi/progress
+                            :caption     "Download: "
+                            :start-msg   "Download started"
+                            :end-msg     "Download ok"
+                            :failed-msg  "Download failed")
+                         nil) ]
       (io/delete-file target)
       (io/spit target (io/download uri
                                    :binary true
                                    :user-agent "Mozilla"
-                                   :progress-fn (if show-progress
-                                                  tc-download-progress
-                                                  nil)))
+                                   :progress-fn progress-fn))
       (if (not show-progress)
         (println "Download ok."))
 

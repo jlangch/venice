@@ -208,6 +208,8 @@
           E.g: 54%
 
           Options:
+            :caption txt
+                A caption text. Defaults to empty.
             :start-msg msg
                 A start message. Defaults to 'started'.
             :end-msg msg
@@ -220,6 +222,7 @@
                               :binary true
                               :user-agent "Mozilla"
                               :progress-fn (ansi/progress
+                                              :caption     "Download: "
                                               :start-msg   "Download started"
                                               :end-msg     "Download ok"
                                               :failed-msg  "Download failed"))
@@ -228,19 +231,20 @@
   progress [& options]
 
   (let [options    (apply hash-map options)
+        caption    (:caption options "")
         start-msg  (:start-msg options "started")
         end-msg    (:end-msg options "ok")
         failed-msg (:failed-msg options "failed")]
-    (fn progress-handler [percent size status])
+    (fn progress-handler [percent size status]
         (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
-              clean     (fn []     (draw (str/repeat " " (max 30 (count start-msg)))))
+              clean     (fn []     (draw (str/repeat " " (max 30 (count (str caption start-msg))))))
               overprint (fn [text] (do (clean) (draw text)))]
           (case status
             "start"    (print start-msg)
-            "progress" (overprint (str percent "%"))
+            "progress" (overprint (str caption percent "%"))
             "end"      (overprint (str end-msg "\n"))
             "failed"   (overprint (str failed-msg "\n"))
-                       (overprint (str "Invalid status '" status "'\n"))))))
+                       (overprint (str "Invalid status '" status "'\n")))))))
 
 
 (defn
@@ -255,6 +259,8 @@
           E.g: [#################        ]
 
           Options:
+            :caption txt
+                A caption text. Defaults to empty.
             :width val
                 The width of the bar in chars. Defaults to 25.
             :start-msg msg
@@ -269,6 +275,7 @@
                               :binary true
                               :user-agent "Mozilla"
                               :progress-fn (ansi/progress-bar
+                                              :caption     "Download: "
                                               :start-msg   "Download started"
                                               :end-msg     "Download ok"
                                               :failed-msg  "Download failed"))
@@ -277,17 +284,18 @@
   progress-bar [& options]
 
   (let [options    (apply hash-map options)
+        caption    (:caption options "")
         width      (min (max (:width options 25) 10) 100)
         start-msg  (:start-msg options "started")
         end-msg    (:end-msg options "ok")
         failed-msg (:failed-msg options "failed")]
     (fn progress-handler [percent size status]
       (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
-            clean     (fn []     (draw (str/repeat " " (max width (count start-msg)))))
+            clean     (fn []     (draw (str/repeat " " (max width (count (str caption start-msg))))))
             overprint (fn [text] (do (clean) (draw text)))
             bar       (fn [perc] (let [w1 (/ (* percent width) 100)
                                        w2 (- width w)]
-                                   (str "[" (str/repeat "#" w1) (str/repeat " " w2) "]")))]
+                                   (str caption "[" (str/repeat "#" w1) (str/repeat " " w2) "]")))]
         (case status
           "start"    (print start-msg)
           "progress" (overprint (bar percent))

@@ -98,7 +98,7 @@ public class CustomREPL {
 		
 		final Terminal terminal = builder
 									.encoding("UTF-8")
-									.type("xterm-256color")
+									//.type("xterm-256color")
 									.system(true)
 									.nativeSignals(true)
 									.signalHandler(createSignalHandler(mainThread))
