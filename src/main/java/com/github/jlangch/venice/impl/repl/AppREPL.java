@@ -101,33 +101,28 @@ public class AppREPL {
 									.type("xterm-256color")
 									.system(true)
 									.nativeSignals(true)
-									.signalHandler(new Terminal.SignalHandler() {
-										public void handle(final Signal signal) {
-											if (signal == Signal.INT) {
-												// ctrl-C stops infinite Venice loops
-												mainThread.interrupt();
-											}
-										}
-									 })
+									.signalHandler(createSignalHandler(mainThread))
 									.build();
  
-		final PrintStream ps_out = config.getColor("stdout") != null 
-										? new ReplPrintStream(
-												terminal, 
-												config.getColor("stdout"))
-										: System.out;
+		final PrintStream ps_out = createPrintStream("stdout", terminal, System.out);
 
-		final PrintStream ps_err = config.getColor("stderr") != null 
-										? new ReplPrintStream(
-												terminal, 
-												config.getColor("stderr"))
-										: System.out;
+		final PrintStream ps_err = createPrintStream("stderr", terminal, System.out);
 
 		final TerminalPrinter printer = new TerminalPrinter(config, terminal, false);
 		
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 		
 		final Env env = loadEnv(venice, cli, ps_out, ps_err);
+		
+
+		try {
+			printer.println("stdout", "loading file \"" + app.getPath() + "\"");
+			venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
+		}
+		catch(Exception ex) {
+			printer.printex("error", ex);
+		}
+
 		
 		final History history = new DefaultHistory();
 		
@@ -141,14 +136,7 @@ public class AppREPL {
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
-		try {
-			printer.println("stdout", "loading file \"" + app.getPath() + "\"");
-			venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
-		}
-		catch(Exception ex) {
-			printer.printex("error", ex);
-		}
-
+		
 		// REPL loop
 		while (true) {
 			resultHistory.mergeToEnv(env);
@@ -195,13 +183,37 @@ public class AppREPL {
 					 .setStderrPrintStream(ps_err);
 	}
 	
+	private PrintStream createPrintStream(
+			final String context,
+			final Terminal terminal,
+			final PrintStream defaultPS
+	) {
+		final String color = config.getColor(context);
+		return color != null ? new ReplPrintStream(terminal,color) : defaultPS;	
+	}
+	
+	private Terminal.SignalHandler createSignalHandler(final Thread mainThread) {
+		return new Terminal.SignalHandler() {
+			public void handle(final Signal signal) {
+				if (signal == Signal.INT) {
+					// ctrl-C stops infinite Venice loops
+					mainThread.interrupt();
+				}
+			}
+		 };
+	}
+	
+	
+	
+	private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";
+	private static final String DEFAULT_PROMPT_SECONDARY = "      | ";
 	
 
 	private final List<String> loadPaths;
 	private final File app;
 
-	private String prompt;
-	private String secondaryPrompt;
+	private String prompt = DEFAULT_PROMPT_PRIMARY;
+	private String secondaryPrompt  = DEFAULT_PROMPT_SECONDARY;
 	private Consumer<String> cmdHandler;
 	private ReplConfig config;
 	private IInterceptor interceptor;

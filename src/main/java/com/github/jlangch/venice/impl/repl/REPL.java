@@ -98,27 +98,12 @@ public class REPL {
 									.type("xterm-256color")
 									.system(true)
 									.nativeSignals(true)
-									.signalHandler(new Terminal.SignalHandler() {
-										public void handle(final Signal signal) {
-											if (signal == Signal.INT) {
-												// ctrl-C stops infinite Venice loops
-												mainThread.interrupt();
-											}
-										}
-									 })
+									.signalHandler(createSignalHandler(mainThread))
 									.build();
  
-		final PrintStream ps_out = config.getColor("stdout") != null 
-										? new ReplPrintStream(
-												terminal, 
-												config.getColor("stdout"))
-										: System.out;
+		final PrintStream ps_out = createPrintStream("stdout", terminal, System.out);
 
-		final PrintStream ps_err = config.getColor("stderr") != null 
-										? new ReplPrintStream(
-												terminal, 
-												config.getColor("stderr"))
-										: System.out;
+		final PrintStream ps_err = createPrintStream("stderr", terminal, System.out);
 
 		printer = new TerminalPrinter(config, terminal, false);
 		
@@ -126,6 +111,7 @@ public class REPL {
 		
 		Env env = loadEnv(cli, ps_out, ps_err);
 
+		
 		final ReplParser parser = new ReplParser(venice);
 		
 		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
@@ -503,6 +489,26 @@ public class REPL {
 		this.interceptor = interceptor; 
 		this.venice = new VeniceInterpreter(interceptor, loadPaths);
 		JavaInterop.register(interceptor);			
+	}
+	
+	private PrintStream createPrintStream(
+			final String context,
+			final Terminal terminal,
+			final PrintStream defaultPS
+	) {
+		final String color = config.getColor(context);
+		return color != null ? new ReplPrintStream(terminal,color) : defaultPS;	
+	}
+	
+	private Terminal.SignalHandler createSignalHandler(final Thread mainThread) {
+		return new Terminal.SignalHandler() {
+			public void handle(final Signal signal) {
+				if (signal == Signal.INT) {
+					// ctrl-C stops infinite Venice loops
+					mainThread.interrupt();
+				}
+			}
+		 };
 	}
 
 	
