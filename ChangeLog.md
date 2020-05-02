@@ -27,7 +27,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- added module `tput`
+- added module `tput` for terminal output on Linux and Mac OSX
+- added module `ansi` to use colors and cursor control on ANSI
+  terminals
 
 ### Changed
 
