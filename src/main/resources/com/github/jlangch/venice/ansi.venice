@@ -39,8 +39,8 @@
     :blink-slow         "[5m"
     :underline          "[4m"
     :underline-off      "[24m"
-    :inverse            "[7m"
-    :inverse-off        "[27m"
+    :reverse            "[7m"
+    :reverse-off        "[27m"
     :strikethrough      "[9m"
     :strikethrough-off  "[29m"
 
@@ -57,15 +57,15 @@
     :cyan    "[36m"
     :white   "[37m"
 
-    ;; bright 8 foreground colors
-    :bright-black   "[30m;1"
-    :bright-red     "[31m;1"
-    :bright-green   "[32m;1"
-    :bright-yellow  "[33m;1"
-    :bright-blue    "[34m;1"
-    :bright-magenta "[35m;1"
-    :bright-cyan    "[36m;1"
-    :bright-white   "[37m;1"
+    ;; bold 8 foreground colors
+    :bold-black   "[30;1m"
+    :bold-red     "[31;1m"
+    :bold-green   "[32;1m"
+    :bold-yellow  "[33;1m"
+    :bold-blue    "[34;1m"
+    :bold-magenta "[35;1m"
+    :bold-cyan    "[36;1m"
+    :bold-white   "[37;1m"
 
     ;; basic 8 background colors
     :bg-black   "[40m"
@@ -78,15 +78,15 @@
     :bg-white   "[47m"
     :bg-default "[49m"
 
-   ;; bright 8 background colors
-    :bg-bright-black   "[40m;1"
-    :bg-bright-red     "[41m;1"
-    :bg-bright-green   "[42m;1"
-    :bg-bright-yellow  "[43m;1"
-    :bg-bright-blue    "[44m;1"
-    :bg-bright-magenta "[45m;1"
-    :bg-bright-cyan    "[46m;1"
-    :bg-bright-white   "[47m;1"
+    ;; bold 8 background colors
+    :bg-bold-black   "[40;1m"
+    :bg-bold-red     "[41;1m"
+    :bg-bold-green   "[42;1m"
+    :bg-bold-yellow  "[43;1m"
+    :bg-bold-blue    "[44;1m"
+    :bg-bold-magenta "[45;1m"
+    :bg-bold-cyan    "[46;1m"
+    :bg-bold-white   "[47;1m"
 
   })
 
@@ -199,10 +199,9 @@
 (defn
   ^{ :arglists '("(progress & options)")
      :doc """
-          Returns a progress handler function that takes three args
+          Returns a progress handler function that takes two args
             [1] progress (0..100%)
-            [2] total bytes (may be -1 if unknown)
-            [3] status {:start :progress :end :failed}
+            [2] status {:start :progress :end :failed}
           that renders the progress as a percentage string.
 
           E.g: 54%
@@ -235,25 +234,29 @@
         start-msg  (:start-msg options "started")
         end-msg    (:end-msg options "ok")
         failed-msg (:failed-msg options "failed")]
-    (fn progress-handler [percent size status]
-        (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
-              clean     (fn []     (draw (str/repeat " " (max 30 (count (str caption start-msg))))))
+    (fn progress-handler [percent status]
+        (let [percent   (max 0 (min 100 percent))
+              draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
+              clean     (fn []     (draw (str/repeat " "
+                                                     (max (count start-msg)
+                                                          (count end-msg)
+                                                          (count failed-msg)
+                                                          (+ (count caption) 10)))))
               overprint (fn [text] (do (clean) (draw text)))]
           (case status
-            "start"    (print start-msg)
-            "progress" (overprint (str caption percent "%"))
-            "end"      (overprint (str end-msg "\n"))
-            "failed"   (overprint (str failed-msg "\n"))
-                       (overprint (str "Invalid status '" status "'\n")))))))
+            :start    (print start-msg)
+            :progress (overprint (str caption percent "%"))
+            :end      (overprint (str end-msg "\n"))
+            :failed   (overprint (str failed-msg "\n"))
+                      (overprint (str "Invalid status '" status "'\n")))))))
 
 
 (defn
   ^{ :arglists '("(progress-bar & options)")
      :doc """
-          Returns a progress handler function that takes three args
+          Returns a progress handler function that takes two args
             [1] progress (0..100%)
-            [2] total bytes (may be -1 if unknown)
-            [3] status {:start :progress :end :failed}
+            [2] status {:start :progress :end :failed}
           that renders the progress as a percentage bar.
 
           E.g: [#################        ]
@@ -289,16 +292,127 @@
         start-msg  (:start-msg options "started")
         end-msg    (:end-msg options "ok")
         failed-msg (:failed-msg options "failed")]
-    (fn progress-handler [percent size status]
-      (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
-            clean     (fn []     (draw (str/repeat " " (max width (count (str caption start-msg))))))
+    (fn progress-handler [percent status]
+      (let [percent   (max 0 (min 100 percent))
+            draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
+            clean     (fn []     (draw (str/repeat " "
+                                                   (max (count start-msg)
+                                                        (count end-msg)
+                                                        (count failed-msg)
+                                                        (+ (count caption) width 2)))))
             overprint (fn [text] (do (clean) (draw text)))
             bar       (fn [perc] (let [w1 (/ (* percent width) 100)
-                                       w2 (- width w)]
+                                       w2 (- width w1)]
                                    (str caption "[" (str/repeat "#" w1) (str/repeat " " w2) "]")))]
         (case status
-          "start"    (print start-msg)
-          "progress" (overprint (bar percent))
-          "end"      (overprint (str end-msg "\n"))
-          "failed"   (overprint (str failed-msg "\n"))
-                     (overprint (str "Invalid status '" status "'\n")))))))
+          :start    (print start-msg)
+          :progress (overprint (bar percent))
+          :end      (overprint (str end-msg "\n"))
+          :failed   (overprint (str failed-msg "\n"))
+                    (overprint (str "Invalid status '" status "'\n")))))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Demo
+;; -----------------------------------------------------------------------------
+
+(defn show-basic-colors []
+  (let [colors-fg [
+            :black :red     :green :yellow
+            :blue  :magenta :cyan  :white ]
+        colors-fg-bold [
+            :bold-black :bold-red     :bold-green :bold-yellow
+            :bold-blue  :bold-magenta :bold-cyan  :bold-white ]
+        colors-bg [
+            :bg-black :bg-red     :bg-green :bg-yellow
+            :bg-blue  :bg-magenta :bg-cyan  :bg-white ]
+        colors-bg-bold [
+            :bg-bold-black :bg-bold-red     :bg-bold-green :bg-bold-yellow
+            :bg-bold-blue  :bg-bold-magenta :bg-bold-cyan  :bg-bold-white ]
+        labels [ "A", "B", "C", "D", "E", "F", "G", "H"]]
+
+    (println "8 basic text and background colors")
+    (docoll #(print (ansi/style (str " " (first %) " ") (second %)))
+            (partition 2 (interleave labels colors-fg)))
+    (print (ansi/style "" :reset))
+    (println)
+
+    (docoll #(print (ansi/style (str " " (first %) " ") (second %)))
+            (partition 2 (interleave labels colors-bg)))
+    (print (ansi/style "" :reset))
+    (println)
+    (println)
+
+
+    (println "8 basic bold/bright text and background colors")
+    (docoll #(print (ansi/style (str " " (first %) " ") (second %)))
+            (partition 2 (interleave labels colors-fg-bold)))
+    (print (ansi/style "" :reset))
+    (println)
+
+    (docoll #(print (ansi/style (str " " (first %) " ") (second %)))
+            (partition 2 (interleave labels colors-bg-bold)))
+    (print (ansi/style "" :reset))
+    (println)))
+
+
+(defn show-all-text-colors []
+  (docoll (fn [line]
+            (docoll (fn [col]
+                      (print (ansi/style (str/format " %3s " (str col))
+                                          (ansi/fg-color col))))
+                      line)
+            (println))
+          (partition 16 (range 0 256)))
+
+  (print (ansi/style "" :reset))
+  (println))
+
+
+(defn show-all-background-colors []
+  (docoll (fn [line]
+            (docoll (fn [col]
+                      (print (ansi/style (str/format " %3s " (str col))
+                                          (ansi/bg-color col))))
+                      line)
+            (println))
+          (partition 16 (range 0 256)))
+
+  (print (ansi/style "" :reset))
+  (println))
+
+
+(defn show-decorations []
+  (print (ansi/style " bold " :bold))
+  (print (ansi/style " underline " :underline))
+  (print (ansi/style " reversed " :reverse))
+  (println)
+)
+
+
+(defn demo-progress []
+  (let [pg (ansi/progress
+               :caption     "Download: "
+               :start-msg   "Download started"
+               :end-msg     "Download ok"
+               :failed-msg  "Download failed")]
+
+    (println "Progress demo")
+    (pg 0 :start)
+    (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
+    (pg 100 :end)))
+
+
+(defn demo-progress-bar []
+  (let [pg (ansi/progress-bar
+               :caption     "Download: "
+               :width       25
+               :start-msg   "Download started"
+               :end-msg     "Download ok"
+               :failed-msg  "Download failed")]
+
+    (println "Progress demo")
+    (pg 0 :start)
+    (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
+    (pg 100 :end)))

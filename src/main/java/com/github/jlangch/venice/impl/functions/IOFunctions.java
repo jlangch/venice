@@ -1267,7 +1267,7 @@ public class IOFunctions {
 
 						final long contentLength = conn.getContentLengthLong();
 	
-						updateDownloadProgress(progressFn, 0L, contentLength, "start");
+						updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
 
 						try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
 							final ByteArrayOutputStream output = new ByteArrayOutputStream();							
@@ -1280,17 +1280,17 @@ public class IOFunctions {
 									output.write(buffer, 0, n);
 									total += n;
 
-									// progress: 0..99%
-									long progress = Math.max(0, Math.min(99, total * 100 / contentLength));
+									// progress: 0..100%
+									long progress = Math.max(0, Math.min(100, total * 100 / contentLength));
 
 									if (progress != progressLast) {
-										updateDownloadProgress(progressFn, progress, contentLength, "progress");
+										updateDownloadProgress(progressFn, progress, new VncKeyword("progress"));
 									}
 
 									progressLast = progress;
 								}
 
-								updateDownloadProgress(progressFn, 100L, contentLength, "end");
+								updateDownloadProgress(progressFn, 100L, new VncKeyword("end"));
 
 								byte data[] = output.toByteArray();
 
@@ -1304,7 +1304,7 @@ public class IOFunctions {
 						}
 					}
 					catch(Exception ex) {
-						updateDownloadProgress(progressFn, 0L, -1L, "failed");
+						updateDownloadProgress(progressFn, 0L, new VncKeyword("failed"));
 						throw ex;
 					}
 					finally {
@@ -1833,14 +1833,10 @@ public class IOFunctions {
 	private static void updateDownloadProgress(
 			final VncFunction fn,
 			final long percentage,
-			final long contentLength,
-			final String status
+			final VncKeyword status
 	) {
 		try {
-			fn.apply(VncTinyList.of(
-					new VncLong(percentage), 
-					new VncLong(contentLength),
-					new VncKeyword(status)));
+			fn.apply(VncTinyList.of(new VncLong(percentage), status));
 		}
 		catch(Exception ex) {
 			// do nothing
