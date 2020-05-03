@@ -149,8 +149,10 @@ public class SpecialFormsTest {
 				"   (with-out-str                  \n" +
 				"      (print x)                   \n" +
 				"      (binding [x 200]            \n" +
-				"        (print (str \"-\" x)))    \n" +
-				"      (print (str \"-\" x))))       ";
+				"        (print \"-\")             \n" +
+				"        (print x))                \n" +
+				"      (print \"-\")               \n" +
+				"      (print x)))                   ";
 				
 		assertEquals("100-200-100", venice.eval(script));					
 	}
@@ -168,21 +170,62 @@ public class SpecialFormsTest {
 				"   (with-out-str                      \n" +
 				"      (print alpha/x)                 \n" +
 				"      (binding [alpha/x 200]          \n" +
-				"        (print (str \"-\" alpha/x)))  \n" +
-				"      (print (str \"-\" alpha/x))))     ";
+				"        (print \"-\")                 \n" +
+				"        (print alpha/x))              \n" +
+				"      (print \"-\")                   \n" +
+				"      (print alpha/x)))                 ";
 				
 		assertEquals("100-200-100", venice.eval(script));					
 	}
+	
+	@Test
+	public void test_def_dynamic_future() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                          \n" +
+				"   (def-dynamic x 100)                       \n" +
+				"                                             \n" +
+				"   (with-out-str                             \n" +
+				"      (print x)                              \n" +
+				"      (print \"-\")                          \n" +
+				"      (let [f (future (fn []                 \n" +
+				"                        (print x)            \n" +
+				"                        (print \":\")        \n" +
+				"                        (binding [x 200]     \n" +
+				"                           (print x)         \n" +
+				"                           (print \";\"))    \n" +
+				"                        x))]                 \n" +
+				"        (print @f))))                          ";
+
+		assertEquals("100-100:200;100", venice.eval(script));					
+	}
 
 	@Test
-	public void test_def_dynamic_2() {
+	public void test_binding() {
 		final Venice venice = new Venice();
 			
 		final String script =
-				"(with-out-str                      \n" +
-				"   (binding [x 200] (print x)))      ";
+				"(with-out-str                \n" +
+				"   (binding [x 200]          \n" +
+				"      (print x)))              ";
 				
 		assertEquals("200", venice.eval(script));					
+	}
+
+	@Test
+	public void test_binding_nested() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(with-out-str                \n" +
+				"   (binding [x 200]          \n" +
+				"      (print x)              \n" +
+				"      (print \"-\")          \n" +
+				"      (binding [x 400]       \n" +
+				"         (print x))))          ";
+				
+		assertEquals("200-400", venice.eval(script));					
 	}
 
 	@Test
