@@ -250,7 +250,7 @@
             [2] status {:start :progress :end :failed}
           that renders the progress as a percentage string.
 
-          E.g: 54%
+          E.g: Download:  54%
 
           Options:
             :caption txt
@@ -303,7 +303,7 @@
             [2] status {:start :progress :end :failed}
           that renders the progress as a percentage bar.
 
-          E.g: [#################        ]
+          E.g: Download: [#################        ]
 
           Options:
             :caption txt
