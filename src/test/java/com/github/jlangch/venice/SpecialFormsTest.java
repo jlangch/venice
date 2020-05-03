@@ -188,17 +188,17 @@ public class SpecialFormsTest {
 				"                                             \n" +
 				"   (with-out-str                             \n" +
 				"      (print x)                              \n" +
-				"      (print \"-\")                          \n" +
+				"      (print \"-a-\")                        \n" +
 				"      (let [f (future (fn []                 \n" +
 				"                        (print x)            \n" +
-				"                        (print \":\")        \n" +
+				"                        (print \"-b-\")      \n" +
 				"                        (binding [x 200]     \n" +
 				"                           (print x)         \n" +
-				"                           (print \";\"))    \n" +
+				"                           (print \"-c-\"))  \n" +
 				"                        x))]                 \n" +
 				"        (print @f))))                          ";
 
-		assertEquals("100-100:200;100", venice.eval(script));					
+		assertEquals("100-a-100-b-200-c-100", venice.eval(script));					
 	}
 
 	@Test
