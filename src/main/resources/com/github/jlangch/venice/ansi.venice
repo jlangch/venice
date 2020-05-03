@@ -169,10 +169,10 @@
           Applies ANSI color and style to a text string.
           """
      :examples '(
-          """(println (ansi/style "foo" :blue))"""
-          """(println (ansi/style "foo" :blue :underline))"""
-          """(println (ansi/style "foo" :blue :bg-white :underline))"""
-          """(println (ansi/style "foo" (ansi/fg-color 21) (ansi/bg-color 221)) :underline)"""
+          """(println (ansi/style "foo" :green))"""
+          """(println (ansi/style "foo" :green :underline))"""
+          """(println (ansi/style "foo" :green :bg-yellow :underline))"""
+          """(println (ansi/style "foo" (ansi/fg-color 21) (ansi/bg-color 221) :underline))"""
         ) }
 
   style [text & styles]
@@ -188,14 +188,14 @@
           ANSI code.
           """
      :examples '(
-          """(println (ansi/ansi :blue) "foo")"""
-          """(println (ansi/ansi :underline) "foo")"""
-          """(println (ansi/ansi (ansi/fg-color 21)) "foo")"""
+          """(println (str (ansi/ansi :blue) "foo"))"""
+          """(println (str (ansi/ansi :underline) "foo"))"""
+          """(println (str (ansi/ansi (ansi/fg-color 33)) "foo"))"""
         ) }
 
   ansi [style]
 
-  (if *use-ansi*
+  (if ansi/*use-ansi*
     (if (string? style)
       (str "\u001b" style)
       (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES))))
@@ -214,12 +214,12 @@
           in the forms.
           """
      :examples '(
-          """(ansi/with-ansi (println (ansi/style "foo" :blue)))"""
+          """(ansi/with-ansi (println (ansi/style "foo" :green)))"""
         ) }
 
   with-ansi [& forms]
 
-  `(binding [*use-ansi* true] (do ~@forms)))
+  `(binding [ansi/*use-ansi* true] (do ~@forms)))
 
 
 (defmacro
@@ -230,12 +230,12 @@
           specified in the forms.
           """
      :examples '(
-          """(ansi/without-ansi (println (ansi/style "foo" :blue)))"""
+          """(ansi/without-ansi (println (ansi/style "foo" :green)))"""
         ) }
 
   without-ansi [& forms]
 
-  `(binding [*use-ansi* false] (do ~@forms)))
+  `(binding [ansi/*use-ansi* false] (do ~@forms)))
 
 
 ;; -----------------------------------------------------------------------------
@@ -323,6 +323,7 @@
                               :user-agent "Mozilla"
                               :progress-fn (ansi/progress-bar
                                               :caption     "Download: "
+                                              :width       25
                                               :start-msg   "Download started"
                                               :end-msg     "Download ok"
                                               :failed-msg  "Download failed"))
