@@ -312,7 +312,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
-					env.setGlobal(new DynamicVar(name, res));
+					env.setGlobalDynamic(name, res);
 					return name;
 				}
 
