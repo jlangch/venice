@@ -156,6 +156,25 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_def_dynamic_namespace() {
+		final Venice venice = new Venice();
+			
+		final String script =
+				"(do                                   \n" +
+				"   (ns alpha)                         \n" +
+				"                                      \n" +
+				"   (def-dynamic x 100)                \n" +
+				"                                      \n" +
+				"   (with-out-str                      \n" +
+				"      (print alpha/x)                 \n" +
+				"      (binding [alpha/x 200]          \n" +
+				"        (print (str \"-\" alpha/x)))  \n" +
+				"      (print (str \"-\" alpha/x))))     ";
+				
+		assertEquals("100-200-100", venice.eval(script));					
+	}
+
+	@Test
 	public void test_def_dynamic_2() {
 		final Venice venice = new Venice();
 			
