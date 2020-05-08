@@ -137,7 +137,7 @@ public class CoreFunctionsTest {
 		assertEquals("[100]", venice.eval("(str (assoc-in [] [0] 100))"));
 		assertEquals("[0 100]", venice.eval("(str (assoc-in [0] [1] 100))"));
 		assertEquals("[0 100]", venice.eval("(str (assoc-in [0 1] [1] 100))"));
-		assertEquals("[0 100]", venice.eval("(str (assoc-in [0 1] [5] 100))"));
+		assertEquals("[0 1 100]", venice.eval("(str (assoc-in [0 1] [5] 100))"));
 		assertEquals("[[0 1] [2 100]]", venice.eval("(str (assoc-in [[0 1] [2 3]] [1 1] 100))"));
 		assertEquals("[[0 1] [2 3 100]]", venice.eval("(str (assoc-in [[0 1] [2 3]] [1 2] 100))"));
 		
