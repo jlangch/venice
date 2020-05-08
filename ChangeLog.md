@@ -29,6 +29,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Fixed
+
+- fixed function 'print' to return always 'nil' instead of the print 
+  stream's class name
+
 
 
 ## [1.7.24] - 2020-05-08
