@@ -24,8 +24,10 @@ Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.githu
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
+#### Linux/Mac OSX
+
 Open a terminal, move to the directory the Venice JAR is located, and start 
-a REPL with `java -jar venice-1.7.25.jar -colors`
+a REPL:
 
 ```text
 foo> java -jar venice-1.7.25.jar -colors
@@ -34,7 +36,36 @@ foo> java -jar venice-1.7.25.jar -colors
 The REPL prompts for input:
 
 ```text
-foo> java -jar venice-1.7.25.jar -colors
+Venice REPL: V1.7.25
+Loading REPL config from repl.json...
+Type '!' for help.
+venice>
+```
+
+Type an expression like `(+ 1 1)` followed by a `<CR>`
+
+```text
+venice> (+ 1 1)
+=> 2
+venice>
+```
+
+
+#### Windows
+
+On Windows an additional 'jansi' library is required. Download the libary from
+Maven [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar).
+
+Open a terminal, move to the directory the Venice JAR is located, and start 
+a REPL:
+
+```text
+foo> java -cp venice-1.7.25.jar;jansi-1.18.jar com.github.jlangch.venice.Launcher -colors
+```
+
+The REPL prompts for input:
+
+```text
 Venice REPL: V1.7.25
 Loading REPL config from repl.json...
 Type '!' for help.
