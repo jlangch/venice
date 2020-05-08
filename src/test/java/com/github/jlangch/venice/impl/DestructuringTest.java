@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -125,7 +124,25 @@ public class DestructuringTest {
 		assertEquals(Constants.Nil, bindings.get(0).val);
 		
 		assertEquals("y", bindings.get(1).sym.getName());
-		assertTrue(((VncList)bindings.get(1).val).isEmpty());
+		assertEquals(Constants.Nil, bindings.get(1).val);
+	}
+
+	@Test
+	public void test_sequential_multiple_empty_3() {
+		// [[x & y] [10]]
+
+		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
+		final VncVal bindVal = VncList.of(new VncLong(10));
+		
+		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+
+		assertEquals(2, bindings.size());
+		
+		assertEquals("x", bindings.get(0).sym.getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		
+		assertEquals("y", bindings.get(1).sym.getName());
+		assertEquals(Constants.Nil, bindings.get(1).val);
 	}
 	
 	@Test
@@ -271,7 +288,7 @@ public class DestructuringTest {
 		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
 		
 		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals(0, ((VncList)bindings.get(2).val).size());
+		assertEquals(Constants.Nil, bindings.get(2).val);
 	}
 	
 	@Test
@@ -691,7 +708,7 @@ public class DestructuringTest {
 		assertEquals("3", venice.eval("(str (let [[ _ _ c ] '(1 2 3)] c)))"));
 
 		assertEquals("[1 2 (3 4 5)]", venice.eval("(str (let [[a b & c] '(1 2 3 4 5)] [a b c]))"));
-		assertEquals("[1 2 ()]", venice.eval("(str (let [[a b & c] '(1 2)] [a b c]))"));
+		assertEquals("[1 2 nil]", venice.eval("(str (let [[a b & c] '(1 2)] [a b c]))"));
 		assertEquals("(1 2 3 4 5)", venice.eval("(str (let [[& a] '(1 2 3 4 5)] a))"));
 	}
 }

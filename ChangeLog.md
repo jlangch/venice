@@ -31,6 +31,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - added module `ansi` to use colors and cursor control on ANSI
   terminals
 
+### Fixed
+
+- sequential destructuring to return `nil` on empty varargs.
+  E.g.: `(let [[a b & c] '(1 2)] [a b c])` c must be `nil` and not an empty list
+
 ### Changed
 
 - function `io/download` to accept a progress function, a connection timeout, 

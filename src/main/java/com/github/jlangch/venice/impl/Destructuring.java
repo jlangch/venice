@@ -150,6 +150,8 @@ public class Destructuring {
 		// [[x y] [10 20]]
 		// [[x _ y _ z] [10 20 30 40 50]]
 		// [[x y & z] [10 20 30 40 50]]
+		// [[x y & z] [10 20]]   => x=10, y=20, z=nil
+		// [[x y & z] [10]]      => x=10, y=nil, z=nil
 		// [[x y :as all] [10 20 30 40 50]]
 		// [[x y & z :as all] [10 20 30 40 50]]
 		
@@ -172,7 +174,7 @@ public class Destructuring {
 					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
 					final VncVal val = valIdx < values.size() 
 											? ((VncSequence)bindVal).slice(valIdx) 
-											: VncTinyList.empty();
+											: Nil;
 					bindings.add(new Binding(sym, val));
 					symIdx += 2; 
 					valIdx = values.size(); // all values read
