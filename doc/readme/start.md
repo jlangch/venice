@@ -24,7 +24,7 @@ Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.githu
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
-#### Linux/Mac OSX
+#### 3.a Linux/Mac OSX
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 a REPL:
@@ -51,7 +51,7 @@ venice>
 ```
 
 
-#### Windows
+#### 3.b Windows
 
 On Windows the 'jansi' library is required. Download the libary from
 Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar)
