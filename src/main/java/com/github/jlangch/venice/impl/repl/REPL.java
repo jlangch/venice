@@ -250,6 +250,9 @@ public class REPL {
 		else if (cmd.equals("config")) {
 			handleConfigCommand();
 		}
+		else if (cmd.equals("launcher")) {
+			handleLauncherCommand();
+		}
 		else if (cmd.equals("env")) {
 			handleEnvCommand(new String[0], env);
 		}
@@ -296,6 +299,15 @@ public class REPL {
 		printer.println("stdout", "in the REPL's working directory:");
 		printer.println();
 		printer.println("stdout", ReplConfig.getRawClasspathConfig());
+	}
+
+	private void handleLauncherCommand() {
+		final String name = ReplConfig.getRawClasspathLauncherName();
+		
+		printer.println("stdout", "Sample REPL launcher script. Save it as '" + name + "'");
+		printer.println("stdout", "in the REPL's working directory:");
+		printer.println();
+		printer.println("stdout", ReplConfig.getRawClasspathLauncher());
 	}
 
 	private void handleEnvCommand(

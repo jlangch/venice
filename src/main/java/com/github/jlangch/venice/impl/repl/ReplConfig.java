@@ -132,6 +132,15 @@ public class ReplConfig {
 						.getResourceAsString("UTF-8");
 	}
 
+	public static String getRawClasspathLauncherName() {
+		return System.getProperty("os.name").startsWith("Windows") ? "repl.bat" : "repl.sh";
+	}
+
+	public static String getRawClasspathLauncher() {
+		return new ClassPathResource(getVeniceBasePath() + getRawClasspathLauncherName())
+						.getResourceAsString("UTF-8");
+	}
+
 	private static JsonObject loadJsonConfig() throws Exception {
 		final File fileJson = new File("repl.json");
 
