@@ -5,7 +5,7 @@
 # --home
 #    |
 #    +-- libs
-#    |    +-- venice-1.7.24.jar
+#    |    +-- venice-1.7.25.jar
 #    |
 #    +-- scripts
 #    |    +-- script-1.venice
