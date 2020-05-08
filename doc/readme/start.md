@@ -53,8 +53,8 @@ venice>
 
 #### Windows
 
-On Windows an additional 'jansi' library is required. Download the libary from
-Maven [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar).
+On Windows the 'jansi' library is required. Download the libary from
+Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar)
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 a REPL:
