@@ -856,10 +856,11 @@
   ([x] (when-not (instance? :java.io.PrintStream x)
          (. *out* :append (str (coalesce x "nil")))
          nil))
-  ([& xs] (if (instance? :java.io.PrintStream (first xs))
-            (. (first xs) :append (str/join " " (map #(str (coalesce % "nil")) (rest xs))))
-            (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs)))
-          nil)))
+  ([& xs] (do
+            (if (instance? :java.io.PrintStream (first xs))
+              (. (first xs) :append (str/join " " (map #(str (coalesce % "nil")) (rest xs))))
+              (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))))
+            nil)))
 
 
 (defn
