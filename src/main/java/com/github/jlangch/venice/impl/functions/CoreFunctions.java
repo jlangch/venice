@@ -2588,6 +2588,45 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction dissoc_in =
+		new VncFunction(
+				"dissoc-in",
+				VncFunction
+					.meta()
+					.arglists("(dissoc-in m ks)")
+					.doc(
+						"Dissociates an entrye in a nested associative structure, where ks is a " +
+						"sequence of keys and returns a new nested structure.")
+					.examples(
+						"(do                                               \n" +
+						"  (def users [ {:name \"James\" :age 26}          \n" +
+						"               {:name \"John\" :age 43} ] )       \n" +
+						"  (dissoc-in users [1]))                            ",
+						"(do                                               \n" +
+						"  (def users [ {:name \"James\" :age 26}          \n" +
+						"               {:name \"John\" :age 43} ] )       \n" +
+						"  (dissoc-in users [1 :age]))                       ")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("dissoc-in", args, 2);
+
+				final VncVal coll = args.first();
+				final VncSequence keys = Coerce.toVncSequence(args.second());
+
+				if (keys.size() == 0) {
+					return coll;
+				}
+				else if (keys.size() == 1) {
+					return dissoc.applyOf(coll, keys.first());
+				}
+				else {
+					return update_in.applyOf(coll, keys.butlast(), dissoc, keys.last());
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction update_in =
 		new VncFunction(
@@ -2604,7 +2643,7 @@ public class CoreFunctions {
 					.examples(
 						"(do                                               \n" +
 						"  (def users [ {:name \"James\" :age 26}          \n" +
-						"               {:name \"John\" :age 43}] )        \n" +
+						"               {:name \"John\" :age 43} ] )       \n" +
 						"  (update-in users [1 :age] inc))                   ",
 						"(update-in {:a 12} [:a] / 4)")
 					.build()
@@ -6304,6 +6343,7 @@ public class CoreFunctions {
 				.add(assoc_in)
 				.add(dissoc)
 				.add(dissoc_BANG)
+				.add(dissoc_in)
 				.add(contains_Q)
 				.add(not_contains_Q)
 				.add(find)

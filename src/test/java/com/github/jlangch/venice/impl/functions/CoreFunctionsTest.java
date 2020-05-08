@@ -752,6 +752,35 @@ public class CoreFunctionsTest {
 
 		assertEquals("{:a 1 :c 3}", venice.eval("(str (dissoc! (mutable-map :a 1 :b 2 :c 3) :b)))"));
 	}
+	
+	@Test
+	public void test_dissoc_in() {
+		final Venice venice = new Venice();
+		
+		// vectors
+		assertEquals(
+				"[1 3]", 
+				venice.eval("(pr-str (dissoc-in [1 2 3] [1]))"));
+
+		assertEquals(
+				"[1 [4 5] 3]", 
+				venice.eval("(pr-str (dissoc-in [1 [4 5 6] 3] [1 2]))"));
+
+		assertEquals(
+			"[{:name \"James\" :age 26}]", 
+			venice.eval("(pr-str (dissoc-in [ (ordered-map :name \"James\" :age 26)   \n" +
+					    "                     (ordered-map :name \"John\"  :age 43) ] \n" +
+					    "                   [1]))                                        "));
+
+		assertEquals(
+				"[{:name \"James\" :age 26} {:name \"John\"}]", 
+				venice.eval("(pr-str (dissoc-in [ (ordered-map :name \"James\" :age 26)   \n" +
+						    "                     (ordered-map :name \"John\"  :age 43) ] \n" +
+						    "                   [1 :age]))                                        "));
+
+		// maps
+		assertEquals("{:a 3}", venice.eval("(pr-str (update-in {:a 12} [:a] / 4))"));
+	}
 
 	@Test
 	public void test_double() {
