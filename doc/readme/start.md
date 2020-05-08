@@ -24,7 +24,7 @@ Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.githu
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
-#### 3.a Linux/Mac OSX
+#### 3.a Linux / MacOSX
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 a REPL:
