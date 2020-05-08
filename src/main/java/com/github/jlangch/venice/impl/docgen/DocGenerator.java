@@ -544,6 +544,7 @@ public class DocGenerator {
 		vec_nested.addItem(getDocItem("get-in"));
 		vec_nested.addItem(getDocItem("assoc-in"));
 		vec_nested.addItem(getDocItem("update-in"));
+		vec_nested.addItem(getDocItem("dissoc-in"));
 			
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
@@ -638,6 +639,7 @@ public class DocGenerator {
 		map_nested.addItem(getDocItem("get-in"));
 		map_nested.addItem(getDocItem("assoc-in"));
 		map_nested.addItem(getDocItem("update-in"));
+		map_nested.addItem(getDocItem("dissoc-in"));
 		
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);
