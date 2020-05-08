@@ -19,23 +19,23 @@ Java can be downloaded from
 
 ### 2. Get the Venice JAR file
 
-Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.7.23/jar)
+Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.7.24/jar)
 
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
-a REPL with `java -jar venice-1.7.23.jar -colors`
+a REPL with `java -jar venice-1.7.24.jar -colors`
 
 ```text
-foo> java -jar venice-1.7.23.jar -colors
+foo> java -jar venice-1.7.24.jar -colors
 ```
 
 The REPL prompts for input:
 
 ```text
-foo> java -jar venice-1.7.23.jar -colors
-Venice REPL: V1.7.23
+foo> java -jar venice-1.7.24.jar -colors
+Venice REPL: V1.7.24
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
