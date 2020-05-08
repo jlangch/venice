@@ -30,11 +30,14 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - added module `tput` for terminal output on Linux and Mac OSX
 - added module `ansi` to use colors and cursor control on ANSI
   terminals
+- added function `update-in`
 
 ### Fixed
 
 - sequential destructuring to return `nil` on empty varargs.
   E.g.: `(let [[a b & c] '(1 2)] [a b c])` c must be `nil` and not an empty list
+- an edge case (nil collection) with function `apply`. `(apply + 1 2 nil)` is
+  equal to `(apply + 1 2 [])`.
 
 ### Changed
 

@@ -75,8 +75,13 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 
 	@Override
-	public abstract VncVal apply(VncList args);
+	public abstract VncVal apply(final VncList args);
 
+	public VncVal applyOf(final VncVal... mvs) {
+		return apply(VncTinyList.of(mvs));
+	}
+
+	
 	public void setNamespace(final String ns) { 
 		this.fnMeta.set(MetaUtil.setNamespace(fnMeta.get(), ns));
 		this.ns = ns;

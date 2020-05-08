@@ -2588,6 +2588,141 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+
+	public static VncFunction update_in =
+		new VncFunction(
+				"update-in",
+				VncFunction
+					.meta()
+					.arglists("(update-in [m ks f & args])")
+					.doc(
+						"Updates' a value in a nested associative structure, where ks is a " + 
+						"sequence of keys and f is a function that will take the old value " + 
+						"and any supplied args and return the new value, and returns a new " + 
+						"nested structure.  If any levels do not exist, hash-maps will be " + 
+						"created.")
+					.examples(
+						"(do                                               \n" +
+						"  (def users [ {:name \"James\" :age 26}          \n" +
+						"               {:name \"John\" :age 43}] )        \n" +
+						"  (update-in users [1 :age] inc))                   ",
+						"(update-in {:a 12} [:a] / 4)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("update-in", args, 3);
+
+				final VncFunction up = new VncFunction("up", this.getMeta()) {
+					public VncVal apply(final VncList args) {
+						final VncVal m_ = args.first();
+						final VncVal k_ = Coerce.toVncSequence(args.second()).first();
+						final VncSequence ks_ = Coerce.toVncSequence(args.second()).rest();
+						final VncFunction f_ = Coerce.toVncFunction(args.third());
+						final VncVal args_ = args.slice(3);
+						
+						if (!ks_.isEmpty()) {
+							return assoc.applyOf(
+									m_, 
+									k_, 
+									apply.applyOf(
+										this,
+										get.applyOf(m_, k_),
+										ks_,
+										f_,
+										args_));
+						}
+						else {
+							return assoc.applyOf(
+									m_, 
+									k_, 
+									apply.applyOf(
+										f_,
+										get.applyOf(m_, k_),
+										args_));
+						}
+					}
+					
+					private static final long serialVersionUID = -1L;
+				};
+				
+				return up.apply(args);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction get_in =
+		new VncFunction(
+				"get-in",
+				VncFunction
+					.meta()
+					.arglists("(get-in m ks)", "(get-in m ks not-found)")
+					.doc(
+						"Returns the value in a nested associative structure, " +
+						"where ks is a sequence of keys. Returns nil if the key " +
+						"is not present, or the not-found value if supplied.")
+					.examples(
+						"(get-in {:a 1 :b {:c 2 :d 3}} [:b :c])",
+						"(get-in [:a :b :c] [0])",
+						"(get-in [:a :b [:c :d :e]] [2 1])",
+						"(get-in {:a 1 :b {:c [4 5 6]}} [:b :c 1])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("get-in", args, 2, 3);
+		
+				VncCollection coll = Coerce.toVncCollection(args.first());
+				VncSequence keys = Coerce.toVncSequence(args.second());
+				VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
+		
+				while(!keys.isEmpty()) {
+					final VncVal key = keys.first();
+					keys = keys.rest();
+		
+					if (Types.isVncMap(coll)) {
+						final VncVal val = ((VncMap)coll).get(key);
+						if (val == Nil) {
+							return key_not_found;
+						}
+						else if (keys.isEmpty()) {
+							return val;
+						}
+						else if (Types.isVncCollection(val)) {
+							coll = (VncCollection)val;
+						}
+						else {
+							return key_not_found;
+						}
+					}
+					else {
+						if (Types.isVncLong(key)) {
+							final int index = ((VncLong)key).getValue().intValue();
+							final VncVal val = ((VncSequence)coll).nthOrDefault(index, Nil);
+							if (val == Nil) {
+								return key_not_found;
+							}
+							else if (keys.isEmpty()) {
+								return val;
+							}
+							else if (Types.isVncCollection(val)) {
+								coll = (VncCollection)val;
+							}
+							else {
+								return key_not_found;
+							}
+						}
+						else {
+							return key_not_found;
+						}
+					}
+				}
+		
+				return key_not_found;
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction dissoc =
 		new VncFunction(
 				"dissoc",
@@ -2756,77 +2891,6 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction get_in =
-		new VncFunction(
-				"get-in",
-				VncFunction
-					.meta()
-					.arglists("(get-in m ks)", "(get-in m ks not-found)")
-					.doc(
-						"Returns the value in a nested associative structure, " +
-						"where ks is a sequence of keys. Returns nil if the key " +
-						"is not present, or the not-found value if supplied.")
-					.examples(
-						"(get-in {:a 1 :b {:c 2 :d 3}} [:b :c])",
-						"(get-in [:a :b :c] [0])",
-						"(get-in [:a :b [:c :d :e]] [2 1])",
-						"(get-in {:a 1 :b {:c [4 5 6]}} [:b :c 1])")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("get-in", args, 2, 3);
-
-				VncCollection coll = Coerce.toVncCollection(args.first());
-				VncSequence keys = Coerce.toVncSequence(args.second());
-				VncVal key_not_found = (args.size() == 3) ? args.nth(2) : Nil;
-
-				while(!keys.isEmpty()) {
-					final VncVal key = keys.first();
-					keys = keys.rest();
-
-					if (Types.isVncMap(coll)) {
-						final VncVal val = ((VncMap)coll).get(key);
-						if (val == Nil) {
-							return key_not_found;
-						}
-						else if (keys.isEmpty()) {
-							return val;
-						}
-						else if (Types.isVncCollection(val)) {
-							coll = (VncCollection)val;
-						}
-						else {
-							return key_not_found;
-						}
-					}
-					else {
-						if (Types.isVncLong(key)) {
-							final int index = ((VncLong)key).getValue().intValue();
-							final VncVal val = ((VncSequence)coll).nthOrDefault(index, Nil);
-							if (val == Nil) {
-								return key_not_found;
-							}
-							else if (keys.isEmpty()) {
-								return val;
-							}
-							else if (Types.isVncCollection(val)) {
-								coll = (VncCollection)val;
-							}
-							else {
-								return key_not_found;
-							}
-						}
-						else {
-							return key_not_found;
-						}
-					}
-				}
-
-				return key_not_found;
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
 
 	public static VncFunction find =
 		new VncFunction(
@@ -5206,7 +5270,8 @@ public class CoreFunctions {
 					.examples(
 						"(apply + [1 2 3])",
 						"(apply + 1 2 [3 4 5])",
-						"(apply str [1 2 3 4 5])")
+						"(apply str [1 2 3 4 5])",
+						"(apply inc [1])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5214,13 +5279,9 @@ public class CoreFunctions {
 				final VncList fn_args = args.slice(1,args.size()-1);
 
 				final VncVal coll = args.last();
-				if (coll == Nil) {
-					return fn.apply(fn_args.addAtEnd(Nil));
-				}
-				else {
-					final VncSequence tailArgs = Coerce.toVncSequence(args.last());
-					return fn.apply(fn_args.addAllAtEnd(tailArgs));
-				}
+				return coll == Nil
+						? fn.apply(fn_args)
+						: fn.apply(fn_args.addAllAtEnd(Coerce.toVncSequence(coll)));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -6255,6 +6316,7 @@ public class CoreFunctions {
 				.add(entries)
 				.add(update)
 				.add(update_BANG)
+				.add(update_in)
 				.add(subvec)
 				.add(empty)
 

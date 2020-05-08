@@ -535,11 +535,15 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("take-while"));
 		vec_modify.addItem(getDocItem("drop"));
 		vec_modify.addItem(getDocItem("drop-while"));
-		vec_modify.addItem(getDocItem("assoc-in"));
-		vec_modify.addItem(getDocItem("get-in"));
 		vec_modify.addItem(getDocItem("update"));
 		vec_modify.addItem(getDocItem("update!"));
 		vec_modify.addItem(getDocItem("split-with"));
+		
+		final DocSection vec_nested = new DocSection("Nested");
+		vectors.addSection(vec_nested);
+		vec_nested.addItem(getDocItem("get-in"));
+		vec_nested.addItem(getDocItem("assoc-in"));
+		vec_nested.addItem(getDocItem("update-in"));
 			
 		final DocSection vec_test = new DocSection("Test");
 		vectors.addSection(vec_test);
@@ -615,8 +619,6 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("conj"));
 		map_modify.addItem(getDocItem("assoc"));
 		map_modify.addItem(getDocItem("assoc!"));
-		map_modify.addItem(getDocItem("assoc-in"));
-		map_modify.addItem(getDocItem("get-in"));
 		map_modify.addItem(getDocItem("update"));
 		map_modify.addItem(getDocItem("update!"));
 		map_modify.addItem(getDocItem("dissoc"));
@@ -630,6 +632,12 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("merge"));
 		map_modify.addItem(getDocItem("merge-with"));
 		map_modify.addItem(getDocItem("map-invert"));
+		
+		final DocSection map_nested = new DocSection("Nested");
+		maps.addSection(map_nested);
+		map_nested.addItem(getDocItem("get-in"));
+		map_nested.addItem(getDocItem("assoc-in"));
+		map_nested.addItem(getDocItem("update-in"));
 		
 		final DocSection map_test = new DocSection("Test");
 		maps.addSection(map_test);

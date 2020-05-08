@@ -86,8 +86,12 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(12), venice.eval("(apply + [3 4 5])"));
 		
 		assertEquals(Long.valueOf(10), venice.eval("(apply + 1 2 [3 4]))"));
-	
+		assertEquals(Long.valueOf(3), venice.eval("(apply + 1 2 []))"));
+		assertEquals(Long.valueOf(3), venice.eval("(apply + 1 2 nil))"));
+
 		assertEquals(Long.valueOf(3), venice.eval("(apply + '(1 2))"));
+
+		assertEquals(Long.valueOf(2), venice.eval("(apply inc [1])"));
 	}
 	
 	@Test
@@ -3244,6 +3248,22 @@ public class CoreFunctionsTest {
 		assertEquals("{:a 1 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 1)))"));
 		assertEquals("{:a 3 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 3)))"));
 		assertEquals("{:a 4 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] (+ x 4))))"));		
+	}
+	
+	@Test
+	public void test_update_in() {
+		final Venice venice = new Venice();
+		
+		// vectors
+		assertEquals(
+			"[{:name \"James\" :age 26} {:name \"John\" :age 44}]", 
+			venice.eval("(pr-str (update-in [ (ordered-map :name \"James\" :age 26)   \n" +
+					    "                     (ordered-map :name \"John\"  :age 43) ] \n" +
+					    "                   [1 :age]                                  \n" +
+					    "                   inc))                                       "));
+		
+		// maps
+		assertEquals("{:a 3}", venice.eval("(pr-str (update-in {:a 12} [:a] / 4))"));
 	}
 	
 	@Test
