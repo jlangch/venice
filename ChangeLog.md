@@ -23,14 +23,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.7.25] - 2020-05-xx
-
-### Added
-
-- ...
+## [1.7.25] - 2020-05-08
 
 ### Fixed
 
+- fixed REPL on Windows to load the 'jansi' library 
 - fixed function 'print' to return always 'nil' instead of the print 
   stream's class name
 
