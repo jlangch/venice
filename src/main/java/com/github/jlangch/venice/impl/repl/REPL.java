@@ -39,6 +39,7 @@ import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
@@ -60,7 +61,6 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
-
 
 public class REPL {
 	
@@ -89,21 +89,27 @@ public class REPL {
 		final String secondaryPrompt = config.getSecondaryPrompt();
 		final String resultPrefix = config.getResultPrefix();
 
-		final TerminalBuilder builder = TerminalBuilder.builder();
-		
 		final Thread mainThread = Thread.currentThread();
 		
-		final Terminal terminal = builder
-									.encoding("UTF-8")
-									//.type("xterm-256color")
-									.system(true)
-									.nativeSignals(true)
-									.signalHandler(createSignalHandler(mainThread))
-									.build();
- 
-		final PrintStream ps_out = createPrintStream("stdout", terminal, System.out);
+		final Terminal terminal = OSUtils.IS_WINDOWS
+									? TerminalBuilder
+										.builder()
+										.streams(System.in, System.out)
+										.system(true)
+										.jansi(true)
+										.build()
+									: TerminalBuilder
+										.builder()
+										.streams(System.in, System.out)
+										.system(true)
+										.encoding("UTF-8")
+										.build();
+	 
+		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
+       
+		final PrintStream ps_out = createPrintStream("stdout", terminal);
 
-		final PrintStream ps_err = createPrintStream("stderr", terminal, System.out);
+		final PrintStream ps_err = createPrintStream("stderr", terminal);
 
 		printer = new TerminalPrinter(config, terminal, false);
 		
@@ -126,6 +132,8 @@ public class REPL {
 									.completer(completer)
 									.parser(parser)
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
+									.variable(LineReader.INDENTATION, 2)
+				                    .variable(LineReader.LIST_MAX, 100)
 									.build();
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
@@ -503,26 +511,11 @@ public class REPL {
 		JavaInterop.register(interceptor);			
 	}
 	
-	private PrintStream createPrintStream(
-			final String context,
-			final Terminal terminal,
-			final PrintStream defaultPS
-	) {
-		final String color = config.getColor(context);
-		return color != null ? new ReplPrintStream(terminal,color) : defaultPS;	
+	private PrintStream createPrintStream(final String context, final Terminal terminal) {
+		return new ReplPrintStream(terminal, config.getColor(context));	
 	}
 	
-	private Terminal.SignalHandler createSignalHandler(final Thread mainThread) {
-		return new Terminal.SignalHandler() {
-			public void handle(final Signal signal) {
-				if (signal == Signal.INT) {
-					// ctrl-C stops infinite Venice loops
-					mainThread.interrupt();
-				}
-			}
-		 };
-	}
-
+	
 	
 	private final static String HELP =
 			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
