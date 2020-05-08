@@ -91,6 +91,21 @@ public class CustomREPL {
 	}
 
 	private void repl(final CommandLineArgs cli) throws Exception {
+		if (OSUtils.IS_WINDOWS) {
+			// check if jansi library is available
+			try {
+				Class.forName("org.fusesource.jansi.Ansi.class", false, getClass().getClassLoader());
+			}
+			catch(ClassNotFoundException ex) {
+				System.out.print(
+						"--------------------------------------------------------------------\n" +
+						"The Venice REPL requires the jansi library on Windows.              \n" +
+						"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
+						"from a Maven repo and put it on the classpath.                      \n" +
+						"--------------------------------------------------------------------\n");
+			}
+		}
+
 		setPrompt(config.getPrompt(), config.getSecondaryPrompt());
 
 		final Thread mainThread = Thread.currentThread();
