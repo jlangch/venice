@@ -157,6 +157,8 @@ shadowJar {
 	exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
 	exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
    
+	mergeServiceFiles()
+   
     archiveFileName = "venice-${project.version}.jar"
 }
 
