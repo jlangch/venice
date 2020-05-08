@@ -759,8 +759,16 @@ public class CoreFunctionsTest {
 		
 		// vectors
 		assertEquals(
+				"[1 2 3]", 
+				venice.eval("(pr-str (dissoc-in [1 2 3] []))"));
+
+		assertEquals(
 				"[1 3]", 
 				venice.eval("(pr-str (dissoc-in [1 2 3] [1]))"));
+
+		assertEquals(
+				"[1 2 3]", 
+				venice.eval("(pr-str (dissoc-in [1 2 3] [4]))"));
 
 		assertEquals(
 				"[1 [4 5] 3]", 
@@ -779,7 +787,19 @@ public class CoreFunctionsTest {
 						    "                   [1 :age]))                                        "));
 
 		// maps
-		assertEquals("{:a 3}", venice.eval("(pr-str (update-in {:a 12} [:a] / 4))"));
+		assertEquals("{:a 12 :b 5}", venice.eval("(pr-str (dissoc-in {:a 12 :b 5} []))"));
+		
+		assertEquals("{:b 5}", venice.eval("(pr-str (dissoc-in {:a 12 :b 5} [:a]))"));
+		
+		assertEquals("{:b 5}", venice.eval("(pr-str (dissoc-in {:a {:x 12} :b 5} [:a]))"));
+		
+		assertEquals("{:a {:y 14} :b 5}", venice.eval("(pr-str (dissoc-in {:a {:x 12 :y 14} :b 5} [:a :x]))"));
+		
+		assertEquals("{:a [1 3] :b 5}", venice.eval("(pr-str (dissoc-in {:a [1 2 3] :b 5} [:a 1]))"));
+		
+		assertEquals("{:a {} :b 5}", venice.eval("(pr-str (dissoc-in {:a {:x 12} :b 5} [:a :x]))"));
+		
+		assertEquals("{:a 12 :b 5}", venice.eval("(pr-str (dissoc-in {:a 12 :b 5} [:c]))"));
 	}
 
 	@Test
