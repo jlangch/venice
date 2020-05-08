@@ -137,6 +137,7 @@ public class CoreFunctionsTest {
 		assertEquals("[100]", venice.eval("(str (assoc-in [] [0] 100))"));
 		assertEquals("[0 100]", venice.eval("(str (assoc-in [0] [1] 100))"));
 		assertEquals("[0 100]", venice.eval("(str (assoc-in [0 1] [1] 100))"));
+		assertEquals("[0 100]", venice.eval("(str (assoc-in [0 1] [5] 100))"));
 		assertEquals("[[0 1] [2 100]]", venice.eval("(str (assoc-in [[0 1] [2 3]] [1 1] 100))"));
 		assertEquals("[[0 1] [2 3 100]]", venice.eval("(str (assoc-in [[0 1] [2 3]] [1 2] 100))"));
 		
@@ -3304,6 +3305,10 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 		
 		// vectors
+		assertEquals("[2]", venice.eval("(str (update-in [1] [0] inc))"));
+		assertEquals("[1 2 [4 4] 5]", venice.eval("(str (update-in [1 2 [3 4] 5] [2 0] inc))"));
+		assertEquals("[1 2 {:a 4 :b 4} 5]", venice.eval("(str (update-in [1 2 {:a 3 :b 4} 5] [2 :a] inc))"));
+
 		assertEquals(
 			"[{:name \"James\" :age 26} {:name \"John\" :age 44}]", 
 			venice.eval("(pr-str (update-in [ (ordered-map :name \"James\" :age 26)   \n" +
