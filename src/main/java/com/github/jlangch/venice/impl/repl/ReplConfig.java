@@ -71,20 +71,23 @@ public class ReplConfig {
 			config.put("secondary-prompt", (String)jsonObj.get("secondary-prompt"));
 			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
 
-			config.put("jline-loglevel", (String)jsonObj.get("jline-loglevel"));
-
-			JsonObject colObj = (JsonObject)jsonObj.get("colors");
-			if (colObj != null) {
+			JsonObject obj = (JsonObject)jsonObj.get("colors");
+			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
-					config.put("colors." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
+					config.put("colors." + cname, StringUtil.emptyToNull((String)obj.get(cname)));
 				}
 			}
 
-			colObj = (JsonObject)jsonObj.get("colors-darkmode");
-			if (colObj != null) {
+			obj = (JsonObject)jsonObj.get("colors-darkmode");
+			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
-					config.put("colors-darkmode." + cname, StringUtil.emptyToNull((String)colObj.get(cname)));
+					config.put("colors-darkmode." + cname, StringUtil.emptyToNull((String)obj.get(cname)));
 				}
+			}
+			
+			obj = (JsonObject)jsonObj.get("jline");
+			if (obj != null) {
+				config.put("jline.loglevel", (String)obj.get("loglevel"));
 			}
 
 			return new ReplConfig(config);
@@ -135,7 +138,7 @@ public class ReplConfig {
 	
 	public Level getJLineLogLevel() {
 		try {
-			return Level.parse(config.get("jline-loglevel"));
+			return Level.parse(config.get("jline.loglevel"));
 		}
 		catch(Exception ex) {
 			return null;
