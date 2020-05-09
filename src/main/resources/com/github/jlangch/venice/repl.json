@@ -26,7 +26,10 @@
   "jline": {
     "loglevel": null
   },
-     
-  "comment-jline": "log levels: OFF, ALL, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST. null -> don't change",
-  "comment-colors": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
+  
+  
+  "_comments": {
+    "jline": "log levels: OFF, ALL, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST. null -> don't change",
+    "colors": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
+  }
 }
