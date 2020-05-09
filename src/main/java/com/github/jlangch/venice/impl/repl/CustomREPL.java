@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.History;
@@ -35,8 +37,8 @@ import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.history.DefaultHistory;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
-import org.jline.utils.OSUtils;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.Venice;
@@ -66,8 +68,29 @@ public class CustomREPL {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
 		try {
-			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			config = ReplConfig.load(cli);
+			
+			final Level jlineLogLevel = config.getJLineLogLevel();
+			if (jlineLogLevel != null) {
+				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
+			}
+
+			if (OSUtils.IS_WINDOWS) {
+				final String jansiVersion = config.getJansiVersion();
+				if (jansiVersion != null) {
+					System.out.println("Using Jansi V" + jansiVersion);
+				}
+				else {
+					System.out.print(
+							"--------------------------------------------------------------------\n" +
+							"The Venice REPL requires the jansi library on Windows.              \n" +
+							"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
+							"from a Maven repo and put it on the classpath.                      \n" +
+							"--------------------------------------------------------------------\n");
+				}
+			}
+
+			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			
 			repl(cli);
 		}
@@ -91,21 +114,6 @@ public class CustomREPL {
 	}
 
 	private void repl(final CommandLineArgs cli) throws Exception {
-		if (OSUtils.IS_WINDOWS) {
-			// check if jansi library is available
-			try {
-				Class.forName("org.fusesource.jansi.Ansi.class", false, getClass().getClassLoader());
-			}
-			catch(ClassNotFoundException ex) {
-				System.out.print(
-						"--------------------------------------------------------------------\n" +
-						"The Venice REPL requires the jansi library on Windows.              \n" +
-						"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
-						"from a Maven repo and put it on the classpath.                      \n" +
-						"--------------------------------------------------------------------\n");
-			}
-		}
-
 		setPrompt(config.getPrompt(), config.getSecondaryPrompt());
 
 		final Thread mainThread = Thread.currentThread();
@@ -115,6 +123,7 @@ public class CustomREPL {
 										.builder()
 										.streams(System.in, System.out)
 										.system(true)
+										.jna(false)
 										.jansi(true)
 										.build()
 									: TerminalBuilder

@@ -25,11 +25,15 @@ import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
@@ -66,6 +70,8 @@ public class ReplConfig {
 			config.put("prompt", (String)jsonObj.get("prompt"));
 			config.put("secondary-prompt", (String)jsonObj.get("secondary-prompt"));
 			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
+
+			config.put("jline-loglevel", (String)jsonObj.get("jline-loglevel"));
 
 			JsonObject colObj = (JsonObject)jsonObj.get("colors");
 			if (colObj != null) {
@@ -127,6 +133,32 @@ public class ReplConfig {
 		return getOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
 	}
 	
+	public Level getJLineLogLevel() {
+		try {
+			return Level.parse(config.get("jline-loglevel"));
+		}
+		catch(Exception ex) {
+			return null;
+		}
+	}
+	
+	public String getJansiVersion() {
+		try (InputStream is = getClass()
+								.getClassLoader()
+								.getResourceAsStream("org/fusesource/jansi/Ansi/jansi.properties")
+		) {
+			if (is != null) {
+				final Properties props = new Properties();
+				props.load(is);
+				return props.getProperty("version");
+			}
+		} 
+		catch (IOException e) {
+			// Ignore
+		}
+		return null;
+	}
+
 	public static String getRawClasspathConfig() {
 		return new ClassPathResource(getVeniceBasePath() + "repl.json")
 						.getResourceAsString("UTF-8");
@@ -169,8 +201,9 @@ public class ReplConfig {
 			return "none";
 		}
 	}
-	
 
+	
+	
 	public static final String ANSI_RESET = "\u001b[0m";
 
 	private static final String DEFAULT_PROMPT = "venice> ";

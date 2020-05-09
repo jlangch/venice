@@ -27,6 +27,8 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.jline.reader.EndOfFileException;
@@ -73,10 +75,31 @@ public class REPL {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
 		try {
-			System.out.println("Venice REPL: V" + Venice.getVersion());
 			config = ReplConfig.load(cli);
 			
+			final Level jlineLogLevel = config.getJLineLogLevel();
+			if (jlineLogLevel != null) {
+				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
+			}
+
+			if (OSUtils.IS_WINDOWS) {
+				final String jansiVersion = config.getJansiVersion();
+				if (jansiVersion != null) {
+					System.out.println("Using Jansi V" + jansiVersion);
+				}
+				else {
+					System.out.print(
+							"--------------------------------------------------------------------\n" +
+							"The Venice REPL requires the jansi library on Windows.              \n" +
+							"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
+							"from a Maven repo and put it on the classpath.                      \n" +
+							"--------------------------------------------------------------------\n");
+				}
+			}
+			
+			System.out.println("Venice REPL: V" + Venice.getVersion());			
 			System.out.println("Type '!' for help.");
+			
 			repl(cli);
 		}
 		catch (Exception ex) {
@@ -89,29 +112,14 @@ public class REPL {
 		final String secondaryPrompt = config.getSecondaryPrompt();
 		final String resultPrefix = config.getResultPrefix();
 
-		if (OSUtils.IS_WINDOWS) {
-			// check if jansi library is available
-			try {
-				Class.forName("org.fusesource.jansi.Ansi.class", false, getClass().getClassLoader());
-			}
-			catch(ClassNotFoundException ex) {
-				System.out.print(
-						"--------------------------------------------------------------------\n" +
-						"The Venice REPL requires the jansi library on Windows.              \n" +
-						"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
-						"from a Maven repo and put it on the classpath.                      \n" +
-						"--------------------------------------------------------------------\n");
-			}
-		}
-
 		final Thread mainThread = Thread.currentThread();
 		
-
 		final Terminal terminal = OSUtils.IS_WINDOWS
 									? TerminalBuilder
 										.builder()
 										.streams(System.in, System.out)
 										.system(true)
+										.jna(false)
 										.jansi(true)
 										.build()
 									: TerminalBuilder
@@ -530,7 +538,6 @@ public class REPL {
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
 		return new ReplPrintStream(terminal, config.getColor(context));	
 	}
-	
 	
 	
 	private final static String HELP =
