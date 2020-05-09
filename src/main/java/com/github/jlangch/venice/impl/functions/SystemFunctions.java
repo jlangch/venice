@@ -29,6 +29,8 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -679,6 +681,42 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction internet_avail_Q =
+		new VncFunction(
+				"internet-avail?",
+				VncFunction
+					.meta()
+					.arglists("(internet-avail?)", "(internet-avail? url)")
+					.doc("Checks if an internet connection is present for a given url. "
+							+ "Defaults to URL http://www.google.com.")
+					.examples(
+						"(internet-avail? \"http://www.google.com\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("internet-avail?", args, 0, 1);
+
+				final String sUrl = args.isEmpty()
+										? "http://www.google.com"
+										: Coerce.toVncString(args.first()).getValue();
+
+				try {
+					final URL url = new URL(sUrl);
+					final URLConnection connection = url.openConnection();
+					connection.setConnectTimeout(3000);
+					connection.connect();
+					connection.getInputStream().close();
+					return True;
+				} 
+				catch (Exception e) {
+					return False;
+				}
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+
 		
 	private static TimeUnit toTimeUnit(final VncKeyword unit) {
 		switch(unit.getValue()) {
@@ -720,7 +758,8 @@ public class SystemFunctions {
 					.add(system_exit_code)
 					.add(java_version)
 					.add(java_version_info)
-					.add(used_memory)				
+					.add(used_memory)
+					.add(internet_avail_Q)
 					.toMap();
 
 

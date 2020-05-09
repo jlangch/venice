@@ -28,7 +28,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,7 @@ import java.util.logging.Level;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.nanojson.JsonArray;
 import com.github.jlangch.venice.nanojson.JsonObject;
 import com.github.jlangch.venice.nanojson.JsonParser;
 
@@ -49,12 +52,12 @@ import com.github.jlangch.venice.nanojson.JsonParser;
  */
 public class ReplConfig {
 
-	private ReplConfig(final Map<String,String> config) {
+	private ReplConfig(final Map<String,Object> config) {
 		this.config = config;
 	}
 	
 	public static ReplConfig load(final CommandLineArgs cli) {
-		final Map<String,String> config = new HashMap<>();
+		final Map<String,Object> config = new HashMap<>();
 		
 		// use colors
 		config.put("colors.mode", getColorMode(cli));
@@ -67,27 +70,43 @@ public class ReplConfig {
 
 		try {
 			final JsonObject jsonObj = loadJsonConfig();
-			config.put("prompt", (String)jsonObj.get("prompt"));
-			config.put("secondary-prompt", (String)jsonObj.get("secondary-prompt"));
-			config.put("result-prefix", (String)jsonObj.get("result-prefix"));
+			config.put("prompt", jsonObj.getString("prompt"));
+			config.put("secondary-prompt", jsonObj.getString("secondary-prompt"));
+			config.put("result-prefix", jsonObj.getString("result-prefix"));
 
 			JsonObject obj = (JsonObject)jsonObj.get("colors");
 			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
-					config.put("colors." + cname, StringUtil.emptyToNull((String)obj.get(cname)));
+					config.put("colors." + cname, StringUtil.emptyToNull(obj.getString(cname)));
 				}
 			}
 
 			obj = (JsonObject)jsonObj.get("colors-darkmode");
 			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
-					config.put("colors-darkmode." + cname, StringUtil.emptyToNull((String)obj.get(cname)));
+					config.put("colors-darkmode." + cname, StringUtil.emptyToNull(obj.getString(cname)));
 				}
 			}
 			
 			obj = (JsonObject)jsonObj.get("jline");
 			if (obj != null) {
-				config.put("jline.loglevel", (String)obj.get("loglevel"));
+				config.put("jline.loglevel", obj.getString("loglevel"));
+				config.put("jline.dumb-terminal", obj.getBoolean("dumb-terminal", Boolean.FALSE));
+			}
+
+			obj = (JsonObject)jsonObj.get("libs");
+			if (obj != null) {
+				config.put("libs.dir", obj.getString("dir"));
+				config.put("libs.mandatory", getStringList(obj.getArray("mandatory")));
+				config.put("libs.optional", getStringList(obj.getArray("optional")));
+			}
+
+			obj = (JsonObject)jsonObj.get("fonts");
+			if (obj != null) {
+				config.put("fonts.dir", obj.getString("dir"));
+				config.put("fonts.base-url", obj.getString("base-url"));
+				config.put("fonts.mandatory", getStringList(obj.getArray("mandatory")));
+				config.put("fonts.optional", getStringList(obj.getArray("optional")));
 			}
 
 			return new ReplConfig(config);
@@ -98,50 +117,50 @@ public class ReplConfig {
 	}
 	
 	public String getColor(final String key) {
-		switch(config.get("colors.mode")) {
-			case "light": return get("colors." + key);
-			case "dark":  return get("colors-darkmode." + key);
+		switch(getString("colors.mode")) {
+			case "light": return getString("colors." + key);
+			case "dark":  return getString("colors-darkmode." + key);
 			default:      return null;
 		}
 	}
 
-	public String get(final String key) {
-		return StringUtil.emptyToNull(config.get(key));
-	}
-	
-	public String getOrDefault(final String key, final String defaultValue) {
-		final String val = get(key);
-		return val == null ? defaultValue : val;
-	}
-
 	public String getLoadFile() {
-		return config.get("load.file");
+		return getString("load.file");
 	}
 
 	public String getPrompt() {
-		final String prompt = getOrDefault("prompt", DEFAULT_PROMPT);
+		final String prompt = getStringOrDefault("prompt", DEFAULT_PROMPT);
 		return getColor("prompt") == null
 				? prompt
 				: getColor("prompt") + prompt + ReplConfig.ANSI_RESET;
 	}
 
 	public String getSecondaryPrompt() {
-		final String prompt = getOrDefault("secondary-prompt", DEFAULT_SECONDARY_PROMPT);
+		final String prompt = getStringOrDefault("secondary-prompt", DEFAULT_SECONDARY_PROMPT);
 		return getColor("secondary-prompt") == null
 				? prompt
 				: getColor("secondary-prompt") + prompt + ReplConfig.ANSI_RESET;
 	}
 
 	public String getResultPrefix() {
-		return getOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
+		return getStringOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
 	}
 	
 	public Level getJLineLogLevel() {
 		try {
-			return Level.parse(config.get("jline.loglevel"));
+			return Level.parse(getString("jline.loglevel"));
 		}
 		catch(Exception ex) {
 			return null;
+		}
+	}
+	
+	public boolean isJLineDumbTerminal() {
+		try {
+			return (Boolean)config.get("jline.dumb-terminal");
+		}
+		catch(Exception ex) {
+			return false;
 		}
 	}
 	
@@ -161,6 +180,38 @@ public class ReplConfig {
 		}
 		return null;
 	}
+	
+	public String getLibsDir() {
+		return getString("libs.dir");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getLibsMandatory() {
+		return nullToEmptyList((List<String>)config.get("libs.mandatory"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getLibsOptional() {
+		return nullToEmptyList((List<String>)config.get("libs.optional"));
+	}
+	
+	public String getFontsDir() {
+		return getString("fonts.dir");
+	}
+	
+	public String getFontsBaseUrl() {
+		return getString("fonts.base-url");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getFontsMandatory() {
+		return nullToEmptyList((List<String>)config.get("fonts.mandatory"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> getFontsOptional() {
+		return nullToEmptyList((List<String>)config.get("fonts.optional"));
+	}
 
 	public static String getRawClasspathConfig() {
 		return new ClassPathResource(getVeniceBasePath() + "repl.json")
@@ -174,6 +225,22 @@ public class ReplConfig {
 	public static String getRawClasspathLauncher() {
 		return new ClassPathResource(getVeniceBasePath() + getRawClasspathLauncherName())
 						.getResourceAsString("UTF-8");
+	}
+
+
+	private String getString(final String key) {
+		return StringUtil.emptyToNull((String)config.get(key));
+	}
+	
+	private String getStringOrDefault(final String key, final String defaultValue) {
+		final String val = getString(key);
+		return val == null ? defaultValue : val;
+	}
+	
+	private static List<String> getStringList(final JsonArray array) {
+		final List<String> values = new ArrayList<>();
+		array.forEach(v -> values.add((String)v));
+		return values;
 	}
 
 	private static JsonObject loadJsonConfig() throws Exception {
@@ -204,6 +271,11 @@ public class ReplConfig {
 			return "none";
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	private static <T> List<T> nullToEmptyList(final List<T> items) {
+		return items == null ? (List<T>) Collections.emptyList() : items;
+	}
 
 	
 	
@@ -222,5 +294,5 @@ public class ReplConfig {
 														"interrupt", 
 														"prompt");
 
-	private final Map<String,String> config;
+	private final Map<String,Object> config;
 }

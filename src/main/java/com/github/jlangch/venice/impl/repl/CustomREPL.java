@@ -114,22 +114,25 @@ public class CustomREPL {
 	}
 
 	private void repl(final CommandLineArgs cli) throws Exception {
-		setPrompt(config.getPrompt(), config.getSecondaryPrompt());
+		final boolean dumbTerminal = config.isJLineDumbTerminal();
+		
+		setPrompt(config.getPrompt(), dumbTerminal ? "" : config.getSecondaryPrompt());
 
 		final Thread mainThread = Thread.currentThread();
-		
+
+		final TerminalBuilder builder = TerminalBuilder
+											.builder()
+											.streams(System.in, System.out)
+											.system(true)
+											.dumb(dumbTerminal)
+											.jna(false);
+							
 		final Terminal terminal = OSUtils.IS_WINDOWS
-									? TerminalBuilder
-										.builder()
-										.streams(System.in, System.out)
-										.system(true)
+									? builder
 										.jna(false)
-										.jansi(true)
+										.jansi(!dumbTerminal)
 										.build()
-									: TerminalBuilder
-										.builder()
-										.streams(System.in, System.out)
-										.system(true)
+									: builder
 										.encoding("UTF-8")
 										.build();
 		
