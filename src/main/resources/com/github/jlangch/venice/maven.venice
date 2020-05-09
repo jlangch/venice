@@ -25,11 +25,12 @@
 (ns maven)
 
 
-(defn- maven/download-artefact-file [uri target-dir target-file]
+(defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
   (let [target (str target-dir "/" target-file)]
-     (println (str "Downloading " uri))
-     (println (str "         to " target "..."))
-     (->> (io/download uri :binary true)
+     (when-not progress-fn
+       (println (str "Downloading " uri))
+       (println (str "         to " target "...")))
+     (->> (io/download uri :binary true :progress-fn progress-fn)
           (io/spit target))))
 
 
@@ -48,13 +49,6 @@
     [uri file-name-base]))
 
 
-(defn- maven/download-artefact-by-type [artefact repo dir file-suffix]
-  (let [elements (maven/parse-artefact artefact repo)
-        uri (str (first elements) file-suffix)
-        target-file (str (second elements) file-suffix)]
-    (maven/download-artefact-file uri dir target-file)))
-
-
 (defn
   ^{ :arglists '("(maven/download artefact options*)")
      :doc """
@@ -70,12 +64,26 @@
 
   maven/download [artefact & options]
 
-  (let [opts (apply hash-map options)
-        jar (:jar opts true)
-        sources (:sources opts false)
-        pom (:pom opts false)
-        dir (:dir opts ".")
-        repo (:repo opts "https://repo1.maven.org/maven2")]
-    (when jar (maven/download-artefact-by-type artefact repo dir ".jar"))
-    (when sources (maven/download-artefact-by-type artefact repo dir "-sources.jar"))
-    (when pom (maven/download-artefact-by-type artefact repo dir ".pom"))))
+  (let [opts           (apply hash-map options)
+        jar            (:jar opts true)
+        sources        (:sources opts false)
+        pom            (:pom opts false)
+        dir            (:dir opts ".")
+        repo           (:repo opts "https://repo1.maven.org/maven2")
+        [uri basename] (maven/parse-artefact artefact repo)
+        progress-fn    nil]
+    (when jar
+      (maven/download-artefact-file (str uri ".jar")
+                                    dir
+                                    (str basename ".jar")
+                                    progress-fn))
+    (when sources
+      (maven/download-artefact-file (str uri "-sources.jar")
+                                    dir
+                                    (str basename "-sources.jar")
+                                    progress-fn))
+    (when pom
+      (maven/download-artefact-file (str uri ".pom")
+                                    dir
+                                    (str basename ".pom")
+                                    progress-fn))))
