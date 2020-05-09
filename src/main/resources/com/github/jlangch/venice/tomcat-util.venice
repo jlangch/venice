@@ -324,16 +324,6 @@
 
     (println "Tomcat deploying webapp done.")))
 
-(defn tc-download-progress [percent size status]
-  (let [draw      (fn [text] (print (ansi/style text (ansi/cursor-left 1000))))
-        clean     (fn []     (draw (str/repeat " " 30)))
-        overprint (fn [text] (do (clean) (draw text)))]
-    (case status
-      "start"    (print "Download started.")
-      "progress" (overprint (str percent "%"))
-      "end"      (overprint "Download ok\n")
-      "failed"   (overprint "Download failed\n"))))
-
 (defn
   ^{ :arglists '("(install install-dir tc-version & options)")
      :doc """
