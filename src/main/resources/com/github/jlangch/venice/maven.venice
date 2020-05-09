@@ -27,8 +27,9 @@
 
 (defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
   (let [target (str target-dir "/" target-file)]
-     (println (str "Downloading " uri))
-     (println (str "         to " target "..."))
+     (when progress-fn
+       (println (str "Downloading " uri))
+       (println (str "         to " target "...")))
      (->> (io/download uri :binary true :progress-fn progress-fn)
           (io/spit target))))
 
@@ -59,21 +60,24 @@
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :sources true :pom true)"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir ".")"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")""" ) }
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent true)""" ) }
 
   maven/download [artefact & options]
 
   (let [opts        (apply hash-map options)
+        silent      (:silent opts false)
         jar         (:jar opts true)
         sources     (:sources opts false)
         pom         (:pom opts false)
         dir         (:dir opts ".")
         repo        (:repo opts "https://repo1.maven.org/maven2")
-        progress-fn (ansi/progress-bar
-                       :caption     "            "
-                       :start-msg   "    started "
-                       :end-msg     "            OK"
-                       :failed-msg  "            FAILED")]
+        progress-fn (if silent
+                      nil
+                      (ansi/progress-bar :caption     "            "
+                                         :start-msg   "    started "
+                                         :end-msg     "            OK"
+                                         :failed-msg  "            FAILED"))]
     (when jar
       (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
         (maven/download-artefact-file uri dir filename progress-fn)))
