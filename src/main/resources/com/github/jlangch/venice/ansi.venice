@@ -467,8 +467,8 @@
 
 (defn demo-progress-bar []
   (let [pg (ansi/progress-bar
-               :caption     "Download: "
                :width       25
+               :caption     "Download: "
                :start-msg   "Download started"
                :end-msg     "Download ok"
                :failed-msg  "Download failed")]

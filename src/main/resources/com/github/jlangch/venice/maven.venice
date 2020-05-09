@@ -27,9 +27,8 @@
 
 (defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
   (let [target (str target-dir "/" target-file)]
-     (when-not progress-fn
-       (println (str "Downloading " uri))
-       (println (str "         to " target "...")))
+     (println (str "Downloading " uri))
+     (println (str "         to " target "..."))
      (->> (io/download uri :binary true :progress-fn progress-fn)
           (io/spit target))))
 
@@ -70,7 +69,11 @@
         pom         (:pom opts false)
         dir         (:dir opts ".")
         repo        (:repo opts "https://repo1.maven.org/maven2")
-        progress-fn nil]
+        progress-fn (ansi/progress-bar
+                       :caption     "            "
+                       :start-msg   "    started "
+                       :end-msg     "            OK"
+                       :failed-msg  "            FAILED")]
     (when jar
       (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
         (maven/download-artefact-file uri dir filename progress-fn)))
