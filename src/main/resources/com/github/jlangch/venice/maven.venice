@@ -37,16 +37,16 @@
 (defn-
   ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
 
-  maven/parse-artefact [artefact repo]
+  maven/parse-artefact [artefact repo suffix]
 
   (let [elements (str/split artefact ":")
         group-id (first elements)
         artefact-id (second elements)
         version (third elements)
         group-path (str/replace-all group-id "." "/")
-        file-name-base (str artefact-id "-" version)
-        uri (str/join "/" [repo group-path artefact-id version file-name-base])]
-    [uri file-name-base]))
+        file-name (str artefact-id "-" version suffix)
+        uri (str/join "/" [repo group-path artefact-id version file-name])]
+    [uri file-name]))
 
 
 (defn
@@ -64,26 +64,19 @@
 
   maven/download [artefact & options]
 
-  (let [opts           (apply hash-map options)
-        jar            (:jar opts true)
-        sources        (:sources opts false)
-        pom            (:pom opts false)
-        dir            (:dir opts ".")
-        repo           (:repo opts "https://repo1.maven.org/maven2")
-        [uri basename] (maven/parse-artefact artefact repo)
-        progress-fn    nil]
+  (let [opts        (apply hash-map options)
+        jar         (:jar opts true)
+        sources     (:sources opts false)
+        pom         (:pom opts false)
+        dir         (:dir opts ".")
+        repo        (:repo opts "https://repo1.maven.org/maven2")
+        progress-fn nil]
     (when jar
-      (maven/download-artefact-file (str uri ".jar")
-                                    dir
-                                    (str basename ".jar")
-                                    progress-fn))
+      (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
+        (maven/download-artefact-file uri dir filename progress-fn)))
     (when sources
-      (maven/download-artefact-file (str uri "-sources.jar")
-                                    dir
-                                    (str basename "-sources.jar")
-                                    progress-fn))
+      (let [[uri filename] (maven/parse-artefact artefact repo "-sources.jar")]
+        (maven/download-artefact-file uri dir filename progress-fn)))
     (when pom
-      (maven/download-artefact-file (str uri ".pom")
-                                    dir
-                                    (str basename ".pom")
-                                    progress-fn))))
+      (let [[uri filename] (maven/parse-artefact artefact repo ".pom")]
+        (maven/download-artefact-file uri dir filename progress-fn)))))
