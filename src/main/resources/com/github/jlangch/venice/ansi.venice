@@ -288,7 +288,7 @@
         (let [percent (max 0 (min 100 percent))]
           (case status
             :start    (print start-msg)
-            :progress (draw (str/format "%s%3s%%" caption percent))
+            :progress (draw (str/format "%s%3s%% " caption percent))
             :end      (draw (str end-msg "\n"))
             :failed   (draw (str failed-msg "\n"))
                       (draw (str "Invalid status '" status "'\n")))
@@ -344,7 +344,7 @@
         bar        (fn [percent]
                      (let [w1 (/ (* percent width) 100)
                            w2 (- width w1)]
-                       (str/format "%s[%s%s]"
+                       (str/format "%s[%s%s] "
                                    caption
                                    (str/repeat "#" w1)
                                    (str/repeat " " w2)))) ]
