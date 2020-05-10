@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - function `io/internet-avail?`
 - simplified REPL setup (automated extended setup)
+- module 'tomcat' throws an exception when used and the Tomcat libs are not on 
+  the classpath
+- module 'xchart' throws an exception when used and the XChart libs are not on 
+  the classpath
 
 
 
