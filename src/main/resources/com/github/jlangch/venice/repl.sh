@@ -17,9 +17,9 @@
 # ------------------------------------------------------------------------------
 
 
-cd /Users/juerg/Desktop/venice/
+cd /Users/foo/venice/
 
-${JAVA_11_HOME}/bin/java \
+java \
   -server \
   -Xmx4G \
   -XX:-OmitStackTraceInFastThrow \

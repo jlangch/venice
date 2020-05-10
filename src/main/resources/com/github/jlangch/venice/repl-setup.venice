@@ -60,33 +60,32 @@
              "ofl/roboto/static/Roboto-Regular.ttf",
              "ofl/roboto/static/Roboto-Thin.ttf",
              "ofl/roboto/static/Roboto-ThinItalic.ttf" ])
-},
 
 
 (defn- missing-libs [dir libs]
-  (->> libs)
-       (map (fn [a] (cons a (maven/parse-artefact a maven/rep ".jar"))))
-       (filter (not (io/exists-file? (io/file dir (third %)))))
-       (map first))
+  (->> libs
+       (map (fn [a] (cons a (maven/parse-artefact a maven/repo ".jar"))))
+       (filter #(not (io/exists-file? (io/file dir (third %)))))
+       (map first)))
 
 
 (defn download-libs [dir libs]
   (let [artefacts (repl-setup/missing-libs dir libs)]
     (when-not (empty? artefacts)
-       (println "Downloading Java libraries...")
-       (when-not (internet-avail?)
-          (throw (. :VncException :new "Internet is not available!")))
-       (docoll #(maven/download % :dir dir)))))
+      (println "Downloading Java libraries...")
+      (if (io/internet-avail?)
+         (docoll #(maven/download % :dir dir) artefacts)
+         (println *err* "Internet is not available!")))))
 
 
 (defn- missing-fonts [dir fonts]
-  (->> fonts)
+  (->> fonts
        (map (fn [f] [f (io/file-name f)]))
-       (filter (not (io/exists-file? (io/file dir (second %)))))
-       (map first))
+       (filter #(not (io/exists-file? (io/file dir (second %)))))
+       (map first)))
 
 
-(defn download-font [uri dir font-name]
+(defn- download-font [uri dir font-name]
   (let [target (io/file dir font-name)
         progress-fn (ansi/progress-bar
                         :caption     (str font-name " ")
@@ -102,17 +101,65 @@
 (defn download-fonts [dir fonts]
   (let [required-fonts (repl-setup/missing-fonts dir fonts)]
     (when-not (empty? required-fonts)
-       (println "Downloading Fonts...")
-       (when-not (internet-avail?)
-          (throw (. :VncException :new "Internet is not available!")))
-       (docoll (fn [f] (repl-setup/download-font (str fonts-base-url f)
-                                                 dir
-                                                 (io/file-name f)))))))
+      (println "Downloading fonts from " fonts-base-url " ...")
+      (if (io/internet-avail?)
+          (docoll #(repl-setup/download-font (str fonts-base-url %)
+                                             dir
+                                             (io/file-name %))
+                  required-fonts)
+          (println *err* "Internet is not available!")))))
 
-(defn setup [lib-dir font-dir]
-  (when-not (io/exists-dir? lib-dir)
-     (io/mkdirs lib-dir))
-  (when-not (io/exists-dir? font-dir)
-     (io/mkdirs font-dir))
-  (repl-setup/download-libs [lib-dir libs])
-  (repl-setup/download-fonts [font-dir fonts]))
+
+(defn setup-scripts [dir]
+  nil)
+
+
+(defn setup-repl-config []
+  (when-not (io/exists-file? "repl.json")
+    (println "Setting up 'repl.json'...")
+    (->> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
+         (io/spit "repl.json"))))
+
+
+(defn- setup-repl-launcher-windows []
+  (when-not (io/exists-file? "repl.bat")
+    (println "Setting up 'repl.bat'...")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
+         (bytebuf-to-string <> :utf-8)
+         (str/replace-all <>
+                          "cd C:/Users/foo/venice"
+                          (io/file-path (io/file-canonical-path ".")))
+         (io/spit "repl.bat"))))
+
+
+(defn- setup-repl-launcher-unix []
+  (when-not (io/exists-file? "repl.sh")
+    (println "Setting up 'repl.sh'...")
+    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
+         (bytebuf-to-string <> :utf-8)
+         (str/replace-all <>
+                          "cd /Users/foo/venice/"
+                          (io/file-path (io/file-canonical-path ".")))
+         (io/spit "repl.sh" <>))
+    (when (io/exists-file? "repl.sh"))
+      (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file "."))))
+
+
+(defn setup-repl-launcher []
+ (if (os-type? :windows)
+   (setup-repl-launcher-windows)
+   (setup-repl-launcher-unix)))
+
+
+(defn setup []
+  (when-not (io/exists-dir? "libs")
+     (io/mkdirs "libs"))
+  (when-not (io/exists-dir? "libs/fonts")
+    (io/mkdirs "libs/fonts"))
+  (when-not (io/exists-dir? "scripts")
+    (io/mkdirs "scripts"))
+  (repl-setup/download-libs "libs" libs)
+  (repl-setup/download-fonts "libs/fonts" fonts)
+  (repl-setup/setup-repl-config)
+  (repl-setup/setup-repl-launcher)
+  (repl-setup/setup-scripts "scripts"))
