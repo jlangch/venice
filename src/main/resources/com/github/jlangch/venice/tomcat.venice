@@ -85,6 +85,16 @@
        "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA"))
 
 
+;; ---------------------------------------------------------------------------
+;; ensure Tomcat libs are available when using the module
+;; ---------------------------------------------------------------------------
+(try
+  (class :org.apache.catalina.startup.Tomcat)
+  (catch :java.lang.Exception ex
+         (throw (. :VncException :new
+                   "The Tomcat libraries are not on the classpath!"))))
+
+
 (defn- create-executor [options]
   (let [executor (. :StandardThreadExecutor :new)]
     (doto executor
@@ -242,11 +252,9 @@
     server)))
 
 
-(defn stop-tomcat
-  [server]
+(defn stop-tomcat [server]
   (. server :stop))
 
 
-(defn destroy-tomcat
-  [server]
+(defn destroy-tomcat [server]
   (. server :destroy))

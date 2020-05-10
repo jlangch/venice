@@ -87,6 +87,16 @@
 
 
 ;; ---------------------------------------------------------------------------
+;; ensure XChart libs are available when using the module
+;; ---------------------------------------------------------------------------
+(try
+  (class :org.knowm.xchart.PieChart)
+  (catch :java.lang.Exception ex
+         (throw (. :VncException :new
+                   "The XChart libraries are not on the classpath!"))))
+
+
+;; ---------------------------------------------------------------------------
 ;; utils
 ;; ---------------------------------------------------------------------------
 
