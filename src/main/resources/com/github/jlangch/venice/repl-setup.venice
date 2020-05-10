@@ -66,7 +66,7 @@
 (defn- missing-libs [dir libs]
   (->> libs)
        (map (fn [a] (cons a (maven/parse-artefact a maven/rep ".jar"))))
-       (filter (not (io/file-exists? (io/file dir (third %)))))
+       (filter (not (io/exists-file? (io/file dir (third %)))))
        (map first))
 
 
@@ -82,7 +82,7 @@
 (defn- missing-fonts [dir fonts]
   (->> fonts)
        (map (fn [f] [f (io/file-name f)]))
-       (filter (not (io/file-exists? (io/file dir (second %)))))
+       (filter (not (io/exists-file? (io/file dir (second %)))))
        (map first))
 
 
@@ -100,7 +100,7 @@
 
 
 (defn download-fonts [dir fonts]
-  (let [required-fonts (repl-setup/missing-fonts dir libs)]
+  (let [required-fonts (repl-setup/missing-fonts dir fonts)]
     (when-not (empty? required-fonts)
        (println "Downloading Fonts...")
        (when-not (internet-avail?)
@@ -108,3 +108,11 @@
        (docoll (fn [f] (repl-setup/download-font (str fonts-base-url f)
                                                  dir
                                                  (io/file-name f)))))))
+
+(defn setup [lib-dir font-dir]
+  (when-not (io/exists-dir? lib-dir)
+     (io/mkdirs lib-dir))
+  (when-not (io/exists-dir? font-dir)
+     (io/mkdirs font-dir))
+  (repl-setup/download-libs [lib-dir libs])
+  (repl-setup/download-fonts [font-dir fonts]))
