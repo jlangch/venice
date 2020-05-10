@@ -102,6 +102,7 @@ public class ModuleLoader {
 							"maven", 
 							"mercator", 
 							"parsatron",
+							"repl-setup", 
 							"ring", 
 							"semver", 
 							"shell", 

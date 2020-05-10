@@ -165,7 +165,9 @@ public class REPL {
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
-		runLoadFile(config.getLoadFile(), env, resultPrefix);
+		if (!runLoadFile(config.getLoadFile(), env, resultPrefix)) {
+			return; // stop REPL
+		}
 
 		// REPL loop
 		while (true) {
@@ -275,6 +277,9 @@ public class REPL {
 		else if (cmd.equals("config")) {
 			handleConfigCommand();
 		}
+		else if (cmd.equals("setup")) {
+			handleSetupCommand(env);
+		}
 		else if (cmd.equals("launcher")) {
 			handleLauncherCommand();
 		}
@@ -324,6 +329,15 @@ public class REPL {
 		printer.println("stdout", "in the REPL's working directory:");
 		printer.println();
 		printer.println("stdout", ReplConfig.getRawClasspathConfig());
+	}
+
+	private void handleSetupCommand(final Env env) {
+		try {
+			venice.RE("(do (load-module :repl-setup) (repl-setup/setup))" , "user", env);
+		}
+		catch(Exception ex) {
+			printer.printex("error", ex);
+		}
 	}
 
 	private void handleLauncherCommand() {
@@ -532,18 +546,19 @@ public class REPL {
 		return new ReplPrintStream(terminal, config.getColor(context));	
 	}
 	
-	private void runLoadFile(final String loadFile, final Env env, final String resultPrefix) {
+	private boolean runLoadFile(final String loadFile, final Env env, final String resultPrefix) {
 		try {
 			if (loadFile != null) {
 				printer.println("stdout", "loading file \"" + loadFile + "\"");
 				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
 				printer.println("stdout", resultPrefix + venice.PRINT(result));
 			}
+			return true;
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);
 			printer.println("error", "Stopped REPL");
-			return; // stop the REPL
+			return false; // stop the REPL
 		}
 	}
 	
