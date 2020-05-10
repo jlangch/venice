@@ -14,11 +14,4 @@ REM # -------------------------------------------------------------------------
 
 cd C:/Users/foo/venice
 
-java.exe ^
-  -server ^
-  -Xmx2G ^
-  -XX:-OmitStackTraceInFastThrow ^
-  -cp "libs\*" ^
-  com.github.jlangch.venice.Launcher ^
-  -loadpath "scripts" 
-  -colors
+java.exe -server -Xmx2G -XX:-OmitStackTraceInFastThrow -cp "libs/*" com.github.jlangch.venice.Launcher -loadpath "scripts" -colors
