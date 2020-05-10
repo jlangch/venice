@@ -25,6 +25,8 @@
 (ns maven)
 
 
+(def maven/repo "https://repo1.maven.org/maven2")
+
 (defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
   (let [target (str target-dir "/" target-file)]
      (when progress-fn
@@ -34,19 +36,56 @@
           (io/spit target))))
 
 
-(defn-
-  ^{ :doc "Parses an artefact like 'com/vaadin:vaadin-client:8.7.2'" }
+(defn
+  ^{ :arglists '(
+        "(maven/parse-artefact artefact)"
+        "(maven/parse-artefact artefact file-suffix)"
+        "(maven/parse-artefact artefact file-suffix repo)")
+     :doc
+        """
+        Parses a Maven artefact like 'com/vaadin:vaadin-client:8.7.2'
 
-  maven/parse-artefact [artefact repo suffix]
+        [1]  (maven/parse-artefact artefact)
+             returns a vector with group-id, artefact-id, and version
+        [2]  (maven/parse-artefact artefact file-suffix)
+             returns a vector with group-id, artefact-id, version and
+             file name
+        [3]  (maven/parse-artefact artefact file-suffix repo)
+             returns a vector with the Maven download URI and the file name
+        """
+     :examples '(
+        """
+        (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1")
+        """,
+        """
+        (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1"
+                              ".jar")
+        """
+        """
+        (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1"
+                              ".jar"
+                              "https://repo1.maven.org/maven2")
+        """ ) }
 
-  (let [elements (str/split artefact ":")
-        group-id (first elements)
-        artefact-id (second elements)
-        version (third elements)
-        group-path (str/replace-all group-id "." "/")
-        file-name (str artefact-id "-" version suffix)
-        uri (str/join "/" [repo group-path artefact-id version file-name])]
-    [uri file-name]))
+  maven/parse-artefact
+
+  ([artefact]
+    (let [elements (str/split artefact ":")
+          group-id (first elements)
+          artefact-id (second elements)
+          version (third elements) ]
+      [group-id artefact-id version]))
+
+  ([artefact file-suffix]
+    (let [[group-id artefact-id version] (maven/parse-artefact artefact)
+          file-name (str artefact-id "-" version file-suffix)]
+      [group-id artefact-id version file-name]))
+
+  ([artefact repo file-suffix]
+    (let [[group-id artefact-id version file-name] (maven/parse-artefact artefact file-suffix)
+          group-path (str/replace-all group-id "." "/")
+          uri (str/join "/" [repo group-path artefact-id version file-name])]
+      [uri file-name])))
 
 
 (defn
@@ -71,7 +110,7 @@
         sources     (:sources opts false)
         pom         (:pom opts false)
         dir         (:dir opts ".")
-        repo        (:repo opts "https://repo1.maven.org/maven2")
+        repo        (:repo opts maven/repo)
         progress-fn (if silent
                       nil
                       (ansi/progress-bar :caption     "            "
