@@ -27,8 +27,10 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -655,6 +657,43 @@ public class SystemFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+		
+	public static VncFunction java_source_location =
+		new VncFunction(
+				"java-source-location",
+				VncFunction
+					.meta()
+					.arglists("(java-source-location class)")
+					.doc("Returns the path of the source location of a class (fully qualified class name).")
+					.examples("(java-source-location :com.github.jlangch.venice.Venice)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("java-source-location", args, 1);
+
+				try {
+					final String className = Coerce.toVncString(
+												CoreFunctions.name.apply(VncList.of(args.first()))
+											).getValue();
+					
+					final Class<?> clazz = Class.forName(className);
+					
+					final URI uri = clazz.getProtectionDomain()
+										 .getCodeSource()
+										 .getLocation()
+										 .toURI();
+					
+					return new VncString(new File(uri).getPath());
+				}
+				catch(Exception ex) {
+					return Nil;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
 
 	public static VncFunction used_memory =
 		new VncFunction(
@@ -721,6 +760,7 @@ public class SystemFunctions {
 					.add(system_exit_code)
 					.add(java_version)
 					.add(java_version_info)
+					.add(java_source_location)
 					.add(used_memory)
 					.toMap();
 
