@@ -2,7 +2,7 @@
   "prompt": "venice> ",
   "secondary-prompt": "      | ", 
   "result-prefix": "=> ",
-  
+
   "colors": {
     "prompt": null,
     "result": "\u001b[38;5;20m",
@@ -12,7 +12,7 @@
     "system": "\u001b[48;5;35m\u001b[38;5;15m",
     "interrupt": "\u001b[48;5;196m\u001b[38;5;15m"
   },
-  
+
   "colors-darkmode": {
     "prompt": null,
     "result": "\u001b[38;5;39m",
@@ -22,7 +22,15 @@
     "system": "\u001b[48;5;35m\u001b[38;5;15m",
     "interrupt": "\u001b[48;5;196m\u001b[38;5;15m"
   },
-  
-      
-  "comment-colors": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
+    
+  "jline": {
+    "loglevel": null,
+    "dumb-terminal": false
+  },
+
+
+  "_comments": {
+    "jline": "log levels: OFF, ALL, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST. null -> don't change",
+    "colors": "see: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#colors"
+  }
 }
