@@ -73,6 +73,13 @@
                "demo-webapp.venice"
                "login-webapp.venice" ])
 
+
+(defn- to-cr-lf [text]
+  (let [cr (char 13)
+        lf (char 10)]
+    (str/join (str cr lf) (str/split-lines text))))
+
+
 (defn- missing-libs [dir libs]
   (->> libs
        (map (fn [a] (cons a (maven/parse-artefact a maven/repo ".jar"))))
@@ -131,8 +138,12 @@
 (defn setup-repl-config []
   (when-not (io/exists-file? "repl.json")
     (println "Setting up 'repl.json'...")
-    (->> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
-         (io/spit "repl.json"))))
+    (let [data (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
+          json (bytebuf-to-string data :utf-8)]
+        (io/spit "repl.json"
+                 (if (os-type? :windows)
+                   (to-cr-lf json)
+                   json)))))
 
 
 (defn- setup-repl-launcher-windows []
@@ -140,6 +151,7 @@
     (println "Setting up 'repl.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
          (bytebuf-to-string <> :utf-8)
+         (to-cr-lf <>)
          (str/replace-all <>
                           "cd C:/Users/foo/venice"
                           (str "cd " (io/file-path (io/file-canonical-path "."))))
