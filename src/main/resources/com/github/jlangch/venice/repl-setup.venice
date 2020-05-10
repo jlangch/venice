@@ -194,7 +194,7 @@
     (println "copied to the 'libs' directory that holds all JAR files   ")
     (println "and resources.                                            ")
     (println )
-    (println "Start the REPL with ~{launch-script} ")
+    (println "!!!! Start the REPL with ~{launch-script} !!!!")
     (println "----------------------------------------------------------")))
 
 
