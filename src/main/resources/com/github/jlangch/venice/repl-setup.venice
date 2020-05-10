@@ -101,7 +101,7 @@
 (defn download-fonts [dir fonts]
   (let [required-fonts (repl-setup/missing-fonts dir fonts)]
     (when-not (empty? required-fonts)
-      (println "Downloading fonts from " fonts-base-url " ...")
+      (println (str "Downloading fonts from '" fonts-base-url "'...")
       (if (io/internet-avail?)
           (docoll #(repl-setup/download-font (str fonts-base-url %)
                                              dir
@@ -146,20 +146,34 @@
 
 
 (defn setup-repl-launcher []
- (if (os-type? :windows)
-   (setup-repl-launcher-windows)
-   (setup-repl-launcher-unix)))
+  (if (os-type? :windows)
+    (setup-repl-launcher-windows)
+    (setup-repl-launcher-unix)))
+
+
+(defn create-resources-jar [lib-dir font-dir]
+  (let [target (io/file lib-dir "resources.jar")
+        res-venice-png "com/github/jlangch/venice/images/venice.png"]
+    (when-not (io/exists-file? target)
+      (println (str "Creating '" (io/file-name target) "'..."))
+      (let [zip-entries  (conj (->> (io/list-files font-dir)
+                                    (map #(vector (str "fonts/" (io/file-name %)) %))
+                                    (flatten))
+                                "images/venice.png"
+                                (io/load-classpath-resource res-venice-png))]
+        (io/spit target (apply io/zip zip-entries))))))
 
 
 (defn setup []
   (when-not (io/exists-dir? "libs")
      (io/mkdirs "libs"))
-  (when-not (io/exists-dir? "libs/fonts")
-    (io/mkdirs "libs/fonts"))
+  (when-not (io/exists-dir? "fonts")
+    (io/mkdirs "fonts"))
   (when-not (io/exists-dir? "scripts")
     (io/mkdirs "scripts"))
   (repl-setup/download-libs "libs" libs)
-  (repl-setup/download-fonts "libs/fonts" fonts)
+  (repl-setup/download-fonts "fonts" fonts)
   (repl-setup/setup-repl-config)
   (repl-setup/setup-repl-launcher)
-  (repl-setup/setup-scripts "scripts"))
+  (repl-setup/setup-scripts "scripts")
+  (repl-setup/create-resources-jar "libs" "fonts"))
