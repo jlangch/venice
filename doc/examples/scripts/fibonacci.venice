@@ -29,4 +29,4 @@
          1 b
          (recur (dec n) b (math/bigint-add a b)))))
 
-   (fib 50))
+   (println "fib(50):" (fib 50)))
