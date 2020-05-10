@@ -1321,6 +1321,42 @@ public class IOFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+
+	public static VncFunction io_internet_avail_Q =
+		new VncFunction(
+				"io/internet-avail?",
+				VncFunction
+					.meta()
+					.arglists("(io/internet-avail?)", "(internet-avail? url)")
+					.doc("Checks if an internet connection is present for a given url. "
+							+ "Defaults to URL http://www.google.com.")
+					.examples(
+						"(io/internet-avail? \"http://www.google.com\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/internet-avail?", args, 0, 1);
+
+				final String sUrl = args.isEmpty()
+										? "http://www.google.com"
+										: Coerce.toVncString(args.first()).getValue();
+
+				try {
+					final URL url = new URL(sUrl);
+					final URLConnection connection = url.openConnection();
+					connection.setConnectTimeout(3000);
+					connection.connect();
+					connection.getInputStream().close();
+					return True;
+				} 
+				catch (Exception e) {
+					return False;
+				}
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_copy_stream =
 		new VncFunction(
 				"io/copy-stream",
@@ -1885,6 +1921,7 @@ public class IOFunctions {
 					.add(io_slurp_lines)
 					.add(io_spit)
 					.add(io_download)
+					.add(io_internet_avail_Q)
 					.add(io_copy_stream)
 					.add(io_slurp_stream)
 					.add(io_spit_stream)

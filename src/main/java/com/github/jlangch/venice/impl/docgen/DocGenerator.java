@@ -1157,7 +1157,9 @@ public class DocGenerator {
 
 		final DocSection http = new DocSection("http");
 		all.addSection(http);
-		http.addItem(getDocItem("io/download"));
+		http.addItem(getDocItem("io/download", false));
+		http.addItem(getDocItem("io/internet-avail?", false));
+		
 
 		final DocSection zip = new DocSection("zip");
 		all.addSection(zip);
