@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +51,6 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -60,7 +58,6 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.Licenses;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -169,9 +166,6 @@ public class REPL {
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
 		runLoadFile(config.getLoadFile(), env, resultPrefix);
-
-		loadLibraries(env);
-		loadFonts(env);
 
 		// REPL loop
 		while (true) {
@@ -551,103 +545,6 @@ public class REPL {
 			printer.println("error", "Stopped REPL");
 			return; // stop the REPL
 		}
-	}
-
-	private void loadLibraries(final Env env) {
-		try {
-			final String dir = config.getLibsDir();
-			final List<String> libs = 
-					config.getLibsMandatory()
-						  .stream()
-						  .filter(l -> !new File(dir, getMavenArtefactFilename(l, ".jar")).isFile())
-						  .collect(Collectors.toList());
-			
-			if (!libs.isEmpty()) {
-				printer.println("stdout", "Loading Java libraries...");
-				
-				if (!new File(dir).isDirectory()) {
-					printer.println("error", String.format("The lib dir %s is not a directory", dir));
-					return;
-				}
-
-				VncVal result = venice.RE("(internet-avail? \"http://www.google.com\")", "user", env);
-				if (result.equals(Constants.False)) {
-					printer.println("error", "Internet is not available!");
-					return;
-				}
-				
-				venice.RE("(do (load-module :maven) (load-module :ansi))", "user", env);
-				
-				libs.forEach(l -> venice.RE(
-									String.format("(maven/download \"%s\" :dir \"%s\")", l, dir), 
-									"user", env));
-			}
-		}
-		catch(Exception ex) {
-			printer.printex("error", ex);
-			printer.println("error", "Stopped REPL");
-			return; // stop the REPL
-		}
-	}
-
-	private void loadFonts(final Env env) {
-		try {
-			final String dir = config.getFontsDir();
-			final String baseUrl = config.getFontsBaseUrl();
-			
-			final List<Tuple2<String,File>> fonts = 
-					config.getFontsMandatory()
-						  .stream()
-						  .map(l -> new Tuple2<String,File>(baseUrl + l, new File(dir, new File(l).getName())))
-						  .filter(l -> !l._2.isFile())
-						  .collect(Collectors.toList());
-			
-			if (!fonts.isEmpty()) {
-				printer.println("stdout", "Loading fonts...");
-				
-				if (!new File(dir).isDirectory()) {
-					printer.println("error", String.format("The font dir %s is not a directory", dir));
-					return;
-				}
-
-				VncVal result = venice.RE("(internet-avail? \"http://www.google.com\")", "user", env);
-				if (result.equals(Constants.False)) {
-					printer.println("error", "Internet is not available!");
-					return;
-				}
-				
-				venice.RE("(load-module :ansi)", "user", env);
-				
-				final String script =
-						"(let [uri         \"%s\"                                        \n" + 
-						"      target      (io/file \"%s\")                              \n" + 
-						"      font-name   \"%s\"                                        \n" + 
-						"      progress-fn (ansi/progress-bar                            \n" +
-						"                     :caption     (str font-name \" \")         \n" +
-						"                     :start-msg   \"\"                          \n" +
-						"                     :end-msg     (str font-name \" ok\")       \n" +
-						"                     :failed-msg  (str font-name \" failed\"))] \n" +
-						"  (io/spit target (io/download uri                              \n" +
-						"                      :binary true                              \n" +
-						"                      :user-agent \"Mozilla\"                   \n" +
-						"                      :progress-fn progress-fn)))               \n";
-
-				fonts.forEach(l -> venice.RE(
-									String.format(script, l._1, l._2.getPath(), l._2.getName()), 
-									"user", env));
-			}
-		}
-		catch(Exception ex) {
-			printer.printex("error", ex);
-			printer.println("error", "Stopped REPL");
-			return; // stop the REPL
-		}
-	}
-
-	
-	final static String getMavenArtefactFilename(final String artefact, final String suffix) {
-		final String[] elements = artefact.split(":");
-		return elements[1] + "-" + elements[2] + suffix;
 	}
 	
 	
