@@ -1,0 +1,8 @@
+(do
+   (defn sum [n]
+      (loop [i 0]
+         (if (< i n)
+            (recur (inc i))
+            i)))
+   (perf (sum 100000) 100 100)
+   (println (prof :data-formatted "Metrics: loop")))

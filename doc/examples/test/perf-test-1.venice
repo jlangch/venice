@@ -1,0 +1,3 @@
+(do
+  (perf (+ 120 200) 12000 1000)
+  (println (prof :data-formatted "Metrics: (+ 120 200)")))
