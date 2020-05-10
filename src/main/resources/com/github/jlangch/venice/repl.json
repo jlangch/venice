@@ -28,46 +28,6 @@
     "dumb-terminal": false
   },
 
-  "libs": {
-    "dir": "libs",
-    "mandatory": [  ],
-    "optional":  [ "org.fusesource.jansi:jansi:1.18",
-                   "org.knowm.xchart:xchart:3.6.3",
-                   "org.apache.tomcat.embed:tomcat-embed-core:9.0.34",
-                   "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.34",
-                   "javax.annotation:javax.annotation-api:1.3.2",
-                   "org.xhtmlrenderer:flying-saucer-core:9.1.20",
-                   "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20",
-                   "com.github.librepdf:openpdf:1.3.16",
-                   "com.github.librepdf:pdf-toolbox:1.3.16" ]
-  },
-
-  "fonts": {
-    "dir": "libs/fonts",
-    "base-url": "https://github.com/google/fonts/tree/master/",
-    "mandatory": [ ],
-    "optional":  [ "apache/opensans/OpenSans-Regular.ttf",
-                   "apache/opensans/OpenSans-Italic.ttf",
-                   "apache/opensans/OpenSans-Light.ttf",
-                   "apache/opensans/OpenSans-Bold.ttf",
-                   "ofl/sourcecodepro/SourceCodePro-Regular.ttf",
-                   "ofl/sourcecodepro/SourceCodePro-Light.ttf",
-                   "ofl/sourcecodepro/SourceCodePro-Bold.ttf",
-                   "ofl/audiowide/Audiowide-Regular.ttf",
-                   "ofl/roboto/static/Roboto-Black.ttf",
-                   "ofl/roboto/static/Roboto-BlackItalic.ttf",
-                   "ofl/roboto/static/Roboto-Bold.ttf",
-                   "ofl/roboto/static/Roboto-BoldItalic.ttf",
-                   "ofl/roboto/static/Roboto-Italic.ttf",
-                   "ofl/roboto/static/Roboto-Light.ttf",
-                   "ofl/roboto/static/Roboto-LightItalic.ttf",
-                   "ofl/roboto/static/Roboto-Medium.ttf",
-                   "ofl/roboto/static/Roboto-MediumItalic.ttf",
-                   "ofl/roboto/static/Roboto-Regular.ttf",
-                   "ofl/roboto/static/Roboto-Thin.ttf",
-                   "ofl/roboto/static/Roboto-ThinItalic.ttf" ]
-  },
-
 
   "_comments": {
     "jline": "log levels: OFF, ALL, SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST. null -> don't change",
