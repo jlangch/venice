@@ -61,6 +61,14 @@
              "ofl/roboto/static/Roboto-Thin.ttf",
              "ofl/roboto/static/Roboto-ThinItalic.ttf" ])
 
+(def scripts [ "chart.venice"
+               "chart-swing.venice"
+               "fibonacci.venice"
+               "dining-philosophers.venice"
+               "tomcat-geoip-map.venice"
+               "zip-tomcat-logs.venice"
+               "demo-webapp.venice"
+               "login-webapp.venice" ])
 
 (defn- missing-libs [dir libs]
   (->> libs
@@ -107,10 +115,13 @@
                                              dir
                                              (io/file-name %))
                   required-fonts)
-          (println *err* "Internet is not available!")))))
+          (println *err* "Internet is not available!"))))))
 
 
 (defn setup-scripts [dir]
+  (println "Copying example scripts...")
+  (docoll #(io/spit (io/file dir %) (io/load-classpath-resource %))
+          scripts)
   nil)
 
 
