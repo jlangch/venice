@@ -46,10 +46,10 @@
 ;; -----------------------------------------------------------------------------
 
 ;; The HTML templates in this demo are string based to get single file demo app.
-;; Alternatively templates can be loaded from classpath or filesystem if 
+;; Alternatively templates can be loaded from classpath or filesystem if
 ;; required so.
 
-(def tpl-login-screen (
+(def tpl-login-screen
   """
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html xmlns="//www.w3.org/1999/xhtml">
