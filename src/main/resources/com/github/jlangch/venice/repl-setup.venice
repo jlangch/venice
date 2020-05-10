@@ -139,7 +139,7 @@
          (bytebuf-to-string <> :utf-8)
          (str/replace-all <>
                           "cd C:/Users/foo/venice"
-                          (io/file-path (io/file-canonical-path ".")))
+                          (str "cd " (io/file-path (io/file-canonical-path "."))))
          (io/spit "repl.bat"))))
 
 
@@ -150,7 +150,7 @@
          (bytebuf-to-string <> :utf-8)
          (str/replace-all <>
                           "cd /Users/foo/venice/"
-                          (io/file-path (io/file-canonical-path ".")))
+                          (str "cd " (io/file-path (io/file-canonical-path "."))))
          (io/spit "repl.sh" <>))
     (when (io/exists-file? "repl.sh"))
       (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file "."))))
@@ -174,6 +174,13 @@
                                 (io/load-classpath-resource res-venice-png))]
         (io/spit target (apply io/zip zip-entries))))))
 
+(defn copy-venice-jar [dir]
+  (let [loc  (java-source-location :com.github.jlangch.venice.Venice)
+        name (when (some? loc) (io/file-name loc))]
+    (when (and (str/starts-with? name "venice-") (str/ends-with? name ".jar"))
+      (println (str "Copying '" name "' to libs"))
+      (io/copy-file loc (io/file dir name)))))
+
 
 (defn setup []
   (when-not (io/exists-dir? "libs")
@@ -182,6 +189,7 @@
     (io/mkdirs "fonts"))
   (when-not (io/exists-dir? "scripts")
     (io/mkdirs "scripts"))
+  (repl-setup/copy-venice-jar "libs")
   (repl-setup/download-libs "libs" libs)
   (repl-setup/download-fonts "fonts" fonts)
   (repl-setup/setup-repl-config)
