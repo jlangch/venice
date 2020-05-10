@@ -109,13 +109,13 @@
 (defn download-fonts [dir fonts]
   (let [required-fonts (repl-setup/missing-fonts dir fonts)]
     (when-not (empty? required-fonts)
-      (println (str "Downloading fonts from '" fonts-base-url "'...")
+      (println (str "Downloading fonts from '" fonts-base-url "'..."))
       (if (io/internet-avail?)
           (docoll #(repl-setup/download-font (str fonts-base-url %)
                                              dir
                                              (io/file-name %))
                   required-fonts)
-          (println *err* "Internet is not available!"))))))
+          (println *err* "Internet is not available!")))))
 
 
 (defn setup-scripts [dir]
