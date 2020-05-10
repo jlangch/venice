@@ -54,7 +54,11 @@ public class DocGenerator {
 
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
-							.createEnv(Arrays.asList("app", "xml", "crypt"), false, new VncKeyword("docgen"))
+							.createEnv(
+								Arrays.asList("app", "xml", "crypt"), 
+								false, 
+								false, 
+								new VncKeyword("docgen"))
 							.setStdoutPrintStream(null);
 	}
 

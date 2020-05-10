@@ -82,8 +82,15 @@ public class REPL {
 				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
 			}
 
+			final String jansiVersion = config.getJansiVersion();
+
+			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
+											|| cli.switchPresent("-dumb") 
+											|| config.isJLineDumbTerminal();
+
+			ansiTerminal = !dumbTerminal;
+
 			if (OSUtils.IS_WINDOWS) {
-				final String jansiVersion = config.getJansiVersion();
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
@@ -98,18 +105,17 @@ public class REPL {
 			}
 			
 			System.out.println("Venice REPL: V" + Venice.getVersion());			
+			System.out.println("Using " + (dumbTerminal ? "dumb" : "ansi") + " terminal.");
 			System.out.println("Type '!' for help.");
-			
-			repl(cli);
+
+			repl(cli, dumbTerminal);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}	
 	}
 
-	private void repl(final CommandLineArgs cli) throws Exception {
-		final boolean dumbTerminal = config.isJLineDumbTerminal();
-		
+	private void repl(final CommandLineArgs cli, final boolean dumbTerminal) throws Exception {
 		final String prompt = config.getPrompt();
 		final String secondaryPrompt = dumbTerminal ? "" : config.getSecondaryPrompt();
 		final String resultPrefix = config.getResultPrefix();
@@ -545,7 +551,7 @@ public class REPL {
 			final PrintStream ps_out,
 			final PrintStream ps_err
 	) {
-		return venice.createEnv(macroexpand, new VncKeyword("repl"))
+		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setStdoutPrintStream(ps_out)
 					 .setStderrPrintStream(ps_err);
@@ -661,4 +667,5 @@ public class REPL {
 	private VeniceInterpreter venice;
 	private TerminalPrinter printer;
 	private boolean macroexpand = false;
+	private boolean ansiTerminal = false;
 }

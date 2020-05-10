@@ -105,7 +105,11 @@ public class Venice {
 	 * @param macroexpand If true expand macros upfront
 	 * @return the pre-compiled script
 	 */
-	public PreCompiled precompile(final String scriptName, final String script, final boolean macroexpand) {
+	public PreCompiled precompile(
+			final String scriptName, 
+			final String script, 
+			final boolean macroexpand
+	) {
 		if (StringUtil.isBlank(scriptName)) {
 			throw new IllegalArgumentException("A 'scriptName' must not be blank");
 		}
@@ -120,7 +124,7 @@ public class Venice {
 												new AcceptAllInterceptor(), 
 												loadPaths);
 		
-		final Env env = venice.createEnv(macroexpand, new VncKeyword("macroexpand"))
+		final Env env = venice.createEnv(macroexpand, false, new VncKeyword("macroexpand"))
 							  .setStdoutPrintStream(null)
 							  .setStderrPrintStream(null);
 
@@ -318,7 +322,7 @@ public class Venice {
 			final boolean macroexpand, 
 			final Map<String,Object> params
 	) {
-		return addParams(venice.createEnv(macroexpand, new VncKeyword("script")), params);
+		return addParams(venice.createEnv(macroexpand, false, new VncKeyword("script")), params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
@@ -424,7 +428,7 @@ public class Venice {
 		Env env = precompiledEnv.get();
 		if (env == null) {
 			env = new VeniceInterpreter()
-						.createEnv(true, new VncKeyword("script"))
+						.createEnv(true, false, new VncKeyword("script"))
 						.setStdoutPrintStream(null)
 						.setStderrPrintStream(null);
 			precompiledEnv.set(env);

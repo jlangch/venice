@@ -175,13 +175,18 @@ public class VeniceInterpreter implements Serializable  {
 		return Printer.pr_str(exp, true);
 	}
 		
-	public Env createEnv(final boolean macroexpandOnLoad, final VncKeyword runMode) {  
-		return createEnv(null, macroexpandOnLoad, runMode);
+	public Env createEnv(
+			final boolean macroexpandOnLoad, 
+			final boolean ansiTerminal, 
+			final VncKeyword runMode
+	) {  
+		return createEnv(null, macroexpandOnLoad, ansiTerminal, runMode);
 	}
 
 	public Env createEnv(
 			final List<String> preloadExtensionModules,
 			final boolean macroexpandOnLoad, 
+			final boolean ansiTerminal,
 			final VncKeyword runMode
 	) {
 		sealedSystemNS.set(false);
@@ -202,6 +207,9 @@ public class VeniceInterpreter implements Serializable  {
 
 		// set system newline
 		env.setGlobal(NEWLINE_VAR);
+
+		// ansi terminal
+		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), ansiTerminal ? True : False, false));
 
 		// set the load path
 		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));

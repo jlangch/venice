@@ -24,6 +24,8 @@
 
 (ns maven)
 
+(load-module :ansi)
+
 
 (def maven/repo "https://repo1.maven.org/maven2")
 
@@ -100,12 +102,12 @@
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir ".")"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true)"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent true)""" ) }
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" ) }
 
   maven/download [artefact & options]
 
   (let [opts        (apply hash-map options)
-        silent      (:silent opts false)
+        silent      (:silent opts true)
         jar         (:jar opts true)
         sources     (:sources opts false)
         pom         (:pom opts false)

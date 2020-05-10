@@ -143,7 +143,7 @@
          (str/replace-all <>
                           "cd C:/Users/foo/venice"
                           (str "cd " (io/file-path (io/file-canonical-path "."))))
-         (io/spit "repl.bat"))))
+         (io/spit "repl.bat" <>))))
 
 
 (defn- setup-repl-launcher-unix []

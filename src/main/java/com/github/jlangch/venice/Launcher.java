@@ -175,9 +175,10 @@ public class Launcher {
 			final VncKeyword runMode,
 			final List<Var> vars
 	) {
-		return venice.createEnv(macroexpand, runMode)
+		return venice.createEnv(macroexpand, false, runMode)
 					 .addGlobalVars(vars)
-					 .setStdoutPrintStream(new PrintStream(System.out, true));
+					 .setStdoutPrintStream(new PrintStream(System.out, true))
+					 .setStderrPrintStream(new PrintStream(System.err, true));
 	}
 
 	private static Var convertAppNameToVar(final String appName) {

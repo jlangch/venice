@@ -130,6 +130,10 @@
     (println "Loading Mercator image...")
     (mercator/load-image file))
 
+  (defn download-maxmind-db [lic-key]
+    (->> (geoip/download-maxmind-db :country lic-key)
+         (io/spit (io/file maxmind-country-zip))))
+
   (defn lookup-ip [ip] (@resolver ip))
 
   (defn run-custom [styles mercator-img out-file & log-files]
@@ -138,21 +142,15 @@
   (defn run [out-file & log-files]
     (process nil nil out-file log-files))
 
-
-  (when-not (io/exists-file? maxmind-country-zip)
-    (throw (. :VncException :new
-              (str "The MaxMind country file"
-                   maxmind-country-zip
-                   "does not exist!"))))
-
   (println """
            Actions:
               [1] (lookup-ip "41.216.186.131")
-              [2] (run "./ip-map.png"
-                       "resources/localhost_access_log.2019-12.zip")
+              [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
               [3] (run "./ip-map.png"
+                       "resources/localhost_access_log.2019-12.zip")
+              [4] (run "./ip-map.png"
                        "resources/localhost_access_log.2019-12-01.log")
-              [4] (apply run "./ip-map.png"
+              [5] (apply run "./ip-map.png"
                              (io/list-files-glob "resources"
                                                  "localhost_access_log.2020-*"))
            """)
@@ -167,4 +165,17 @@
 
                       From the REPL run: !macroexpand
              -------------------------------------------------------------------
-             """)))
+             """))
+
+  (when-not (io/exists-file? maxmind-country-zip)
+    (println *err*
+             """
+
+             -------------------------------------------------------------------
+             Error: The MaxMind country file does not exist!
+
+                    ~{maxmind-country-zip}
+             -------------------------------------------------------------------
+             """))
+
+)

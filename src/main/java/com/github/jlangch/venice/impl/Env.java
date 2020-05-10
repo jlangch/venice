@@ -395,7 +395,7 @@ public class Env implements Serializable {
 					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   ", regexFilter))
 					.toString();
 	}
-	
+		
 	public Env setStdoutPrintStream(final PrintStream ps) {
 		replaceGlobalDynamic(
 				new VncSymbol("*out*"), 
