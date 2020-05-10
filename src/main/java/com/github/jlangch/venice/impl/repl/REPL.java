@@ -172,7 +172,7 @@ public class REPL {
 		if (cli.switchPresent("-setup")) {
 			handleSetupCommand(env, Mode.Minimal);
 		}
-		if (cli.switchPresent("-setup-ext")) {
+		else if (cli.switchPresent("-setup-ext")) {
 			handleSetupCommand(env, Mode.Extended);
 		}
 
