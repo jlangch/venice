@@ -28,6 +28,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - function `io/internet-avail?`
+- simplified REPL setup (automated extended setup)
 
 
 
