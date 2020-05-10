@@ -27,39 +27,42 @@
 (load-module :maven)
 (load-module :ansi)
 
+(def libs-min [ "org.fusesource.jansi:jansi:1.18" ])
 
-(def libs [ "org.fusesource.jansi:jansi:1.18",
-            "org.knowm.xchart:xchart:3.6.3",
-            "org.apache.tomcat.embed:tomcat-embed-core:9.0.34",
-            "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.34",
-            "javax.annotation:javax.annotation-api:1.3.2",
-            "org.xhtmlrenderer:flying-saucer-core:9.1.20",
-            "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20",
-            "com.github.librepdf:openpdf:1.3.16",
-            "com.github.librepdf:pdf-toolbox:1.3.16" ])
+(def libs-ext [ "org.fusesource.jansi:jansi:1.18",
+                "org.knowm.xchart:xchart:3.6.3",
+                "org.apache.tomcat.embed:tomcat-embed-core:9.0.34",
+                "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.34",
+                "javax.annotation:javax.annotation-api:1.3.2",
+                "org.xhtmlrenderer:flying-saucer-core:9.1.20",
+                "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20",
+                "com.github.librepdf:openpdf:1.3.16",
+                "com.github.librepdf:pdf-toolbox:1.3.16" ])
 
 (def fonts-base-url "https://github.com/google/fonts/tree/master/")
 
-(def fonts [ "apache/opensans/OpenSans-Regular.ttf",
-             "apache/opensans/OpenSans-Italic.ttf",
-             "apache/opensans/OpenSans-Light.ttf",
-             "apache/opensans/OpenSans-Bold.ttf",
-             "ofl/sourcecodepro/SourceCodePro-Regular.ttf",
-             "ofl/sourcecodepro/SourceCodePro-Light.ttf",
-             "ofl/sourcecodepro/SourceCodePro-Bold.ttf",
-             "ofl/audiowide/Audiowide-Regular.ttf",
-             "ofl/roboto/static/Roboto-Black.ttf",
-             "ofl/roboto/static/Roboto-BlackItalic.ttf",
-             "ofl/roboto/static/Roboto-Bold.ttf",
-             "ofl/roboto/static/Roboto-BoldItalic.ttf",
-             "ofl/roboto/static/Roboto-Italic.ttf",
-             "ofl/roboto/static/Roboto-Light.ttf",
-             "ofl/roboto/static/Roboto-LightItalic.ttf",
-             "ofl/roboto/static/Roboto-Medium.ttf",
-             "ofl/roboto/static/Roboto-MediumItalic.ttf",
-             "ofl/roboto/static/Roboto-Regular.ttf",
-             "ofl/roboto/static/Roboto-Thin.ttf",
-             "ofl/roboto/static/Roboto-ThinItalic.ttf" ])
+(def fonts-min [])
+
+(def fonts-ext [ "apache/opensans/OpenSans-Regular.ttf",
+                 "apache/opensans/OpenSans-Italic.ttf",
+                 "apache/opensans/OpenSans-Light.ttf",
+                 "apache/opensans/OpenSans-Bold.ttf",
+                 "ofl/sourcecodepro/SourceCodePro-Regular.ttf",
+                 "ofl/sourcecodepro/SourceCodePro-Light.ttf",
+                 "ofl/sourcecodepro/SourceCodePro-Bold.ttf",
+                 "ofl/audiowide/Audiowide-Regular.ttf",
+                 "ofl/roboto/static/Roboto-Black.ttf",
+                 "ofl/roboto/static/Roboto-BlackItalic.ttf",
+                 "ofl/roboto/static/Roboto-Bold.ttf",
+                 "ofl/roboto/static/Roboto-BoldItalic.ttf",
+                 "ofl/roboto/static/Roboto-Italic.ttf",
+                 "ofl/roboto/static/Roboto-Light.ttf",
+                 "ofl/roboto/static/Roboto-LightItalic.ttf",
+                 "ofl/roboto/static/Roboto-Medium.ttf",
+                 "ofl/roboto/static/Roboto-MediumItalic.ttf",
+                 "ofl/roboto/static/Roboto-Regular.ttf",
+                 "ofl/roboto/static/Roboto-Thin.ttf",
+                 "ofl/roboto/static/Roboto-ThinItalic.ttf" ])
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -182,17 +185,40 @@
       (io/copy-file loc (io/file dir name)))))
 
 
-(defn setup []
-  (when-not (io/exists-dir? "libs")
-     (io/mkdirs "libs"))
-  (when-not (io/exists-dir? "fonts")
-    (io/mkdirs "fonts"))
-  (when-not (io/exists-dir? "scripts")
-    (io/mkdirs "scripts"))
-  (repl-setup/copy-venice-jar "libs")
-  (repl-setup/download-libs "libs" libs)
-  (repl-setup/download-fonts "fonts" fonts)
-  (repl-setup/setup-repl-config)
-  (repl-setup/setup-repl-launcher)
-  (repl-setup/setup-scripts "scripts")
-  (repl-setup/create-resources-jar "libs" "fonts"))
+(defn print-success-message []
+  (let [launch-script (if (os-type? :windows) "repl.bat" "repl.sh")]
+    (println )
+    (println "----------------------------------------------------------")
+    (println "The Venice REPL has been successfuly configured and setup.")
+    (println "The original Venice JAR is not needed anymore, it has been")
+    (println "copied to the 'libs' directory that holds all JAR files   ")
+    (println "and resources.                                            ")
+    (println )
+    (println "Start the REPL with ~{launch-script} ")
+    (println "----------------------------------------------------------")))
+
+
+(defn setup [mode]
+  (let [libs  (if (= mode :extended) libs-ext libs-min)
+        fonts (if (= mode :extended) fonts-ext fonts-min)]
+    (when-not (io/exists-dir? "libs")
+      (io/mkdirs "libs"))
+
+    (when-not (io/exists-dir? "scripts")
+      (io/mkdirs "scripts"))
+
+    (when (= mode :extended)
+      (when-not (io/exists-dir? "fonts")
+        (io/mkdirs "fonts")))
+
+    (repl-setup/copy-venice-jar "libs")
+    (repl-setup/download-libs "libs" libs)
+    (repl-setup/download-fonts "fonts" fonts)
+    (repl-setup/setup-repl-config)
+    (repl-setup/setup-repl-launcher)
+    (repl-setup/setup-scripts "scripts")
+
+    (when (= mode :extended)
+      (repl-setup/create-resources-jar "libs" "fonts"))
+
+    (print-success-message)))

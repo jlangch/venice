@@ -168,6 +168,13 @@ public class REPL {
 		if (!runLoadFile(config.getLoadFile(), env, resultPrefix)) {
 			return; // stop REPL
 		}
+		
+		if (cli.switchPresent("-setup")) {
+			handleSetupCommand(env, Mode.Minimal);
+		}
+		if (cli.switchPresent("-setup-ext")) {
+			handleSetupCommand(env, Mode.Extended);
+		}
 
 		// REPL loop
 		while (true) {
@@ -278,7 +285,10 @@ public class REPL {
 			handleConfigCommand();
 		}
 		else if (cmd.equals("setup")) {
-			handleSetupCommand(env);
+			handleSetupCommand(env, Mode.Minimal);
+		}
+		else if (cmd.equals("setup-ext")) {
+			handleSetupCommand(env, Mode.Extended);
 		}
 		else if (cmd.equals("launcher")) {
 			handleLauncherCommand();
@@ -331,12 +341,23 @@ public class REPL {
 		printer.println("stdout", ReplConfig.getRawClasspathConfig());
 	}
 
-	private void handleSetupCommand(final Env env) {
+	private void handleSetupCommand(final Env env, final Mode mode) {
 		try {
-			venice.RE("(do (load-module :repl-setup) (repl-setup/setup))" , "user", env);
+			final String script = 
+				mode == Mode.Minimal 
+					? "(do                             \n" +
+		              "  (load-module :repl-setup)     \n" +
+		              "  (repl-setup/setup :minimal))  \n"
+		              
+		            : "(do                             \n" +
+				      "  (load-module :repl-setup)     \n" +
+				      "  (repl-setup/setup :extended)) \n";
+			
+			venice.RE(script, "user", env);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);
+			printer.println("error", "REPL setup failed!");
 		}
 	}
 
@@ -630,6 +651,8 @@ public class REPL {
 			"   !sandbox add-rule venice:module:shell\n";	
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
+	
+	private static enum Mode { Minimal, Extended };
 
 	private final List<String> loadPaths;
 
