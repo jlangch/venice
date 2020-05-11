@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Fixed
+
+- `drop` function (the unit test was not annotated so the bug slipped)
+
 
 
 ## [1.7.26] - 2020-05-11

@@ -725,6 +725,7 @@ public class TransducerFunctionsTest {
 		assertEquals("([0 \"a\"] [1 \"b\"] [2 \"c\"])", venice.eval("(pr-str (map-indexed vector \"abc\"))"));
 	}	
 
+	@Test
 	public void test_drop() {
 		final Venice venice = new Venice();
 
@@ -752,7 +753,7 @@ public class TransducerFunctionsTest {
 		
 		assertEquals("[1]", venice.eval("(pr-str (drop 0 [1]))"));
 		assertEquals("[]", venice.eval("(pr-str (drop 1 [1]))"));
-		assertEquals("[1]", venice.eval("(pr-str (drop 2 [1]))"));
+		assertEquals("[]", venice.eval("(pr-str (drop 2 [1]))"));
 		
 		assertEquals("[1 2]", venice.eval("(pr-str (drop 0 [1 2]))"));
 		assertEquals("[2]", venice.eval("(pr-str (drop 1 [1 2]))"));
@@ -764,6 +765,8 @@ public class TransducerFunctionsTest {
 		assertEquals("[3]", venice.eval("(pr-str (drop 2 [1 2 3]))"));
 		assertEquals("[]", venice.eval("(pr-str (drop 3 [1 2 3]))"));
 		assertEquals("[]", venice.eval("(pr-str (drop 4 [1 2 3]))"));
+
+		assertEquals("[4 5]", venice.eval("(pr-str (drop 3 [1 2 3 4 5]))"));
 	}
 
 	@Test

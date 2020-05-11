@@ -500,7 +500,7 @@ public class TransducerFunctions {
 					final VncLong n = Coerce.toVncLong(args.first());
 					final VncSequence coll = coerceToSequence(args.second());
 
-					return coll.slice((int)Math.min(n.getValue()+1, coll.size()));
+					return coll.slice((int)Math.min(n.getValue(), coll.size()));
 				}
 			}
 
