@@ -195,7 +195,7 @@
 
   ansi [style]
 
-  (if (and ansi/*use-ansi* (some? *ansi-term*))
+  (if (and ansi/*use-ansi* core/*ansi-term*)
     (if (string? style)
       (str "\u001b" style)
       (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES))))
@@ -284,7 +284,7 @@
                      (print (ansi/style text
                                         :clear-line
                                         (ansi/cursor-left 1000)))) ]
-    (if (some? *ansi-term*)
+    (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))]
             (case status
@@ -358,7 +358,7 @@
                                    caption
                                    (str/repeat "#" w1)
                                    (str/repeat " " w2)))) ]
-    (if (some? *ansi-term*)
+    (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
           (case status

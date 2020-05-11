@@ -127,7 +127,7 @@
 
 
 (defn setup-scripts [dir]
-  (println "Copying example scripts...")
+  (println "Extracting example scripts...")
   (let [load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
                            (bytebuf-to-string <> :utf-8)

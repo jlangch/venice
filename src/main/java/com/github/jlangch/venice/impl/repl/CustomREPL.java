@@ -98,11 +98,7 @@ public class CustomREPL {
 				}
 			}
 
-			final String colorInfo = (dumbTerminal || config.getColorMode() == ColorMode.None)
-										? "(colors turned off)"
-										: "(colors turned on)";
-			
-			System.out.println("Using " + (dumbTerminal ? "dumb" : "ansi") + " terminal " + colorInfo);
+			System.out.println(getTerminalInfo());
 			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			System.out.println("Type '!' for help.");
 
@@ -230,6 +226,20 @@ public class CustomREPL {
 	
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
 		return new ReplPrintStream(terminal, config.getColor(context));	
+	}
+	
+	private String getTerminalInfo() {
+		if (ansiTerminal) {
+			if (config.getColorMode() == ColorMode.None) {
+				return "Using ansi terminal (colors turned off, turn on with option '-colors')";
+			}
+			else {
+				return "Using ansi terminal (colors turned on)";
+			}
+		}
+		else {
+			return "Using dumb terminal (colors turned off)";
+		}
 	}
 	
 	
