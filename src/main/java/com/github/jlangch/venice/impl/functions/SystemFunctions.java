@@ -31,6 +31,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -441,6 +442,27 @@ public class SystemFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+		
+	public static VncFunction charset_default_encoding =
+		new VncFunction(
+				"charset-default-encoding",
+				VncFunction
+					.meta()
+					.arglists("(charset-default-encoding)")
+					.doc("Returns the default charset of this Java virtual machine.")
+					.examples("(charset-default-encoding)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("os", args, 0);
+
+				return new VncKeyword(Charset.defaultCharset().name());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 
 	public static VncFunction os_type =
 		new VncFunction(
@@ -762,6 +784,7 @@ public class SystemFunctions {
 					.add(java_version_info)
 					.add(java_source_location)
 					.add(used_memory)
+					.add(charset_default_encoding)
 					.toMap();
 
 

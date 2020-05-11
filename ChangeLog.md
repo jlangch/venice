@@ -27,7 +27,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- functions `io/internet-avail?`, `str/cr-lf`
+- functions `io/internet-avail?`, `str/cr-lf`, `charset-default-encoding`
 - simplified REPL setup (automated extended setup)
 - module 'tomcat' throws an exception when used and the Tomcat libs are not on 
   the classpath

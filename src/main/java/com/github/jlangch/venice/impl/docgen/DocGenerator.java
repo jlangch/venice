@@ -847,15 +847,19 @@ public class DocGenerator {
 		test.addItem(getDocItem("sandboxed?"));
 		test.addItem(getDocItem("os-type?"));
 
+		final DocSection system = new DocSection("System");
+		all.addSection(system);
+		system.addItem(getDocItem("version"));
+		system.addItem(getDocItem("os-type"));
+		system.addItem(getDocItem("system-prop"));
+		system.addItem(getDocItem("system-env"));
+		system.addItem(getDocItem("system-exit-code"));
+		system.addItem(getDocItem("java-version"));
+		system.addItem(getDocItem("java-version-info"));
+		system.addItem(getDocItem("charset-default-encoding"));
+
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
-		util.addItem(getDocItem("version"));
-		util.addItem(getDocItem("os-type"));
-		util.addItem(getDocItem("system-prop"));
-		util.addItem(getDocItem("system-env"));
-		util.addItem(getDocItem("system-exit-code"));
-		util.addItem(getDocItem("java-version"));
-		util.addItem(getDocItem("java-version-info"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("host-name"));
