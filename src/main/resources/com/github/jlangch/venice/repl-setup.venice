@@ -90,7 +90,7 @@
     (when-not (empty? artefacts)
       (println "Downloading Java libraries...")
       (if (io/internet-avail?)
-         (docoll #(maven/download % :dir dir) artefacts)
+         (docoll #(maven/download % :dir dir :silent false) artefacts)
          (println *err* "Internet is not available!")))))
 
 
@@ -130,7 +130,7 @@
   (println "Copying example scripts...")
   (let [load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
-                           (bytebuf-to-string <> :utf-8)
+                           (bytebuf-to-string <> (charset-default-encoding))
                            (repl-setup/cr-lf <>)))]
     (docoll #(io/spit (io/file dir %) (load-script %)) scripts)))
 
@@ -139,7 +139,7 @@
   (when-not (io/exists-file? "repl.json")
     (println "Setting up 'repl.json'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
-         (bytebuf-to-string <> :utf-8)
+         (bytebuf-to-string <> (charset-default-encoding))
          (repl-setup/cr-lf <>)
          (io/spit "repl.json" <>))))
 
@@ -148,7 +148,7 @@
   (when-not (io/exists-file? "repl.bat")
     (println "Setting up 'repl.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
-         (bytebuf-to-string <> :utf-8)
+         (bytebuf-to-string <> (charset-default-encoding))
          (repl-setup/cr-lf <>)
          (str/replace-all <>
                           "cd C:/Users/foo/venice"
@@ -160,7 +160,7 @@
   (when-not (io/exists-file? "repl.sh")
     (println "Setting up 'repl.sh'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
-         (bytebuf-to-string <> :utf-8)
+         (bytebuf-to-string <> (charset-default-encoding))
          (repl-setup/cr-lf <>)
          (str/replace-all <>
                           "cd /Users/foo/venice/"
