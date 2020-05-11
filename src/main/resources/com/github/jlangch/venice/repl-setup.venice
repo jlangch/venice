@@ -130,42 +130,45 @@
   (println "Copying example scripts...")
   (let [load-script (fn [script]
                       (-<> (io/load-classpath-resource script)
-                           (bytebuf-to-string <> (charset-default-encoding))
+                           (bytebuf-to-string <> :utf-8)
                            (repl-setup/cr-lf <>)))]
-    (docoll #(io/spit (io/file dir %) (load-script %)) scripts)))
+    (docoll #(io/spit (io/file dir %)
+                      (load-script %)
+                      :encoding (charset-default-encoding))
+            scripts)))
 
 
 (defn setup-repl-config []
   (when-not (io/exists-file? "repl.json")
     (println "Setting up 'repl.json'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
-         (bytebuf-to-string <> (charset-default-encoding))
+         (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
-         (io/spit "repl.json" <>))))
+         (io/spit "repl.json" <> :encoding (charset-default-encoding)))))
 
 
 (defn- setup-repl-launcher-windows []
   (when-not (io/exists-file? "repl.bat")
     (println "Setting up 'repl.bat'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
-         (bytebuf-to-string <> (charset-default-encoding))
+         (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <>
                           "cd C:/Users/foo/venice"
                           (str "cd " (io/file-path (io/file-canonical-path "."))))
-         (io/spit "repl.bat" <>))))
+         (io/spit "repl.bat" <> :encoding (charset-default-encoding)))))
 
 
 (defn- setup-repl-launcher-unix []
   (when-not (io/exists-file? "repl.sh")
     (println "Setting up 'repl.sh'...")
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
-         (bytebuf-to-string <> (charset-default-encoding))
+         (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <>
                           "cd /Users/foo/venice/"
                           (str "cd " (io/file-path (io/file-canonical-path "."))))
-         (io/spit "repl.sh" <>))
+         (io/spit "repl.sh" <> :encoding (charset-default-encoding)))
     (when (io/exists-file? "repl.sh"))
       (sh "/bin/sh" "-c" "chmod u+x repl.sh" :dir (io/file "."))))
 
