@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
@@ -297,6 +298,9 @@ public class REPL {
 		}
 		else if (cmd.equals("setup-ext")) {
 			handleSetupCommand(venice, env, SetupMode.Extended, printer);
+		}
+		else if (cmd.equals("classpath")) {
+			handleReplClasspathCommand();
 		}
 		else if (cmd.equals("launcher")) {
 			handleLauncherCommand();
@@ -608,6 +612,13 @@ public class REPL {
 		else {
 			return "Using dumb terminal (colors turned off)";
 		}
+	}
+	
+	private void handleReplClasspathCommand() {
+		printer.println("stdout", "REPL classpath:");					
+		for (String f : System.getProperty("java.class.path").split(File.pathSeparator)) {
+			printer.println("stdout", "  " + f);					
+		}			
 	}
 	
 	
