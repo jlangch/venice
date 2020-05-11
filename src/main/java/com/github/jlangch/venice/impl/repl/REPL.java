@@ -180,9 +180,11 @@ public class REPL {
 		
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
 			handleSetupCommand(venice, env, SetupMode.Extended, printer);
+			return; // we stop here
 		}
 		else if (cli.switchPresent("-setup")) {
 			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
+			return; // we stop here
 		}
 
 		// REPL loop
