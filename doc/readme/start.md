@@ -62,7 +62,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL:
 
 ```text
-foo> java -cp venice-1.7.25.jar;jansi-1.18.jar com.github.jlangch.venice.Launcher -colors
+foo> java -cp venice-1.7.25.jar;jansi-1.18.jar com.github.jlangch.venice.Launcher -colors-darkmode
 ```
 
 The REPL prompts for input:
@@ -80,6 +80,37 @@ Type an expression like `(+ 1 1)` followed by a `<CR>`
 venice> (+ 1 1)
 => 2
 venice>
+```
+
+#### 3.c Automated setup for all operating systems
+
+The automated setup will create a laucher script with the Java classpath correctly
+setup, download the Jansi libray from Maven, and add some example Venice scripts.
+
+Open a terminal, move to the directory the Venice JAR is located, and start 
+the REPL in setup mode:
+
+```text
+foo> java -jar venice-1.7.25.jar -setup -colors-darkmode
+```
+
+The `-setup` option will cause Venice to run a setup:
+  - download the Jansi library from the Maven repository
+  - extract some example Venice scripts
+  - creates a launcher `repl.bat` for Windows and `repl.sh` for all other OS
+  
+Now a Venice REPL can be started
+
+on Windows:
+
+```text
+foo> repl.bat
+```
+
+on MacOSX and Linux:
+
+```text
+foo> ./repl.sh
 ```
 
 
