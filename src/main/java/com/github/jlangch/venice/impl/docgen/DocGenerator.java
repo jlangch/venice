@@ -275,15 +275,18 @@ public class DocGenerator {
 		use.addItem(getDocItem("shuffle"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
-		use.addItem(getDocItem("str/join"));
 		use.addItem(getDocItem("str/subs"));
 		use.addItem(getDocItem("str/chars"));
-		use.addItem(getDocItem("str/split"));
-		use.addItem(getDocItem("str/split-lines"));
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
 		use.addItem(getDocItem("str/truncate"));
 		use.addItem(getDocItem("str/lorem-ipsum"));
+		
+		final DocSection split = new DocSection("Split/Join");
+		strings.addSection(split);
+		split.addItem(getDocItem("str/split"));
+		split.addItem(getDocItem("str/split-lines"));
+		split.addItem(getDocItem("str/join"));
 		
 		final DocSection replace = new DocSection("Replace");
 		strings.addSection(replace);
