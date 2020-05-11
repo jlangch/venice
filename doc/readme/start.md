@@ -87,7 +87,7 @@ venice>
 This is by far the easiest way to setup a Venice REPL environment regardless of
 the operating system (Windows, MacOSX, or Linux) you run.
 
-You just need the Venice JAR (venice-1.7.26.jar) as prerequisite.
+You just need the Venice JAR (venice-1.7.26.jar or newer) as prerequisite.
 
 The automated setup will create a launcher script with the Java classpath correctly
 setup, download the Jansi library from Maven, and add some example Venice scripts.
