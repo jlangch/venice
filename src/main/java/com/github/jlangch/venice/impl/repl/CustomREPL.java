@@ -157,20 +157,19 @@ public class CustomREPL {
 		final Env env = loadEnv(venice, cli, ps_out, ps_err);
 		
 
-		try {
-			printer.println("stdout", "loading file \"" + app.getPath() + "\"");
-			venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
-		}
-		catch(Exception ex) {
-			printer.printex("error", ex);
-		}
-
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
 			handleSetupCommand(venice, env, SetupMode.Extended, printer);
+			return; // we stop here
 		}
 		else if (cli.switchPresent("-setup")) {
 			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
+			return; // we stop here
 		}
+
+		if (!runApp(venice, env, printer)) {
+			return; // stop REPL
+		}
+
 		
 		final History history = new DefaultHistory();
 		
@@ -274,6 +273,24 @@ public class CustomREPL {
 		}
 	}
 	
+	private boolean runApp(
+			final VeniceInterpreter venice, 
+			final Env env, 
+			final TerminalPrinter printer
+	) {
+		try {
+			if (app != null) {
+				printer.println("stdout", "loading file \"" + app.getPath() + "\"");
+				venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
+			}
+			return true;
+		}
+		catch(Exception ex) {
+			printer.printex("error", ex);
+			printer.println("error", "Stopped REPL");
+			return false; // stop the REPL
+		}
+	}
 	
 	
 	private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";
