@@ -96,7 +96,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup mode:
 
 ```text
-foo> java -jar venice-1.7.25.jar -setup -colors-darkmode
+foo> java -jar venice-1.7.25.jar -setup -colors
 ```
 
 The `-setup` option will cause Venice to run a setup:
@@ -104,7 +104,7 @@ The `-setup` option will cause Venice to run a setup:
   - extract some example Venice scripts
   - creates a launcher `repl.bat` for Windows and `repl.sh` for all other OS
   
-Now a Venice REPL can be started
+Now a Venice REPL can be started simply by executing the launcher.
 
 on Windows:
 
