@@ -97,7 +97,9 @@ public class REPL {
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
-				else {
+				else if (!(cli.switchPresent("-setup") 
+						    || cli.switchPresent("-setup-ext") 
+						    || cli.switchPresent("-setup-extended"))) {
 					System.out.print(
 							"--------------------------------------------------------------------\n" +
 							"The Venice REPL requires the jansi library on Windows.              \n" +
