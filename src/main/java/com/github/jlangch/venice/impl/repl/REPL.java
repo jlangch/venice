@@ -173,10 +173,6 @@ public class REPL {
 									.build();
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
-
-		if (!runLoadFile(config.getLoadFile(), env, resultPrefix)) {
-			return; // stop REPL
-		}
 		
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
 			handleSetupCommand(venice, env, SetupMode.Extended, printer);
@@ -185,6 +181,10 @@ public class REPL {
 		else if (cli.switchPresent("-setup")) {
 			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
 			return; // we stop here
+		}
+
+		if (!runLoadFile(config.getLoadFile(), env, resultPrefix)) {
+			return; // stop REPL
 		}
 
 		// REPL loop
