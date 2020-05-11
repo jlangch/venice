@@ -289,6 +289,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/strip-end"));
 		use.addItem(getDocItem("str/strip-indent"));
 		use.addItem(getDocItem("str/strip-margin"));
+		use.addItem(getDocItem("str/cr-lf", false));
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
 		use.addItem(getDocItem("str/truncate"));

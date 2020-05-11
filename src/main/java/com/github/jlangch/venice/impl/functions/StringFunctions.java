@@ -749,6 +749,40 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_cr_lf =
+		new VncFunction(
+				"str/cr-lf",
+				VncFunction
+					.meta()
+					.arglists("(str/cr-lf s mode)")
+					.doc("Convert a text to use LF or CR-LF.")
+					.examples(
+						"(str/cr-lf \"line1\nline2\nline3\" :cr-lf)",
+						"(str/cr-lf \"line1\nline2\nline3\" :lf)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/cr-lf", args, 2);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				else {
+					final String text = Coerce.toVncString(args.first()).getValue();
+					final String mode = Coerce.toVncKeyword(args.second()).getValue();
+					final String ending = "cr-lf".equals(mode) ? "\r\n" : "\n";
+					
+					return new VncString(
+							StringUtil
+								.splitIntoLines(text)
+								.stream()
+								.collect(Collectors.joining(ending)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_rest =
 		new VncFunction(
 				"str/rest",
@@ -1770,6 +1804,7 @@ public class StringFunctions {
 					.add(str_chars)
 					.add(str_split)
 					.add(str_split_lines)
+					.add(str_cr_lf)
 					.add(str_format)
 					.add(str_rest)
 					.add(str_quote)
