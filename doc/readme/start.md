@@ -8,6 +8,7 @@ like Linux, MacOSX, or Windows.
 Venice can be setup on a [local machine](#venice-local-setup) or you can use a [Venice GitPod workspace](#venice-gitpod-workspace) without requiring any local installations.
  
 
+
 ## Venice Local Setup
 
 ### 1. Install Java
@@ -26,7 +27,7 @@ Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.githu
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
-#### 3.a Linux / MacOSX
+#### 3.a Linux and MacOSX
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 a REPL:
@@ -90,7 +91,8 @@ the operating system (Windows, MacOSX, or Linux) you run.
 You just need the Venice JAR (venice-1.7.26.jar or newer) as prerequisite.
 
 The automated setup will create a launcher script with the Java classpath correctly
-setup, download the Jansi library from Maven, and add some example Venice scripts.
+setup, will download the Jansi library from Maven, and add some example Venice 
+scripts.
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 the REPL in setup mode:
@@ -119,6 +121,7 @@ foo> ./repl.sh
 ```
 
 
+
 ## Venice GitPod workspace 
 
 ### Start a REPL from a Venice GitPod workspace
@@ -144,7 +147,7 @@ Start a new terminal (menu Terminal -> New Terminal) ...
 launch the REPL within the terminal:
 
 ```text
-$ java -jar build/libs/venice-*.jar -colors-darkmode
+$ java -jar build/libs/venice-1.7.26.jar -colors-darkmode
 ```
 
 
