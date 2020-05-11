@@ -150,7 +150,7 @@ public class CustomREPL {
 
 		final PrintStream ps_err = createPrintStream("stderr", terminal);
 
-		final TerminalPrinter printer = new TerminalPrinter(config, terminal, false);
+		final TerminalPrinter printer = new TerminalPrinter(config, terminal, dumbTerminal, false);
 		
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 		

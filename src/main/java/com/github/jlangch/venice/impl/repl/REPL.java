@@ -147,7 +147,7 @@ public class REPL {
 
 		final PrintStream ps_err = createPrintStream("stderr", terminal);
 
-		printer = new TerminalPrinter(config, terminal, false);
+		printer = new TerminalPrinter(config, terminal, dumbTerminal, false);
 		
 		venice = new VeniceInterpreter(interceptor, loadPaths);
 		

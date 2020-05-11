@@ -31,13 +31,16 @@ import com.github.jlangch.venice.impl.ValueException;
 
 
 public class TerminalPrinter {
+	
 	public TerminalPrinter(
 			final ReplConfig config,
 			final Terminal terminal,
+			final boolean dumbTerminal,
 			final boolean printJavaEx
 	) {
 		this.config = config;
 		this.terminal = terminal;
+		this.dumbTerminal = dumbTerminal;
 		this.printJavaEx = printJavaEx;
 	}
 	
@@ -49,7 +52,7 @@ public class TerminalPrinter {
 			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		final String color = config.getColor(colorID);
+		final String color = getColor(colorID);
 		if (color != null) {
 			terminal.writer().print(color);
 		}
@@ -104,8 +107,13 @@ public class TerminalPrinter {
 		}
 	}
 	
+	private String getColor(final String colorID) {
+		return dumbTerminal ? null : config.getColor(colorID);
+	}
+	
 	
 	private final Terminal terminal;
-	private ReplConfig config;
+	private final boolean dumbTerminal;
+	private final ReplConfig config;
 	private boolean printJavaEx;
 }
