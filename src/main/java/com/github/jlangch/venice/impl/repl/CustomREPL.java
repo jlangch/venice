@@ -45,6 +45,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -97,7 +98,11 @@ public class CustomREPL {
 				}
 			}
 
-			System.out.println("Using " + (dumbTerminal ? "dumb" : "ansi") + " terminal.");
+			final String colorInfo = (dumbTerminal || config.getColorMode() == ColorMode.None)
+										? "(colors turned off)"
+										: "(colors turned on)";
+			
+			System.out.println("Using " + (dumbTerminal ? "dumb" : "ansi") + " terminal " + colorInfo);
 			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			System.out.println("Type '!' for help.");
 

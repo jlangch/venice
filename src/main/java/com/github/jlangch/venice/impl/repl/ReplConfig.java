@@ -131,7 +131,11 @@ public class ReplConfig {
 			throw new RuntimeException("Failed to parse REPL json config file", ex);
 		}	
 	}
-	
+
+	public ColorMode getColorMode() {
+		return colorMode;
+	}
+
 	public String getColor(final String key) {
 		switch(colorMode) {
 			case Light: return lookupColor("light." + key);
@@ -242,7 +246,7 @@ public class ReplConfig {
 	
 	public static final String ANSI_RESET = "\u001b[0m";
 	
-	private static enum ColorMode { Light, Dark, None };
+	public static enum ColorMode { Light, Dark, None };
 
 	private static final String DEFAULT_PROMPT = "venice> ";
 	private static final String DEFAULT_SECONDARY_PROMPT = "| ";
