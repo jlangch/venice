@@ -228,6 +228,7 @@
     (println)
     (println "Setting up the REPL for the local platform")
     (println "Using the platforms's default charset" (charset-default-encoding))
+    (println)
 
     (repl-setup/copy-venice-jar "libs")
     (repl-setup/download-libs "libs" libs)
