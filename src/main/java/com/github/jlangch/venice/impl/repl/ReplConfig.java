@@ -175,7 +175,7 @@ public class ReplConfig {
 	public String getJansiVersion() {
 		try (InputStream is = getClass()
 								.getClassLoader()
-								.getResourceAsStream("org/fusesource/jansi/Ansi/jansi.properties")
+								.getResourceAsStream("org/fusesource/jansi/jansi.properties")
 		) {
 			if (is != null) {
 				final Properties props = new Properties();
