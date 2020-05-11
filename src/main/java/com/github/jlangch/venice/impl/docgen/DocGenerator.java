@@ -275,25 +275,34 @@ public class DocGenerator {
 		use.addItem(getDocItem("shuffle"));
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
-		use.addItem(getDocItem("str/replace-first"));
-		use.addItem(getDocItem("str/replace-last"));
-		use.addItem(getDocItem("str/replace-all"));
-		use.addItem(getDocItem("str/lower-case"));
-		use.addItem(getDocItem("str/upper-case"));
 		use.addItem(getDocItem("str/join"));
 		use.addItem(getDocItem("str/subs"));
 		use.addItem(getDocItem("str/chars"));
 		use.addItem(getDocItem("str/split"));
 		use.addItem(getDocItem("str/split-lines"));
-		use.addItem(getDocItem("str/strip-start"));
-		use.addItem(getDocItem("str/strip-end"));
-		use.addItem(getDocItem("str/strip-indent"));
-		use.addItem(getDocItem("str/strip-margin"));
-		use.addItem(getDocItem("str/cr-lf", false));
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
 		use.addItem(getDocItem("str/truncate"));
 		use.addItem(getDocItem("str/lorem-ipsum"));
+		
+		final DocSection replace = new DocSection("Replace");
+		strings.addSection(replace);
+		replace.addItem(getDocItem("str/replace-first"));
+		replace.addItem(getDocItem("str/replace-last"));
+		replace.addItem(getDocItem("str/replace-all"));
+		
+		final DocSection strip = new DocSection("Strip");
+		strings.addSection(strip);
+		strip.addItem(getDocItem("str/strip-start"));
+		strip.addItem(getDocItem("str/strip-end"));
+		strip.addItem(getDocItem("str/strip-indent"));
+		strip.addItem(getDocItem("str/strip-margin"));
+		
+		final DocSection conv = new DocSection("Conversion");
+		strings.addSection(conv);
+		conv.addItem(getDocItem("str/lower-case"));
+		conv.addItem(getDocItem("str/upper-case"));
+		conv.addItem(getDocItem("str/cr-lf", false));
 		
 		final DocSection regex = new DocSection("Regex");
 		strings.addSection(regex);
