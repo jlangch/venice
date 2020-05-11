@@ -253,7 +253,9 @@ public class ReplConfig {
 			}
 		}
 		else {
-			return (JsonObject)JsonParser.object().from(getRawClasspathConfig());
+			final String config = getRawClasspathConfig();
+			System.out.println("Loading REPL default config...");
+			return (JsonObject)JsonParser.object().from(config);
 		}
 	}
 	

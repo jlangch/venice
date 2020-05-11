@@ -97,8 +97,8 @@ public class CustomREPL {
 				}
 			}
 
-			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			System.out.println("Using " + (dumbTerminal ? "dumb" : "ansi") + " terminal.");
+			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			System.out.println("Type '!' for help.");
 
 			repl(cli, dumbTerminal);
@@ -136,7 +136,6 @@ public class CustomREPL {
 							
 		final Terminal terminal = OSUtils.IS_WINDOWS
 									? builder
-										.jna(false)
 										.jansi(!dumbTerminal)
 										.build()
 									: builder
