@@ -45,6 +45,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -164,6 +165,12 @@ public class CustomREPL {
 			printer.printex("error", ex);
 		}
 
+		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
+			handleSetupCommand(venice, env, SetupMode.Extended, printer);
+		}
+		else if (cli.switchPresent("-setup")) {
+			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
+		}
 		
 		final History history = new DefaultHistory();
 		
@@ -228,6 +235,31 @@ public class CustomREPL {
 		return new ReplPrintStream(terminal, config.getColor(context));	
 	}
 	
+	private void handleSetupCommand(
+			final VeniceInterpreter venice, 
+			final Env env, 
+			final SetupMode mode,
+			final TerminalPrinter printer
+	) {
+		try {
+			final String script = 
+				mode == SetupMode.Minimal 
+					? "(do                             \n" +
+		              "  (load-module :repl-setup)     \n" +
+		              "  (repl-setup/setup :minimal))  \n"
+		              
+		            : "(do                             \n" +
+				      "  (load-module :repl-setup)     \n" +
+				      "  (repl-setup/setup :extended)) \n";
+			
+			venice.RE(script, "user", env);
+		}
+		catch(Exception ex) {
+			printer.printex("error", ex);
+			printer.println("error", "REPL setup failed!");
+		}
+	}
+	
 	private String getTerminalInfo() {
 		if (ansiTerminal) {
 			if (config.getColorMode() == ColorMode.None) {
@@ -247,7 +279,6 @@ public class CustomREPL {
 	private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";
 	private static final String DEFAULT_PROMPT_SECONDARY = "      | ";
 	
-
 	private final List<String> loadPaths;
 	private final File app;
 

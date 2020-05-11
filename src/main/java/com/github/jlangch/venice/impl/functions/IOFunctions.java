@@ -1212,10 +1212,9 @@ public class IOFunctions {
 						"  :read-timeout val  - e.g :read-timeout 10000, \n" +
 						"                           read timeout in milli seconds. \n" +
 						"                           0 is interpreted as an infinite timeout. \n" +
-						"  :progress-fn fn    - a progress function that takes 3 args \n" +
+						"  :progress-fn fn    - a progress function that takes 2 args \n" +
 						"                           [1] progress (0..100%) \n" +
-						"                           [2] total bytes (may be -1 if unknown) \n" +
-						"                           [3] status {:start :progress :end :failed}\n\n" +
+						"                           [2] status {:start :progress :end :failed}\n\n" +
 						"If the server returns a 403 (access denied) sending a user-agent\n" +
 						"may fool the website.")
 					.build()

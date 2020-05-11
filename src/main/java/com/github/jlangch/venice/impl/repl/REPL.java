@@ -177,11 +177,11 @@ public class REPL {
 			return; // stop REPL
 		}
 		
-		if (cli.switchPresent("-setup")) {
-			handleSetupCommand(env, Mode.Minimal);
+		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
+			handleSetupCommand(venice, env, SetupMode.Extended, printer);
 		}
-		else if (cli.switchPresent("-setup-ext")) {
-			handleSetupCommand(env, Mode.Extended);
+		else if (cli.switchPresent("-setup")) {
+			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
 		}
 
 		// REPL loop
@@ -293,10 +293,10 @@ public class REPL {
 			handleConfigCommand();
 		}
 		else if (cmd.equals("setup")) {
-			handleSetupCommand(env, Mode.Minimal);
+			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
 		}
 		else if (cmd.equals("setup-ext")) {
-			handleSetupCommand(env, Mode.Extended);
+			handleSetupCommand(venice, env, SetupMode.Extended, printer);
 		}
 		else if (cmd.equals("launcher")) {
 			handleLauncherCommand();
@@ -349,10 +349,15 @@ public class REPL {
 		printer.println("stdout", ReplConfig.getRawClasspathConfig());
 	}
 
-	private void handleSetupCommand(final Env env, final Mode mode) {
+	private void handleSetupCommand(
+			final VeniceInterpreter venice, 
+			final Env env, 
+			final SetupMode mode,
+			final TerminalPrinter printer
+	) {
 		try {
 			final String script = 
-				mode == Mode.Minimal 
+				mode == SetupMode.Minimal 
 					? "(do                             \n" +
 		              "  (load-module :repl-setup)     \n" +
 		              "  (repl-setup/setup :minimal))  \n"
@@ -606,6 +611,8 @@ public class REPL {
 	}
 	
 	
+	public static enum SetupMode { Minimal, Extended };
+	
 	private final static String HELP =
 			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
 			"Commands: \n" +	
@@ -673,8 +680,6 @@ public class REPL {
 			"   !sandbox add-rule venice:module:shell\n";	
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
-	
-	private static enum Mode { Minimal, Extended };
 
 	private final List<String> loadPaths;
 
