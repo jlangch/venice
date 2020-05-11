@@ -104,7 +104,7 @@ The `-setup` option will cause Venice to run a setup:
   - extract some example Venice scripts
   - creates a launcher `repl.bat` for Windows and `repl.sh` for all other OS
   
-Now a Venice REPL can be started simply by executing the launcher.
+Now the Venice REPL can be started simply by executing the launcher.
 
 on Windows:
 
