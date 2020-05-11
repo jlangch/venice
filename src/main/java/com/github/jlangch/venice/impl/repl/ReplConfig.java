@@ -28,9 +28,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +38,6 @@ import java.util.logging.Level;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.nanojson.JsonArray;
 import com.github.jlangch.venice.nanojson.JsonObject;
 import com.github.jlangch.venice.nanojson.JsonParser;
 
@@ -52,64 +49,83 @@ import com.github.jlangch.venice.nanojson.JsonParser;
  */
 public class ReplConfig {
 
-	private ReplConfig(final Map<String,Object> config) {
-		this.config = config;
+	private ReplConfig(
+			final ColorMode colorMode,
+			final String loadFile,
+			final String prompt,
+			final String secondaryPrompt,
+			final String resultPrefix,
+			final Level jlineLoglevel,
+			final boolean jlineDumbTerminal,
+			final Map<String,String> colors
+	) {
+		this.colorMode = colorMode;
+		
+		this.loadFile = loadFile;
+		
+		this.prompt = orDefault(prompt, DEFAULT_PROMPT);
+		this.secondaryPrompt = orDefault(secondaryPrompt, DEFAULT_SECONDARY_PROMPT);		
+		this.resultPrefix = orDefault(resultPrefix , DEFAULT_RESULT_PREFIX);
+		
+		this.jlineLoglevel = jlineLoglevel;
+		this.jlineDumbTerminal = jlineDumbTerminal;
+		
+		this.colors.putAll(colors);
 	}
 	
 	public static ReplConfig load(final CommandLineArgs cli) {
-		final Map<String,Object> config = new HashMap<>();
-		
-		// use colors
-		config.put("colors.mode", getColorMode(cli));
-		
-		// load module
-		final String file = cli.switchValue("-load-file");
-		if (file != null) {
-			config.put("load.file", file);
-		}
+		final Map<String,String> colors = new HashMap<>();
+				
+		// load file
+		final String loadFile = cli.switchValue("-load-file");
 
 		try {
 			final JsonObject jsonObj = loadJsonConfig();
-			config.put("prompt", jsonObj.getString("prompt"));
-			config.put("secondary-prompt", jsonObj.getString("secondary-prompt"));
-			config.put("result-prefix", jsonObj.getString("result-prefix"));
+			
+			final String prompt = jsonObj.getString("prompt");
+			final String secondaryPrompt = jsonObj.getString("secondary-prompt");
+			final String resultPrefix =  jsonObj.getString("result-prefix");
 
 			JsonObject obj = (JsonObject)jsonObj.get("colors");
 			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
-					config.put("colors." + cname, StringUtil.emptyToNull(obj.getString(cname)));
+					colors.put("light." + cname, StringUtil.emptyToNull(obj.getString(cname)));
 				}
 			}
 
 			obj = (JsonObject)jsonObj.get("colors-darkmode");
 			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
-					config.put("colors-darkmode." + cname, StringUtil.emptyToNull(obj.getString(cname)));
+					colors.put("dark." + cname, StringUtil.emptyToNull(obj.getString(cname)));
 				}
 			}
 			
+			Level jlineLoglevel = null;
+			boolean jlineDumbTerminal = false;
 			obj = (JsonObject)jsonObj.get("jline");
 			if (obj != null) {
-				config.put("jline.loglevel", obj.getString("loglevel"));
-				config.put("jline.dumb-terminal", obj.getBoolean("dumb-terminal", Boolean.FALSE));
+				try {
+					jlineLoglevel = Level.parse(obj.getString("loglevel"));
+				}
+				catch(Exception ex) { /* skip */ }
+
+				try {
+					jlineDumbTerminal = obj.getBoolean("dumb-terminal", Boolean.FALSE);
+				}
+				catch(Exception ex) { 
+					jlineDumbTerminal = true;
+				}
 			}
 
-			obj = (JsonObject)jsonObj.get("libs");
-			if (obj != null) {
-				config.put("libs.dir", obj.getString("dir"));
-				config.put("libs.mandatory", getStringList(obj.getArray("mandatory")));
-				config.put("libs.optional", getStringList(obj.getArray("optional")));
-			}
-
-			obj = (JsonObject)jsonObj.get("fonts");
-			if (obj != null) {
-				config.put("fonts.dir", obj.getString("dir"));
-				config.put("fonts.base-url", obj.getString("base-url"));
-				config.put("fonts.mandatory", getStringList(obj.getArray("mandatory")));
-				config.put("fonts.optional", getStringList(obj.getArray("optional")));
-			}
-
-			return new ReplConfig(config);
+			return new ReplConfig(
+						getColorMode(cli), 
+						loadFile,
+						prompt,
+						secondaryPrompt,
+						resultPrefix,
+						jlineLoglevel,
+						jlineDumbTerminal,
+						colors);
 		} 
 		catch (Exception ex) {
 			throw new RuntimeException("Failed to parse REPL json config file", ex);
@@ -117,51 +133,39 @@ public class ReplConfig {
 	}
 	
 	public String getColor(final String key) {
-		switch(getString("colors.mode")) {
-			case "light": return getString("colors." + key);
-			case "dark":  return getString("colors-darkmode." + key);
-			default:      return null;
+		switch(colorMode) {
+			case Light: return lookupColor("light." + key);
+			case Dark:  return lookupColor("dark." + key);
+			default:    return null;
 		}
 	}
 
 	public String getLoadFile() {
-		return getString("load.file");
+		return loadFile;
 	}
 
 	public String getPrompt() {
-		final String prompt = getStringOrDefault("prompt", DEFAULT_PROMPT);
 		return getColor("prompt") == null
 				? prompt
 				: getColor("prompt") + prompt + ReplConfig.ANSI_RESET;
 	}
 
 	public String getSecondaryPrompt() {
-		final String prompt = getStringOrDefault("secondary-prompt", DEFAULT_SECONDARY_PROMPT);
 		return getColor("secondary-prompt") == null
-				? prompt
-				: getColor("secondary-prompt") + prompt + ReplConfig.ANSI_RESET;
+				? secondaryPrompt
+				: getColor("secondary-prompt") + secondaryPrompt + ReplConfig.ANSI_RESET;
 	}
 
 	public String getResultPrefix() {
-		return getStringOrDefault("result-prefix", DEFAULT_RESULT_PREFIX);
+		return resultPrefix;
 	}
 	
 	public Level getJLineLogLevel() {
-		try {
-			return Level.parse(getString("jline.loglevel"));
-		}
-		catch(Exception ex) {
-			return null;
-		}
+		return jlineLoglevel;
 	}
 	
 	public boolean isJLineDumbTerminal() {
-		try {
-			return (Boolean)config.get("jline.dumb-terminal");
-		}
-		catch(Exception ex) {
-			return false;
-		}
+		return jlineDumbTerminal;
 	}
 	
 	public String getJansiVersion() {
@@ -180,38 +184,6 @@ public class ReplConfig {
 		}
 		return null;
 	}
-	
-	public String getLibsDir() {
-		return getString("libs.dir");
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<String> getLibsMandatory() {
-		return nullToEmptyList((List<String>)config.get("libs.mandatory"));
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<String> getLibsOptional() {
-		return nullToEmptyList((List<String>)config.get("libs.optional"));
-	}
-	
-	public String getFontsDir() {
-		return getString("fonts.dir");
-	}
-	
-	public String getFontsBaseUrl() {
-		return getString("fonts.base-url");
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<String> getFontsMandatory() {
-		return nullToEmptyList((List<String>)config.get("fonts.mandatory"));
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<String> getFontsOptional() {
-		return nullToEmptyList((List<String>)config.get("fonts.optional"));
-	}
 
 	public static String getRawClasspathConfig() {
 		return new ClassPathResource(getVeniceBasePath() + "repl.json")
@@ -228,21 +200,10 @@ public class ReplConfig {
 	}
 
 
-	private String getString(final String key) {
-		return StringUtil.emptyToNull((String)config.get(key));
+	private String lookupColor(final String key) {
+		return StringUtil.emptyToNull(colors.get(key));
 	}
 	
-	private String getStringOrDefault(final String key, final String defaultValue) {
-		final String val = getString(key);
-		return val == null ? defaultValue : val;
-	}
-	
-	private static List<String> getStringList(final JsonArray array) {
-		final List<String> values = new ArrayList<>();
-		array.forEach(v -> values.add((String)v));
-		return values;
-	}
-
 	private static JsonObject loadJsonConfig() throws Exception {
 		final File fileJson = new File("repl.json");
 
@@ -259,29 +220,29 @@ public class ReplConfig {
 		}
 	}
 	
-	private static String getColorMode(final CommandLineArgs cli) {
+	private static ColorMode getColorMode(final CommandLineArgs cli) {
 		if (cli.switchPresent("-colors")) {
-			return "light";
+			return ColorMode.Light;
 		}
 		else if (cli.switchPresent("-colors-lightmode")) {
-			return "light";
+			return ColorMode.Light;
 		}
 		else if (cli.switchPresent("-colors-darkmode")) {
-			return "dark";
+			return ColorMode.Dark;
 		}
 		else {
-			return "none";
+			return ColorMode.None;
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private static <T> List<T> nullToEmptyList(final List<T> items) {
-		return items == null ? (List<T>) Collections.emptyList() : items;
+	private static String orDefault(final String s, final String sDefault) {
+		return s == null ? sDefault : s;
 	}
-
 	
 	
 	public static final String ANSI_RESET = "\u001b[0m";
+	
+	private static enum ColorMode { Light, Dark, None };
 
 	private static final String DEFAULT_PROMPT = "venice> ";
 	private static final String DEFAULT_SECONDARY_PROMPT = "| ";
@@ -296,5 +257,14 @@ public class ReplConfig {
 														"interrupt", 
 														"prompt");
 
-	private final Map<String,Object> config;
+	private final ColorMode colorMode;
+	private final String loadFile;
+	private final String prompt;
+	private final String secondaryPrompt;
+	private final String resultPrefix;
+	
+	private final Level jlineLoglevel;
+	private final boolean jlineDumbTerminal;
+
+	private final Map<String,String> colors = new HashMap<>();
 }
