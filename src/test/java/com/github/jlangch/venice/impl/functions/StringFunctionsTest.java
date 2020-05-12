@@ -371,6 +371,102 @@ public class StringFunctionsTest {
 		assertEquals("a...", venice.eval("(str/truncate \"abcdefghij\" 4 \"...\" :end)"));
 	}
 
+
+	@Test
+	public void test_str_expand() {
+		final Venice venice = new Venice();
+		
+		assertEquals("..........", venice.eval("(str/expand nil 10 \".\")"));
+		assertEquals("..........", venice.eval("(str/expand \"\" 10 \".\")"));
+		assertEquals("a.........", venice.eval("(str/expand \"a\" 10 \".\")"));
+		assertEquals("ab........", venice.eval("(str/expand \"ab\" 10 \".\")"));
+		assertEquals("abc.......", venice.eval("(str/expand \"abc\" 10 \".\")"));
+		assertEquals("abcd......", venice.eval("(str/expand \"abcd\" 10 \".\")"));
+		assertEquals("abcde.....", venice.eval("(str/expand \"abcde\" 10 \".\")"));
+		assertEquals("abcdef....", venice.eval("(str/expand \"abcdef\" 10 \".\")"));
+		assertEquals("abcdefg...", venice.eval("(str/expand \"abcdefg\" 10 \".\")"));
+		assertEquals("abcdefgh..", venice.eval("(str/expand \"abcdefgh\" 10 \".\")"));
+		assertEquals("abcdefghi.", venice.eval("(str/expand \"abcdefghi\" 10 \".\")"));
+		assertEquals("abcdefghij", venice.eval("(str/expand \"abcdefghij\" 10 \".\")"));
+		assertEquals("abcdefghijk", venice.eval("(str/expand \"abcdefghijk\" 10 \".\")"));
+		assertEquals("abcdefghijkl", venice.eval("(str/expand \"abcdefghijkl\" 10 \".\")"));
+		
+		assertEquals("..........", venice.eval("(str/expand nil 10 \".\" :end)"));
+		assertEquals("..........", venice.eval("(str/expand \"\" 10 \".\" :end)"));
+		assertEquals("a.........", venice.eval("(str/expand \"a\" 10 \".\" :end)"));
+		assertEquals("ab........", venice.eval("(str/expand \"ab\" 10 \".\" :end)"));
+		assertEquals("abc.......", venice.eval("(str/expand \"abc\" 10 \".\" :end)"));
+		assertEquals("abcd......", venice.eval("(str/expand \"abcd\" 10 \".\" :end)"));
+		assertEquals("abcde.....", venice.eval("(str/expand \"abcde\" 10 \".\" :end)"));
+		assertEquals("abcdef....", venice.eval("(str/expand \"abcdef\" 10 \".\" :end)"));
+		assertEquals("abcdefg...", venice.eval("(str/expand \"abcdefg\" 10 \".\" :end)"));
+		assertEquals("abcdefgh..", venice.eval("(str/expand \"abcdefgh\" 10 \".\" :end)"));
+		assertEquals("abcdefghi.", venice.eval("(str/expand \"abcdefghi\" 10 \".\" :end)"));
+		assertEquals("abcdefghij", venice.eval("(str/expand \"abcdefghij\" 10 \".\" :end)"));
+		assertEquals("abcdefghijk", venice.eval("(str/expand \"abcdefghijk\" 10 \".\" :end)"));
+		assertEquals("abcdefghijkl", venice.eval("(str/expand \"abcdefghijkl\" 10 \".\" :end)"));
+		
+		assertEquals("..........", venice.eval("(str/expand nil 10 \".\" :start)"));
+		assertEquals("..........", venice.eval("(str/expand \"\" 10 \".\" :start)"));
+		assertEquals(".........a", venice.eval("(str/expand \"a\" 10 \".\" :start)"));
+		assertEquals("........ab", venice.eval("(str/expand \"ab\" 10 \".\" :start)"));
+		assertEquals(".......abc", venice.eval("(str/expand \"abc\" 10 \".\" :start)"));
+		assertEquals("......abcd", venice.eval("(str/expand \"abcd\" 10 \".\" :start)"));
+		assertEquals(".....abcde", venice.eval("(str/expand \"abcde\" 10 \".\" :start)"));
+		assertEquals("....abcdef", venice.eval("(str/expand \"abcdef\" 10 \".\" :start)"));
+		assertEquals("...abcdefg", venice.eval("(str/expand \"abcdefg\" 10 \".\" :start)"));
+		assertEquals("..abcdefgh", venice.eval("(str/expand \"abcdefgh\" 10 \".\" :start)"));
+		assertEquals(".abcdefghi", venice.eval("(str/expand \"abcdefghi\" 10 \".\" :start)"));
+		assertEquals("abcdefghij", venice.eval("(str/expand \"abcdefghij\" 10 \".\" :start)"));
+		assertEquals("abcdefghijk", venice.eval("(str/expand \"abcdefghijk\" 10 \".\" :start)"));
+		assertEquals("abcdefghijkl", venice.eval("(str/expand \"abcdefghijkl\" 10 \".\" :start)"));
+		
+		assertEquals("1231231231", venice.eval("(str/expand nil 10 \"123\")"));
+		assertEquals("1231231231", venice.eval("(str/expand \"\" 10 \"123\")"));
+		assertEquals("a123123123", venice.eval("(str/expand \"a\" 10 \"123\")"));
+		assertEquals("ab12312312", venice.eval("(str/expand \"ab\" 10 \"123\")"));
+		assertEquals("abc1231231", venice.eval("(str/expand \"abc\" 10 \"123\")"));
+		assertEquals("abcd123123", venice.eval("(str/expand \"abcd\" 10 \"123\")"));
+		assertEquals("abcde12312", venice.eval("(str/expand \"abcde\" 10 \"123\")"));
+		assertEquals("abcdef1231", venice.eval("(str/expand \"abcdef\" 10 \"123\")"));
+		assertEquals("abcdefg123", venice.eval("(str/expand \"abcdefg\" 10 \"123\")"));
+		assertEquals("abcdefgh12", venice.eval("(str/expand \"abcdefgh\" 10 \"123\")"));
+		assertEquals("abcdefghi1", venice.eval("(str/expand \"abcdefghi\" 10 \"123\")"));
+		assertEquals("abcdefghij", venice.eval("(str/expand \"abcdefghij\" 10 \"123\")"));
+		assertEquals("abcdefghijk", venice.eval("(str/expand \"abcdefghijk\" 10 \"123\")"));
+		assertEquals("abcdefghijkl", venice.eval("(str/expand \"abcdefghijkl\" 10 \"123\")"));
+		
+		assertEquals("1231231231", venice.eval("(str/expand nil 10 \"123\" :end)"));
+		assertEquals("1231231231", venice.eval("(str/expand \"\" 10 \"123\" :end)"));
+		assertEquals("a123123123", venice.eval("(str/expand \"a\" 10 \"123\" :end)"));
+		assertEquals("ab12312312", venice.eval("(str/expand \"ab\" 10 \"123\" :end)"));
+		assertEquals("abc1231231", venice.eval("(str/expand \"abc\" 10 \"123\" :end)"));
+		assertEquals("abcd123123", venice.eval("(str/expand \"abcd\" 10 \"123\" :end)"));
+		assertEquals("abcde12312", venice.eval("(str/expand \"abcde\" 10 \"123\" :end)"));
+		assertEquals("abcdef1231", venice.eval("(str/expand \"abcdef\" 10 \"123\" :end)"));
+		assertEquals("abcdefg123", venice.eval("(str/expand \"abcdefg\" 10 \"123\" :end)"));
+		assertEquals("abcdefgh12", venice.eval("(str/expand \"abcdefgh\" 10 \"123\" :end)"));
+		assertEquals("abcdefghi1", venice.eval("(str/expand \"abcdefghi\" 10 \"123\" :end)"));
+		assertEquals("abcdefghij", venice.eval("(str/expand \"abcdefghij\" 10 \"123\" :end)"));
+		assertEquals("abcdefghijk", venice.eval("(str/expand \"abcdefghijk\" 10 \"123\" :end)"));
+		assertEquals("abcdefghijkl", venice.eval("(str/expand \"abcdefghijkl\" 10 \"123\" :end)"));
+		
+		assertEquals("1231231231", venice.eval("(str/expand nil 10 \"123\" :start)"));
+		assertEquals("1231231231", venice.eval("(str/expand \"\" 10 \"123\" :start)"));
+		assertEquals("123123123a", venice.eval("(str/expand \"a\" 10 \"123\" :start)"));
+		assertEquals("12312312ab", venice.eval("(str/expand \"ab\" 10 \"123\" :start)"));
+		assertEquals("1231231abc", venice.eval("(str/expand \"abc\" 10 \"123\" :start)"));
+		assertEquals("123123abcd", venice.eval("(str/expand \"abcd\" 10 \"123\" :start)"));
+		assertEquals("12312abcde", venice.eval("(str/expand \"abcde\" 10 \"123\" :start)"));
+		assertEquals("1231abcdef", venice.eval("(str/expand \"abcdef\" 10 \"123\" :start)"));
+		assertEquals("123abcdefg", venice.eval("(str/expand \"abcdefg\" 10 \"123\" :start)"));
+		assertEquals("12abcdefgh", venice.eval("(str/expand \"abcdefgh\" 10 \"123\" :start)"));
+		assertEquals("1abcdefghi", venice.eval("(str/expand \"abcdefghi\" 10 \"123\" :start)"));
+		assertEquals("abcdefghij", venice.eval("(str/expand \"abcdefghij\" 10 \"123\" :start)"));
+		assertEquals("abcdefghijk", venice.eval("(str/expand \"abcdefghijk\" 10 \"123\" :start)"));
+		assertEquals("abcdefghijkl", venice.eval("(str/expand \"abcdefghijkl\" 10 \"123\" :start)"));
+	}
+
 	@Test
 	public void test_str_upper_case() {
 		final Venice venice = new Venice();

@@ -1077,6 +1077,66 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_expand =
+		new VncFunction(
+				"str/expand",
+				VncFunction
+					.meta()
+					.arglists("(str/expand s len fill mode*)")
+					.doc(
+						"Expands a string to the max lenght len. Fills up with the fill" +
+						"string if the string needs to be expanded. The fill string is " +
+						"added to the start or end of the string depending on the mode" +
+						":start, :end. The mode defaults to :end")
+					.examples(
+						"(str/expand \"abcdefghij\" 8 \".\")",
+						"(str/expand \"abcdefghij\" 20 \".\")",
+						"(str/expand \"abcdefghij\" 20 \".\" :start)",
+						"(str/expand \"abcdefghij\" 20 \".\" :end)",
+						"(str/expand \"abcdefghij\" 30 \"1234\" :start)",
+						"(str/expand \"abcdefghij\" 30 \"1234\" :end)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/expand", args, 3, 4);
+
+				final String text = args.first() == Nil 
+										? ""
+										: Coerce.toVncString(args.first()).getValue();
+				final int len = Coerce.toVncLong(args.second()).getValue().intValue();
+				final String fill = Coerce.toVncString(args.nth(2)).getValue();
+				final String mode = Coerce.toVncKeyword(args.nthOrDefault(3, new VncKeyword(":end")))
+										  .getValue();
+				
+				if (fill.isEmpty()){
+					throw new VncException("A fill string must not be empty");
+				}
+				
+				if (text.length() >= len) {
+					return args.first();
+				}
+				
+				final int gap = len - text.length();
+				
+				final StringBuilder filling = new StringBuilder();
+				while(filling.length() < gap) {
+					final int delta = gap - filling.length();
+					filling.append(delta >= fill.length() 
+									? fill 
+									: fill.substring(0, delta));
+				}
+
+				switch(mode) {
+					case "start": return new VncString(filling + text);
+					case "end": return new VncString(text + filling);
+				}
+				
+				throw new VncException("Invalid truncation mode ':" + mode + "'");
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_strip_start =
 		new VncFunction(
 				"str/strip-start",
@@ -1850,6 +1910,7 @@ public class StringFunctions {
 					.add(str_quoted_Q)
 					.add(str_double_quoted_Q)
 					.add(str_truncate)
+					.add(str_expand)
 					.add(str_strip_start)
 					.add(str_strip_end)
 					.add(str_strip_indent)

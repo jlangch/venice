@@ -280,6 +280,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
 		use.addItem(getDocItem("str/truncate"));
+		use.addItem(getDocItem("str/expand"));
 		use.addItem(getDocItem("str/lorem-ipsum"));
 		
 		final DocSection split = new DocSection("Split/Join");
