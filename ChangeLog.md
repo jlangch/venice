@@ -44,7 +44,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- `drop` function (the unit test was not annotated so the bug slipped)
+- `drop` function (dropped 1 item too much, the corresponding unit test did not have a 
+   test annotation, so the test slipped)
 
 
 
