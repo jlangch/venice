@@ -345,26 +345,31 @@
 
   progress-bar [& options]
 
-  (let [options      (apply hash-map options)
-        caption      (:caption options "")
-        width        (min (max (:width options 25) 10) 100)
-        start-msg    (:start-msg options "started")
-        end-msg      (:end-msg options "ok")
-        failed-msg   (:failed-msg options "failed")
-        show-percent (:show-percent options false)
-        draw         (fn [text]
-                       (print (ansi/style text
-                                          :clear-line
-                                          (ansi/cursor-left 1000))))
-        bar          (fn [percent]
-                       (let [percentage (if show-percent (str percent "% ") "")
-                             w1 (/ (* percent width) 100)
-                             w2 (- width w1)]
-                         (str/format "%s[%s%s] %s"
-                                     caption
-                                     (str/repeat "#" w1)
-                                     (str/repeat " " w2)
-                                     percentage))) ]
+  (let [options       (apply hash-map options)
+        caption       (:caption options "")
+        caption-width (max 0 (:caption-width options 0))
+        caption       (if (== caption-width 0)
+                        caption
+                        (-> (str/truncate caption caption-width :middle)
+                            (str/expand caption-width " " :end)))
+        width         (min (max (:width options 25) 10) 100)
+        start-msg     (:start-msg options "started")
+        end-msg       (:end-msg options "ok")
+        failed-msg    (:failed-msg options "failed")
+        show-percent  (:show-percent options false)
+        draw          (fn [text]
+                        (print (ansi/style text
+                                           :clear-line
+                                           (ansi/cursor-left 1000))))
+        bar           (fn [percent]
+                        (let [percentage (if show-percent (str percent "% ") "")
+                              w1 (/ (* percent width) 100)
+                              w2 (- width w1)]
+                          (str/format "%s[%s%s] %s"
+                                      caption
+                                      (str/repeat "#" w1)
+                                      (str/repeat " " w2)
+                                      percentage))) ]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
