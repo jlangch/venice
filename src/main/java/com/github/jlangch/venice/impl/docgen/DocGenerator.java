@@ -1495,6 +1495,7 @@ public class DocGenerator {
 		other.addItem(getDocItem("*loaded-files*"));
 		other.addItem(getDocItem("*ns*"));
 		other.addItem(getDocItem("*run-mode*"));
+		other.addItem(getDocItem("*ansi-term*"));
 
 		return section;
 	}
@@ -1549,69 +1550,54 @@ public class DocGenerator {
 	) {
 		final Venice runner = new Venice();
 
-		final StringBuilder sb = new StringBuilder();
-		
 		try {
-			examples
-				.stream()
-				.filter(e -> !StringUtil.isEmpty(e))
-				.forEach(e -> {
-					if (run) {
-						final CapturingPrintStream ps_out = new CapturingPrintStream();
-						
-						try {
-							final String result = (String)runner.eval(
-														"example",
-														"(pr-str " + e + ")",
-														Parameters.of(
-															"*out*", ps_out,
-															"*err*", ps_out));
-							
-							if (sb.length() > 0) {
-								sb.append("\n\n");
-							}
-							sb.append(e).append("\n");
-							if (!ps_out.isEmpty()) {
-								final String out = ps_out.getOutput();
-								sb.append(out);
-								if (!out.endsWith("\n")) sb.append("\n");
-							}
-							sb.append("=> ").append(result);
-						}
-						catch(Exception ex) {
-							if (catchEx) {							
-								if (sb.length() > 0) {
-									sb.append("\n\n");
-								}
-								sb.append(e);
-								sb.append("\n");
-								if (!ps_out.isEmpty()) {
-									final String out = ps_out.getOutput();
-									sb.append(out);
-									if (!out.endsWith("\n")) sb.append("\n");
-								}
-								sb.append("=> ")
-								  .append(ex.getClass().getSimpleName())
-								  .append(": ")
-								  .append(ex.getMessage());
-							}
-							else {
-								throw ex;
-							}
-						}
-					}
-					else {
-						if (sb.length() > 0) {
-							sb.append("\n\n");
-						}
-						sb.append(e);
-					}
-				});
-			
-			return sb.length() == 0 ? null : sb.toString();	
+			return StringUtil.trimToNull(
+					examples
+						.stream()
+						.filter(e -> !StringUtil.isEmpty(e))
+						.map(e -> runExample(runner, name, e, run, catchEx))
+						.map(o -> o.render())
+						.collect(Collectors.joining("\n\n")));
 		}
 		catch(RuntimeException ex) {
-			throw new RuntimeException(String.format("Failed to run examples for %s", name), ex);
+			throw new RuntimeException(String.format(
+					"Failed to run examples for %s", name), 
+					ex);
+		}
+	}
+
+	private Output runExample(
+			final Venice runner,
+			final String name, 
+			final String example, 
+			final boolean run,
+			final boolean catchEx
+	) {
+		if (run) {
+			final CapturingPrintStream ps_out = new CapturingPrintStream();
+			final CapturingPrintStream ps_err = new CapturingPrintStream();
+
+			try {
+				final String result = (String)runner.eval(
+											"example",
+											"(pr-str " + example + ")",
+											Parameters.of(
+												"*out*", ps_out,
+												"*err*", ps_err));
+									
+				return new Output(name, example, ps_out.getOutput(), ps_err.getOutput(), result);
+			}
+			catch(RuntimeException ex) {
+				if (catchEx) {							
+					return new Output(name, example, ps_out.getOutput(), ps_err.getOutput(), ex);
+				}
+				else {
+					throw ex;
+				}
+			}
+		}
+		else {
+			return new Output(name, example);
 		}
 	}
 
