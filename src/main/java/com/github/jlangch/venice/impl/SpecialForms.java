@@ -813,6 +813,19 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 	
+
+	public static VncFunction var_ansi_term = 
+		new SpecialFormsDocFunction(
+				"*ansi-term*",
+				VncFunction
+					.meta()
+					.doc("True if Venice runs in an ANSI terminal, otherwise false")
+					.examples(
+						"*ansi-term*")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
 	
 	private static class SpecialFormsDocFunction extends VncFunction {
 		public SpecialFormsDocFunction(final String name, final VncVal meta) {
@@ -869,5 +882,6 @@ public class SpecialForms {
 					.put("*loaded-files*",  var_loaded_files)
 					.put("*ns*",			var_ns)
 					.put("*run-mode*",		var_run_mode)
+					.put("*ansi-term*",		var_ansi_term)
 					.toMap();
 }
