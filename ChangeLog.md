@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Changed
+
+- REPL setup: put the generated 'repl.json' on the classpath
+
 ### Fixed
 
 - `drop` function (the unit test was not annotated so the bug slipped)
