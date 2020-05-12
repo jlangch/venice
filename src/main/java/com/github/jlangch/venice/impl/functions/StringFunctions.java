@@ -1013,28 +1013,65 @@ public class StringFunctions {
 				"str/truncate",
 				VncFunction
 					.meta()
-					.arglists("(str/truncate s maxlen marker)")
+					.arglists("(str/truncate s maxlen marker mode*)")
 					.doc(
 						"Truncates a string to the max lenght maxlen and adds the " +
-						"marker to the end if the string needs to be truncated")
+						"marker if the string needs to be truncated. The marker is " +
+						"added to the start, middle, or end of the string depending " +
+						"on the mode :start, :middle, :end. The mode defaults to :end")
 					.examples(
 						"(str/truncate \"abcdefghij\" 20 \"...\")",
 						"(str/truncate \"abcdefghij\" 9 \"...\")",
-						"(str/truncate \"abcdefghij\" 4 \"...\")")
+						"(str/truncate \"abcdefghij\" 4 \"...\")",
+						"(str/truncate \"abcdefghij\" 7 \"...\" :start)",
+						"(str/truncate \"abcdefghij\" 7 \"...\" :middle)",
+						"(str/truncate \"abcdefghij\" 7 \"...\" :end)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("str/truncate", args, 3);
+				assertArity("str/truncate", args, 3, 4);
 
 				if (args.first() == Nil) {
 					return Nil;
 				}
 
-				return new VncString(
-							StringUtil.truncate(
-								Coerce.toVncString(args.first()).getValue(),
-								Coerce.toVncLong(args.second()).getValue().intValue(),
-								Coerce.toVncString(args.nth(2)).getValue()));
+				final String text = Coerce.toVncString(args.first()).getValue();
+				final int maxLen = Coerce.toVncLong(args.second()).getValue().intValue();
+				final String marker = Coerce.toVncString(args.nth(2)).getValue();
+				final String mode = Coerce.toVncKeyword(args.nthOrDefault(3, new VncKeyword(":end")))
+										  .getValue();
+				
+				int lenMarker = marker.length();
+				
+				if (maxLen <= lenMarker){
+					throw new VncException("A maxLen must greater than the length of the truncation marker");
+				}
+				
+				if (text == null || text.length() <= maxLen) {
+					return args.first();
+				}
+				
+
+				switch(mode) {
+					case "start": {
+						final int lenTail = maxLen - lenMarker;
+						return new VncString(marker + text.substring(text.length() - lenTail));
+					}
+					case "middle": {
+						final int lenStart = maxLen / 2 - lenMarker / 2;
+						final int lenTail = maxLen - lenStart - lenMarker;					
+						return new VncString(
+									text.substring(0, lenStart) 
+										+ marker 
+										+ text.substring(text.length() - lenTail));
+					}
+					case "end": {
+						final int lenStart = maxLen - lenMarker;
+						return new VncString(text.substring(0, lenStart) + marker);
+					}
+				}
+				
+				throw new VncException("Invalid truncation mode ':" + mode + "'");
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

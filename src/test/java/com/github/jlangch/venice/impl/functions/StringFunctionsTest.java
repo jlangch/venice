@@ -334,12 +334,41 @@ public class StringFunctionsTest {
 	public void test_str_truncate() {
 		final Venice venice = new Venice();
 		
+		
 		assertEquals(null, venice.eval("(str/truncate nil 20 \"...\")"));
 		assertEquals("", venice.eval("(str/truncate \"\" 20 \"...\")"));
 		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 20 \"...\")"));
 		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 10 \"...\")"));
 		assertEquals("abcdef...", venice.eval("(str/truncate \"abcdefghij\" 9 \"...\")"));
 		assertEquals("a...", venice.eval("(str/truncate \"abcdefghij\" 4 \"...\")"));
+
+		// mode :start
+		assertEquals(null, venice.eval("(str/truncate nil 20 \"...\" :start)"));
+		assertEquals("", venice.eval("(str/truncate \"\" 20 \"...\" :start)"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 20 \"...\" :start)"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 10 \"...\" :start)"));
+		assertEquals("...efghij", venice.eval("(str/truncate \"abcdefghij\" 9 \"...\" :start)"));
+		assertEquals("...j", venice.eval("(str/truncate \"abcdefghij\" 4 \"...\" :start)"));
+
+		// mode :middle
+		assertEquals(null, venice.eval("(str/truncate nil 20 \"...\" :middle)"));
+		assertEquals("", venice.eval("(str/truncate \"\" 20 \"...\" :middle)"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 20 \"...\" :middle)"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 10 \"...\" :middle)"));
+		assertEquals("abc...hij", venice.eval("(str/truncate \"abcdefghij\" 9 \"...\" :middle)"));
+		assertEquals("abc...ij", venice.eval("(str/truncate \"abcdefghij\" 8 \"...\" :middle)"));
+		assertEquals("ab...ij", venice.eval("(str/truncate \"abcdefghij\" 7 \"...\" :middle)"));
+		assertEquals("ab...j", venice.eval("(str/truncate \"abcdefghij\" 6 \"...\" :middle)"));
+		assertEquals("a...j", venice.eval("(str/truncate \"abcdefghij\" 5 \"...\" :middle)"));
+		assertEquals("a...", venice.eval("(str/truncate \"abcdefghij\" 4 \"...\" :middle)"));
+
+		// mode :end
+		assertEquals(null, venice.eval("(str/truncate nil 20 \"...\" :end)"));
+		assertEquals("", venice.eval("(str/truncate \"\" 20 \"...\" :end)"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 20 \"...\" :end)"));
+		assertEquals("abcdefghij", venice.eval("(str/truncate \"abcdefghij\" 10 \"...\" :end)"));
+		assertEquals("abcdef...", venice.eval("(str/truncate \"abcdefghij\" 9 \"...\" :end)"));
+		assertEquals("a...", venice.eval("(str/truncate \"abcdefghij\" 4 \"...\" :end)"));
 	}
 
 	@Test

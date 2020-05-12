@@ -31,6 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Changed
 
+- function `str/truncate` to support an optional truncation mode `:start`, `:middle`, or `:end`
 - REPL setup: put the generated 'repl.json' on the classpath
 
 ### Fixed
