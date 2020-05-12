@@ -92,6 +92,15 @@ public class Output {
 		return ex;
 	}
 
+	public String getExString() {
+		return ex != null
+				? String.format(
+						"%s: %s", 
+						ex.getClass().getSimpleName(),
+						ex.getMessage())
+				: null;
+	}
+
 	public String render() {
 		final StringBuilder sb = new StringBuilder();
 
@@ -116,9 +125,7 @@ public class Output {
 		
 		if (ex != null) {
 			sb.append("=> ")
-			  .append(ex.getClass().getSimpleName())
-			  .append(": ")
-			  .append(ex.getMessage());
+			  .append(getExString());
 		}
 		
 		return sb.toString();

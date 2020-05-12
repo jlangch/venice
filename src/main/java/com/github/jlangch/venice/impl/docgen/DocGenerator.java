@@ -1542,7 +1542,7 @@ public class DocGenerator {
 		return null;
 	}
 
-	private String runExamples(
+	private List<Output> runExamples(
 			final String name, 
 			final List<String> examples, 
 			final boolean run,
@@ -1551,13 +1551,11 @@ public class DocGenerator {
 		final Venice runner = new Venice();
 
 		try {
-			return StringUtil.trimToNull(
-					examples
+			return examples
 						.stream()
 						.filter(e -> !StringUtil.isEmpty(e))
 						.map(e -> runExample(runner, name, e, run, catchEx))
-						.map(o -> o.render())
-						.collect(Collectors.joining("\n\n")));
+						.collect(Collectors.toList());
 		}
 		catch(RuntimeException ex) {
 			throw new RuntimeException(String.format(
@@ -1565,6 +1563,7 @@ public class DocGenerator {
 					ex);
 		}
 	}
+	
 
 	private Output runExample(
 			final Venice runner,

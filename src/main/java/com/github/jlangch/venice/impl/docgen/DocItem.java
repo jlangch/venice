@@ -22,6 +22,9 @@
 package com.github.jlangch.venice.impl.docgen;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class DocItem {
@@ -30,7 +33,7 @@ public class DocItem {
 			final String name, 
 			final List<String> signatures,
 			final String description,
-			final String examples,
+			final List<Output> examples,
 			final String id
 	) {
 		this.name = name;
@@ -62,7 +65,15 @@ public class DocItem {
 	}
 	
 	public String getExamples() {
-		return examples;
+		return renderExamples();
+	}
+
+	public String renderExamples() {
+		return StringUtil.trimToNull(
+				examples
+					.stream()
+					.map(o -> o.render())
+					.collect(Collectors.joining("\n\n")));
 	}
 
 
@@ -99,5 +110,5 @@ public class DocItem {
 	
 	private final List<String> signatures;
 	private final String description;
-	private final String examples;
+	private final List<Output> examples;
 }
