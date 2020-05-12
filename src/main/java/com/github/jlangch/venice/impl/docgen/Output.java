@@ -103,7 +103,7 @@ public class Output {
 			}
 		}
 		if (stderr != null && !stderr.isEmpty()) {
-			sb.append(stdout);
+			sb.append(stderr);
 			if (!stderr.endsWith("\n")) {
 				sb.append("\n");
 			}
