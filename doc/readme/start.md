@@ -120,6 +120,7 @@ on MacOSX and Linux:
 foo> ./repl.sh
 ```
 
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png">
 
 
 ## Venice GitPod workspace 

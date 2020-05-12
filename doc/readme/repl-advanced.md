@@ -167,7 +167,7 @@ REPL Launcher with "-loadpath" option:
     -server \
     -XX:-OmitStackTraceInFastThrow \
     -Xmx2G \
-    -cp "libs/*" \
+    -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "/users/foo/venice/scripts1;/users/foo/venice/scripts2" \
     -colors
