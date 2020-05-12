@@ -314,6 +314,7 @@
           that renders the progress as a percentage bar.
 
           E.g: Download: [#################        ]
+               Download: [#################        ] 70%
 
           Options:
             :caption txt
@@ -326,38 +327,44 @@
                 An end message. Defaults to 'ok'.
             :failed-msg msg
                 A failed message. Defaults to 'failed'.
+            :show-percent {true/false}
+                If true ahows the percentage. Defaults to 'false'.
           """
      :examples '("""
                  (io/download "https://foo.org/image.png"
                               :binary true
                               :user-agent "Mozilla"
                               :progress-fn (ansi/progress-bar
-                                              :caption     "Download: "
-                                              :width       25
-                                              :start-msg   "Download started"
-                                              :end-msg     "Download ok"
-                                              :failed-msg  "Download failed"))
+                                              :caption      "Download: "
+                                              :width        25
+                                              :start-msg    "Download started"
+                                              :end-msg      "Download ok"
+                                              :failed-msg   "Download failed"
+                                              :show-percent true))
                  """) }
 
   progress-bar [& options]
 
-  (let [options    (apply hash-map options)
-        caption    (:caption options "")
-        width      (min (max (:width options 25) 10) 100)
-        start-msg  (:start-msg options "started")
-        end-msg    (:end-msg options "ok")
-        failed-msg (:failed-msg options "failed")
-        draw       (fn [text]
-                     (print (ansi/style text
-                                        :clear-line
-                                        (ansi/cursor-left 1000))))
-        bar        (fn [percent]
-                     (let [w1 (/ (* percent width) 100)
-                           w2 (- width w1)]
-                       (str/format "%s[%s%s] "
-                                   caption
-                                   (str/repeat "#" w1)
-                                   (str/repeat " " w2)))) ]
+  (let [options      (apply hash-map options)
+        caption      (:caption options "")
+        width        (min (max (:width options 25) 10) 100)
+        start-msg    (:start-msg options "started")
+        end-msg      (:end-msg options "ok")
+        failed-msg   (:failed-msg options "failed")
+        show-percent (:show-percent options false)
+        draw         (fn [text]
+                       (print (ansi/style text
+                                          :clear-line
+                                          (ansi/cursor-left 1000))))
+        bar          (fn [percent]
+                       (let [percentage (if show-percent (str percent "% ") "")
+                             w1 (/ (* percent width) 100)
+                             w2 (- width w1)]
+                         (str/format "%s[%s%s] %s"
+                                     caption
+                                     (str/repeat "#" w1)
+                                     (str/repeat " " w2)
+                                     percentage))) ]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
