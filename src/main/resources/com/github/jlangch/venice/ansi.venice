@@ -494,11 +494,12 @@
 
 (defn demo-progress-bar []
   (let [pg (ansi/progress-bar
-               :width       25
-               :caption     "Download: "
-               :start-msg   "Download started"
-               :end-msg     "Download ok"
-               :failed-msg  "Download failed")]
+               :width        25
+               :caption      "Download: "
+               :start-msg    "Download started"
+               :end-msg      "Download ok"
+               :failed-msg   "Download failed"
+               :show-percent true)]
 
     (println "Progress bar demo")
     (pg 0 :start)
