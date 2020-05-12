@@ -71,7 +71,9 @@ public class CustomREPL {
 
 		try {
 			config = ReplConfig.load(cli);
-			
+
+			final boolean setupMode = isSetupMode(cli);
+
 			final Level jlineLogLevel = config.getJLineLogLevel();
 			if (jlineLogLevel != null) {
 				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
@@ -89,7 +91,7 @@ public class CustomREPL {
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
-				else if (!isSetupMode(cli)) {
+				else if (!setupMode) {
 					System.out.print(
 							"--------------------------------------------------------------------\n" +
 							"The Venice REPL requires the jansi library on Windows.              \n" +
@@ -101,8 +103,10 @@ public class CustomREPL {
 
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
-			System.out.println("Venice custom REPL: V" + Venice.getVersion());
-			System.out.println("Type '!' for help.");
+			System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+			if (!setupMode) {
+				System.out.println("Type '!' for help.");
+			}
 
 			repl(cli, dumbTerminal);
 		}
