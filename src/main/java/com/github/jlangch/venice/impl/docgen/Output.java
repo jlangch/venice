@@ -25,9 +25,11 @@ package com.github.jlangch.venice.impl.docgen;
 public class Output {
 
 	public Output(
+			final long idx,
 			final String name,
 			final String example
 	) {
+		this.idx = idx;
 		this.name = name;
 		this.example = example;
 		this.stdout = null;
@@ -37,12 +39,14 @@ public class Output {
 	}
 
 	public Output(
+			final long idx,
 			final String name,
 			final String example,
 			final String stdout,
 			final String stderr,
 			final String result
 	) {
+		this.idx = idx;
 		this.name = name;
 		this.example = example;
 		this.stdout = stdout;
@@ -52,12 +56,14 @@ public class Output {
 	}
 	
 	public Output(
+			final long idx,
 			final String name,
 			final String example,
 			final String stdout,
 			final String stderr,
 			final RuntimeException ex
 	) {
+		this.idx = idx;
 		this.name = name;
 		this.example = example;
 		this.stdout = stdout;
@@ -68,6 +74,10 @@ public class Output {
 
 	
 	
+	public long getIdx() {
+		return idx;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -131,7 +141,12 @@ public class Output {
 		return sb.toString();
 	}
 
+	public boolean isFirst() {
+		return idx == 0L;
+	}
 	
+	
+	private final long idx;
 	private final String name;
 	private final String example;
 	private final String result;
