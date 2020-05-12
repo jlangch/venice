@@ -5,7 +5,7 @@ Welcome to Venice!
 Venice can run on any operating system for which a Java VM is available, 
 like Linux, MacOSX, or Windows.
 
-Venice can be setup on a [local machine](#venice-local-setup) or you can use a [Venice GitPod workspace](#venice-gitpod-workspace) without requiring any local installations.
+Venice can be setup on a [local machine](#venice-local-setup) or you can use a [Venice GitPod workspace](#venice-gitpod-workspace) without requiring any local installation.
  
 
 
