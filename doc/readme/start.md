@@ -86,7 +86,7 @@ venice>
 #### 3.c Automated setup for all operating systems
 
 This is by far the easiest way to setup a local Venice REPL environment 
-regardless of the operating system (Windows, MacOSX, or Linux) you run.
+regardless of the operating system (Windows, MacOSX, or Linux).
 
 You just need the Venice JAR (venice-1.7.26.jar or newer) as prerequisite.
 
