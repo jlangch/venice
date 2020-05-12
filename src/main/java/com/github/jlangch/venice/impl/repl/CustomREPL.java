@@ -247,16 +247,16 @@ public class CustomREPL {
 	) {
 		try {
 			final String script = 
-				mode == SetupMode.Minimal 
-					? "(do                             \n" +
-		              "  (load-module :repl-setup)     \n" +
-		              "  (repl-setup/setup :minimal))  \n"
-		              
-		            : "(do                             \n" +
-				      "  (load-module :repl-setup)     \n" +
-				      "  (repl-setup/setup :extended)) \n";
-			
-			venice.RE(script, "user", env);
+					mode == SetupMode.Minimal 
+						? "(do                             \n" +
+			              "  (load-module :repl-setup)     \n" +
+			              "  (repl-setup/setup :minimal))  \n"
+			              
+			            : "(do                             \n" +
+					      "  (load-module :repl-setup)     \n" +
+					      "  (repl-setup/setup :extended)) \n";
+				
+				venice.RE(script, "user", env);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);

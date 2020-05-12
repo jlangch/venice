@@ -366,15 +366,16 @@ public class REPL {
 			final TerminalPrinter printer
 	) {
 		try {
+			final String setupModeMode = ":" + mode.name().toLowerCase();
+			final String colorMode = ":" + config.getColorMode().name().toLowerCase();
+			
 			final String script = 
-				mode == SetupMode.Minimal 
-					? "(do                             \n" +
-		              "  (load-module :repl-setup)     \n" +
-		              "  (repl-setup/setup :minimal))  \n"
-		              
-		            : "(do                             \n" +
-				      "  (load-module :repl-setup)     \n" +
-				      "  (repl-setup/setup :extended)) \n";
+				String.format(
+					"(do                                                \n" +
+		            "  (load-module :repl-setup)                        \n" +
+		            "  (repl-setup/setup :setup-mode %s :color-mode %s))  \n",
+		            setupModeMode,
+		            colorMode);
 			
 			venice.RE(script, "user", env);
 		}
