@@ -22,7 +22,7 @@ Java can be downloaded from
 
 ### 2. Get the Venice JAR file
 
-Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.7.26/jar)
+Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.7.27/jar)
 
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
@@ -33,13 +33,13 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL:
 
 ```text
-foo> java -jar venice-1.7.26.jar -colors
+foo> java -jar venice-1.7.27.jar -colors
 ```
 
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.7.26
+Venice REPL: V1.7.27
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -63,13 +63,13 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL:
 
 ```text
-foo> java -cp venice-1.7.26.jar;jansi-1.18.jar com.github.jlangch.venice.Launcher -colors-darkmode
+foo> java -cp venice-1.7.27.jar;jansi-1.18.jar com.github.jlangch.venice.Launcher -colors-darkmode
 ```
 
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.7.26
+Venice REPL: V1.7.27
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -88,7 +88,7 @@ venice>
 This is by far the easiest way to setup a local Venice REPL environment 
 regardless of the operating system (Windows, MacOSX, or Linux).
 
-You just need the Venice JAR (venice-1.7.26.jar or newer) as prerequisite.
+You just need the Venice JAR (venice-1.7.27.jar or newer) as prerequisite.
 
 The automated setup will create a launcher script with the Java classpath correctly
 setup, will download the Jansi library from Maven, and add some example Venice 
@@ -98,7 +98,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup mode:
 
 ```text
-foo> java -jar venice-1.7.26.jar -setup -colors
+foo> java -jar venice-1.7.27.jar -setup -colors
 ```
 
 The `-setup` option will cause Venice to:
@@ -148,7 +148,7 @@ Start a new terminal (menu Terminal -> New Terminal) ...
 launch the REPL within the terminal:
 
 ```text
-$ java -jar build/libs/venice-1.7.26.jar -colors-darkmode
+$ java -jar build/libs/venice-1.7.27.jar -colors-darkmode
 ```
 
 
