@@ -226,7 +226,7 @@
 
 
 (defn print-success-message []
-  (let [launch-script (if (os-type? :windows) "repl.bat" "repl.sh")]
+  (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
     (println "----------------------------------------------------------")
     (println "The Venice REPL has been successfuly configured and setup.")
