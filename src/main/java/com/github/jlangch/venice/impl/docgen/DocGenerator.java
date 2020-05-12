@@ -1585,11 +1585,13 @@ public class DocGenerator {
 												"*out*", ps_out,
 												"*err*", ps_err));
 									
-				return new Output(name, example, ps_out.getOutput(), ps_err.getOutput(), result);
+				return new Output(
+						name, example, ps_out.getOutput(), ps_err.getOutput(), result);
 			}
 			catch(RuntimeException ex) {
 				if (catchEx) {							
-					return new Output(name, example, ps_out.getOutput(), ps_err.getOutput(), ex);
+					return new Output(
+							name, example, ps_out.getOutput(), ps_err.getOutput(), ex);
 				}
 				else {
 					throw ex;
