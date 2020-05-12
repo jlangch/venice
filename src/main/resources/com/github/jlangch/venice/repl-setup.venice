@@ -141,21 +141,24 @@
             scripts)))
 
 
-(defn setup-repl-config [dir color-mode]
-  (let [config (io/file dir "repl.json")
-        color-switch (case color-mode
+(defn change-repl-config-color [cfg color-mode]
+  (let [color-switch (case color-mode
                        :light  "-colors"
                        :dark   "-colors-darkmode"
                                "")]
+    (if (str/contains? cfg "-colors-darkmode")
+      (str/replace-last cfg "-colors-darkmode" color-switch)
+      (str/replace-last cfg "-colors" color-switch))))
+
+
+(defn setup-repl-config [dir color-mode]
+  (let [config (io/file dir "repl.json")]
     (when-not (io/exists-file? config)
       (println "Setting up 'repl.json'...")
       (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
            (bytebuf-to-string <> :utf-8)
            (repl-setup/cr-lf <>)
-           (let [cfg <>]
-             (if (str/contains? cfg "-colors-darkmode"))
-               (str/replace-last cfg "-colors-darkmode" color-switch)
-               (str/replace-last cfg "-colors" color-switch))
+           (change-repl-config-color <> color-mode)
            (io/spit config <> :encoding (charset-default-encoding))))))
 
 
@@ -248,8 +251,8 @@
 
 (defn setup [& options]
   (let [options     (apply hash-map options)
-        setup-mode  (:setup-mode options :minimal)
-        color-mode  (:color-mode options :none)
+        setup-mode  (:setup-mode options :minimal)   ;; {:minimal :extended}
+        color-mode  (:color-mode options :none)      ;; {:none :light :dark}
         libs  (if (= setup-mode :extended) libs-ext libs-min)
         fonts (if (= setup-mode :extended) fonts-ext fonts-min)]
     (when-not (io/exists-dir? "libs")
