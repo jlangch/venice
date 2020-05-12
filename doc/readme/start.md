@@ -13,7 +13,7 @@ Venice can be setup on a [local machine](#venice-local-setup) or you can use a [
 
 ### 1. Install Java
 
-Venice requires Java 8 or higher.
+Venice requires Java 8 or newer.
 
 Java can be downloaded from 
 - [AdoptOpenJDK](https://adoptopenjdk.net/)
