@@ -97,19 +97,17 @@ public class REPL {
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
-				else if (!(cli.switchPresent("-setup") 
-						    || cli.switchPresent("-setup-ext") 
-						    || cli.switchPresent("-setup-extended"))) {
+				else if (!isSetupMode(cli)) {
 					System.out.print(
 							"--------------------------------------------------------------------\n" +
 							"The Venice REPL requires the jansi library on Windows.              \n" +
 							"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
 							"from a Maven repo and put it on the classpath.                      \n" +
-							"--------------------------------------------------------------------\n");
+							"--------------------------------------------------------------------\n\n");
 				}
 			}
 			
-			
+			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
 			System.out.println("Venice REPL: V" + Venice.getVersion());			
 			System.out.println("Type '!' for help.");
@@ -354,7 +352,7 @@ public class REPL {
 		printer.println("stdout", "Sample REPL configuration. Save it as 'repl.json'");
 		printer.println("stdout", "in the REPL's working directory:");
 		printer.println();
-		printer.println("stdout", ReplConfig.getRawClasspathConfig());
+		printer.println("stdout", ReplConfig.getDefaultClasspathConfig());
 	}
 
 	private void handleSetupCommand(
@@ -383,12 +381,12 @@ public class REPL {
 	}
 
 	private void handleLauncherCommand() {
-		final String name = ReplConfig.getRawClasspathLauncherName();
+		final String name = ReplConfig.getLauncherScriptName();
 		
 		printer.println("stdout", "Sample REPL launcher script. Save it as '" + name + "'");
 		printer.println("stdout", "in the REPL's working directory:");
 		printer.println();
-		printer.println("stdout", ReplConfig.getRawClasspathLauncher());
+		printer.println("stdout", ReplConfig.getDefaultClasspathLauncherScript());
 	}
 
 	private void handleEnvCommand(
@@ -623,6 +621,12 @@ public class REPL {
 		for (String f : System.getProperty("java.class.path").split(File.pathSeparator)) {
 			printer.println("stdout", "  " + f);					
 		}			
+	}
+	
+	private boolean isSetupMode(final CommandLineArgs cli) {
+		return cli.switchPresent("-setup") 
+			    || cli.switchPresent("-setup-ext") 
+			    || cli.switchPresent("-setup-extended");
 	}
 	
 	

@@ -141,13 +141,14 @@
             scripts)))
 
 
-(defn setup-repl-config []
-  (when-not (io/exists-file? "repl.json")
-    (println "Setting up 'repl.json'...")
-    (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
-         (bytebuf-to-string <> :utf-8)
-         (repl-setup/cr-lf <>)
-         (io/spit "repl.json" <> :encoding (charset-default-encoding)))))
+(defn setup-repl-config [dir]
+  (let [config (io/file dir "repl.json")]
+    (when-not (io/exists-file? config)
+      (println "Setting up 'repl.json'...")
+      (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.json")
+           (bytebuf-to-string <> :utf-8)
+           (repl-setup/cr-lf <>)
+           (io/spit config <> :encoding (charset-default-encoding))))))
 
 
 (defn- setup-repl-launcher-windows []
@@ -260,7 +261,7 @@
     (repl-setup/copy-venice-jar "libs")
     (repl-setup/download-libs "libs" libs)
     (repl-setup/download-fonts "fonts" fonts)
-    (repl-setup/setup-repl-config)
+    (repl-setup/setup-repl-config "libs")
     (repl-setup/setup-repl-launcher)
     (repl-setup/setup-scripts "scripts")
 

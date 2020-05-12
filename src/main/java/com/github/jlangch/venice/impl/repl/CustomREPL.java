@@ -89,18 +89,17 @@ public class CustomREPL {
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
-				else if (!(cli.switchPresent("-setup") 
-						    || cli.switchPresent("-setup-ext") 
-						    || cli.switchPresent("-setup-extended"))) {
+				else if (!isSetupMode(cli)) {
 					System.out.print(
 							"--------------------------------------------------------------------\n" +
 							"The Venice REPL requires the jansi library on Windows.              \n" +
 							"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
 							"from a Maven repo and put it on the classpath.                      \n" +
-							"--------------------------------------------------------------------\n");
+							"--------------------------------------------------------------------\n\n");
 				}
 			}
 
+			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
 			System.out.println("Venice custom REPL: V" + Venice.getVersion());
 			System.out.println("Type '!' for help.");
@@ -293,6 +292,13 @@ public class CustomREPL {
 			return false; // stop the REPL
 		}
 	}
+	
+	private boolean isSetupMode(final CommandLineArgs cli) {
+		return cli.switchPresent("-setup") 
+			    || cli.switchPresent("-setup-ext") 
+			    || cli.switchPresent("-setup-extended");
+	}
+	
 	
 	
 	private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";

@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.nanojson.JsonObject;
 import com.github.jlangch.venice.nanojson.JsonParser;
 
@@ -50,6 +51,7 @@ import com.github.jlangch.venice.nanojson.JsonParser;
 public class ReplConfig {
 
 	private ReplConfig(
+			final String configSource,
 			final ColorMode colorMode,
 			final String loadFile,
 			final String prompt,
@@ -59,6 +61,7 @@ public class ReplConfig {
 			final boolean jlineDumbTerminal,
 			final Map<String,String> colors
 	) {
+		this.configSource = configSource;
 		this.colorMode = colorMode;
 		
 		this.loadFile = loadFile;
@@ -80,7 +83,9 @@ public class ReplConfig {
 		final String loadFile = cli.switchValue("-load-file");
 
 		try {
-			final JsonObject jsonObj = loadJsonConfig();
+			final Tuple2<JsonObject,String> cfg = loadJsonConfig();
+			final JsonObject jsonObj = cfg._1;
+			final String jsonConfigSource = cfg._2;
 			
 			final String prompt = jsonObj.getString("prompt");
 			final String secondaryPrompt = jsonObj.getString("secondary-prompt");
@@ -112,12 +117,13 @@ public class ReplConfig {
 				try {
 					jlineDumbTerminal = obj.getBoolean("dumb-terminal", Boolean.FALSE);
 				}
-				catch(Exception ex) { 
+				catch(Exception ex) {
 					jlineDumbTerminal = true;
 				}
 			}
 
 			return new ReplConfig(
+						jsonConfigSource,
 						getColorMode(cli), 
 						loadFile,
 						prompt,
@@ -130,6 +136,10 @@ public class ReplConfig {
 		catch (Exception ex) {
 			throw new RuntimeException("Failed to parse REPL json config file", ex);
 		}	
+	}
+
+	public String getConfigSource() {
+		return configSource;
 	}
 
 	public ColorMode getColorMode() {
@@ -189,17 +199,17 @@ public class ReplConfig {
 		return null;
 	}
 
-	public static String getRawClasspathConfig() {
+	public static String getDefaultClasspathConfig() {
 		return new ClassPathResource(getVeniceBasePath() + "repl.json")
 						.getResourceAsString("UTF-8");
 	}
 
-	public static String getRawClasspathLauncherName() {
+	public static String getLauncherScriptName() {
 		return System.getProperty("os.name").startsWith("Windows") ? "repl.bat" : "repl.sh";
 	}
 
-	public static String getRawClasspathLauncher() {
-		return new ClassPathResource(getVeniceBasePath() + getRawClasspathLauncherName())
+	public static String getDefaultClasspathLauncherScript() {
+		return new ClassPathResource(getVeniceBasePath() + getLauncherScriptName())
 						.getResourceAsString("UTF-8");
 	}
 
@@ -208,20 +218,39 @@ public class ReplConfig {
 		return StringUtil.emptyToNull(colors.get(key));
 	}
 	
-	private static JsonObject loadJsonConfig() throws Exception {
+	private static Tuple2<JsonObject,String> loadJsonConfig() throws Exception {
+		
+		// [1] load from current working directory
 		final File fileJson = new File("repl.json");
-
 		if (fileJson.isFile()) {
-			System.out.println("Loading REPL config from " + fileJson + "...");
 			try (Reader reader = new FileReader(fileJson)) {
-				return (JsonObject)JsonParser.object().from(reader);
+				return new Tuple2<JsonObject,String>(
+							(JsonObject)JsonParser.object().from(reader),
+							"file " + fileJson.getPath());
 			}
 		}
-		else {
-			final String config = getRawClasspathConfig();
-			System.out.println("Loading REPL default config...");
-			return (JsonObject)JsonParser.object().from(config);
+		
+		// [2] load custom from classpath
+		try {
+			final String clientConfig = new ClassPathResource("repl.json")
+												.getResourceAsString("UTF-8");
+			if (clientConfig != null) {
+				return new Tuple2<JsonObject,String>(
+							(JsonObject)JsonParser.object().from(clientConfig),
+							"classpath custom 'repl.json'");
+			}
 		}
+		catch(Exception ex) { /* ignore */ }
+			
+		// [3] load built-in from classpath
+		final String builtinConfig = getDefaultClasspathConfig();
+		if (builtinConfig != null) {
+			return new Tuple2<JsonObject,String>(
+						(JsonObject)JsonParser.object().from(builtinConfig),
+						"classpath built-in 'repl.json'");
+		}
+		
+		throw new RuntimeException("Failed to find a 'repl.json'");
 	}
 	
 	private static ColorMode getColorMode(final CommandLineArgs cli) {
@@ -261,6 +290,7 @@ public class ReplConfig {
 														"interrupt", 
 														"prompt");
 
+	private final String configSource;
 	private final ColorMode colorMode;
 	private final String loadFile;
 	private final String prompt;
