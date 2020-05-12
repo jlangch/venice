@@ -101,7 +101,7 @@ the REPL in setup mode:
 foo> java -jar venice-1.7.26.jar -setup -colors
 ```
 
-The `-setup` option will cause Venice to run a setup:
+The `-setup` option will cause Venice to:
   - download the Jansi library from the Maven repository
   - extract some example Venice scripts
   - creates a launcher `repl.bat` for Windows and `repl.sh` for all other OS
