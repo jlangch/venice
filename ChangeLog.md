@@ -37,7 +37,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- edge cases in functions `str/replace-first` and  `str/replace-last`
+- edge cases in functions `str/replace-first` and `str/replace-last`
 
 
 
