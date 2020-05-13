@@ -142,13 +142,15 @@
 
 
 (defn change-repl-launcher-color [cfg color-mode]
-  (let [color-switch (case color-mode
-                       :light  "-colors"
-                       :dark   "-colors-darkmode"
-                               "")]
-    (if (str/contains? cfg "-colors-darkmode")
-      (str/replace-last cfg "-colors-darkmode" color-switch)
-      (str/replace-last cfg "-colors" color-switch))))
+  (if (== :none color-mode)
+    cfg  ;; do not change
+    (let [color-switch (case color-mode
+                         :light  "-colors"
+                         :dark   "-colors-darkmode"
+                                 "-colors")]
+      (if (str/contains? cfg "-colors-darkmode")
+        (str/replace-last cfg "-colors-darkmode" color-switch)
+        (str/replace-last cfg "-colors" color-switch)))))
 
 
 (defn setup-repl-config [dir]
