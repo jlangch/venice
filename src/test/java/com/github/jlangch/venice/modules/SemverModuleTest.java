@@ -42,7 +42,7 @@ public class SemverModuleTest {
 				"      (assert (== 1 (:major v)))                   \n" + 
 				"      (assert (== 2 (:minor v)))                   \n" + 
 				"      (assert (== 3 (:patch v)))                   \n" + 
-				"      (assert (== nil (:rev v)))                   \n" + 
+				"      (assert (== nil (:revision v)))              \n" + 
 				"      (assert (== \"snapshot\" (:pre-release v)))  \n" + 
 				"      (assert (== \"b1\" (:meta-data v))))         \n" + 
 				") ";
@@ -62,7 +62,7 @@ public class SemverModuleTest {
 				"      (assert (== 1 (:major v)))                   \n" + 
 				"      (assert (== 2 (:minor v)))                   \n" + 
 				"      (assert (== 3 (:patch v)))                   \n" + 
-				"      (assert (== nil (:rev v)))                   \n" + 
+				"      (assert (== nil (:revision v)))              \n" + 
 				"      (assert (== \"snapshot\" (:pre-release v)))  \n" + 
 				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
@@ -82,7 +82,7 @@ public class SemverModuleTest {
 				"      (assert (== 1 (:major v)))                   \n" + 
 				"      (assert (== 2 (:minor v)))                   \n" + 
 				"      (assert (== 3 (:patch v)))                   \n" + 
-				"      (assert (== nil (:rev v)))                   \n" + 
+				"      (assert (== nil (:revision v)))              \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
 				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
@@ -102,7 +102,7 @@ public class SemverModuleTest {
 				"      (assert (== nil (:major v)))                 \n" + 
 				"      (assert (== nil (:minor v)))                 \n" + 
 				"      (assert (== nil (:patch v)))                 \n" + 
-				"      (assert (== nil (:rev v)))                   \n" + 
+				"      (assert (== nil (:revision v)))              \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
 				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
@@ -122,7 +122,7 @@ public class SemverModuleTest {
 				"      (assert (== nil (:major v)))                 \n" + 
 				"      (assert (== nil (:minor v)))                 \n" + 
 				"      (assert (== nil (:patch v)))                 \n" + 
-				"      (assert (== nil (:rev v)))                   \n" + 
+				"      (assert (== nil (:revision v)))              \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
 				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";
@@ -142,7 +142,7 @@ public class SemverModuleTest {
 				"      (assert (== nil (:major v)))                 \n" + 
 				"      (assert (== nil (:minor v)))                 \n" + 
 				"      (assert (== nil (:patch v)))                 \n" + 
-				"      (assert (== nil (:rev v)))                   \n" + 
+				"      (assert (== nil (:revision v)))              \n" + 
 				"      (assert (== nil (:pre-release v)))           \n" + 
 				"      (assert (== nil (:meta-data v))))            \n" + 
 				") ";

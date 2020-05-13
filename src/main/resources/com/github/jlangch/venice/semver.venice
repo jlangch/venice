@@ -37,8 +37,8 @@
 (def major      "[0-9]+")
 (def minor      "[0-9]+")
 (def patch      "[0-9]+")
-(def revision   "[0-9]+")
-(def prerelease "-([0-9A-Za-z-]+(?:[.][0-9A-Za-z-]+)*)")
+(def revision   "[.]([0-9]+)")
+(def prerelease "[-]([0-9A-Za-z-]+(?:[.][0-9A-Za-z-]+)*)")
 (def metadata   "[+]([0-9A-Za-z-]+(?:[.][0-9A-Za-z-]+)*)")
 
 (def pattern (str "^"
@@ -47,7 +47,7 @@
                   "(" minor ")"
                   "[.]"
                   "(" patch ")"
-                  "(?:[.]" revision ")?"
+                  "(?:" revision ")?"
                   "(?:" prerelease ")?"
                   "(?:" metadata ")?"
                   "$"))
@@ -82,7 +82,8 @@
        (>= (:minor v) 0)
        (>= (:patch v) 0)
        (or (nil? (:revision v))
-           (>= (:revision v) 0))
+           (and (number? (:revision v))
+                (>= (:revision v) 0)))
        (or (nil? (:pre-release v))
            (string? (:pre-release v)))
        (or (nil? (:meta-data v))
