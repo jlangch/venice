@@ -517,24 +517,10 @@
 
 
 (defn demo []
-  (show-basic-colors)
-  (println)
-  (println)
-
-  (show-all-text-colors)
-  (println)
-  (println)
-
-  (show-all-background-colors)
-  (println)
-  (println)
-
-  (show-decorations)
-  (println)
-  (println)
-
-  (demo-progress)
-  (println)
-  (println)
-
-  (demo-progress-bar))
+  (let [features [show-basic-colors
+                  show-all-text-colors
+                  show-all-background-colors,
+                  show-decorations
+                  demo-progress,
+                  demo-progress-bar]]
+    (docoll (fn [f] (f) (sleep 2 :seconds) (println "\n")) features)))
