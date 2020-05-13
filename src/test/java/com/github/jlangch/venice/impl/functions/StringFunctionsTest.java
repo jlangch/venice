@@ -179,11 +179,28 @@ public class StringFunctionsTest {
 	public void test_str_replace_all() {
 		final Venice venice = new Venice();
 
-		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"**\" \"xy\"))"));
+		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"HH\" \"xy\"))"));
 		assertEquals("xy:xy:ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"ab\" \"xy\"))"));
 		assertEquals("xy:xy:xy", venice.eval("(str (str/replace-all \"ab:ab:ab\" \"ab\" \"xy\"))"));
 		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-all \"ab:cd:ef\" \"ef\" \"xy\"))"));
 		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-all \"ab:cd:ef\" \"cd\" \"xy\"))"));
+
+		assertEquals("::ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"ab\" \"\"))"));
+		assertEquals("ab::", venice.eval("(str (str/replace-all \"ab:ef:ef\" \"ef\" \"\"))"));
+
+		assertEquals("x:x:ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"ab\" \"x\"))"));
+		assertEquals("ab:x:x", venice.eval("(str (str/replace-all \"ab:ef:ef\" \"ef\" \"x\"))"));
+
+		assertEquals("xy:xy:ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"ab\" \"xy\"))"));
+		assertEquals("ab:xy:xy", venice.eval("(str (str/replace-all \"ab:ef:ef\" \"ef\" \"xy\"))"));
+
+		assertEquals("xyz:xyz:ef", venice.eval("(str (str/replace-all \"ab:ab:ef\" \"ab\" \"xyz\"))"));
+		assertEquals("ab:xyz:xyz", venice.eval("(str (str/replace-all \"ab:ef:ef\" \"ef\" \"xyz\"))"));
+		
+		assertEquals("", venice.eval("(str (str/replace-all \"ab\" \"ab\" \"\"))"));
+		assertEquals("x", venice.eval("(str (str/replace-all \"ab\" \"ab\" \"x\"))"));
+		assertEquals("xy", venice.eval("(str (str/replace-all \"ab\" \"ab\" \"xy\"))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-all \"ab\" \"ab\" \"xyz\"))"));
 	}
 
 	@Test
@@ -193,26 +210,54 @@ public class StringFunctionsTest {
 		assertEquals("ab:_:ef", venice.eval("(str (str/replace-all \"ab:0:ef\" (regex/pattern \"[0-9]+\") \"_\"))"));
 		assertEquals("ab:_:ef", venice.eval("(str (str/replace-all \"ab:00:ef\" (regex/pattern \"[0-9]+\") \"_\"))"));
 		assertEquals("ab:_:ef", venice.eval("(str (str/replace-all \"ab:000:ef\" (regex/pattern \"[0-9]+\") \"_\"))"));
+		
+		assertEquals("ab:___:ef", venice.eval("(str (str/replace-all \"ab:0:ef\" (regex/pattern \"[0-9]+\") \"___\"))"));
+		assertEquals("ab:___:ef", venice.eval("(str (str/replace-all \"ab:00:ef\" (regex/pattern \"[0-9]+\") \"___\"))"));
+		assertEquals("ab:___:ef", venice.eval("(str (str/replace-all \"ab:000:ef\" (regex/pattern \"[0-9]+\") \"___\"))"));
+		
+		assertEquals("ab:cd:___", venice.eval("(str (str/replace-all \"ab:cd:0\" (regex/pattern \"[0-9]+\") \"___\"))"));
+		assertEquals("ab:cd:___", venice.eval("(str (str/replace-all \"ab:cd:00\" (regex/pattern \"[0-9]+\") \"___\"))"));
+		assertEquals("ab:cd:___", venice.eval("(str (str/replace-all \"ab:cd:000\" (regex/pattern \"[0-9]+\") \"___\"))"));
 	}
 
 	@Test
 	public void test_str_replace_first() {
 		final Venice venice = new Venice();
 
-		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"**\" \"xy\"))"));
+		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"HH\" \"xy\"))"));
 		assertEquals("xy:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xy\"))"));
 		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-first \"ab:cd:ef\" \"ef\" \"xy\"))"));
 		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-first \"ab:cd:ef\" \"cd\" \"xy\"))"));
+
+		assertEquals(":ab:ef",   venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"\"))"));
+		assertEquals("x:ab:ef",   venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"x\"))"));
+		assertEquals("xy:ab:ef",  venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xy\"))"));
+		assertEquals("xyz:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xyz\"))"));
+		
+		assertEquals("", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"\"))"));
+		assertEquals("x", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"x\"))"));
+		assertEquals("xy", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xy\"))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xyz\"))"));
 	}
 
 	@Test
 	public void test_str_replace_last() {
 		final Venice venice = new Venice();
 
-		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-last \"ab:ab:ef\" \"**\" \"xy\"))"));
+		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-last \"ab:ab:ef\" \"HH\" \"xy\"))"));
 		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-last \"ab:ab:ef\" \"ab\" \"xy\"))"));
 		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-last \"ab:cd:ef\" \"ef\" \"xy\"))"));
 		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-last \"ab:cd:ef\" \"cd\" \"xy\"))"));
+
+		assertEquals("ab:ef:",   venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"\"))"));
+		assertEquals("ab:ef:x",   venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"x\"))"));
+		assertEquals("ab:ef:xy",  venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"xy\"))"));
+		assertEquals("ab:ef:xyz", venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"xyz\"))"));
+		
+		assertEquals("", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"\"))"));
+		assertEquals("x", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"x\"))"));
+		assertEquals("xy", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xy\"))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xyz\"))"));
 	}
 
 	@Test

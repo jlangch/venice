@@ -33,6 +33,62 @@ import java.util.stream.Collectors;
 public class StringUtil {
 	
 	/**
+     * <p>Replaces a String with another String inside a larger String,
+     * for the first {@code max} values of the search String,
+     * case sensitively/insensitively based on {@code ignoreCase} value.</p>
+     *
+     * <p>A {@code null} reference passed to this method is a no-op.</p>
+	 * 
+     * @param text  text to search and replace in, may be null
+     * @param searchString  the String to search for (case insensitive), may be null
+     * @param replacement  the String to replace it with, may be null
+     * @param max  maximum number of values to replace, or {@code -1} if no maximum
+     * @param ignoreCase if true replace is case insensitive, otherwise case sensitive
+     * @return the text with any replacements processed,
+	 */
+	public static String replace(
+			final String text, 
+			final String searchString, 
+			final String replacement, 
+			final int max,
+			final boolean ignoreCase
+	) {
+		if (isEmpty(text) || isEmpty(searchString) || replacement == null || max == 0) {
+			return text;
+		}
+		
+		final String textLowerCase = ignoreCase ? text.toLowerCase() : null;
+		final String searchStringLowerCase  = ignoreCase ? searchString.toLowerCase() : null;
+		
+				
+		int start = 0;
+		int end = ignoreCase 
+						? indexOf(textLowerCase, searchStringLowerCase, start) 
+						: indexOf(text, searchString, start);
+		if (end == -1) {
+			return text;
+		}
+
+		int count = max;
+
+		final int replLength = searchString.length();
+		final StringBuilder buf = new StringBuilder(text.length());
+		while (end != -1) {
+			buf.append(text, start, end).append(replacement);
+			start = end + replLength;
+			if (--count == 0) {
+				break;
+			}
+			end = ignoreCase 
+						? indexOf(textLowerCase, searchStringLowerCase, start) 
+						: indexOf(text, searchString, start);
+		}
+		
+		buf.append(text, start, text.length());
+		return buf.toString();
+	}
+
+	/**
 	 * Splits a text into lines
 	 * 
 	 * @param text	a string

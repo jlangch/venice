@@ -382,25 +382,18 @@ public class StringFunctions {
 				if (args.first() == Nil) {
 					return Nil;
 				}
+				if (args.second() == Nil || args.third() == Nil) {
+					return args.first();
+				}
 
 				final String text = Coerce.toVncString(args.first()).getValue();
 				final VncVal search = args.second();
-				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
+				final String replacement = Coerce.toVncString(args.third()).getValue();
 
 				if (Types.isVncString(search)) {
 					final String searchString = Coerce.toVncString(args.second()).getValue();
 
-					if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-						return args.first();
-					}
-
-					int pos = text.indexOf(searchString);
-					return pos >= 0
-						? new VncString(
-								text.substring(0, pos) +
-								replacement +
-								text.substring(pos + replacement.length()))
-					 	: args.first();
+					return new VncString(StringUtil.replace(text, searchString, replacement, 1, false));
 				}
 				else if (Types.isVncJavaObject(search, Pattern.class)) {
 					final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
