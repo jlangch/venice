@@ -30,9 +30,14 @@
 (ns semver)
 
 ;; Schema
-;;   standard:     1.0.0
-;;   pre-release:  1.0.0-beta
-;;   meta data:    1.0.0-beta+001,
+;;   standard
+;;     version:        1.0.0
+;;     pre-release:    1.0.0-beta
+;;     meta data:      1.0.0-beta+001
+;;   with revision
+;;     version:        1.0.0.0
+;;     pre-release:    1.0.0.0-beta
+;;     meta data:      1.0.0.0-beta+001
 
 (def major      "[0-9]+")
 (def minor      "[0-9]+")
