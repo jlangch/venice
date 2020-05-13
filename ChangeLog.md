@@ -29,6 +29,12 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Changed
+
+- function `str/replace-first` to optionally support replacing ignoring case 
+  and replacing the first n occurrences
+- function `str/replace-last` to optionally support replacing ignoring case
+
 ### Fixed
 
 - edge cases in functions `str/replace-first` and  `str/replace-last`

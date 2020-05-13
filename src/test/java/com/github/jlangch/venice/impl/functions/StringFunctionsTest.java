@@ -241,6 +241,59 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_replace_first_ignoreCase() {
+		final Venice venice = new Venice();
+
+		// ignore-case false (matching)
+		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"HH\" \"xy\" :ignore-case false))"));
+		assertEquals("xy:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-first \"ab:cd:ef\" \"ef\" \"xy\" :ignore-case false))"));
+		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-first \"ab:cd:ef\" \"cd\" \"xy\" :ignore-case false))"));
+
+		assertEquals(":ab:ef",    venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"\" :ignore-case false))"));
+		assertEquals("x:ab:ef",   venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"x\" :ignore-case false))"));
+		assertEquals("xy:ab:ef",  venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("xyz:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xyz\" :ignore-case false))"));
+		
+		assertEquals("",    venice.eval("(str (str/replace-first \"ab\" \"ab\" \"\" :ignore-case false))"));
+		assertEquals("x",   venice.eval("(str (str/replace-first \"ab\" \"ab\" \"x\" :ignore-case false))"));
+		assertEquals("xy",  venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xyz\" :ignore-case false))"));
+
+		// ignore-case false (not matching)
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"HH\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:CD:EF", venice.eval("(str (str/replace-first \"AB:CD:EF\" \"ef\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:CD:EF", venice.eval("(str (str/replace-first \"AB:CD:EF\" \"cd\" \"xy\" :ignore-case false))"));
+
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"\" :ignore-case false))"));
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"x\" :ignore-case false))"));
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"xyz\" :ignore-case false))"));
+		
+		assertEquals("AB", venice.eval("(str (str/replace-first \"AB\" \"ab\" \"\" :ignore-case false))"));
+		assertEquals("AB", venice.eval("(str (str/replace-first \"AB\" \"ab\" \"x\" :ignore-case false))"));
+		assertEquals("AB", venice.eval("(str (str/replace-first \"AB\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("AB", venice.eval("(str (str/replace-first \"AB\" \"ab\" \"xyz\" :ignore-case false))"));
+
+		// ignore-case true
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"HH\" \"xy\" :ignore-case true))"));
+		assertEquals("xy:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"xy\" :ignore-case true))"));
+		assertEquals("AB:CD:xy", venice.eval("(str (str/replace-first \"AB:CD:EF\" \"ef\" \"xy\" :ignore-case true))"));
+		assertEquals("AB:xy:EF", venice.eval("(str (str/replace-first \"AB:CD:EF\" \"cd\" \"xy\" :ignore-case true))"));
+
+		assertEquals(":AB:EF",    venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"\" :ignore-case true))"));
+		assertEquals("x:AB:EF",   venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"x\" :ignore-case true))"));
+		assertEquals("xy:AB:EF",  venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"xy\" :ignore-case true))"));
+		assertEquals("xyz:AB:EF", venice.eval("(str (str/replace-first \"AB:AB:EF\" \"ab\" \"xyz\" :ignore-case true))"));
+		
+		assertEquals("",    venice.eval("(str (str/replace-first \"AB\" \"ab\" \"\" :ignore-case true))"));
+		assertEquals("x",   venice.eval("(str (str/replace-first \"AB\" \"ab\" \"x\" :ignore-case true))"));
+		assertEquals("xy",  venice.eval("(str (str/replace-first \"AB\" \"ab\" \"xy\" :ignore-case true))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-first \"AB\" \"ab\" \"xyz\" :ignore-case true))"));
+	}
+
+	@Test
 	public void test_str_replace_last() {
 		final Venice venice = new Venice();
 
@@ -258,6 +311,59 @@ public class StringFunctionsTest {
 		assertEquals("x", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"x\"))"));
 		assertEquals("xy", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xy\"))"));
 		assertEquals("xyz", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xyz\"))"));
+	}
+
+	@Test
+	public void test_str_replace_last_ignore_case() {
+		final Venice venice = new Venice();
+
+		// ignore-case false (matching)
+		assertEquals("ab:ab:ef", venice.eval("(str (str/replace-last \"ab:ab:ef\" \"HH\" \"xy\" :ignore-case false))"));
+		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-last \"ab:ab:ef\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-last \"ab:cd:ef\" \"ef\" \"xy\" :ignore-case false))"));
+		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-last \"ab:cd:ef\" \"cd\" \"xy\" :ignore-case false))"));
+
+		assertEquals("ab:ef:",    venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"\" :ignore-case false))"));
+		assertEquals("ab:ef:x",   venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"x\" :ignore-case false))"));
+		assertEquals("ab:ef:xy",  venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"xy\" :ignore-case false))"));
+		assertEquals("ab:ef:xyz", venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"xyz\" :ignore-case false))"));
+		
+		assertEquals("",    venice.eval("(str (str/replace-last \"ab\" \"ab\" \"\" :ignore-case false))"));
+		assertEquals("x",   venice.eval("(str (str/replace-last \"ab\" \"ab\" \"x\" :ignore-case false))"));
+		assertEquals("xy",  venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xyz\" :ignore-case false))"));
+
+		// ignore-case false (not matching)
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-last \"AB:AB:EF\" \"HH\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-last \"AB:AB:EF\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:CD:EF", venice.eval("(str (str/replace-last \"AB:CD:EF\" \"ef\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:CD:EF", venice.eval("(str (str/replace-last \"AB:CD:EF\" \"cd\" \"xy\" :ignore-case false))"));
+
+		assertEquals("AB:EF:EF", venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"\" :ignore-case false))"));
+		assertEquals("AB:EF:EF", venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"x\" :ignore-case false))"));
+		assertEquals("AB:EF:EF", venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"xy\" :ignore-case false))"));
+		assertEquals("AB:EF:EF", venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"xyz\" :ignore-case false))"));
+		
+		assertEquals("AB", venice.eval("(str (str/replace-last \"AB\" \"ab\" \"\" :ignore-case false))"));
+		assertEquals("AB", venice.eval("(str (str/replace-last \"AB\" \"ab\" \"x\" :ignore-case false))"));
+		assertEquals("AB", venice.eval("(str (str/replace-last \"AB\" \"ab\" \"xy\" :ignore-case false))"));
+		assertEquals("AB", venice.eval("(str (str/replace-last \"AB\" \"ab\" \"xyz\" :ignore-case false))"));
+
+		// ignore-case true (matching)
+		assertEquals("AB:AB:EF", venice.eval("(str (str/replace-last \"AB:AB:EF\" \"HH\" \"xy\" :ignore-case true))"));
+		assertEquals("AB:xy:EF", venice.eval("(str (str/replace-last \"AB:AB:EF\" \"ab\" \"xy\" :ignore-case true))"));
+		assertEquals("AB:CD:xy", venice.eval("(str (str/replace-last \"AB:CD:EF\" \"ef\" \"xy\" :ignore-case true))"));
+		assertEquals("AB:xy:EF", venice.eval("(str (str/replace-last \"AB:CD:EF\" \"cd\" \"xy\" :ignore-case true))"));
+
+		assertEquals("AB:EF:",    venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"\" :ignore-case true))"));
+		assertEquals("AB:EF:x",   venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"x\" :ignore-case true))"));
+		assertEquals("AB:EF:xy",  venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"xy\" :ignore-case true))"));
+		assertEquals("AB:EF:xyz", venice.eval("(str (str/replace-last \"AB:EF:EF\" \"ef\" \"xyz\" :ignore-case true))"));
+		
+		assertEquals("",    venice.eval("(str (str/replace-last \"AB\" \"ab\" \"\" :ignore-case true))"));
+		assertEquals("x",   venice.eval("(str (str/replace-last \"AB\" \"ab\" \"x\" :ignore-case true))"));
+		assertEquals("xy",  venice.eval("(str (str/replace-last \"AB\" \"ab\" \"xy\" :ignore-case true))"));
+		assertEquals("xyz", venice.eval("(str (str/replace-last \"AB\" \"ab\" \"xyz\" :ignore-case true))"));
 	}
 
 	@Test

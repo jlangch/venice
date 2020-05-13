@@ -362,22 +362,77 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_replace_all =
+		new VncFunction(
+				"str/replace-all",
+				VncFunction
+					.meta()
+					.arglists("(str/replace-all s search replacement)")
+					.doc(
+						"Replaces the all occurrances of search in s. " +
+						"The search arg may be a string or a regex pattern")
+					.examples(
+						"(str/replace-all \"abcdefabc\" \"ab\" \"__\")",
+						"(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("str/replace-all", args, 3);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+
+				final String text = Coerce.toVncString(args.first()).getValue();
+				final VncVal search = args.second();
+				final String replacement = Coerce.toVncString(args.third()).getValue();
+
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final boolean ignoreCase = options.get(new VncKeyword("ignore-case"), False).equals(True);
+
+				if (Types.isVncString(search)) {
+					final String searchString = Coerce.toVncString(args.second()).getValue();
+
+					return new VncString(StringUtil.replace(text, searchString, replacement, 1000000, ignoreCase));
+				}
+				else if (Types.isVncJavaObject(search, Pattern.class)) {
+					final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
+
+					final Matcher m = p.matcher(text);
+					return new VncString(m.replaceAll(replacement));
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'str/replace-all' does not allow %s as search argument.",
+							Types.getType(search)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_replace_first =
 		new VncFunction(
 				"str/replace-first",
 				VncFunction
 					.meta()
-					.arglists("(str/replace-first s search replacement)")
+					.arglists("(str/replace-first s search replacement & options)")
 					.doc(
-						"Replaces the first occurrance of search in s. " +
-						"The search arg may be a string or a regex pattern")
+						"Replaces the first occurrance of search in s. The search arg may be a" +
+						"string or a regex pattern. If the search arg is of type string the " +
+						"options :ignore-case and :nfirst are supported.\n\n" +
+						"Options: \n" +
+							"  :ignore-case true/false - e.g :ignore-case true, defaults to false \n" +
+							"  :nfirst n - e.g :nfirst 2, defaults to 1")
 					.examples(
-						"(str/replace-first \"abcdefabc\" \"ab\" \"XYZ\")",
+						"(str/replace-first \"ab-cd-ef-ab-cd\" \"ab\" \"XYZ\")",
+						"(str/replace-first \"AB-CD-EF-AB-CD\" \"ab\" \"XYZ\" :ignore-case true)",
+						"(str/replace-first \"ab-ab-cd-ab-ef-ab-cd\" \"ab\" \"XYZ\" :nfirst 3)",
 						"(str/replace-first \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("str/replace-first", args, 3);
+				assertMinArity("str/replace-first", args, 3);
 
 				if (args.first() == Nil || args.second() == Nil || args.third() == Nil) {
 					return args.first();
@@ -387,11 +442,14 @@ public class StringFunctions {
 				final VncVal search = args.second();
 				final String replacement = Coerce.toVncString(args.third()).getValue();
 
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final boolean ignoreCase = options.get(new VncKeyword("ignore-case"), False).equals(True);
+				final long nFirst = Coerce.toVncLong(options.get(new VncKeyword("nfirst"), new VncLong(1))).getValue();
 
 				if (Types.isVncString(search)) {
 					final String searchString = Coerce.toVncString(args.second()).getValue();
 
-					return new VncString(StringUtil.replace(text, searchString, replacement, 1, false));
+					return new VncString(StringUtil.replace(text, searchString, replacement, (int)nFirst, ignoreCase));
 				}
 				else if (Types.isVncJavaObject(search, Pattern.class)) {
 					final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
@@ -414,13 +472,19 @@ public class StringFunctions {
 				"str/replace-last",
 				VncFunction
 					.meta()
-					.arglists("(str/replace-last s search replacement)")
+					.arglists("(str/replace-last s search replacement & options)")
+					.doc(
+						"Replaces the last occurrance of search in s\n\n" +
+						"Options: \n" +
+						"  :ignore-case true/false - e.g :ignore-case true, defaults to false")
 					.doc("Replaces the last occurrance of search in s")
-					.examples("(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")")
+					.examples(
+						"(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")",
+						"(str/replace-last \"foo.JPG\" \".jpg\" \".png\" :ignore-case true)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("str/replace-last", args, 3);
+				assertMinArity("str/replace-last", args, 3);
 
 
 				if (args.first() == Nil || args.second() == Nil || args.third() == Nil) {
@@ -431,7 +495,10 @@ public class StringFunctions {
 				final String searchString = Coerce.toVncString(args.second()).getValue();
 				final String replacement = Coerce.toVncString(args.third()).getValue();
 
-				return new VncString(StringUtil.replaceLast(text, searchString, replacement, false));
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final boolean ignoreCase = options.get(new VncKeyword("ignore-case"), False).equals(True);
+
+				return new VncString(StringUtil.replaceLast(text, searchString, replacement, ignoreCase));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -463,68 +530,6 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction str_replace_all =
-		new VncFunction(
-				"str/replace-all",
-				VncFunction
-					.meta()
-					.arglists("(str/replace-all s search replacement)")
-					.doc(
-						"Replaces the all occurrances of search in s. " +
-						"The search arg may be a string or a regex pattern")
-					.examples(
-						"(str/replace-all \"abcdefabc\" \"ab\" \"__\")",
-						"(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				assertArity("str/replace-all", args, 3);
-
-				if (args.first() == Nil) {
-					return Nil;
-				}
-
-				final String text = Coerce.toVncString(args.first()).getValue();
-				final VncVal search = args.second();
-				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
-
-				if (Types.isVncString(search)) {
-					final String searchString = Coerce.toVncString(args.second()).getValue();
-
-					if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-						return args.first();
-					}
-
-					int start = 0;
-					int end = text.indexOf(searchString, start);
-					if (end == -1) {
-						return args.first();
-					}
-					final int replLength = searchString.length();
-					final StringBuilder buf = new StringBuilder();
-					while (end != -1) {
-						buf.append(text, start, end).append(replacement);
-						start = end + replLength;
-						end = text.indexOf(searchString, start);
-					}
-					buf.append(text, start, text.length());
-					return new VncString(buf.toString());
-				}
-				else if (Types.isVncJavaObject(search, Pattern.class)) {
-					final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
-
-					final Matcher m = p.matcher(text);
-					return new VncString(m.replaceAll(replacement));
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'str/replace-all' does not allow %s as search argument.",
-							Types.getType(search)));
-				}
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
 
 	public static VncFunction str_lower_case =
 		new VncFunction(
