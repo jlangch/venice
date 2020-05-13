@@ -347,7 +347,7 @@
 
   (let [options       (apply hash-map options)
         caption       (:caption options "")
-        caption-width (max 0 (:caption-width options 0))
+        caption-width (min 100 (max 0 (:caption-width options 0)))
         caption       (if (== caption-width 0)
                         caption
                         (-> (str/truncate caption caption-width :middle)
