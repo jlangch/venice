@@ -871,6 +871,12 @@ public class DocGenerator {
 		os.addItem(getDocItem("os-name"));
 		os.addItem(getDocItem("os-version"));
 
+		final DocSection time = new DocSection("Time");
+		all.addSection(time);
+		time.addItem(getDocItem("current-time-millis"));
+		time.addItem(getDocItem("nano-time"));
+		time.addItem(getDocItem("format-nano-time"));
+
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
 		util.addItem(getDocItem("uuid"));
@@ -880,9 +886,6 @@ public class DocGenerator {
 		util.addItem(getDocItem("gc"));
 		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));
-		util.addItem(getDocItem("current-time-millis"));
-		util.addItem(getDocItem("nano-time"));
-		util.addItem(getDocItem("format-nano-time"));
 
 		final DocSection shell = new DocSection("Shell");
 		all.addSection(shell);
