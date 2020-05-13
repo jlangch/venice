@@ -27,7 +27,7 @@ Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.githu
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
 
-#### 3.a Linux and MacOSX
+#### 3.1 Linux and MacOSX
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 a REPL:
@@ -54,7 +54,7 @@ venice>
 ```
 
 
-#### 3.b Windows
+#### 3.2 Windows
 
 On Windows the 'jansi' library is required. Download the libary from
 Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar)
@@ -83,7 +83,7 @@ venice> (+ 1 1)
 venice>
 ```
 
-#### 3.c Automated setup for all operating systems
+#### 3.3 Automated setup for all operating systems
 
 This is by far the easiest way to setup a local Venice REPL environment 
 regardless of the operating system (Windows, MacOSX, or Linux).
