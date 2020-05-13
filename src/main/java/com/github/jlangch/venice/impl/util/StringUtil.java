@@ -84,7 +84,9 @@ public class StringUtil {
 						: indexOf(text, searchString, start);
 		}
 		
-		buf.append(text, start, text.length());
+		if (start < text.length()) {
+			buf.append(text, start, text.length());
+		}
 		return buf.toString();
 	}
 

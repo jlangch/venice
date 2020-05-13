@@ -229,14 +229,14 @@ public class StringFunctionsTest {
 		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-first \"ab:cd:ef\" \"ef\" \"xy\"))"));
 		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-first \"ab:cd:ef\" \"cd\" \"xy\"))"));
 
-		assertEquals(":ab:ef",   venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"\"))"));
+		assertEquals(":ab:ef",    venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"\"))"));
 		assertEquals("x:ab:ef",   venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"x\"))"));
 		assertEquals("xy:ab:ef",  venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xy\"))"));
 		assertEquals("xyz:ab:ef", venice.eval("(str (str/replace-first \"ab:ab:ef\" \"ab\" \"xyz\"))"));
 		
-		assertEquals("", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"\"))"));
-		assertEquals("x", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"x\"))"));
-		assertEquals("xy", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xy\"))"));
+		assertEquals("",    venice.eval("(str (str/replace-first \"ab\" \"ab\" \"\"))"));
+		assertEquals("x",   venice.eval("(str (str/replace-first \"ab\" \"ab\" \"x\"))"));
+		assertEquals("xy",  venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xy\"))"));
 		assertEquals("xyz", venice.eval("(str (str/replace-first \"ab\" \"ab\" \"xyz\"))"));
 	}
 
@@ -302,14 +302,14 @@ public class StringFunctionsTest {
 		assertEquals("ab:cd:xy", venice.eval("(str (str/replace-last \"ab:cd:ef\" \"ef\" \"xy\"))"));
 		assertEquals("ab:xy:ef", venice.eval("(str (str/replace-last \"ab:cd:ef\" \"cd\" \"xy\"))"));
 
-		assertEquals("ab:ef:",   venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"\"))"));
+		assertEquals("ab:ef:",    venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"\"))"));
 		assertEquals("ab:ef:x",   venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"x\"))"));
 		assertEquals("ab:ef:xy",  venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"xy\"))"));
 		assertEquals("ab:ef:xyz", venice.eval("(str (str/replace-last \"ab:ef:ef\" \"ef\" \"xyz\"))"));
 		
-		assertEquals("", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"\"))"));
-		assertEquals("x", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"x\"))"));
-		assertEquals("xy", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xy\"))"));
+		assertEquals("",    venice.eval("(str (str/replace-last \"ab\" \"ab\" \"\"))"));
+		assertEquals("x",   venice.eval("(str (str/replace-last \"ab\" \"ab\" \"x\"))"));
+		assertEquals("xy",  venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xy\"))"));
 		assertEquals("xyz", venice.eval("(str (str/replace-last \"ab\" \"ab\" \"xyz\"))"));
 	}
 
