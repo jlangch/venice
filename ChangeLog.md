@@ -23,14 +23,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.7.28] - 2020-05-xx
-
-### Added
-
-- ...
+## [1.7.28] - 2020-05-13
 
 ### Changed
 
+- REPL setup: handles color mode better
 - function `str/replace-first` to optionally support replacing ignoring case 
   and replacing the first n occurrences
 - function `str/replace-last` to optionally support replacing ignoring case
