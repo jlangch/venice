@@ -379,16 +379,14 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/replace-first", args, 3);
 
-				if (args.first() == Nil) {
-					return Nil;
-				}
-				if (args.second() == Nil || args.third() == Nil) {
+				if (args.first() == Nil || args.second() == Nil || args.third() == Nil) {
 					return args.first();
 				}
 
 				final String text = Coerce.toVncString(args.first()).getValue();
 				final VncVal search = args.second();
 				final String replacement = Coerce.toVncString(args.third()).getValue();
+
 
 				if (Types.isVncString(search)) {
 					final String searchString = Coerce.toVncString(args.second()).getValue();
@@ -424,25 +422,16 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("str/replace-last", args, 3);
 
-				if (args.first() == Nil) {
-					return Nil;
+
+				if (args.first() == Nil || args.second() == Nil || args.third() == Nil) {
+					return args.first();
 				}
 
 				final String text = Coerce.toVncString(args.first()).getValue();
 				final String searchString = Coerce.toVncString(args.second()).getValue();
-				final String replacement = Coerce.toVncString(args.nth(2)).getValue();
+				final String replacement = Coerce.toVncString(args.third()).getValue();
 
-				if (StringUtil.isEmpty(text) || StringUtil.isEmpty(searchString) || replacement == null) {
-					return args.first();
-				}
-
-				int pos = text.lastIndexOf(searchString);
-				return pos >= 0
-					? new VncString(
-							text.substring(0, pos) +
-							replacement +
-							text.substring(pos + replacement.length()))
-				 	: args.first();
+				return new VncString(StringUtil.replaceLast(text, searchString, replacement, false));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

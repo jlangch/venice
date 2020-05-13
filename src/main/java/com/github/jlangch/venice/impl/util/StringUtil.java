@@ -89,6 +89,47 @@ public class StringUtil {
 	}
 
 	/**
+     * <p>Replaces a String with another String inside a larger String,
+     * for the last value of the search String,
+     * case sensitively/insensitively based on {@code ignoreCase} value.</p>
+     *
+     * <p>A {@code null} reference passed to this method is a no-op.</p>
+	 * 
+     * @param text  text to search and replace in, may be null
+     * @param searchString  the String to search for (case insensitive), may be null
+     * @param replacement  the String to replace it with, may be null
+      * @param ignoreCase if true replace is case insensitive, otherwise case sensitive
+     * @return the text with any replacements processed,
+	 */
+	public static String replaceLast(
+			final String text, 
+			final String searchString, 
+			final String replacement, 
+			final boolean ignoreCase
+	) {
+		if (isEmpty(text) || isEmpty(searchString) || replacement == null) {
+			return text;
+		}
+		
+		final String textLowerCase = ignoreCase ? text.toLowerCase() : null;
+		final String searchStringLowerCase  = ignoreCase ? searchString.toLowerCase() : null;
+						
+		int end = ignoreCase 
+						? textLowerCase.lastIndexOf(searchStringLowerCase)
+						: text.lastIndexOf(searchString);
+		if (end == -1) {
+			return text;
+		}
+
+		final StringBuilder buf = new StringBuilder(text.length());
+		buf.append(text, 0, end);
+		buf.append(replacement);
+		buf.append(text, end + searchString.length(), text.length());
+		
+		return buf.toString();
+	}
+
+	/**
 	 * Splits a text into lines
 	 * 
 	 * @param text	a string
