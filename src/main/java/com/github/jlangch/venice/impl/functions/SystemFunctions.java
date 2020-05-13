@@ -463,7 +463,6 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-
 	public static VncFunction os_type =
 		new VncFunction(
 				"os-type",
@@ -475,7 +474,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("os", args, 0);
+				assertArity("os-type", args, 0);
 
 				final String osName = System.getProperty("os.name");
 				if (osName.startsWith("Windows")) {
@@ -522,6 +521,63 @@ public class SystemFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction os_arch =
+		new VncFunction(
+				"os-arch",
+				VncFunction
+					.meta()
+					.arglists("(os-arch)")
+					.doc("Returns the OS architecture")
+					.examples("(os-arch)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("os-arch", args, 0);
+
+				return new VncString(System.getProperty("os.arch"));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction os_name =
+		new VncFunction(
+				"os-name",
+				VncFunction
+					.meta()
+					.arglists("(os-name)")
+					.doc("Returns the OS name")
+					.examples("(os-name)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("os-name", args, 0);
+
+				return new VncString(System.getProperty("os.name"));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction os_version =
+			new VncFunction(
+					"os-version",
+					VncFunction
+						.meta()
+						.arglists("(os-version)")
+						.doc("Returns the OS version")
+						.examples("(os-version)")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					assertArity("os-version", args, 0);
+
+					return new VncString(System.getProperty("os.version"));
+				}
+
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
 
 	public static VncFunction sandboxed_Q =
 		new VncFunction(
@@ -776,6 +832,9 @@ public class SystemFunctions {
 					.add(callstack)
 					.add(os_type)
 					.add(os_type_Q)
+					.add(os_arch)
+					.add(os_name)
+					.add(os_version)
 					.add(version)
 					.add(system_prop)
 					.add(system_env)

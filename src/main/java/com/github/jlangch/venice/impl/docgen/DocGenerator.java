@@ -846,21 +846,30 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 
-		final DocSection test = new DocSection("Test");
-		all.addSection(test);
-		test.addItem(getDocItem("sandboxed?"));
-		test.addItem(getDocItem("os-type?"));
+		final DocSection venice = new DocSection("Venice");
+		all.addSection(venice);
+		venice.addItem(getDocItem("version"));
+		venice.addItem(getDocItem("sandboxed?"));
 
 		final DocSection system = new DocSection("System");
 		all.addSection(system);
-		system.addItem(getDocItem("version"));
-		system.addItem(getDocItem("os-type"));
 		system.addItem(getDocItem("system-prop"));
 		system.addItem(getDocItem("system-env"));
 		system.addItem(getDocItem("system-exit-code"));
-		system.addItem(getDocItem("java-version"));
-		system.addItem(getDocItem("java-version-info"));
 		system.addItem(getDocItem("charset-default-encoding"));
+		
+		final DocSection java = new DocSection("Java");
+		all.addSection(java);
+		java.addItem(getDocItem("java-version"));
+		java.addItem(getDocItem("java-version-info"));
+
+		final DocSection os = new DocSection("OS");
+		all.addSection(os);
+		os.addItem(getDocItem("os-type"));
+		os.addItem(getDocItem("os-type?"));
+		os.addItem(getDocItem("os-arch"));
+		os.addItem(getDocItem("os-name"));
+		os.addItem(getDocItem("os-version"));
 
 		final DocSection util = new DocSection("Other");
 		all.addSection(util);
