@@ -101,6 +101,11 @@ the REPL in setup mode:
 foo> java -jar venice-1.7.28.jar -setup -colors
 ```
 
+For a REPL run in a darkmode terminal use the option `-colors-darkmode` instead 
+of `-colors`. This can also be changed later on by modifying the generated launcher 
+shell script.
+
+
 The `-setup` option will cause Venice to:
   - download the Jansi library from the Maven repository
   - extract some example Venice scripts
@@ -108,16 +113,16 @@ The `-setup` option will cause Venice to:
   
 Now the Venice REPL can be started simply by executing the launcher.
 
-on Windows:
-
-```text
-foo> repl.bat
-```
-
 on MacOSX and Linux:
 
 ```text
 foo> ./repl.sh
+```
+
+on Windows:
+
+```text
+foo> repl.bat
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
