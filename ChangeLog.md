@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Fixed
+
+- edge cases in functions `str/replace-first` and  `str/replace-last`
+
 
 
 ## [1.7.27] - 2020-05-12
