@@ -1439,10 +1439,6 @@ public class DocGenerator {
 		general.addItem(getDocItem("java-obj?"));
 		general.addItem(getDocItem("java-iterator-to-list"));
 		general.addItem(getDocItem("java-enumeration-to-list"));
-		general.addItem(new DocItem(" ", null));
-		general.addItem(new DocItem("Invoke constructors", null));
-		general.addItem(new DocItem("Invoke static or instance methods", null));
-		general.addItem(new DocItem("Access static or instance fields", null));
 
 		return section;
 	}
