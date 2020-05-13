@@ -1424,21 +1424,23 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 			
-		final DocSection general = new DocSection("General");
-		all.addSection(general);
-		
-		general.addItem(getDocItem("."));
-		general.addItem(getDocItem("proxify"));
-		general.addItem(getDocItem("import"));
-		general.addItem(getDocItem("imports"));
-		general.addItem(getDocItem("supers"));
-		general.addItem(getDocItem("bases"));
-		general.addItem(getDocItem("class"));
-		general.addItem(getDocItem("cast"));
-		general.addItem(getDocItem("formal-type"));
-		general.addItem(getDocItem("java-obj?"));
-		general.addItem(getDocItem("java-iterator-to-list"));
-		general.addItem(getDocItem("java-enumeration-to-list"));
+		final DocSection java = new DocSection("Java");
+		all.addSection(java);	
+		java.addItem(getDocItem("."));
+		java.addItem(getDocItem("proxify"));
+		java.addItem(getDocItem("import"));
+		java.addItem(getDocItem("java-obj?"));
+		java.addItem(getDocItem("java-iterator-to-list"));
+		java.addItem(getDocItem("java-enumeration-to-list"));
+		java.addItem(getDocItem("cast"));
+		java.addItem(getDocItem("class"));
+	
+		final DocSection support = new DocSection("Support");
+		all.addSection(support);	
+		support.addItem(getDocItem("imports"));
+		support.addItem(getDocItem("supers"));
+		support.addItem(getDocItem("bases"));
+		support.addItem(getDocItem("formal-type"));
 
 		return section;
 	}
