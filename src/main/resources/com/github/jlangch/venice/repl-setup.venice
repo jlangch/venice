@@ -145,9 +145,9 @@
   (if (== :none color-mode)
     cfg  ;; do not change
     (let [color-switch (case color-mode
-                         :light  "-colors"
-                         :dark   "-colors-darkmode"
-                                 "-colors")]
+                             :light  "-colors"
+                             :dark   "-colors-darkmode"
+                                     "-colors")]
       (if (str/contains? cfg "-colors-darkmode")
         (str/replace-last cfg "-colors-darkmode" color-switch)
         (str/replace-last cfg "-colors" color-switch)))))

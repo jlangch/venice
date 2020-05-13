@@ -63,8 +63,8 @@ public class StringUtil {
 				
 		int start = 0;
 		int end = ignoreCase 
-						? indexOf(textLowerCase, searchStringLowerCase, start) 
-						: indexOf(text, searchString, start);
+						? textLowerCase.indexOf(searchStringLowerCase, start) 
+						: text.indexOf(searchString, start);
 		if (end == -1) {
 			return text;
 		}
@@ -80,8 +80,8 @@ public class StringUtil {
 				break;
 			}
 			end = ignoreCase 
-						? indexOf(textLowerCase, searchStringLowerCase, start) 
-						: indexOf(text, searchString, start);
+						? textLowerCase.indexOf(searchStringLowerCase, start) 
+						: text.indexOf(searchString, start);
 		}
 		
 		if (start < text.length()) {
@@ -187,7 +187,7 @@ public class StringUtil {
 		return sb.toString();
 	}
 	
-	public static int indexOf(final String text, final String searchChars, final int startPos) {
+	public static int indexOneCharOf(final String text, final String searchChars, final int startPos) {
 		if (text == null) {
 			throw new IllegalArgumentException("A text must not be null");
 		}
@@ -443,7 +443,7 @@ public class StringUtil {
 		final String first = lines.get(0);
 		
 		final int firstNonBlankPos = StringUtil.indexNotOf(first, " \t", 0);
-		final int firstBlankPos = StringUtil.indexOf(first, " \t", 0);
+		final int firstBlankPos = StringUtil.indexOneCharOf(first, " \t", 0);
 
 		if (firstBlankPos < 0) {
 			return text;

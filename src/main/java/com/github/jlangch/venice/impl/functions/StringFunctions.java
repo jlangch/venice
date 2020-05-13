@@ -387,7 +387,7 @@ public class StringFunctions {
 				final VncVal search = args.second();
 				final String replacement = Coerce.toVncString(args.third()).getValue();
 
-				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final VncHashMap options = VncHashMap.ofAll(args.slice(3));
 				final boolean ignoreCase = options.get(new VncKeyword("ignore-case"), False).equals(True);
 
 				if (Types.isVncString(search)) {
@@ -442,7 +442,7 @@ public class StringFunctions {
 				final VncVal search = args.second();
 				final String replacement = Coerce.toVncString(args.third()).getValue();
 
-				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final VncHashMap options = VncHashMap.ofAll(args.slice(3));
 				final boolean ignoreCase = options.get(new VncKeyword("ignore-case"), False).equals(True);
 				final long nFirst = Coerce.toVncLong(options.get(new VncKeyword("nfirst"), new VncLong(1))).getValue();
 
@@ -495,7 +495,7 @@ public class StringFunctions {
 				final String searchString = Coerce.toVncString(args.second()).getValue();
 				final String replacement = Coerce.toVncString(args.third()).getValue();
 
-				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final VncHashMap options = VncHashMap.ofAll(args.slice(3));
 				final boolean ignoreCase = options.get(new VncKeyword("ignore-case"), False).equals(True);
 
 				return new VncString(StringUtil.replaceLast(text, searchString, replacement, ignoreCase));
