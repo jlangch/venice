@@ -437,6 +437,7 @@
 
 
 (defn show-all-text-colors []
+  (println "Text colors")
   (docoll (fn [line]
             (docoll (fn [col]
                       (print (ansi/style (str/format " %3s " (str col))
@@ -450,6 +451,7 @@
 
 
 (defn show-all-background-colors []
+  (println "Background colors")
   (docoll (fn [line]
             (docoll (fn [col]
                       (print (ansi/style (str/format " %3s " (str col))
@@ -463,6 +465,7 @@
 
 
 (defn show-decorations []
+  (println "Font styles")
   (print (ansi/style " bold " :bold))
   (print (ansi/style " underline " :underline))
   (print (ansi/style " reversed " :reverse))
@@ -474,6 +477,7 @@
   (let [text1  "hello world"
         text2  "HELLO WORLD"
         len    (count text1)]
+    (println "Cursor demo")
     (print text1)
     (print (ansi/style "" (ansi/cursor-left 1)))
     (dotimes [n len]
@@ -510,3 +514,27 @@
     (pg 0 :start)
     (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
     (pg 100 :end)))
+
+
+(defn demo []
+  (show-basic-colors)
+  (println)
+  (println)
+
+  (show-all-text-colors)
+  (println)
+  (println)
+
+  (show-all-background-colors)
+  (println)
+  (println)
+
+  (show-decorations)
+  (println)
+  (println)
+
+  (demo-progress)
+  (println)
+  (println)
+
+  (demo-progress-bar))
