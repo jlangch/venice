@@ -289,17 +289,20 @@
         start-msg      (:start-msg options "started")
         end-msg        (:end-msg options "ok")
         failed-msg     (:failed-msg options "failed")
-        percent-styles (:percent-styles options)]
+        percent-styles (:percent-styles options [])]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
-          (let [percent (max 0 (min 100 percent))]
+          (let [percent (max 0 (min 100 percent))
+                value   (str/format "%3s%%" percent)]
             (print (ansi/style "" :clear-line :cursor-left-1000))
             (case status
               :start    (print start-msg)
-              :progress (print (str caption (str/format "%3s%%" percent) " "))
-              :end      (print (str end-msg "\n"))
-              :failed   (print (str failed-msg "\n"))
-                        (print (str "Invalid status '" status "'\n")))
+              :progress (print (str caption
+                                    (apply ansi/style value percent-styles)
+                                    " "))
+              :end      (println end-msg)
+              :failed   (println failed-msg)
+                        (println (str "Invalid status '" status "'")))
             nil))
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))]
@@ -365,14 +368,15 @@
         failed-msg    (:failed-msg options "failed")
         show-percent  (:show-percent options false)
         bar           (fn [percent]
-                        (let [w1 (/ (* percent width) 100)
-                              w2 (- width w1)]
+                        (let [w1    (/ (* percent width) 100)
+                              w2    (- width w1)
+                              value (str percent "%")]
                           (str caption
                                "["
                                (str/repeat "#" w1)
                                (str/repeat " " w2)
-                               "] "
-                               (if show-percent (str percent "% ") "")))) ]
+                               "]"
+                               (if show-percent (str " " value " ") " ")))) ]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
