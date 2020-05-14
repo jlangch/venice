@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.List;
@@ -151,15 +152,17 @@ public class CustomREPL {
 		
 		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
  
-		final PrintStream ps_out = createPrintStream("stdout", terminal);
+		final PrintStream out = createPrintStream("stdout", terminal);
 
-		final PrintStream ps_err = createPrintStream("stderr", terminal);
+		final PrintStream err = createPrintStream("stderr", terminal);
+		
+		final BufferedReader in = createBufferedReader("stdin", terminal);
 
 		final TerminalPrinter printer = new TerminalPrinter(config, terminal, dumbTerminal, false);
 		
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 		
-		final Env env = loadEnv(venice, cli, ps_out, ps_err);
+		final Env env = loadEnv(venice, cli, out, err, in);
 		
 
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
@@ -225,19 +228,24 @@ public class CustomREPL {
 	private Env loadEnv(
 			final VeniceInterpreter venice,
 			final CommandLineArgs cli,
-			final PrintStream ps_out,
-			final PrintStream ps_err
+			final PrintStream out,
+			final PrintStream err,
+			final BufferedReader in
 	) {
 		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setGlobal(new Var(new VncSymbol("*REPL*"), new VncJavaObject(this), false))
-					 .setStdoutPrintStream(ps_out)
-					 .setStderrPrintStream(ps_err)
-					 .setStdinReader(null);
+					 .setStdoutPrintStream(out)
+					 .setStderrPrintStream(err)
+					 .setStdinReader(in);
 	}
 	
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
 		return new ReplPrintStream(terminal, config.getColor(context));	
+	}
+	
+	private BufferedReader createBufferedReader(final String context, final Terminal terminal) {
+		return new BufferedReader(terminal.reader());	
 	}
 	
 	private void handleSetupCommand(

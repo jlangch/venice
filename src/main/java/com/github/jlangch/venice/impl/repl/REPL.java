@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -147,15 +148,17 @@ public class REPL {
 	 
 		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
        
-		final PrintStream ps_out = createPrintStream("stdout", terminal);
+		final PrintStream out = createPrintStream("stdout", terminal);
 
-		final PrintStream ps_err = createPrintStream("stderr", terminal);
+		final PrintStream err = createPrintStream("stderr", terminal);
+		
+		final BufferedReader in = createBufferedReader("stdin", terminal);
 
 		printer = new TerminalPrinter(config, terminal, dumbTerminal, false);
 		
 		venice = new VeniceInterpreter(interceptor, loadPaths);
 		
-		Env env = loadEnv(cli, ps_out, ps_err);
+		Env env = loadEnv(cli, out, err, in);
 
 		
 		final ReplParser parser = new ReplParser(venice);
@@ -207,7 +210,7 @@ public class REPL {
 				if (line.startsWith("!")) {
 					final String cmd = StringUtil.trimToEmpty(line.substring(1));				
 					if (cmd.equals("reload")) {
-						env = loadEnv(cli, ps_out, ps_err);
+						env = loadEnv(cli, out, err, in);
 						printer.println("system", "reloaded");					
 						continue;
 					}
@@ -566,14 +569,15 @@ public class REPL {
 
 	private Env loadEnv(
 			final CommandLineArgs cli,
-			final PrintStream ps_out,
-			final PrintStream ps_err
+			final PrintStream out,
+			final PrintStream err,
+			final BufferedReader in
 	) {
 		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
-					 .setStdoutPrintStream(ps_out)
-					 .setStderrPrintStream(ps_err)
-					 .setStdinReader(null);
+					 .setStdoutPrintStream(out)
+					 .setStderrPrintStream(err)
+					 .setStdinReader(in);
 	}
 	
 	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {
@@ -590,6 +594,10 @@ public class REPL {
 	
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
 		return new ReplPrintStream(terminal, config.getColor(context));	
+	}
+	
+	private BufferedReader createBufferedReader(final String context, final Terminal terminal) {
+		return new BufferedReader(terminal.reader());	
 	}
 	
 	private boolean runLoadFile(final String loadFile, final Env env, final String resultPrefix) {
