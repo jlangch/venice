@@ -104,6 +104,13 @@
 
     :cursor-pos-save       "[s"
     :cursor-pos-restore    "[u"
+
+    :cursor-left-1         "[1D"
+    :cursor-left-2         "[2D"
+    :cursor-left-3         "[3D"
+    :cursor-left-4         "[4D"
+    :cursor-left-5         "[5D"
+    :cursor-left-1000      "[1000D"
 })
 
 
@@ -173,6 +180,7 @@
           """(println (ansi/style "foo" :green :underline))"""
           """(println (ansi/style "foo" :green :bg-yellow :underline))"""
           """(println (ansi/style "foo" (ansi/fg-color 21) (ansi/bg-color 221) :underline))"""
+          """(println (ansi/style "foo" nil))"""
         ) }
 
   style [text & styles]
@@ -196,9 +204,10 @@
   ansi [style]
 
   (if (and ansi/*use-ansi* core/*ansi-term*)
-    (if (string? style)
-      (str "\u001b" style)
-      (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES))))
+    (cond
+      (keyword? style)  (str "\u001b" (get ansi/ANSI-CODES style (:reset ansi/ANSI-CODES)))
+      (string? style)   (str "\u001b" style)
+      :default          "")
     ""))
 
 
@@ -275,24 +284,22 @@
 
   progress [& options]
 
-  (let [options    (apply hash-map options)
-        caption    (:caption options "")
-        start-msg  (:start-msg options "started")
-        end-msg    (:end-msg options "ok")
-        failed-msg (:failed-msg options "failed")
-        draw       (fn [text]
-                     (print (ansi/style text
-                                        :clear-line
-                                        (ansi/cursor-left 1000)))) ]
+  (let [options        (apply hash-map options)
+        caption        (:caption options "")
+        start-msg      (:start-msg options "started")
+        end-msg        (:end-msg options "ok")
+        failed-msg     (:failed-msg options "failed")
+        percent-styles (:percent-styles options)]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))]
+            (print (ansi/style "" :clear-line :cursor-left-1000))
             (case status
               :start    (print start-msg)
-              :progress (draw (str/format "%s%3s%% " caption percent))
-              :end      (draw (str end-msg "\n"))
-              :failed   (draw (str failed-msg "\n"))
-                        (draw (str "Invalid status '" status "'\n")))
+              :progress (print (str caption (str/format "%3s%%" percent) " "))
+              :end      (print (str end-msg "\n"))
+              :failed   (print (str failed-msg "\n"))
+                        (print (str "Invalid status '" status "'\n")))
             nil))
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))]
@@ -357,28 +364,25 @@
         end-msg       (:end-msg options "ok")
         failed-msg    (:failed-msg options "failed")
         show-percent  (:show-percent options false)
-        draw          (fn [text]
-                        (print (ansi/style text
-                                           :clear-line
-                                           (ansi/cursor-left 1000))))
         bar           (fn [percent]
-                        (let [percentage (if show-percent (str percent "% ") "")
-                              w1 (/ (* percent width) 100)
+                        (let [w1 (/ (* percent width) 100)
                               w2 (- width w1)]
-                          (str/format "%s[%s%s] %s"
-                                      caption
-                                      (str/repeat "#" w1)
-                                      (str/repeat " " w2)
-                                      percentage))) ]
+                          (str caption
+                               "["
+                               (str/repeat "#" w1)
+                               (str/repeat " " w2)
+                               "] "
+                               (if show-percent (str percent "% ") "")))) ]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
+          (print (ansi/style "" :clear-line :cursor-left-1000))
           (case status
             :start    (print start-msg)
-            :progress (draw (bar percent))
-            :end      (draw (str end-msg "\n"))
-            :failed   (draw (str failed-msg "\n"))
-                      (draw (str "Invalid status '" status "'\n")))
+            :progress (print (bar percent))
+            :end      (println end-msg)
+            :failed   (println failed-msg)
+                      (println (str "Invalid status '" status "'")))
           nil))
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
