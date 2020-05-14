@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -415,9 +416,17 @@ public class Env implements Serializable {
 	}
 
 	public Env setStdinReader(final java.io.Reader rd) {
-		replaceGlobalDynamic(
-				new VncSymbol("*in*"), 
-				new VncJavaObject(rd != null ? rd : nullReader()));
+		final VncSymbol sym = new VncSymbol("*in*");
+		
+		if (rd == null) {
+			replaceGlobalDynamic(sym, new VncJavaObject(nullBufferedReader()));
+		}
+		else if (rd instanceof BufferedReader) {
+			replaceGlobalDynamic(sym, new VncJavaObject(rd));
+		}
+		else {
+			replaceGlobalDynamic(sym, new VncJavaObject(new BufferedReader(rd)));
+		}
 		
 		return this;
 	}
@@ -586,8 +595,8 @@ public class Env implements Serializable {
 		return new PrintStream(new NullOutputStream(), true);
 	}
 
-	private java.io.Reader nullReader() {
-		return new InputStreamReader(new NullInputStream());
+	private BufferedReader nullBufferedReader() {
+		return new BufferedReader(new InputStreamReader(new NullInputStream()));
 	}
 
 //	private void validatePrivateSymbolAccess(final VncSymbol sym) {

@@ -962,8 +962,7 @@
   read-line  []
 
   (try
-    (-> (. :java.io.BufferedReader :new *in*)
-        (. :readLine))
+    (. *in* :readLine)
     (catch :java.io.IOException e (. :VncException :new (:message e)))))
 
 
