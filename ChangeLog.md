@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - optional revision number support to 'semver' module (ArangoDB uses 
   3.6.3.1 style versions)
+  
+### Changed
+
+- REPL setup: repl.bat gets an `@ECHO OFF` to suppress commands
 
 
 
