@@ -28,7 +28,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - optional revision number support to 'semver' module (ArangoDB uses 
-  3.6.3.1 style versions)
+  3.6.3.1 style versions thus not sticking to semantic versioning)
   
 ### Changed
 
