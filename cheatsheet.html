@@ -205,7 +205,7 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.28</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.7.29</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -1006,23 +1006,38 @@
                         <tbody>
                             
                             <tr>
-                                <td class="shrink">Test</td>
-                                <td class="expand"><code><a href="#1524">sandboxed?</a> <a href="#1525">os-type?</a> </code></td>
+                                <td class="shrink">Venice</td>
+                                <td class="expand"><code><a href="#1524">version</a> <a href="#1525">sandboxed?</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">System</td>
-                                <td class="expand"><code><a href="#1526">version</a> <a href="#1527">os-type</a> <a href="#1528">system-prop</a> <a href="#1529">system-env</a> <a href="#1530">system-exit-code</a> <a href="#1531">java-version</a> <a href="#1532">java-version-info</a> <a href="#1533">charset-default-encoding</a> </code></td>
+                                <td class="expand"><code><a href="#1526">system-prop</a> <a href="#1527">system-env</a> <a href="#1528">system-exit-code</a> <a href="#1529">charset-default-encoding</a> </code></td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="shrink">Java</td>
+                                <td class="expand"><code><a href="#1530">java-version</a> <a href="#1531">java-version-info</a> </code></td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="shrink">OS</td>
+                                <td class="expand"><code><a href="#1532">os-type</a> <a href="#1533">os-type?</a> <a href="#1534">os-arch</a> <a href="#1535">os-name</a> <a href="#1536">os-version</a> </code></td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="shrink">Time</td>
+                                <td class="expand"><code><a href="#1537">current-time-millis</a> <a href="#1538">nano-time</a> <a href="#1539">format-nano-time</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">Other</td>
-                                <td class="expand"><code><a href="#1534">uuid</a> <a href="#1535">sleep</a> <a href="#1536">host-name</a> <a href="#1537">host-address</a> <a href="#1538">gc</a> <a href="#1539">pid</a> <a href="#1540">shutdown-hook</a> <a href="#1541">current-time-millis</a> <a href="#1542">nano-time</a> <a href="#1543">format-nano-time</a> </code></td>
+                                <td class="expand"><code><a href="#1540">uuid</a> <a href="#1541">sleep</a> <a href="#1542">host-name</a> <a href="#1543">host-address</a> <a href="#1544">gc</a> <a href="#1545">pid</a> <a href="#1546">shutdown-hook</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">Shell</td>
-                                <td class="expand"><code><a href="#1544">sh</a> <a href="#1545">with-sh-dir</a> <a href="#1546">with-sh-env</a> <a href="#1547">with-sh-throw</a> </code></td>
+                                <td class="expand"><code><a href="#1547">sh</a> <a href="#1548">with-sh-dir</a> <a href="#1549">with-sh-env</a> <a href="#1550">with-sh-throw</a> </code></td>
                             </tr>
                             
                         </tbody>
@@ -1030,7 +1045,7 @@
                     
                 </div>
                 
-                <div class="section" id="1548">
+                <div class="section" id="1551">
                     <h2>Java Interoperability</h2>
                     
                     <h3></h3>
@@ -1038,8 +1053,13 @@
                         <tbody>
                             
                             <tr>
-                                <td class="shrink">General</td>
-                                <td class="expand"><code><a href="#1549">.</a> <a href="#1550">proxify</a> <a href="#1551">import</a> <a href="#1552">imports</a> <a href="#1553">supers</a> <a href="#1554">bases</a> <a href="#1555">class</a> <a href="#1556">cast</a> <a href="#1557">formal-type</a> <a href="#1558">java-obj?</a> <a href="#1559">java-iterator-to-list</a> <a href="#1560">java-enumeration-to-list</a> <span> </span><br/><span>Invoke constructors</span><br/><span>Invoke static or instance methods</span><br/><span>Access static or instance fields</span><br/></code></td>
+                                <td class="shrink">Java</td>
+                                <td class="expand"><code><a href="#1552">.</a> <a href="#1553">proxify</a> <a href="#1554">import</a> <a href="#1555">java-obj?</a> <a href="#1556">java-iterator-to-list</a> <a href="#1557">java-enumeration-to-list</a> <a href="#1558">cast</a> <a href="#1559">class</a> </code></td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="shrink">Support</td>
+                                <td class="expand"><code><a href="#1560">imports</a> <a href="#1561">supers</a> <a href="#1562">bases</a> <a href="#1563">formal-type</a> </code></td>
                             </tr>
                             
                         </tbody>
@@ -1047,7 +1067,7 @@
                     
                 </div>
                 
-                <div class="section" id="1561">
+                <div class="section" id="1564">
                     <h2>IO</h2>
                     
                     <h3></h3>
@@ -1056,57 +1076,57 @@
                             
                             <tr>
                                 <td class="shrink">to</td>
-                                <td class="expand"><code><a href="#1562">print</a> <a href="#1563">println</a> <a href="#1564">printf</a> <a href="#1565">flush</a> <a href="#1566">newline</a> </code></td>
+                                <td class="expand"><code><a href="#1565">print</a> <a href="#1566">println</a> <a href="#1567">printf</a> <a href="#1568">flush</a> <a href="#1569">newline</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">to-str</td>
-                                <td class="expand"><code><a href="#1567">pr-str</a> <a href="#1261">with-out-str</a> </code></td>
+                                <td class="expand"><code><a href="#1570">pr-str</a> <a href="#1261">with-out-str</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">from</td>
-                                <td class="expand"><code><a href="#1568">readline</a> <a href="#1569">read-string</a> </code></td>
+                                <td class="expand"><code><a href="#1571">read-line</a> <a href="#1572">read-string</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">file i/o</td>
-                                <td class="expand"><code><a href="#1570">io/file</a> <a href="#1571">io/file-parent</a> <a href="#1572">io/file-name</a> <a href="#1573">io/file-path</a> <a href="#1574">io/file-absolute-path</a> <a href="#1575">io/file-canonical-path</a> <a href="#1576">io/file-ext?</a> <a href="#1577">io/list-files</a> <a href="#1578">io/list-files-glob</a> <a href="#1579">io/list-file-tree</a> <a href="#1580">io/file-size</a> <a href="#1581">io/delete-file</a> <a href="#1582">io/delete-file-on-exit</a> <a href="#1583">io/delete-file-tree</a> <a href="#1584">io/copy-file</a> <a href="#1585">io/move-file</a> <a href="#1586">io/mkdir</a> <a href="#1587">io/mkdirs</a> <a href="#1588">io/slurp</a> <a href="#1589">io/slurp-lines</a> <a href="#1590">io/spit</a> <a href="#1591">io/temp-file</a> </code></td>
+                                <td class="expand"><code><a href="#1573">io/file</a> <a href="#1574">io/file-parent</a> <a href="#1575">io/file-name</a> <a href="#1576">io/file-path</a> <a href="#1577">io/file-absolute-path</a> <a href="#1578">io/file-canonical-path</a> <a href="#1579">io/file-ext?</a> <a href="#1580">io/list-files</a> <a href="#1581">io/list-files-glob</a> <a href="#1582">io/list-file-tree</a> <a href="#1583">io/file-size</a> <a href="#1584">io/delete-file</a> <a href="#1585">io/delete-file-on-exit</a> <a href="#1586">io/delete-file-tree</a> <a href="#1587">io/copy-file</a> <a href="#1588">io/move-file</a> <a href="#1589">io/mkdir</a> <a href="#1590">io/mkdirs</a> <a href="#1591">io/slurp</a> <a href="#1592">io/slurp-lines</a> <a href="#1593">io/spit</a> <a href="#1594">io/temp-file</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">file test</td>
-                                <td class="expand"><code><a href="#1592">io/file?</a> <a href="#1593">io/exists-file?</a> <a href="#1594">io/exists-dir?</a> <a href="#1595">io/file-can-read?</a> <a href="#1596">io/file-can-write?</a> <a href="#1597">io/file-can-execute?</a> <a href="#1598">io/file-hidden?</a> </code></td>
+                                <td class="expand"><code><a href="#1595">io/file?</a> <a href="#1596">io/exists-file?</a> <a href="#1597">io/exists-dir?</a> <a href="#1598">io/file-can-read?</a> <a href="#1599">io/file-can-write?</a> <a href="#1600">io/file-can-execute?</a> <a href="#1601">io/file-hidden?</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">file other</td>
-                                <td class="expand"><code><a href="#1599">io/tmp-dir</a> <a href="#1600">io/user-dir</a> <a href="#1601">io/user-home-dir</a> </code></td>
+                                <td class="expand"><code><a href="#1602">io/tmp-dir</a> <a href="#1603">io/user-dir</a> <a href="#1604">io/user-home-dir</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">stream</td>
-                                <td class="expand"><code><a href="#1602">io/copy-stream</a> <a href="#1603">io/slurp-stream</a> <a href="#1604">io/spit-stream</a> <a href="#1605">io/uri-stream</a> <a href="#1606">io/wrap-os-with-buffered-writer</a> <a href="#1607">io/wrap-os-with-print-writer</a> <a href="#1608">io/wrap-is-with-buffered-reader</a> </code></td>
+                                <td class="expand"><code><a href="#1605">io/copy-stream</a> <a href="#1606">io/slurp-stream</a> <a href="#1607">io/spit-stream</a> <a href="#1608">io/uri-stream</a> <a href="#1609">io/wrap-os-with-buffered-writer</a> <a href="#1610">io/wrap-os-with-print-writer</a> <a href="#1611">io/wrap-is-with-buffered-reader</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">http</td>
-                                <td class="expand"><code><a href="#1609">io/download</a> <a href="#1610">io/internet-avail?</a> </code></td>
+                                <td class="expand"><code><a href="#1612">io/download</a> <a href="#1613">io/internet-avail?</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">zip</td>
-                                <td class="expand"><code><a href="#1611">io/zip</a> <a href="#1612">io/zip-file</a> <a href="#1613">io/zip-list</a> <a href="#1614">io/zip-list-entry-names</a> <a href="#1615">io/zip-append</a> <a href="#1616">io/zip-remove</a> <a href="#1617">io/zip?</a> <a href="#1618">io/unzip</a> <a href="#1619">io/unzip-first</a> <a href="#1620">io/unzip-nth</a> <a href="#1621">io/unzip-all</a> <a href="#1622">io/unzip-to-dir</a> </code></td>
+                                <td class="expand"><code><a href="#1614">io/zip</a> <a href="#1615">io/zip-file</a> <a href="#1616">io/zip-list</a> <a href="#1617">io/zip-list-entry-names</a> <a href="#1618">io/zip-append</a> <a href="#1619">io/zip-remove</a> <a href="#1620">io/zip?</a> <a href="#1621">io/unzip</a> <a href="#1622">io/unzip-first</a> <a href="#1623">io/unzip-nth</a> <a href="#1624">io/unzip-all</a> <a href="#1625">io/unzip-to-dir</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">gzip</td>
-                                <td class="expand"><code><a href="#1623">io/gzip</a> <a href="#1624">io/gzip-to-stream</a> <a href="#1625">io/gzip?</a> <a href="#1626">io/ungzip</a> <a href="#1627">io/ungzip-to-stream</a> </code></td>
+                                <td class="expand"><code><a href="#1626">io/gzip</a> <a href="#1627">io/gzip-to-stream</a> <a href="#1628">io/gzip?</a> <a href="#1629">io/ungzip</a> <a href="#1630">io/ungzip-to-stream</a> </code></td>
                             </tr>
                             
                             <tr>
                                 <td class="shrink">other</td>
-                                <td class="expand"><code><a href="#1261">with-out-str</a> <a href="#1628">io/load-classpath-resource</a> <a href="#1629">io/mime-type</a> <a href="#1630">io/default-charset</a> </code></td>
+                                <td class="expand"><code><a href="#1261">with-out-str</a> <a href="#1631">io/load-classpath-resource</a> <a href="#1632">io/mime-type</a> <a href="#1633">io/default-charset</a> </code></td>
                             </tr>
                             
                         </tbody>
@@ -1114,7 +1134,7 @@
                     
                 </div>
                 
-                <div class="section" id="1631">
+                <div class="section" id="1634">
                     <h2>Application</h2>
                     
                     <h3></h3>
@@ -1123,7 +1143,7 @@
                             
                             <tr>
                                 <td class="shrink">Management</td>
-                                <td class="expand"><code><a href="#1632">app/build</a> <a href="#1633">app/manifest</a> </code></td>
+                                <td class="expand"><code><a href="#1635">app/build</a> <a href="#1636">app/manifest</a> </code></td>
                             </tr>
                             
                         </tbody>
@@ -1626,7 +1646,7 @@ form, etc.</code>
                 
                  
                 
-                <div class="detail" id="1549">
+                <div class="detail" id="1552">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>.</h1>
                     
@@ -1660,7 +1680,7 @@ form, etc.</code>
 
 ;; invoke static method 
 (. :java.time.ZonedDateTime :now)
-=&gt; 2020-05-13T14:04:14.438+02:00[Europe/Zurich]
+=&gt; 2020-05-14T23:11:05.271+02:00[Europe/Zurich]
 
 ;; invoke static method 
 (. :java.lang.Math :min 10 20)
@@ -1916,12 +1936,6 @@ form, etc.</code>
 =&gt; true</code>
                     </div>
                 </div>
-                
-                 
-                
-                 
-                
-                 
                 
                  
                 
@@ -2264,7 +2278,7 @@ The handler-fn is called if an action throws an exception. It&apos;s afunction t
                 
                  
                 
-                <div class="detail" id="1632">
+                <div class="detail" id="1635">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>app/build</h1>
                     
@@ -2305,7 +2319,7 @@ Or with additional Java libraries (all JARs in &apos;libs&apos; dir):
                 
                  
                 
-                <div class="detail" id="1633">
+                <div class="detail" id="1636">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>app/manifest</h1>
                     
@@ -2737,7 +2751,7 @@ value to thread into any argument position.</code>
                 
                  
                 
-                <div class="detail" id="1554">
+                <div class="detail" id="1562">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>bases</h1>
                     
@@ -3326,7 +3340,7 @@ of test-constant result-expr</code>
                 
                  
                 
-                <div class="detail" id="1556">
+                <div class="detail" id="1558">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>cast</h1>
                     
@@ -3352,7 +3366,7 @@ of test-constant result-expr</code>
          gd (cast :Graphics (. img :createGraphics))] 
      (. gd :fillOval 10 20 5 5)
      img))
-=&gt; BufferedImage@66a3ffec: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
+=&gt; BufferedImage@27efef64: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
                     </div>
                 </div>
                 
@@ -3442,7 +3456,7 @@ of test-constant result-expr</code>
                 
                  
                 
-                <div class="detail" id="1533">
+                <div class="detail" id="1529">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>charset-default-encoding</h1>
                     
@@ -3546,7 +3560,7 @@ of test-constant result-expr</code>
                 
                  
                 
-                <div class="detail" id="1555">
+                <div class="detail" id="1559">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>class</h1>
                     
@@ -3790,7 +3804,7 @@ the same effects, if any, and returns the opposite truth value.</code>
                     </div>
                     <div class="examples">
                         <code>(complement even?)
-=&gt; function anonymous-9a64ce37-f3b6-4a5f-9b20-185a7cdb00c7 {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-cf5b0a0a-f6ba-458b-8188-3e917a5b7640 {visibility :public, ns &quot;core&quot;}
 
 (filter (complement even?) &apos;(1 2 3 4))
 =&gt; (1 3)</code>
@@ -4511,7 +4525,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1541">
+                <div class="detail" id="1537">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>current-time-millis</h1>
                     
@@ -4528,7 +4542,7 @@ Options:
                     </div>
                     <div class="examples">
                         <code>(current-time-millis)
-=&gt; 1589371454399</code>
+=&gt; 1589490660008</code>
                     </div>
                 </div>
                 
@@ -5423,7 +5437,7 @@ Test...
                     </div>
                     <div class="examples">
                         <code>(dobench 10 (+ 1 1))
-=&gt; (3281 965 1319 763 654 661 684 486 386 399)</code>
+=&gt; (3314 1097 1542 1058 973 950 804 823 590 635)</code>
                     </div>
                 </div>
                 
@@ -6260,7 +6274,7 @@ evaluated in order. Returns x.</code>
                 
                  
                 
-                <div class="detail" id="1565">
+                <div class="detail" id="1568">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>flush</h1>
                     
@@ -6397,7 +6411,7 @@ working...
                 
                  
                 
-                <div class="detail" id="1557">
+                <div class="detail" id="1563">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>formal-type</h1>
                     
@@ -6428,7 +6442,7 @@ working...
                 
                  
                 
-                <div class="detail" id="1543">
+                <div class="detail" id="1539">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>format-nano-time</h1>
                     
@@ -6701,8 +6715,8 @@ After 300ms: done=true
     (fn [] (log &quot;Worker&quot; n)))                    
   (apply futures-wait (futures-fork 3 factory)))     
 Worker0
-Worker2
 Worker1
+Worker2
 =&gt; nil</code>
                     </div>
                 </div>
@@ -6741,7 +6755,7 @@ Worker2
                 
                  
                 
-                <div class="detail" id="1538">
+                <div class="detail" id="1544">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>gc</h1>
                     
@@ -6964,7 +6978,7 @@ Worker2
                 
                  
                 
-                <div class="detail" id="1537">
+                <div class="detail" id="1543">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>host-address</h1>
                     
@@ -6987,7 +7001,7 @@ Worker2
                 
                  
                 
-                <div class="detail" id="1536">
+                <div class="detail" id="1542">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>host-name</h1>
                     
@@ -7117,7 +7131,7 @@ otherwise else expr, if supplied, else nil.</code>
                 
                  
                 
-                <div class="detail" id="1551">
+                <div class="detail" id="1554">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>import</h1>
                     
@@ -7166,7 +7180,7 @@ alpha: true
                 
                  
                 
-                <div class="detail" id="1552">
+                <div class="detail" id="1560">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>imports</h1>
                     
@@ -7522,7 +7536,7 @@ alpha: true
                 
                  
                 
-                <div class="detail" id="1584">
+                <div class="detail" id="1587">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/copy-file</h1>
                     
@@ -7547,7 +7561,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1602">
+                <div class="detail" id="1605">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/copy-stream</h1>
                     
@@ -7569,7 +7583,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1630">
+                <div class="detail" id="1633">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/default-charset</h1>
                     
@@ -7591,7 +7605,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1581">
+                <div class="detail" id="1584">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/delete-file</h1>
                     
@@ -7613,7 +7627,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1582">
+                <div class="detail" id="1585">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/delete-file-on-exit</h1>
                     
@@ -7635,7 +7649,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1583">
+                <div class="detail" id="1586">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/delete-file-tree</h1>
                     
@@ -7657,7 +7671,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1609">
+                <div class="detail" id="1612">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/download</h1>
                     
@@ -7696,7 +7710,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1594">
+                <div class="detail" id="1597">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/exists-dir?</h1>
                     
@@ -7719,7 +7733,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1593">
+                <div class="detail" id="1596">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/exists-file?</h1>
                     
@@ -7742,7 +7756,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1570">
+                <div class="detail" id="1573">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file</h1>
                     
@@ -7774,7 +7788,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1574">
+                <div class="detail" id="1577">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-absolute-path</h1>
                     
@@ -7797,7 +7811,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1597">
+                <div class="detail" id="1600">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-can-execute?</h1>
                     
@@ -7819,7 +7833,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1595">
+                <div class="detail" id="1598">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-can-read?</h1>
                     
@@ -7841,7 +7855,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1596">
+                <div class="detail" id="1599">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-can-write?</h1>
                     
@@ -7863,7 +7877,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1575">
+                <div class="detail" id="1578">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-canonical-path</h1>
                     
@@ -7886,7 +7900,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1576">
+                <div class="detail" id="1579">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-ext?</h1>
                     
@@ -7912,7 +7926,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1598">
+                <div class="detail" id="1601">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-hidden?</h1>
                     
@@ -7934,7 +7948,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1572">
+                <div class="detail" id="1575">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-name</h1>
                     
@@ -7957,7 +7971,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1571">
+                <div class="detail" id="1574">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-parent</h1>
                     
@@ -7980,7 +7994,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1573">
+                <div class="detail" id="1576">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-path</h1>
                     
@@ -8003,7 +8017,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1580">
+                <div class="detail" id="1583">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file-size</h1>
                     
@@ -8026,7 +8040,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1592">
+                <div class="detail" id="1595">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/file?</h1>
                     
@@ -8049,7 +8063,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1623">
+                <div class="detail" id="1626">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/gzip</h1>
                     
@@ -8075,7 +8089,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1624">
+                <div class="detail" id="1627">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/gzip-to-stream</h1>
                     
@@ -8105,7 +8119,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1625">
+                <div class="detail" id="1628">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/gzip?</h1>
                     
@@ -8128,7 +8142,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1610">
+                <div class="detail" id="1613">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/internet-avail?</h1>
                     
@@ -8152,7 +8166,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1579">
+                <div class="detail" id="1582">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/list-file-tree</h1>
                     
@@ -8177,7 +8191,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1577">
+                <div class="detail" id="1580">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/list-files</h1>
                     
@@ -8202,7 +8216,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1578">
+                <div class="detail" id="1581">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/list-files-glob</h1>
                     
@@ -8226,7 +8240,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1628">
+                <div class="detail" id="1631">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/load-classpath-resource</h1>
                     
@@ -8248,7 +8262,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1629">
+                <div class="detail" id="1632">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/mime-type</h1>
                     
@@ -8274,7 +8288,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1586">
+                <div class="detail" id="1589">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/mkdir</h1>
                     
@@ -8296,7 +8310,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1587">
+                <div class="detail" id="1590">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/mkdirs</h1>
                     
@@ -8318,7 +8332,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1585">
+                <div class="detail" id="1588">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/move-file</h1>
                     
@@ -8340,7 +8354,7 @@ may fool the website.</code>
                 
                  
                 
-                <div class="detail" id="1588">
+                <div class="detail" id="1591">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/slurp</h1>
                     
@@ -8366,7 +8380,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1589">
+                <div class="detail" id="1592">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/slurp-lines</h1>
                     
@@ -8391,7 +8405,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1603">
+                <div class="detail" id="1606">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/slurp-stream</h1>
                     
@@ -8425,7 +8439,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1590">
+                <div class="detail" id="1593">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/spit</h1>
                     
@@ -8451,7 +8465,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1604">
+                <div class="detail" id="1607">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/spit-stream</h1>
                     
@@ -8484,7 +8498,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1591">
+                <div class="detail" id="1594">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/temp-file</h1>
                     
@@ -8511,7 +8525,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1599">
+                <div class="detail" id="1602">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/tmp-dir</h1>
                     
@@ -8534,7 +8548,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1626">
+                <div class="detail" id="1629">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/ungzip</h1>
                     
@@ -8559,7 +8573,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1627">
+                <div class="detail" id="1630">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/ungzip-to-stream</h1>
                     
@@ -8585,7 +8599,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1618">
+                <div class="detail" id="1621">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip</h1>
                     
@@ -8610,7 +8624,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1621">
+                <div class="detail" id="1624">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-all</h1>
                     
@@ -8636,7 +8650,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1619">
+                <div class="detail" id="1622">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-first</h1>
                     
@@ -8661,7 +8675,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1620">
+                <div class="detail" id="1623">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-nth</h1>
                     
@@ -8687,7 +8701,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1622">
+                <div class="detail" id="1625">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/unzip-to-dir</h1>
                     
@@ -8712,7 +8726,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1605">
+                <div class="detail" id="1608">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/uri-stream</h1>
                     
@@ -8735,7 +8749,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1600">
+                <div class="detail" id="1603">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/user-dir</h1>
                     
@@ -8757,7 +8771,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1601">
+                <div class="detail" id="1604">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/user-home-dir</h1>
                     
@@ -8779,7 +8793,7 @@ a file, a string (file path) or an InputStream.</code>
                 
                  
                 
-                <div class="detail" id="1608">
+                <div class="detail" id="1611">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/wrap-is-with-buffered-reader</h1>
                     
@@ -8810,7 +8824,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1606">
+                <div class="detail" id="1609">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/wrap-os-with-buffered-writer</h1>
                     
@@ -8841,7 +8855,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1607">
+                <div class="detail" id="1610">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/wrap-os-with-print-writer</h1>
                     
@@ -8871,7 +8885,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1611">
+                <div class="detail" id="1614">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip</h1>
                     
@@ -8915,7 +8929,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1615">
+                <div class="detail" id="1618">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-append</h1>
                     
@@ -8944,7 +8958,7 @@ line 2
                 
                  
                 
-                <div class="detail" id="1612">
+                <div class="detail" id="1615">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-file</h1>
                     
@@ -8977,7 +8991,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1613">
+                <div class="detail" id="1616">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-list</h1>
                     
@@ -9004,7 +9018,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1614">
+                <div class="detail" id="1617">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-list-entry-names</h1>
                     
@@ -9026,7 +9040,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1616">
+                <div class="detail" id="1619">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip-remove</h1>
                     
@@ -9053,7 +9067,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1617">
+                <div class="detail" id="1620">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>io/zip?</h1>
                     
@@ -9076,7 +9090,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1560">
+                <div class="detail" id="1557">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-enumeration-to-list</h1>
                     
@@ -9098,7 +9112,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1559">
+                <div class="detail" id="1556">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-iterator-to-list</h1>
                     
@@ -9120,7 +9134,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1558">
+                <div class="detail" id="1555">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-obj?</h1>
                     
@@ -9143,7 +9157,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1531">
+                <div class="detail" id="1530">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-version</h1>
                     
@@ -9166,7 +9180,7 @@ Options:
                 
                  
                 
-                <div class="detail" id="1532">
+                <div class="detail" id="1531">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>java-version-info</h1>
                     
@@ -10701,7 +10715,7 @@ To recursively expand all macros in a form use (macroexpand-all form).</code>
           :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
   (time (fibonacci 25)))
-Elapsed time: 6.89 ms
+Elapsed time: 9.30 ms
 =&gt; 75025</code>
                     </div>
                 </div>
@@ -11068,7 +11082,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                 
                  
                 
-                <div class="detail" id="1542">
+                <div class="detail" id="1538">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>nano-time</h1>
                     
@@ -11085,7 +11099,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     </div>
                     <div class="examples">
                         <code>(nano-time)
-=&gt; 607257257582854</code>
+=&gt; 654044664536116</code>
                     </div>
                 </div>
                 
@@ -11158,7 +11172,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                 
                  
                 
-                <div class="detail" id="1566">
+                <div class="detail" id="1569">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>newline</h1>
                     
@@ -11798,7 +11812,53 @@ passed output stream. Returns nil.</code>
                 
                  
                 
-                <div class="detail" id="1527">
+                <div class="detail" id="1534">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>os-arch</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(os-arch)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Returns the OS architecture</code>
+                    </div>
+                    <div class="examples">
+                        <code>(os-arch)
+=&gt; &quot;x86_64&quot;</code>
+                    </div>
+                </div>
+                
+                 
+                
+                <div class="detail" id="1535">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>os-name</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(os-name)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Returns the OS name</code>
+                    </div>
+                    <div class="examples">
+                        <code>(os-name)
+=&gt; &quot;Mac OS X&quot;</code>
+                    </div>
+                </div>
+                
+                 
+                
+                <div class="detail" id="1532">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>os-type</h1>
                     
@@ -11821,7 +11881,7 @@ passed output stream. Returns nil.</code>
                 
                  
                 
-                <div class="detail" id="1525">
+                <div class="detail" id="1533">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>os-type?</h1>
                     
@@ -11842,6 +11902,29 @@ passed output stream. Returns nil.</code>
 
 (os-type? :windows)
 =&gt; false</code>
+                    </div>
+                </div>
+                
+                 
+                
+                <div class="detail" id="1536">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>os-version</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(os-version)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Returns the OS version</code>
+                    </div>
+                    <div class="examples">
+                        <code>(os-version)
+=&gt; &quot;10.15.4&quot;</code>
                     </div>
                 </div>
                 
@@ -12179,7 +12262,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                 
                  
                 
-                <div class="detail" id="1539">
+                <div class="detail" id="1545">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>pid</h1>
                     
@@ -12196,7 +12279,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                     </div>
                     <div class="examples">
                         <code>(pid)
-=&gt; &quot;45487&quot;</code>
+=&gt; &quot;53294&quot;</code>
                     </div>
                 </div>
                 
@@ -12383,7 +12466,7 @@ Walked: (1 2 {:a 1 :b 2})
                 
                  
                 
-                <div class="detail" id="1567">
+                <div class="detail" id="1570">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>pr-str</h1>
                     
@@ -12444,7 +12527,7 @@ Walked: 2
                 
                  
                 
-                <div class="detail" id="1562">
+                <div class="detail" id="1565">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>print</h1>
                     
@@ -12483,7 +12566,7 @@ Returns nil.</code>
                 
                  
                 
-                <div class="detail" id="1564">
+                <div class="detail" id="1567">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>printf</h1>
                     
@@ -12525,7 +12608,7 @@ abc: 100
                 
                  
                 
-                <div class="detail" id="1563">
+                <div class="detail" id="1566">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>println</h1>
                     
@@ -12659,7 +12742,7 @@ Returns nil.</code>
                 
                  
                 
-                <div class="detail" id="1550">
+                <div class="detail" id="1553">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>proxify</h1>
                     
@@ -12854,10 +12937,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-double)
-=&gt; 0.079425472529007
+=&gt; 0.7410120365119695
 
 (rand-double 100.0)
-=&gt; 94.26522065428412</code>
+=&gt; 64.74625894346825</code>
                     </div>
                 </div>
                 
@@ -12883,10 +12966,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-gaussian)
-=&gt; 0.9676793830733083
+=&gt; 0.2231522793344651
 
 (rand-gaussian 0.0 5.0)
-=&gt; 3.5427157467800106</code>
+=&gt; -4.619143117375032</code>
                     </div>
                 </div>
                 
@@ -12912,10 +12995,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-long)
-=&gt; 6976127893827540400
+=&gt; 578407187888335838
 
 (rand-long 100)
-=&gt; 69</code>
+=&gt; 59</code>
                     </div>
                 </div>
                 
@@ -12966,7 +13049,30 @@ This function is based on a cryptographically strong random number generator (RN
                 
                  
                 
-                <div class="detail" id="1569">
+                <div class="detail" id="1571">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <h1>read-line</h1>
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(read-line)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="descr">
+                        <code>Reads the next line from stream that is the current value of *in* .
+Returns nil if the of the stream is reached.</code>
+                    </div>
+                    <div class="examples">
+                        <code></code>
+                    </div>
+                </div>
+                
+                 
+                
+                <div class="detail" id="1572">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>read-string</h1>
                     
@@ -12988,28 +13094,6 @@ This function is based on a cryptographically strong random number generator (RN
   (eval (read-string &quot;(def x 100)&quot; &quot;test&quot;)) 
   x)                                              
 =&gt; 100</code>
-                    </div>
-                </div>
-                
-                 
-                
-                <div class="detail" id="1568">
-                    <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>readline</h1>
-                    
-                    <div class="arglists">
-                        <div class="arglist">
-                           
-                           <code>(readline prompt)</code>
-                           
-                        </div>
-                    </div>
-                    
-                    <div class="descr">
-                        <code>Reads the next line from stdin. The function is sandboxed</code>
-                    </div>
-                    <div class="examples">
-                        <code></code>
                     </div>
                 </div>
                 
@@ -13632,12 +13716,12 @@ nil
                     </div>
                     <div class="examples">
                         <code>(repeatedly 5 #(rand-long 11))
-=&gt; (6 7 8 3 7)
+=&gt; (4 0 9 1 8)
 
 ;; compare with repeat, which only calls the &apos;rand-long&apos;
 ;; function once, repeating the value five times. 
 (repeat 5 (rand-long 11))
-=&gt; (2 2 2 2 2)</code>
+=&gt; (0 0 0 0 0)</code>
                     </div>
                 </div>
                 
@@ -13939,7 +14023,7 @@ predicate is true for all the items, false otherwise.</code>
                 
                  
                 
-                <div class="detail" id="1524">
+                <div class="detail" id="1525">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>sandboxed?</h1>
                     
@@ -14313,7 +14397,7 @@ Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. </code>
                 
                  
                 
-                <div class="detail" id="1544">
+                <div class="detail" id="1547">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>sh</h1>
                     
@@ -14445,13 +14529,13 @@ sh returns a map of
                     </div>
                     <div class="examples">
                         <code>(shuffle &apos;(1 2 3 4 5 6))
-=&gt; (2 1 3 5 6 4)
+=&gt; (1 2 5 4 3 6)
 
 (shuffle [1 2 3 4 5 6])
-=&gt; [1 6 5 4 2 3]
+=&gt; [1 4 2 6 3 5]
 
 (shuffle &quot;abcdef&quot;)
-=&gt; (&quot;d&quot; &quot;f&quot; &quot;c&quot; &quot;a&quot; &quot;b&quot; &quot;e&quot;)</code>
+=&gt; (&quot;f&quot; &quot;d&quot; &quot;c&quot; &quot;e&quot; &quot;b&quot; &quot;a&quot;)</code>
                     </div>
                 </div>
                 
@@ -14509,7 +14593,7 @@ sh returns a map of
                 
                  
                 
-                <div class="detail" id="1540">
+                <div class="detail" id="1546">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>shutdown-hook</h1>
                     
@@ -14561,7 +14645,7 @@ sh returns a map of
                 
                  
                 
-                <div class="detail" id="1535">
+                <div class="detail" id="1541">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>sleep</h1>
                     
@@ -16591,7 +16675,7 @@ line3&quot;)
                 
                  
                 
-                <div class="detail" id="1553">
+                <div class="detail" id="1561">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>supers</h1>
                     
@@ -16709,7 +16793,7 @@ line3&quot;)
                 
                  
                 
-                <div class="detail" id="1529">
+                <div class="detail" id="1527">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>system-env</h1>
                     
@@ -16735,7 +16819,7 @@ line3&quot;)
                 
                  
                 
-                <div class="detail" id="1530">
+                <div class="detail" id="1528">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>system-exit-code</h1>
                     
@@ -16760,7 +16844,7 @@ Note: The exit code is only used when the Venice launcher has been used to run a
                 
                  
                 
-                <div class="detail" id="1528">
+                <div class="detail" id="1526">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>system-prop</h1>
                     
@@ -17153,7 +17237,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     </div>
                     <div class="examples">
                         <code>(time (+ 100 200))
-Elapsed time: 11.69 µs
+Elapsed time: 15.78 µs
 =&gt; 300</code>
                     </div>
                 </div>
@@ -17225,7 +17309,7 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/date)
-=&gt; Wed May 13 14:04:02 CEST 2020</code>
+=&gt; Thu May 14 23:10:53 CEST 2020</code>
                     </div>
                 </div>
                 
@@ -17271,13 +17355,13 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-month (time/local-date))
-=&gt; 13
+=&gt; 14
 
 (time/day-of-month (time/local-date-time))
-=&gt; 13
+=&gt; 14
 
 (time/day-of-month (time/zoned-date-time))
-=&gt; 13</code>
+=&gt; 14</code>
                     </div>
                 </div>
                 
@@ -17300,13 +17384,13 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-week (time/local-date))
-=&gt; :WEDNESDAY
+=&gt; :THURSDAY
 
 (time/day-of-week (time/local-date-time))
-=&gt; :WEDNESDAY
+=&gt; :THURSDAY
 
 (time/day-of-week (time/zoned-date-time))
-=&gt; :WEDNESDAY</code>
+=&gt; :THURSDAY</code>
                     </div>
                 </div>
                 
@@ -17329,13 +17413,13 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-year (time/local-date))
-=&gt; 134
+=&gt; 135
 
 (time/day-of-year (time/local-date-time))
-=&gt; 134
+=&gt; 135
 
 (time/day-of-year (time/zoned-date-time))
-=&gt; 134</code>
+=&gt; 135</code>
                     </div>
                 </div>
                 
@@ -17412,19 +17496,19 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)
-=&gt; &quot;13-05-2020&quot;
+=&gt; &quot;14-05-2020&quot;
 
 (time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)
-=&gt; &quot;2020-05-13T14:04:02.818CEST&quot;
+=&gt; &quot;2020-05-14T23:10:53.599CEST&quot;
 
 (time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)
-=&gt; &quot;2020-05-13T14:04:02.824+02:00&quot;
+=&gt; &quot;2020-05-14T23:10:53.603+02:00&quot;
 
 (time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))
-=&gt; &quot;2020-05-13T14:04:02.830CEST&quot;
+=&gt; &quot;2020-05-14T23:10:53.608CEST&quot;
 
 (time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))
-=&gt; &quot;2020-05-13T14:04:02.837+02:00&quot;</code>
+=&gt; &quot;2020-05-14T23:10:53.612+02:00&quot;</code>
                     </div>
                 </div>
                 
@@ -17485,10 +17569,10 @@ Elapsed time: 11.69 µs
 =&gt; 0
 
 (time/hour (time/local-date-time))
-=&gt; 14
+=&gt; 23
 
 (time/hour (time/zoned-date-time))
-=&gt; 14</code>
+=&gt; 23</code>
                     </div>
                 </div>
                 
@@ -17663,7 +17747,7 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date)
-=&gt; 2020-05-13
+=&gt; 2020-05-14
 
 (time/local-date 2018 8 1)
 =&gt; 2018-08-01
@@ -17675,7 +17759,7 @@ Elapsed time: 11.69 µs
 =&gt; 2013-08-01
 
 (time/local-date (. :java.util.Date :new))
-=&gt; 2020-05-13</code>
+=&gt; 2020-05-14</code>
                     </div>
                 </div>
                 
@@ -17729,7 +17813,7 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date-time)
-=&gt; 2020-05-13T14:04:02.371
+=&gt; 2020-05-14T23:10:53.104
 
 (time/local-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00
@@ -17747,7 +17831,7 @@ Elapsed time: 11.69 µs
 =&gt; 2013-08-01T02:00
 
 (time/local-date-time (. :java.util.Date :new))
-=&gt; 2020-05-13T14:04:02.397</code>
+=&gt; 2020-05-14T23:10:53.134</code>
                     </div>
                 </div>
                 
@@ -17842,13 +17926,13 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/minus (time/local-date) :days 2)
-=&gt; 2020-05-11
+=&gt; 2020-05-12
 
 (time/minus (time/local-date-time) :days 2)
-=&gt; 2020-05-11T14:04:02.916
+=&gt; 2020-05-12T23:10:53.688
 
 (time/minus (time/zoned-date-time) :days 2)
-=&gt; 2020-05-11T14:04:02.919+02:00[Europe/Zurich]</code>
+=&gt; 2020-05-12T23:10:53.693+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -17874,10 +17958,10 @@ Elapsed time: 11.69 µs
 =&gt; 0
 
 (time/minute (time/local-date-time))
-=&gt; 4
+=&gt; 10
 
 (time/minute (time/zoned-date-time))
-=&gt; 4</code>
+=&gt; 10</code>
                     </div>
                 </div>
                 
@@ -18004,13 +18088,13 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/plus (time/local-date) :days 2)
-=&gt; 2020-05-15
+=&gt; 2020-05-16
 
 (time/plus (time/local-date-time) :days 2)
-=&gt; 2020-05-15T14:04:02.904
+=&gt; 2020-05-16T23:10:53.676
 
 (time/plus (time/zoned-date-time) :days 2)
-=&gt; 2020-05-15T14:04:02.908+02:00[Europe/Zurich]</code>
+=&gt; 2020-05-16T23:10:53.680+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -18036,10 +18120,10 @@ Elapsed time: 11.69 µs
 =&gt; 0
 
 (time/second (time/local-date-time))
-=&gt; 2
+=&gt; 53
 
 (time/second (time/zoned-date-time))
-=&gt; 2</code>
+=&gt; 53</code>
                     </div>
                 </div>
                 
@@ -18062,7 +18146,7 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/to-millis (time/local-date))
-=&gt; 1589320800000</code>
+=&gt; 1589407200000</code>
                     </div>
                 </div>
                 
@@ -18087,13 +18171,13 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/with-time (time/local-date) 22 00 15 333)
-=&gt; 2020-05-13T22:00:15.333
+=&gt; 2020-05-14T22:00:15.333
 
 (time/with-time (time/local-date-time) 22 00 15 333)
-=&gt; 2020-05-13T22:00:15.333
+=&gt; 2020-05-14T22:00:15.333
 
 (time/with-time (time/zoned-date-time) 22 00 15 333)
-=&gt; 2020-05-13T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2020-05-14T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -18258,7 +18342,7 @@ Elapsed time: 11.69 µs
                     </div>
                     <div class="examples">
                         <code>(time/zoned-date-time)
-=&gt; 2020-05-13T14:04:02.414+02:00[Europe/Zurich]
+=&gt; 2020-05-14T23:10:53.161+02:00[Europe/Zurich]
 
 (time/zoned-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -18276,10 +18360,10 @@ Elapsed time: 11.69 µs
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 (time/zoned-date-time (. :java.util.Date :new))
-=&gt; 2020-05-13T14:04:02.447+02:00[Europe/Zurich]
+=&gt; 2020-05-14T23:10:53.201+02:00[Europe/Zurich]
 
 (time/zoned-date-time :UTC)
-=&gt; 2020-05-13T12:04:02.454Z[UTC]
+=&gt; 2020-05-14T21:10:53.207Z[UTC]
 
 (time/zoned-date-time :UTC 2018 8 1)
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -18297,7 +18381,7 @@ Elapsed time: 11.69 µs
 =&gt; 2013-08-01T00:00Z[UTC]
 
 (time/zoned-date-time :UTC (. :java.util.Date :new))
-=&gt; 2020-05-13T12:04:02.495Z[UTC]</code>
+=&gt; 2020-05-14T21:10:53.251Z[UTC]</code>
                     </div>
                 </div>
                 
@@ -18786,7 +18870,7 @@ unpack it after trampoline returns.</code>
                 
                  
                 
-                <div class="detail" id="1534">
+                <div class="detail" id="1540">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>uuid</h1>
                     
@@ -18803,7 +18887,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(uuid )
-=&gt; &quot;24ac8f78-cf3f-4740-baa2-11dfe6d974af&quot;</code>
+=&gt; &quot;b6608598-1192-4e04-b527-c9584c2073d3&quot;</code>
                     </div>
                 </div>
                 
@@ -18959,7 +19043,7 @@ unpack it after trampoline returns.</code>
                 
                  
                 
-                <div class="detail" id="1526">
+                <div class="detail" id="1524">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>version</h1>
                     
@@ -19216,7 +19300,7 @@ calls.</code>
                 
                  
                 
-                <div class="detail" id="1545">
+                <div class="detail" id="1548">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>with-sh-dir</h1>
                     
@@ -19238,7 +19322,7 @@ calls.</code>
                 
                  
                 
-                <div class="detail" id="1546">
+                <div class="detail" id="1549">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>with-sh-env</h1>
                     
@@ -19260,7 +19344,7 @@ calls.</code>
                 
                  
                 
-                <div class="detail" id="1547">
+                <div class="detail" id="1550">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <h1>with-sh-throw</h1>
                     
