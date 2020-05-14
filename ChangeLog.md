@@ -41,7 +41,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   
 ### Changed
 
-- REPL setup: repl.bat gets an `@ECHO OFF` to suppress commands echoing
+- REPL setup: repl.bat gets an `@ECHO OFF` to suppress command echoing
 
 
 
