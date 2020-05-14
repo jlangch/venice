@@ -572,7 +572,8 @@ public class REPL {
 		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setStdoutPrintStream(ps_out)
-					 .setStderrPrintStream(ps_err);
+					 .setStderrPrintStream(ps_err)
+					 .setStdinReader(null);
 	}
 	
 	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {

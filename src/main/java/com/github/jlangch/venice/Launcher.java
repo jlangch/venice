@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
@@ -178,7 +179,8 @@ public class Launcher {
 		return venice.createEnv(macroexpand, false, runMode)
 					 .addGlobalVars(vars)
 					 .setStdoutPrintStream(new PrintStream(System.out, true))
-					 .setStderrPrintStream(new PrintStream(System.err, true));
+					 .setStderrPrintStream(new PrintStream(System.err, true))
+					 .setStdinReader(new InputStreamReader(System.in));
 	}
 
 	private static Var convertAppNameToVar(final String appName) {

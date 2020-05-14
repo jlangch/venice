@@ -1135,7 +1135,7 @@ public class DocGenerator {
 
 		final DocSection from = new DocSection("from");
 		all.addSection(from);
-		from.addItem(getDocItem("readline"));
+		from.addItem(getDocItem("read-line"));
 		from.addItem(getDocItem("read-string"));
 
 		final DocSection file_io = new DocSection("file i/o");

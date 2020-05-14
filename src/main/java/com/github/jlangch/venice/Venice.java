@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
@@ -52,6 +54,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
 import com.github.jlangch.venice.util.Timer;
 
@@ -126,7 +129,8 @@ public class Venice {
 		
 		final Env env = venice.createEnv(macroexpand, false, new VncKeyword("macroexpand"))
 							  .setStdoutPrintStream(null)
-							  .setStderrPrintStream(null);
+							  .setStderrPrintStream(null)
+							  .setStdinReader(null);
 
 		VncVal ast = venice.READ(script, scriptName);
 		ast = venice.MACROEXPAND(ast, env, macroexpand);
@@ -328,6 +332,7 @@ public class Venice {
 	private Env addParams(final Env env, final Map<String,Object> params) {
 		boolean stdoutAdded = false;
 		boolean stderrAdded = false;
+		boolean stdinAdded = false;
 		
 		if (params != null) {
 			for(Map.Entry<String,Object> entry : params.entrySet()) {
@@ -344,6 +349,11 @@ public class Venice {
 					
 					stderrAdded = true;
 				}
+				else if (key.equals("*in*")) {
+					env.setStdinReader(buildReader(val, "*in*"));
+					
+					stdinAdded = true;
+				}
 				else {
 					env.setGlobal(
 						new Var(
@@ -359,6 +369,10 @@ public class Venice {
 
 		if (!stderrAdded) {
 			env.setStderrPrintStream(stderr);
+		}
+
+		if (!stdinAdded) {
+			env.setStdinReader(stdin);
 		}
 
 		return env;
@@ -378,6 +392,25 @@ public class Venice {
 			throw new VncException(String.format(
 						"The %s parameter value (%s) must be either null or an "
 							+ "instance of PrintStream or OutputStream",
+						type,
+						val.getClass().getSimpleName()));
+		}
+	}
+	
+	private java.io.Reader buildReader(final Object val, final String type) {
+		if (val == null) {
+			return new InputStreamReader(new NullInputStream());
+		}
+		else if (val instanceof InputStream) {
+			return new InputStreamReader((InputStream)val);
+		}
+		else if (val instanceof java.io.Reader) {
+			return (java.io.Reader)val;
+		}
+		else {
+			throw new VncException(String.format(
+						"The %s parameter value (%s) must be either null or an "
+							+ "instance of Reader or InputStream",
 						type,
 						val.getClass().getSimpleName()));
 		}
@@ -430,7 +463,8 @@ public class Venice {
 			env = new VeniceInterpreter()
 						.createEnv(true, false, new VncKeyword("script"))
 						.setStdoutPrintStream(null)
-						.setStderrPrintStream(null);
+						.setStderrPrintStream(null)
+						.setStdinReader(null);
 			precompiledEnv.set(env);
 		}
 		
@@ -455,4 +489,5 @@ public class Venice {
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 	private final PrintStream stdout = new PrintStream(System.out, true);
 	private final PrintStream stderr = new PrintStream(System.err, true);
+	private final java.io.Reader stdin = new InputStreamReader(System.in);
 }

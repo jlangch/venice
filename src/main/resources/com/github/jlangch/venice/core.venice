@@ -953,6 +953,21 @@
 
 
 (defn
+  ^{ :arglists '("(read-line)")
+     :doc """
+          Reads the next line from stream that is the current value of *in* .
+          Returns nil if the of the stream is reached.
+          """ }
+
+  read-line  []
+
+  (try
+    (-> (. :java.io.BufferedReader :new *in*)
+        (. :readLine))
+    (catch :java.io.IOException e (. :VncException :new (:message e)))))
+
+
+(defn
   ^{ :arglists '("(not x)")
      :doc "Returns true if x is logical false, false otherwise."
      :examples '("(not true)"

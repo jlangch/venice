@@ -232,7 +232,8 @@ public class CustomREPL {
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setGlobal(new Var(new VncSymbol("*REPL*"), new VncJavaObject(this), false))
 					 .setStdoutPrintStream(ps_out)
-					 .setStderrPrintStream(ps_err);
+					 .setStderrPrintStream(ps_err)
+					 .setStdinReader(null);
 	}
 	
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {

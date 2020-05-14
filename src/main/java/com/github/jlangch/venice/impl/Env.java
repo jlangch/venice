@@ -21,8 +21,9 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.types.Constants.*;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.WithCallStack;
+import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
 
 
@@ -411,6 +413,15 @@ public class Env implements Serializable {
 		
 		return this;
 	}
+
+	public Env setStdinReader(final java.io.Reader rd) {
+		replaceGlobalDynamic(
+				new VncSymbol("*in*"), 
+				new VncJavaObject(rd != null ? rd : nullReader()));
+		
+		return this;
+	}
+
 	
 	private String toString(
 			final Map<VncSymbol,Var> vars, 
@@ -573,6 +584,10 @@ public class Env implements Serializable {
 	
 	private PrintStream nullPrintStream() {
 		return new PrintStream(new NullOutputStream(), true);
+	}
+
+	private java.io.Reader nullReader() {
+		return new InputStreamReader(new NullInputStream());
 	}
 
 //	private void validatePrivateSymbolAccess(final VncSymbol sym) {

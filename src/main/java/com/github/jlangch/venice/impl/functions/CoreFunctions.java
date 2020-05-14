@@ -28,7 +28,6 @@ import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
@@ -43,12 +42,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
-import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.GenSym;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
-import com.github.jlangch.venice.impl.Readline;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -89,9 +86,7 @@ import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
 
@@ -718,33 +713,6 @@ public class CoreFunctions {
 					}
 				}
 				return new VncString(sb.toString());
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction readline =
-		new VncFunction(
-				"readline",
-				VncFunction
-					.meta()
-					.arglists("(readline prompt)")
-					.doc("Reads the next line from stdin. The function is sandboxed")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				final String prompt = Coerce.toVncString(args.first()).getValue();
-				try {
-					return new VncString(Readline.readline(prompt));
-				}
-				catch (IOException ex) {
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("readline", args))) {
-						throw new ValueException(new VncString(ex.getMessage()), ex);
-					}
-				}
-				catch (EofException e) {
-					return Nil;
-				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -6292,7 +6260,6 @@ public class CoreFunctions {
 
 				.add(pr_str)
 				.add(str)
-				.add(readline)
 				.add(read_string)
 
 				.add(equal_Q)

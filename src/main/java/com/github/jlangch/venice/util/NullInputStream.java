@@ -19,25 +19,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 
-import com.github.jlangch.venice.EofException;
 
-public class Readline {
-	  
-	// Just java readline (no history, or line editing)
-	public static String readline(String prompt) throws EofException, IOException {
-		System.out.print(prompt);
-		
-		final BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-		final String line=buffer.readLine();
-		if (line == null) {
-			throw new EofException("stdin EOF");
-		}
-		return line;
+/**
+ * The {@link NullInputStream} discards all bytes written to this
+ * output stream.
+ */
+public class NullInputStream extends InputStream {
+
+	@Override
+	public int read() throws IOException {
+		return -1;  // end-of-stream
 	}
+
+
 }
