@@ -256,8 +256,9 @@
   (let [options     (apply hash-map options)
         setup-mode  (:setup-mode options :minimal)   ;; {:minimal :extended}
         color-mode  (:color-mode options :none)      ;; {:none :light :dark}
-        libs  (if (= setup-mode :extended) libs-ext libs-min)
-        fonts (if (= setup-mode :extended) fonts-ext fonts-min)]
+        libs        (if (= setup-mode :extended) libs-ext libs-min)
+        fonts       (if (= setup-mode :extended) fonts-ext fonts-min)
+        charset     (name (charset-default-encoding))]
     (when-not (io/exists-dir? "libs")
       (io/mkdirs "libs"))
 
@@ -270,7 +271,7 @@
 
     (println)
     (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
-    (println "Using the platforms's default charset" (charset-default-encoding))
+    (println "Using the platforms's default charset" charset)
     (println)
     (let [{version :version, vendor :vendor} (java-version-info)]
       (println (str "Running on Java VM: " version " (" vendor ")"))
