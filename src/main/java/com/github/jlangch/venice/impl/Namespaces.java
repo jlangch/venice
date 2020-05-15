@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -77,6 +78,10 @@ public class Namespaces {
 		return isQualified(sym.getName());
 	}
 
+	public static boolean isQualified(final VncKeyword keyword) {
+		return isQualified(keyword.getValue());
+	}
+
 	public static VncSymbol qualifySymbol(final VncSymbol ns, final VncSymbol sym) {
 		if (Namespaces.isQualified(sym)) {
 			throw new VncException(String.format(
@@ -84,6 +89,15 @@ public class Namespaces {
 					sym.getName()));
 		}
 		return new VncSymbol(ns.getName() + "/" + sym.getName());
+	}
+
+	public static VncKeyword qualifyKeyword(final VncSymbol ns, final VncKeyword keyword) {
+		if (Namespaces.isQualified(keyword)) {
+			throw new VncException(String.format(
+					"The keyword '%s' is already qualified with a namespace",
+					keyword.getValue()));
+		}
+		return new VncKeyword(ns.getName() + "/" + keyword.getValue());
 	}
 
 
