@@ -360,7 +360,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 					typeDefRegistry.add(typeDef);
 					
-					return Nil;
+					return qualifiedType;
 				}
 
 				case "defmacro":

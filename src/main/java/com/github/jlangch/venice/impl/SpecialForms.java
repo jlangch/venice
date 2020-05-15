@@ -297,6 +297,21 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
+
+	public static VncFunction deftype = 
+		new SpecialFormsDocFunction(
+				"deftype",
+				VncFunction
+					.meta()
+					.arglists("(deftype name fields)")		
+					.doc("Creates a new method for a multimethod associated with a dispatch-value.")
+					.examples(
+							"(deftype :complex [real :long, imaginary :long]) ")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction def_dynamic = 
 		new SpecialFormsDocFunction(
 				"def-dynamic",
@@ -855,6 +870,7 @@ public class SpecialForms {
 					.put("defonce",			defonce)
 					.put("defmulti",		defmulti)
 					.put("defmethod",		defmethod)
+					.put("deftype",			deftype)
 					.put("def-dynamic",		def_dynamic)
 					.put("binding",			binding)
 					.put("bound?",			bound_Q)
