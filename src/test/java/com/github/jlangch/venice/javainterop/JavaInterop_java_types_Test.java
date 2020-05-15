@@ -259,7 +259,7 @@ public class JavaInterop_java_types_Test {
 				"	        (. :put :b 2)))                    " +
 				") ";
 
-		assertEquals("venice.HashMap", venice.eval(map2).toString());
+		assertEquals("hash-map", venice.eval(map2).toString());
 	}
 
 	@Test
@@ -284,7 +284,7 @@ public class JavaInterop_java_types_Test {
 				"	        (. :put :b 2)))                    " +
 				") ";
 
-		assertEquals("venice.OrderedMap", venice.eval(map2).toString());
+		assertEquals("ordered-map", venice.eval(map2).toString());
 	}
 
 	@Test
@@ -309,7 +309,7 @@ public class JavaInterop_java_types_Test {
 				"	        (. :put :b 2)))                    " +
 				") ";
 
-		assertEquals("venice.SortedMap", venice.eval(map2).toString());
+		assertEquals("sorted-map", venice.eval(map2).toString());
 	}
 
 }

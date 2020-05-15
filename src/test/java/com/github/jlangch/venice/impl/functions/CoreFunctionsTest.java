@@ -1450,51 +1450,60 @@ public class CoreFunctionsTest {
 	public void test_instanceQ() {
 		final Venice venice = new Venice();
 
-		assertTrue((Boolean)venice.eval("(instance? :venice.Nil nil)"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Boolean true)"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Boolean false)"));
+		assertTrue((Boolean)venice.eval("(instance? :nil nil)"));
+		assertTrue((Boolean)venice.eval("(instance? :boolean true)"));
+		assertTrue((Boolean)venice.eval("(instance? :boolean false)"));
 		
-		assertTrue((Boolean)venice.eval("(instance? :venice.Keyword :a)"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Symbol 'a)"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Atom (atom 0))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.ThreadLocal (thread-local))"));
+		assertTrue((Boolean)venice.eval("(instance? :keyword :a)"));
+		assertTrue((Boolean)venice.eval("(instance? :symbol 'a)"));
+		assertTrue((Boolean)venice.eval("(instance? :atom (atom 0))"));
+		assertTrue((Boolean)venice.eval("(instance? :thread-local (thread-local))"));
 		
-		assertTrue((Boolean)venice.eval("(instance? :venice.Long 1)"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Double 1.0)"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Decimal 1.0M)"));
-		
-		assertTrue((Boolean)venice.eval("(instance? :venice.List '())"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.List (list))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Vector '[])"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Vector (vector))"));
+		assertTrue((Boolean)venice.eval("(instance? :long 1)"));
+		assertTrue((Boolean)venice.eval("(instance? :double 1.0)"));
+		assertTrue((Boolean)venice.eval("(instance? :decimal 1.0M)"));
 
-		assertTrue((Boolean)venice.eval("(instance? :venice.Set '#{})"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.HashSet '#{})"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.SortedSet (sorted-set))"));
-		
-		assertTrue((Boolean)venice.eval("(instance? :venice.Map '{})"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.HashMap '{})"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.HashMap (hash-map))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.SortedMap (sorted-map))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.OrderedMap (ordered-map))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.MutableMap (mutable-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :just (just 1))"));
 
-		assertTrue((Boolean)venice.eval("(instance? :venice.Sequence '())"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Sequence '[])"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Sequence (list))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Sequence (vector))"));
+		assertTrue((Boolean)venice.eval("(instance? :list '())"));
+		assertTrue((Boolean)venice.eval("(instance? :list (list))"));
+		assertTrue((Boolean)venice.eval("(instance? :vector '[])"));
+		assertTrue((Boolean)venice.eval("(instance? :vector (vector))"));
+
+		assertTrue((Boolean)venice.eval("(instance? :set '#{})"));
+		assertTrue((Boolean)venice.eval("(instance? :set (sorted-set))"));
+		assertTrue((Boolean)venice.eval("(instance? :set (mutable-set))"));
+		assertTrue((Boolean)venice.eval("(instance? :hash-set '#{})"));
+		assertTrue((Boolean)venice.eval("(instance? :sorted-set (sorted-set))"));
+		assertTrue((Boolean)venice.eval("(instance? :mutable-set (mutable-set))"));
+		
+		assertTrue((Boolean)venice.eval("(instance? :map '{})"));
+		assertTrue((Boolean)venice.eval("(instance? :map (hash-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :map (sorted-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :map (ordered-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :map (mutable-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :hash-map '{})"));
+		assertTrue((Boolean)venice.eval("(instance? :hash-map (hash-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :sorted-map (sorted-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :ordered-map (ordered-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :mutable-map (mutable-map))"));
+
+		assertTrue((Boolean)venice.eval("(instance? :sequence '())"));
+		assertTrue((Boolean)venice.eval("(instance? :sequence '[])"));
+		assertTrue((Boolean)venice.eval("(instance? :sequence (list))"));
+		assertTrue((Boolean)venice.eval("(instance? :sequence (vector))"));
 	
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection '())"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection '[])"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (list))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (vector))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection '#{})"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (sorted-set))"));	
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection '{})"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (hash-map))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (sorted-map))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (ordered-map))"));
-		assertTrue((Boolean)venice.eval("(instance? :venice.Collection (mutable-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :collection '())"));
+		assertTrue((Boolean)venice.eval("(instance? :collection '[])"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (list))"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (vector))"));
+		assertTrue((Boolean)venice.eval("(instance? :collection '#{})"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (sorted-set))"));	
+		assertTrue((Boolean)venice.eval("(instance? :collection '{})"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (hash-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (sorted-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (ordered-map))"));
+		assertTrue((Boolean)venice.eval("(instance? :collection (mutable-map))"));
 
 		// Java Interop		
 		assertTrue((Boolean)venice.eval("(instance? :java.util.List (. :java.util.ArrayList :new))"));
@@ -3216,33 +3225,33 @@ public class CoreFunctionsTest {
 	public void test_type() {
 		final Venice venice = new Venice();
 
-		assertEquals("venice.Nil", venice.eval("(type nil)"));
-		assertEquals("venice.Boolean", venice.eval("(type false)"));
-		assertEquals("venice.Boolean", venice.eval("(type true)"));
+		assertEquals(":nil", venice.eval("(pr-str (type nil))"));
+		assertEquals(":boolean", venice.eval("(pr-str (type false))"));
+		assertEquals(":boolean", venice.eval("(pr-str (type true))"));
 		
-		assertEquals("venice.Keyword", venice.eval("(type :a)"));
-		assertEquals("venice.Symbol", venice.eval("(type 'a)"));
-		assertEquals("venice.Atom", venice.eval("(type (atom 0))"));
-		assertEquals("venice.ThreadLocal", venice.eval("(type (thread-local))"));
+		assertEquals(":keyword", venice.eval("(pr-str (type :a))"));
+		assertEquals(":symbol", venice.eval("(pr-str (type 'a))"));
+		assertEquals(":atom", venice.eval("(pr-str (type (atom 0)))"));
+		assertEquals(":thread-local", venice.eval("(pr-str (type (thread-local)))"));
 		
-		assertEquals("venice.Long", venice.eval("(type 1)"));
-		assertEquals("venice.Long", venice.eval("(type (* 1 3))"));
-		assertEquals("venice.Double", venice.eval("(type 1.0)"));
-		assertEquals("venice.Double", venice.eval("(type (* 1.0 2.0))"));
-		assertEquals("venice.Decimal", venice.eval("(type 1.06M)"));
-		assertEquals("venice.Decimal", venice.eval("(type (* 1.06M 2.0M))"));
+		assertEquals(":long", venice.eval("(pr-str (type 1))"));
+		assertEquals(":long", venice.eval("(pr-str (type (* 1 3)))"));
+		assertEquals(":double", venice.eval("(pr-str (type 1.0))"));
+		assertEquals(":double", venice.eval("(pr-str (type (* 1.0 2.0)))"));
+		assertEquals(":decimal", venice.eval("(pr-str (type 1.06M))"));
+		assertEquals(":decimal", venice.eval("(pr-str (type (* 1.06M 2.0M)))"));
 		
-		assertEquals("venice.List", venice.eval("(type '())"));
-		assertEquals("venice.List", venice.eval("(type (list))"));
-		assertEquals("venice.Vector", venice.eval("(type '[])"));
-		assertEquals("venice.Vector", venice.eval("(type (vector))"));
-		assertEquals("venice.HashSet", venice.eval("(type '#{})"));
-		assertEquals("venice.SortedSet", venice.eval("(type (sorted-set))"));
-		assertEquals("venice.HashMap", venice.eval("(type '{})"));
-		assertEquals("venice.HashMap", venice.eval("(type (hash-map))"));
-		assertEquals("venice.SortedMap", venice.eval("(type (sorted-map))"));
-		assertEquals("venice.OrderedMap", venice.eval("(type (ordered-map))"));
-		assertEquals("venice.MutableMap", venice.eval("(type (mutable-map))"));
+		assertEquals(":list", venice.eval("(pr-str (type '()))"));
+		assertEquals(":list", venice.eval("(pr-str (type (list)))"));
+		assertEquals(":vector", venice.eval("(pr-str (type '[]))"));
+		assertEquals(":vector", venice.eval("(pr-str (type (vector)))"));
+		assertEquals(":hash-set", venice.eval("(pr-str (type '#{}))"));
+		assertEquals(":sorted-set", venice.eval("(pr-str (type (sorted-set)))"));
+		assertEquals(":hash-map", venice.eval("(pr-str (type '{}))"));
+		assertEquals(":hash-map", venice.eval("(pr-str (type (hash-map)))"));
+		assertEquals(":sorted-map", venice.eval("(pr-str (type (sorted-map)))"));
+		assertEquals(":ordered-map", venice.eval("(pr-str (type (ordered-map)))"));
+		assertEquals(":mutable-map", venice.eval("(pr-str (type (mutable-map)))"));
 
 		// Java Interop		
 		assertEquals("java.util.ArrayList", venice.eval("(type (. :java.util.ArrayList :new))"));

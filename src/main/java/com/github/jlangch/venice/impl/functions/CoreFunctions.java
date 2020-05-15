@@ -4851,7 +4851,7 @@ public class CoreFunctions {
 						.arglists("(instance? type x)")
 						.doc("Returns true if x is an instance of the given type")
 						.examples(
-							"(instance? :venice.Long 500)",
+							"(instance? :long 500)",
 							"(instance? :java.math.BigInteger 500)")
 						.build()
 			) {

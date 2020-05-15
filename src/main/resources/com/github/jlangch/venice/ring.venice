@@ -591,13 +591,13 @@
 
 (defn- write-body-to-stream [body response output-stream]
   (cond
-    (instance? :venice.String body)
+    (string? body)
         (try-with [os output-stream]
           (if-let [charset (ring/get-charset response)]
             (io/spit-stream os body :flush true :encoding charset)
                             (io/spit-stream os body :flush true)))
 
-    (instance? :venice.ByteBuffer body)
+    (bytebuf? body)
         (try-with [os output-stream]
           (io/spit-stream os body :flush true))
 

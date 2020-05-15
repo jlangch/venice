@@ -415,7 +415,7 @@
   geoip/ip4? [ip]
 
   (case (type ip)
-    :venice.String          (str/contains? ip ".")
+    :string                 (str/contains? ip ".")
     :java.net.Inet4Address  true
     :java.net.Inet6Address  false
     false))
@@ -431,7 +431,7 @@
   geoip/ip6? [ip]
 
   (case (type ip)
-    :venice.String          (str/contains? ip ":")
+    :string                 (str/contains? ip ":")
     :java.net.Inet4Address  false
     :java.net.Inet6Address  true
     false))
