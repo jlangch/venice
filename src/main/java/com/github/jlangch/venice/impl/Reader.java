@@ -584,6 +584,7 @@ public class Reader {
 	
 	// (?:X)      non capturing group
 	// [\\s\\S]*? zero or more characters, linefeed included, reluctant not greedy
+	// \\s        whitespace
 	//
 	// tokens:
 	//    unquote splicing => ~@

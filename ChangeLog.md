@@ -36,6 +36,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - access to stdin in the REPL and Venice scripts 
+- function `read-line`
 - optional revision number support to 'semver' module (ArangoDB uses 
   3.6.3.1 style versions thus not sticking to semantic versioning)
   
