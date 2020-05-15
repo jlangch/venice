@@ -17,6 +17,7 @@ public enum TypeRank {
 	
 	BYTEBUFFER (40),	
 	JAVAOBJECT (41),
+	CUSTOMTYPE (42),
 	
 	ATOM (50),
 	VOLATILE (51),

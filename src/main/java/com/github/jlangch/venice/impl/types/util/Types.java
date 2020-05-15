@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
+import com.github.jlangch.venice.impl.types.VncCustomType;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -141,6 +142,10 @@ public class Types {
 
 	public static boolean isVncJust(final VncVal val) {
 		return val != null && (val instanceof VncJust);
+	}
+
+	public static boolean isVncCustomType(final VncVal val) {
+		return val != null && (val instanceof VncCustomType);
 	}
 
 	public static boolean isVncByteBuffer(final VncVal val) {
@@ -295,6 +300,9 @@ public class Types {
 		else if (Types.isVncJust(val)) {
 			return new VncKeyword(":just");
 		}
+		else if (Types.isVncCustomType(val)) {
+			return ((VncCustomType)val).getType();
+		}
 		else if (Types.isVncMultiArityFunction(val)) {
 			return ((VncFunction)val).isMacro()
 						? new VncKeyword(":macro")
@@ -419,7 +427,10 @@ public class Types {
 			case "map-entry":		return Types.isVncMapEntry(val);
 			default:
 				try {
-					if (Types.isVncJavaObject(val)) {
+					if (Types.isVncCustomType(val)) {
+						return type.equals(((VncCustomType)val).getType());
+					}
+					else if (Types.isVncJavaObject(val)) {
 						return Class.forName(clazz)
 									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
