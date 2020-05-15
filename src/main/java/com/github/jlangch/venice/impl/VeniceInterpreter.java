@@ -44,6 +44,8 @@ import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.sandbox.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.VncCustomTypeDef;
+import com.github.jlangch.venice.impl.types.VncCustomTypeFieldDef;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -322,6 +324,43 @@ public class VeniceInterpreter implements Serializable  {
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
 					env.setGlobalDynamic(name, res);
 					return name;
+				}
+				
+				case "deftype": { // (deftype type fields)
+					final VncKeyword type = Coerce.toVncKeyword(ast.second());				
+					final VncVector fields = Coerce.toVncVector(ast.third());				
+					
+					if (fields.isEmpty() || ((fields.size() % 2) != 0)) {
+						throw new VncException("deftype invalid field definition."); 
+					}
+					
+					final List<VncCustomTypeFieldDef> fieldDefs = new ArrayList<>();
+					final List<VncVal> fieldItems = fields.getList();
+					for(int ii=0; ii<fieldItems.size()/2; ii++) {
+						fieldDefs.add(
+							new VncCustomTypeFieldDef(
+									Coerce.toVncSymbol(fieldItems.get(ii * 2)),
+									Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
+									ii));
+					}
+					
+					
+					final VncKeyword qualifiedType = Namespaces.isQualified(type)
+														? type
+														: Namespaces.qualifyKeyword(
+																Namespaces.getCurrentNS(), 
+																type);
+					
+					final VncCustomTypeDef typeDef = new VncCustomTypeDef(qualifiedType, fieldDefs);
+					
+					if (typeDefRegistry.exists(qualifiedType)) {
+						throw new VncException(String.format(
+								"deftype: the type :%s already exists.", qualifiedType.getValue())); 
+					}
+					
+					typeDefRegistry.add(typeDef);
+					
+					return Nil;
 				}
 
 				case "defmacro":
@@ -1524,5 +1563,7 @@ public class VeniceInterpreter implements Serializable  {
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
+	private final CustomTypeDefRegistry typeDefRegistry = new CustomTypeDefRegistry();
+	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
 }

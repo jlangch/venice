@@ -21,29 +21,33 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.List;
+public class VncCustomTypeFieldDef  {
 
-
-public class VncCustomTypeDef {
-
-	public VncCustomTypeDef(
+	public VncCustomTypeFieldDef(
+			final VncSymbol name,
 			final VncKeyword type,
-			final List<VncCustomTypeFieldDef> fieldDefs
+			final int index
 	) {
+		this.name = name;
 		this.type = type;
-		this.fieldDefs = fieldDefs;
+		this.index = index;
 	}
-
-
-    public VncKeyword getType() {
+	
+		
+	public VncSymbol getName() {
+		return name;
+	}
+	
+	public VncKeyword getType() {
 		return type;
 	}
-    
-	public List<VncCustomTypeFieldDef> getFieldDefs() {
-		return fieldDefs;
+	
+	public int getIndex() {
+		return index;
 	}
 
 
+	private final VncSymbol name;
 	private final VncKeyword type;
-    private final List<VncCustomTypeFieldDef> fieldDefs;
+	private final int index;
 }
