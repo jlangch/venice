@@ -32,11 +32,13 @@ import com.github.jlangch.venice.impl.types.VncCustomType;
 import com.github.jlangch.venice.impl.types.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.VncCustomTypeFieldDef;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 
@@ -55,12 +57,12 @@ public class DefType {
 		
 		final List<VncCustomTypeFieldDef> fieldDefs = new ArrayList<>();
 		final List<VncVal> fieldItems = fields.getList();
-		for(int ii=0; ii<fieldItems.size()/2; ii++) {
+		for(int ii=0; ii<fieldItems.size()/2; ii++) {		
 			fieldDefs.add(
 				new VncCustomTypeFieldDef(
-						new VncKeyword(Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()),
-						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
-						ii));
+					new VncKeyword(Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
+					qualify("core", Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1))), 
+					ii));
 		}
 		
 		final VncKeyword qualifiedType = qualify(type);
@@ -101,13 +103,15 @@ public class DefType {
 					typeArgs.size())); 
 		}
 		
-		// TODO
-		// check types 
-		
 		final Map<VncVal,VncVal> fields = new LinkedHashMap<>();
 		
 		for(int ii=0; ii<typeArgs.size(); ii++) {
-			fields.put(typeDef.getFieldDef(ii).getName(), typeArgs.get(ii));
+			final VncCustomTypeFieldDef fieldDef = typeDef.getFieldDef(ii);
+			final VncVal arg = typeArgs.get(ii);
+			
+			validateCompatible(qualifiedType, fieldDef, arg);
+			
+			fields.put(fieldDef.getName(), arg);
 		}
 		
 		return new VncCustomType(
@@ -117,11 +121,36 @@ public class DefType {
 	}
 
 	
+	private static void validateCompatible(
+			final VncKeyword type,
+			final VncCustomTypeFieldDef fieldDef,
+			final VncVal arg
+	) {
+		final VncKeyword argType = Types.getType(arg);
+		
+		if (!fieldDef.getType().equals(argType)) {
+			throw new VncException(String.format(
+					"deftype: the type :%s requires arg %d of type :%s instead the passed :%s", 
+					type.getValue(), 
+					fieldDef.getIndex() + 1,
+					fieldDef.getType().getValue(),
+					argType.getValue())); 
+		}
+	}
+	
 	private static VncKeyword qualify(final VncKeyword keyword) {
 		return Namespaces.isQualified(keyword)
 					? keyword
 					: Namespaces.qualifyKeyword(
 							Namespaces.getCurrentNS(), 
+							keyword);	
+	}
+	
+	private static VncKeyword qualify(final String ns, final VncKeyword keyword) {
+		return Namespaces.isQualified(keyword)
+					? keyword
+					: Namespaces.qualifyKeyword(
+							new VncSymbol(ns), 
 							keyword);	
 	}
 }

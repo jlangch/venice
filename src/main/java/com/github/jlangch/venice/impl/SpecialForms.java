@@ -297,16 +297,35 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
-
 	public static VncFunction deftype = 
 		new SpecialFormsDocFunction(
 				"deftype",
 				VncFunction
 					.meta()
 					.arglists("(deftype name fields)")		
-					.doc("Defines a new type.")
+					.doc("Defines a new custom type for the name with the fields.")
 					.examples(
-						"(deftype :complex [real :long, imaginary :long])")
+						"(do                                                      \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
+						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  (println x))                                           \n")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction deftype_new = 
+		new SpecialFormsDocFunction(
+				".:",
+				VncFunction
+					.meta()
+					.arglists("(.: type-name args*)")		
+					.doc("Instantiates a custom type.")
+					.examples(
+						"(do                                                      \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
+						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  (println x))                                           \n")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -871,6 +890,7 @@ public class SpecialForms {
 					.put("defmulti",		defmulti)
 					.put("defmethod",		defmethod)
 					.put("deftype",			deftype)
+					.put(".:",				deftype_new)		
 					.put("def-dynamic",		def_dynamic)
 					.put("binding",			binding)
 					.put("bound?",			bound_Q)
