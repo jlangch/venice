@@ -113,10 +113,12 @@ public class DocGenerator {
 				getTimeSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
-				getTransducersSection(),
+				getTypesSection(),
 				getNamespaceSection(),
 				getSpecialFormsSection(),
-				getMiscellaneousSection());
+				getTransducersSection(),
+				getAppSection(),
+				getJavaInteropSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -126,9 +128,8 @@ public class DocGenerator {
 				getRegexSection(),
 				getConcurrencySection(),
 				getSystemSection(),
-				getJavaInteropSection(),
 				getIOSection(),
-				getAppSection());
+				getMiscellaneousSection());
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
@@ -965,6 +966,23 @@ public class DocGenerator {
 		all.addSection(profil);
 		profil.addItem(getDocItem("time"));
 		profil.addItem(getDocItem("perf", false));
+		
+		return section;
+	}
+
+	private DocSection getTypesSection() {
+		final DocSection section = new DocSection("Types", id());
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection define = new DocSection("Define");
+		all.addSection(define);		
+		define.addItem(getDocItem("deftype"));
+
+		final DocSection create = new DocSection("Create");
+		all.addSection(create);
+		create.addItem(getDocItem(".:"));
 		
 		return section;
 	}
