@@ -304,9 +304,9 @@ public class SpecialForms {
 				VncFunction
 					.meta()
 					.arglists("(deftype name fields)")		
-					.doc("Creates a new method for a multimethod associated with a dispatch-value.")
+					.doc("Defines a new type.")
 					.examples(
-							"(deftype :complex [real :long, imaginary :long]) ")
+						"(deftype :complex [real :long, imaginary :long])")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;

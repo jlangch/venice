@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.types;
 
 import java.util.List;
 
+import com.github.jlangch.venice.VncException;
+
 
 public class VncCustomTypeDef {
 
@@ -38,9 +40,23 @@ public class VncCustomTypeDef {
     public VncKeyword getType() {
 		return type;
 	}
-    
+ 
+    public VncCustomTypeFieldDef getFieldDef(final int index) {
+    	if (index >= 0 && index < fieldDefs.size()) {
+    		return fieldDefs.get(index);
+    	}
+    	else {
+			throw new VncException(String.format(
+					"deftype: field def index %d out of bounds.", index)); 
+    	}
+	}
+
 	public List<VncCustomTypeFieldDef> getFieldDefs() {
 		return fieldDefs;
+	}
+	
+    public int count() {
+		return fieldDefs.size();
 	}
 
 

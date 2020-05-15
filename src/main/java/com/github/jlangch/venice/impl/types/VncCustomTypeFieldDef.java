@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.types;
 public class VncCustomTypeFieldDef  {
 
 	public VncCustomTypeFieldDef(
-			final VncSymbol name,
+			final VncKeyword name,
 			final VncKeyword type,
 			final int index
 	) {
@@ -34,7 +34,7 @@ public class VncCustomTypeFieldDef  {
 	}
 	
 		
-	public VncSymbol getName() {
+	public VncKeyword getName() {
 		return name;
 	}
 	
@@ -47,7 +47,7 @@ public class VncCustomTypeFieldDef  {
 	}
 
 
-	private final VncSymbol name;
+	private final VncKeyword name;
 	private final VncKeyword type;
 	private final int index;
 }

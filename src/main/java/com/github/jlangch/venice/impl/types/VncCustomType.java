@@ -207,12 +207,12 @@ public class VncCustomType extends VncMap {
 
 	@Override 
 	public String toString() {
-		return values.toString();
+		return "#:" + type.getValue() + values.toString();
 	}
 
 	@Override
 	public String toString(final boolean print_readably) {
-		return values.toString(print_readably);
+		return "#:" + type.getValue() + values.toString(print_readably);
 	}
 
 	
