@@ -73,6 +73,13 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		this._private = MetaUtil.isPrivate(meta);
 		return this;
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return isMacro() 
+					? new VncKeyword(":core/macro") 
+					: new VncKeyword(":core/atom");
+	}
 
 	@Override
 	public abstract VncVal apply(final VncList args);

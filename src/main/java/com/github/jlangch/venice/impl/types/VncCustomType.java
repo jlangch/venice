@@ -72,6 +72,7 @@ public class VncCustomType extends VncMap {
 		return new VncCustomType(typeDef, values, meta);
 	}
 
+	@Override
 	public VncKeyword getType() {
 		return type;
 	}

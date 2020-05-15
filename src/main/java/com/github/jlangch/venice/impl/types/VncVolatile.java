@@ -37,6 +37,11 @@ public class VncVolatile extends VncVal implements IDeref {
 	public VncVolatile withMeta(final VncVal meta) {
 		return new VncVolatile(state, meta);
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/volatile");
+	}
 
 	public VncVal reset(final VncVal newVal) {
 		state = newVal; 

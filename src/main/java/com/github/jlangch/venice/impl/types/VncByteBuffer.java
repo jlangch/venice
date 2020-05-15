@@ -49,6 +49,11 @@ public class VncByteBuffer extends VncVal {
 	public VncByteBuffer withMeta(final VncVal meta) {
 		return new VncByteBuffer(value, meta);
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/bytebuf");
+	}
 
 	public ByteBuffer getValue() { 
 		return value; 

@@ -53,6 +53,11 @@ public class VncBigDecimal extends VncVal {
 		return new VncBigDecimal(value, meta);
 	}
 	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/decimal");
+	}
+	
 	public VncBigDecimal negate() { 
 		return new VncBigDecimal(value.negate()); 
 	}

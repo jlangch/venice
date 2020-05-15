@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -33,6 +34,11 @@ public abstract class VncCollection extends VncVal {
 
 	@Override
 	public abstract VncCollection withMeta(VncVal meta);
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/collection");
+	}
 	
 	public abstract VncCollection emptyWithMeta();
 		

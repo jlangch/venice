@@ -43,6 +43,11 @@ public class VncAtom extends VncVal implements IDeref {
 	public VncAtom withMeta(final VncVal meta) {
 		return new VncAtom(state.get(), meta);
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/atom");
+	}
 
 	public VncVal reset(final VncVal newVal) {
 		state.set(newVal); 

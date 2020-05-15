@@ -54,6 +54,11 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal withMeta(final VncVal meta) {
 		return this;
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/thread-local");
+	}
 
 	public VncVal get(final VncKeyword key) {
 		return ThreadLocalMap.get(key);

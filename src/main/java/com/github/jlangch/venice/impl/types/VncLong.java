@@ -46,6 +46,11 @@ public class VncLong extends VncVal {
 		return new VncLong(value, meta);
 	}
 	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/long");
+	}
+	
 	public VncLong negate() { 
 		return new VncLong(value * -1L); 
 	}

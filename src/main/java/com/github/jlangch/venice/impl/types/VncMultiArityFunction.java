@@ -63,6 +63,13 @@ public class VncMultiArityFunction extends VncFunction {
 		super.withMeta(meta);
 		return this;
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return isMacro() 
+					? new VncKeyword(":core/macro") 
+					: new VncKeyword(":core/atom");
+	}
 
 	@Override
 	public VncVal apply(final VncList params) {

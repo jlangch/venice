@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -46,6 +47,11 @@ public abstract class VncSequence extends VncCollection {
 	
 	@Override
 	public abstract VncSequence withMeta(VncVal meta);
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/sequence");
+	}
 
 	public abstract List<VncVal> getList();
 	

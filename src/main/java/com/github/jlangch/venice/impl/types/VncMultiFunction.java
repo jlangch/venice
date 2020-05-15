@@ -47,6 +47,11 @@ public class VncMultiFunction extends VncFunction {
 		return this;
 	}
 	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/multi-function");
+	}
+	
 	public VncMultiFunction addFn(final VncVal dispatchVal, final VncFunction fn) {
 		if (dispatchVal == null) {
 			throw new VncException("A dispatch value must not be null");

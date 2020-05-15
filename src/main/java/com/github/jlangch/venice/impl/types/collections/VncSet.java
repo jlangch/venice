@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -55,6 +56,11 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 	
 	@Override
 	public abstract VncSet emptyWithMeta();
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/set");
+	}
 
 	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
 	

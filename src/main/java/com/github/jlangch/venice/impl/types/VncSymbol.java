@@ -47,6 +47,11 @@ public class VncSymbol extends VncVal {
 	public VncSymbol withMeta(final VncVal meta) {
 		return new VncSymbol(value, meta);
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/symbol");
+	}
 
 	public String getName() { 
 		return value; 

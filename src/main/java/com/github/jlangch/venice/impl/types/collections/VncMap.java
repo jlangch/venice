@@ -28,6 +28,7 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -64,6 +65,11 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	@Override
 	public abstract VncMap withMeta(VncVal meta);
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/map");
+	}
 
 	
 	public abstract Map<VncVal,VncVal> getMap();

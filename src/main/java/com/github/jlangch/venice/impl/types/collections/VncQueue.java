@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -59,6 +60,11 @@ public class VncQueue extends VncCollection {
 	@Override
 	public VncQueue withMeta(final VncVal meta) {
 		return new VncQueue(this, meta);
+	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/queue");
 	}
 
 	@Override

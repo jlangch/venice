@@ -38,6 +38,22 @@ public class VncConstant extends VncVal {
 	public VncConstant withMeta(final VncVal meta) {
 		return this;
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		if (this == Constants.Nil) {
+			return new VncKeyword(":core/nil");
+		}
+		else if (this == Constants.True) {
+			return new VncKeyword(":core/boolean");
+		}
+		else if (this == Constants.False) {
+			return new VncKeyword(":core/boolean");
+		}
+		else {
+			return null;
+		}
+	}
 
 	public String getValue() { 
 		return value; 

@@ -108,6 +108,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	public VncMap withMeta(final VncVal meta) {
 		return new VncJavaObject(delegate, meta);
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(delegate.getClass().getName());
+	}
 
 	public VncJavaObject castTo(final Class<?> clazz) {
 		return VncJavaObject.from(delegate, clazz);

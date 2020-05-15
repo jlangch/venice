@@ -55,6 +55,11 @@ public class VncChar extends VncVal {
 		return new VncChar(value, meta); 
 	}
 	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/char");
+	}
+	
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.CHAR;

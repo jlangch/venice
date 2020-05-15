@@ -30,6 +30,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -135,6 +136,11 @@ public class VncTinyList extends VncList {
 	@Override
 	public VncList emptyWithMeta() {
 		return new VncTinyList(getMeta());
+	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/list");
 	}
 	
 	@Override

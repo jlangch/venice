@@ -29,6 +29,7 @@ import java.util.Set;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -92,6 +93,11 @@ public class VncSortedSet extends VncSet {
 	@Override
 	public VncSortedSet withMeta(final VncVal meta) {
 		return new VncSortedSet(value, meta);
+	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/sorted-set");
 	}
 	
 	@Override

@@ -48,6 +48,11 @@ public class VncJust extends VncVal implements IDeref {
 	public VncJust withMeta(final VncVal meta) {
 		return new VncJust(value, meta); 
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/just");
+	}
 
 	@Override 
 	public TypeRank typeRank() {

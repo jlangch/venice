@@ -50,6 +50,11 @@ public class VncString extends VncVal {
 	public VncString withMeta(final VncVal meta) {
 		return new VncString(value, meta); 
 	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/string");
+	}
 
 	public int size() {
 		return value.length();

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -58,6 +59,11 @@ public class VncMapEntry extends VncVal {
 	@Override
 	public VncMapEntry withMeta(final VncVal meta) {
 		return this;
+	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/map-entry");
 	}
 	
 	@Override 

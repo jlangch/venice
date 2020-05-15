@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -105,6 +106,11 @@ public class VncVector extends VncSequence implements IVncFunction {
 	@Override
 	public VncVector withMeta(final VncVal meta) {
 		return new VncVector(value, meta);
+	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(":core/vector");
 	}
 
 	@Override

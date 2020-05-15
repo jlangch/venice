@@ -267,128 +267,8 @@ public class Types {
 	}
 
 	public static VncKeyword getType(final VncVal val) {
-		if (val == Constants.Nil) {
-			return new VncKeyword(":core/nil");
-		}
-		else if (val ==  Constants.True || val == Constants.False) {
-			return new VncKeyword(":core/boolean");
-		}
-		else if (Types.isVncAtom(val)) {
-			return new VncKeyword(":core/atom");
-		}
-		else if (Types.isVncVolatile(val)) {
-			return new VncKeyword(":core/volatile");
-		}
-		else if (Types.isVncThreadLocal(val)) {
-			return new VncKeyword(":core/thread-local");
-		}
-		else if (Types.isVncLong(val)) {
-			return new VncKeyword(":core/long");
-		}
-		else if (Types.isVncInteger(val)) {
-			return new VncKeyword(":core/integer");
-		}
-		else if (Types.isVncDouble(val)) {
-			return new VncKeyword(":core/double");
-		}
-		else if (Types.isVncBigDecimal(val)) {
-			return new VncKeyword(":core/decimal");
-		}
-		else if (Types.isVncByteBuffer(val)) {
-			return new VncKeyword(":core/bytebuf");
-		}
-		else if (Types.isVncJust(val)) {
-			return new VncKeyword(":core/just");
-		}
-		else if (Types.isVncCustomType(val)) {
-			return ((VncCustomType)val).getType();
-		}
-		else if (Types.isVncMultiArityFunction(val)) {
-			return ((VncFunction)val).isMacro()
-						? new VncKeyword(":core/macro")
-						: new VncKeyword(":core/function");
-		}
-		else if (Types.isVncMultiFunction(val)) {
-			return new VncKeyword(":core/multi-function");
-		}
-		else if (Types.isVncFunction(val)) {
-			return ((VncFunction)val).isMacro()
-						? new VncKeyword(":core/macro")
-						: new VncKeyword(":core/function");
-		}
-		else if (Types.isVncSymbol(val)) {
-			return new VncKeyword(":core/symbol");
-		}
-		else if (Types.isVncKeyword(val)) {
-			return new VncKeyword(":core/keyword");
-		}
-		else if (Types.isVncString(val)) {
-			return new VncKeyword(":core/string");
-		}
-		else if (Types.isVncChar(val)) {
-			return new VncKeyword(":core/char");
-		}
-		else if (Types.isVncVector(val)) {
-			return new VncKeyword(":core/vector");
-		}
-		else if (Types.isVncList(val)) {
-			return new VncKeyword(":core/list");
-		}
-		else if (Types.isVncMutableList(val)) {
-			return new VncKeyword(":core/mutable-list");
-		}
-		else if (Types.isVncHashSet(val)) {
-			return new VncKeyword(":core/hash-set");
-		}
-		else if (Types.isVncSortedSet(val)) {
-			return new VncKeyword(":core/sorted-set");
-		}
-		else if (Types.isVncMutableSet(val)) {
-			return new VncKeyword(":core/mutable-set");
-		}
-		else if (Types.isVncHashMap(val)) {
-			return new VncKeyword(":core/hash-map");
-		}
-		else if (Types.isVncOrderedMap(val)) {
-			return new VncKeyword(":core/ordered-map");
-		}
-		else if (Types.isVncSortedMap(val)) {
-			return new VncKeyword(":core/sorted-map");
-		}
-		else if (Types.isVncMutableMap(val)) {
-			return new VncKeyword(":core/mutable-map");
-		}
-		else if (Types.isVncMapEntry(val)) {
-			return new VncKeyword(":core/map-entry");
-		}
-		else if (Types.isVncJavaObject(val)) {
-			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
-		}
-		else if (Types.isVncJavaSet(val)) {
-			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
-		}
-		else if (Types.isVncJavaList(val)) {
-			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
-		}
-		else if (Types.isVncJavaMap(val)) {
-			return new VncKeyword(((IVncJavaObject)val).getDelegate().getClass().getName());
-		}
-		else if (Types.isVncSet(val)) {
-			return new VncKeyword(":core/set");
-		}
-		else if (Types.isVncMap(val)) {
-			return new VncKeyword(":core/map");
-		}
-		else if (Types.isVncStack(val)) {
-			return new VncKeyword(":core/stack");
-		}
-		else if (Types.isVncQueue(val)) {
-			return new VncKeyword(":core/queue");
-		}
-		else {
-			return new VncKeyword(val.getClass().getName());
-		}
-	};
+		return val.getType();
+	}
 	
 	public static boolean isInstanceOf(final VncKeyword type, final VncVal val) {
 		final String clazz = type.getValue();
@@ -425,6 +305,7 @@ public class Types {
 			case "core/sorted-map":		return Types.isVncSortedMap(val);
 			case "core/mutable-map":	return Types.isVncMutableMap(val);
 			case "core/map-entry":		return Types.isVncMapEntry(val);
+			case "core/java-object":	return Types.isVncJavaObject(val);
 			default:
 				try {
 					if (Types.isVncCustomType(val)) {

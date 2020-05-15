@@ -332,6 +332,10 @@ public class VeniceInterpreter implements Serializable  {
 				case "deftype": { // (deftype type fields)
 					return DefType.defineCustomType(ast.rest(), typeDefRegistry);
 				}
+				
+				case "deftype-of": { // (deftype-of type base)
+					return DefType.defineCustomWrapperType(ast.rest(), typeDefRegistry);
+				}
 
 				case ".:": { // (.: type args*)
 					return DefType.createCustomType(ast.rest(), typeDefRegistry);

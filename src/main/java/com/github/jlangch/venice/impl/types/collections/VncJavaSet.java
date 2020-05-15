@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -79,6 +80,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	@Override
 	public VncJavaSet withMeta(final VncVal meta) {
 		return new VncJavaSet(value, meta);
+	}
+	
+	@Override
+	public VncKeyword getType() {
+		return new VncKeyword(value.getClass().getName());
 	}
 	
 	@Override
