@@ -292,6 +292,9 @@ public class Types {
 		else if (Types.isVncByteBuffer(val)) {
 			return new VncKeyword("venice.ByteBuffer");
 		}
+		else if (Types.isVncJust(val)) {
+			return new VncKeyword("venice.Just");
+		}
 		else if (Types.isVncMultiArityFunction(val)) {
 			return ((VncFunction)val).isMacro()
 						? new VncKeyword("venice.Macro")
@@ -314,6 +317,9 @@ public class Types {
 		else if (Types.isVncString(val)) {
 			return new VncKeyword("venice.String");
 		}
+		else if (Types.isVncChar(val)) {
+			return new VncKeyword("venice.Char");
+		}
 		else if (Types.isVncVector(val)) {
 			return new VncKeyword("venice.Vector");
 		}
@@ -328,6 +334,9 @@ public class Types {
 		}
 		else if (Types.isVncSortedSet(val)) {
 			return new VncKeyword("venice.SortedSet");
+		}
+		else if (Types.isVncMutableSet(val)) {
+			return new VncKeyword("venice.MutableSet");
 		}
 		else if (Types.isVncHashMap(val)) {
 			return new VncKeyword("venice.HashMap");
