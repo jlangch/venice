@@ -60,18 +60,24 @@ public class DefType {
 		for(int ii=0; ii<fieldItems.size()/2; ii++) {		
 			fieldDefs.add(
 				new VncCustomTypeFieldDef(
-					new VncKeyword(Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
-					qualify("core", Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1))), 
+					new VncKeyword(
+							Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
+					qualify(
+						Namespaces.NS_CORE,
+						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1))), 
 					ii));
 		}
 		
-		final VncKeyword qualifiedType = qualify(type);
+		final VncKeyword qualifiedType = qualify(Namespaces.getCurrentNS(), type);
 		
-		final VncCustomTypeDef typeDef = new VncCustomTypeDef(qualifiedType, fieldDefs);
+		final VncCustomTypeDef typeDef = new VncCustomTypeDef(
+												qualifiedType, 
+												fieldDefs);
 		
 		if (registry.exists(qualifiedType)) {
 			throw new VncException(String.format(
-					"deftype: the type :%s already exists.", qualifiedType.getValue())); 
+					"deftype: the type :%s already exists.", 
+					qualifiedType.getValue())); 
 		}
 		
 		registry.add(typeDef);
@@ -86,13 +92,14 @@ public class DefType {
 		final VncKeyword type = Coerce.toVncKeyword(args.first());
 		final List<VncVal> typeArgs = Coerce.toVncSequence(args.rest()).getList();
 
-		final VncKeyword qualifiedType = qualify(type);
+		final VncKeyword qualifiedType = qualify(Namespaces.getCurrentNS(), type);
 
 		final VncCustomTypeDef typeDef = registry.get(qualifiedType);
 		
 		if (typeDef == null) {
 			throw new VncException(String.format(
-					"deftype: the type :%s is not defined exists.", qualifiedType.getValue())); 
+					"deftype: the type :%s is not defined exists.", 
+					qualifiedType.getValue())); 
 		}
 		
 		if (typeDef.count() != typeArgs.size()) {
@@ -109,7 +116,7 @@ public class DefType {
 			final VncCustomTypeFieldDef fieldDef = typeDef.getFieldDef(ii);
 			final VncVal arg = typeArgs.get(ii);
 			
-			validateCompatible(qualifiedType, fieldDef, arg);
+			validateTypeCompatibility(qualifiedType, fieldDef, arg);
 			
 			fields.put(fieldDef.getName(), arg);
 		}
@@ -121,7 +128,7 @@ public class DefType {
 	}
 
 	
-	private static void validateCompatible(
+	private static void validateTypeCompatibility(
 			final VncKeyword type,
 			final VncCustomTypeFieldDef fieldDef,
 			final VncVal arg
@@ -130,7 +137,8 @@ public class DefType {
 		
 		if (!fieldDef.getType().equals(argType)) {
 			throw new VncException(String.format(
-					"deftype: the type :%s requires arg %d of type :%s instead the passed :%s", 
+					"deftype: the type :%s requires arg %d of type :%s "
+						+ "instead the passed :%s", 
 					type.getValue(), 
 					fieldDef.getIndex() + 1,
 					fieldDef.getType().getValue(),
@@ -138,19 +146,13 @@ public class DefType {
 		}
 	}
 	
-	private static VncKeyword qualify(final VncKeyword keyword) {
+	private static VncKeyword qualify(
+			final VncSymbol ns, 
+			final VncKeyword keyword
+	) {
 		return Namespaces.isQualified(keyword)
 					? keyword
-					: Namespaces.qualifyKeyword(
-							Namespaces.getCurrentNS(), 
-							keyword);	
+					: Namespaces.qualifyKeyword(ns, keyword);	
 	}
-	
-	private static VncKeyword qualify(final String ns, final VncKeyword keyword) {
-		return Namespaces.isQualified(keyword)
-					? keyword
-					: Namespaces.qualifyKeyword(
-							new VncSymbol(ns), 
-							keyword);	
-	}
+
 }
