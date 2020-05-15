@@ -19,35 +19,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.types;
+package com.github.jlangch.venice.impl.types.custom;
 
-public class VncCustomTypeFieldDef  {
+import java.util.List;
 
-	public VncCustomTypeFieldDef(
-			final VncKeyword name,
+import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+
+
+public class VncCustomTypeDef {
+
+	public VncCustomTypeDef(
 			final VncKeyword type,
-			final int index
+			final List<VncCustomTypeFieldDef> fieldDefs
 	) {
-		this.name = name;
 		this.type = type;
-		this.index = index;
+		this.fieldDefs = fieldDefs;
 	}
-	
-		
-	public VncKeyword getName() {
-		return name;
-	}
-	
-	public VncKeyword getType() {
+
+
+    public VncKeyword getType() {
 		return type;
 	}
+ 
+    public VncCustomTypeFieldDef getFieldDef(final int index) {
+    	if (index >= 0 && index < fieldDefs.size()) {
+    		return fieldDefs.get(index);
+    	}
+    	else {
+			throw new VncException(String.format(
+					"deftype: field def index %d out of bounds.", index)); 
+    	}
+	}
+
+	public List<VncCustomTypeFieldDef> getFieldDefs() {
+		return fieldDefs;
+	}
 	
-	public int getIndex() {
-		return index;
+    public int count() {
+		return fieldDefs.size();
 	}
 
 
-	private final VncKeyword name;
 	private final VncKeyword type;
-	private final int index;
+    private final List<VncCustomTypeFieldDef> fieldDefs;
 }

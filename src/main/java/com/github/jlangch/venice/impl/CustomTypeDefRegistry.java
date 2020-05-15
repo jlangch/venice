@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.jlangch.venice.impl.types.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 
 
 public class CustomTypeDefRegistry {

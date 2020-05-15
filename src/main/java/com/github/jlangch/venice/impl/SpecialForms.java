@@ -314,6 +314,23 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction deftype_of = 
+		new SpecialFormsDocFunction(
+				"deftype-of",
+				VncFunction
+					.meta()
+					.arglists("(deftype-of name base)")		
+					.doc("Defines a new custom type wrapper type based on the base type.")
+					.examples(
+						"(do                                                      \n" +
+						"  (deftype-of :user/email-address :string)               \n" +
+						"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
+						"  (println x))                                             ")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction deftype_new = 
 		new SpecialFormsDocFunction(
 				".:",

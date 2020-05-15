@@ -28,15 +28,15 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncCustomType;
-import com.github.jlangch.venice.impl.types.VncCustomTypeDef;
-import com.github.jlangch.venice.impl.types.VncCustomTypeFieldDef;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.custom.VncCustomType;
+import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
+import com.github.jlangch.venice.impl.types.custom.VncCustomTypeFieldDef;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -84,7 +84,17 @@ public class DefType {
 		
 		return qualifiedType;
 	}
+
+	public static VncVal defineCustomWrapperType(
+			final VncList args, 
+			final CustomTypeDefRegistry registry
+	) {
+		final VncKeyword type = Coerce.toVncKeyword(args.first());
+		final VncKeyword base = Coerce.toVncKeyword(args.second());
 	
+		return Constants.Nil;
+	}
+
 	public static VncVal createCustomType(
 			final VncList args, 
 			final CustomTypeDefRegistry registry
