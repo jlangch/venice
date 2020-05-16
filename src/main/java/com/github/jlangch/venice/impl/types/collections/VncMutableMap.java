@@ -112,6 +112,11 @@ public class VncMutableMap extends VncMap {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/mutable-map");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/map");
+	}
 
 	@Override
 	public Map<VncVal,VncVal> getMap() {

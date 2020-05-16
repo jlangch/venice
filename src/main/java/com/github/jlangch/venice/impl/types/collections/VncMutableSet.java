@@ -97,6 +97,11 @@ public class VncMutableSet extends VncSet {
 	}
 	
 	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/set");
+	}
+	
+	@Override
 	public VncMutableSet add(final VncVal val) {
 		value.add(val);
 		return this;

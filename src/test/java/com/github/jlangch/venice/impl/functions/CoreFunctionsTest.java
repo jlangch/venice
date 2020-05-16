@@ -3274,6 +3274,52 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_supertype() {
+		final Venice venice = new Venice();
+
+		assertEquals(":core/val", venice.eval("(pr-str (supertype nil))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype false))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype true))"));
+		
+		assertEquals(":core/string", venice.eval("(pr-str (supertype :a))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype 'a))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype (atom 0)))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype (thread-local)))"));
+		
+		assertEquals(":core/val", venice.eval("(pr-str (supertype 1))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype (* 1 3)))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype 1.0))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype (* 1.0 2.0)))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype 1.06M))"));
+		assertEquals(":core/val", venice.eval("(pr-str (supertype (* 1.06M 2.0M)))"));
+		
+		assertEquals(":core/sequence", venice.eval("(pr-str (supertype '()))"));
+		assertEquals(":core/sequence", venice.eval("(pr-str (supertype (list)))"));
+		assertEquals(":core/sequence", venice.eval("(pr-str (supertype '[]))"));
+		assertEquals(":core/sequence", venice.eval("(pr-str (supertype (vector)))"));
+		assertEquals(":core/set", venice.eval("(pr-str (supertype '#{}))"));
+		assertEquals(":core/set", venice.eval("(pr-str (supertype (sorted-set)))"));
+		assertEquals(":core/map", venice.eval("(pr-str (supertype '{}))"));
+		assertEquals(":core/map", venice.eval("(pr-str (supertype (hash-map)))"));
+		assertEquals(":core/map", venice.eval("(pr-str (supertype (sorted-map)))"));
+		assertEquals(":core/map", venice.eval("(pr-str (supertype (ordered-map)))"));
+		assertEquals(":core/map", venice.eval("(pr-str (supertype (mutable-map)))"));
+
+		// Java Interop		
+		assertEquals(":java.util.AbstractList", venice.eval("(pr-str (supertype (. :java.util.ArrayList :new)))"));
+		assertEquals(":java.util.AbstractSet", venice.eval("(pr-str (supertype (. :java.util.HashSet :new)))"));
+		assertEquals(":java.util.AbstractMap", venice.eval("(pr-str (supertype (. :java.util.HashMap :new)))"));
+
+		// Custom Types	
+		assertEquals(
+			":user/complex", 
+			venice.eval(
+				"(do                                                      \n" +
+				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
+				"  (pr-str (supertype (.: :user/complex 100 200))))             "));
+	}
+
+	@Test
 	public void test_union() {
 		final Venice venice = new Venice();
 

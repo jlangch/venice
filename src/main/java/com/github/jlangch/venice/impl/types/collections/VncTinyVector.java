@@ -188,6 +188,11 @@ public class VncTinyVector extends VncVector {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/vector");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/sequence");
+	}
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {

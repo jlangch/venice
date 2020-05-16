@@ -101,6 +101,11 @@ public class VncHashSet extends VncSet {
 	}
 	
 	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/set");
+	}
+	
+	@Override
 	public VncHashSet add(final VncVal val) {
 		return new VncHashSet(value.add(val), getMeta());
 	}

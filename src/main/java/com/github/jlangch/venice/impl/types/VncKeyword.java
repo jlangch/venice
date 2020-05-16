@@ -89,6 +89,11 @@ public class VncKeyword extends VncString implements IVncFunction {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/keyword");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/string");
+	}
 
 	public VncSymbol toSymbol() {
 		return new VncSymbol(getValue());

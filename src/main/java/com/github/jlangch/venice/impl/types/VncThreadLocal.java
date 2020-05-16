@@ -59,6 +59,11 @@ public class VncThreadLocal extends VncVal {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/thread-local");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	public VncVal get(final VncKeyword key) {
 		return ThreadLocalMap.get(key);

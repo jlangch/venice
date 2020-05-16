@@ -90,6 +90,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	public VncKeyword getType() {
 		return new VncKeyword(value.getClass().getName());
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(value.getClass().getSuperclass().getName());
+	}
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {

@@ -66,6 +66,11 @@ public class VncQueue extends VncCollection {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/queue");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/collection");
+	}
 
 	@Override
 	public VncList toVncList() {

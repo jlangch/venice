@@ -59,6 +59,11 @@ public class VncStack extends VncCollection {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/stack");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/collection");
+	}
 
 	@Override
 	public VncList toVncList() {

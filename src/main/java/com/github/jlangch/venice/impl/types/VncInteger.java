@@ -51,6 +51,11 @@ public class VncInteger extends VncVal {
 		return new VncKeyword(":core/integer");
 	}
 	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
+	
 	public VncInteger negate() { 
 		return new VncInteger(value * -1); 
 	}

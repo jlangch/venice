@@ -6159,6 +6159,27 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction supertype =
+		new VncFunction(
+				"supertype",
+				VncFunction
+					.meta()
+					.arglists("(supertype x)")
+					.doc("Returns the super type of x.")
+					.examples(
+						"(supertype 5)",
+						"(supertype [1 2])",
+						"(supertype (. :java.math.BigInteger :valueOf 100))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("supertype", args, 1);
+				return Types.getSupertype(args.first());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 
 	private static VncVal sort(
 			final String fnName,
@@ -6411,6 +6432,7 @@ public class CoreFunctions {
 				.add(gensym)
 				.add(name)
 				.add(type)
+				.add(supertype)
 				.add(instance_Q)
 
 				.toMap();

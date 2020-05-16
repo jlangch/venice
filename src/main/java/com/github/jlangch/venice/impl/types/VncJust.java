@@ -53,6 +53,11 @@ public class VncJust extends VncVal implements IDeref {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/just");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	@Override 
 	public TypeRank typeRank() {

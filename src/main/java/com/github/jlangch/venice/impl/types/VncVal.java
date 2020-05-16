@@ -41,8 +41,10 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	}
 	
 	abstract public VncVal withMeta(final VncVal meta);
-		
+	
 	abstract public VncKeyword getType();
+	
+	abstract public VncKeyword getSupertype();
 	
 	abstract public TypeRank typeRank();
 

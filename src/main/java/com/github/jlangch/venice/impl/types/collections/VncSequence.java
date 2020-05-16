@@ -52,6 +52,11 @@ public abstract class VncSequence extends VncCollection {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/sequence");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/collection");
+	}
 
 	public abstract List<VncVal> getList();
 	

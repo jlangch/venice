@@ -70,6 +70,11 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/map");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/collection");
+	}
 
 	
 	public abstract Map<VncVal,VncVal> getMap();

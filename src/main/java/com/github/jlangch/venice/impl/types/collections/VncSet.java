@@ -61,6 +61,11 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/set");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/collection");
+	}
 
 	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
 	

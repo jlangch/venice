@@ -66,6 +66,11 @@ public class VncMapEntry extends VncVal {
 		return new VncKeyword(":core/map-entry");
 	}
 	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
+	
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.MAPENTRY;

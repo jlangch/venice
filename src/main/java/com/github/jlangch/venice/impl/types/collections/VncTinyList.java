@@ -144,6 +144,11 @@ public class VncTinyList extends VncList {
 	}
 	
 	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/sequence");
+	}
+	
+	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
 		return VncTinyList.of(replaceVals).withMeta(getMeta());
 	}

@@ -269,6 +269,10 @@ public class Types {
 	public static VncKeyword getType(final VncVal val) {
 		return val.getType();
 	}
+
+	public static VncKeyword getSupertype(final VncVal val) {
+		return val.getSupertype();
+	}
 	
 	public static boolean isInstanceOf(final VncKeyword type, final VncVal val) {
 		final String clazz = type.getValue();

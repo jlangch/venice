@@ -52,6 +52,11 @@ public class VncSymbol extends VncVal {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/symbol");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	public String getName() { 
 		return value; 

@@ -42,6 +42,11 @@ public class VncVolatile extends VncVal implements IDeref {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/volatile");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	public VncVal reset(final VncVal newVal) {
 		state = newVal; 

@@ -80,6 +80,11 @@ public class VncCustomType extends VncMap {
 		return type;
 	}
 
+	@Override
+	public VncKeyword getSupertype() {
+		return type;
+	}
+
 	public VncCustomTypeDef getTypeDef() {
 		return typeDef;
 	}

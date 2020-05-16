@@ -59,6 +59,11 @@ public class VncDouble extends VncVal {
 		return new VncKeyword(":core/double");
 	}
 	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
+	
 	public VncDouble negate() { 
 		return new VncDouble(value * -1.0D); 
 	}

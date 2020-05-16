@@ -78,7 +78,12 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	public VncKeyword getType() {
 		return isMacro() 
 					? new VncKeyword(":core/macro") 
-					: new VncKeyword(":core/atom");
+					: new VncKeyword(":core/function");
+	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
 	}
 
 	@Override

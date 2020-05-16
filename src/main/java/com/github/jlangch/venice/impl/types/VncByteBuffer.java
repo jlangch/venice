@@ -54,6 +54,11 @@ public class VncByteBuffer extends VncVal {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/bytebuf");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	public ByteBuffer getValue() { 
 		return value; 

@@ -32,6 +32,11 @@ public class VncTunnelAsJavaObject extends VncJavaObject {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/tunneled-java-object");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	@Override
 	public VncVal getDelegate() {

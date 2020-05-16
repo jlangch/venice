@@ -60,6 +60,11 @@ public class VncChar extends VncVal {
 		return new VncKeyword(":core/char");
 	}
 	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
+	
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.CHAR;

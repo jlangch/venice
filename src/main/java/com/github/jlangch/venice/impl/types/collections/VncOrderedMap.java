@@ -141,6 +141,11 @@ public class VncOrderedMap extends VncMap {
 	}
 	
 	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/map");
+	}
+	
+	@Override
 	public Map<VncVal,VncVal> getMap() {
 		return Collections.unmodifiableMap(value.toJavaMap());
 	}

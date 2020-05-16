@@ -54,6 +54,11 @@ public class VncConstant extends VncVal {
 			return null;
 		}
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	public String getValue() { 
 		return value; 

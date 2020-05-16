@@ -40,6 +40,11 @@ public abstract class VncCollection extends VncVal {
 		return new VncKeyword(":core/collection");
 	}
 	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
+	
 	public abstract VncCollection emptyWithMeta();
 		
 	public abstract VncList toVncList();

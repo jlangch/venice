@@ -55,6 +55,11 @@ public class VncString extends VncVal {
 	public VncKeyword getType() {
 		return new VncKeyword(":core/string");
 	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
 
 	public int size() {
 		return value.length();

@@ -51,6 +51,11 @@ public class VncLong extends VncVal {
 		return new VncKeyword(":core/long");
 	}
 	
+	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(":core/val");
+	}
+	
 	public VncLong negate() { 
 		return new VncLong(value * -1L); 
 	}

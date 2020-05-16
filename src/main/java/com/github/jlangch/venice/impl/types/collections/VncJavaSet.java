@@ -88,6 +88,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	}
 	
 	@Override
+	public VncKeyword getSupertype() {
+		return new VncKeyword(value.getClass().getSuperclass().getName());
+	}
+	
+	@Override
 	public VncJavaSet add(final VncVal val) {
 		value.add(val.convertToJavaObject());
 		return this;
