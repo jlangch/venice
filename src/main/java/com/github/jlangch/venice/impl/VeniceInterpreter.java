@@ -330,7 +330,13 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				
 				case "deftype": { // (deftype type fields)
-					return DefType.defineCustomType(ast.rest(), typeDefRegistry);
+					final VncKeyword type = Coerce.toVncKeyword(ast.second());
+					final VncVector fields = Coerce.toVncVector(ast.third());
+					final VncFunction validationFn = ast.size() == 4
+														? Coerce.toVncFunction(evaluate(ast.fourth(), env))
+														: null;
+
+					return DefType.defineCustomType(type, fields, validationFn, typeDefRegistry);
 				}
 				
 				case "deftype-of": { // (deftype-of type base)

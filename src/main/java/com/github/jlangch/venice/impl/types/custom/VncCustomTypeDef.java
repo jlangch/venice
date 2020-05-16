@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.custom;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 
 
@@ -31,10 +32,12 @@ public class VncCustomTypeDef {
 
 	public VncCustomTypeDef(
 			final VncKeyword type,
-			final List<VncCustomTypeFieldDef> fieldDefs
+			final List<VncCustomTypeFieldDef> fieldDefs,
+			final VncFunction validationFn
 	) {
 		this.type = type;
 		this.fieldDefs = fieldDefs;
+		this.validationFn = validationFn;
 	}
 
 
@@ -55,6 +58,10 @@ public class VncCustomTypeDef {
 	public List<VncCustomTypeFieldDef> getFieldDefs() {
 		return fieldDefs;
 	}
+
+	public VncFunction getValidationFn() {
+		return validationFn;
+	}
 	
     public int count() {
 		return fieldDefs.size();
@@ -63,4 +70,5 @@ public class VncCustomTypeDef {
 
 	private final VncKeyword type;
     private final List<VncCustomTypeFieldDef> fieldDefs;
+    private final VncFunction validationFn;
 }

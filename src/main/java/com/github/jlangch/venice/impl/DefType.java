@@ -28,9 +28,11 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
@@ -44,12 +46,11 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class DefType {
 
 	public static VncVal defineCustomType(
-			final VncList args, 
+			final VncKeyword type,
+			final VncVector fields,
+			final VncFunction validationFn,
 			final CustomTypeDefRegistry registry
-	) {
-		final VncKeyword type = Coerce.toVncKeyword(args.first());
-		final VncVector fields = Coerce.toVncVector(args.second());
-		
+	) {											
 		if (fields.isEmpty() || ((fields.size() % 2) != 0)) {
 			throw new VncException("deftype invalid field definition."); 
 		}
@@ -71,7 +72,8 @@ public class DefType {
 		
 		final VncCustomTypeDef typeDef = new VncCustomTypeDef(
 												qualifiedType, 
-												fieldDefs);
+												fieldDefs,
+												validationFn);
 		
 		if (registry.exists(qualifiedType)) {
 			throw new VncException(String.format(
@@ -130,9 +132,16 @@ public class DefType {
 			fields.put(fieldDef.getName(), arg);
 		}
 		
+		final VncMap data = new VncOrderedMap(fields, Constants.Nil);
+		
+		final VncFunction validationFn = typeDef.getValidationFn();
+		if (validationFn != null) {
+			validationFn.apply(VncList.of(data));
+		}
+		
 		return new VncCustomType(
 						typeDef, 
-						new VncOrderedMap(fields, Constants.Nil), 
+						data, 
 						Constants.Nil);
 	}
 
