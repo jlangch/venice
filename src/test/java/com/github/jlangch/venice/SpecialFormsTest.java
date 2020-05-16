@@ -238,7 +238,7 @@ public class SpecialFormsTest {
 				"           [real :long, imaginary :long]                                   \n" +
 				"           (fn [t]                                                         \n" +
 				"              (assert (pos? (:real t)) \"real must be positive\")))        \n" +
-				"  (def x (.: :user/complex -100 200))                                       \n" +
+				"  (def x (.: :user/complex -100 200))                                      \n" +
 				"  (pr-str [(:real x) (:imaginary x)]))                                       ";
 
 		assertThrows(AssertionException.class, () -> new Venice().eval(script));

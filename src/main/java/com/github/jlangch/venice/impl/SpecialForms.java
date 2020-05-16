@@ -302,13 +302,25 @@ public class SpecialForms {
 				"deftype",
 				VncFunction
 					.meta()
-					.arglists("(deftype name fields)")		
+					.arglists(
+						"(deftype name fields)",
+						"(deftype name fields validator)")		
 					.doc("Defines a new custom type for the name with the fields.")
 					.examples(
 						"(do                                                      \n" +
 						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
 						"  (def x (.: :user/complex 100 200))                     \n" +
-						"  (println x))                                             ")
+						"  (println x))                                             ",
+						"(do                                                      \n" +
+						"  (deftype :user/complex                                 \n" +
+						"           [real :long, imaginary :long]                 \n" +
+						"           (fn [t]                                       \n" +
+						"              (assert (pos? (:real t))                   \n" +
+						"                      \"real must be positive\")         \n" +
+						"              (assert (pos? (:imaginary t))              \n" +
+						"                       \"imaginary must be positive\"))) \n" +
+						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  [(:real x) (:imaginary x)])                              ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
