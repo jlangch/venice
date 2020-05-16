@@ -329,7 +329,7 @@ public class VeniceInterpreter implements Serializable  {
 						return defmacro_(ast, env);
 					}
 				
-				case "deftype": { // (deftype type fields)
+				case "deftype": { // (deftype type fields validationFn*)
 					final VncKeyword type = Coerce.toVncKeyword(ast.second());
 					final VncVector fields = Coerce.toVncVector(ast.third());
 					final VncFunction validationFn = ast.size() == 4
@@ -339,12 +339,26 @@ public class VeniceInterpreter implements Serializable  {
 					return DefType.defineCustomType(type, fields, validationFn, typeDefRegistry);
 				}
 				
-				case "deftype-of": { // (deftype-of type base)
-					return DefType.defineCustomWrapperType(ast.rest(), typeDefRegistry);
+				case "deftype-of": { // (deftype-of type base-type validationFn*)
+					final VncKeyword type = Coerce.toVncKeyword(ast.second());
+					final VncKeyword baseType = Coerce.toVncKeyword(ast.third());
+					final VncFunction validationFn = ast.size() == 4
+														? Coerce.toVncFunction(evaluate(ast.fourth(), env))
+														: null;
+					return DefType.defineCustomWrapperType(
+								type, 
+								baseType, 
+								validationFn, 
+								typeDefRegistry,
+								wrappableTypes);
 				}
 
 				case ".:": { // (.: type args*)
-					return DefType.createCustomType(ast.rest(), typeDefRegistry);
+					final List<VncVal> args = new ArrayList<>();
+					for(VncVal v : ast.rest().getList()) {
+						args.add(evaluate(v, env));
+					}
+					return DefType.createType(args, typeDefRegistry);
 				}
 
 				case "set!": { // (set! name expr)
@@ -1543,6 +1557,7 @@ public class VeniceInterpreter implements Serializable  {
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 	private final CustomTypeDefRegistry typeDefRegistry = new CustomTypeDefRegistry();
+	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
 	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
 }

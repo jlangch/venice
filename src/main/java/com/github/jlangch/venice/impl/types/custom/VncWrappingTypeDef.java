@@ -21,24 +21,21 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
-import java.util.List;
-
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
-public class VncCustomTypeDef {
+public class VncWrappingTypeDef {
 
-	public VncCustomTypeDef(
+	public VncWrappingTypeDef(
 			final VncKeyword type,
-			final List<VncCustomTypeFieldDef> fieldDefs,
+			final VncKeyword baseType,
 			final VncFunction validationFn
 	) {
 		this.type = type;
-		this.fieldDefs = fieldDefs;
+		this.baseType = baseType;
 		this.validationFn = validationFn;
 	}
 
@@ -47,36 +44,22 @@ public class VncCustomTypeDef {
 		return type;
 	}
  
-    public VncCustomTypeFieldDef getFieldDef(final int index) {
-    	if (index >= 0 && index < fieldDefs.size()) {
-    		return fieldDefs.get(index);
-    	}
-    	else {
-			throw new VncException(String.format(
-					"deftype: field def index %d out of bounds.", index)); 
-    	}
+    public VncKeyword getBaseType() {
+		return baseType;
 	}
-
-	public List<VncCustomTypeFieldDef> getFieldDefs() {
-		return fieldDefs;
-	}
-
+ 
 	public VncFunction getValidationFn() {
 		return validationFn;
 	}
-	
-    public int count() {
-		return fieldDefs.size();
-	}
 
-    public void validate(final VncMap data) {
+    public void validate(final VncVal val) {
 		if (validationFn != null) {
-			validationFn.apply(VncList.of(data));
+			validationFn.apply(VncList.of(val));
 		}
     }
-    
 
+    
 	private final VncKeyword type;
-    private final List<VncCustomTypeFieldDef> fieldDefs;
+	private final VncKeyword baseType;
     private final VncFunction validationFn;
 }

@@ -31,13 +31,13 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeFieldDef;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -70,53 +70,79 @@ public class DefType {
 		
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 		
-		final VncCustomTypeDef typeDef = new VncCustomTypeDef(
-												qualifiedType, 
-												fieldDefs,
-												validationFn);
-		
-		if (registry.exists(qualifiedType)) {
+		if (registry.existsCustomType(qualifiedType)) {
 			throw new VncException(String.format(
 					"deftype: the type :%s already exists.", 
 					qualifiedType.getValue())); 
 		}
+
 		
-		registry.add(typeDef);
+		registry.addCustomType(new VncCustomTypeDef(qualifiedType, fieldDefs, validationFn));
 		
 		return qualifiedType;
 	}
 
 	public static VncVal defineCustomWrapperType(
-			final VncList args, 
-			final CustomTypeDefRegistry registry
+			final VncKeyword type,
+			final VncKeyword baseType,
+			final VncFunction validationFn,
+			final CustomTypeDefRegistry registry,
+			final CustomWrappableTypes wrappableTypes
 	) {
-		final VncKeyword type = Coerce.toVncKeyword(args.first());
-		final VncKeyword base = Coerce.toVncKeyword(args.second());
-	
-		return Constants.Nil;
-	}
-
-	public static VncVal createCustomType(
-			final VncList args, 
-			final CustomTypeDefRegistry registry
-	) {
-		final VncKeyword type = Coerce.toVncKeyword(args.first());
-		final List<VncVal> typeArgs = Coerce.toVncSequence(args.rest()).getList();
+		if (!wrappableTypes.isWrappable(baseType)) {
+			throw new VncException(String.format(
+					"deftype-of: the type :%s can not be wrapped.", 
+					baseType.getValue())); 
+		}
 
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
-		final VncCustomTypeDef typeDef = registry.get(qualifiedType);
-		
-		if (typeDef == null) {
+		final VncKeyword qualifiedBaseType = Types.qualify(Namespaces.NS_CORE, baseType);
+
+		if (registry.existsWrappedType(qualifiedType)) {
 			throw new VncException(String.format(
-					"deftype: the type :%s is not defined exists.", 
+					"deftype: the type :%s already exists.", 
 					qualifiedType.getValue())); 
 		}
+
+		registry.addWrappedType(new VncWrappingTypeDef(qualifiedType, qualifiedBaseType, validationFn));
 		
+		return qualifiedType;
+	}
+
+	public static VncVal createType(
+			final List<VncVal> args, 
+			final CustomTypeDefRegistry registry
+	) {
+		final VncKeyword type = Coerce.toVncKeyword(args.get(0));
+
+		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+
+		final VncCustomTypeDef customTypeDef = registry.getCustomType(qualifiedType);
+		if (customTypeDef != null) {
+			final List<VncVal> typeArgs = args.subList(1, args.size());
+			return createCustomType(customTypeDef, typeArgs, registry);
+		}
+		
+		final VncWrappingTypeDef wrappedTypeDef = registry.getWrappedType(qualifiedType);
+		if (wrappedTypeDef != null) {
+			return createWrappedType(wrappedTypeDef, args.get(1), registry);
+		}
+		
+		throw new VncException(String.format(
+				"the custom type :%s is not defined.", 
+				qualifiedType.getValue())); 
+	}
+
+	public static VncVal createCustomType(
+			final VncCustomTypeDef typeDef, 
+			final List<VncVal> typeArgs,
+			final CustomTypeDefRegistry registry
+	) {
 		if (typeDef.count() != typeArgs.size()) {
 			throw new VncException(String.format(
 					"deftype: the type :%s requires %d args. %d have been passed", 
-					qualifiedType.getValue(), 
+					typeDef.getType().getValue(), 
 					typeDef.count(),
 					typeArgs.size())); 
 		}
@@ -127,17 +153,14 @@ public class DefType {
 			final VncCustomTypeFieldDef fieldDef = typeDef.getFieldDef(ii);
 			final VncVal arg = typeArgs.get(ii);
 			
-			validateTypeCompatibility(qualifiedType, fieldDef, arg);
+			validateTypeCompatibility(typeDef.getType(), fieldDef, arg);
 			
 			fields.put(fieldDef.getName(), arg);
 		}
 		
 		final VncMap data = new VncOrderedMap(fields, Constants.Nil);
 		
-		final VncFunction validationFn = typeDef.getValidationFn();
-		if (validationFn != null) {
-			validationFn.apply(VncList.of(data));
-		}
+		typeDef.validate(data);
 		
 		return new VncCustomType(
 						typeDef, 
@@ -145,7 +168,15 @@ public class DefType {
 						Constants.Nil);
 	}
 
-	
+	public static VncVal createWrappedType(
+			final VncWrappingTypeDef typeDef, 
+			final VncVal val,
+			final CustomTypeDefRegistry registry
+	) {		
+		typeDef.validate(val);
+		return val.wrap(typeDef, val.getMeta());
+	}
+
 	private static void validateTypeCompatibility(
 			final VncKeyword type,
 			final VncCustomTypeFieldDef fieldDef,
@@ -163,5 +194,4 @@ public class DefType {
 					argType.getValue())); 
 		}
 	}
-
 }

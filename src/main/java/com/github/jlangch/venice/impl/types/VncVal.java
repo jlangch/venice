@@ -25,18 +25,28 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
 abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	public VncVal() {
-		this(Nil);
+		this(null, Nil);
 	}
 
 	public VncVal(final VncVal meta) {	
+		this(null, meta);
+	}
+
+	public VncVal(
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) {	
 		this.meta = meta;
+		this.wrappingTypeDef = wrappingTypeDef;
 		this._private = MetaUtil.isPrivate(meta);
 	}
 	
@@ -45,6 +55,22 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	abstract public VncKeyword getType();
 	
 	abstract public VncKeyword getSupertype();
+	
+	
+	public VncWrappingTypeDef getWrappingTypeDef() {
+		return wrappingTypeDef;
+	}
+
+	public boolean isWrapped() {
+		return wrappingTypeDef != null;
+	}
+
+	public VncVal wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		throw new VncException(
+					String.format(
+							"The type :%s can not be wrapped!", 
+							getType().getValue()));
+	}
 	
 	abstract public TypeRank typeRank();
 
@@ -112,4 +138,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 
 	private final VncVal meta;
 	private final boolean _private;
+		
+	// the wrap type info when this instance has been wrapped
+	private final VncWrappingTypeDef wrappingTypeDef; 
 }

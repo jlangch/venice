@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -37,7 +38,15 @@ public class VncString extends VncVal {
 	}
 
 	public VncString(final String v, final VncVal meta) { 
-		super(meta);
+		this(v, null, meta);
+	}
+
+	public VncString(
+			final String v, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) { 
+		super(wrappingTypeDef, meta);
 		value = (v == null) ? "" : v; 
 	}
 
@@ -52,8 +61,14 @@ public class VncString extends VncVal {
 	}
 	
 	@Override
+	public VncVal wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncString(value, wrappingTypeDef, meta); 
+	}
+
+	
+	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/string");
+		return TYPE;
 	}
 	
 	@Override
@@ -176,9 +191,13 @@ public class VncString extends VncVal {
 		return EMPTY;
 	}
 	
+    
+    public final static VncString EMPTY = new VncString("");
+    
+    public final static VncKeyword TYPE = new VncKeyword(":core/string");
 
+    
     private static final long serialVersionUID = -1848883965231344442L;
-    private static VncString EMPTY = new VncString("");
 
 	private final String value;
 }

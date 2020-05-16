@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
 public class CustomTypeDefRegistry {
@@ -34,35 +35,54 @@ public class CustomTypeDefRegistry {
 	public CustomTypeDefRegistry() {
 	}
 
-	public void add(final VncCustomTypeDef typeDef) {
+	public void addCustomType(final VncCustomTypeDef typeDef) {
 		Objects.requireNonNull(typeDef);
-		types.put(typeDef.getType(), typeDef);
+		customTypes.put(typeDef.getType(), typeDef);
 	}
-	
-	public VncCustomTypeDef get(final VncKeyword type) {
-		Objects.requireNonNull(type);
-		return types.get(type);
-	}
-	
-	public boolean exists(final VncKeyword type) {
-		Objects.requireNonNull(type);
-		return types.get(type) != null;
-	}
-	
-	public VncCustomTypeDef computeIfAbsent(final VncCustomTypeDef typeDef) {
+
+	public void addWrappedType(final VncWrappingTypeDef typeDef) {
 		Objects.requireNonNull(typeDef);
-		return types.computeIfAbsent(typeDef.getType(), t -> typeDef);
+		wrappedTypes.put(typeDef.getType(), typeDef);
+	}
+
+	public VncCustomTypeDef getCustomType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return customTypes.get(type);
+	}
+
+	public VncWrappingTypeDef getWrappedType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return wrappedTypes.get(type);
 	}
 	
-	public VncCustomTypeDef remove(final VncKeyword type) {
+	public boolean existsCustomType(final VncKeyword type) {
 		Objects.requireNonNull(type);
-		return types.remove(type);
+		return customTypes.get(type) != null;
+	}
+	
+	public boolean existsWrappedType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return wrappedTypes.get(type) != null;
+	}
+	
+	public VncCustomTypeDef removeCustomType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return customTypes.remove(type);
+	}
+	
+	public VncWrappingTypeDef removeWrappedType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return wrappedTypes.remove(type);
 	}
 
 	public void clear() {
-		types.clear();
+		customTypes.clear();
+		wrappedTypes.clear();
 	}
 	
 
-	private final Map<VncKeyword, VncCustomTypeDef> types = new ConcurrentHashMap<>();
+	private final Map<VncKeyword, VncCustomTypeDef> customTypes = new ConcurrentHashMap<>();
+	private final Map<VncKeyword, VncWrappingTypeDef> wrappedTypes = new ConcurrentHashMap<>();
+	
+	
 }

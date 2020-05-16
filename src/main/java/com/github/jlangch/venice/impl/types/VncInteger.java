@@ -48,7 +48,7 @@ public class VncInteger extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/integer");
+		return TYPE;
 	}
 	
 	@Override
@@ -129,6 +129,8 @@ public class VncInteger extends VncVal {
 		return value.toString() + "I";
 	}
 
+    
+    public final static VncKeyword TYPE = new VncKeyword(":core/integer");
 
     private static final long serialVersionUID = -1848883965231344442L;
 
