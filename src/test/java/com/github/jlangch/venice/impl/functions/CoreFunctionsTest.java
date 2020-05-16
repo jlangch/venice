@@ -3324,7 +3324,7 @@ public class CoreFunctionsTest {
 			venice.eval(
 				"(do                                                      \n" +
 				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (pr-str (supertype (.: :user/complex 100 200))))             "));
+				"  (pr-str (supertype (.: :user/complex 100 200))))         "));
 	}
 
 	@Test
