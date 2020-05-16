@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.functions.MathOp;
 import com.github.jlangch.venice.impl.functions.Numeric;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -440,6 +441,16 @@ public class Types {
 				return a.equals(b);
 			}
 		}
+	}
+
+	
+	public static VncKeyword qualify(
+			final VncSymbol ns, 
+			final VncKeyword type
+	) {
+		return Namespaces.isQualified(type)
+					? type
+					: Namespaces.qualifyKeyword(ns, type);	
 	}
 
 }

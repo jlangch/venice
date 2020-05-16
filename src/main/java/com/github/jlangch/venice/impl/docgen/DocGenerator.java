@@ -812,8 +812,6 @@ public class DocGenerator {
 		misc.addItem(getDocItem("nil?"));
 		misc.addItem(getDocItem("some?"));
 		misc.addItem(getDocItem("doc"));
-		misc.addItem(getDocItem("type"));
-		misc.addItem(getDocItem("instance?"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
 		misc.addItem(getDocItem("callstack"));
@@ -975,6 +973,12 @@ public class DocGenerator {
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
+
+		final DocSection test = new DocSection("Test");
+		all.addSection(test);		
+		test.addItem(getDocItem("type"));
+		test.addItem(getDocItem("supertype"));
+		test.addItem(getDocItem("instance?"));
 
 		final DocSection define = new DocSection("Define");
 		all.addSection(define);		

@@ -71,7 +71,10 @@ public class Namespaces {
 	}
 
 	public static boolean isQualified(final String name) {
-		return name.indexOf("/") >= 1;
+		// Venice symbol first, core/first,
+		// Venice type   core/long, long
+		// Java class    java.math.BigInteger
+		return name.indexOf("/") >= 1 || name.indexOf(".") >= 1;
 	}
 
 	public static boolean isQualified(final VncSymbol sym) {

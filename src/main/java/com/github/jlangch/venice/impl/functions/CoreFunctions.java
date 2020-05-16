@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.GenSym;
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.ValueException;
@@ -4858,7 +4859,10 @@ public class CoreFunctions {
 				public VncVal apply(final VncList args) {
 					assertArity("instance?", args, 2);
 
-					final VncKeyword type = Coerce.toVncKeyword(args.first());
+					final VncKeyword type = Types.qualify(
+												Namespaces.NS_CORE, 
+												Coerce.toVncKeyword(args.first()));
+
 					final VncVal x = args.second();
 
 					return Types.isInstanceOf(type, x) ? True : False;

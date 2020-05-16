@@ -29,7 +29,6 @@ import java.util.Map;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
@@ -62,13 +61,13 @@ public class DefType {
 				new VncCustomTypeFieldDef(
 					new VncKeyword(
 							Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
-					qualify(
+					Types.qualify(
 						Namespaces.NS_CORE,
 						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1))), 
 					ii));
 		}
 		
-		final VncKeyword qualifiedType = qualify(Namespaces.getCurrentNS(), type);
+		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 		
 		final VncCustomTypeDef typeDef = new VncCustomTypeDef(
 												qualifiedType, 
@@ -102,7 +101,7 @@ public class DefType {
 		final VncKeyword type = Coerce.toVncKeyword(args.first());
 		final List<VncVal> typeArgs = Coerce.toVncSequence(args.rest()).getList();
 
-		final VncKeyword qualifiedType = qualify(Namespaces.getCurrentNS(), type);
+		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
 		final VncCustomTypeDef typeDef = registry.get(qualifiedType);
 		
@@ -154,15 +153,6 @@ public class DefType {
 					fieldDef.getType().getValue(),
 					argType.getValue())); 
 		}
-	}
-	
-	private static VncKeyword qualify(
-			final VncSymbol ns, 
-			final VncKeyword keyword
-	) {
-		return Namespaces.isQualified(keyword)
-					? keyword
-					: Namespaces.qualifyKeyword(ns, keyword);	
 	}
 
 }
