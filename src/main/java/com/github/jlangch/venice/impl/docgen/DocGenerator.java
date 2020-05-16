@@ -111,14 +111,14 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getByteBufSection(),
 				getTimeSection(),
+				getTransducersSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
+				getSpecialFormsSection(),
 				getTypesSection(),
 				getNamespaceSection(),
-				getSpecialFormsSection(),
-				getTransducersSection(),
-				getAppSection(),
-				getJavaInteropSection());
+				getJavaInteropSection(),
+				getAppSection());
 	}
 	
 	private List<DocSection> getRightSections() {
