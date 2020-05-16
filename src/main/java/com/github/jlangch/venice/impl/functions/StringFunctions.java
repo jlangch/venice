@@ -1816,6 +1816,37 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_valid_email_addr_Q =
+		new VncFunction(
+				"str/valid-email-addr?",
+				VncFunction
+					.meta()
+					.arglists("(str/valid-email-addr? e)")
+					.doc("Returns true if e is a valid email address according to RFC5322, else returns false" )
+					.examples(
+						"(str/valid-email-addr? \"user@domain.com\")",
+						"(str/valid-email-addr? \"user@domain.co.in\")",
+						"(str/valid-email-addr? \"user.name@domain.com\")",
+						"(str/valid-email-addr? \"user_name@domain.com\")",
+						"(str/valid-email-addr? \"username@yahoo.corporate.in\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/valid-email-addr?", args, 1);
+
+				final VncVal arg = args.first();
+				if (arg == Nil) {
+					return False;
+				}
+				else {
+					final String s = Coerce.toVncString(arg).getValue();
+					return s.matches(EMAIL_REGEX) ? True : False;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	private static List<Object> toJavaObjects(final VncList list) {
 		return list
 				.getList()
@@ -1853,7 +1884,12 @@ public class StringFunctions {
 					Tuple2.of("'", "&apos;"),
 					Tuple2.of("\u00A0", "&nbsp;"));
 
+	// see: https://howtodoinjava.com/regex/java-regex-validate-email-address/
+	private static final String EMAIL_REGEX =
+			"^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 
+
+	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -1913,5 +1949,6 @@ public class StringFunctions {
 					.add(str_decode_url)
 					.add(str_escape_html)
 					.add(str_escape_xml)
+					.add(str_valid_email_addr_Q)
 					.toMap();
 }

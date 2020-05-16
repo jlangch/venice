@@ -25,11 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
 public class StringFunctionsTest {
@@ -624,6 +626,31 @@ public class StringFunctionsTest {
 		
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"abcdef\")"));
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"aBcDeF\")"));
+	}
+
+	@Test
+	public void test_str_valid_email_addr_Q() {
+		final List<String> emails = CollectionUtil.toList(
+										"user@domain.com",
+										"user@domain.co.in",
+										"user.name@domain.com",
+										"user_name@domain.com",
+										"username@yahoo.corporate.in");
+
+		final List<String> invalidEmails = CollectionUtil.toList(
+												".username@yahoo.com",
+												"username@yahoo.com.",
+												"username@yahoo..com",
+												"username@yahoo.c",
+												"username@yahoo.corporate");
+
+		final Venice venice = new Venice();
+		
+		emails.forEach(
+				e -> assertTrue((Boolean)venice.eval("(str/valid-email-addr? \"" + e + "\")")));
+		
+		invalidEmails.forEach(
+				e -> assertFalse((Boolean)venice.eval("(str/valid-email-addr? \"" + e + "\")")));
 	}
 
 	@Test

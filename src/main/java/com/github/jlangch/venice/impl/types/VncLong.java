@@ -22,38 +22,56 @@
 package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncLong extends VncVal {
 
 	public VncLong(final Long v) { 
-		this(v, Constants.Nil); 
+		this(v, null, Constants.Nil); 
 	}
 	
 	public VncLong(final Integer v) { 
-		this(v.longValue(), Constants.Nil); 
+		this(v.longValue(), null, Constants.Nil); 
 	}
 
 	public VncLong(final Long v, final VncVal meta) { 
-		super(meta);
+		this(v, null, meta);
+	}
+
+	public VncLong(
+			final Long v, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) { 
+		super(wrappingTypeDef, meta);
 		value = v; 
 	}
 	
 	
 	@Override
 	public VncLong withMeta(final VncVal meta) {
-		return new VncLong(value, meta);
+		return new VncLong(value, getWrappingTypeDef(), meta);
+	}
+	
+	@Override
+	public VncLong wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncLong(value, wrappingTypeDef, meta); 
 	}
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
+		return isWrapped() 
+					? getWrappingTypeDef().getType() 
+					: TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() 
+					? TYPE 
+					: new VncKeyword(":core/val");
 	}
 	
 	public VncLong negate() { 

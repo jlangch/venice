@@ -57,23 +57,27 @@ public class VncString extends VncVal {
 	
 	@Override
 	public VncString withMeta(final VncVal meta) {
-		return new VncString(value, meta); 
+		return new VncString(value, getWrappingTypeDef(), meta); 
 	}
 	
 	@Override
-	public VncVal wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+	public VncString wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
 		return new VncString(value, wrappingTypeDef, meta); 
 	}
 
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
+		return isWrapped() 
+					? getWrappingTypeDef().getType() 
+					: TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() 
+					? TYPE 
+					: new VncKeyword(":core/val");
 	}
 
 	public int size() {

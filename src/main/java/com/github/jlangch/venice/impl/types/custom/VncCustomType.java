@@ -83,12 +83,13 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncKeyword getSupertype() {
-		return type;
+		return new VncKeyword("core/custom-type");
 	}
 
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(
 					getSupertype(), 
+					new VncKeyword(":core/custom-type"),
 					new VncKeyword(":core/map"),
 					new VncKeyword(":core/collection"),
 					new VncKeyword(":core/val"));

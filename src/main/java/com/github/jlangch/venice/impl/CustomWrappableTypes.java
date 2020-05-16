@@ -23,7 +23,10 @@ package com.github.jlangch.venice.impl;
 
 import java.util.Set;
 
+import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
+import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -36,7 +39,10 @@ public class CustomWrappableTypes {
 		types = CollectionUtil.toSet(
 					VncString.TYPE,
 					VncLong.TYPE,
-					VncInteger.TYPE);
+					VncInteger.TYPE,
+					VncDouble.TYPE,
+					VncBigDecimal.TYPE,
+					VncJust.TYPE);
 	}
 
 	public boolean isWrappable(final VncKeyword type) {

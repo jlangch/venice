@@ -314,7 +314,12 @@ public class Types {
 			default:
 				try {
 					if (Types.isVncCustomType(val)) {
-						return ((VncCustomType)val).getAllSupertypes().contains(type);
+						if (((VncCustomType)val).getType().equals(type)) {
+							return true;
+						}
+						else {
+							return ((VncCustomType)val).getAllSupertypes().contains(type);
+						}
 					}
 					else if (Types.isVncJavaObject(val)) {
 						return Class.forName(clazz)

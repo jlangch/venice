@@ -334,6 +334,11 @@ public class DocGenerator {
 		encode.addItem(getDocItem("str/escape-html"));
 		encode.addItem(getDocItem("str/escape-xml"));
 
+
+		final DocSection validation = new DocSection("Validation");
+		strings.addSection(validation);
+		validation.addItem(getDocItem("str/valid-email-addr?"));
+
 		final DocSection str_test = new DocSection("Test");
 		strings.addSection(str_test);
 		str_test.addItem(getDocItem("string?"));

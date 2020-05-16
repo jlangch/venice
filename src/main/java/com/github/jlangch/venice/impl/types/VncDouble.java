@@ -22,46 +22,64 @@
 package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncDouble extends VncVal {
 
 	public VncDouble(final Double v) { 
-		this(v, Constants.Nil); 
+		this(v, null, Constants.Nil); 
 	}
 	
 	public VncDouble(final Float v) { 
-		this(v.doubleValue(), Constants.Nil); 
+		this(v.doubleValue(), null, Constants.Nil); 
 	}
 
 	public VncDouble(final Long v) { 
-		this(v.doubleValue(), Constants.Nil); 
+		this(v.doubleValue(), null, Constants.Nil); 
 	}
 
 	public VncDouble(final Integer v) { 
-		this(v.doubleValue(), Constants.Nil); 
+		this(v.doubleValue(), null, Constants.Nil); 
+	}
+	
+	public VncDouble(final Double v, final VncVal meta) { 
+		this(v, null, meta);
 	}
 
-	public VncDouble(final Double v, final VncVal meta) { 
-		super(meta);
+	public VncDouble(
+			final Double v, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) { 
+		super(wrappingTypeDef, meta);
 		value = v; 
 	}
 
 	
 	@Override
 	public VncDouble withMeta(final VncVal meta) {
-		return new VncDouble(value, meta);
+		return new VncDouble(value, getWrappingTypeDef(), meta);
+	}
+	
+	@Override
+	public VncDouble wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncDouble(value, wrappingTypeDef, meta); 
 	}
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/double");
+		return isWrapped() 
+					? getWrappingTypeDef().getType() 
+					: TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() 
+					? TYPE 
+					: new VncKeyword(":core/val");
 	}
 	
 	public VncDouble negate() { 
@@ -133,6 +151,8 @@ public class VncDouble extends VncVal {
 		return value.toString();
 	}
 
+
+    public final static VncKeyword TYPE = new VncKeyword(":core/double");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

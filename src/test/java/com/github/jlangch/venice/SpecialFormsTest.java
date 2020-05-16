@@ -200,50 +200,7 @@ public class SpecialFormsTest {
 
 		assertEquals("100-a-100-b-200-c-100", venice.eval(script));					
 	}
-	
-	@Test
-	public void test_deftype() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :user/complex 100 200))                     \n" +
-				"  (pr-str [(:real x) (:imaginary x)]))                     ";
-
-		assertEquals("[100 200]", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_validation_OK() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                                        \n" +
-				"  (deftype :user/complex                                                   \n" +
-				"           [real :long, imaginary :long]                                   \n" +
-				"           (fn [t]                                                         \n" +
-				"              (assert (pos? (:real t)) \"real must be positive\")))        \n" +
-				"  (def x (.: :user/complex 100 200))                                       \n" +
-				"  (pr-str [(:real x) (:imaginary x)]))                                       ";
-
-		assertEquals("[100 200]", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_validation_FAILED() {
-		final String script =
-				"(do                                                                        \n" +
-				"  (deftype :user/complex                                                   \n" +
-				"           [real :long, imaginary :long]                                   \n" +
-				"           (fn [t]                                                         \n" +
-				"              (assert (pos? (:real t)) \"real must be positive\")))        \n" +
-				"  (def x (.: :user/complex -100 200))                                      \n" +
-				"  (pr-str [(:real x) (:imaginary x)]))                                       ";
-
-		assertThrows(AssertionException.class, () -> new Venice().eval(script));
-	}
-	
 	@Test
 	public void test_binding() {
 		final Venice venice = new Venice();

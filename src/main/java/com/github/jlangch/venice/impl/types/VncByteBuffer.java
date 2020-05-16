@@ -26,38 +26,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncByteBuffer extends VncVal {
 
 	public VncByteBuffer(final byte[] v) { 
-		this(ByteBuffer.wrap(v), Constants.Nil); 
+		this(ByteBuffer.wrap(v), null, Constants.Nil); 
 	}
 	
 	public VncByteBuffer(final ByteBuffer v) { 
-		this(v, Constants.Nil); 
+		this(v, null, Constants.Nil); 
 	}
 	
 	public VncByteBuffer(final ByteBuffer v, final VncVal meta) {
-		super(meta);
+		this(v, null, meta);
+	}
+	
+	public VncByteBuffer(
+			final ByteBuffer v, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) {
+		super(wrappingTypeDef, meta);
 		value = v; 
 	}
 
 	
 	@Override
 	public VncByteBuffer withMeta(final VncVal meta) {
-		return new VncByteBuffer(value, meta);
+		return new VncByteBuffer(value, getWrappingTypeDef(), meta);
+	}
+	
+	@Override
+	public VncByteBuffer wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncByteBuffer(value, wrappingTypeDef, meta); 
 	}
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/bytebuf");
+		return isWrapped() 
+					? getWrappingTypeDef().getType() 
+					: TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() 
+					? TYPE 
+					: new VncKeyword(":core/val");
 	}
 
 	public ByteBuffer getValue() { 
@@ -149,7 +167,9 @@ public class VncByteBuffer extends VncVal {
 	}
 
 
-    private static final long serialVersionUID = -1848883965231344442L;
+    public final static VncKeyword TYPE = new VncKeyword(":core/bytebuf");
+
+	private static final long serialVersionUID = -1848883965231344442L;
 
 	private final ByteBuffer value;
 }

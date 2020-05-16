@@ -25,42 +25,60 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncBigDecimal extends VncVal {
 
 	public VncBigDecimal(final BigDecimal v) { 
-		this(v, Constants.Nil); 
+		this(v, null, Constants.Nil); 
 	}
 
 	public VncBigDecimal(final double v) { 
-		this(BigDecimal.valueOf(v), Constants.Nil); 
+		this(BigDecimal.valueOf(v), null, Constants.Nil); 
 	}
 
 	public VncBigDecimal(final long v) { 
-		this(BigDecimal.valueOf(v), Constants.Nil); 
+		this(BigDecimal.valueOf(v), null, Constants.Nil); 
+	}
+	
+	public VncBigDecimal(final BigDecimal v, final VncVal meta) { 
+		this(v, null, meta);
 	}
 
-	public VncBigDecimal(final BigDecimal v, final VncVal meta) {
-		super(meta);
+	public VncBigDecimal(
+			final BigDecimal v, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) {
+		super(wrappingTypeDef, meta);
 		value = v; 
 	}
 
 	
 	@Override
 	public VncBigDecimal withMeta(final VncVal meta) {
-		return new VncBigDecimal(value, meta);
+		return new VncBigDecimal(value, getWrappingTypeDef(), meta);
+	}
+	
+	@Override
+	public VncBigDecimal wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncBigDecimal(value, wrappingTypeDef, meta); 
 	}
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/decimal");
+		return isWrapped() 
+					? getWrappingTypeDef().getType() 
+					: TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() 
+					? TYPE 
+					: new VncKeyword(":core/val");
 	}
 	
 	public VncBigDecimal negate() { 
@@ -135,6 +153,9 @@ public class VncBigDecimal extends VncVal {
 	public static RoundingMode toRoundingMode(final VncString val) {
 		return RoundingMode.valueOf(RoundingMode.class, val.getValue());
 	}
+
+	
+    public final static VncKeyword TYPE = new VncKeyword(":core/decimal");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

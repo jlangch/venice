@@ -1515,13 +1515,17 @@ public class CoreFunctionsTest {
 
 		// Custom Types	
 		assertTrue((Boolean)venice.eval(
-						"(do                                                      \n" +
-						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-						"  (instance? :user/complex (.: :user/complex 100 200)))    "));
+						"(do                                                          \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])      \n" +
+						"  (instance? :user/complex (.: :user/complex 100 200)))        "));
 		assertTrue((Boolean)venice.eval(
-						"(do                                                      \n" +
-						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-						"  (instance? :core/map (.: :user/complex 100 200)))    "));
+						"(do                                                          \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])      \n" +
+						"  (instance? :core/custom-type (.: :user/complex 100 200)))    "));
+		assertTrue((Boolean)venice.eval(
+						"(do                                                          \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])      \n" +
+						"  (instance? :core/map (.: :user/complex 100 200)))            "));
 	}
 	
 	@Test
@@ -3316,7 +3320,7 @@ public class CoreFunctionsTest {
 
 		// Custom Types	
 		assertEquals(
-			":user/complex", 
+			":core/custom-type", 
 			venice.eval(
 				"(do                                                      \n" +
 				"  (deftype :user/complex [real :long, imaginary :long])  \n" +

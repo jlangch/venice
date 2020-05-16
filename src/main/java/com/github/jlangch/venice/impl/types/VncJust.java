@@ -21,17 +21,26 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class VncJust extends VncVal implements IDeref {
 	
 	public VncJust(final VncVal v) { 
-		this(v, Constants.Nil); 
+		this(v, null, Constants.Nil); 
 	}
 
 	public VncJust(final VncVal v, final VncVal meta) { 
-		super(meta);
+		this(v, null, meta);
+	}
+
+	public VncJust(
+			final VncVal v, 
+			final VncWrappingTypeDef wrappingTypeDef,
+			final VncVal meta
+	) { 
+		super(wrappingTypeDef, meta);
 		value = (v == null) ? Constants.Nil : v; 
 	}
 
@@ -46,17 +55,26 @@ public class VncJust extends VncVal implements IDeref {
 	
 	@Override
 	public VncJust withMeta(final VncVal meta) {
-		return new VncJust(value, meta); 
+		return new VncJust(value, getWrappingTypeDef(), meta); 
+	}
+	
+	@Override
+	public VncJust wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncJust(value, wrappingTypeDef, meta); 
 	}
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/just");
+		return isWrapped() 
+					? getWrappingTypeDef().getType() 
+					: TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() 
+					? TYPE 
+					: new VncKeyword(":core/val");
 	}
 
 	@Override 
@@ -115,6 +133,8 @@ public class VncJust extends VncVal implements IDeref {
 		return String.format("(just %s)", value.toString(print_readably));
 	}
 	
+
+    public final static VncKeyword TYPE = new VncKeyword(":core/just");
 
     private static final long serialVersionUID = -1848883965231344442L;
  

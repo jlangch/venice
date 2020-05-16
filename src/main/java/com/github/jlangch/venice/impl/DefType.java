@@ -89,15 +89,15 @@ public class DefType {
 			final CustomTypeDefRegistry registry,
 			final CustomWrappableTypes wrappableTypes
 	) {
-		if (!wrappableTypes.isWrappable(baseType)) {
+		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+
+		final VncKeyword qualifiedBaseType = Types.qualify(Namespaces.NS_CORE, baseType);
+
+		if (!wrappableTypes.isWrappable(qualifiedBaseType)) {
 			throw new VncException(String.format(
 					"deftype-of: the type :%s can not be wrapped.", 
 					baseType.getValue())); 
 		}
-
-		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
-
-		final VncKeyword qualifiedBaseType = Types.qualify(Namespaces.NS_CORE, baseType);
 
 		if (registry.existsWrappedType(qualifiedType)) {
 			throw new VncException(String.format(
