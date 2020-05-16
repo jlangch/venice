@@ -1506,18 +1506,22 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(instance? :core/collection (mutable-map))"));
 
 		// Java Interop		
-		assertTrue((Boolean)venice.eval("(instance? :java.util.List (. :java.util.ArrayList :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.List      (. :java.util.ArrayList :new))"));
 		assertTrue((Boolean)venice.eval("(instance? :java.util.ArrayList (. :java.util.ArrayList :new))"));
-		assertTrue((Boolean)venice.eval("(instance? :java.util.Set (. :java.util.HashSet :new))"));
-		assertTrue((Boolean)venice.eval("(instance? :java.util.HashSet (. :java.util.HashSet :new))"));
-		assertTrue((Boolean)venice.eval("(instance? :java.util.Map (. :java.util.HashMap :new))"));
-		assertTrue((Boolean)venice.eval("(instance? :java.util.HashMap (. :java.util.HashMap :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.Set       (. :java.util.HashSet :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.HashSet   (. :java.util.HashSet :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.Map       (. :java.util.HashMap :new))"));
+		assertTrue((Boolean)venice.eval("(instance? :java.util.HashMap   (. :java.util.HashMap :new))"));
 
 		// Custom Types	
 		assertTrue((Boolean)venice.eval(
 						"(do                                                      \n" +
 						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
 						"  (instance? :user/complex (.: :user/complex 100 200)))    "));
+		assertTrue((Boolean)venice.eval(
+						"(do                                                      \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
+						"  (instance? :core/map (.: :user/complex 100 200)))    "));
 	}
 	
 	@Test

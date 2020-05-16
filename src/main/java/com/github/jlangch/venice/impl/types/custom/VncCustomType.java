@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.custom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,14 @@ public class VncCustomType extends VncMap {
 	@Override
 	public VncKeyword getSupertype() {
 		return type;
+	}
+
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(
+					getSupertype(), 
+					new VncKeyword(":core/map"),
+					new VncKeyword(":core/collection"),
+					new VncKeyword(":core/val"));
 	}
 
 	public VncCustomTypeDef getTypeDef() {
