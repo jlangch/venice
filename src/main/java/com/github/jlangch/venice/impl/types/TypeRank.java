@@ -3,6 +3,7 @@ package com.github.jlangch.venice.impl.types;
 public enum TypeRank {
 
 	CONSTANT (0),
+	BOOLEAN (1),
 	
 	INTEGER (10), 
 	LONG (12),
