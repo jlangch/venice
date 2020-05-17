@@ -44,6 +44,17 @@ public class VncBoolean extends VncVal {
 		value = v; 
 	}
 	
+//	public static VncBoolean of(final boolean bool) {
+//		return bool ? TRUE : FALSE;
+//	}
+//	
+//	public static boolean isTrue(final VncVal val) {
+//		return (val instanceof VncBoolean) && ((VncBoolean)val).getValue() == Boolean.TRUE;
+//	}
+//	
+//	public static boolean isFalse(final VncVal val) {
+//		return (val instanceof VncBoolean) && ((VncBoolean)val).getValue() == Boolean.FALSE;
+//	}
 	
 	@Override
 	public VncBoolean withMeta(final VncVal meta) {
