@@ -21,13 +21,11 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -280,7 +278,7 @@ public class Numeric {
 	
 	private static VncVal calcInteger(final MathOp op, final Integer op1, final Integer op2) {
 		switch(op) {
-			case EQU: return op1.compareTo(op2) == 0 ? True : False;
+			case EQU: return Constants.bool(op1.compareTo(op2) == 0);
 			case ADD: return new VncInteger(op1 + op2);
 			case SUB: return new VncInteger(op1 - op2);
 			case MUL: return new VncInteger(op1 * op2);
@@ -291,7 +289,7 @@ public class Numeric {
 	
 	private static VncVal calcLong(final MathOp op, final Long op1, final Long op2) {
 		switch(op) {
-			case EQU: return op1.compareTo(op2) == 0 ? True : False;
+			case EQU: return Constants.bool(op1.compareTo(op2) == 0);
 			case ADD: return new VncLong(op1 + op2);
 			case SUB: return new VncLong(op1 - op2);
 			case MUL: return new VncLong(op1 * op2);
@@ -302,7 +300,7 @@ public class Numeric {
 
 	private static VncVal calcDouble(final MathOp op, final Double op1, final Double op2) {
 		switch(op) {
-			case EQU: return op1.compareTo(op2) == 0 ? True : False;
+			case EQU: return Constants.bool(op1.compareTo(op2) == 0);
 			case ADD: return new VncDouble(op1 + op2);
 			case SUB: return new VncDouble(op1 - op2);
 			case MUL: return new VncDouble(op1 * op2);
@@ -313,7 +311,7 @@ public class Numeric {
 
 	private static VncVal calcDecimal(final MathOp op, final BigDecimal op1, final BigDecimal op2) {
 		switch(op) {
-			case EQU: return op1.compareTo(op2) == 0 ? True : False;
+			case EQU: return Constants.bool(op1.compareTo(op2) == 0);
 			case ADD: return new VncBigDecimal(op1.add(op2));
 			case SUB: return new VncBigDecimal(op1.subtract(op2));
 			case MUL: return new VncBigDecimal(op1.multiply(op2));

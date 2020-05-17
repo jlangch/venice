@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -155,7 +152,7 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return value.containsKey(key) ? True : False;
+		return Constants.bool(value.containsKey(key));
 	}
 
 	@Override

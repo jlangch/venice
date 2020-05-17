@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -90,7 +91,7 @@ public class StringFunctions {
 
 				final String s = Coerce.toVncString(args.first()).getValue();
 
-				return StringUtil.isBlank(s) ? True : False;
+				return Constants.bool(StringUtil.isBlank(s));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -121,7 +122,7 @@ public class StringFunctions {
 					return True;
 				}
 				else {
-					return Types.isVncString(s) && ((VncString)s).size() == 1 ? True : False;
+					return Constants.bool(Types.isVncString(s) && ((VncString)s).size() == 1);
 				}
 			}
 
@@ -148,7 +149,7 @@ public class StringFunctions {
 				final VncString string = Coerce.toVncString(args.first());
 				final VncString prefix = Coerce.toVncString(args.second());
 
-				return string.getValue().startsWith(prefix.getValue()) ? True : False;
+				return Constants.bool(string.getValue().startsWith(prefix.getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -174,7 +175,7 @@ public class StringFunctions {
 				final VncString string = Coerce.toVncString(args.first());
 				final VncString suffix = Coerce.toVncString(args.second());
 
-				return string.getValue().endsWith(suffix.getValue()) ? True : False;
+				return Constants.bool(string.getValue().endsWith(suffix.getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -200,7 +201,7 @@ public class StringFunctions {
 				final VncString string = Coerce.toVncString(args.first());
 				final VncString text = Coerce.toVncString(args.second());
 
-				return string.getValue().contains(text.getValue()) ? True : False;
+				return Constants.bool(string.getValue().contains(text.getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -229,7 +230,7 @@ public class StringFunctions {
 					final String s1 = Coerce.toVncString(args.first()).getValue();
 					final String s2 = Coerce.toVncString(args.second()).getValue();
 
-					return s1.equalsIgnoreCase(s2) ? True : False;
+					return Constants.bool(s1.equalsIgnoreCase(s2));
 				}
 				else {
 					return False;
@@ -906,7 +907,7 @@ public class StringFunctions {
 										? start
 										: Coerce.toVncString(args.nth(2)).getValue();
 
-				return s.startsWith(start) && s.endsWith(end) ? True : False;
+				return Constants.bool(s.startsWith(start) && s.endsWith(end));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -988,7 +989,7 @@ public class StringFunctions {
 				else {
 					final String s = Coerce.toVncString(args.first()).getValue();
 	
-					return s.startsWith("\"") && s.endsWith("\"") ? True : False;
+					return Constants.bool(s.startsWith("\"") && s.endsWith("\""));
 				}
 			}
 
@@ -1284,7 +1285,7 @@ public class StringFunctions {
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
-					return Character.isDigit(((VncChar)v).getValue()) ? True : False;
+					return Constants.bool(Character.isDigit(((VncChar)v).getValue()));
 				}
 				else if (Types.isVncString(v)) {
 					final String str = Coerce.toVncString(v).getValue();
@@ -1293,7 +1294,7 @@ public class StringFunctions {
 								"Function 'str/digit?' expects a single char string",
 								Types.getType(v)));
 					}
-					return Character.isDigit(str.charAt(0)) ? True : False;
+					return Constants.bool(Character.isDigit(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1323,7 +1324,7 @@ public class StringFunctions {
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
-					return Character.isLetter(((VncChar)v).getValue()) ? True : False;
+					return Constants.bool(Character.isLetter(((VncChar)v).getValue()));
 				}
 				else if (Types.isVncString(v)) {
 					final String str = Coerce.toVncString(v).getValue();
@@ -1332,7 +1333,7 @@ public class StringFunctions {
 								"Function 'str/letter?' expects a single char string",
 								Types.getType(v)));
 					}
-					return Character.isLetter(str.charAt(0)) ? True : False;
+					return Constants.bool(Character.isLetter(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1362,7 +1363,7 @@ public class StringFunctions {
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
-					return Character.isLowerCase(((VncChar)v).getValue()) ? True : False;
+					return Constants.bool(Character.isLowerCase(((VncChar)v).getValue()));
 				}
 				else if (Types.isVncString(v)) {
 					final String str = Coerce.toVncString(v).getValue();
@@ -1371,7 +1372,7 @@ public class StringFunctions {
 								"Function 'str/lower-case?' expects a single char string",
 								Types.getType(v)));
 					}
-					return Character.isLowerCase(str.charAt(0)) ? True : False;
+					return Constants.bool(Character.isLowerCase(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1401,7 +1402,7 @@ public class StringFunctions {
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
-					return Character.isUpperCase(((VncChar)v).getValue()) ? True : False;
+					return Constants.bool(Character.isUpperCase(((VncChar)v).getValue()));
 				}
 				else if (Types.isVncString(v)) {
 					final String str = Coerce.toVncString(v).getValue();
@@ -1410,7 +1411,7 @@ public class StringFunctions {
 								"Function 'str/upper-case?' expects a single char string",
 								Types.getType(v)));
 					}
-					return Character.isUpperCase(str.charAt(0)) ? True : False;
+					return Constants.bool(Character.isUpperCase(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1438,7 +1439,7 @@ public class StringFunctions {
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
-					return ((VncChar)v).getValue() == '\n' ? True : False;
+					return Constants.bool(((VncChar)v).getValue() == '\n');
 				}
 				if (Types.isVncString(v)) {
 					final String str = Coerce.toVncString(v).getValue();
@@ -1447,7 +1448,7 @@ public class StringFunctions {
 								"Function 'str/linefeed?' expects a single char string",
 								Types.getType(args.first())));
 					}
-					return str.charAt(0) == '\n' ? True : False;
+					return Constants.bool(str.charAt(0) == '\n');
 				}
 				else {
 					return False;
@@ -1477,7 +1478,7 @@ public class StringFunctions {
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
-					return Character.isWhitespace(((VncChar)v).getValue()) ? True : False;
+					return Constants.bool(Character.isWhitespace(((VncChar)v).getValue()));
 				}
 				else if (Types.isVncString(v)) {
 					final String str = Coerce.toVncString(v).getValue();
@@ -1486,7 +1487,7 @@ public class StringFunctions {
 								"Function 'str/whitespace?' expects a single char string",
 								Types.getType(v)));
 					}
-					return Character.isWhitespace(str.charAt(0)) ? True : False;
+					return Constants.bool(Character.isWhitespace(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1840,7 +1841,7 @@ public class StringFunctions {
 				}
 				else {
 					final String s = Coerce.toVncString(arg).getValue();
-					return s.matches(EMAIL_REGEX) ? True : False;
+					return Constants.bool(s.matches(EMAIL_REGEX));
 				}
 			}
 

@@ -22,9 +22,7 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +30,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -121,7 +120,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
-				return m.find() ? True : False;
+				return Constants.bool(m.find());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -186,7 +185,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
-				return m.matches() ? True : False;
+				return Constants.bool(m.matches());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;

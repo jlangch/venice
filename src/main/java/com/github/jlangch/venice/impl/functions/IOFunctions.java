@@ -296,7 +296,7 @@ public class IOFunctions {
 									"Function 'io/file-ext?' does not allow %s as f");
 
 				final String ext = Coerce.toVncString(args.second()).getValue();
-				return f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext) ? True : False;
+				return Constants.bool(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -315,7 +315,7 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file?", args, 1);
 
-				return Types.isVncJavaObject(args.first(), File.class) ? True : False;
+				return Constants.bool(Types.isVncJavaObject(args.first(), File.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

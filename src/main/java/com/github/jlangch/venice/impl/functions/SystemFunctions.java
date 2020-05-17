@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -512,9 +511,9 @@ public class SystemFunctions {
 				final String type = Coerce.toVncKeyword(args.first()).getValue();
 				final String osName = System.getProperty("os.name");
 				switch(type) {
-					case "windows": return  osName.startsWith("Windows") ? True : False;
-					case "mac-osx": return  osName.startsWith("Mac OS X") ? True : False;
-					case "linux":   return  osName.startsWith("LINUX") ? True : False;
+					case "windows": return Constants.bool(osName.startsWith("Windows"));
+					case "mac-osx": return Constants.bool(osName.startsWith("Mac OS X"));
+					case "linux":   return Constants.bool(osName.startsWith("LINUX"));
 					default:        return False;
 				}
 			}
@@ -592,7 +591,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("sandboxed?", args, 0);
 
-				return JavaInterop.isSandboxed() ? True : False;
+				return Constants.bool(JavaInterop.isSandboxed());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

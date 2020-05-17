@@ -210,7 +210,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(NEWLINE_VAR);
 
 		// ansi terminal
-		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), ansiTerminal ? True : False, false));
+		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), Constants.bool(ansiTerminal), false));
 
 		// set the load path
 		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));
@@ -584,7 +584,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "bound?": { // (bound? sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
-					return env.isBound(sym) ? True : False;
+					return Constants.bool(env.isBound(sym));
 				}
 				
 				case "global-vars-count": { // (global-vars-count)

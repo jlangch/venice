@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
@@ -35,6 +34,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -1176,16 +1176,16 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() == 0L ? True : False;
+					return Constants.bool(((VncLong)op1).getValue() == 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return ((VncInteger)op1).getValue() == 0 ? True : False;
+					return Constants.bool(((VncInteger)op1).getValue() == 0);
 				}
 				else if (Types.isVncDouble(op1)) {
-					return ((VncDouble)op1).getValue() == 0D ? True : False;
+					return Constants.bool(((VncDouble)op1).getValue() == 0D);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return ((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0 ? True : False;
+					return Constants.bool(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1217,16 +1217,16 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() > 0L ? True : False;
+					return Constants.bool(((VncLong)op1).getValue() > 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return ((VncInteger)op1).getValue() > 0 ? True : False;
+					return Constants.bool(((VncInteger)op1).getValue() > 0);
 				}
 				else if (Types.isVncDouble(op1)) {
-					return ((VncDouble)op1).getValue() > 0D ? True : False;
+					return Constants.bool(((VncDouble)op1).getValue() > 0D);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return ((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0 ? True : False;
+					return Constants.bool(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1258,16 +1258,16 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() < 0L ? True : False;
+					return Constants.bool(((VncLong)op1).getValue() < 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return ((VncInteger)op1).getValue() < 0 ? True : False;
+					return Constants.bool(((VncInteger)op1).getValue() < 0);
 				}
 				else if (Types.isVncDouble(op1)) {
-					return ((VncDouble)op1).getValue() < 0D ? True : False;
+					return Constants.bool(((VncDouble)op1).getValue() < 0D);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return ((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0 ? True : False;
+					return Constants.bool(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1297,10 +1297,10 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() % 2L == 0L ? True : False;
+					return Constants.bool(((VncLong)op1).getValue() % 2L == 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return ((VncInteger)op1).getValue() % 2 == 0 ? True : False;
+					return Constants.bool(((VncInteger)op1).getValue() % 2 == 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1330,10 +1330,10 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return ((VncLong)op1).getValue() % 2L == 1L ? True : False;
+					return Constants.bool(((VncLong)op1).getValue() % 2L == 1L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return ((VncInteger)op1).getValue() % 2 == 1 ? True : False;
+					return Constants.bool(((VncInteger)op1).getValue() % 2 == 1);
 				}
 				else {
 					throw new VncException(String.format(

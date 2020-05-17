@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -159,7 +160,7 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("reduced?", args, 1);
 
-				return Reduced.isReduced(args.first()) ? True : False;
+				return Constants.bool(Reduced.isReduced(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

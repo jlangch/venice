@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,7 +114,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return value.containsKey(key.convertToJavaObject()) ? True : False;
+		return Constants.bool(value.containsKey(key.convertToJavaObject()));
 	}
 
 	@Override

@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
@@ -54,6 +51,7 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -582,7 +580,7 @@ public class REPL {
 	
 	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {
 		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), 
-				              macroexpandOnLoad ? True : False, 
+							  Constants.bool(macroexpandOnLoad), 
 				              true));
 	}
 	

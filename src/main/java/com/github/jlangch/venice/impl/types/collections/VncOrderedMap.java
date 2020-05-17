@@ -21,16 +21,13 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
-import static com.github.jlangch.venice.impl.types.Constants.True;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.LinkedHashMap;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -157,7 +154,7 @@ public class VncOrderedMap extends VncMap {
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return value.containsKey(key) ? True : False;
+		return Constants.bool(value.containsKey(key));
 	}
 
 	@Override

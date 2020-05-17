@@ -43,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -137,7 +138,7 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/date?", args, 1);
 
-				return Types.isVncJavaObject(args.first(), Date.class) ? True : False;
+				return Constants.bool(Types.isVncJavaObject(args.first(), Date.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -239,7 +240,7 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/local-date?", args, 1);
 
-				return Types.isVncJavaObject(args.first(), LocalDate.class) ? True : False;
+				return Constants.bool(Types.isVncJavaObject(args.first(), LocalDate.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -394,7 +395,7 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/local-date-time?", args, 1);
 
-				return Types.isVncJavaObject(args.first(), LocalDateTime.class) ? True : False;
+				return Constants.bool(Types.isVncJavaObject(args.first(), LocalDateTime.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -577,7 +578,7 @@ public class TimeFunctions {
 				assertArity("time/zoned-date-time?", args, 1);
 
 				final VncVal val = args.first();
-				return Types.isVncJavaObject(val, ZonedDateTime.class) ? True : False;
+				return Constants.bool(Types.isVncJavaObject(val, ZonedDateTime.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -634,13 +635,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return ((ZonedDateTime)date1).isAfter((ZonedDateTime)date2) ? True : False;
+					return Constants.bool(((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return ((LocalDateTime)date1).isAfter((LocalDateTime)date2) ? True : False;
+					return Constants.bool(((LocalDateTime)date1).isAfter((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return ((LocalDate)date1).isAfter((LocalDate)date2) ? True : False;
+					return Constants.bool(((LocalDate)date1).isAfter((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -708,13 +709,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return ((ZonedDateTime)date1).isBefore((ZonedDateTime)date2) ? True : False;
+					return Constants.bool(((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return ((LocalDateTime)date1).isBefore((LocalDateTime)date2) ? True : False;
+					return Constants.bool(((LocalDateTime)date1).isBefore((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return ((LocalDate)date1).isBefore((LocalDate)date2) ? True : False;
+					return Constants.bool(((LocalDate)date1).isBefore((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -1386,20 +1387,21 @@ public class TimeFunctions {
 
 
 				if (args.first() instanceof VncLong) {
-					return LocalDate.of(Coerce.toVncLong(args.first()).getValue().intValue(), 1, 1)
-							        .isLeapYear() ? True : False;
+					return Constants.bool(
+							LocalDate.of(Coerce.toVncLong(args.first()).getValue().intValue(), 1, 1)
+							         .isLeapYear());
 				}
 
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
 
 				if (dt instanceof ZonedDateTime) {
-					return ((ZonedDateTime)dt).toLocalDateTime().toLocalDate().isLeapYear() ? True : False;
+					return Constants.bool(((ZonedDateTime)dt).toLocalDateTime().toLocalDate().isLeapYear());
 				}
 				else if (dt instanceof LocalDateTime) {
-					return ((LocalDateTime)dt).toLocalDate().isLeapYear() ? True : False;
+					return Constants.bool(((LocalDateTime)dt).toLocalDate().isLeapYear());
 				}
 				else if (dt instanceof LocalDate) {
-					return ((LocalDate)dt).isLeapYear() ? True : False;
+					return Constants.bool(((LocalDate)dt).isLeapYear());
 				}
 				else {
 					throw new VncException(String.format(
@@ -1575,8 +1577,9 @@ public class TimeFunctions {
 					return True;
 				}
 				else if (start != Nil && end != Nil) {
-					return ((not_before_Q.apply(VncList.of(date, start)) == True)
-							 && (not_after_Q.apply(VncList.of(date, end)) == True)) ? True : False;
+					return Constants.bool(
+							((not_before_Q.apply(VncList.of(date, start)) == True)
+							  && (not_after_Q.apply(VncList.of(date, end)) == True)));
 				}
 				else if (start != Nil) {
 					return not_before_Q.apply(VncList.of(date, start));

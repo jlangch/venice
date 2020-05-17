@@ -22,9 +22,7 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -32,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -69,7 +68,7 @@ public class BytebufFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("bytebuf?", args, 1);
 
-				return Types.isVncByteBuffer(args.first()) ? True : False;
+				return Constants.bool(Types.isVncByteBuffer(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

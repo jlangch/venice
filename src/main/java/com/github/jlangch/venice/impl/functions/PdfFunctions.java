@@ -581,7 +581,7 @@ public class PdfFunctions {
 	}
 	
 	private static VncConstant getBooleanOption(final String optName, final VncMap options, final boolean defaultVal) {
-		final VncVal val = options.get(new VncKeyword(optName), defaultVal ? True : False);
+		final VncVal val = options.get(new VncKeyword(optName), Constants.bool(defaultVal));
 		if (val == True) {
 			return True;
 		}
