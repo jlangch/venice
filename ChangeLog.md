@@ -27,7 +27,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- special form `deftype` to support custom composable types
+- special form `deftype-of` to support custom wrapper types 
 
 
 

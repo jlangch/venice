@@ -305,12 +305,17 @@ public class SpecialForms {
 					.arglists(
 						"(deftype name fields)",
 						"(deftype name fields validator)")		
-					.doc("Defines a new custom type for the name with the fields.")
+					.doc(
+						"Defines a new custom type for the name with the fields.")
 					.examples(
 						"(do                                                      \n" +
 						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
 						"  (def x (.: :user/complex 100 200))                     \n" +
-						"  (println x))                                             ",
+						"  x)                                                       ",
+						"(do                                                      \n" +
+						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
+						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  (type x))                                                ",
 						"(do                                                      \n" +
 						"  (deftype :user/complex                                 \n" +
 						"           [real :long, imaginary :long]                 \n" +
@@ -331,13 +336,31 @@ public class SpecialForms {
 				"deftype-of",
 				VncFunction
 					.meta()
-					.arglists("(deftype-of name base)")		
-					.doc("Defines a new custom type wrapper type based on the base type.")
+					.arglists(
+						"(deftype-of name base-type)",
+						"(deftype-of name base-type validator)")		
+					.doc(
+						"Defines a new custom type wrapper based on a base type.")
 					.examples(
-						"(do                                                      \n" +
-						"  (deftype-of :user/email-address :string)               \n" +
-						"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-						"  (println x))                                             ")
+						"(do                                                        \n" +
+						"  (deftype-of :user/email-address :string)                 \n" +
+						"  (def x (.: :user/email-address \"foo@foo.org\"))         \n" +
+						"  x)                                                         ",
+						"(do                                                        \n" +
+						"  (deftype-of :user/email-address :string)                 \n" +
+						"  (def x (.: :user/email-address \"foo@foo.org\"))         \n" +
+						"  (type x))                                                  ",
+						"(do                                                        \n" +
+						"  (deftype-of :user/email-address                          \n" +
+						"              :string                                      \n" +
+						"              (fn [e] (assert (str/valid-email-addr? e)    \n" +
+						"                              \"invalid email address\"))) \n" +
+						"  (def x (.: :user/email-address \"foo@foo.org\"))         \n" +
+						"  x)                                                         ",
+						"(do                                                        \n" +
+						"  (deftype-of :user/contract-id :long)                     \n" +
+						"  (def x (.: :user/contract-id 100000))                    \n" +
+						"  x)                                                         ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -919,6 +942,7 @@ public class SpecialForms {
 					.put("defmulti",		defmulti)
 					.put("defmethod",		defmethod)
 					.put("deftype",			deftype)
+					.put("deftype-of",		deftype_of)
 					.put(".:",				deftype_new)		
 					.put("def-dynamic",		def_dynamic)
 					.put("binding",			binding)

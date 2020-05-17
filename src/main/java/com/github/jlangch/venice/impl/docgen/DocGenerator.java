@@ -988,6 +988,7 @@ public class DocGenerator {
 		final DocSection define = new DocSection("Define");
 		all.addSection(define);		
 		define.addItem(getDocItem("deftype"));
+		define.addItem(getDocItem("deftype-of"));
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
