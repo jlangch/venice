@@ -206,7 +206,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("some?", args, 1);
 
-				return args.first() == Nil ? False : True;
+				return Constants.bool(args.first() != Nil);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -931,7 +931,7 @@ public class CoreFunctions {
 							Types.getType(args.second())));
 				}
 
-				return matchesRegex(args.first(), args.second()) ? False : True;
+				return Constants.bool(!matchesRegex(args.first(), args.second()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1370,7 +1370,7 @@ public class CoreFunctions {
 						final BigDecimal dec = BigDecimal.ZERO;
 						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 					}
-					else if (arg == Constants.False) {
+					else if (Constants.isFalse(arg)) {
 						final BigDecimal dec = BigDecimal.ZERO;
 						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 					}
@@ -3470,7 +3470,7 @@ public class CoreFunctions {
 								   .stream()
 								   .allMatch(v -> { 
 									   final VncVal r = pred.apply(VncList.of(v));
-									   return r != Nil && r != False; }));
+									   return r != Nil && !Constants.isFalse(r); }));
 				}
 			}
 
@@ -3542,7 +3542,7 @@ public class CoreFunctions {
 								   .stream()
 								   .anyMatch(v -> { 
 									   final VncVal r = pred.apply(VncList.of(v));
-									   return r != Nil && r != False; }));
+									   return r != Nil && !Constants.isFalse(r); }));
 				}
 			}
 
@@ -3609,7 +3609,7 @@ public class CoreFunctions {
 
 					for(VncVal v : coll.toVncList().getList()) {
 						final VncVal r = pred.apply(VncList.of(v));
-						if (r != False && r != Nil) {
+						if (!Constants.isFalse(r) && r != Nil) {
 							return r;
 						}
 					}
@@ -5636,7 +5636,7 @@ public class CoreFunctions {
 						final VncVal val = entry.getValue();
 
 						final VncVal r = filterFn.apply(VncList.of(key, val));
-						if (r != Nil && r != False) {
+						if (r != Nil && !Constants.isFalse(r)) {
 							filtered.put(key, val);
 						}
 					}

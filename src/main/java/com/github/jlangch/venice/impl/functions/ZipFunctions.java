@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -634,10 +633,11 @@ public class ZipFunctions {
 												? null
 												: new FilenameFilter() {
 														public boolean accept(File dir, String name) {
-															return True == filterFn.apply(
+															return Constants.isTrue(
+																		filterFn.apply(
 																				VncList.of(
 																					new VncJavaObject(dir),
-																					new VncString(name)));
+																					new VncString(name))));
 														}};
 
 				// parse files

@@ -47,7 +47,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 		if (args.size() == 1) {
 			return get(args.first());		
 		}
-		else if (containsKey(first) == Constants.True) {
+		else if (Constants.isTrue(containsKey(first))) {
 			return get(args.first());
 		}
 		else {

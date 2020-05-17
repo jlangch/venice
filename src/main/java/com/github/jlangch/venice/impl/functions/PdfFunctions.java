@@ -177,7 +177,7 @@ public class PdfFunctions {
 				final Color color_ = HtmlColor.getColor(Coerce.toVncString(color).getValue());
 				final float opacity_= Coerce.toVncDouble(opacity).getValue().floatValue();
 				final float angle_= Coerce.toVncDouble(angle).getValue().floatValue();
-				final boolean overContent_ = Coerce.toVncBoolean(overContent) == Constants.True ? true : false;
+				final boolean overContent_ = Constants.isTrue(Coerce.toVncBoolean(overContent));
 				final int skipTopPages_ = Coerce.toVncLong(skipTopPages).getValue().intValue();
 				final int skipBottomPages_ = Coerce.toVncLong(skipBottomPages).getValue().intValue();
 

@@ -80,7 +80,7 @@ public class VncJsonReader {
 			case ARRAY:   return readArray();
 			case STRING:  return new VncString(reader.string());
 			case NUMBER:  return readNumber();
-			case BOOLEAN: return reader.bool() ? Constants.True : Constants.False;
+			case BOOLEAN: return Constants.bool(reader.bool());
 			case NULL:    return Constants.Nil;
  			default: throw new RuntimeException("Unexpected JSON type " + reader.current());
 		}

@@ -152,10 +152,10 @@ public class VncJsonWriter {
 			if (val == Constants.Nil) {
 				writer.nul();
 			}
-			else if (val == Constants.True) {
+			else if (Constants.isTrue(val)) {
 				writer.value(true);
 			}
-			else if (val == Constants.False) {
+			else if (Constants.isFalse(val)) {
 				writer.value(false);
 			}
 		}
@@ -163,10 +163,10 @@ public class VncJsonWriter {
 			if (val == Constants.Nil) {
 				writer.nul(key);
 			}
-			else if (val == Constants.True) {
+			else if (Constants.isTrue(val)) {
 				writer.value(key, true);
 			}
-			else if (val == Constants.False) {
+			else if (Constants.isFalse(val)) {
 				writer.value(key, false);
 			}
 		}

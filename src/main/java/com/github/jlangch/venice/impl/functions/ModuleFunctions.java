@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +34,7 @@ import java.util.Map;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -134,7 +134,7 @@ public class ModuleFunctions {
 				
 				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
-					final boolean binary = True == options.get(new VncKeyword("binary"));
+					final boolean binary = Constants.isTrue(options.get(new VncKeyword("binary")));
 					final String encoding = encoding(options.get(new VncKeyword("encoding")));
 					
 					final File file = new File(name(args.first()));					

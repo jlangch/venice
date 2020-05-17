@@ -320,7 +320,7 @@ public class JavaInteropUtil {
 			}
 		}
 		else if (value instanceof Boolean) {
-			return ((Boolean)value).booleanValue() ? Constants.True : Constants.False;
+			return Constants.bool(((Boolean)value).booleanValue());
 		}
 		else if (ReflectionTypes.isEnumType(value.getClass())) {
 			return new VncString(value.toString());

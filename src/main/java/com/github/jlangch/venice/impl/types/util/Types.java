@@ -89,8 +89,8 @@ public class Types {
 	}
 
 	public static boolean isVncBoolean(final VncVal val) {
-		return val == Constants.True 
-				|| val == Constants.False 
+		return Constants.isTrue(val)
+				|| Constants.isFalse(val) 
 				|| (val != null && (val instanceof VncBoolean));
 	}
 

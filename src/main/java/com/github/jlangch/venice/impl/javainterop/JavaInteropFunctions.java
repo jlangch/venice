@@ -448,7 +448,7 @@ public class JavaInteropFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("java-obj?", args, 1);
 			
-			return Types.isVncJavaObject(args.first()) ? Constants.True : Constants.False;
+			return Constants.bool(Types.isVncJavaObject(args.first()));
 		}
 		
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -575,7 +575,7 @@ public class JavaInteropFunctions {
 		return new VncHashMap()
 				.assoc(new VncKeyword(":name"), new VncKeyword(f.getName()))
 				.assoc(new VncKeyword(":type"), new VncKeyword(f.getType().getName()))
-				.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(f) ? Constants.True : Constants.False);
+				.assoc(new VncKeyword(":static"), Constants.bool(ReflectionUtil.isStatic(f)));
 	}
 	
 	private static VncHashMap mapMethod(final Method m) {
@@ -587,7 +587,7 @@ public class JavaInteropFunctions {
 				.assoc(new VncKeyword(":name"), new VncKeyword(m.getName()))
 				.assoc(new VncKeyword(":params"), mapParams(params, types))
 				.assoc(new VncKeyword(":return"), new VncKeyword(ret.getTypeName()))
-				.assoc(new VncKeyword(":static"), ReflectionUtil.isStatic(m) ? Constants.True : Constants.False);
+				.assoc(new VncKeyword(":static"), Constants.bool(ReflectionUtil.isStatic(m)));
 	}
 	
 	private static VncHashMap mapConstructor(final Constructor<?> c) {
@@ -595,7 +595,7 @@ public class JavaInteropFunctions {
 		final Type[] types = c.getGenericParameterTypes();
 
 		return new VncHashMap()
-				.assoc(new VncKeyword(":default"), params.length == 0 ? Constants.True : Constants.False)
+				.assoc(new VncKeyword(":default"), Constants.bool(params.length == 0))
 				.assoc(new VncKeyword(":params"), mapParams(params, types));
 	}
 	

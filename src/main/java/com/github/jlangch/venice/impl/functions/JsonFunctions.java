@@ -388,7 +388,7 @@ public class JsonFunctions {
 		};
 
 	private static boolean isTrueOption(final VncHashMap options, final String optionName) {
-		return options.get(new VncKeyword(optionName),Constants.False) == Constants.True; 
+		return Constants.isTrue(options.get(new VncKeyword(optionName),Constants.False)); 
 	}
 	
 	private static VncFunction getFunctionOption(final VncHashMap options, final String optionName) {

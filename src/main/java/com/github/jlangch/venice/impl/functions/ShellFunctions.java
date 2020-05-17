@@ -270,7 +270,7 @@ public class ShellFunctions {
 					future_stdin.get();
 				}
 
-				if (exitCode != 0 && opts.get(new VncKeyword(":throw-ex")) == Constants.True) {
+				if (exitCode != 0 && Constants.isTrue(opts.get(new VncKeyword(":throw-ex")))) {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", cmd))) {
 						throw new ShellException(
 								String.format(

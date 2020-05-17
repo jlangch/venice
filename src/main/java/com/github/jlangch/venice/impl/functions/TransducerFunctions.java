@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
@@ -406,7 +405,7 @@ public class TransducerFunctions {
 										final VncVal input = args.second();
 
 										final VncVal cond = predicate.apply(VncList.of(input));
-										return (cond != False && cond != Nil)
+										return (!Constants.isFalse(cond) && cond != Nil)
 													? rf.apply(VncList.of(result, input))
 													: result;
 									}
@@ -427,7 +426,7 @@ public class TransducerFunctions {
 					for(int i=0; i<coll.size(); i++) {
 						final VncVal val = coll.nth(i);
 						final VncVal keep = predicate.apply(VncList.of(val));
-						if (keep != False && keep != Nil) {
+						if (!Constants.isFalse(keep) && keep != Nil) {
 							items.add(val);
 						}
 					}
@@ -1307,7 +1306,7 @@ public class TransducerFunctions {
 									final VncVal input = args.second();
 
 									final VncVal cond = predicate.apply(VncList.of(input));
-									if (cond != False && cond != Nil) {
+									if (!Constants.isFalse(cond) && cond != Nil) {
 										final VncVal haltVal = halt_return_fn != null
 																? halt_return_fn.apply(
 																		VncList.of(

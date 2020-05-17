@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
@@ -672,13 +671,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return ((ZonedDateTime)date1).isAfter((ZonedDateTime)date2) ? False : True;
+					return Constants.bool(!((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return ((LocalDateTime)date1).isAfter((LocalDateTime)date2) ? False : True;
+					return Constants.bool(!((LocalDateTime)date1).isAfter((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return ((LocalDate)date1).isAfter((LocalDate)date2) ? False : True;
+					return Constants.bool(!((LocalDate)date1).isAfter((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -746,13 +745,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return ((ZonedDateTime)date1).isBefore((ZonedDateTime)date2) ? False : True;
+					return Constants.bool(!((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return ((LocalDateTime)date1).isBefore((LocalDateTime)date2) ? False : True;
+					return Constants.bool(!((LocalDateTime)date1).isBefore((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return ((LocalDate)date1).isBefore((LocalDate)date2) ? False : True;
+					return Constants.bool(!((LocalDate)date1).isBefore((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(

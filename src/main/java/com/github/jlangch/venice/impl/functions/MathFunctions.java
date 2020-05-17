@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -1560,7 +1559,7 @@ public class MathFunctions {
 
 				final List<VncVal> values = new ArrayList<>();
 
-				if (zero_Q.apply(VncList.of(step)) == True) {
+				if (Constants.isTrue(zero_Q.apply(VncList.of(step)))) {
 					throw new VncException("range: a step value must not be 0");
 				}
 
