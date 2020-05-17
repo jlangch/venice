@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.specialforms;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.CustomTypeDefRegistry;
+import com.github.jlangch.venice.impl.CustomWrappableTypes;
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -43,7 +46,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 
 
-public class DefType {
+public class DefTypeForm {
 
 	public static VncVal defineCustomType(
 			final VncKeyword type,

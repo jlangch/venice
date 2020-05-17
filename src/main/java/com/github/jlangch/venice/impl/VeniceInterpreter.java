@@ -42,6 +42,8 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.sandbox.SandboxMaxExecutionTimeChecker;
+import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
+import com.github.jlangch.venice.impl.specialforms.DocForm;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -66,7 +68,6 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.CatchBlock;
-import com.github.jlangch.venice.impl.util.Doc;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
@@ -330,27 +331,31 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				
 				case "deftype": { // (deftype type fields validationFn*)
-					final VncKeyword type = Coerce.toVncKeyword(ast.second());
-					final VncVector fields = Coerce.toVncVector(ast.third());
-					final VncFunction validationFn = ast.size() == 4
-														? Coerce.toVncFunction(evaluate(ast.fourth(), env))
-														: null;
-
-					return DefType.defineCustomType(type, fields, validationFn, typeDefRegistry);
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype", ast))) {
+						final VncKeyword type = Coerce.toVncKeyword(ast.second());
+						final VncVector fields = Coerce.toVncVector(ast.third());
+						final VncFunction validationFn = ast.size() == 4
+															? Coerce.toVncFunction(evaluate(ast.fourth(), env))
+															: null;
+	
+						return DefTypeForm.defineCustomType(type, fields, validationFn, typeDefRegistry);
+					}
 				}
 				
 				case "deftype-of": { // (deftype-of type base-type validationFn*)
-					final VncKeyword type = Coerce.toVncKeyword(ast.second());
-					final VncKeyword baseType = Coerce.toVncKeyword(ast.third());
-					final VncFunction validationFn = ast.size() == 4
-														? Coerce.toVncFunction(evaluate(ast.fourth(), env))
-														: null;
-					return DefType.defineCustomWrapperType(
-								type, 
-								baseType, 
-								validationFn, 
-								typeDefRegistry,
-								wrappableTypes);
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype-of", ast))) {
+						final VncKeyword type = Coerce.toVncKeyword(ast.second());
+						final VncKeyword baseType = Coerce.toVncKeyword(ast.third());
+						final VncFunction validationFn = ast.size() == 4
+															? Coerce.toVncFunction(evaluate(ast.fourth(), env))
+															: null;
+						return DefTypeForm.defineCustomWrapperType(
+									type, 
+									baseType, 
+									validationFn, 
+									typeDefRegistry,
+									wrappableTypes);
+					}
 				}
 
 				case ".:": { // (.: type args*)
@@ -358,7 +363,7 @@ public class VeniceInterpreter implements Serializable  {
 					for(VncVal v : ast.rest().getList()) {
 						args.add(evaluate(v, env));
 					}
-					return DefType.createType(args, typeDefRegistry);
+					return DefTypeForm.createType(args, typeDefRegistry);
 				}
 
 				case "set!": { // (set! name expr)
@@ -534,13 +539,11 @@ public class VeniceInterpreter implements Serializable  {
 					orig_ast = quasiquote(ast.second());
 					break;
 	
-				case "doc":
-					final String name = ((VncString)CoreFunctions.name.apply(ast.rest())).getValue();
-					VncVal docVal = SpecialForms.ns.get(new VncSymbol(name));
-					if (docVal == null) {
-						docVal = env.get(new VncSymbol(name));
+				case "doc": // (doc conj)
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("doc", ast))) {
+						final VncString doc = DocForm.doc(ast.second(), env, typeDefRegistry);
+						orig_ast = VncTinyList.of(new VncSymbol("println"), doc);
 					}
-					orig_ast = VncTinyList.of(new VncSymbol("println"), Doc.getDoc(docVal));
 					break;
 					
 				case "eval": {
