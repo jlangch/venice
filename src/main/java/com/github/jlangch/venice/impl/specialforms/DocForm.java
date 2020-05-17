@@ -61,9 +61,9 @@ public class DocForm {
 	}
 	
 	private static VncString docForSymbol(final VncSymbol sym, final Env env) {
-		VncVal docVal = SpecialForms.ns.get(sym);
+		VncVal docVal = SpecialForms.ns.get(sym); // special form?
 		if (docVal == null) {
-			docVal = env.get(sym);
+			docVal = env.get(sym); // var?
 		}
 		
 		return Doc.getDoc(docVal);
