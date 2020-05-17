@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -98,7 +97,7 @@ public class MetaUtil {
 			return false;
 		}
 		else if (meta instanceof VncHashMap) {
-			return ((VncHashMap)meta).get(PRIVATE) == True;
+			return Constants.isTrue(((VncHashMap)meta).get(PRIVATE));
 		}
 		else {
 			return false;

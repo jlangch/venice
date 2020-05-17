@@ -614,7 +614,7 @@ public class IOFunctions {
 
 					final List<VncVal> files = new ArrayList<>();
 					for(File f : dir.listFiles()) {
-						if (filterFn == null || filterFn.apply(VncList.of(new VncJavaObject(f))) == True) {
+						if (filterFn == null || Constants.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
 							files.add(new VncJavaObject(f));
 						}
 					}
@@ -661,7 +661,7 @@ public class IOFunctions {
 				    Files.walk(dir.toPath())
 				    	 .map(Path::toFile)
 				    	 .forEach(f -> {
-							if (filterFn == null || filterFn.apply(VncList.of(new VncJavaObject(f))) == True) {
+							if (filterFn == null || Constants.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
 								files.add(new VncJavaObject(f));
 							}
 				    	 });						
@@ -755,7 +755,7 @@ public class IOFunctions {
 										: Coerce.toVncJavaObject(destVal, File.class);
 
 					final List<CopyOption> copyOptions = new ArrayList<>();
-					if (replaceOpt == True) {
+					if (Constants.isTrue(replaceOpt)) {
 						copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
 					}
 					
@@ -1067,7 +1067,7 @@ public class IOFunctions {
 
 						validateReadableFile(file);
 
-						if (binary == True) {
+						if (Constants.isTrue(binary)) {
 							final byte[] data = Files.readAllBytes(file.toPath());
 							return new VncByteBuffer(ByteBuffer.wrap(data));
 						}
@@ -1083,7 +1083,7 @@ public class IOFunctions {
 					else if (Types.isVncJavaObject(arg, InputStream.class)) {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
-						if (binary == True) {
+						if (Constants.isTrue(binary)) {
 							final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 							return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 						}
@@ -1100,7 +1100,7 @@ public class IOFunctions {
 						try (BufferedReader brd = new BufferedReader(rd)) {
 							final String s = brd.lines().collect(Collectors.joining(System.lineSeparator()));
 	
-							if (binary == True) {
+							if (Constants.isTrue(binary)) {
 								final VncVal encVal = options.get(new VncKeyword("encoding"));
 								final String encoding = encoding(encVal);
 	
@@ -1174,7 +1174,7 @@ public class IOFunctions {
 					final List<OpenOption> openOptions = new ArrayList<>();
 					openOptions.add(StandardOpenOption.CREATE);
 					openOptions.add(StandardOpenOption.WRITE);
-					openOptions.add(append == True 
+					openOptions.add(Constants.isTrue(append) 
 										? StandardOpenOption.APPEND 
 										: StandardOpenOption.TRUNCATE_EXISTING);
 
@@ -1293,7 +1293,7 @@ public class IOFunctions {
 
 								byte data[] = output.toByteArray();
 
-								return binary == True
+								return Constants.isTrue(binary)
 										? new VncByteBuffer(ByteBuffer.wrap(data))
 										: new VncString(new String(data, encoding));
 							}
@@ -1430,7 +1430,7 @@ public class IOFunctions {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					final VncVal binary = options.get(new VncKeyword("binary"));
 
-					if (binary == True) {
+					if (Constants.isTrue(binary)) {
 						final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 						return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 					}
@@ -1489,7 +1489,7 @@ public class IOFunctions {
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
 					final VncVal flushVal = options.get(new VncKeyword("flush"));
-					final boolean flush = flushVal == True ? true : false;
+					final boolean flush = Constants.isTrue(flushVal);
 
 					byte[] data;
 

@@ -704,7 +704,7 @@ public class ZipFunctions {
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 
-					final boolean verbose = options.get(new VncKeyword("verbose")) == True ? true : false;
+					final boolean verbose = Constants.isTrue(options.get(new VncKeyword("verbose")));
 
 					if (Types.isVncByteBuffer(f)) {
 						Zipper.listZip(((VncByteBuffer)f).getBytes(), System.out, verbose);

@@ -1564,24 +1564,24 @@ public class MathFunctions {
 					throw new VncException("range: a step value must not be 0");
 				}
 
-				if (MathFunctions.pos_Q.apply(VncList.of(step)) == True) {
-					if (CoreFunctions.lt.apply(VncList.of(end, start)) == True) {
+				if (Constants.isTrue(MathFunctions.pos_Q.apply(VncList.of(step)))) {
+					if (Constants.isTrue(CoreFunctions.lt.apply(VncList.of(end, start)))) {
 						throw new VncException("range positive step: end must not be lower than start");
 					}
 
 					VncVal val = start;
-					while(CoreFunctions.lt.apply(VncList.of(val, end)) == True) {
+					while(Constants.isTrue(CoreFunctions.lt.apply(VncList.of(val, end)))) {
 						values.add(val);
 						val = add.apply(VncList.of(val, step));
 					}
 				}
 				else {
-					if (CoreFunctions.gt.apply(VncList.of(end, start)) == True) {
+					if (Constants.isTrue(CoreFunctions.gt.apply(VncList.of(end, start)))) {
 						throw new VncException("range negative step: end must not be greater than start");
 					}
 
 					VncVal val = start;
-					while(CoreFunctions.gt.apply(VncList.of(val, end)) == True) {
+					while(Constants.isTrue(CoreFunctions.gt.apply(VncList.of(val, end)))) {
 						values.add(val);
 						val = add.apply(VncList.of(val, step));
 					}

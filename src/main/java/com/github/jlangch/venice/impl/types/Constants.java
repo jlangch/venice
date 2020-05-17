@@ -31,6 +31,14 @@ public class Constants {
 
 	
 	
+	public static boolean isTrue(final VncVal val) {
+		return val == True;
+	}
+	
+	public static boolean isFalse(final VncVal val) {
+		return val == False;
+	}
+	
 	public static VncConstant bool(final boolean bool) {
 		return bool ? True : False;
 	}

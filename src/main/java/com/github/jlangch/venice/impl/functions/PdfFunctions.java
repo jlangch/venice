@@ -448,7 +448,7 @@ public class PdfFunctions {
 					data.put("pages", pages);
 					data.put("fontSize", fontSize.getValue().toString());
 					data.put("fontWeight", fontWeight.getValue().toString());
-					data.put("fontFamiliy", fontMonoSpace == True ? "Courier" : "Helvetica, Sans-Serif");
+					data.put("fontFamiliy", Constants.isTrue(fontMonoSpace) ? "Courier" : "Helvetica, Sans-Serif");
 
 					final String template = loadText2PdfTemplate();
 					
@@ -582,10 +582,10 @@ public class PdfFunctions {
 	
 	private static VncConstant getBooleanOption(final String optName, final VncMap options, final boolean defaultVal) {
 		final VncVal val = options.get(new VncKeyword(optName), Constants.bool(defaultVal));
-		if (val == True) {
+		if (Constants.isTrue(val)) {
 			return True;
 		}
-		else if (val == False) {
+		else if (Constants.isFalse(val)) {
 			return False;
 		}
 		else {

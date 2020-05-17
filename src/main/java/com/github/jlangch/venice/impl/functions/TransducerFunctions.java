@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -555,7 +554,7 @@ public class TransducerFunctions {
 										}
 										else {
 											final VncVal drop = predicate.apply(VncList.of(input));
-											if (drop == True) {
+											if (Constants.isTrue(drop)) {
 												return result;
 											}
 											else {
@@ -578,7 +577,7 @@ public class TransducerFunctions {
 
 					for(int i=0; i<coll.size(); i++) {
 						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
-						if (take == False) {
+						if (Constants.isFalse(take)) {
 							return coll.slice(i);
 						}
 					}
@@ -703,7 +702,7 @@ public class TransducerFunctions {
 										final VncVal input = args.second();
 
 										final VncVal take = predicate.apply(VncList.of(input));
-										if (take == True) {
+										if (Constants.isTrue(take)) {
 											return rf.apply(VncList.of(result, input));
 										}
 										else {
@@ -725,7 +724,7 @@ public class TransducerFunctions {
 
 					for(int i=0; i<coll.size(); i++) {
 						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
-						if (take == False) {
+						if (Constants.isFalse(take)) {
 							return coll.slice(0, i);
 						}
 					}
@@ -782,7 +781,7 @@ public class TransducerFunctions {
 										final VncVal input = args.second();
 
 										final VncVal val = fn.apply(VncList.of(input));
-										return val == Nil || val == False ? result : rf.apply(VncList.of(result, input));
+										return val == Nil || Constants.isFalse(val) ? result : rf.apply(VncList.of(result, input));
 									}
 								}
 
@@ -911,7 +910,7 @@ public class TransducerFunctions {
 					final VncFunction fn =
 							new VncFunction(createAnonymousFuncName("remove:transducer")) {
 								public VncVal apply(final VncList args) {
-									return predicate.apply(args) == True ? False : True;
+									return Constants.bool(!Constants.isTrue(predicate.apply(args)));
 								}
 								private static final long serialVersionUID = -1;
 							};
@@ -923,7 +922,7 @@ public class TransducerFunctions {
 					
 					for(VncVal val : coll.getList()) {
 						final VncVal keep = predicate.apply(VncList.of(val));
-						if (keep == Nil || keep == False) {
+						if (keep == Nil || Constants.isFalse(keep)) {
 							items.add(val);
 						}
 					}
@@ -1293,7 +1292,7 @@ public class TransducerFunctions {
 								else if (args.size() == 1) {
 									final VncVal result = args.first();
 
-									if (Types.isVncMap(result) && ((VncMap)result).containsKey(HALT) == True) {
+									if (Types.isVncMap(result) && Constants.isTrue(((VncMap)result).containsKey(HALT))) {
 										return ((VncMap)result).get(HALT);
 									}
 									else if (no_halt_return_fn != null) {

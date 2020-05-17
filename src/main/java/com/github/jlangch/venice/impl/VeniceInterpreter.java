@@ -714,7 +714,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "if": 
 					final VncVal cond = evaluate(ast.second(), env);
-					if (cond == False || cond == Nil) {
+					if (Constants.isFalse(cond) || cond == Nil) {
 						// eval false slot form
 						if (ast.size() > 3) {
 							orig_ast = ast.nth(3);
@@ -1440,8 +1440,8 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private boolean isFnConditionTrue(final VncVal result) {
 		return Types.isVncSequence(result) 
-				? ((VncSequence)result).first() == True 
-				: result == True;
+				? Constants.isTrue(((VncSequence)result).first()) 
+				: Constants.isTrue(result);
 	}
 
 	private void validateFnPreconditions(

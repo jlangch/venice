@@ -21,10 +21,10 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import com.github.jlangch.venice.impl.types.util.Types;
+
 
 public class VncConstant extends VncVal {
 
@@ -74,10 +74,10 @@ public class VncConstant extends VncVal {
 		if (this == Constants.Nil) {
 			return null;
 		}
-		else if (this == Constants.True) {
+		else if (Constants.isTrue(this)) {
 			return Boolean.TRUE;
 		}
-		else if (this == Constants.False) {
+		else if (Constants.isFalse(this)) {
 			return Boolean.FALSE;
 		}
 		else {
@@ -94,7 +94,7 @@ public class VncConstant extends VncVal {
 			return 1;
 		}
 		else if (Types.isVncBoolean(this) && Types.isVncBoolean(o)) {
-			return Long.valueOf(this == False ? 0L : 1L).compareTo(o == False ? 0L : 1L);				
+			return Long.valueOf(Constants.isFalse(this) ? 0L : 1L).compareTo(Constants.isFalse(o) ? 0L : 1L);				
 		}
 
 		return super.compareTo(o);

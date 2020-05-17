@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
 
 import java.util.Map;
 
@@ -351,7 +350,7 @@ public class Types {
 
 	public static boolean _equal_Q(VncVal a, VncVal b) {
 		if (Types.isVncNumber(a) && Types.isVncNumber(b)) {
-			return Numeric.calc(MathOp.EQU, a, b) == True;
+			return Constants.isTrue(Numeric.calc(MathOp.EQU, a, b));
 		}
 		else if (Types.isVncString(a) && Types.isVncChar(b)) {
 			return ((VncString)a).getValue().equals(((VncChar)b).getValue().toString());
