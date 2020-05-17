@@ -62,7 +62,7 @@ public class SpecialFormsTest_CustomTypes {
 		final String script =
 				"(do                                                      \n" +
 				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (deftype :user/test [a :user/complex, b :long])       \n" +
+				"  (deftype :user/test [a :user/complex, b :long])        \n" +
 				"  (def x (.: :user/test (.: :user/complex 100 200) 400)) \n" +
 				"  (pr-str x))                                              ";
 
@@ -74,12 +74,13 @@ public class SpecialFormsTest_CustomTypes {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (deftype :user/test [a :user/complex, b :long])       \n" +
-				"  (def x (.: :user/test (.: :user/complex 100 200) 400)) \n" +
-				"  (pr-str [[(:real (:a x)) (:imaginary (:a x))] (:b x)]))                     ";
+				"(do                                                           \n" +
+				"  (deftype :user/complex [real :long, imaginary :long])       \n" +
+				"  (deftype :user/test [a :user/complex, b :long])             \n" +
+				"  (def x (.: :user/test (.: :user/complex 100 200) 400))      \n" +
+				"  (pr-str [[(-> x :a :real)  (-> x :a :imaginary)] (:b x)]))    ";
 
+		
 		assertEquals("[[100 200] 400]", venice.eval(script));					
 	}
 	
