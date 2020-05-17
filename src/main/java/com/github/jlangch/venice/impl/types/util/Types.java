@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.util;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.Constants.True;
 
@@ -36,6 +35,7 @@ import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
@@ -89,6 +89,12 @@ public class Types {
 		return val != null && (val instanceof VncConstant);
 	}
 
+	public static boolean isVncBoolean(final VncVal val) {
+		return val == Constants.True 
+				|| val == Constants.False 
+				|| (val != null && (val instanceof VncBoolean));
+	}
+
 	public static boolean isVncAtom(final VncVal val) {
 		return val != null && (val instanceof VncAtom);
 	}
@@ -115,10 +121,6 @@ public class Types {
 
 	public static boolean isVncSymbol(final VncVal val) {
 		return val != null && (val instanceof VncSymbol);
-	}
-
-	public static boolean isVncBoolean(final VncVal val) {
-		return val == Constants.True || val == Constants.False;
 	}
 
 	public static boolean isVncInteger(final VncVal val) {
@@ -280,7 +282,7 @@ public class Types {
 		
 		switch(clazz) {
 			case "core/nil":			return val == Nil;
-			case "core/boolean":		return val == True || val == False;
+			case "core/boolean":		return Types.isVncBoolean(val);
 			case "core/atom":			return Types.isVncAtom(val);
 			case "core/volatile":		return Types.isVncVolatile(val);
 			case "core/thread-local":	return Types.isVncThreadLocal(val);
@@ -373,6 +375,9 @@ public class Types {
 		else {
 			if (a instanceof VncConstant) {
 				return ((VncConstant)a) == ((VncConstant)b);
+			} 
+			if (a instanceof VncBoolean) {
+				return ((VncBoolean)a).getValue() == ((VncBoolean)b).getValue();
 			} 
 			else if (a instanceof VncLong) {
 				return ((VncLong)a).getValue().equals(((VncLong)b).getValue());
