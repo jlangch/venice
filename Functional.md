@@ -5,9 +5,11 @@
 
 [Domain Modeling Made Functional](https://youtu.be/2JB1_e5wZmU)
 
-[Functional Design Patterns](https://youtu.be/srQt1NAHYC0)
+[Functional Design Patterns - Scott Wlaschin](https://youtu.be/srQt1NAHYC0)
 
-[Functional architecture](https://youtu.be/US8QG9I1XW0)
+[Functional architecture - Scott Wlaschin](https://youtu.be/US8QG9I1XW0)
+
+[The Functional Programmer's Toolkit - Scott Wlaschin](https://www.youtube.com/watch?v=Nrp_LZ-XGsY)
 
 [Project Euler](https://projecteuler.net/)
 
