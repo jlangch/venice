@@ -7,11 +7,12 @@
 
 [Functional Design Patterns - Scott Wlaschin](https://youtu.be/srQt1NAHYC0)
 
+[The power of composition - Scott Wlaschin](https://www.youtube.com/watch?v=oquuPOkz8xo)
+
 [Functional Architecture - Scott Wlaschin](https://youtu.be/US8QG9I1XW0)
 
 [The Functional Programmer's Toolkit - Scott Wlaschin](https://www.youtube.com/watch?v=Nrp_LZ-XGsY)
 
-[The power of composition - Scott Wlaschin](https://www.youtube.com/watch?v=oquuPOkz8xo)
 
 [Project Euler](https://projecteuler.net/)
 
