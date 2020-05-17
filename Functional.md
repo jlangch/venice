@@ -13,6 +13,7 @@
 
 [The Functional Programmer's Toolkit - Scott Wlaschin](https://www.youtube.com/watch?v=Nrp_LZ-XGsY)
 
+[Designing with Capabilities - Scott Wlaschin](https://www.youtube.com/watch?v=fi1FsDW1QeY)
 
 [Project Euler](https://projecteuler.net/)
 
