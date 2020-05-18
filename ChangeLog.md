@@ -32,8 +32,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- PDF watermark color opacity: OpenPDF library changed behavior in one of 
-  the recent releases!
+- 'pdf' module PDF watermark color opacity: OpenPDF library changed behavior in 
+  one of the recent releases!
 
 
 
