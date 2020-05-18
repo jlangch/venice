@@ -27,7 +27,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -98,11 +98,11 @@ public class CidrFunctions {
 				if (Types.isVncString(ip)) {
 					if (Types.isVncString(cidr_)) {
 						final CIDR cidr = CIDR.parse(((VncString)cidr_).getValue());
-						return Constants.bool(cidr.isInRange(((VncString)ip).getValue()));
+						return VncBoolean.of(cidr.isInRange(((VncString)ip).getValue()));
 					}
 					else if (Types.isVncJavaObject(cidr_, CIDR.class)) {
 						final CIDR cidr = (CIDR)((VncJavaObject)cidr_).getDelegate();
-						return Constants.bool(cidr.isInRange(((VncString)ip).getValue()));				
+						return VncBoolean.of(cidr.isInRange(((VncString)ip).getValue()));				
 					}
 					else {
 						throw new VncException(String.format(
@@ -114,12 +114,12 @@ public class CidrFunctions {
 					if (Types.isVncString(cidr_)) {
 						final InetAddress inet = (InetAddress)((VncJavaObject)ip).getDelegate();
 						final CIDR cidr = CIDR.parse(((VncString)cidr_).getValue());
-						return Constants.bool(cidr.isInRange(inet));
+						return VncBoolean.of(cidr.isInRange(inet));
 					}
 					else if (Types.isVncJavaObject(cidr_, CIDR.class)) {
 						final InetAddress inet = (InetAddress)((VncJavaObject)ip).getDelegate();
 						final CIDR cidr = (CIDR)((VncJavaObject)cidr_).getDelegate();
-						return Constants.bool(cidr.isInRange(inet));
+						return VncBoolean.of(cidr.isInRange(inet));
 					}
 					else {
 						throw new VncException(String.format(

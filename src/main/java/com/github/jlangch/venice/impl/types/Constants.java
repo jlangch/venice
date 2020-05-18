@@ -24,22 +24,5 @@ package com.github.jlangch.venice.impl.types;
 public class Constants {
    
 	public static VncConstant Nil = new VncConstant("nil");
-	
-	public static VncConstant True = new VncConstant("true");
-	
-	public static VncConstant False = new VncConstant("false");
 
-	
-	
-	public static boolean isTrue(final VncVal val) {
-		return val == True;
-	}
-	
-	public static boolean isFalse(final VncVal val) {
-		return val == False;
-	}
-	
-	public static VncConstant bool(final boolean bool) {
-		return bool ? True : False;
-	}
 }

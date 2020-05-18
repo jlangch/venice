@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -320,7 +321,7 @@ public class JavaInteropUtil {
 			}
 		}
 		else if (value instanceof Boolean) {
-			return Constants.bool(((Boolean)value).booleanValue());
+			return VncBoolean.of(((Boolean)value).booleanValue());
 		}
 		else if (ReflectionTypes.isEnumType(value.getClass())) {
 			return new VncString(value.toString());

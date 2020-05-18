@@ -23,9 +23,9 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
+import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +47,9 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -272,13 +272,13 @@ public class ConcurrencyFunctions {
 				if (Types.isVncJavaObject(args.first())) {
 					final Object delegate = ((VncJavaObject)args.first()).getDelegate();
 					if (delegate instanceof Future) {
-						return Constants.bool(((Future<?>)delegate).isDone());
+						return VncBoolean.of(((Future<?>)delegate).isDone());
 					}
 					else if (delegate instanceof CompletableFuture) {
-						return Constants.bool(((CompletableFuture<?>)delegate).isDone());
+						return VncBoolean.of(((CompletableFuture<?>)delegate).isDone());
 					}
 					else if (delegate instanceof Delay) {
-						return Constants.bool(((Delay)delegate).isRealized());
+						return VncBoolean.of(((Delay)delegate).isRealized());
 					}
 				}
 				
@@ -429,7 +429,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("atom?", args, 1);
 				
-				return Constants.bool(Types.isVncAtom(args.first()));
+				return VncBoolean.of(Types.isVncAtom(args.first()));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -607,7 +607,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("volatile?", args, 1);
 				
-				return Constants.bool(Types.isVncVolatile(args.first()));
+				return VncBoolean.of(Types.isVncVolatile(args.first()));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -906,7 +906,7 @@ public class ConcurrencyFunctions {
 				
 				return agents.isEmpty() 
 						? True
-						: Constants.bool(Agent.await(agents, -1));
+						: VncBoolean.of(Agent.await(agents, -1));
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -947,7 +947,7 @@ public class ConcurrencyFunctions {
 				
 				return agents.isEmpty() 
 						? True
-						: Constants.bool(Agent.await(agents, timeoutMillis));
+						: VncBoolean.of(Agent.await(agents, timeoutMillis));
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1000,7 +1000,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("shutdown-agents?", args, 0);
 		
-				return Constants.bool(Agent.isShutdown());
+				return VncBoolean.of(Agent.isShutdown());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1057,7 +1057,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("await-termination-agents?", args, 0);
 		
-				return Constants.bool(Agent.isShutdown());
+				return VncBoolean.of(Agent.isShutdown());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1157,7 +1157,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("promise?", args, 1);
 	
-				return Constants.bool(Types.isVncJavaObject(args.first(), CompletableFuture.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), CompletableFuture.class));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1265,7 +1265,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("future?", args, 1);
 	
-				return Constants.bool(Types.isVncJavaObject(args.first(), Future.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), Future.class));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1295,7 +1295,7 @@ public class ConcurrencyFunctions {
 					try {
 						@SuppressWarnings("unchecked")
 						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
-						return Constants.bool(future.isDone());
+						return VncBoolean.of(future.isDone());
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to check if future is done", ex);
@@ -1369,7 +1369,7 @@ public class ConcurrencyFunctions {
 					try {
 						@SuppressWarnings("unchecked")
 						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
-						return Constants.bool(future.isCancelled());
+						return VncBoolean.of(future.isCancelled());
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to check if future is cancelled", ex);
@@ -1495,7 +1495,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("delay?", args, 1);
 	
-				return Constants.bool(Types.isVncJavaObject(args.first(), Delay.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), Delay.class));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1578,7 +1578,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("thread-local?", args, 1);
 				
-				return Constants.bool(Types.isVncThreadLocal(args.first()));
+				return VncBoolean.of(Types.isVncThreadLocal(args.first()));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1685,7 +1685,7 @@ public class ConcurrencyFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("thread-interrupted?", args, 0);
-				return Constants.bool(Thread.currentThread().isInterrupted());
+				return VncBoolean.of(Thread.currentThread().isInterrupted());
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1712,7 +1712,7 @@ public class ConcurrencyFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("thread-interrupted", args, 0);
-				return Constants.bool(Thread.interrupted());
+				return VncBoolean.of(Thread.interrupted());
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;

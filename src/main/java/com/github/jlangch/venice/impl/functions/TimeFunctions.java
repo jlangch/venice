@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
+import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -42,7 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -137,7 +137,7 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/date?", args, 1);
 
-				return Constants.bool(Types.isVncJavaObject(args.first(), Date.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), Date.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -239,7 +239,7 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/local-date?", args, 1);
 
-				return Constants.bool(Types.isVncJavaObject(args.first(), LocalDate.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), LocalDate.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -394,7 +394,7 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("time/local-date-time?", args, 1);
 
-				return Constants.bool(Types.isVncJavaObject(args.first(), LocalDateTime.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), LocalDateTime.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -577,7 +577,7 @@ public class TimeFunctions {
 				assertArity("time/zoned-date-time?", args, 1);
 
 				final VncVal val = args.first();
-				return Constants.bool(Types.isVncJavaObject(val, ZonedDateTime.class));
+				return VncBoolean.of(Types.isVncJavaObject(val, ZonedDateTime.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -634,13 +634,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return Constants.bool(((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
+					return VncBoolean.of(((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return Constants.bool(((LocalDateTime)date1).isAfter((LocalDateTime)date2));
+					return VncBoolean.of(((LocalDateTime)date1).isAfter((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return Constants.bool(((LocalDate)date1).isAfter((LocalDate)date2));
+					return VncBoolean.of(((LocalDate)date1).isAfter((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -671,13 +671,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return Constants.bool(!((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
+					return VncBoolean.of(!((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return Constants.bool(!((LocalDateTime)date1).isAfter((LocalDateTime)date2));
+					return VncBoolean.of(!((LocalDateTime)date1).isAfter((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return Constants.bool(!((LocalDate)date1).isAfter((LocalDate)date2));
+					return VncBoolean.of(!((LocalDate)date1).isAfter((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -708,13 +708,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return Constants.bool(((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
+					return VncBoolean.of(((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return Constants.bool(((LocalDateTime)date1).isBefore((LocalDateTime)date2));
+					return VncBoolean.of(((LocalDateTime)date1).isBefore((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return Constants.bool(((LocalDate)date1).isBefore((LocalDate)date2));
+					return VncBoolean.of(((LocalDate)date1).isBefore((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -745,13 +745,13 @@ public class TimeFunctions {
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
 
 				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return Constants.bool(!((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
+					return VncBoolean.of(!((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
 				}
 				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return Constants.bool(!((LocalDateTime)date1).isBefore((LocalDateTime)date2));
+					return VncBoolean.of(!((LocalDateTime)date1).isBefore((LocalDateTime)date2));
 				}
 				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return Constants.bool(!((LocalDate)date1).isBefore((LocalDate)date2));
+					return VncBoolean.of(!((LocalDate)date1).isBefore((LocalDate)date2));
 				}
 				else {
 					throw new VncException(String.format(
@@ -1386,7 +1386,7 @@ public class TimeFunctions {
 
 
 				if (args.first() instanceof VncLong) {
-					return Constants.bool(
+					return VncBoolean.of(
 							LocalDate.of(Coerce.toVncLong(args.first()).getValue().intValue(), 1, 1)
 							         .isLeapYear());
 				}
@@ -1394,13 +1394,13 @@ public class TimeFunctions {
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
 
 				if (dt instanceof ZonedDateTime) {
-					return Constants.bool(((ZonedDateTime)dt).toLocalDateTime().toLocalDate().isLeapYear());
+					return VncBoolean.of(((ZonedDateTime)dt).toLocalDateTime().toLocalDate().isLeapYear());
 				}
 				else if (dt instanceof LocalDateTime) {
-					return Constants.bool(((LocalDateTime)dt).toLocalDate().isLeapYear());
+					return VncBoolean.of(((LocalDateTime)dt).toLocalDate().isLeapYear());
 				}
 				else if (dt instanceof LocalDate) {
-					return Constants.bool(((LocalDate)dt).isLeapYear());
+					return VncBoolean.of(((LocalDate)dt).isLeapYear());
 				}
 				else {
 					throw new VncException(String.format(
@@ -1499,7 +1499,7 @@ public class TimeFunctions {
 				else {
 					VncVal latest = dates.get(0);
 					for(VncVal date : dates.subList(0, dates.size())) {
-						if (Constants.isTrue(after_Q.apply(VncList.of(date, latest)))) {
+						if (VncBoolean.isTrue(after_Q.apply(VncList.of(date, latest)))) {
 							latest = date;
 						}
 					}
@@ -1538,7 +1538,7 @@ public class TimeFunctions {
 				else {
 					VncVal latest = dates.get(0);
 					for(VncVal date : dates.subList(0, dates.size())) {
-						if (Constants.isTrue(before_Q.apply(VncList.of(date, latest)))) {
+						if (VncBoolean.isTrue(before_Q.apply(VncList.of(date, latest)))) {
 							latest = date;
 						}
 					}
@@ -1576,9 +1576,9 @@ public class TimeFunctions {
 					return True;
 				}
 				else if (start != Nil && end != Nil) {
-					return Constants.bool(
-							((Constants.isTrue(not_before_Q.apply(VncList.of(date, start))))
-							  && (Constants.isTrue(not_after_Q.apply(VncList.of(date, end))))));
+					return VncBoolean.of(
+							((VncBoolean.isTrue(not_before_Q.apply(VncList.of(date, start))))
+							  && (VncBoolean.isTrue(not_after_Q.apply(VncList.of(date, end))))));
 				}
 				else if (start != Nil) {
 					return not_before_Q.apply(VncList.of(date, start));

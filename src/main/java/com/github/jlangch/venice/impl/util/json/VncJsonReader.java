@@ -30,6 +30,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -80,7 +81,7 @@ public class VncJsonReader {
 			case ARRAY:   return readArray();
 			case STRING:  return new VncString(reader.string());
 			case NUMBER:  return readNumber();
-			case BOOLEAN: return Constants.bool(reader.bool());
+			case BOOLEAN: return VncBoolean.of(reader.bool());
 			case NULL:    return Constants.Nil;
  			default: throw new RuntimeException("Unexpected JSON type " + reader.current());
 		}

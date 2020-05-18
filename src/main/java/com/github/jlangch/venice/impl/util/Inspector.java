@@ -26,7 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -54,7 +54,7 @@ public class Inspector {
 				arityFunctions.add(
 					VncOrderedMap.of(
 						new VncKeyword("arity"), new VncLong(((VncFunction)f).getFixedArgsCount()),
-						new VncKeyword("variadic?"), Constants.bool(((VncFunction)f).hasVariadicArgs()),
+						new VncKeyword("variadic?"), VncBoolean.of(((VncFunction)f).hasVariadicArgs()),
 						new VncKeyword("fn"), inspect((VncFunction)f)));
 			});
 			

@@ -33,6 +33,7 @@ import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -188,11 +189,11 @@ public class Reader {
 		} 
 		else if (matcher.group(6) != null) {
 			// 6: true
-			return Constants.True;
+			return VncBoolean.True;
 		} 
 		else if (matcher.group(7) != null) {
 			// 7: false
-			return Constants.False;
+			return VncBoolean.False;
 		} 
 		else if (matcher.group(8) != null) {
 			// 8: string """
@@ -309,7 +310,7 @@ public class Reader {
 				VncVal meta = read_form(rdr);
 				if (Types.isVncKeyword(meta)) {
 					// allow ^:private is equivalent to ^{:private true}
-					meta = VncHashMap.of(meta, Constants.True);
+					meta = VncHashMap.of(meta, VncBoolean.True);
 				}
 				if (Types.isVncMap(meta)) {
 					final Token symToken = rdr.peek();

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -448,7 +448,7 @@ public class JavaInteropFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("java-obj?", args, 1);
 			
-			return Constants.bool(Types.isVncJavaObject(args.first()));
+			return VncBoolean.of(Types.isVncJavaObject(args.first()));
 		}
 		
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -575,7 +575,7 @@ public class JavaInteropFunctions {
 		return new VncHashMap()
 				.assoc(new VncKeyword(":name"), new VncKeyword(f.getName()))
 				.assoc(new VncKeyword(":type"), new VncKeyword(f.getType().getName()))
-				.assoc(new VncKeyword(":static"), Constants.bool(ReflectionUtil.isStatic(f)));
+				.assoc(new VncKeyword(":static"), VncBoolean.of(ReflectionUtil.isStatic(f)));
 	}
 	
 	private static VncHashMap mapMethod(final Method m) {
@@ -587,7 +587,7 @@ public class JavaInteropFunctions {
 				.assoc(new VncKeyword(":name"), new VncKeyword(m.getName()))
 				.assoc(new VncKeyword(":params"), mapParams(params, types))
 				.assoc(new VncKeyword(":return"), new VncKeyword(ret.getTypeName()))
-				.assoc(new VncKeyword(":static"), Constants.bool(ReflectionUtil.isStatic(m)));
+				.assoc(new VncKeyword(":static"), VncBoolean.of(ReflectionUtil.isStatic(m)));
 	}
 	
 	private static VncHashMap mapConstructor(final Constructor<?> c) {
@@ -595,7 +595,7 @@ public class JavaInteropFunctions {
 		final Type[] types = c.getGenericParameterTypes();
 
 		return new VncHashMap()
-				.assoc(new VncKeyword(":default"), Constants.bool(params.length == 0))
+				.assoc(new VncKeyword(":default"), VncBoolean.of(params.length == 0))
 				.assoc(new VncKeyword(":params"), mapParams(params, types));
 	}
 	
@@ -617,7 +617,7 @@ public class JavaInteropFunctions {
 		return new VncHashMap()
 				.assoc(new VncKeyword(":property"), new VncKeyword(name))
 				.assoc(new VncKeyword(":type"),new VncKeyword(type.getTypeName()))
-				.assoc(new VncKeyword(":getter"), Constants.True);
+				.assoc(new VncKeyword(":getter"), VncBoolean.True);
 	}
 	
 	private static VncHashMap mapBeanSetter(final Method m) {
@@ -628,7 +628,7 @@ public class JavaInteropFunctions {
 		return new VncHashMap()
 				.assoc(new VncKeyword(":property"), new VncKeyword(name))
 				.assoc(new VncKeyword(":type"),new VncKeyword(type.getTypeName()))
-				.assoc(new VncKeyword(":setter"), Constants.True);
+				.assoc(new VncKeyword(":setter"), VncBoolean.True);
 	}
 
 	private static Set<String> skippedFn = new HashSet<>(Arrays.asList(

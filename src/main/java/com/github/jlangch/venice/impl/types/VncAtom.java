@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -84,7 +84,7 @@ public class VncAtom extends VncVal implements IDeref {
 			if (successful) {
 				watchable.notifyWatches(this, oldVal, newVal);
 			}			
-			return Constants.bool(successful);
+			return VncBoolean.of(successful);
 		}
 		else {
 			return False;

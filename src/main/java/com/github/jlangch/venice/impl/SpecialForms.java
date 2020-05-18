@@ -316,16 +316,14 @@ public class SpecialForms {
 						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
 						"  (def x (.: :user/complex 100 200))                     \n" +
 						"  (type x))                                                ",
-						"(do                                                      \n" +
-						"  (deftype :user/complex                                 \n" +
-						"           [real :long, imaginary :long]                 \n" +
-						"           (fn [t]                                       \n" +
-						"              (assert (pos? (:real t))                   \n" +
-						"                      \"real must be positive\")         \n" +
-						"              (assert (pos? (:imaginary t))              \n" +
-						"                       \"imaginary must be positive\"))) \n" +
-						"  (def x (.: :user/complex 100 200))                     \n" +
-						"  [(:real x) (:imaginary x)])                              ")
+						"(do                                                                           \n" +
+						"  (deftype :user/complex                                                      \n" +
+						"           [real :long, imaginary :long]                                      \n" +
+						"           (fn [t]                                                            \n" +
+						"              (assert (pos? (:real t)) \"real must be positive\")             \n" +
+						"              (assert (pos? (:imaginary t)) \"imaginary must be positive\"))) \n" +
+						"  (def x (.: :user/complex 100 200))                                          \n" +
+						"  [(:real x) (:imaginary x)])                                                   ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -342,25 +340,28 @@ public class SpecialForms {
 					.doc(
 						"Defines a new custom type wrapper based on a base type.")
 					.examples(
-						"(do                                                        \n" +
-						"  (deftype-of :user/email-address :string)                 \n" +
-						"  (def x (.: :user/email-address \"foo@foo.org\"))         \n" +
-						"  x)                                                         ",
-						"(do                                                        \n" +
-						"  (deftype-of :user/email-address :string)                 \n" +
-						"  (def x (.: :user/email-address \"foo@foo.org\"))         \n" +
-						"  (type x))                                                  ",
-						"(do                                                        \n" +
-						"  (deftype-of :user/email-address                          \n" +
-						"              :string                                      \n" +
-						"              (fn [e] (assert (str/valid-email-addr? e)    \n" +
-						"                              \"invalid email address\"))) \n" +
-						"  (def x (.: :user/email-address \"foo@foo.org\"))         \n" +
-						"  x)                                                         ",
-						"(do                                                        \n" +
-						"  (deftype-of :user/contract-id :long)                     \n" +
-						"  (def x (.: :user/contract-id 100000))                    \n" +
-						"  x)                                                         ")
+						"(do                                                           \n" +
+						"  (deftype-of :user/email-address :string)                    \n" +
+						"  (.: :user/email-address \"foo@foo.org\"))                     ",
+						"(do                                                           \n" +
+						"  (deftype-of :user/email-address :string)                    \n" +
+						"  (str \"Email: \" (.: :user/email-address \"foo@foo.org\")))   ",
+						"(do                                                           \n" +
+						"  (deftype-of :user/email-address :string)                    \n" +
+						"  (def x (.: :user/email-address \"foo@foo.org\"))            \n" +
+						"  [(type x) (supertype x)])                                     ",
+						"(do                                                                            \n" +
+						"  (deftype-of :user/email-address                                              \n" +
+						"              :string                                                          \n" +
+						"              (fn [e]                                                          \n" +
+						"                (assert (str/valid-email-addr? e) \"invalid email address\"))) \n" +
+						"  (.: :user/email-address \"foo@foo.org\"))                                      ",
+						"(do                                                           \n" +
+						"  (deftype-of :user/contract-id :long)                        \n" +
+						"  (.: :user/contract-id 100000))                                ",
+						"(do                                                           \n" +
+						"  (deftype-of :user/my-long :long)                            \n" +
+						"  (+ 10 (.: :user/my-long 100000)))                             ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;

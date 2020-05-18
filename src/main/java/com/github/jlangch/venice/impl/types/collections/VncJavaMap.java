@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -114,7 +115,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return Constants.bool(value.containsKey(key.convertToJavaObject()));
+		return VncBoolean.of(value.containsKey(key.convertToJavaObject()));
 	}
 
 	@Override

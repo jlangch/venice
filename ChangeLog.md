@@ -30,6 +30,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - special form `deftype` to support custom composable types
 - special form `deftype-of` to support custom wrapper types 
 
+### Fixed
+
+- PDF watermark color opacity: OpenPDF library changed behavior in one of 
+  the recent releases!
+
 
 
 ## [1.7.29] - 2020-05-14

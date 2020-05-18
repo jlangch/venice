@@ -33,8 +33,8 @@ import java.util.Map;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -1175,16 +1175,16 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return Constants.bool(((VncLong)op1).getValue() == 0L);
+					return VncBoolean.of(((VncLong)op1).getValue() == 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return Constants.bool(((VncInteger)op1).getValue() == 0);
+					return VncBoolean.of(((VncInteger)op1).getValue() == 0);
 				}
 				else if (Types.isVncDouble(op1)) {
-					return Constants.bool(((VncDouble)op1).getValue() == 0D);
+					return VncBoolean.of(((VncDouble)op1).getValue() == 0D);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return Constants.bool(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0);
+					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1216,16 +1216,16 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return Constants.bool(((VncLong)op1).getValue() > 0L);
+					return VncBoolean.of(((VncLong)op1).getValue() > 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return Constants.bool(((VncInteger)op1).getValue() > 0);
+					return VncBoolean.of(((VncInteger)op1).getValue() > 0);
 				}
 				else if (Types.isVncDouble(op1)) {
-					return Constants.bool(((VncDouble)op1).getValue() > 0D);
+					return VncBoolean.of(((VncDouble)op1).getValue() > 0D);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return Constants.bool(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0);
+					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1257,16 +1257,16 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return Constants.bool(((VncLong)op1).getValue() < 0L);
+					return VncBoolean.of(((VncLong)op1).getValue() < 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return Constants.bool(((VncInteger)op1).getValue() < 0);
+					return VncBoolean.of(((VncInteger)op1).getValue() < 0);
 				}
 				else if (Types.isVncDouble(op1)) {
-					return Constants.bool(((VncDouble)op1).getValue() < 0D);
+					return VncBoolean.of(((VncDouble)op1).getValue() < 0D);
 				}
 				else if (Types.isVncBigDecimal(op1)) {
-					return Constants.bool(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0);
+					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1296,10 +1296,10 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return Constants.bool(((VncLong)op1).getValue() % 2L == 0L);
+					return VncBoolean.of(((VncLong)op1).getValue() % 2L == 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return Constants.bool(((VncInteger)op1).getValue() % 2 == 0);
+					return VncBoolean.of(((VncInteger)op1).getValue() % 2 == 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1329,10 +1329,10 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return Constants.bool(((VncLong)op1).getValue() % 2L == 1L);
+					return VncBoolean.of(((VncLong)op1).getValue() % 2L == 1L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return Constants.bool(((VncInteger)op1).getValue() % 2 == 1);
+					return VncBoolean.of(((VncInteger)op1).getValue() % 2 == 1);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1559,28 +1559,28 @@ public class MathFunctions {
 
 				final List<VncVal> values = new ArrayList<>();
 
-				if (Constants.isTrue(zero_Q.apply(VncList.of(step)))) {
+				if (VncBoolean.isTrue(zero_Q.apply(VncList.of(step)))) {
 					throw new VncException("range: a step value must not be 0");
 				}
 
-				if (Constants.isTrue(MathFunctions.pos_Q.apply(VncList.of(step)))) {
-					if (Constants.isTrue(CoreFunctions.lt.apply(VncList.of(end, start)))) {
+				if (VncBoolean.isTrue(MathFunctions.pos_Q.apply(VncList.of(step)))) {
+					if (VncBoolean.isTrue(CoreFunctions.lt.apply(VncList.of(end, start)))) {
 						throw new VncException("range positive step: end must not be lower than start");
 					}
 
 					VncVal val = start;
-					while(Constants.isTrue(CoreFunctions.lt.apply(VncList.of(val, end)))) {
+					while(VncBoolean.isTrue(CoreFunctions.lt.apply(VncList.of(val, end)))) {
 						values.add(val);
 						val = add.apply(VncList.of(val, step));
 					}
 				}
 				else {
-					if (Constants.isTrue(CoreFunctions.gt.apply(VncList.of(end, start)))) {
+					if (VncBoolean.isTrue(CoreFunctions.gt.apply(VncList.of(end, start)))) {
 						throw new VncException("range negative step: end must not be greater than start");
 					}
 
 					VncVal val = start;
-					while(Constants.isTrue(CoreFunctions.gt.apply(VncList.of(val, end)))) {
+					while(VncBoolean.isTrue(CoreFunctions.gt.apply(VncList.of(val, end)))) {
 						values.add(val);
 						val = add.apply(VncList.of(val, step));
 					}

@@ -21,9 +21,9 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
+import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.io.Closeable;
 import java.io.Serializable;
@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.sandbox.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.DocForm;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -210,7 +211,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(NEWLINE_VAR);
 
 		// ansi terminal
-		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), Constants.bool(ansiTerminal), false));
+		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 
 		// set the load path
 		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));
@@ -584,7 +585,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "bound?": { // (bound? sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
-					return Constants.bool(env.isBound(sym));
+					return VncBoolean.of(env.isBound(sym));
 				}
 				
 				case "global-vars-count": { // (global-vars-count)
@@ -714,7 +715,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "if": 
 					final VncVal cond = evaluate(ast.second(), env);
-					if (Constants.isFalse(cond) || cond == Nil) {
+					if (VncBoolean.isFalse(cond) || cond == Nil) {
 						// eval false slot form
 						if (ast.size() > 3) {
 							orig_ast = ast.nth(3);
@@ -1440,8 +1441,8 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private boolean isFnConditionTrue(final VncVal result) {
 		return Types.isVncSequence(result) 
-				? Constants.isTrue(((VncSequence)result).first()) 
-				: Constants.isTrue(result);
+				? VncBoolean.isTrue(((VncSequence)result).first()) 
+				: VncBoolean.isTrue(result);
 	}
 
 	private void validateFnPreconditions(

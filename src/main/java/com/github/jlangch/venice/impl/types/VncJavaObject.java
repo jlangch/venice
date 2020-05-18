@@ -147,7 +147,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return Constants.bool(getMap().containsKey(key));
+		return VncBoolean.of(getMap().containsKey(key));
 	}
 
 	@Override

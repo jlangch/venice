@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
@@ -42,6 +42,7 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -511,9 +512,9 @@ public class SystemFunctions {
 				final String type = Coerce.toVncKeyword(args.first()).getValue();
 				final String osName = System.getProperty("os.name");
 				switch(type) {
-					case "windows": return Constants.bool(osName.startsWith("Windows"));
-					case "mac-osx": return Constants.bool(osName.startsWith("Mac OS X"));
-					case "linux":   return Constants.bool(osName.startsWith("LINUX"));
+					case "windows": return VncBoolean.of(osName.startsWith("Windows"));
+					case "mac-osx": return VncBoolean.of(osName.startsWith("Mac OS X"));
+					case "linux":   return VncBoolean.of(osName.startsWith("LINUX"));
 					default:        return False;
 				}
 			}
@@ -591,7 +592,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("sandboxed?", args, 0);
 
-				return Constants.bool(JavaInterop.isSandboxed());
+				return VncBoolean.of(JavaInterop.isSandboxed());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

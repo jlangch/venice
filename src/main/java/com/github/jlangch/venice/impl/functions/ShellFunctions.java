@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -270,7 +270,7 @@ public class ShellFunctions {
 					future_stdin.get();
 				}
 
-				if (exitCode != 0 && Constants.isTrue(opts.get(new VncKeyword(":throw-ex")))) {
+				if (exitCode != 0 && VncBoolean.isTrue(opts.get(new VncKeyword(":throw-ex")))) {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", cmd))) {
 						throw new ShellException(
 								String.format(

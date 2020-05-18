@@ -28,14 +28,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -56,6 +58,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 
 public class VncJsonWriter {
+	
 	public VncJsonWriter(
 			final JsonAppendableWriter writer,
 			final boolean decimalAsDouble
@@ -80,8 +83,14 @@ public class VncJsonWriter {
 		else if (Types.isVncConstant(val)) {
 			write_VncConstant(key, (VncConstant)val);
 		}
+		else if (Types.isVncBoolean(val)) {
+			write_VncBoolean(key, (VncBoolean)val);
+		}
 		else if (Types.isVncString(val)) {
 			write_VncString(key, (VncString)val);
+		}
+		else if (Types.isVncChar(val)) {
+			write_VncChar(key, (VncChar)val);
 		}
 		else if (Types.isVncInteger(val)) {
 			write_VncInteger(key, (VncInteger)val);
@@ -152,21 +161,29 @@ public class VncJsonWriter {
 			if (val == Constants.Nil) {
 				writer.nul();
 			}
-			else if (Constants.isTrue(val)) {
-				writer.value(true);
-			}
-			else if (Constants.isFalse(val)) {
-				writer.value(false);
-			}
 		}
 		else {
 			if (val == Constants.Nil) {
 				writer.nul(key);
 			}
-			else if (Constants.isTrue(val)) {
+		}
+	}
+
+
+	private void write_VncBoolean(final String key, final VncBoolean val) {
+		if (key == null) {
+			if (VncBoolean.isTrue(val)) {
+				writer.value(true);
+			}
+			else if (VncBoolean.isFalse(val)) {
+				writer.value(false);
+			}
+		}
+		else {
+			if (VncBoolean.isTrue(val)) {
 				writer.value(key, true);
 			}
-			else if (Constants.isFalse(val)) {
+			else if (VncBoolean.isFalse(val)) {
 				writer.value(key, false);
 			}
 		}
@@ -174,6 +191,16 @@ public class VncJsonWriter {
 
 	private void write_VncString(final String key, final VncString val) {
 		final String v = val.getValue();
+		if (key == null) {
+			writer.value(v);
+		}
+		else {
+			writer.value(key, v);
+		}
+	}
+
+	private void write_VncChar(final String key, final VncChar val) {
+		final String v = val.getValue().toString();
 		if (key == null) {
 			writer.value(v);
 		}

@@ -49,11 +49,11 @@ public class VncBoolean extends VncVal {
 	}
 	
 	public static boolean isTrue(final VncVal val) {
-		return (val instanceof VncBoolean) && ((VncBoolean)val).getValue() == Boolean.TRUE;
+		return (val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.TRUE);
 	}
 	
 	public static boolean isFalse(final VncVal val) {
-		return (val instanceof VncBoolean) && ((VncBoolean)val).getValue() == Boolean.FALSE;
+		return (val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.FALSE);
 	}
 	
 	@Override

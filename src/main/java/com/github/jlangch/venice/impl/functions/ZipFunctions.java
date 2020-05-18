@@ -23,8 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -633,7 +633,7 @@ public class ZipFunctions {
 												? null
 												: new FilenameFilter() {
 														public boolean accept(File dir, String name) {
-															return Constants.isTrue(
+															return VncBoolean.isTrue(
 																		filterFn.apply(
 																				VncList.of(
 																					new VncJavaObject(dir),
@@ -704,7 +704,7 @@ public class ZipFunctions {
 
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 
-					final boolean verbose = Constants.isTrue(options.get(new VncKeyword("verbose")));
+					final boolean verbose = VncBoolean.isTrue(options.get(new VncKeyword("verbose")));
 
 					if (Types.isVncByteBuffer(f)) {
 						Zipper.listZip(((VncByteBuffer)f).getBytes(), System.out, verbose);
@@ -1083,20 +1083,20 @@ public class ZipFunctions {
 					final VncVal f = args.first();
 
 					if (Types.isVncByteBuffer(f)) {
-						return Constants.bool(Zipper.isZipFile(((VncByteBuffer)f).getBytes()));
+						return VncBoolean.of(Zipper.isZipFile(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						return Constants.bool(Zipper.isZipFile(file));
+						return VncBoolean.of(Zipper.isZipFile(file));
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						return Constants.bool(Zipper.isZipFile(file));
+						return VncBoolean.of(Zipper.isZipFile(file));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						return Constants.bool(Zipper.isZipFile((InputStream)((VncJavaObject)f).getDelegate()));
+						return VncBoolean.of(Zipper.isZipFile((InputStream)((VncJavaObject)f).getDelegate()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -1137,20 +1137,20 @@ public class ZipFunctions {
 					final VncVal f = args.first();
 
 					if (Types.isVncByteBuffer(f)) {
-						return Constants.bool(Zipper.isGZipFile(((VncByteBuffer)f).getBytes()));
+						return VncBoolean.of(Zipper.isGZipFile(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						return Constants.bool(Zipper.isGZipFile(file));
+						return VncBoolean.of(Zipper.isGZipFile(file));
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						return Constants.bool(Zipper.isGZipFile(file));
+						return VncBoolean.of(Zipper.isGZipFile(file));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						return Constants.bool(Zipper.isGZipFile((InputStream)((VncJavaObject)f).getDelegate()));
+						return VncBoolean.of(Zipper.isGZipFile((InputStream)((VncJavaObject)f).getDelegate()));
 					}
 					else {
 						throw new VncException(String.format(

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -47,7 +48,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 		if (args.size() == 1) {
 			return get(args.first());		
 		}
-		else if (Constants.isTrue(containsKey(first))) {
+		else if (VncBoolean.isTrue(containsKey(first))) {
 			return get(args.first());
 		}
 		else {

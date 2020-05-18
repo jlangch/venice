@@ -28,7 +28,6 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.functions.MathOp;
 import com.github.jlangch.venice.impl.functions.Numeric;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
@@ -89,9 +88,7 @@ public class Types {
 	}
 
 	public static boolean isVncBoolean(final VncVal val) {
-		return Constants.isTrue(val)
-				|| Constants.isFalse(val) 
-				|| (val != null && (val instanceof VncBoolean));
+		return val != null && (val instanceof VncBoolean);
 	}
 
 	public static boolean isVncAtom(final VncVal val) {
@@ -350,7 +347,7 @@ public class Types {
 
 	public static boolean _equal_Q(VncVal a, VncVal b) {
 		if (Types.isVncNumber(a) && Types.isVncNumber(b)) {
-			return Constants.isTrue(Numeric.calc(MathOp.EQU, a, b));
+			return VncBoolean.isTrue(Numeric.calc(MathOp.EQU, a, b));
 		}
 		else if (Types.isVncString(a) && Types.isVncChar(b)) {
 			return ((VncString)a).getValue().equals(((VncChar)b).getValue().toString());

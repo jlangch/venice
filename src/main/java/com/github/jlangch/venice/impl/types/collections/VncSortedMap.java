@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -152,7 +153,7 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return Constants.bool(value.containsKey(key));
+		return VncBoolean.of(value.containsKey(key));
 	}
 
 	@Override

@@ -23,9 +23,9 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
+import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -43,9 +43,8 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
-import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -166,7 +165,7 @@ public class PdfFunctions {
 				final VncVal color = options.get(new VncKeyword("color", new VncString("#000000"))); 
 				final VncDouble opacity = getVncDoubleOption("opacity", options, 0.4); 
 				final VncDouble angle = getVncDoubleOption("angle", options, 45.0); 
-				final VncConstant overContent = getBooleanOption("over-content", options, true); 
+				final VncBoolean overContent = getBooleanOption("over-content", options, true); 
 				final VncLong skipTopPages = getVncLongOption("skip-top-pages", options, 0); 
 				final VncLong skipBottomPages = getVncLongOption("skip-bottom-pages", options, 0); 
 
@@ -177,7 +176,7 @@ public class PdfFunctions {
 				final Color color_ = HtmlColor.getColor(Coerce.toVncString(color).getValue());
 				final float opacity_= Coerce.toVncDouble(opacity).getValue().floatValue();
 				final float angle_= Coerce.toVncDouble(angle).getValue().floatValue();
-				final boolean overContent_ = Constants.isTrue(Coerce.toVncBoolean(overContent));
+				final boolean overContent_ = VncBoolean.isTrue(overContent);
 				final int skipTopPages_ = Coerce.toVncLong(skipTopPages).getValue().intValue();
 				final int skipBottomPages_ = Coerce.toVncLong(skipBottomPages).getValue().intValue();
 
@@ -218,20 +217,20 @@ public class PdfFunctions {
 				
 				// com.github.librepdf:openpdf:xxx
 				if (!ReflectionAccessor.classExists("com.lowagie.text.Anchor")) {
-					return Constants.False;
+					return VncBoolean.False;
 				}
 				
 				// org.xhtmlrenderer:flying-saucer-core:xxx
 				if (!ReflectionAccessor.classExists("org.xhtmlrenderer.DefaultCSSMarker")) {
-					return Constants.False;
+					return VncBoolean.False;
 				}
 				
 				// org.xhtmlrenderer:flying-saucer-pdf-openpdf:xxx
 				if (!ReflectionAccessor.classExists("org.xhtmlrenderer.pdf.AbstractFormField")) {
-					return Constants.False;
+					return VncBoolean.False;
 				}
 
-				return Constants.True;
+				return VncBoolean.True;
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -437,7 +436,7 @@ public class PdfFunctions {
 					final VncMap options = VncHashMap.ofAll(args.slice(1));
 					final VncDouble fontSize = getVncDoubleOption("font-size", options, 9.0); 
 					final VncLong fontWeight = getVncLongOption("font-weight", options, 200); 
-					final VncConstant fontMonoSpace = getBooleanOption("font-monospace", options, false); 
+					final VncBoolean fontMonoSpace = getBooleanOption("font-monospace", options, false); 
 
 					final List<List<String>> pages = splitIntoPages(text)
 														.stream()
@@ -448,7 +447,7 @@ public class PdfFunctions {
 					data.put("pages", pages);
 					data.put("fontSize", fontSize.getValue().toString());
 					data.put("fontWeight", fontWeight.getValue().toString());
-					data.put("fontFamiliy", Constants.isTrue(fontMonoSpace) ? "Courier" : "Helvetica, Sans-Serif");
+					data.put("fontFamiliy", VncBoolean.isTrue(fontMonoSpace) ? "Courier" : "Helvetica, Sans-Serif");
 
 					final String template = loadText2PdfTemplate();
 					
@@ -580,12 +579,12 @@ public class PdfFunctions {
 		}
 	}
 	
-	private static VncConstant getBooleanOption(final String optName, final VncMap options, final boolean defaultVal) {
-		final VncVal val = options.get(new VncKeyword(optName), Constants.bool(defaultVal));
-		if (Constants.isTrue(val)) {
+	private static VncBoolean getBooleanOption(final String optName, final VncMap options, final boolean defaultVal) {
+		final VncVal val = options.get(new VncKeyword(optName), VncBoolean.of(defaultVal));
+		if (VncBoolean.isTrue(val)) {
 			return True;
 		}
-		else if (Constants.isFalse(val)) {
+		else if (VncBoolean.isFalse(val)) {
 			return False;
 		}
 		else {

@@ -43,6 +43,7 @@ import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -388,7 +389,7 @@ public class JsonFunctions {
 		};
 
 	private static boolean isTrueOption(final VncHashMap options, final String optionName) {
-		return Constants.isTrue(options.get(new VncKeyword(optionName),Constants.False)); 
+		return VncBoolean.isTrue(options.get(new VncKeyword(optionName),VncBoolean.False)); 
 	}
 	
 	private static VncFunction getFunctionOption(final VncHashMap options, final String optionName) {

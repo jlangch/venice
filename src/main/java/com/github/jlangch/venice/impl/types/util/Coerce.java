@@ -26,9 +26,9 @@ import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
-import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -197,9 +197,9 @@ public class Coerce {
 		}
 	}
 	
-	public static VncConstant toVncBoolean(final VncVal val) {
+	public static VncBoolean toVncBoolean(final VncVal val) {
 		if (val == null || Types.isVncBoolean(val)) {
-			return (VncConstant)val;
+			return (VncBoolean)val;
 		}
 		else {
 			throw new VncException(String.format(

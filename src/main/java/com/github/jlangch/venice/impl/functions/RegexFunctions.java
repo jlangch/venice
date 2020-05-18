@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -120,7 +120,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
-				return Constants.bool(m.find());
+				return VncBoolean.of(m.find());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -185,7 +185,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
-				return Constants.bool(m.matches());
+				return VncBoolean.of(m.matches());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;

@@ -23,9 +23,9 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.types.Constants.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.Constants.True;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
+import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -296,7 +296,7 @@ public class IOFunctions {
 									"Function 'io/file-ext?' does not allow %s as f");
 
 				final String ext = Coerce.toVncString(args.second()).getValue();
-				return Constants.bool(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
+				return VncBoolean.of(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -315,7 +315,7 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file?", args, 1);
 
-				return Constants.bool(Types.isVncJavaObject(args.first(), File.class));
+				return VncBoolean.of(Types.isVncJavaObject(args.first(), File.class));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -338,7 +338,7 @@ public class IOFunctions {
 									args.first(),
 									"Function 'io/exists-file?' does not allow %s as x");
 
-				return Constants.bool(f.isFile());
+				return VncBoolean.of(f.isFile());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -363,7 +363,7 @@ public class IOFunctions {
 									args.first(),
 									"Function 'io/exists-dir?' does not allow %s as f");
 
-				return Constants.bool(f.isDirectory());
+				return VncBoolean.of(f.isDirectory());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -388,7 +388,7 @@ public class IOFunctions {
 									args.first(),
 									"Function 'io/file-can-read?' does not allow %s as x");
 
-				return Constants.bool((f.isFile() || f.isDirectory()) && f.canRead());
+				return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canRead());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -413,7 +413,7 @@ public class IOFunctions {
 									args.first(),
 									"Function 'io/file-can-write?' does not allow %s as x");
 
-				return Constants.bool((f.isFile() || f.isDirectory()) && f.canWrite());
+				return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canWrite());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -438,7 +438,7 @@ public class IOFunctions {
 									args.first(),
 									"Function 'io/file-can-execute?' does not allow %s as x");
 
-				return Constants.bool((f.isFile() || f.isDirectory()) && f.canExecute());
+				return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canExecute());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -463,7 +463,7 @@ public class IOFunctions {
 									args.first(),
 									"Function 'io/file-hidden?' does not allow %s as x");
 
-				return Constants.bool((f.isFile() || f.isDirectory()) && f.isHidden());
+				return VncBoolean.of((f.isFile() || f.isDirectory()) && f.isHidden());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -614,7 +614,7 @@ public class IOFunctions {
 
 					final List<VncVal> files = new ArrayList<>();
 					for(File f : dir.listFiles()) {
-						if (filterFn == null || Constants.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
+						if (filterFn == null || VncBoolean.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
 							files.add(new VncJavaObject(f));
 						}
 					}
@@ -661,7 +661,7 @@ public class IOFunctions {
 				    Files.walk(dir.toPath())
 				    	 .map(Path::toFile)
 				    	 .forEach(f -> {
-							if (filterFn == null || Constants.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
+							if (filterFn == null || VncBoolean.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
 								files.add(new VncJavaObject(f));
 							}
 				    	 });						
@@ -755,7 +755,7 @@ public class IOFunctions {
 										: Coerce.toVncJavaObject(destVal, File.class);
 
 					final List<CopyOption> copyOptions = new ArrayList<>();
-					if (Constants.isTrue(replaceOpt)) {
+					if (VncBoolean.isTrue(replaceOpt)) {
 						copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
 					}
 					
@@ -1067,7 +1067,7 @@ public class IOFunctions {
 
 						validateReadableFile(file);
 
-						if (Constants.isTrue(binary)) {
+						if (VncBoolean.isTrue(binary)) {
 							final byte[] data = Files.readAllBytes(file.toPath());
 							return new VncByteBuffer(ByteBuffer.wrap(data));
 						}
@@ -1083,7 +1083,7 @@ public class IOFunctions {
 					else if (Types.isVncJavaObject(arg, InputStream.class)) {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
-						if (Constants.isTrue(binary)) {
+						if (VncBoolean.isTrue(binary)) {
 							final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 							return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 						}
@@ -1100,7 +1100,7 @@ public class IOFunctions {
 						try (BufferedReader brd = new BufferedReader(rd)) {
 							final String s = brd.lines().collect(Collectors.joining(System.lineSeparator()));
 	
-							if (Constants.isTrue(binary)) {
+							if (VncBoolean.isTrue(binary)) {
 								final VncVal encVal = options.get(new VncKeyword("encoding"));
 								final String encoding = encoding(encVal);
 	
@@ -1174,7 +1174,7 @@ public class IOFunctions {
 					final List<OpenOption> openOptions = new ArrayList<>();
 					openOptions.add(StandardOpenOption.CREATE);
 					openOptions.add(StandardOpenOption.WRITE);
-					openOptions.add(Constants.isTrue(append) 
+					openOptions.add(VncBoolean.isTrue(append) 
 										? StandardOpenOption.APPEND 
 										: StandardOpenOption.TRUNCATE_EXISTING);
 
@@ -1293,7 +1293,7 @@ public class IOFunctions {
 
 								byte data[] = output.toByteArray();
 
-								return Constants.isTrue(binary)
+								return VncBoolean.isTrue(binary)
 										? new VncByteBuffer(ByteBuffer.wrap(data))
 										: new VncString(new String(data, encoding));
 							}
@@ -1430,7 +1430,7 @@ public class IOFunctions {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					final VncVal binary = options.get(new VncKeyword("binary"));
 
-					if (Constants.isTrue(binary)) {
+					if (VncBoolean.isTrue(binary)) {
 						final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 						return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
 					}
@@ -1489,7 +1489,7 @@ public class IOFunctions {
 					final VncVal encVal = options.get(new VncKeyword("encoding"));
 					final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
 					final VncVal flushVal = options.get(new VncKeyword("flush"));
-					final boolean flush = Constants.isTrue(flushVal);
+					final boolean flush = VncBoolean.isTrue(flushVal);
 
 					byte[] data;
 

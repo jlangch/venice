@@ -28,6 +28,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -97,7 +98,7 @@ public class MetaUtil {
 			return false;
 		}
 		else if (meta instanceof VncHashMap) {
-			return Constants.isTrue(((VncHashMap)meta).get(PRIVATE));
+			return VncBoolean.isTrue(((VncHashMap)meta).get(PRIVATE));
 		}
 		else {
 			return false;

@@ -44,10 +44,10 @@ public class VncConstant extends VncVal {
 		if (this == Constants.Nil) {
 			return new VncKeyword(":core/nil");
 		}
-		else if (Constants.isTrue(this)) {
+		else if (VncBoolean.isTrue(this)) {
 			return new VncKeyword(":core/boolean");
 		}
-		else if (Constants.isFalse(this)) {
+		else if (VncBoolean.isFalse(this)) {
 			return new VncKeyword(":core/boolean");
 		}
 		else {
@@ -74,10 +74,10 @@ public class VncConstant extends VncVal {
 		if (this == Constants.Nil) {
 			return null;
 		}
-		else if (Constants.isTrue(this)) {
+		else if (VncBoolean.isTrue(this)) {
 			return Boolean.TRUE;
 		}
-		else if (Constants.isFalse(this)) {
+		else if (VncBoolean.isFalse(this)) {
 			return Boolean.FALSE;
 		}
 		else {
@@ -94,7 +94,7 @@ public class VncConstant extends VncVal {
 			return 1;
 		}
 		else if (Types.isVncBoolean(this) && Types.isVncBoolean(o)) {
-			return Long.valueOf(Constants.isFalse(this) ? 0L : 1L).compareTo(Constants.isFalse(o) ? 0L : 1L);				
+			return Long.valueOf(VncBoolean.isFalse(this) ? 0L : 1L).compareTo(VncBoolean.isFalse(o) ? 0L : 1L);				
 		}
 
 		return super.compareTo(o);

@@ -87,7 +87,7 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public VncVal containsKey(final VncKeyword key) {
-		return Constants.bool(key != null && ThreadLocalMap.containsKey(key));
+		return VncBoolean.of(key != null && ThreadLocalMap.containsKey(key));
 	}
 
 	public VncThreadLocal assoc(final VncVal... kvs) {

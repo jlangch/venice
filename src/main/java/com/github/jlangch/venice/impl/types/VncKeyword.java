@@ -53,7 +53,7 @@ public class VncKeyword extends VncString implements IVncFunction {
 			if (args.size() == 1) {
 				return map.get(this);
 			}
-			else if (Constants.isTrue(map.containsKey(this))) {
+			else if (VncBoolean.isTrue(map.containsKey(this))) {
 				return map.get(this);
 			}
 			else {
