@@ -57,6 +57,8 @@
 
 (ns geoip)
 
+(import :java.net.Inet4Address)
+(import :java.net.Inet6Address)
 
 ;; MaxMind GEO IP database download URL.
 ;;
@@ -204,7 +206,7 @@
      :examples '(
            """
            (do
-             (def rv (geoip/ip-to-country-resolver "resources/geoip.zip"))
+             (def rv (geoip/ip-to-country-resolver "resources/geoip-country.zip"))
              (rv "91.223.55.1")) ;; => { :country-name "Poland"
                                  ;;      :country-iso "PL" }
            """
@@ -414,10 +416,10 @@
 
   geoip/ip4? [ip]
 
-  (case (type ip)
-    :string                 (str/contains? ip ".")
-    :java.net.Inet4Address  true
-    :java.net.Inet6Address  false
+  (cond
+    (string? ip)               (str/contains? ip ".")
+    (instance? :Inet4Address)  true
+    (instance? :Inet6Address)  false
     false))
 
 
@@ -430,10 +432,10 @@
 
   geoip/ip6? [ip]
 
-  (case (type ip)
-    :string                 (str/contains? ip ":")
-    :java.net.Inet4Address  false
-    :java.net.Inet6Address  true
+  (cond
+    (string? ip)               (str/contains? ip ":")
+    (instance? :Inet4Address)  false
+    (instance? :Inet6Address)  true
     false))
 
 
