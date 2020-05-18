@@ -29,7 +29,6 @@ import com.lowagie.text.Element;
 import com.lowagie.text.Image;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 
@@ -103,20 +102,21 @@ public class PdfWatermark {
 			final int startPage = 1 + skipTopPages;
 			final int endPage = numPages - skipBottomPages;
 
-			final PdfGState gState = new PdfGState();
-			gState.setFillOpacity(opacity);
-			gState.setStrokeOpacity(opacity);
-
 			final BaseFont baseFont = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
-								
+
+			final Color watermarkTextColor = new Color(
+													color.getRed(), 
+													color.getGreen(), 
+													color.getBlue(),
+													(int)(opacity * 255));
+
 			for(int page=startPage; page<=endPage; page++) {
 				final PdfContentByte cb = overContent 
 											? stamper.getOverContent(page) 
 											: stamper.getUnderContent(page);
 				
 				cb.saveState();
-				cb.setGState(gState);
-				cb.setColorFill(color);
+				cb.setColorFill(watermarkTextColor);
 				cb.beginText();
 				cb.setFontAndSize(baseFont, fontSize);
 				cb.setCharacterSpacing(fontCharacterSpacing);
