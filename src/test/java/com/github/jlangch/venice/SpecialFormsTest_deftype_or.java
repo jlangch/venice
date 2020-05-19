@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ public class SpecialFormsTest_deftype_or {
 				"  (deftype-or :user/color :red :green :blue)             \n" +
 				"  (doc :user/color))                                       ";
 
-		//assertEquals("\"foo@foo.org\"", venice.eval(script));					
+		assertNotNull(venice.eval(script));					
 	}
 	
 	@Test

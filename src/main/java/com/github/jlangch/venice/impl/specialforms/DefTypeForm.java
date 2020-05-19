@@ -153,7 +153,7 @@ public class DefTypeForm {
 						choiceTypes.add(qualified);
 					}
 					else {
-						choiceValues.add(k);
+						choiceValues.add(v);
 					}
 				}
 

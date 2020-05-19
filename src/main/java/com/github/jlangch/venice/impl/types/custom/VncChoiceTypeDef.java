@@ -57,10 +57,9 @@ public class VncChoiceTypeDef {
 	}
 
 	public VncList values() {
-		final VncList list = new VncList();
-		list.addAllAtEnd(choiceTypes.toVncList());
-		list.addAllAtEnd(choiceValues.toVncList());
-		return list;
+		return new VncList()
+					.addAllAtEnd(choiceTypes.toVncList())
+					.addAllAtEnd(choiceValues.toVncList());
 	}
 
 
