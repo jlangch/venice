@@ -30,15 +30,27 @@ import org.junit.jupiter.api.Test;
 public class SpecialFormsTest_deftype_or {
 		
 	@Test
-	public void test_deftype_or() {
+	public void test_deftype_or_1() {
 		final Venice venice = new Venice();
 
 		final String script =
 				"(do                                                      \n" +
 				"  (deftype-or :user/color :red :green :blue)             \n" +
-				"  (pr-str x))                                              ";
+				"  (doc :user/color))                                       ";
 
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
+		//assertEquals("\"foo@foo.org\"", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_or_2() {
+		final Venice venice = new Venice();
+	
+		final String script =
+				"(do                                                      \n" +
+				"  (deftype-or :user/numbers 1 2 3)            			  \n" +
+				"  (doc :user/color))                                       ";
+	
+		//assertEquals("\"foo@foo.org\"", venice.eval(script));					
 	}
 
 }
