@@ -22,9 +22,11 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.CustomTypeDefRegistry;
@@ -34,9 +36,12 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeFieldDef;
@@ -113,6 +118,57 @@ public class DefTypeForm {
 		return qualifiedType;
 	}
 
+	public static VncVal defineCustomChoiceType(
+			final VncKeyword type,
+			final VncList choiceVals,
+			final CustomTypeDefRegistry registry,
+			final CustomWrappableTypes wrappableTypes
+	) {
+		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+
+		final Set<VncVal> choiceTypes = new HashSet<>();
+		final Set<VncVal> choiceValues = new HashSet<>();
+		
+		for (VncVal v : choiceVals.getList()) {
+			if (Types.isVncKeyword(v)) {
+				final VncKeyword k = (VncKeyword)v;		
+				
+				if (Namespaces.isQualified(k)) {
+					if (registry.existsType(k)) {
+						choiceTypes.add(k);
+					}
+					else {
+						throw new VncException(String.format(
+								"The type :%s is not defined.", 
+								k.getValue())); 
+					}
+				}
+				else {
+					final VncKeyword qualified = Types.qualify(Namespaces.NS_CORE, k);
+					if (registry.existsType(qualified)) {
+						choiceTypes.add(qualified);
+					}
+					else {
+						choiceValues.add(k);
+					}
+				}
+
+			}
+			else {
+				choiceValues.add(v);
+			}
+		}
+		
+		registry.addChoiceType(
+					new VncChoiceTypeDef(
+							qualifiedType, 
+							VncHashSet.ofAll(choiceTypes), 
+							VncHashSet.ofAll(choiceValues)));
+		
+		
+		return qualifiedType;
+	}
+
 	public static VncVal createType(
 			final List<VncVal> args, 
 			final CustomTypeDefRegistry registry
@@ -133,7 +189,7 @@ public class DefTypeForm {
 		}
 		
 		throw new VncException(String.format(
-				"the custom type :%s is not defined.", 
+				"The custom type :%s is not defined.", 
 				qualifiedType.getValue())); 
 	}
 
@@ -144,7 +200,7 @@ public class DefTypeForm {
 	) {
 		if (typeDef.count() != typeArgs.size()) {
 			throw new VncException(String.format(
-					"deftype: the type :%s requires %d args. %d have been passed", 
+					"The custom type :%s requires %d args. %d have been passed", 
 					typeDef.getType().getValue(), 
 					typeDef.count(),
 					typeArgs.size())); 
@@ -189,8 +245,8 @@ public class DefTypeForm {
 		
 		if (!fieldDef.getType().equals(argType)) {
 			throw new VncException(String.format(
-					"deftype: the type :%s requires arg %d of type :%s "
-						+ "instead the passed :%s", 
+					"The type :%s requires arg %d of type :%s "
+						+ "instead of the passed :%s", 
 					type.getValue(), 
 					fieldDef.getIndex() + 1,
 					fieldDef.getType().getValue(),

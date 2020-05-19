@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncTinyList;
+import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -98,6 +99,16 @@ public class DocForm {
 			if (typeDef.getValidationFn() != null) {
 				sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
 			}
+			
+			return new VncString(sb.toString());
+		}
+		else if (typeDefRegistry.existsChoiceType(type)) {
+			final VncChoiceTypeDef typeDef = typeDefRegistry.getChoiceType(type);
+			final StringBuilder sb = new StringBuilder();
+			
+			sb.append(String.format("Custom choice type :%s\n", type.getValue()));
+			sb.append("Values: \n");
+			typeDef.values().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
 			
 			return new VncString(sb.toString());
 		}

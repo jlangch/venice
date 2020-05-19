@@ -236,8 +236,8 @@ public class VncCustomType extends VncMap {
 
 	
 		
-    private static final long serialVersionUID = -1848883965231344442L;
-    private final VncKeyword type;
-    private final VncCustomTypeDef typeDef;
-    private final VncMap values;
+	private static final long serialVersionUID = -1848883965231344442L;
+	private final VncKeyword type;
+	private final VncCustomTypeDef typeDef;
+	private final VncMap values;
 }

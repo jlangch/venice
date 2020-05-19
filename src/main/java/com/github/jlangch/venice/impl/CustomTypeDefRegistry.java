@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
@@ -45,6 +46,11 @@ public class CustomTypeDefRegistry {
 		wrappedTypes.put(typeDef.getType(), typeDef);
 	}
 
+	public void addChoiceType(final VncChoiceTypeDef typeDef) {
+		Objects.requireNonNull(typeDef);
+		choiceTypes.put(typeDef.getType(), typeDef);
+	}
+
 	public VncCustomTypeDef getCustomType(final VncKeyword type) {
 		Objects.requireNonNull(type);
 		return customTypes.get(type);
@@ -54,7 +60,19 @@ public class CustomTypeDefRegistry {
 		Objects.requireNonNull(type);
 		return wrappedTypes.get(type);
 	}
-	
+
+	public VncChoiceTypeDef getChoiceType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return choiceTypes.get(type);
+	}
+
+	public boolean existsType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return existsCustomType(type) 
+					|| existsWrappedType(type) 
+					|| existsChoiceType(type);
+	}
+
 	public boolean existsCustomType(final VncKeyword type) {
 		Objects.requireNonNull(type);
 		return customTypes.get(type) != null;
@@ -63,6 +81,11 @@ public class CustomTypeDefRegistry {
 	public boolean existsWrappedType(final VncKeyword type) {
 		Objects.requireNonNull(type);
 		return wrappedTypes.get(type) != null;
+	}
+	
+	public boolean existsChoiceType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return choiceTypes.get(type) != null;
 	}
 	
 	public VncCustomTypeDef removeCustomType(final VncKeyword type) {
@@ -74,15 +97,22 @@ public class CustomTypeDefRegistry {
 		Objects.requireNonNull(type);
 		return wrappedTypes.remove(type);
 	}
+	
+	public VncChoiceTypeDef removeChoiceType(final VncKeyword type) {
+		Objects.requireNonNull(type);
+		return choiceTypes.remove(type);
+	}
 
 	public void clear() {
 		customTypes.clear();
 		wrappedTypes.clear();
+		choiceTypes.clear();
 	}
 	
 
 	private final Map<VncKeyword, VncCustomTypeDef> customTypes = new ConcurrentHashMap<>();
 	private final Map<VncKeyword, VncWrappingTypeDef> wrappedTypes = new ConcurrentHashMap<>();
+	private final Map<VncKeyword, VncChoiceTypeDef> choiceTypes = new ConcurrentHashMap<>();
 	
 	
 }

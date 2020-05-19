@@ -1,8 +1,8 @@
-/*   __    __         _
+/*   __	__		 _
  *   \ \  / /__ _ __ (_) ___ ___ 
- *    \ \/ / _ \ '_ \| |/ __/ _ \
- *     \  /  __/ | | | | (_|  __/
- *      \/ \___|_| |_|_|\___\___|
+ *	\ \/ / _ \ '_ \| |/ __/ _ \
+ *	 \  /  __/ | | | | (_|  __/
+ *	  \/ \___|_| |_|_|\___\___|
  *
  *
  * Copyright 2017-2020 Venice
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,18 +43,18 @@ public class VncCustomTypeDef {
 	}
 
 
-    public VncKeyword getType() {
+	public VncKeyword getType() {
 		return type;
 	}
  
-    public VncCustomTypeFieldDef getFieldDef(final int index) {
-    	if (index >= 0 && index < fieldDefs.size()) {
-    		return fieldDefs.get(index);
-    	}
-    	else {
+	public VncCustomTypeFieldDef getFieldDef(final int index) {
+		if (index >= 0 && index < fieldDefs.size()) {
+			return fieldDefs.get(index);
+		}
+		else {
 			throw new VncException(String.format(
 					"deftype: field def index %d out of bounds.", index)); 
-    	}
+		}
 	}
 
 	public List<VncCustomTypeFieldDef> getFieldDefs() {
@@ -65,18 +65,18 @@ public class VncCustomTypeDef {
 		return validationFn;
 	}
 	
-    public int count() {
+	public int count() {
 		return fieldDefs.size();
 	}
 
-    public void validate(final VncMap data) {
+	public void validate(final VncMap data) {
 		if (validationFn != null) {
 			validationFn.apply(VncList.of(data));
 		}
-    }
-    
+	}
+	
 
 	private final VncKeyword type;
-    private final List<VncCustomTypeFieldDef> fieldDefs;
-    private final VncFunction validationFn;
+	private final List<VncCustomTypeFieldDef> fieldDefs;
+	private final VncFunction validationFn;
 }

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 
-public class SpecialFormsTest_CustomTypes {
+public class SpecialFormsTest_deftype {
 	
 	@Test
 	public void test_deftype() {
@@ -138,74 +138,4 @@ public class SpecialFormsTest_CustomTypes {
 
 		assertThrows(AssertionException.class, () -> new Venice().eval(script));
 	}
-	
-	@Test
-	public void test_deftype_of() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype-of :user/email-address :string)               \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-				"  (pr-str x))                                              ";
-
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_of_type() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype-of :user/email-address :string)               \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-				"  (pr-str (type x)))                                       ";
-
-		assertEquals(":user/email-address", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_of_supertype() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype-of :user/email-address :string)               \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-				"  (pr-str (supertype x)))                                  ";
-
-		assertEquals(":core/string", venice.eval(script));					
-	}
-
-	@Test
-	public void test_deftype_of_validation_OK() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                            \n" +
-				"  (deftype-of :user/email-address                              \n" +
-				"              :string                                          \n" +
-				"              (fn [e] (assert (str/valid-email-addr? e)        \n" +
-				"                              \"invalid email address\")))     \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))             \n" +
-				"  (pr-str x))                                                    ";
-
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
-	}
-
-	@Test
-	public void test_deftype_of_validation_FAILED() {
-		final String script =
-				"(do                                                            \n" +
-				"  (deftype-of :user/email-address                              \n" +
-				"              :string                                          \n" +
-				"              (fn [e] (assert (str/valid-email-addr? e)        \n" +
-				"                              \"invalid email address\")))     \n" +
-				"  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
-				"  (pr-str x))                                                    ";
-
-		assertThrows(AssertionException.class, () -> new Venice().eval(script));
-	}
-
 }

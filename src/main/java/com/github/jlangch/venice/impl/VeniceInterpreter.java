@@ -358,6 +358,19 @@ public class VeniceInterpreter implements Serializable  {
 									wrappableTypes);
 					}
 				}
+				
+				case "deftype-or": { // (deftype-of type base-type*)
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype-or", ast))) {
+						final VncKeyword type = Coerce.toVncKeyword(ast.second());
+						final VncList choiceVals = ast.slice(2);
+
+						return DefTypeForm.defineCustomChoiceType(
+									type, 
+									choiceVals, 
+									typeDefRegistry,
+									wrappableTypes);
+					}
+				}
 
 				case ".:": { // (.: type args*)
 					final List<VncVal> args = new ArrayList<>();
