@@ -31,6 +31,13 @@ public class VncWrappingTypeDef {
 
 	public VncWrappingTypeDef(
 			final VncKeyword type,
+			final VncKeyword baseType
+	) {
+		this(type, baseType, null);
+	}
+
+	public VncWrappingTypeDef(
+			final VncKeyword type,
 			final VncKeyword baseType,
 			final VncFunction validationFn
 	) {

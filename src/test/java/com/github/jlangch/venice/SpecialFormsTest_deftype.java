@@ -41,7 +41,7 @@ public class SpecialFormsTest_deftype {
 
 		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
 	}
-	
+
 	@Test
 	public void test_deftype_access_fields() {
 		final Venice venice = new Venice();
@@ -82,7 +82,55 @@ public class SpecialFormsTest_deftype {
 	
 		assertEquals("[[100 200] 400]", venice.eval(script));					
 	}
+
 	
+	@Test
+	public void test_deftype_nested_complex() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              \n" +
+				"  (ns foo)                                                       \n" +
+				"                                                                 \n" +
+				"  (deftype-of :check-number :integer)                            \n" +
+				"                                                                 \n" +
+				"  (deftype-of :card-number :string)                              \n" +
+				"                                                                 \n" +
+				"  (deftype-or :card-type :mastercard :visa)                      \n" +
+				"                                                                 \n" +
+				"  (deftype :credit-card [type    :card-type                      \n" +
+				"                         number  :card-number])                  \n" +
+				"                                                                 \n" +
+				"  (deftype :check [number :check-number])                        \n" +
+				"                                                                 \n" +
+				"  (deftype-of :payment-amount :decimal)                          \n" +
+				"                                                                 \n" +
+				"  (deftype-or :payment-currency :CHF :EUR)                       \n" +
+				"                                                                 \n" +
+				"  (deftype-or :payment-method :cash                              \n" +
+				"                              :check                             \n" +
+				"                              :credit-card)                      \n" +
+				"                                                                 \n" +
+				"  (deftype :payment [amount    :payment-amount                   \n" +
+				"                     currency  :payment-currency                 \n" +
+				"                     method    :payment-method ])                \n" +
+				"                                                                 \n" +
+				"  (def payment (.: :payment                                      \n" +
+				"               (.: :payment-amount 2000.0M)                      \n" +
+				"               (.: :payment-currency :CHF)                       \n" +
+				"               (.: :payment-method                               \n" +
+				"                      (.: :credit-card                           \n" +
+				"                             (.: :card-type :mastercard)         \n" +
+				"                             (.: :card-number \"123-4567\")))))  \n" +
+				"                                                                 \n" +
+				"  (pr-str [ (:amount payment)                                    \n" +
+				"            (:currency payment)                                  \n" +
+				"            (-> payment :method :number)                         \n" +
+				"            (-> payment :method :type) ]))                         ";
+
+		assertEquals("[2000.0M \"CHF\" \"123-4567\" \"mastercard\"]", venice.eval(script));					
+	}
+
 	@Test
 	public void test_deftype_type() {
 		final Venice venice = new Venice();

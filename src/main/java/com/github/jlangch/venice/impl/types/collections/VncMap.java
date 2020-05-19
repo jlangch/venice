@@ -31,13 +31,22 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
 public abstract class VncMap extends VncCollection implements IVncFunction {
 	
-	public VncMap(VncVal meta) {
+	public VncMap(final VncVal meta) {
 		super(meta);
 	}
+
+	public VncMap(
+			final VncWrappingTypeDef wrappingTypeDef,
+			final VncVal meta
+	) {
+		super(wrappingTypeDef, meta);
+	}
+
 
 	@Override
 	public VncVal apply(final VncList args) {

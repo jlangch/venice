@@ -320,7 +320,7 @@ public class SpecialForms {
 						"  (type x))                                                ",
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
-						"  (deftype :complex                                                          \n" +
+						"  (deftype :complex                                                           \n" +
 						"           [real :long, imaginary :long]                                      \n" +
 						"           (fn [t]                                                            \n" +
 						"              (assert (pos? (:real t)) \"real must be positive\")             \n" +

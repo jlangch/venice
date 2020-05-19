@@ -69,10 +69,10 @@ public class DefTypeForm {
 			fieldDefs.add(
 				new VncCustomTypeFieldDef(
 					new VncKeyword(
-							Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
-					Types.qualify(
-						Namespaces.NS_CORE,
-						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1))), 
+						Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
+					qualifyType(
+						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
+						registry), 
 					ii));
 		}
 		
@@ -99,7 +99,7 @@ public class DefTypeForm {
 	) {
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
-		final VncKeyword qualifiedBaseType = Types.qualify(Namespaces.NS_CORE, baseType);
+		final VncKeyword qualifiedBaseType = qualifyType(baseType, registry);
 
 		if (!wrappableTypes.isWrappable(qualifiedBaseType)) {
 			throw new VncException(String.format(
@@ -147,7 +147,7 @@ public class DefTypeForm {
 					}
 				}
 				else {
-					final VncKeyword qualified = Types.qualify(Namespaces.NS_CORE, k);
+					final VncKeyword qualified = qualifyType(k, registry);
 					if (registry.existsType(qualified)) {
 						choiceTypes.add(qualified);
 					}
@@ -276,7 +276,9 @@ public class DefTypeForm {
 	) {		
 
 		if (typeDef.valuesOnly().contains(val)) {
-			return val;
+			return val.wrap(
+					new VncWrappingTypeDef(typeDef.getType(), val.getType()), 
+					val.getMeta());
 		}
 		
 		final VncKeyword type = val.isWrapped()
@@ -284,7 +286,9 @@ public class DefTypeForm {
 				: val.getType();
 		
 		if (typeDef.typesOnly().contains(type)) {
-			return val;
+			return val.wrap(
+					new VncWrappingTypeDef(typeDef.getType(), val.getType()), 
+					val.getMeta());
 		}
 		
 		// not a choice type
@@ -307,16 +311,46 @@ public class DefTypeForm {
 			final VncCustomTypeFieldDef fieldDef,
 			final VncVal arg
 	) {
-		final VncKeyword argType = Types.getType(arg);
+		VncKeyword argType = Types.getType(arg);
+		if (fieldDef.getType().equals(argType)) {
+			return;
+		}
+
+		if (arg.isWrapped()) {
+			argType = arg.getWrappingTypeDef().getType();
+			if (fieldDef.getType().equals(argType)) {
+				return;
+			}
+		}
 		
-		if (!fieldDef.getType().equals(argType)) {
-			throw new VncException(String.format(
-					"The type :%s requires arg %d of type :%s "
+		throw new VncException(String.format(
+				"The type :%s requires arg %d of type :%s "
 						+ "instead of the passed :%s", 
 					type.getValue(), 
 					fieldDef.getIndex() + 1,
 					fieldDef.getType().getValue(),
 					argType.getValue())); 
+	}
+	
+	private static VncKeyword qualifyType(
+			final VncKeyword type,
+			final CustomTypeDefRegistry registry
+	) {
+		if (Namespaces.isQualified(type)) {
+			return type;
+		}
+		else {
+			final VncKeyword type_ =  Namespaces.qualifyKeyword(
+										Namespaces.getCurrentNS(), 
+										type); 
+			
+			if (registry.existsType(type_)) {
+				return type_;
+			}
+			else {
+				return Namespaces.qualifyKeyword(Namespaces.NS_CORE, type);
+			}
 		}
 	}
+
 }

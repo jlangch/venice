@@ -32,7 +32,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -47,24 +46,33 @@ public class VncCustomType extends VncMap {
 			final VncMap values, 
 			final VncVal meta
 	) {
-		super(meta);
+		this(typeDef, values, null, meta);
+	}
+
+	public VncCustomType(
+			final VncCustomTypeDef typeDef,
+			final VncMap values, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) {
+		super(wrappingTypeDef, meta);
 
 		this.type = typeDef.getType();
 		this.typeDef = typeDef;
 		this.values = values;
 	}
-	
+
 	@Override
-	public VncMap emptyWithMeta() {
+	public VncCustomType emptyWithMeta() {
 		throw new VncException("not supported");
 	}
 	@Override
-	public VncHashMap withValues(final Map<VncVal,VncVal> replaceVals) {
+	public VncCustomType withValues(final Map<VncVal,VncVal> replaceVals) {
 		throw new VncException("not supported");
 	}
 	
 	@Override
-	public VncHashMap withValues(
+	public VncCustomType withValues(
 			final Map<VncVal,VncVal> replaceVals, 
 			final VncVal meta
 	) {
@@ -72,7 +80,12 @@ public class VncCustomType extends VncMap {
 	}
 	
 	@Override
-	public VncMap withMeta(final VncVal meta) {
+	public VncCustomType wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncCustomType(typeDef, values, wrappingTypeDef, meta); 
+	}
+	
+	@Override
+	public VncCustomType withMeta(final VncVal meta) {
 		return new VncCustomType(typeDef, values, meta);
 	}
 

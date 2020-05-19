@@ -23,12 +23,20 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
 public abstract class VncCollection extends VncVal {
 	
 	public VncCollection(VncVal meta) {
 		super(meta);
+	}
+	
+	public VncCollection(
+			final VncWrappingTypeDef wrappingTypeDef,
+			final VncVal meta
+	) {
+		super(wrappingTypeDef, meta);
 	}
 
 
