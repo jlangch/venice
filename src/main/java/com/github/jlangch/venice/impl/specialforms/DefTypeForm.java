@@ -90,28 +90,6 @@ public class DefTypeForm {
 		return qualifiedType;
 	}
 
-	public static boolean isCustomType(
-			final VncVal val,
-			final CustomTypeDefRegistry registry
-	) {	
-		if (Types.isVncKeyword(val)) {
-			final VncKeyword type = Types.qualify(
-												Namespaces.getCurrentNS(), 
-												(VncKeyword)val);
-			return registry.existsType(type);
-		}
-		else if (Types.isVncCustomType(val)) {
-			return true;
-		}
-		else if (val.isWrapped()) {
-			final VncKeyword type = val.getWrappingTypeDef().getType();
-			return registry.existsType(type);
-		}
-		else {
-			return false;
-		}
-	}
-
 	public static VncVal defineCustomWrapperType(
 			final VncKeyword type,
 			final VncKeyword baseType,
@@ -143,8 +121,7 @@ public class DefTypeForm {
 	public static VncVal defineCustomChoiceType(
 			final VncKeyword type,
 			final VncList choiceVals,
-			final CustomTypeDefRegistry registry,
-			final CustomWrappableTypes wrappableTypes
+			final CustomTypeDefRegistry registry
 	) {
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
@@ -174,6 +151,9 @@ public class DefTypeForm {
 					if (registry.existsType(qualified)) {
 						choiceTypes.add(qualified);
 					}
+					else if (Types.isCorePrimitiveType(qualified)) {
+						choiceTypes.add(qualified);
+					}
 					else {
 						choiceValues.add(v);
 					}
@@ -195,6 +175,28 @@ public class DefTypeForm {
 		return qualifiedType;
 	}
 
+	public static boolean isCustomType(
+			final VncVal val,
+			final CustomTypeDefRegistry registry
+	) {	
+		if (Types.isVncKeyword(val)) {
+			final VncKeyword type = Types.qualify(
+											Namespaces.getCurrentNS(), 
+											(VncKeyword)val);
+			return registry.existsType(type);
+		}
+		else if (Types.isVncCustomType(val)) {
+			return true;
+		}
+		else if (val.isWrapped()) {
+			final VncKeyword type = val.getWrappingTypeDef().getType();
+			return registry.existsType(type);
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static VncVal createType(
 			final List<VncVal> args, 
 			final CustomTypeDefRegistry registry
@@ -203,17 +205,25 @@ public class DefTypeForm {
 
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
+		// custom type
 		final VncCustomTypeDef customTypeDef = registry.getCustomType(qualifiedType);
 		if (customTypeDef != null) {
 			final List<VncVal> typeArgs = args.subList(1, args.size());
-			return createCustomType(customTypeDef, typeArgs, registry);
+			return createCustomType(customTypeDef, typeArgs);
 		}
 		
+		// custom wrapped type
 		final VncWrappingTypeDef wrappedTypeDef = registry.getWrappedType(qualifiedType);
 		if (wrappedTypeDef != null) {
-			return createWrappedType(wrappedTypeDef, args.get(1), registry);
+			return createWrappedType(wrappedTypeDef, args.get(1));
 		}
 		
+		// custom choice type (OR)
+		final VncChoiceTypeDef choiceTypeDef = registry.getChoiceType(qualifiedType);
+		if (choiceTypeDef != null) {
+			return createChoiceType(choiceTypeDef, args.get(1));
+		}
+
 		throw new VncException(String.format(
 				"The custom type :%s is not defined.", 
 				qualifiedType.getValue())); 
@@ -221,8 +231,7 @@ public class DefTypeForm {
 
 	public static VncVal createCustomType(
 			final VncCustomTypeDef typeDef, 
-			final List<VncVal> typeArgs,
-			final CustomTypeDefRegistry registry
+			final List<VncVal> typeArgs
 	) {
 		if (typeDef.count() != typeArgs.size()) {
 			throw new VncException(String.format(
@@ -255,11 +264,42 @@ public class DefTypeForm {
 
 	public static VncVal createWrappedType(
 			final VncWrappingTypeDef typeDef, 
-			final VncVal val,
-			final CustomTypeDefRegistry registry
+			final VncVal val
 	) {		
 		typeDef.validate(val);
 		return val.wrap(typeDef, val.getMeta());
+	}
+
+	public static VncVal createChoiceType(
+			final VncChoiceTypeDef typeDef, 
+			final VncVal val
+	) {		
+
+		if (typeDef.valuesOnly().contains(val)) {
+			return val;
+		}
+		
+		final VncKeyword type = val.isWrapped()
+				? val.getWrappingTypeDef().getType()
+				: val.getType();
+		
+		if (typeDef.typesOnly().contains(type)) {
+			return val;
+		}
+		
+		// not a choice type
+		if (Types.isCorePrimitiveType(val)) {
+			throw new VncException(String.format(
+					"The choice type :%s  is not compatible with the value %s", 
+					typeDef.getType().getValue(), 
+					val.toString(true))); 
+		}
+		else {
+			throw new VncException(String.format(
+					"The choice type :%s  is not compatible with a value of type :%s", 
+					typeDef.getType().getValue(), 
+					type.getValue())); 
+		}
 	}
 
 	private static void validateTypeCompatibility(

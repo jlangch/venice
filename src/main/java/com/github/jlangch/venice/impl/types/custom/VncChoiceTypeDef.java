@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.types.custom;
 
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 
 
@@ -56,18 +56,18 @@ public class VncChoiceTypeDef {
 		return choiceValues.contains(val);
 	}
 
-	public VncList typesOnly() {
-		return choiceTypes.toVncList();
+	public VncSet typesOnly() {
+		return choiceTypes;
 	}
 
-	public VncList valuesOnly() {
-		return choiceValues.toVncList();
+	public VncSet valuesOnly() {
+		return choiceValues;
 	}
 
-	public VncList values() {
-		return new VncList()
-					.addAllAtEnd(choiceTypes.toVncList())
-					.addAllAtEnd(choiceValues.toVncList());
+	public VncSet values() {
+		return new VncHashSet()
+					.addAll(choiceTypes.toVncList())
+					.addAll(choiceValues.toVncList());
 	}
 
 

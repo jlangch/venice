@@ -375,8 +375,7 @@ public class VeniceInterpreter implements Serializable  {
 						return DefTypeForm.defineCustomChoiceType(
 									type, 
 									choiceVals, 
-									typeDefRegistry,
-									wrappableTypes);
+									typeDefRegistry);
 					}
 				}
 

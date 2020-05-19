@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
@@ -107,18 +107,18 @@ public class DocForm {
 		else if (typeDefRegistry.existsChoiceType(type)) {
 			final VncChoiceTypeDef typeDef = typeDefRegistry.getChoiceType(type);
 			
-			final VncList types = typeDef.typesOnly();
-			final VncList values = typeDef.valuesOnly();
+			final VncSet types = typeDef.typesOnly();
+			final VncSet values = typeDef.valuesOnly();
 			
 			final StringBuilder sb = new StringBuilder();
 			sb.append(String.format("Custom choice type :%s\n", type.getValue()));
 			if (!types.isEmpty()) {
 				sb.append("Types: \n");
-				typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+				typeDef.typesOnly().getList().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
 			}
 			if (!values.isEmpty()) {
 				sb.append("Values: \n");
-				typeDef.valuesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+				typeDef.valuesOnly().getList().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
 			}
 			
 			return new VncString(sb.toString());

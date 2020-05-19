@@ -404,6 +404,33 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction deftype_or = 
+		new SpecialFormsDocFunction(
+				"deftype-or",
+				VncFunction
+					.meta()
+					.arglists(
+						"(deftype-or name val*)")		
+					.doc(
+						"Defines a new custom or type.")
+					.examples(
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-or :color :red :green :blue)                       \n" +
+						"  (.: :color :red))                                             ",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
+						"  (.: :digit 1))                                                ",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-or :long-or-double :long :double)                  \n" +
+						"  (.: :long-or-double 1000))                                    ")
+				.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction deftype_new = 
 		new SpecialFormsDocFunction(
 				".:",
@@ -983,6 +1010,7 @@ public class SpecialForms {
 					.put("deftype",			deftype)
 					.put("deftype?",		deftypeQ)			
 					.put("deftype-of",		deftype_of)
+					.put("deftype-or",		deftype_or)
 					.put(".:",				deftype_new)		
 					.put("def-dynamic",		def_dynamic)
 					.put("binding",			binding)

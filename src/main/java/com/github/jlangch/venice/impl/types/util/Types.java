@@ -345,6 +345,32 @@ public class Types {
 		}		
 	}
 
+	public static boolean isCoreType(final VncVal val) {
+		return Namespaces.isCoreNS(
+					Namespaces.getNamespace(
+							val.getType().getValue()));
+	}
+
+	public static boolean isCorePrimitiveType(final VncVal val) {
+		final String type = Types.isVncKeyword(val)
+								? ((VncKeyword)val).getValue()
+								: val.getType().getValue();
+		
+		switch(type) {
+			case "core/nil":		return true;
+			case "core/boolean":	return true;
+			case "core/long":		return true;
+			case "core/integer":	return true;
+			case "core/double":		return true;
+			case "core/decimal":	return true;
+			case "core/string":		return true;
+			case "core/char":		return true;
+			case "core/symbol":		return true;
+			case "core/keyword":	return true;
+			default:				return false;
+		}		
+	}
+
 	public static boolean _equal_Q(VncVal a, VncVal b) {
 		if (Types.isVncNumber(a) && Types.isVncNumber(b)) {
 			return VncBoolean.isTrue(Numeric.calc(MathOp.EQU, a, b));

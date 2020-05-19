@@ -29,30 +29,71 @@ import org.junit.jupiter.api.Test;
 public class SpecialFormsTest_deftype_or {
 		
 	@Test
-	public void test_deftype_or_1() {
+	public void test_deftype_or_values_keyword() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                      \n" +
-				"  (deftype-or :user/color :red :green :blue)             \n" +
-				"  (doc :user/color))                                       ";
+				"(do                                           \n" +
+				"  (deftype-or :color :red :green :blue)       \n" +
+				"  (.: :color :red))                             ";
 
-		assertNull(venice.eval(script));					
+		assertEquals("red", venice.eval(script));					
 	}
 	
 	@Test
-	public void test_deftype_or_2() {
+	public void test_deftype_or_values_keyword_FAILED() {
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :color :red :green :blue)       \n" +
+				"  (.: :color :yellow))                          ";
+	
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
+	public void test_deftype_or_values_long() {
 		final Venice venice = new Venice();
 	
 		final String script =
-				"(do                                                      \n" +
-				"  (deftype-or :user/numbers 1 2 3)            			  \n" +
-				"  (doc :user/color))                                       ";
+				"(do                                           \n" +
+				"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)     \n" +
+				"  (.: :digit 5))                                ";
 	
-		//assertEquals("\"foo@foo.org\"", venice.eval(script));					
+		assertEquals(5L, venice.eval(script));					
 	}
 
+	@Test
+	public void test_deftype_or_values_long_FAILED() {
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)     \n" +
+				"  (.: :digit 999))                              ";
 	
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
+	public void test_deftype_or_types() {
+		final Venice venice = new Venice();
+	
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :test :long :double)            \n" +
+				"  (.: :test 5))                                ";
+	
+		assertEquals(5L, venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_or_types_FAILED() {
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :test :long :double)            \n" +
+				"  (.: :test \"5\"))                             ";
+	
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
 	@Test
 	public void test_deftype_or_no_values() {
 		final String script =

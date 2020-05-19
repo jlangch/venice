@@ -990,6 +990,7 @@ public class DocGenerator {
 		all.addSection(define);		
 		define.addItem(getDocItem("deftype"));
 		define.addItem(getDocItem("deftype-of"));
+		define.addItem(getDocItem("deftype-or"));
 
 		final DocSection create = new DocSection("Create");
 		all.addSection(create);
