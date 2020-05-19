@@ -24,12 +24,14 @@ package com.github.jlangch.venice.impl.specialforms;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.CustomTypeDefRegistry;
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
@@ -104,18 +106,34 @@ public class DocForm {
 		}
 		else if (typeDefRegistry.existsChoiceType(type)) {
 			final VncChoiceTypeDef typeDef = typeDefRegistry.getChoiceType(type);
-			final StringBuilder sb = new StringBuilder();
 			
+			final VncList types = typeDef.typesOnly();
+			final VncList values = typeDef.valuesOnly();
+			
+			final StringBuilder sb = new StringBuilder();
 			sb.append(String.format("Custom choice type :%s\n", type.getValue()));
-			sb.append("Values: \n");
-			typeDef.values().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+			if (!types.isEmpty()) {
+				sb.append("Types: \n");
+				typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+			}
+			if (!values.isEmpty()) {
+				sb.append("Values: \n");
+				typeDef.valuesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+			}
 			
 			return new VncString(sb.toString());
 		}
 		else {
-			throw new VncException(String.format(
-					":%s is not a custom type. No documentation available!",
-					type.getValue()));
+			if (Namespaces.isQualified(type)) {
+				throw new VncException(String.format(
+						":%s is not a custom type. No documentation available!",
+						type.getValue()));
+			}
+			else {
+				throw new VncException(String.format(
+						":%s is not a custom type. Please qualify the type with its namespace!",
+						type.getValue()));
+			}
 		}
 	}
 

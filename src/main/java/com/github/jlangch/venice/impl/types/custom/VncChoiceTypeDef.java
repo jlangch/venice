@@ -56,6 +56,14 @@ public class VncChoiceTypeDef {
 		return choiceValues.contains(val);
 	}
 
+	public VncList typesOnly() {
+		return choiceTypes.toVncList();
+	}
+
+	public VncList valuesOnly() {
+		return choiceValues.toVncList();
+	}
+
 	public VncList values() {
 		return new VncList()
 					.addAllAtEnd(choiceTypes.toVncList())
