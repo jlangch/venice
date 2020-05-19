@@ -126,6 +126,10 @@ public class DefTypeForm {
 	) {
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
+		if (choiceVals.isEmpty()) {
+			throw new VncException("There is at least one value required for a choice type."); 
+		}
+		
 		final Set<VncVal> choiceTypes = new HashSet<>();
 		final Set<VncVal> choiceValues = new HashSet<>();
 		

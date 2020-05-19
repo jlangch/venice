@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -51,6 +50,17 @@ public class SpecialFormsTest_deftype_or {
 				"  (doc :user/color))                                       ";
 	
 		//assertEquals("\"foo@foo.org\"", venice.eval(script));					
+	}
+
+	
+	@Test
+	public void test_deftype_or_no_values() {
+		final String script =
+				"(do                                                      \n" +
+				"  (deftype-or :user/numbers )               			  \n" +
+				"  (doc :user/color))                                       ";
+	
+		assertThrows(VncException.class, () -> new Venice().eval(script));
 	}
 
 }
