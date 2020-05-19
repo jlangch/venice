@@ -984,6 +984,7 @@ public class DocGenerator {
 		test.addItem(getDocItem("type"));
 		test.addItem(getDocItem("supertype"));
 		test.addItem(getDocItem("instance?"));
+		test.addItem(getDocItem("deftype?"));
 
 		final DocSection define = new DocSection("Define");
 		all.addSection(define);		

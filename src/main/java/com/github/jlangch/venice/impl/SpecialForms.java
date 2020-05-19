@@ -309,21 +309,52 @@ public class SpecialForms {
 						"Defines a new custom type for the name with the fields.")
 					.examples(
 						"(do                                                      \n" +
-						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  (ns foo)                                               \n" +
+						"  (deftype :complex [real :long, imaginary :long])       \n" +
+						"  (def x (.: :complex 100 200))                          \n" +
 						"  x)                                                       ",
 						"(do                                                      \n" +
-						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  (ns foo)                                               \n" +
+						"  (deftype :complex [real :long, imaginary :long])       \n" +
+						"  (def x (.: :complex 100 200))                          \n" +
 						"  (type x))                                                ",
-						"(do                                                                           \n" +
-						"  (deftype :user/complex                                                      \n" +
+						"(do                                                      \n" +
+						"  (ns foo)                                               \n" +
+						"  (deftype :complex                                                          \n" +
 						"           [real :long, imaginary :long]                                      \n" +
 						"           (fn [t]                                                            \n" +
 						"              (assert (pos? (:real t)) \"real must be positive\")             \n" +
 						"              (assert (pos? (:imaginary t)) \"imaginary must be positive\"))) \n" +
-						"  (def x (.: :user/complex 100 200))                                          \n" +
+						"  (def x (.: :complex 100 200))                                               \n" +
 						"  [(:real x) (:imaginary x)])                                                   ")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction deftypeQ = 
+		new SpecialFormsDocFunction(
+				"deftype?",
+				VncFunction
+					.meta()
+					.arglists(
+						"(deftype? type)")		
+					.doc(
+						"Returns true if type is a custom type else false.")
+					.examples(
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (deftype? :complex))                                ",
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype-of :email-address :string)               \n" +
+						"  (deftype? :email-address))                          ",
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (def x (.: :complex 100 200))                     \n" +
+						"  (deftype? (type x)))                                ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -341,27 +372,33 @@ public class SpecialForms {
 						"Defines a new custom type wrapper based on a base type.")
 					.examples(
 						"(do                                                           \n" +
-						"  (deftype-of :user/email-address :string)                    \n" +
-						"  (.: :user/email-address \"foo@foo.org\"))                     ",
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :email-address :string)                         \n" +
+						"  (.: :email-address \"foo@foo.org\"))                          ",
 						"(do                                                           \n" +
-						"  (deftype-of :user/email-address :string)                    \n" +
-						"  (str \"Email: \" (.: :user/email-address \"foo@foo.org\")))   ",
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :email-address :string)                         \n" +
+						"  (str \"Email: \" (.: :email-address \"foo@foo.org\")))        ",
 						"(do                                                           \n" +
-						"  (deftype-of :user/email-address :string)                    \n" +
-						"  (def x (.: :user/email-address \"foo@foo.org\"))            \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :email-address :string)                         \n" +
+						"  (def x (.: :email-address \"foo@foo.org\"))                 \n" +
 						"  [(type x) (supertype x)])                                     ",
 						"(do                                                                            \n" +
-						"  (deftype-of :user/email-address                                              \n" +
+						"  (ns foo)                                                                     \n" +
+						"  (deftype-of :email-address                                                   \n" +
 						"              :string                                                          \n" +
 						"              (fn [e]                                                          \n" +
 						"                (assert (str/valid-email-addr? e) \"invalid email address\"))) \n" +
-						"  (.: :user/email-address \"foo@foo.org\"))                                      ",
+						"  (.: :email-address \"foo@foo.org\"))                                           ",
 						"(do                                                           \n" +
-						"  (deftype-of :user/contract-id :long)                        \n" +
-						"  (.: :user/contract-id 100000))                                ",
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :contract-id :long)                             \n" +
+						"  (.: :contract-id 100000))                                     ",
 						"(do                                                           \n" +
-						"  (deftype-of :user/my-long :long)                            \n" +
-						"  (+ 10 (.: :user/my-long 100000)))                             ")
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :my-long :long)                                 \n" +
+						"  (+ 10 (.: :my-long 100000)))                                  ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -376,8 +413,9 @@ public class SpecialForms {
 					.doc("Instantiates a custom type.")
 					.examples(
 						"(do                                                      \n" +
-						"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-						"  (def x (.: :user/complex 100 200))                     \n" +
+						"  (ns foo)                                               \n" +
+						"  (deftype :complex [real :long, imaginary :long])       \n" +
+						"  (def x (.: :complex 100 200))                          \n" +
 						"  [(:real x) (:imaginary x)])                              ")
 					.build()
 		) {
@@ -943,6 +981,7 @@ public class SpecialForms {
 					.put("defmulti",		defmulti)
 					.put("defmethod",		defmethod)
 					.put("deftype",			deftype)
+					.put("deftype?",		deftypeQ)			
 					.put("deftype-of",		deftype_of)
 					.put(".:",				deftype_new)		
 					.put("def-dynamic",		def_dynamic)

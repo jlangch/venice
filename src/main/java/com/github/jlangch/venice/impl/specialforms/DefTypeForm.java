@@ -90,6 +90,28 @@ public class DefTypeForm {
 		return qualifiedType;
 	}
 
+	public static boolean isCustomType(
+			final VncVal val,
+			final CustomTypeDefRegistry registry
+	) {	
+		if (Types.isVncKeyword(val)) {
+			final VncKeyword type = Types.qualify(
+												Namespaces.getCurrentNS(), 
+												(VncKeyword)val);
+			return registry.existsType(type);
+		}
+		else if (Types.isVncCustomType(val)) {
+			return true;
+		}
+		else if (val.isWrapped()) {
+			final VncKeyword type = val.getWrappingTypeDef().getType();
+			return registry.existsType(type);
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static VncVal defineCustomWrapperType(
 			final VncKeyword type,
 			final VncKeyword baseType,
