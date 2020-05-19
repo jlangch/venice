@@ -37,7 +37,7 @@ public class SpecialFormsTest_deftype_or {
 				"  (deftype-or :user/color :red :green :blue)             \n" +
 				"  (doc :user/color))                                       ";
 
-		assertNotNull(venice.eval(script));					
+		assertNull(venice.eval(script));					
 	}
 	
 	@Test

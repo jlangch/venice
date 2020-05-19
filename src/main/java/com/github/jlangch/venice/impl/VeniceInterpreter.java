@@ -333,7 +333,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "deftype": { // (deftype type fields validationFn*)
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype", ast))) {
-						final VncKeyword type = Coerce.toVncKeyword(ast.second());
+						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncVector fields = Coerce.toVncVector(ast.third());
 						final VncFunction validationFn = ast.size() == 4
 															? Coerce.toVncFunction(evaluate(ast.fourth(), env))
@@ -343,10 +343,18 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				}
 				
+				case "deftype?": { // (deftype? type)
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype?", ast))) {
+						final VncVal type = evaluate(ast.second(), env);
+
+						return VncBoolean.of(DefTypeForm.isCustomType(type, typeDefRegistry));
+					}
+				}
+				
 				case "deftype-of": { // (deftype-of type base-type validationFn*)
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype-of", ast))) {
-						final VncKeyword type = Coerce.toVncKeyword(ast.second());
-						final VncKeyword baseType = Coerce.toVncKeyword(ast.third());
+						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
+						final VncKeyword baseType = Coerce.toVncKeyword(evaluate(ast.third(), env));
 						final VncFunction validationFn = ast.size() == 4
 															? Coerce.toVncFunction(evaluate(ast.fourth(), env))
 															: null;
@@ -361,7 +369,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "deftype-or": { // (deftype-of type base-type*)
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype-or", ast))) {
-						final VncKeyword type = Coerce.toVncKeyword(ast.second());
+						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncList choiceVals = ast.slice(2);
 
 						return DefTypeForm.defineCustomChoiceType(
