@@ -30,13 +30,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - ...
 
 
-
 ## [1.8.0] - 2020-05-18
-
-### Added
-
-- special forms `deftype`, `deftype-of`, and `deftype-or` to support 
-  composable types
 
 ### Fixed
 
@@ -45,7 +39,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.8.0] - 2020-05-14
+## [1.7.29] - 2020-05-14
 
 ### Added
 

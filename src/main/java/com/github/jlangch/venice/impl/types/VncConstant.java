@@ -44,12 +44,6 @@ public class VncConstant extends VncVal {
 		if (this == Constants.Nil) {
 			return new VncKeyword(":core/nil");
 		}
-		else if (VncBoolean.isTrue(this)) {
-			return new VncKeyword(":core/boolean");
-		}
-		else if (VncBoolean.isFalse(this)) {
-			return new VncKeyword(":core/boolean");
-		}
 		else {
 			return null;
 		}
