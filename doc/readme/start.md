@@ -153,7 +153,8 @@ Start a new terminal (menu Terminal -> New Terminal) ...
 launch the REPL within the terminal:
 
 ```text
-$ java -jar build/libs/venice-1.8.0.jar -colors-darkmode
+$ cd /workspace/repl
+$ ./repl.sh
 ```
 
 
