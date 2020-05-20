@@ -226,7 +226,7 @@ public class ReplConfig {
 			try (Reader reader = new FileReader(fileJson)) {
 				return new Tuple2<JsonObject,String>(
 							(JsonObject)JsonParser.object().from(reader),
-							"file " + fileJson.getPath());
+							"file '" + fileJson.getPath() +"'");
 			}
 		}
 		
@@ -247,10 +247,10 @@ public class ReplConfig {
 		if (builtinConfig != null) {
 			return new Tuple2<JsonObject,String>(
 						(JsonObject)JsonParser.object().from(builtinConfig),
-						"classpath built-in 'repl.json'");
+						"built-in default 'repl.json'");
 		}
 		
-		throw new RuntimeException("Failed to find a 'repl.json'");
+		throw new RuntimeException("Failed to find a 'repl.json' configuration");
 	}
 	
 	private static ColorMode getColorMode(final CommandLineArgs cli) {
