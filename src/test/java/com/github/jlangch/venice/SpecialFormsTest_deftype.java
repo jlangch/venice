@@ -115,7 +115,9 @@ public class SpecialFormsTest_deftype {
 				"                     currency  :payment-currency                 \n" +
 				"                     method    :payment-method ])                \n" +
 				"                                                                 \n" +
-				"  (def payment (.: :payment                                      \n" +
+				"  ; build a credit card payment                                  \n" +
+				"  (def payment                                                   \n" +
+				"        (.: :payment                                             \n" +
 				"               (.: :payment-amount 2000.0M)                      \n" +
 				"               (.: :payment-currency :CHF)                       \n" +
 				"               (.: :payment-method                               \n" +
