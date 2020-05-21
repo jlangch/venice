@@ -89,6 +89,10 @@ public class VncDouble extends VncVal {
 	public Double getValue() { 
 		return value; 
 	}
+	
+	public Float getFloatValue() { 
+		return value.floatValue(); 
+	}
 
 	@Override 
 	public TypeRank typeRank() {

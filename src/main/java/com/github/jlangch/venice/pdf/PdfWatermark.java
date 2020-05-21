@@ -52,16 +52,16 @@ public class PdfWatermark {
 		}
 		
 		try {
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			final ByteArrayOutputStream os = new ByteArrayOutputStream();
 			
-			PdfReader reader = new PdfReader(pdf.array());
-			int numPages = reader.getNumberOfPages();
-			PdfStamper stamper = new PdfStamper(reader, os);
-			Image watermark_image = Image.getInstance(imgResourceName);
+			final PdfReader reader = new PdfReader(pdf.array());
+			final int numPages = reader.getNumberOfPages();
+			final PdfStamper stamper = new PdfStamper(reader, os);
+			final Image watermark_image = Image.getInstance(imgResourceName);
 			watermark_image.setAbsolutePosition(200, 400);
 
-			int startPage = skipTopPages;
-			int endPage = numPages - skipBottomPages;
+			final int startPage = skipTopPages;
+			final int endPage = numPages - skipBottomPages;
 
 			for(int page=startPage; page<endPage; page++) {
 				PdfContentByte under = stamper.getUnderContent(page);
@@ -84,6 +84,9 @@ public class PdfWatermark {
 			final float fontCharacterSpacing,
 			final Color color,
 			final float opacity,
+			final Color colorOutline,
+			final float colorOutlineOpacity,
+			final float outlineWidth,
 			final float angle,
 			final boolean overContent,
 			final int skipTopPages, 
@@ -104,11 +107,9 @@ public class PdfWatermark {
 
 			final BaseFont baseFont = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
 
-			final Color watermarkTextColor = new Color(
-													color.getRed(), 
-													color.getGreen(), 
-													color.getBlue(),
-													(int)(opacity * 255));
+			final Color textColor = opacity(withBlack(color), opacity);
+
+			final Color strokeColor = opacity(withBlack(colorOutline), colorOutlineOpacity);
 
 			for(int page=startPage; page<=endPage; page++) {
 				final PdfContentByte cb = overContent 
@@ -116,13 +117,12 @@ public class PdfWatermark {
 											: stamper.getUnderContent(page);
 				
 				cb.saveState();
-				cb.setColorFill(watermarkTextColor);
+				cb.setColorFill(textColor);
+				cb.setColorStroke(strokeColor);
 				cb.beginText();
 				cb.setFontAndSize(baseFont, fontSize);
-				cb.setCharacterSpacing(fontCharacterSpacing);
-				
-				// simulate bold
-				cb.setLineWidth(0.5F);
+				cb.setCharacterSpacing(fontCharacterSpacing);			
+				cb.setLineWidth(Math.max(0.0F, outlineWidth));
 				cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE); 
 				
 				cb.showTextAligned(
@@ -143,5 +143,17 @@ public class PdfWatermark {
 		catch(Exception ex) {
 			throw new RuntimeException("Failed to add watermarks to the PDF", ex);
 		}		
+	}
+
+	private Color withBlack(final Color color) {
+		return color == null ? Color.BLACK : color;
+	}
+
+	private Color opacity(final Color color, final float opacity) {
+		return new Color(
+					color.getRed(), 
+					color.getGreen(), 
+					color.getBlue(),
+					Math.max(0, Math.min(255, (int)(opacity * 255))));
 	}
 }
