@@ -69,6 +69,10 @@ import com.lowagie.text.pdf.PdfReader;
 
 public class PdfFunctions {
 
+	
+	private static String BLACK = "#000000";
+
+	
 	///////////////////////////////////////////////////////////////////////////
 	// PDF
 	///////////////////////////////////////////////////////////////////////////
@@ -134,9 +138,9 @@ public class PdfFunctions {
 						"  :text s              - watermark text (string), defaults to \"WATERMARK\" \n" +
 						"  :font-size n         - font size in pt (double), defaults to 24.0 \n" +
 						"  :font-char-spacing n - font character spacing (double), defaults to 0.0 \n" +
-						"  :color s             - font color (HTML color string), defaults to #000000 \n" +
+						"  :color s             - font color (HTML color string), defaults to " + BLACK + "\n" +
 						"  :opacity n           - opacity 0.0 ... 1.0 (double), defaults to 0.4 \n" +
-						"  :outline-color s     - font outline color (HTML color string), defaults to #000000 \n" +
+						"  :outline-color s     - font outline color (HTML color string), defaults to " + BLACK + "\n" +
 						"  :outline-opacity n   - outline opacity 0.0 ... 1.0 (double), defaults to 0.8 \n" +
 						"  :outline-witdh n     - outline width  0.0 ... 10.0 (double), defaults to 0.5 \n" +
 						"  :angle n             - angle 0.0 ... 360.0 (double), defaults to 45.0 \n" +
@@ -163,17 +167,15 @@ public class PdfFunctions {
 				final String text           = getStringOption("text", options, "WATERMARK"); 
 				final float fontSize        = getFloatOption("font-size", options, 24.0); 
 				final float fontCharSpacing = getFloatOption("font-char-spacing", options, 0.0); 
-				final Color color           = HtmlColor.getColor(getStringOption("color", options, "#000000")); 
+				final Color color           = HtmlColor.getColor(getStringOption("color", options, BLACK)); 
 				final float opacity         = getFloatOption("opacity", options, 0.4); 
-				final Color outlineColor    = HtmlColor.getColor(getStringOption("outline-color", options, "#000000")); 
+				final Color outlineColor    = HtmlColor.getColor(getStringOption("outline-color", options, BLACK)); 
 				final float outlineOpacity  = getFloatOption("outline-opacity", options, 0.8); 
 				final float outlineWidth    = getFloatOption("outline-width", options, 0.5); 
 				final float angle           = getFloatOption("angle", options, 45.0); 
 				final boolean overContent   = getBooleanOption("over-content", options, true); 
 				final int skipTopPages      = getIntOption("skip-top-pages", options, 0); 
 				final int skipBottomPages   = getIntOption("skip-bottom-pages", options, 0); 
-
-				final ByteBuffer pdf_        = Coerce.toVncByteBuffer(pdf).getValue();
 
 				if (StringUtil.isBlank(text)) {
 					return pdf;
@@ -182,7 +184,7 @@ public class PdfFunctions {
 				return new VncByteBuffer(
 						new PdfWatermark()
 								.addWatermarkText(
-									pdf_, 
+									Coerce.toVncByteBuffer(pdf).getValue(), 
 									text,
 									fontSize,
 									fontCharSpacing,
@@ -621,6 +623,7 @@ public class PdfFunctions {
 		}
 	}
 
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions

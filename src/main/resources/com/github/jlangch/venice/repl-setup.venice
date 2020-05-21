@@ -39,8 +39,8 @@
                 "javax.annotation:javax.annotation-api:1.3.2",
                 "org.xhtmlrenderer:flying-saucer-core:9.1.20",
                 "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20",
-                "com.github.librepdf:openpdf:1.3.16",
-                "com.github.librepdf:pdf-toolbox:1.3.16" ])
+                "com.github.librepdf:openpdf:1.3.17",
+                "com.github.librepdf:pdf-toolbox:1.3.17" ])
 
 (def fonts-base-url "https://github.com/google/fonts/tree/master/")
 
@@ -74,7 +74,17 @@
                "tomcat-geoip-map.venice"
                "zip-tomcat-logs.venice"
                "demo-webapp.venice"
-               "login-webapp.venice" ])
+               "login-webapp.venice"
+               "pdf/pdf-example.venice"
+               "pdf/pdf-fonts.venice"
+               "pdf/pdf-tables.venice"
+               "pdf/pdf-images.venice"
+               "pdf/pdf-table-of-content.venice"
+               "pdf/pdf-footers.venice"
+               "pdf/pdf-watermarks.venice"
+               "pdf/pdf-text2pdf.venice"
+               "pdf/pdf-merge.venice"
+               "pdf/pdf-copy.venice" ])
 
 
 (defn- cr-lf [text]
@@ -232,24 +242,29 @@
           jansi-jar (io/file dir jansi-name)]
       (when-not (io/exists-file? jansi-jar)
         (println )
-        (println "----------------------------------------------------------")
-        (println " !WARNING! The Jansi JAR could not be downloaded. Without ")
-        (println "           this JAR the REPL has limited features!        ")
-        (println "----------------------------------------------------------")
+        (println *err*
+                 """
+                 --------------------------------------------------------
+                 !WARNING! The Jansi JAR could not be downloaded. Without
+                 this JAR the REPL has limited features!
+                 --------------------------------------------------------
+                 """)
         (println )))))
 
 
 (defn print-success-message []
   (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
-    (println "----------------------------------------------------------")
-    (println "The Venice REPL has been successfuly configured and setup.")
-    (println "The original Venice JAR is not needed anymore, it has been")
-    (println "copied to the 'libs' directory that holds all JAR files   ")
-    (println "and resources.                                            ")
-    (println )
-    (println "!!!! Start the REPL with ~{launch-script} !!!!")
-    (println "----------------------------------------------------------")))
+    (println """
+             ----------------------------------------------------------
+             The Venice REPL has been successfuly configured and setup.
+             The original Venice JAR is not needed anymore, it has been
+             copied to the 'libs' directory that holds all JAR files
+             and resources.
+
+             !!!! Start the REPL with ~{launch-script} !!!!
+             ----------------------------------------------------------
+             """)))
 
 
 (defn setup [& options]
@@ -262,8 +277,8 @@
     (when-not (io/exists-dir? "libs")
       (io/mkdirs "libs"))
 
-    (when-not (io/exists-dir? "scripts")
-      (io/mkdirs "scripts"))
+    (when-not (io/exists-dir? "scripts/pdf")
+      (io/mkdirs "scripts/pdf"))
 
     (when-not (empty? fonts)
       (when-not (io/exists-dir? "fonts")

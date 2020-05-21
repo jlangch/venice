@@ -981,7 +981,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
                    :font-char-spacing 10.0
                    :color             "#000000"
                    :opacity           0.4
-                   :outline-color     "#FF0000"
+                   :outline-color     "#000000"
                    :outline-opacity   0.8
                    :outline-width     0.5
                    :angle             45.0
