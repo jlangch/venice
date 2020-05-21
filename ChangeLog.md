@@ -28,6 +28,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - ...
+- PDF watermark text outline customization to 'pdf' module 
+
 
 
 ## [1.8.0] - 2020-05-18
