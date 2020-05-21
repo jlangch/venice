@@ -104,16 +104,16 @@ public class PdfFunctions {
 				
 				// undocumented options
 				// be careful with these options, know what you are doing!
-				final VncVal dotsPerPixel = getLongOption("dots-per-pixel", options, PdfRenderer.DOTS_PER_PIXEL);
-				final VncVal dotsPerPoint = getDoubleOption("dots-per-point", options, PdfRenderer.DOTS_PER_POINT);
+				final int dotsPerPixel = getIntOption("dots-per-pixel", options, PdfRenderer.DOTS_PER_PIXEL);
+				final float dotsPerPoint = getFloatOption("dots-per-point", options, PdfRenderer.DOTS_PER_POINT);
 
 				return new VncByteBuffer(
 						PdfRenderer.render(
 								xhtml.getValue(),
 								baseUrl == Nil ? null : Coerce.toVncString(baseUrl).getValue(),
 								resources == Nil ? null : mapResources(Coerce.toVncMap(resources)),
-								Coerce.toVncLong(dotsPerPixel).getValue().intValue(),
-								Coerce.toVncDouble(dotsPerPoint).getValue().floatValue()));
+								dotsPerPixel,
+								dotsPerPoint));
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -160,34 +160,22 @@ public class PdfFunctions {
 										? Coerce.toVncMap(args.second())
 										: VncHashMap.ofAll(args.slice(1));
 
-				final VncString text            = getStringOption("text", options, "WATERMARK"); 
-				final VncDouble fontSize        = getDoubleOption("font-size", options, 24.0); 
-				final VncDouble fontCharSpacing = getDoubleOption("font-char-spacing", options, 0.0); 
-				final VncString color           = getStringOption("color", options, "#000000"); 
-				final VncDouble opacity         = getDoubleOption("opacity", options, 0.4); 
-				final VncString outlineColor    = getStringOption("outline-color", options, "#000000"); 
-				final VncDouble outlineOpacity  = getDoubleOption("outline-opacity", options, 0.8); 
-				final VncDouble outlineWidth    = getDoubleOption("outline-width", options, 0.5); 
-				final VncDouble angle           = getDoubleOption("angle", options, 45.0); 
-				final VncBoolean overContent    = getBooleanOption("over-content", options, true); 
-				final VncLong skipTopPages      = getLongOption("skip-top-pages", options, 0); 
-				final VncLong skipBottomPages   = getLongOption("skip-bottom-pages", options, 0); 
+				final String text           = getStringOption("text", options, "WATERMARK"); 
+				final float fontSize        = getFloatOption("font-size", options, 24.0); 
+				final float fontCharSpacing = getFloatOption("font-char-spacing", options, 0.0); 
+				final Color color           = HtmlColor.getColor(getStringOption("color", options, "#000000")); 
+				final float opacity         = getFloatOption("opacity", options, 0.4); 
+				final Color outlineColor    = HtmlColor.getColor(getStringOption("outline-color", options, "#000000")); 
+				final float outlineOpacity  = getFloatOption("outline-opacity", options, 0.8); 
+				final float outlineWidth    = getFloatOption("outline-width", options, 0.5); 
+				final float angle           = getFloatOption("angle", options, 45.0); 
+				final boolean overContent   = getBooleanOption("over-content", options, true); 
+				final int skipTopPages      = getIntOption("skip-top-pages", options, 0); 
+				final int skipBottomPages   = getIntOption("skip-bottom-pages", options, 0); 
 
 				final ByteBuffer pdf_        = Coerce.toVncByteBuffer(pdf).getValue();
-				final String text_           = text.getValue();
-				final float fontSize_        = fontSize.getFloatValue();
-				final float fontCharSpacing_ = fontCharSpacing.getFloatValue();
-				final Color color_           = HtmlColor.getColor(color.getValue());
-				final float opacity_         = opacity.getFloatValue();
-				final Color outlineColor_    = HtmlColor.getColor(outlineColor.getValue());
-				final float outlineOpacity_  = outlineOpacity.getFloatValue();
-				final float outlineWidth_    = outlineWidth.getFloatValue();
-				final float angle_           = angle.getFloatValue();
-				final boolean overContent_   = VncBoolean.isTrue(overContent);
-				final int skipTopPages_      = skipTopPages.getIntValue();
-				final int skipBottomPages_   = skipBottomPages.getIntValue();
 
-				if (StringUtil.isBlank(text_)) {
+				if (StringUtil.isBlank(text)) {
 					return pdf;
 				}
 
@@ -195,18 +183,18 @@ public class PdfFunctions {
 						new PdfWatermark()
 								.addWatermarkText(
 									pdf_, 
-									text_,
-									fontSize_,
-									fontCharSpacing_,
-									color_,
-									opacity_,
-									outlineColor_,
-									outlineOpacity_,
-									outlineWidth_,
-									angle_,
-									overContent_,
-									skipTopPages_, 
-									skipBottomPages_));
+									text,
+									fontSize,
+									fontCharSpacing,
+									color,
+									opacity,
+									outlineColor,
+									outlineOpacity,
+									outlineWidth,
+									angle,
+									overContent,
+									skipTopPages, 
+									skipBottomPages));
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -444,9 +432,9 @@ public class PdfFunctions {
 					final String text = Coerce.toVncString(args.first()).getValue();
 					
 					final VncMap options = VncHashMap.ofAll(args.slice(1));
-					final VncDouble fontSize = getDoubleOption("font-size", options, 9.0); 
-					final VncLong fontWeight = getLongOption("font-weight", options, 200); 
-					final VncBoolean fontMonoSpace = getBooleanOption("font-monospace", options, false); 
+					final Float fontSize = getFloatOption("font-size", options, 9.0); 
+					final Integer fontWeight = getIntOption("font-weight", options, 200); 
+					final boolean fontMonoSpace = getBooleanOption("font-monospace", options, false); 
 
 					final List<List<String>> pages = splitIntoPages(text)
 														.stream()
@@ -455,9 +443,9 @@ public class PdfFunctions {
 
 					final Map<String,Object> data = new HashMap<>();		
 					data.put("pages", pages);
-					data.put("fontSize", fontSize.getValue().toString());
-					data.put("fontWeight", fontWeight.getValue().toString());
-					data.put("fontFamiliy", VncBoolean.isTrue(fontMonoSpace) ? "Courier" : "Helvetica, Sans-Serif");
+					data.put("fontSize", fontSize.toString());
+					data.put("fontWeight", fontWeight.toString());
+					data.put("fontFamiliy", fontMonoSpace ? "Courier" : "Helvetica, Sans-Serif");
 
 					final String template = loadText2PdfTemplate();
 					
@@ -557,14 +545,14 @@ public class PdfFunctions {
 					.collect(Collectors.toList());
 	}
 	
-	private static VncString getStringOption(
+	private static String getStringOption(
 			final String optName, 
 			final VncMap options, 
 			final String defaultVal
 	) {
 		final VncVal val = options.get(new VncKeyword(optName), new VncString(defaultVal));
 		if (Types.isVncString(val)) {
-			return (VncString)val;
+			return ((VncString)val).getValue();
 		}
 		else {
 			throw new VncException(
@@ -573,20 +561,20 @@ public class PdfFunctions {
 		}
 	}
 	
-	private static VncDouble getDoubleOption(
+	private static float getFloatOption(
 			final String optName, 
 			final VncMap options, 
 			final double defaultVal
 	) {
 		final VncVal val = options.get(new VncKeyword(optName), new VncDouble(defaultVal));
 		if (Types.isVncLong(val)) {
-			return new VncDouble(((VncLong)val).getValue().doubleValue());
+			return ((VncLong)val).getValue().floatValue();
 		}
 		else if (Types.isVncInteger(val)) {
-			return new VncDouble(((VncInteger)val).getValue().doubleValue());
+			return ((VncInteger)val).getValue().floatValue();
 		}
 		else if (Types.isVncDouble(val)) {
-			return (VncDouble)val;
+			return ((VncDouble)val).getFloatValue();
 		}
 		else {
 			throw new VncException(
@@ -595,20 +583,20 @@ public class PdfFunctions {
 		}
 	}
 	
-	private static VncLong getLongOption(
+	private static int getIntOption(
 			final String optName, 
 			final VncMap options, 
 			final long defaultVal
 	) {
 		final VncVal val = options.get(new VncKeyword(optName), new VncLong(defaultVal));
 		if (Types.isVncLong(val)) {
-			return (VncLong)val;
+			return ((VncLong)val).getIntValue();
 		}
 		else if (Types.isVncInteger(val)) {
-			return new VncLong(((VncInteger)val).getValue().longValue());
+			return ((VncInteger)val).getValue();
 		}
 		else if (Types.isVncDouble(val)) {
-			return new VncLong(((VncDouble)val).getValue().longValue());
+			return ((VncDouble)val).getValue().intValue();
 		}
 		else {
 			throw new VncException(
@@ -617,14 +605,14 @@ public class PdfFunctions {
 		}
 	}
 	
-	private static VncBoolean getBooleanOption(
+	private static boolean getBooleanOption(
 			final String optName, 
 			final VncMap options, 
 			final boolean defaultVal
 	) {
 		final VncVal val = options.get(new VncKeyword(optName), VncBoolean.of(defaultVal));
 		if (Types.isVncBoolean(val)) {
-			return (VncBoolean)val;
+			return ((VncBoolean)val).getValue();
 		}
 		else {
 			throw new VncException(

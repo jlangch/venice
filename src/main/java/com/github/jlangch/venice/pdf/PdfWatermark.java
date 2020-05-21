@@ -73,7 +73,7 @@ public class PdfWatermark {
 			return ByteBuffer.wrap(os.toByteArray());
 		}
 		catch(Exception ex) {
-			throw new RuntimeException("Failed to add watermarks to the PDF", ex);
+			throw new RuntimeException("Failed to add image watermark to the PDF", ex);
 		}		
 	}
 
@@ -100,16 +100,15 @@ public class PdfWatermark {
 			final ByteArrayOutputStream os = new ByteArrayOutputStream();
 			
 			final PdfReader reader = new PdfReader(pdf.array());
-			final int numPages = reader.getNumberOfPages();
 			final PdfStamper stamper = new PdfStamper(reader, os);
+			final int numPages = reader.getNumberOfPages();
 			final int startPage = 1 + skipTopPages;
 			final int endPage = numPages - skipBottomPages;
 
 			final BaseFont baseFont = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
 
-			final Color textColor = opacity(withBlack(color), opacity);
-
-			final Color strokeColor = opacity(withBlack(colorOutline), colorOutlineOpacity);
+			final Color textColor = withOpacity(nullToBlack(color), opacity);
+			final Color strokeColor = withOpacity(nullToBlack(colorOutline), colorOutlineOpacity);
 
 			for(int page=startPage; page<=endPage; page++) {
 				final PdfContentByte cb = overContent 
@@ -141,19 +140,23 @@ public class PdfWatermark {
 			return ByteBuffer.wrap(os.toByteArray());
 		}
 		catch(Exception ex) {
-			throw new RuntimeException("Failed to add watermarks to the PDF", ex);
+			throw new RuntimeException("Failed to add text watermark to the PDF", ex);
 		}		
 	}
 
-	private Color withBlack(final Color color) {
+	private Color nullToBlack(final Color color) {
 		return color == null ? Color.BLACK : color;
 	}
 
-	private Color opacity(final Color color, final float opacity) {
+	private Color withOpacity(final Color color, final float opacity) {
 		return new Color(
 					color.getRed(), 
 					color.getGreen(), 
 					color.getBlue(),
-					Math.max(0, Math.min(255, (int)(opacity * 255))));
+					toIntOpacity(opacity));
+	}
+	
+	private int toIntOpacity(final float opacity) {
+		return Math.max(0, Math.min(255, (int)(opacity * 255)));
 	}
 }
