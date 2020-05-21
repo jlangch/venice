@@ -28,7 +28,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - ...
-- PDF watermark text outline customization to 'pdf' module 
+- PDF watermark text outline customization
 
 
 
@@ -36,7 +36,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- 'pdf' module PDF watermark color opacity: OpenPDF library changed behavior in 
+- PDF watermark color opacity: OpenPDF library changed behavior in 
   one of the recent releases!
 
 

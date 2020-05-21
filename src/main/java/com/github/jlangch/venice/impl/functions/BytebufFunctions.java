@@ -402,7 +402,7 @@ public class BytebufFunctions {
 						 "increments the position by four.")
 					.examples(
 					    "(-> (bytebuf-allocate 8)   \n" +
-						"    (bytebuf-put-int! 4I)   \n" +
+						"    (bytebuf-put-int! 4I)  \n" +
 						"    (bytebuf-put-int! 8I))")
 					.build()
 		) {
@@ -450,7 +450,11 @@ public class BytebufFunctions {
 					.arglists("(bytebuf-pos! buf pos)")
 					.doc("Sets the buffer's position.")
 					.examples(
-						"(bytebuf-pos! (bytebuf-allocate 10) 4)")
+						"(-> (bytebuf-allocate 10)    \n" +
+						"    (bytebuf-pos! 4)         \n" +
+						"    (bytebuf-put-byte! 1)    \n" +
+						"    (bytebuf-pos! 8)         \n" +
+						"    (bytebuf-put-byte! 2))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

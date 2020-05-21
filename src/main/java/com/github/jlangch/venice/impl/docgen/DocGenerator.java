@@ -157,10 +157,10 @@ public class DocGenerator {
 		lit.addSection(literals);
 
 		literals.addItem(new DocItem("Nil: nil", null));
+		literals.addItem(new DocItem("Boolean: true, false", null));
 		literals.addItem(new DocItem("Integer: 150I", null));
 		literals.addItem(new DocItem("Long: 1500", null));
 		literals.addItem(new DocItem("Double: 3.569", null));
-		literals.addItem(new DocItem("Boolean: true, false", null));
 		literals.addItem(new DocItem("BigDecimal: 6.897M", null));
 		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", null) );
 		literals.addItem(new DocItem("String: \"\"\"{ \"age\": 42 }\"\"\"", null) );
@@ -1168,30 +1168,38 @@ public class DocGenerator {
 		from.addItem(getDocItem("read-line"));
 		from.addItem(getDocItem("read-string"));
 
+		final DocSection file = new DocSection("file");
+		all.addSection(file);
+		file.addItem(getDocItem("io/file"));
+		file.addItem(getDocItem("io/file-parent"));
+		file.addItem(getDocItem("io/file-name"));
+		file.addItem(getDocItem("io/file-path"));
+		file.addItem(getDocItem("io/file-absolute-path"));
+		file.addItem(getDocItem("io/file-canonical-path"));
+		file.addItem(getDocItem("io/file-ext?"));
+		file.addItem(getDocItem("io/file-size"));
+
+		final DocSection file_dir = new DocSection("file dir");
+		all.addSection(file_dir);
+		file_dir.addItem(getDocItem("io/mkdir"));
+		file_dir.addItem(getDocItem("io/mkdirs"));
+
 		final DocSection file_io = new DocSection("file i/o");
 		all.addSection(file_io);
-		file_io.addItem(getDocItem("io/file"));
-		file_io.addItem(getDocItem("io/file-parent"));
-		file_io.addItem(getDocItem("io/file-name"));
-		file_io.addItem(getDocItem("io/file-path"));
-		file_io.addItem(getDocItem("io/file-absolute-path"));
-		file_io.addItem(getDocItem("io/file-canonical-path"));
-		file_io.addItem(getDocItem("io/file-ext?"));
-		file_io.addItem(getDocItem("io/list-files"));
-		file_io.addItem(getDocItem("io/list-files-glob"));
-		file_io.addItem(getDocItem("io/list-file-tree"));
-		file_io.addItem(getDocItem("io/file-size"));
-		file_io.addItem(getDocItem("io/delete-file"));
-		file_io.addItem(getDocItem("io/delete-file-on-exit"));
-		file_io.addItem(getDocItem("io/delete-file-tree"));
-		file_io.addItem(getDocItem("io/copy-file"));
-		file_io.addItem(getDocItem("io/move-file"));
-		file_io.addItem(getDocItem("io/mkdir"));
-		file_io.addItem(getDocItem("io/mkdirs"));
 		file_io.addItem(getDocItem("io/slurp"));
 		file_io.addItem(getDocItem("io/slurp-lines"));
 		file_io.addItem(getDocItem("io/spit"));
-		file_io.addItem(getDocItem("io/temp-file"));
+		file_io.addItem(getDocItem("io/copy-file"));
+		file_io.addItem(getDocItem("io/move-file"));
+		file_io.addItem(getDocItem("io/delete-file"));
+		file_io.addItem(getDocItem("io/delete-file-on-exit"));
+		file_io.addItem(getDocItem("io/delete-file-tree"));
+
+		final DocSection file_list = new DocSection("file list");
+		all.addSection(file_list);
+		file_list.addItem(getDocItem("io/list-files"));
+		file_list.addItem(getDocItem("io/list-files-glob"));
+		file_list.addItem(getDocItem("io/list-file-tree"));
 
 		final DocSection file_test = new DocSection("file test");
 		all.addSection(file_test);
@@ -1205,6 +1213,7 @@ public class DocGenerator {
 
 		final DocSection file_other = new DocSection("file other");
 		all.addSection(file_other);
+		file_other.addItem(getDocItem("io/temp-file"));
 		file_other.addItem(getDocItem("io/tmp-dir"));
 		file_other.addItem(getDocItem("io/user-dir"));
 		file_other.addItem(getDocItem("io/user-home-dir"));
@@ -1369,16 +1378,24 @@ public class DocGenerator {
 		all.addSection(fields);
 		fields.addItem(getDocItem("time/year"));
 		fields.addItem(getDocItem("time/month"));
-		fields.addItem(getDocItem("time/hour"));
-		fields.addItem(getDocItem("time/minute"));
-		fields.addItem(getDocItem("time/second"));
-		fields.addItem(getDocItem("time/length-of-year"));
-		fields.addItem(getDocItem("time/length-of-month"));
 		fields.addItem(getDocItem("time/day-of-week"));
 		fields.addItem(getDocItem("time/day-of-month"));
 		fields.addItem(getDocItem("time/day-of-year"));
-		fields.addItem(getDocItem("time/zone"));
-		fields.addItem(getDocItem("time/zone-offset"));
+		fields.addItem(getDocItem("time/hour"));
+		fields.addItem(getDocItem("time/minute"));
+		fields.addItem(getDocItem("time/second"));
+
+		final DocSection etc = new DocSection("Fields etc");
+		all.addSection(etc);
+		etc.addItem(getDocItem("time/length-of-year"));
+		etc.addItem(getDocItem("time/length-of-month"));
+		etc.addItem(getDocItem("time/first-day-of-month"));
+		etc.addItem(getDocItem("time/last-day-of-month"));
+		
+		final DocSection zone = new DocSection("Zone");
+		all.addSection(zone);
+		zone.addItem(getDocItem("time/zone"));
+		zone.addItem(getDocItem("time/zone-offset"));
 
 		final DocSection format = new DocSection("Format");
 		all.addSection(format);
@@ -1400,8 +1417,6 @@ public class DocGenerator {
 		misc.addItem(getDocItem("time/plus"));
 		misc.addItem(getDocItem("time/minus"));
 		misc.addItem(getDocItem("time/period"));
-		misc.addItem(getDocItem("time/first-day-of-month"));
-		misc.addItem(getDocItem("time/last-day-of-month"));
 		misc.addItem(getDocItem("time/earliest"));
 		misc.addItem(getDocItem("time/latest"));
 
