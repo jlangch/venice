@@ -297,8 +297,11 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "def": { // (def name value)
-					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env));
+					final VncSymbol name = validateSymbolWithCurrNS(
+												qualifySymbolWithCurrNS(
+														evaluateSymbolMetaData(ast.second(), env)),
+											"def");
+					
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -307,8 +310,11 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defonce": { // (defonce name value)
-					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env));
+					final VncSymbol name = validateSymbolWithCurrNS(
+												qualifySymbolWithCurrNS(
+														evaluateSymbolMetaData(ast.second(), env)),
+												"defonce");
+									
 					final VncVal val = ast.third();
 
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -317,8 +323,11 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "def-dynamic": { // (def-dynamic name value)
-					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env));				
+					final VncSymbol name = validateSymbolWithCurrNS(
+												qualifySymbolWithCurrNS(
+														evaluateSymbolMetaData(ast.second(), env)),
+												"def-dynamic");
+					
 					final VncVal val = ast.third();
 					
 					final VncVal res = evaluate(val, env).withMeta(name.getMeta());
@@ -414,8 +423,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "defmulti": { // (defmulti name dispatch-fn)
-					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env));
+					final VncSymbol name =  validateSymbolWithCurrNS(
+												qualifySymbolWithCurrNS(
+														evaluateSymbolMetaData(ast.second(), env)),
+											"defmulti");
 					
 					IVncFunction dispatchFn;
 					
@@ -1554,6 +1565,26 @@ public class VeniceInterpreter implements Serializable  {
 						: ns.getName() + "/" + sym.getName(), 
 					MetaUtil.setNamespace(sym.getMeta(), ns.getName()));
 		}
+	}
+	
+	private VncSymbol validateSymbolWithCurrNS(
+			final VncSymbol sym,
+			final String specialFormName
+	) {
+		if (sym != null) {
+			// do not allow to hijack another namespace
+			final String ns = Namespaces.getNamespace(sym.getName());
+			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
+				throw new VncException(String.format(
+						"Special form '%s': Invalid use of namespace. "
+							+ "The symbol '%s' can only be defined for the current namespace '%s'.",
+							specialFormName,
+						Namespaces.getName(sym.getName()),
+						Namespaces.getCurrentNS().toString())); 
+			}
+		}
+		
+		return sym;
 	}
 	
 	
