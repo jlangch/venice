@@ -985,7 +985,6 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
                    :outline-opacity   0.8
                    :outline-width     0.5
                    :angle             45.0
-                   :over-content      true
                    :skip-top-pages    1
                    :skip-bottom-pages 0 })
 
