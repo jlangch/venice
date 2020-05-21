@@ -188,4 +188,24 @@ public class SpecialFormsTest_deftype {
 
 		assertThrows(AssertionException.class, () -> new Venice().eval(script));
 	}
+	
+	@Test
+	public void test_deftype_ns_hijack_1() {
+		final String script =
+				"(do                                                      \n" +
+				"  (ns foo)                                               \n" +
+				"  (deftype :user/complex [real :long, imaginary :long]))   ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
+	public void test_deftype_ns_hijack_2() {
+		final String script =
+				"(do                                                      \n" +
+				"  (ns foo)                                               \n" +
+				"  (deftype :core/complex [real :long, imaginary :long]))   ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
 }

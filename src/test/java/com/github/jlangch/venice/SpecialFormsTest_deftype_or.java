@@ -97,11 +97,30 @@ public class SpecialFormsTest_deftype_or {
 	@Test
 	public void test_deftype_or_no_values() {
 		final String script =
-				"(do                                                      \n" +
-				"  (deftype-or :user/numbers )               			  \n" +
-				"  (doc :user/color))                                       ";
+				"(do                                           \n" +
+				"  (deftype-or :user/numbers )                 \n" +
+				"  (doc :user/color))                           ";
 	
 		assertThrows(VncException.class, () -> new Venice().eval(script));
 	}
 
+	@Test
+	public void test_deftype_of_ns_hijack_1() {
+		final String script =
+				"(do                                           \n" +
+				"  (ns foo)                                    \n" +
+				"  (deftype-or :user/color :red :green :blue))   ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
+	public void test_deftype_of_ns_hijack_2() {
+		final String script =
+				"(do                                           \n" +
+				"  (ns foo)                                    \n" +
+				"  (deftype-or :core/color :red :green :blue))   ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
 }

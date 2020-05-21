@@ -98,4 +98,23 @@ public class SpecialFormsTest_deftype_of {
 		assertThrows(AssertionException.class, () -> new Venice().eval(script));
 	}
 
+	@Test
+	public void test_deftype_of_ns_hijack_1() {
+		final String script =
+				"(do                                         \n" +
+				"  (ns foo)                                  \n" +
+				"  (deftype-of :user/email-address :string))   ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
+	public void test_deftype_of_ns_hijack_2() {
+		final String script =
+				"(do                                         \n" +
+				"  (ns foo)                                  \n" +
+				"  (deftype-of :core/email-address :string))   ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
 }

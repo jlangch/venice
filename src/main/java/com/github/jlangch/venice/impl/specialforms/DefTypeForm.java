@@ -81,8 +81,8 @@ public class DefTypeForm {
 		
 		if (registry.existsCustomType(qualifiedType)) {
 			throw new VncException(String.format(
-					"deftype: the type :%s already exists.", 
-					qualifiedType.getValue())); 
+					"deftype: the type %s already exists.", 
+					qualifiedType.toString())); 
 		}
 
 		
@@ -104,14 +104,14 @@ public class DefTypeForm {
 
 		if (!wrappableTypes.isWrappable(qualifiedBaseType)) {
 			throw new VncException(String.format(
-					"deftype-of: the type :%s can not be wrapped.", 
-					baseType.getValue())); 
+					"deftype-of: the type %s can not be wrapped.", 
+					baseType.toString())); 
 		}
 
 		if (registry.existsWrappedType(qualifiedType)) {
 			throw new VncException(String.format(
-					"deftype: the type :%s already exists.", 
-					qualifiedType.getValue())); 
+					"deftype: the type %s already exists.", 
+					qualifiedType.toString())); 
 		}
 
 		registry.addWrappedType(new VncWrappingTypeDef(qualifiedType, qualifiedBaseType, validationFn));
@@ -143,8 +143,8 @@ public class DefTypeForm {
 					}
 					else {
 						throw new VncException(String.format(
-								"The type :%s is not defined.", 
-								k.getValue())); 
+								"The type %s is not defined.", 
+								k.toString())); 
 					}
 				}
 				else {
@@ -226,8 +226,8 @@ public class DefTypeForm {
 		}
 
 		throw new VncException(String.format(
-				"The custom type :%s is not defined.", 
-				qualifiedType.getValue())); 
+				"The custom type %s is not defined.", 
+				qualifiedType.toString())); 
 	}
 
 	public static VncVal createCustomType(
@@ -236,8 +236,8 @@ public class DefTypeForm {
 	) {
 		if (typeDef.count() != typeArgs.size()) {
 			throw new VncException(String.format(
-					"The custom type :%s requires %d args. %d have been passed", 
-					typeDef.getType().getValue(), 
+					"The custom type %s requires %d args. %d have been passed", 
+					typeDef.getType().toString(), 
 					typeDef.count(),
 					typeArgs.size())); 
 		}
@@ -295,15 +295,15 @@ public class DefTypeForm {
 		// not a choice type
 		if (Types.isCorePrimitiveType(val)) {
 			throw new VncException(String.format(
-					"The choice type :%s  is not compatible with the value %s", 
-					typeDef.getType().getValue(), 
+					"The choice type %s is not compatible with the value %s", 
+					typeDef.getType().toString(), 
 					val.toString(true))); 
 		}
 		else {
 			throw new VncException(String.format(
-					"The choice type :%s  is not compatible with a value of type :%s", 
-					typeDef.getType().getValue(), 
-					type.getValue())); 
+					"The choice type %s is not compatible with a value of type %s", 
+					typeDef.getType().toString(), 
+					type.toString())); 
 		}
 	}
 
@@ -325,12 +325,12 @@ public class DefTypeForm {
 		}
 		
 		throw new VncException(String.format(
-				"The type :%s requires arg %d of type :%s "
-						+ "instead of the passed :%s", 
-					type.getValue(), 
+				"The type %s requires arg %d of type %s "
+						+ "instead of the passed %s", 
+					type.toString(), 
 					fieldDef.getIndex() + 1,
-					fieldDef.getType().getValue(),
-					argType.getValue())); 
+					fieldDef.getType().toString(),
+					argType.toString())); 
 	}
 	
 	private static VncKeyword qualifyBaseType(
@@ -363,9 +363,10 @@ public class DefTypeForm {
 			final String ns = Namespaces.getNamespace(type.getValue());
 			if (!ns.equals(Namespaces.getCurrentNS().getName())) {
 				throw new VncException(String.format(
-						"%s: the type :%s can only be defined for the current namespace '%s'.",
+						"function %s: Invalid use of namespace. "
+							+ "The type %s can only be defined for the current namespace '%s'.",
 						fnName,
-						type.getValue(),
+						type.toString(),
 						Namespaces.getCurrentNS().getValue())); 
 			}	
 			
