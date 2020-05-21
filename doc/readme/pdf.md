@@ -327,7 +327,7 @@ Dynamically created images can be passed to the renderer as in-memory resources.
 (pdf/render xhtml :resources images)
 ```
 
-These images are then referred as:
+These images are then referred to as:
 
 ```html
 <img src="memory:/images/chart_2018.png"/>
