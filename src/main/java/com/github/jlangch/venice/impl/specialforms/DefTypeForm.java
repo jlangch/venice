@@ -70,13 +70,14 @@ public class DefTypeForm {
 				new VncCustomTypeFieldDef(
 					new VncKeyword(
 						Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
-					qualifyType(
+					qualifyBaseType(
 						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
 						registry), 
 					ii));
 		}
 		
-		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+
+		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype");
 		
 		if (registry.existsCustomType(qualifiedType)) {
 			throw new VncException(String.format(
@@ -97,9 +98,9 @@ public class DefTypeForm {
 			final CustomTypeDefRegistry registry,
 			final CustomWrappableTypes wrappableTypes
 	) {
-		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-of");
 
-		final VncKeyword qualifiedBaseType = qualifyType(baseType, registry);
+		final VncKeyword qualifiedBaseType = qualifyBaseType(baseType, registry);
 
 		if (!wrappableTypes.isWrappable(qualifiedBaseType)) {
 			throw new VncException(String.format(
@@ -123,7 +124,7 @@ public class DefTypeForm {
 			final VncList choiceVals,
 			final CustomTypeDefRegistry registry
 	) {
-		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-or");
 
 		if (choiceVals.isEmpty()) {
 			throw new VncException("There is at least one value required for a choice type."); 
@@ -147,7 +148,7 @@ public class DefTypeForm {
 					}
 				}
 				else {
-					final VncKeyword qualified = qualifyType(k, registry);
+					final VncKeyword qualified = qualifyBaseType(k, registry);
 					if (registry.existsType(qualified)) {
 						choiceTypes.add(qualified);
 					}
@@ -332,7 +333,7 @@ public class DefTypeForm {
 					argType.getValue())); 
 	}
 	
-	private static VncKeyword qualifyType(
+	private static VncKeyword qualifyBaseType(
 			final VncKeyword type,
 			final CustomTypeDefRegistry registry
 	) {
@@ -350,6 +351,28 @@ public class DefTypeForm {
 			else {
 				return Namespaces.qualifyKeyword(Namespaces.NS_CORE, type);
 			}
+		}
+	}
+	
+	public static VncKeyword qualifyMainTypeWithCurrentNS(
+			final VncKeyword type,
+			final String fnName
+	) {
+		if (Namespaces.isQualified(type)) {
+			// do not allow to hijack another namespace
+			final String ns = Namespaces.getNamespace(type.getValue());
+			if (!ns.equals(Namespaces.getCurrentNS().getName())) {
+				throw new VncException(String.format(
+						"%s: the type :%s can only be defined for the current namespace '%s'.",
+						fnName,
+						type.getValue(),
+						Namespaces.getCurrentNS().getValue())); 
+			}	
+			
+			return type;
+		}
+		else {
+			return Namespaces.qualifyKeyword(Namespaces.getCurrentNS(), type);
 		}
 	}
 
