@@ -156,8 +156,9 @@
            """)
 
   (when-not *macroexpand-on-load*
-    (println """
-
+    (println)
+    (println *err*
+             """
              -------------------------------------------------------------------
              Warning: macroexpand-on-load is not activated. To get a much better
                       performance activate macroexpand-on-load before loading
@@ -168,9 +169,9 @@
              """))
 
   (when-not (io/exists-file? maxmind-country-zip)
+    (println)
     (println *err*
              """
-
              -------------------------------------------------------------------
              Error: The MaxMind country file does not exist!
 
