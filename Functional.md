@@ -29,9 +29,13 @@
 
 
 
-## ETA
+## Languages
 
 [ETA](https://eta-lang.org/)
+
+[Elixier](https://elixir-lang.org/)
+
+[Elm](https://elm-lang.org/)
 
 
 
