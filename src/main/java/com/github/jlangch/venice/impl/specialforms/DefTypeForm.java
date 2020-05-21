@@ -364,10 +364,10 @@ public class DefTypeForm {
 			if (!ns.equals(Namespaces.getCurrentNS().getName())) {
 				throw new VncException(String.format(
 						"function %s: Invalid use of namespace. "
-							+ "The type %s can only be defined for the current namespace '%s'.",
+							+ "The type '%s' can only be defined for the current namespace '%s'.",
 						fnName,
-						type.toString(),
-						Namespaces.getCurrentNS().getValue())); 
+						Namespaces.getName(type.getValue()),
+						Namespaces.getCurrentNS().toString())); 
 			}	
 			
 			return type;
