@@ -326,7 +326,13 @@ public class SpecialForms {
 						"              (assert (pos? (:real t)) \"real must be positive\")             \n" +
 						"              (assert (pos? (:imaginary t)) \"imaginary must be positive\"))) \n" +
 						"  (def x (.: :complex 100 200))                                               \n" +
-						"  [(:real x) (:imaginary x)])                                                   ")
+						"  [(:real x) (:imaginary x)])                                                   ",
+						"(do                                                      \n" +
+						"  (ns foo)                                               \n" +
+						"  (deftype :named [name :string, value :any])            \n" +
+						"  (def x (.: :named \"count\" 200))                      \n" +
+						"  (def y (.: :named \"seq\" [1 2]))                      \n" +
+						"  [x y])                                                   ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;

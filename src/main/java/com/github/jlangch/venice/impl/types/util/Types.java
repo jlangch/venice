@@ -367,6 +367,7 @@ public class Types {
 			case "core/char":		return true;
 			case "core/symbol":		return true;
 			case "core/keyword":	return true;
+			case "core/function":	return true;
 			default:				return false;
 		}		
 	}
@@ -484,5 +485,7 @@ public class Types {
 					? type
 					: Namespaces.qualifyKeyword(ns, type);	
 	}
-
+	
+	
+	public static VncKeyword ANY = new VncKeyword("core/any");
 }

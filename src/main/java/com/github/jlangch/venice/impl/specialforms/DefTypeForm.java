@@ -312,6 +312,10 @@ public class DefTypeForm {
 			final VncCustomTypeFieldDef fieldDef,
 			final VncVal arg
 	) {
+		if (Types.ANY.equals(fieldDef.getType())) {
+			return;
+		}
+
 		VncKeyword argType = Types.getType(arg);
 		if (fieldDef.getType().equals(argType)) {
 			return;

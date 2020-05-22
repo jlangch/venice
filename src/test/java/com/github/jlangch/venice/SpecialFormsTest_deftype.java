@@ -34,10 +34,10 @@ public class SpecialFormsTest_deftype {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :user/complex 100 200))                     \n" +
-				"  (pr-str x))                                              ";
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (.: :complex 100 200))                     \n" +
+				"  (pr-str x))                                         ";
 
 		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
 	}
@@ -47,10 +47,10 @@ public class SpecialFormsTest_deftype {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :user/complex 100 200))                     \n" +
-				"  (pr-str [(:real x) (:imaginary x)]))                     ";
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (.: :complex 100 200))                     \n" +
+				"  (pr-str [(:real x) (:imaginary x)]))                ";
 
 		assertEquals("[100 200]", venice.eval(script));					
 	}
@@ -61,9 +61,9 @@ public class SpecialFormsTest_deftype {
 
 		final String script =
 				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (deftype :user/test [a :user/complex, b :long])        \n" +
-				"  (def x (.: :user/test (.: :user/complex 100 200) 400)) \n" +
+				"  (deftype :complex [real :long, imaginary :long])       \n" +
+				"  (deftype :test [a :user/complex, b :long])             \n" +
+				"  (def x (.: :test (.: :user/complex 100 200) 400))      \n" +
 				"  (pr-str x))                                              ";
 
 		assertEquals("#:user/test{:a #:user/complex{:real 100 :imaginary 200} :b 400}", venice.eval(script));					
@@ -75,9 +75,9 @@ public class SpecialFormsTest_deftype {
 
 		final String script =
 				"(do                                                           \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])       \n" +
-				"  (deftype :user/test [a :user/complex, b :long])             \n" +
-				"  (def x (.: :user/test (.: :user/complex 100 200) 400))      \n" +
+				"  (deftype :complex [real :long, imaginary :long])            \n" +
+				"  (deftype :test [a :user/complex, b :long])                  \n" +
+				"  (def x (.: :test (.: :complex 100 200) 400))                \n" +
 				"  (pr-str [[(-> x :a :real)  (-> x :a :imaginary)] (:b x)]))    ";
 	
 		assertEquals("[[100 200] 400]", venice.eval(script));					
@@ -134,13 +134,30 @@ public class SpecialFormsTest_deftype {
 	}
 
 	@Test
+	public void test_deftype_any() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                             \n" +
+				"  (deftype :named [name :string, value :any])   \n" +
+				"  (def x (.: :named \"a\" 200))                 \n" +
+				"  (def y (.: :named \"b\" [1 2]))               \n" +
+				"  (pr-str [x y]))                                 ";
+
+		assertEquals(
+				"[#:user/named{:name \"a\" :value 200} "
+					+ "#:user/named{:name \"b\" :value [1 2]}]", 
+				venice.eval(script));					
+	}
+
+	@Test
 	public void test_deftype_type() {
 		final Venice venice = new Venice();
 
 		final String script =
 				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :user/complex 100 200))                     \n" +
+				"  (deftype :complex [real :long, imaginary :long])       \n" +
+				"  (def x (.: :complex 100 200))                          \n" +
 				"  (pr-str (type x)))                                       ";
 
 		assertEquals(":user/complex", venice.eval(script));					
@@ -152,8 +169,8 @@ public class SpecialFormsTest_deftype {
 
 		final String script =
 				"(do                                                      \n" +
-				"  (deftype :user/complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :user/complex 100 200))                     \n" +
+				"  (deftype :complex [real :long, imaginary :long])       \n" +
+				"  (def x (.: :complex 100 200))                           \n" +
 				"  (pr-str (supertype x)))                                  ";
 
 		assertEquals(":core/custom-type", venice.eval(script));					
@@ -165,11 +182,11 @@ public class SpecialFormsTest_deftype {
 
 		final String script =
 				"(do                                                      \n" +
-				"  (deftype :user/complex                                 \n" +
+				"  (deftype :complex                                      \n" +
 				"           [real :long, imaginary :long]                 \n" +
 				"           (fn [t] (assert (pos? (:real t))              \n" +
 				"                   \"real must be positive\")))          \n" +
-				"  (def x (.: :user/complex 100 200))                     \n" +
+				"  (def x (.: :complex 100 200))                          \n" +
 				"  (pr-str [(:real x) (:imaginary x)]))                     ";
 
 		assertEquals("[100 200]", venice.eval(script));					
@@ -179,11 +196,11 @@ public class SpecialFormsTest_deftype {
 	public void test_deftype_validation_FAILED() {
 		final String script =
 				"(do                                                      \n" +
-				"  (deftype :user/complex                                 \n" +
+				"  (deftype :complex                                      \n" +
 				"           [real :long, imaginary :long]                 \n" +
 				"           (fn [t] (assert (pos? (:real t))              \n" +
 				"                   \"real must be positive\")))          \n" +
-				"  (def x (.: :user/complex -100 200))                    \n" +
+				"  (def x (.: :complex -100 200))                         \n" +
 				"  (pr-str [(:real x) (:imaginary x)]))                     ";
 
 		assertThrows(AssertionException.class, () -> new Venice().eval(script));
