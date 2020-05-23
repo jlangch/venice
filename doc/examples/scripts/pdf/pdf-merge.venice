@@ -23,8 +23,8 @@
   (ns test)
 
   ;; ensure PDF libs are available when loading this file
-  (when-not (pdf/available?)
-    (throw (. :VncException :new "The PDF libraries are not on the classpath!")))
+  (pdf/check-required-libs)
+
 
 
   (let [pdf (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)

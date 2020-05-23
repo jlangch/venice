@@ -22,13 +22,14 @@
 (do
   (ns test)
 
-  ;; ensure PDF libs are available when loading this file
-  (when-not (pdf/available?)
-    (throw (. :VncException :new "The PDF libraries are not on the classpath!")))
-
-
   (load-module :kira)
   (load-module :xchart)
+
+  ;; ensure XChart and PDF libs are available when loading this file
+  (xchart/check-required-libs)
+  (pdf/check-required-libs)
+
+
 
   (defn chart []
     (xchart/to-bytes-with-dpi

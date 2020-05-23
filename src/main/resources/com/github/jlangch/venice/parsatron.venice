@@ -33,8 +33,12 @@
 
 (ns parsatron)
 
-(defn InputState. [input pos] { :input input :pos pos })
-(defn SourcePos. [line column] { :line line :column column })
+(deftype :source-pos [line :long, column :long])
+(deftype :input-state [input :string, pos :source-pos])
+
+(deftype :continue_ [fn :function])
+(deftype :ok [item :any])
+(deftype :err [errmsg :string])
 
 (defn Continue. [fn] { :fn fn :type :Continue })
 (defn Ok. [item] { :item item :type :Ok })
@@ -46,14 +50,14 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; position
-(defn inc-sourcepos
+(defn inc-source-pos
   ; Increment the source position by a single character, c. On newline,
-  ; increments the SourcePos's line number and resets the column, on
+  ; increments the source pos's line number and resets the column, on
   ; all other characters, increments the column
-  [{:keys [line column]} c]
+  [pos c]
   (if (str/linefeed? c)
-    (SourcePos. (inc line) 1)
-    (SourcePos. line (inc column))))
+    (.: :source-pos (inc (:line pos)) 1)
+    (.: :source-pos (:line pos) (inc (:column pos)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; errors
@@ -228,7 +232,7 @@
     (if-not (empty? input)
       (let [tok (first input)]
         (if (consume? tok)
-          (cok tok (InputState. (rest input) (inc-sourcepos pos tok)))
+          (cok tok (.: :input-state (rest input) (inc-source-pos pos tok)))
           (eerr (unexpect-error (str "token '" tok "'") pos))))
       (eerr (unexpect-error "end of input" pos)))))
 
@@ -346,7 +350,7 @@
   ; in a VncException and thrown, and if the parser succeeds, its
   ; value is returned
   [p input]
-  (let [result (run-parser p (InputState. input (SourcePos. 1 1)))]
+  (let [result (run-parser p (.: :input-state input (.: :source-pos 1 1)))]
     (cond
       (Ok? result) (:item result)
       (Err? result) (throw (fail (:errmsg result))))))

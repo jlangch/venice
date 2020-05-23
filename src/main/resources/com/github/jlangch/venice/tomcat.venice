@@ -49,6 +49,7 @@
         :org.apache.coyote.http11.Http11NioProtocol
         :org.apache.tomcat.util.net.SSLHostConfig)
 
+
 (defonce default-http-port 8080)
 (defonce default-https-port 8443)
 (defonce default-base-dir ".")
@@ -86,14 +87,25 @@
 
 
 ;; ---------------------------------------------------------------------------
-;; ensure Tomcat libs are available when using the module
+;; check Tomcat libs are available
 ;; ---------------------------------------------------------------------------
-(try
-  (class :org.apache.catalina.startup.Tomcat)
-  (catch :java.lang.Exception ex
-         (throw (. :VncException :new
-                   "The Tomcat libraries are not on the classpath!"))))
 
+(defn check-required-libs []
+ (when-not (exists-class? :org.apache.catalina.startup.Tomcat))
+   (throw (. :VncException :new
+             """
+             The Tomcat libraries are not on the classpath!
+
+             (do
+               (load-module :maven)
+               (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.34")
+               (maven/download "javax.annotation-api-1.3.2.jar"))
+             """)))
+
+
+;; ---------------------------------------------------------------------------
+;; Tomcat functions
+;; ---------------------------------------------------------------------------
 
 (defn- create-executor [options]
   (let [executor (. :StandardThreadExecutor :new)]

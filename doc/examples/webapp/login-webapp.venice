@@ -41,6 +41,10 @@
 (load-module :kira)
 
 
+; ensure the Tomcat libs are on the classpath
+(tc/check-required-libs)
+
+
 ;; -----------------------------------------------------------------------------
 ;; HTML templates
 ;; -----------------------------------------------------------------------------

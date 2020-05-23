@@ -202,6 +202,50 @@ public class PdfFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction pdf_check_required_libs = 
+		new VncFunction(
+				"pdf/check-required-libs", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(pdf/check-required-libs)")
+					.doc(
+						"Checks if the 3rd party libraries required for generating PDFs " +
+						"are available. Throws an exception if not.")
+					.examples(
+						"(pdf/check-required-libs)")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("pdf/check-required-libs", args, 0);
+				
+				
+				// com.github.librepdf:openpdf:xxx
+				if (ReflectionAccessor.classExists("com.lowagie.text.Anchor")
+						// com.github.librepdf:pdf-toolbox:xxx
+						&& ReflectionAccessor.classExists("com.lowagie.text.pdf.PdfCopy")
+						// org.xhtmlrenderer:flying-saucer-core:xxx
+						&& ReflectionAccessor.classExists("org.xhtmlrenderer.DefaultCSSMarker")
+						// org.xhtmlrenderer:flying-saucer-pdf-openpdf:xxx
+						&&ReflectionAccessor.classExists("org.xhtmlrenderer.pdf.AbstractFormField")
+				) {
+					return Nil;
+				}
+
+				throw new VncException(
+						"The PDF libraries are not on the classpath! \n" +
+						"\n" +
+						"(do \n" +
+			            "  (load-module :maven) \n" +
+			            "  (maven/download \"com.github.librepdf:flying-saucer-core:9.1.20\") \n" +
+			            "  (maven/download \"com.github.librepdf:lying-saucer-pdf-openpdf:9.1.20\"))" +
+			            "  (maven/download \"com.github.librepdf:openpdf:1.3.17\") \n" +
+			            "  (maven/download \"com.github.librepdf:pdf-toolbox:1.3.17\") \n");
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction pdf_available_Q = 
 		new VncFunction(
 				"pdf/available?", 
@@ -215,22 +259,13 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("pdf/available?", args, 0);
 				
-				// com.github.librepdf:openpdf:xxx
-				if (!ReflectionAccessor.classExists("com.lowagie.text.Anchor")) {
+				try {
+					pdf_check_required_libs.apply(new VncList());
+					return VncBoolean.True;
+				}
+				catch(Exception ex) {
 					return VncBoolean.False;
 				}
-				
-				// org.xhtmlrenderer:flying-saucer-core:xxx
-				if (!ReflectionAccessor.classExists("org.xhtmlrenderer.DefaultCSSMarker")) {
-					return VncBoolean.False;
-				}
-				
-				// org.xhtmlrenderer:flying-saucer-pdf-openpdf:xxx
-				if (!ReflectionAccessor.classExists("org.xhtmlrenderer.pdf.AbstractFormField")) {
-					return VncBoolean.False;
-				}
-
-				return VncBoolean.True;
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -631,7 +666,8 @@ public class PdfFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap
-					.Builder()			
+					.Builder()	
+					.add(pdf_check_required_libs)
 					.add(pdf_available_Q)
 					.add(pdf_render)
 					.add(pdf_watermark)

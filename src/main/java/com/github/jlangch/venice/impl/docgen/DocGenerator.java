@@ -1522,13 +1522,14 @@ public class DocGenerator {
 		
 		final DocSection pdf = new DocSection("PDF");
 		all.addSection(pdf);
-		pdf.addItem(getDocItem("pdf/available?", false));
 		pdf.addItem(getDocItem("pdf/render", false));
 		pdf.addItem(getDocItem("pdf/watermark", false));
 		pdf.addItem(getDocItem("pdf/merge", false));
 		pdf.addItem(getDocItem("pdf/copy", false));
 		pdf.addItem(getDocItem("pdf/pages", false));
 		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
+		pdf.addItem(getDocItem("pdf/available?", false));
+		pdf.addItem(getDocItem("pdf/check-required-libs", false));
 		
 		final DocSection crypt = new DocSection("Cryptography");
 		all.addSection(crypt);

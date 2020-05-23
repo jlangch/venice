@@ -22,12 +22,12 @@
 (do
   (ns test)
 
-  ;; ensure PDF libs are available when loading this file
-  (when-not (pdf/available?)
-    (throw (. :VncException :new "The PDF libraries are not on the classpath!")))
-
-
   (load-module :kira)
+
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+
 
   ; define the template
   (def text

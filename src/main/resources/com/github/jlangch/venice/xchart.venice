@@ -85,15 +85,16 @@
 (import :javax.swing.SwingUtilities)
 
 
+(defn check-required-libs []
+  (when-not (exists-class? :org.knowm.xchart.PieChart))
+    (throw (. :VncException :new
+              """
+              The XChart libraries are not on the classpath!
 
-;; ---------------------------------------------------------------------------
-;; ensure XChart libs are available when using the module
-;; ---------------------------------------------------------------------------
-(try
-  (class :org.knowm.xchart.PieChart)
-  (catch :java.lang.Exception ex
-         (throw (. :VncException :new
-                   "The XChart libraries are not on the classpath!"))))
+              (do
+                (load-module :maven)
+                (maven/download "org.knowm.xchart:xchart:3.6.3"))
+              """)))
 
 
 ;; ---------------------------------------------------------------------------

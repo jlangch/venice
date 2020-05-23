@@ -6,6 +6,11 @@
 (load-module :tomcat)
 (load-module :ring)
 
+
+; ensure the Tomcat libs are on the classpath
+(tc/check-required-libs)
+
+
 (defn hello-world-handler [request]
   { :status 200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
