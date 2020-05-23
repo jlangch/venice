@@ -73,6 +73,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 
@@ -1764,8 +1765,12 @@ public class IOFunctions {
 				"io/load-classpath-resource",
 				VncFunction
 					.meta()
-					.arglists("(io/load-classpath-resource name)")
-					.doc("Loads a classpath resource.")
+					.arglists(
+						"(io/load-classpath-resource name)")
+					.doc(
+						"Loads a classpath resource.")
+					.examples(
+						"(io/load-classpath-resource \"org/foo/images/foo.png\"")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1798,6 +1803,49 @@ public class IOFunctions {
 				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_classpath_resource_Q =
+		new VncFunction(
+				"io/classpath-resource?",
+				VncFunction
+					.meta()
+					.arglists(
+						"(io/classpath-resource? name)")
+					.doc(
+						"Returns true if the classpath resource exists otherwise false.")
+					.examples(
+						"(io/classpath-resource? \"org/foo/images/foo.png\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				try {
+					assertArity("io/classpath-resource?", args, 1);
+
+					final VncVal name = args.first();
+
+					if (Types.isVncString(name)) {
+						final String path = ((VncString)args.first()).getValue();
+						return VncBoolean.of(new ClassPathResource(path).getResource() != null);
+					}
+					else if (Types.isVncKeyword(name)) {
+						final String path = ((VncKeyword)args.first()).getValue();
+						return VncBoolean.of(new ClassPathResource(path).getResource() != null);
+					}
+					else if (Types.isVncSymbol(name)) {
+						final String path = ((VncSymbol)args.first()).getName();
+						return VncBoolean.of(new ClassPathResource(path).getResource() != null);
+					}
+					else {
+						return VncBoolean.False;
+					}
+				}
+				catch (Exception ex) {
+					return VncBoolean.False;
 				}
 			}
 
@@ -1931,5 +1979,6 @@ public class IOFunctions {
 					.add(io_mime_type)
 					.add(io_default_charset)
 					.add(io_load_classpath_resource)
+					.add(io_classpath_resource_Q)
 					.toMap();
 }

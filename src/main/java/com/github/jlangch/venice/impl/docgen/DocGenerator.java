@@ -1218,6 +1218,11 @@ public class DocGenerator {
 		file_other.addItem(getDocItem("io/user-dir"));
 		file_other.addItem(getDocItem("io/user-home-dir"));
 
+		final DocSection classpath = new DocSection("classpath");
+		all.addSection(classpath);
+		classpath.addItem(getDocItem("io/load-classpath-resource", false));
+		classpath.addItem(getDocItem("io/classpath-resource?", false));
+		
 		final DocSection stream = new DocSection("stream");
 		all.addSection(stream);
 		stream.addItem(getDocItem("io/copy-stream"));
@@ -1260,7 +1265,6 @@ public class DocGenerator {
 		final DocSection other = new DocSection("other");
 		all.addSection(other);
 		other.addItem(getDocItem("with-out-str"));
-		other.addItem(getDocItem("io/load-classpath-resource"));
 		other.addItem(getDocItem("io/mime-type"));
 		other.addItem(getDocItem("io/default-charset"));
 
