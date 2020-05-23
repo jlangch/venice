@@ -1474,12 +1474,16 @@ public class DocGenerator {
 		java.addItem(getDocItem("."));
 		java.addItem(getDocItem("proxify"));
 		java.addItem(getDocItem("import"));
-		java.addItem(getDocItem("java-obj?"));
 		java.addItem(getDocItem("java-iterator-to-list"));
 		java.addItem(getDocItem("java-enumeration-to-list"));
 		java.addItem(getDocItem("cast"));
 		java.addItem(getDocItem("class"));
-	
+
+		final DocSection test = new DocSection("Test");
+		all.addSection(test);	
+		test.addItem(getDocItem("java-obj?"));
+		test.addItem(getDocItem("exists-class?"));
+
 		final DocSection support = new DocSection("Support");
 		all.addSection(support);	
 		support.addItem(getDocItem("imports"));

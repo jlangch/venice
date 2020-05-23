@@ -254,7 +254,7 @@ public class JavaInteropFunctions {
 				VncFunction
 					.meta()
 					.arglists("(class name)")
-					.doc("Returns the Java class for the given name.")
+					.doc("Returns the Java class for the given name. Throws an exception if the class is not found.")
 					.examples("(class :java.util.ArrayList)")
 					.build());
 		}
@@ -267,6 +267,36 @@ public class JavaInteropFunctions {
 						JavaInteropUtil.toClass(
 							args.first(), 
 							Namespaces.getCurrentNamespace().getJavaImports()));
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaExistsClassQFn extends AbstractJavaFn {
+		public JavaExistsClassQFn() {
+			super(
+				"exists-class?", 
+				VncFunction
+					.meta()
+					.arglists("(exists-class? name)")
+					.doc("Returns true the Java class for the given name exists otherwise returns false.")
+					.examples("(exists-class? :java.util.ArrayList)")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity("exists-class?", args, 1);
+					
+			try {
+				JavaInteropUtil.toClass(
+					args.first(), 
+					Namespaces.getCurrentNamespace().getJavaImports());
+				return VncBoolean.True;
+			}
+			catch(Exception ex) {
+				return VncBoolean.False;
+			}
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -656,6 +686,7 @@ public class JavaInteropFunctions {
 					.add(new BasesFn())
 					.add(new DescribeJavaClassFn())
 					.add(new JavaClassFn())
+					.add(new JavaExistsClassQFn())
 					.add(new JavaObjQFn())
 					.add(new JavaEnumToListFn())
 					.add(new JavaIterToListFn())
