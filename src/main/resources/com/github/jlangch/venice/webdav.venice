@@ -63,6 +63,7 @@
               """
               The WebDav client libraries are not on the classpath!
 
+              -------------------------------------------------------------------
               (do
                 (load-module :maven)
                 (maven/download "com.github.lookfirst:sardine:5.9")
@@ -70,6 +71,7 @@
                 (maven/download "org.apache.httpcomponents:httpmime:4.5.12")
                 (maven/download "org.apache.httpcomponents:httpcore:4.4.13")
                 (maven/download "org.apache.httpcomponents:httpcore-nio:4.4.13"))
+                -----------------------------------------------------------------
               """))))
 
 (defmacro

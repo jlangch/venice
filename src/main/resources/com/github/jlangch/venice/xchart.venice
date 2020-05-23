@@ -91,9 +91,11 @@
               """
               The XChart libraries are not on the classpath!
 
+              ---------------------------------------------------
               (do
                 (load-module :maven)
                 (maven/download "org.knowm.xchart:xchart:3.6.3"))
+              ---------------------------------------------------
               """))))
 
 

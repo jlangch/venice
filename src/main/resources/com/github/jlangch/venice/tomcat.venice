@@ -96,10 +96,12 @@
               """
               The Tomcat libraries are not on the classpath!
 
+              ---------------------------------------------------------------------
               (do
                 (load-module :maven)
                 (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.34")
                 (maven/download "javax.annotation-api-1.3.2.jar"))
+              ---------------------------------------------------------------------
               """))))
 
 
