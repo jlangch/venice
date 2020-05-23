@@ -27,6 +27,14 @@
   ;; ensure PDF libs are available when loading this file
   (pdf/check-required-libs)
 
+  ;; ensure the fonts are available when loading this file
+  (->> ["fonts/OpenSans-Regular.ttf"
+        "fonts/OpenSans-Bold.ttf"
+        "fonts/SourceCodePro-Regular.ttf"]
+       (docoll (fn [r]
+                (when-not (io/classpath-resource? r)
+                  (throw (. :VncException :new
+                            "Font classpath resource '~{r}' not found!"))))))
 
 
   (def text (str/lorem-ipsum :paragraphs 1))
