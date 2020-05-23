@@ -99,6 +99,11 @@
               """))))
 
 
+; ensure the XChart libs are on the classpath (constant defs require classes)
+(check-required-libs)
+
+
+
 ;; ---------------------------------------------------------------------------
 ;; utils
 ;; ---------------------------------------------------------------------------
