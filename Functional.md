@@ -15,6 +15,8 @@
 
 [Designing with Capabilities - Scott Wlaschin](https://www.youtube.com/watch?v=fi1FsDW1QeY)
 
+[Functors](https://www.youtube.com/watch?v=JUVMiRRq6wU)
+
 [Project Euler](https://projecteuler.net/)
 
 [Lisp 1.5 programmer's manual](http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf)
