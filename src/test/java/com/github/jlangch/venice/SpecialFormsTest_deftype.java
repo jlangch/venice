@@ -184,15 +184,15 @@ public class SpecialFormsTest_deftype {
 				"(do                                                     \n" +
 				"  (deftype :named [name :string, values :sequence])     \n" +
 				"  (def x (.: :named \"a\" '(1 2)))                      \n" +
-				"  (pr-str x))                                         ";
+				"  (pr-str x))                                             ";
 
 		assertEquals("#:user/named{:name \"a\" :values (1 2)}", venice.eval(script_list));					
 
 		final String script_vector =
 				"(do                                                     \n" +
 				"  (deftype :named [name :string, values :sequence])     \n" +
-				"  (def x (.: :named \"a\" [1 2]))                      \n" +
-				"  (pr-str x))                                         ";
+				"  (def x (.: :named \"a\" [1 2]))                       \n" +
+				"  (pr-str x))                                             ";
 
 		assertEquals("#:user/named{:name \"a\" :values [1 2]}", venice.eval(script_vector));					
 	}

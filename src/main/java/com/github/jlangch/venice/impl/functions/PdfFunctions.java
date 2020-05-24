@@ -277,7 +277,9 @@ public class PdfFunctions {
 				VncFunction
 					.meta()
 					.arglists("pdf/merge pdfs")
-					.doc("Merge multiple PDFs into a single PDF.")
+					.doc(
+						"Merge multiple PDFs into a single PDF. The PDFs are passed \n" + 
+						"as bytebuf. Returns the new PDF as a bytebuf.")
 					.examples(
 						"(pdf/merge pdf1 pdf2)",
 						"(pdf/merge pdf1 pdf2 pdf3)")
@@ -335,7 +337,9 @@ public class PdfFunctions {
 				VncFunction
 					.meta()
 					.arglists("pdf/copy pdf & page-nr")
-					.doc("Copies pages from a PDF to a new PDF.")
+					.doc(
+						"Copies pages from a PDF to a new PDF. The PDF is passed a \n" + 
+						"as bytebuf. Returns the new PDF as a bytebuf.")
 					.examples(
 						"; copy the first and second page \n" +
 						"(pdf/copy pdf :1 :2)",
@@ -418,8 +422,12 @@ public class PdfFunctions {
 				VncFunction
 					.meta()
 					.arglists("pdf/pages pdf")
-					.doc("Returns the number of pages of a PDF.")
-					.examples("(pdf/pages pdf)")
+					.doc(
+						"Returns the number of pages of a PDF. The PDF is passed a bytebuf.")
+					.examples(
+						"(->> (str/lorem-ipsum :paragraphs 30)  \n" +
+						"     (pdf/text-to-pdf)                 \n" +
+						"     (pdf/pages))                        ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
