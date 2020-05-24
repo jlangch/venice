@@ -30,15 +30,48 @@
 ;;;;
 ;;;; This is a Venice port of the Parsatron parser combinator.
 
+;;; Parsec boils down to 2 ideas.
+;;;    A parser either consumes input or doesn’t. Consumed or Empty.
+;;;    A parser either succeeds in parsing or it fails. Ok or Err.
+;;;
+;;; These outcomes can be combined into 4 continuation functions that are
+;;; passed to every parser:
+;;;
+;;;     cok – Consumed & Ok
+;;;     cerr – Consumed & Err
+;;;     eok – Empty & Ok
+;;;     eerr – Empty & Err
+;;;
+;;; As for errors, Parsec defines two types of them. Those that we can say
+;;; something about, and those that we can say nothing about. These are errors
+;;; with messages and unknown errors, respectively. Of the errors that we can
+;;; say something about, some are the result of not finding input that the
+;;; parser was expecting, which lead to messages like "expected 'a' and
+;;; found 'b'", and some are the result of not finding input where we expected
+;;; to, which lead to messages like "unexpected end of input".
+;;;
+;;; Finally, Parsec keeps tabs on the thing it's parsing, it maintains state.
+;;; The state is made up of 2 elements, the input stream and the current
+;;; source position, itself made up of the name of the input, and one's
+;;; current line and column location in it.
+
 
 (ns parsatron)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; types
 (deftype :source-pos [line :long, column :long])
-(deftype :input-state [input :string, pos :source-pos])
+(deftype :input-state [input :any, pos :source-pos])
 
-(deftype :continue_ [fn :function])
+(deftype :continue [func :function])
 (deftype :ok [item :any])
 (deftype :err [errmsg :string])
+
+(deftype :parse-err [pos :source-pos msgs :sequence])
+
+
+(defn InputState. [input pos] { :input input :pos pos })
+(defn SourcePos. [line column] { :line line :column column })
 
 (defn Continue. [fn] { :fn fn :type :Continue })
 (defn Ok. [item] { :item item :type :Ok })
@@ -48,31 +81,34 @@
 (defn Ok? [v]  (and (map? v) (== :Ok (:type v))))
 (defn Err? [v]  (and (map? v) (== :Err (:type v))))
 
+(defn ParseError. [pos msgs]
+  {:pos pos :msgs msgs})
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; position
-(defn inc-source-pos
+(defn inc-sourcepos
   ; Increment the source position by a single character, c. On newline,
-  ; increments the source pos's line number and resets the column, on
+  ; increments the SourcePos's line number and resets the column, on
   ; all other characters, increments the column
-  [pos c]
+  [{:keys [line column]} c]
   (if (str/linefeed? c)
-    (.: :source-pos (inc (:line pos)) 1)
-    (.: :source-pos (:line pos) (inc (:column pos)))))
+    (SourcePos. (inc line) 1)
+    (SourcePos. line (inc column))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; errors
 (defn show-error [parse-error]
-  (let [msgs (:msgs parse-error) pos (:pos parse-error)]
+  (let [msgs (:msgs parse-error)
+        pos  (:pos parse-error)]
     (str (str/join ", " msgs)
          " at"
          " line: " (:line pos)
          " column: " (:column pos))))
 
-(defn ParseError. [pos msgs]
-  {:pos pos :msgs msgs})
-
-(defn unknown-error [{:keys [pos] :as state}]
-  (ParseError. pos ["Error"]))
+(defn unknown-error [state]
+  (ParseError. (:pos state) ["Error"]))
 
 (defn unexpect-error [msg pos]
   (ParseError. pos [(str "Unexpected " msg)]))
@@ -80,8 +116,9 @@
 (defn expect-error [msg pos]
   (ParseError. pos [(str "Expected " msg)]))
 
-(defn merge-errors [{:keys [pos] :as err} other-err]
-  (ParseError. pos (flatten (concat (:msgs err) (:msgs other-err)))))
+(defn merge-errors [err other-err]
+  (ParseError. (:pos err) (flatten (concat (:msgs err) (:msgs other-err)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; trampoline
@@ -102,6 +139,7 @@
     (Continue? value) (Continue. #(sequentially f ((:fn value))))
     :else (f value)))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; host environment
 (defn fail [message]
@@ -112,6 +150,7 @@
 
 (defn letter? [c]
   (str/letter? c))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; m
@@ -172,6 +211,7 @@
       `(bind ~p (fn [~bind-form] ~@body))
       `(bind ~p (fn [~bind-form] (let->> ~(drop 2 bindings_) ~@body))))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; m+
 (defn never
@@ -186,9 +226,9 @@
   [p q]
   (fn [state cok cerr eok eerr]
     (let [peerr (fn [err-from-p]
-              (let [qeerr (fn [err-from-q]
-                              (eerr (merge-errors err-from-p err-from-q)))]
-                (Continue. #(q state cok cerr eok qeerr))))]
+                  (let [qeerr (fn [err-from-q]
+                                (eerr (merge-errors err-from-p err-from-q)))]
+                     (Continue. #(q state cok cerr eok qeerr))))]
       (Continue. #(p state cok cerr eok peerr)))))
 
 (defn attempt
@@ -197,6 +237,7 @@
   [p]
   (fn [state cok cerr eok eerr]
     (Continue. #(p state cok eerr eok eerr))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; interacting with the parser's state
@@ -221,6 +262,7 @@
   []
   (extract (comp :line :pos)))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; token
 (defn token
@@ -232,7 +274,7 @@
     (if-not (empty? input)
       (let [tok (first input)]
         (if (consume? tok)
-          (cok tok (.: :input-state (rest input) (inc-source-pos pos tok)))
+          (cok tok (InputState. (rest input) (inc-sourcepos pos tok)))
           (eerr (unexpect-error (str "token '" tok "'") pos))))
       (eerr (unexpect-error "end of input" pos)))))
 
@@ -329,6 +371,7 @@
            xs (many p)]
     (always (cons x xs))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; run parsers
 (defn run-parser
@@ -350,7 +393,7 @@
   ; in a VncException and thrown, and if the parser succeeds, its
   ; value is returned
   [p input]
-  (let [result (run-parser p (.: :input-state input (.: :source-pos 1 1)))]
+  (let [result (run-parser p (InputState. input (SourcePos. 1 1)))]
     (cond
       (Ok? result) (:item result)
       (Err? result) (throw (fail (:errmsg result))))))
