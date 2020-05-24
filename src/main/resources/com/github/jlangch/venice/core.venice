@@ -955,7 +955,7 @@
 (defn
   ^{ :arglists '("(read-line)")
      :doc """
-          Reads the next line from stream that is the current value of *in* .
+          Reads the next line from the stream that is the current value of *in*.
           Returns nil if the of the stream is reached.
           """ }
 
@@ -963,6 +963,21 @@
 
   (try
     (. *in* :readLine)
+    (catch :java.io.IOException e (. :VncException :new (:message e)))))
+
+
+(defn
+  ^{ :arglists '("(read-char)")
+     :doc """
+          Reads the next char from the stream that is the current value of *in*.
+          Returns nil if the of the stream is reached.
+          """ }
+
+  read-char  []
+
+  (try
+    (let [ch (. *in* :read)]
+      (if (= -1I ch) nil (char ch)))
     (catch :java.io.IOException e (. :VncException :new (:message e)))))
 
 
