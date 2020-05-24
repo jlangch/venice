@@ -476,8 +476,11 @@ public class CoreFunctions {
 								"Function 'char' expects a string type argument of length 1.");
 					}
 				}
-				else if (Types.isVncNumber(c)) {
-					return new VncChar((char)Coerce.toVncLong(c).getIntValue().intValue());
+				else if (Types.isVncInteger(c)) {
+					return new VncChar((char)((VncInteger)c).getValue().intValue());
+				}
+				else if (Types.isVncLong(c)) {
+					return new VncChar((char)((VncLong)c).getValue().intValue());
 				}
 				else {
 					throw new VncException(String.format(

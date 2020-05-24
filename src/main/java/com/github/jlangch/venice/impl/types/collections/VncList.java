@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -101,12 +102,17 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/list");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/sequence");
+		return VncSequence.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
 	}
 
 	@Override
@@ -298,9 +304,10 @@ public class VncList extends VncSequence {
 		return "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")";
 	}
 
-   
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/list");
+
     private static final long serialVersionUID = -1848883965231344442L;
  
-
 	private final io.vavr.collection.Vector<VncVal> value;
 }

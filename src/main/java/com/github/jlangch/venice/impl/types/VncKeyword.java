@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -87,12 +90,17 @@ public class VncKeyword extends VncString implements IVncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/keyword");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/string");
+		return VncString.TYPE;
+	}
+	
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncString.TYPE, VncVal.TYPE);
 	}
 
 	public VncSymbol toSymbol() {
@@ -125,6 +133,8 @@ public class VncKeyword extends VncString implements IVncFunction {
 		return toString();
 	}
 	
+	
+    public static final VncKeyword TYPE = new VncKeyword(":core/keyword");
 	
     private static final long serialVersionUID = -1848883965231344442L;
 }

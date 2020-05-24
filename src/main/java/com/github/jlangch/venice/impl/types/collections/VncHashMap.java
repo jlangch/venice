@@ -136,12 +136,17 @@ public class VncHashMap extends VncMap {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/hash-map");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/map");
+		return VncMap.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncMap.TYPE, VncCollection.TYPE, VncVal.TYPE);
 	}
 	
 	@Override
@@ -345,6 +350,8 @@ public class VncHashMap extends VncMap {
 		private HashMap<VncVal,VncVal> map = new HashMap<>();
 	}
 	
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/hash-map");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

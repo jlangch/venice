@@ -99,12 +99,17 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/mutable-list");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/sequence");
+		return VncSequence.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
 	}
 
 	@Override
@@ -305,8 +310,9 @@ public class VncMutableList extends VncSequence {
 	}
 
    
-    private static final long serialVersionUID = -1848883965231344442L;
- 
+	public static final VncKeyword TYPE = new VncKeyword(":core/mutable-list");
 
+	private static final long serialVersionUID = -1848883965231344442L;
+ 
 	private final CopyOnWriteArrayList<VncVal> value;
 }

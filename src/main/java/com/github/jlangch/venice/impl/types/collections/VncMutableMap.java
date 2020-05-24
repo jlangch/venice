@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -108,12 +109,17 @@ public class VncMutableMap extends VncMap {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/mutable-map");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/map");
+		return VncMap.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncMap.TYPE, VncCollection.TYPE, VncVal.TYPE);
 	}
 
 	@Override
@@ -319,6 +325,8 @@ public class VncMutableMap extends VncMap {
 		private final HashMap<VncVal,VncVal> map = new HashMap<>();
 	}
 	
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/mutable-map");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

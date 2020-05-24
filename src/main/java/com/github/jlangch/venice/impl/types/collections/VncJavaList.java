@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -94,6 +95,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	@Override
 	public VncKeyword getSupertype() {
 		return new VncKeyword(value.getClass().getSuperclass().getName());
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(getSupertype());
 	}
 
 	@Override

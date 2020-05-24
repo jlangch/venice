@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.functions.Numeric;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -70,16 +73,19 @@ public class VncDouble extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() 
-					? getWrappingTypeDef().getType() 
-					: TYPE;
+		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
+		return isWrapped() ? TYPE : VncVal.TYPE;
+	}
+	
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
-					? TYPE 
-					: new VncKeyword(":core/val");
+				? Arrays.asList(TYPE, VncVal.TYPE)
+				: Arrays.asList(VncVal.TYPE);
 	}
 	
 	public VncDouble negate() { 
@@ -156,7 +162,7 @@ public class VncDouble extends VncVal {
 	}
 
 
-    public final static VncKeyword TYPE = new VncKeyword(":core/double");
+    public static final VncKeyword TYPE = new VncKeyword(":core/double");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

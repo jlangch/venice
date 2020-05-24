@@ -316,16 +316,9 @@ public class DefTypeForm {
 			return;
 		}
 
-		VncKeyword argType = Types.getType(arg);
-		if (fieldDef.getType().equals(argType)) {
+		final VncKeyword argType = Types.getType(arg);
+		if (Types.isInstanceOf(fieldDef.getType(), arg)) {
 			return;
-		}
-
-		if (arg.isWrapped()) {
-			argType = arg.getWrappingTypeDef().getType();
-			if (fieldDef.getType().equals(argType)) {
-				return;
-			}
 		}
 		
 		throw new VncException(String.format(

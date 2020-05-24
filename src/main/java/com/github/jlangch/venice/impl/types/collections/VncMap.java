@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,14 +79,18 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/map");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/collection");
+		return VncCollection.TYPE;
 	}
 
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
+	}
 	
 	public abstract Map<VncVal,VncVal> getMap();
 	
@@ -123,6 +128,8 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 		return map;
 	}
 
- 
+	
+	public static final VncKeyword TYPE = new VncKeyword(":core/map");
+
 	private static final long serialVersionUID = -1848883965231344442L;
 }

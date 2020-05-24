@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -54,12 +56,17 @@ public class VncThreadLocal extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/thread-local");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	public VncVal get(final VncKeyword key) {
@@ -142,6 +149,8 @@ public class VncThreadLocal extends VncVal {
 		return "ThreadLocal";
 	}
 	
-	
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/thread-local");
+
     private static final long serialVersionUID = -1848883965231344442L;
 }

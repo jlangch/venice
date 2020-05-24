@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
@@ -66,14 +67,17 @@ public class VncMultiArityFunction extends VncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return isMacro() 
-					? new VncKeyword(":core/macro") 
-					: new VncKeyword(":core/function");
+		return isMacro() ? VncFunction.TYPE_MACRO : VncFunction.TYPE_FUNCTION;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	@Override

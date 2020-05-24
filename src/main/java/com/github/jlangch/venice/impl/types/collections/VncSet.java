@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -59,12 +60,17 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/set");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/collection");
+		return VncCollection.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 
 	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
@@ -101,6 +107,8 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 				.collect(Collectors.toSet());
 	}
 
-	
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/set");
+
     private static final long serialVersionUID = -1848883965231344442L;
 }

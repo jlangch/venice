@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class VncTunnelAsJavaObject extends VncJavaObject {
 	public VncTunnelAsJavaObject(final VncVal val) {
 		super(null);
@@ -30,12 +33,17 @@ public class VncTunnelAsJavaObject extends VncJavaObject {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/tunneled-java-object");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	@Override
@@ -47,7 +55,10 @@ public class VncTunnelAsJavaObject extends VncJavaObject {
 	public VncVal convertToJavaObject() {
 		return val;
 	}
-			
+
+	
+	public static final VncKeyword TYPE = new VncKeyword(":core/tunneled-java-object");
+
     private static final long serialVersionUID = -1848883965231344442L;
     
     private final VncVal val;

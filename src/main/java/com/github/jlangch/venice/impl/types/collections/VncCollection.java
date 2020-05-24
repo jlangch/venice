@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
@@ -45,13 +48,19 @@ public abstract class VncCollection extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/collection");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
 	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
+	}
+	
 	
 	public abstract VncCollection emptyWithMeta();
 		
@@ -69,5 +78,7 @@ public abstract class VncCollection extends VncVal {
 	}
 	
 	
+	public static final VncKeyword TYPE = new VncKeyword(":core/collection");
+
     private static final long serialVersionUID = -1848883965231344442L;
 }

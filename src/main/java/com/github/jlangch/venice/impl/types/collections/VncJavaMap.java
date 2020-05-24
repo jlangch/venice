@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -95,6 +96,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	@Override
 	public VncKeyword getSupertype() {
 		return new VncKeyword(value.getClass().getSuperclass().getName());
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(getSupertype());
 	}
 
 	@Override
@@ -289,6 +295,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 		return "{" + Printer.join(list, " ", print_readably) + "}";
 	}
 	
+
 
     private static final long serialVersionUID = -1848883965231344442L;
 

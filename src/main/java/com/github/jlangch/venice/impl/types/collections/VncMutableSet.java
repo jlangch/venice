@@ -93,12 +93,17 @@ public class VncMutableSet extends VncSet {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/mutable-set");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/set");
+		return VncSet.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncSet.TYPE, VncCollection.TYPE, VncVal.TYPE);
 	}
 	
 	@Override
@@ -233,6 +238,7 @@ public class VncMutableSet extends VncSet {
 	}
 
 
+	public static final VncKeyword TYPE = new VncKeyword(":core/mutable-map");
 	
     private static final long serialVersionUID = -1848883965231344442L;
 

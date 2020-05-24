@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
@@ -40,12 +43,17 @@ public class VncVolatile extends VncVal implements IDeref {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/volatile");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	public VncVal reset(final VncVal newVal) {
@@ -84,6 +92,7 @@ public class VncVolatile extends VncVal implements IDeref {
 	}
 	
 	
+    public static final VncKeyword TYPE = new VncKeyword(":core/volatile");
 	
     private static final long serialVersionUID = -1848883965231344442L;
 	

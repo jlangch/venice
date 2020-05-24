@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
@@ -68,16 +69,19 @@ public class VncString extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() 
-					? getWrappingTypeDef().getType() 
-					: TYPE;
+		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
+		return isWrapped() ? TYPE : VncVal.TYPE;
+	}
+	
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
-					? TYPE 
-					: new VncKeyword(":core/val");
+				? Arrays.asList(TYPE, VncVal.TYPE)
+				: Arrays.asList(VncVal.TYPE);
 	}
 
 	public int size() {
@@ -196,9 +200,9 @@ public class VncString extends VncVal {
 	}
 	
     
-    public final static VncString EMPTY = new VncString("");
+    public static final VncString EMPTY = new VncString("");
     
-    public final static VncKeyword TYPE = new VncKeyword(":core/string");
+    public static final VncKeyword TYPE = new VncKeyword(":core/string");
 
     
     private static final long serialVersionUID = -1848883965231344442L;

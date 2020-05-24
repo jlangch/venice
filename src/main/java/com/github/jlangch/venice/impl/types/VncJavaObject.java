@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +115,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	@Override
 	public VncKeyword getSupertype() {
 		return new VncKeyword(delegate.getClass().getSuperclass().getName());
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(getSupertype());
 	}
 
 	public VncJavaObject castTo(final Class<?> clazz) {

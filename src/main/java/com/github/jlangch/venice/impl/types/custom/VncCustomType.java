@@ -32,6 +32,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -96,16 +97,16 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword("core/custom-type");
+		return TYPE;
 	}
 
+	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(
-					getSupertype(), 
-					new VncKeyword(":core/custom-type"),
-					new VncKeyword(":core/map"),
-					new VncKeyword(":core/collection"),
-					new VncKeyword(":core/val"));
+					TYPE, 
+					VncMap.TYPE,
+					VncCollection.TYPE,
+					VncVal.TYPE);
 	}
 
 	public VncCustomTypeDef getTypeDef() {
@@ -248,8 +249,10 @@ public class VncCustomType extends VncMap {
 	}
 
 	
+	public static final VncKeyword TYPE = new VncKeyword(":core/custom-type");
 		
 	private static final long serialVersionUID = -1848883965231344442L;
+	
 	private final VncKeyword type;
 	private final VncCustomTypeDef typeDef;
 	private final VncMap values;

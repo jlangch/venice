@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.types.util.Types;
 
 public class VncSymbol extends VncVal {
@@ -50,12 +53,17 @@ public class VncSymbol extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/symbol");
+		return TYPE;
 	}
-	
+
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	public String getName() { 
@@ -118,6 +126,8 @@ public class VncSymbol extends VncVal {
 		return value;
 	}
 	
+
+    public static final VncKeyword TYPE = new VncKeyword(":core/symbol");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

@@ -21,27 +21,39 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.Arrays;
+import java.util.List;
+
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class VncChar extends VncVal {
 	
-	public VncChar(final Character v) { 
-		this(v, Constants.Nil); 
-	}
-	
 	public VncChar(final char v) { 
 		this(v, Constants.Nil); 
 	}
 
-	public VncChar(final Character v, final VncVal meta) { 
+	public VncChar(final char v, final VncVal meta) { 
 		super(meta);
 		value = v; 
 	}
 
-	public VncChar(final char v, final VncVal meta) { 
-		super(meta);
+	public VncChar(final Character v) { 
+		this(v, Constants.Nil); 
+	}
+	
+	public VncChar(final Character v, final VncVal meta) { 
+		this(v, null, meta);
+	}
+
+	public VncChar(
+			final Character v, 
+			final VncWrappingTypeDef wrappingTypeDef, 
+			final VncVal meta
+	) { 
+		super(wrappingTypeDef, meta);
 		value = v; 
 	}
 
@@ -56,13 +68,25 @@ public class VncChar extends VncVal {
 	}
 	
 	@Override
+	public VncChar wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncChar(value, wrappingTypeDef, meta); 
+	}
+	
+	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/char");
+		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return isWrapped() ? TYPE : VncVal.TYPE;
+	}
+	
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return isWrapped() 
+				? Arrays.asList(TYPE, VncVal.TYPE)
+				: Arrays.asList(VncVal.TYPE);
 	}
 	
 	@Override 
@@ -128,7 +152,9 @@ public class VncChar extends VncVal {
 			return value.toString();
 		}
 	}
+
 	
+    public static final VncKeyword TYPE = new VncKeyword(":core/char");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

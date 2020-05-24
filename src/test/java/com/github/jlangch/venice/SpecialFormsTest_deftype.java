@@ -149,6 +149,66 @@ public class SpecialFormsTest_deftype {
 					+ "#:user/named{:name \"b\" :value [1 2]}]", 
 				venice.eval(script));					
 	}
+	
+	@Test
+	public void test_deftype_with_list() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :named [name :string, values :list])     \n" +
+				"  (def x (.: :named \"a\" '(1 2)))                  \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("#:user/named{:name \"a\" :values (1 2)}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_with_vector() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :named [name :string, values :vector])   \n" +
+				"  (def x (.: :named \"a\" [1 2]))                   \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("#:user/named{:name \"a\" :values [1 2]}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_with_sequence() {
+		final Venice venice = new Venice();
+
+		final String script_list =
+				"(do                                                     \n" +
+				"  (deftype :named [name :string, values :sequence])     \n" +
+				"  (def x (.: :named \"a\" '(1 2)))                      \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("#:user/named{:name \"a\" :values (1 2)}", venice.eval(script_list));					
+
+		final String script_vector =
+				"(do                                                     \n" +
+				"  (deftype :named [name :string, values :sequence])     \n" +
+				"  (def x (.: :named \"a\" [1 2]))                      \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("#:user/named{:name \"a\" :values [1 2]}", venice.eval(script_vector));					
+	}
+	
+	@Test
+	public void test_deftype_with_hashmap() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :named [name :string, values :hash-map]) \n" +
+				"  (def x (.: :named \"a\" {:x 1 :y 2}))             \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("#:user/named{:name \"a\" :values {:x 1 :y 2}}", venice.eval(script));					
+	}
 
 	@Test
 	public void test_deftype_type() {

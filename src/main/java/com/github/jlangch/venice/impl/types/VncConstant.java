@@ -23,6 +23,9 @@ package com.github.jlangch.venice.impl.types;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
@@ -42,7 +45,7 @@ public class VncConstant extends VncVal {
 	@Override
 	public VncKeyword getType() {
 		if (this == Constants.Nil) {
-			return new VncKeyword(":core/nil");
+			return TYPE_NIL;
 		}
 		else {
 			return null;
@@ -51,7 +54,12 @@ public class VncConstant extends VncVal {
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/val");
+		return VncVal.TYPE;
+	}
+	
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	public String getValue() { 
@@ -124,6 +132,8 @@ public class VncConstant extends VncVal {
 		return value; 
 	}
    
+	
+    public static final VncKeyword TYPE_NIL = new VncKeyword(":core/nil");
 
     private static final long serialVersionUID = -1848883965231344442L;
 

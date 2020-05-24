@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
@@ -57,12 +58,17 @@ public class VncStack extends VncCollection {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(":core/stack");
+		return TYPE;
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return new VncKeyword(":core/collection");
+		return VncCollection.TYPE;
+	}
+
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 
 	@Override
@@ -129,6 +135,8 @@ public class VncStack extends VncCollection {
 		return val == null ? Constants.Nil : val;
 	}
 
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/stack");
 
 	private static final long serialVersionUID = -564531670922145260L;
 
