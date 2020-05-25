@@ -234,6 +234,17 @@ functions are executed form right to left.
 
 ```clojure
 (do
+  (def person
+    {:name "Peter Meier"
+     :address {:street "Lindenstrasse 45"
+               :city "Bern" 
+               :zip 3000}})
+  ((comp :street :address) person) ;; => "Lindenstrasse 45"
+  ((comp :private :email) person)) ;; => nil
+```
+
+```clojure
+(do
   (def xform
     (comp 
       (partial take 4)
