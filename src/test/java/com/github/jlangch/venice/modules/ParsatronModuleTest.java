@@ -310,4 +310,113 @@ public class ParsatronModuleTest {
 		assertEquals("[\"4\" \"0\" \"0\"]", new Venice().eval(script2));
 	}
 
+	@Test
+	public void test_builtin_parser_many1() {
+		final String script1 =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def number-parser (parsatron/many (parsatron/digit)))               \n" +
+				"   (def number-parser1 (parsatron/many1 (parsatron/digit)))             \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run number-parser \"\")))                                 ";
+
+		assertEquals("[]", new Venice().eval(script1));
+
+	
+		final String script2 =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def number-parser (parsatron/many (parsatron/digit)))               \n" +
+				"   (def number-parser1 (parsatron/many1 (parsatron/digit)))             \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run number-parser \"100\")))                              ";
+
+		assertEquals("[\"1\" \"0\" \"0\"]", new Venice().eval(script2));
+		
+		
+		final String script3 =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def number-parser (parsatron/many (parsatron/digit)))               \n" +
+				"   (def number-parser1 (parsatron/many1 (parsatron/digit)))             \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run number-parser1 \"\")))                                 ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script3));
+
+	
+		final String script4 =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def number-parser (parsatron/many (parsatron/digit)))               \n" +
+				"   (def number-parser1 (parsatron/many1 (parsatron/digit)))             \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run number-parser1 \"100\")))                              ";
+
+		assertEquals("[\"1\" \"0\" \"0\"]", new Venice().eval(script4));
+	}
+
+	@Test
+	public void test_builtin_parser_choice() {
+		final String script1 =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def number (parsatron/many1 (parsatron/digit)))                     \n" +
+				"   (def word (parsatron/many1 (parsatron/letter)))                      \n" +
+				"   (def number-or-word (parsatron/choice number word))                  \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run number-or-word \"dog\")))                             ";
+
+		assertEquals("[\"d\" \"o\" \"g\"]", new Venice().eval(script1));
+
+	
+		final String script2 =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def number (parsatron/many1 (parsatron/digit)))                     \n" +
+				"   (def word (parsatron/many1 (parsatron/letter)))                      \n" +
+				"   (def number-or-word (parsatron/choice number word))                  \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run number-or-word \"42\")))                             ";
+
+		assertEquals("[\"4\" \"2\"]", new Venice().eval(script2));
+	}
+
+	@Test
+	public void test_builtin_parser_between() {
+		final String script =
+				"(do                                                                     \n" +
+				"   (load-module :parsatron)                                             \n" +
+				"                                                                        \n" +
+				"   (def whitespace-char (parsatron/token str/whitespace?))              \n" +
+				"   (def optional-whitespace (parsatron/many whitespace-char))           \n" +
+				"                                                                        \n" +
+				"   (def open-paren (parsatron/char (char \"(\")))                       \n" +
+				"   (def close-paren (parsatron/char (char \")\")))                      \n" +
+				"                                                                        \n" +
+				"   (def number (parsatron/many1 (parsatron/digit)))                     \n" +
+				"                                                                        \n" +
+				"   (pr-str                                                              \n" +
+				"     (parsatron/run                                                     \n" +
+				"          (parsatron/between                                            \n" +
+				"               (parsatron/>> open-paren optional-whitespace)            \n" +
+				"               (parsatron/>> optional-whitespace  close-paren)          \n" +
+				"               number)                                                  \n" +
+				"          \"(123    )\")))                                                ";
+
+		assertEquals("[\"1\" \"2\" \"3\"]", new Venice().eval(script));
+	}
+
 }
