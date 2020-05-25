@@ -195,7 +195,7 @@
         p     (gensym "p_")]
     `(defn ~name ~args
        (fn [~state ~cok ~cerr ~eok ~eerr]
-         (let [~p (>> ~@body)]
+         (let [~p (parsatron/>> ~@body)]
            (parsatron/Continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
 (defmacro >>

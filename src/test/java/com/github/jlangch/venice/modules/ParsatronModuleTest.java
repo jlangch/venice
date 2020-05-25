@@ -419,4 +419,22 @@ public class ParsatronModuleTest {
 		assertEquals("[\"1\" \"2\" \"3\"]", new Venice().eval(script));
 	}
 
+
+	@Test
+	public void test_builtin_defparser_always() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-module :parsatron)                              \n" +
+				"                                                         \n" +
+				"   (parsatron/defparser sample []                        \n" +
+				"     (parsatron/string \"Hello\")                        \n" +
+				"     (parsatron/always 42))                              \n" +
+				"                                                         \n" +
+				"   (def my-sample-parser (sample))                       \n" +
+				"                                                         \n" +
+				"   (parsatron/run my-sample-parser \"Hello, world!\"))     ";
+		
+		assertEquals(42L, (Long)new Venice().eval(script));
+	}
+
 }
