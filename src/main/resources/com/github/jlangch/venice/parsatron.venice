@@ -42,7 +42,7 @@
 ;;;     eok – Empty & Ok
 ;;;     eerr – Empty & Err
 ;;;
-;;; As for errors, Parsec defines two types of them. Those that we can say
+;;; As for errors, Parsatron defines two types of them. Those that we can say
 ;;; something about, and those that we can say nothing about. These are errors
 ;;; with messages and unknown errors, respectively. Of the errors that we can
 ;;; say something about, some are the result of not finding input that the
@@ -50,7 +50,7 @@
 ;;; found 'b'", and some are the result of not finding input where we expected
 ;;; to, which lead to messages like "unexpected end of input".
 ;;;
-;;; Finally, Parsec keeps tabs on the thing it's parsing, it maintains state.
+;;; Finally, Parsatron keeps tabs on the thing it's parsing, it maintains state.
 ;;; The state is made up of 2 elements, the input stream and the current
 ;;; source position, itself made up of the name of the input, and one's
 ;;; current line and column location in it.
@@ -58,7 +58,7 @@
 
 (ns parsatron)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; types
 (deftype :source-pos [line :long, column :long])
 (deftype :input-state [input :any, pos :source-pos])
@@ -73,7 +73,7 @@
 (defn InputState. [input pos] { :input input :pos pos })
 (defn SourcePos. [line column] { :line line :column column })
 
-(defn Continue. [fn] { :fn fn :type :Continue })
+(defn Continue. [func] { :fn func :type :Continue })
 (defn Ok. [item] { :item item :type :Ok })
 (defn Err. [errmsg] { :errmsg errmsg :type :Err })
 
@@ -81,23 +81,24 @@
 (defn Ok? [v]  (and (map? v) (== :Ok (:type v))))
 (defn Err? [v]  (and (map? v) (== :Err (:type v))))
 
-(defn ParseError. [pos msgs]
-  {:pos pos :msgs msgs})
+(defn ParseError. [pos msgs] {:pos pos :msgs msgs})
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; position
 (defn inc-sourcepos
   ; Increment the source position by a single character, c. On newline,
   ; increments the SourcePos's line number and resets the column, on
   ; all other characters, increments the column
-  [{:keys [line column]} c]
-  (if (str/linefeed? c)
-    (SourcePos. (inc line) 1)
-    (SourcePos. line (inc column))))
+  [pos c]
+  (let [line   (:line pos)
+        column (:column pos)]
+    (if (str/linefeed? c)
+      (SourcePos. (inc line) 1)
+      (SourcePos. line (inc column)))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; errors
 (defn show-error [parse-error]
   (let [msgs (:msgs parse-error)
@@ -120,7 +121,7 @@
   (ParseError. (:pos err) (flatten (concat (:msgs err) (:msgs other-err)))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; trampoline
 (defn parsatron-poline
   ; A trampoline for executing potentially stack-blowing recursive
@@ -130,14 +131,14 @@
   ; the value is no longer a Continue record, returning that.
   [f & args]
   (loop [value (apply f args)]
-    (cond
-      (Continue? value) (recur ((:fn value)))
-      :else value)))
+    (if (Continue? value)
+      (recur ((:fn value)))
+      value)))
 
 (defn sequentially [f value]
-  (cond
-    (Continue? value) (Continue. #(sequentially f ((:fn value))))
-    :else (f value)))
+  (if (Continue? value)
+    (Continue. #(sequentially f ((:fn value))))
+    (f value)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -152,8 +153,8 @@
   (str/letter? c))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; m
+;; -----------------------------------------------------------------------------
+;; parsers
 (defn always
   ; A parser that always succeeds with the value given and consumes no
   ; input
@@ -201,7 +202,7 @@
   ; Expands into nested nxt forms
   ([m] m)
   ([m n] `(parsatron/nxt ~m ~n))
-  ([m n & ms] `(parsatron/nxt ~m (>> ~n ~@ms))))
+  ([m n & ms] `(parsatron/nxt ~m (parsatron/>> ~n ~@ms))))
 
 (defmacro let->>
   ; Expands into nested bind forms
@@ -209,10 +210,10 @@
   (let [[bind-form p] (take 2 bindings_)]
     (if (== 2 (count bindings_))
       `(bind ~p (fn [~bind-form] ~@body))
-      `(bind ~p (fn [~bind-form] (let->> ~(drop 2 bindings_) ~@body))))))
+      `(bind ~p (fn [~bind-form] (parsatron/let->> ~(drop 2 bindings_) ~@body))))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; m+
 (defn never
   ; A parser that always fails, consuming no input
@@ -239,9 +240,8 @@
     (Continue. #(p state cok eerr eok eerr))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; interacting with the parser's state
-
 (defn extract
   ; Extract information from the Parser's current state. f should be a
   ; fn of one argument, the parser's current state, and any value that
@@ -263,7 +263,7 @@
   (extract (comp :line :pos)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; token
 (defn token
   ; Consume a single item from the head of the input if (consume? item)
@@ -324,10 +324,10 @@
   ; consume from the underlying input, this parser suceeds with a nil
   ; value, otherwise it fails
   []
-  (fn [{:keys [input pos] :as state} cok cerr eok eerr]
-    (if (empty? input)
-      (eok nil state)
-      (eerr (expect-error "end of input" pos)))))
+  (fn [state cok cerr eok eerr]
+    (if (empty? (:input state))
+        (eok nil state)
+        (eerr (expect-error "end of input" (:pos state))))))
 
 (defn char
   ; Consume the given character
@@ -367,12 +367,11 @@
 (defn many1
   ;Consume 1 or more p
   [p]
-  (let->> [x p
-           xs (many p)]
+  (let->> [x p, xs (many p)]
     (always (cons x xs))))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; -----------------------------------------------------------------------------
 ;; run parsers
 (defn run-parser
   ;Execute a parser p, given some state, Returns Ok or Err
