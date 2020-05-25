@@ -27,8 +27,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
 - PDF watermark text outline customization
+
+### Fixed
+
+- 'parsatron' parser combinator
 
 
 
