@@ -188,7 +188,9 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/contains? s substr)")
 					.doc("True if s contains with substr.")
-					.examples("(str/contains? \"abc\"  \"ab\")")
+					.examples(
+						"(str/contains? \"abc\" \"ab\")",
+						"(str/contains? \"abc\" (char \"b\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -199,9 +201,26 @@ public class StringFunctions {
 				}
 
 				final VncString string = Coerce.toVncString(args.first());
-				final VncString text = Coerce.toVncString(args.second());
-
-				return VncBoolean.of(string.getValue().contains(text.getValue()));
+				
+				final VncVal vSubstr = args.second();
+				
+				if (Types.isVncString(vSubstr)) {
+					final String text = Coerce.toVncString(args.second()).getValue();
+					
+					if (text.isEmpty()) {
+						return VncBoolean.False;
+					}
+					
+					return VncBoolean.of(string.getValue().contains(text));
+				}
+				else if (Types.isVncChar(vSubstr)) {
+					final Character ch = Coerce.toVncChar(args.second()).getValue();
+					final String text = String.valueOf(ch);
+					return VncBoolean.of(string.getValue().contains(text));
+				}
+				else {
+					return VncBoolean.False;
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

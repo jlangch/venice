@@ -41,7 +41,13 @@ public class StringFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertTrue((Boolean)venice.eval("(str/contains? \"abcdef\" \"f\")"));
+		assertTrue((Boolean)venice.eval("(str/contains? \"abcdef\" \"abc\")"));
+		assertTrue((Boolean)venice.eval("(str/contains? \"abcdef\" \"abcdef\")"));
+		assertFalse((Boolean)venice.eval("(str/contains? \"abcdef\" \"\")"));
 		assertFalse((Boolean)venice.eval("(str/contains? \"abcdef\" \"x\")"));
+
+		assertTrue((Boolean)venice.eval("(str/contains? \"abcdef\" (char \"f\"))"));
+		assertFalse((Boolean)venice.eval("(str/contains? \"abcdef\" (char \"x\"))"));
 	}
 
 	@Test
