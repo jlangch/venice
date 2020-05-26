@@ -31,6 +31,11 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
 
+/**
+ * Parsatron unit tests
+ * 
+ * @see <a href="https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown">Examples</a>
+ */
 public class ParsatronModuleTest {
 
 	@Test
