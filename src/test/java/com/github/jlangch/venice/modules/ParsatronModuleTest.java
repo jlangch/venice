@@ -43,7 +43,7 @@ public class ParsatronModuleTest {
 		final String script =
 				"(do                                               \n" +
 				"   (load-module :parsatron)                       \n" +
-				"   (parsatron/run (parsatron/char (char \"H\"))   \n" +
+				"   (parsatron/run (parsatron/char \"H\")          \n" +
 				"                  \"Hello, world!\"))              ";
 
 		assertEquals("H", new Venice().eval(script));
@@ -65,7 +65,7 @@ public class ParsatronModuleTest {
 		final String script =
 				"(do                                               \n" +
 				"   (load-module :parsatron)                       \n" +
-				"   (parsatron/run (parsatron/char (char \"Q\"))   \n" +
+				"   (parsatron/run (parsatron/char \"Q\")          \n" +
 				"                  \"Hello, world!\"))              ";
 		
 		assertThrows(VncException.class, () -> new Venice().eval(script));
@@ -76,7 +76,7 @@ public class ParsatronModuleTest {
 		final String script =
 				"(do                                               \n" +
 				"   (load-module :parsatron)                       \n" +
-				"   (def h-parser (parsatron/char (char \"H\")))   \n" +
+				"   (def h-parser (parsatron/char \"H\"))          \n" +
 				"   (parsatron/run h-parser                        \n" +
 				"                  \"Hello, world!\"))              ";
 
@@ -111,7 +111,7 @@ public class ParsatronModuleTest {
 		final String script =
 				"(do                                                 \n" +
 				"   (load-module :parsatron)                         \n" +
-				"   (parsatron/run (parsatron/char (char \"H\"))     \n" +
+				"   (parsatron/run (parsatron/char \"H\")            \n" +
 				"                  \"Hello, world!\"))                 ";
 
 		assertEquals("H", new Venice().eval(script));
@@ -204,7 +204,7 @@ public class ParsatronModuleTest {
 		final String script1 =
 				"(do                                                              \n" +
 				"   (load-module :parsatron)                                      \n" +
-				"   (def my-parser (parsatron/>> (parsatron/char (char \"a\"))    \n" +
+				"   (def my-parser (parsatron/>> (parsatron/char \"a\")           \n" +
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"a5\"))                               ";
 
@@ -214,7 +214,7 @@ public class ParsatronModuleTest {
 		final String script2 =
 				"(do                                                              \n" +
 				"   (load-module :parsatron)                                      \n" +
-				"   (def my-parser (parsatron/>> (parsatron/char (char \"a\"))    \n" +
+				"   (def my-parser (parsatron/>> (parsatron/char \"a\")           \n" +
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"5a\"))                               ";
 
@@ -224,7 +224,7 @@ public class ParsatronModuleTest {
 		final String script3 =
 				"(do                                                              \n" +
 				"   (load-module :parsatron)                                      \n" +
-				"   (def my-parser (parsatron/>> (parsatron/char (char \"a\"))    \n" +
+				"   (def my-parser (parsatron/>> (parsatron/char \"a\")           \n" +
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"b5\"))                               ";
 
@@ -234,7 +234,7 @@ public class ParsatronModuleTest {
 		final String script4 =
 				"(do                                                              \n" +
 				"   (load-module :parsatron)                                      \n" +
-				"   (def my-parser (parsatron/>> (parsatron/char (char \"a\"))    \n" +
+				"   (def my-parser (parsatron/>> (parsatron/char \"a\")           \n" +
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"aq\"))                               ";
 
@@ -408,8 +408,8 @@ public class ParsatronModuleTest {
 				"   (def whitespace-char (parsatron/token str/whitespace?))              \n" +
 				"   (def optional-whitespace (parsatron/many whitespace-char))           \n" +
 				"                                                                        \n" +
-				"   (def open-paren (parsatron/char (char \"(\")))                       \n" +
-				"   (def close-paren (parsatron/char (char \")\")))                      \n" +
+				"   (def open-paren (parsatron/char \"(\"))                              \n" +
+				"   (def close-paren (parsatron/char \")\"))                             \n" +
 				"                                                                        \n" +
 				"   (def number (parsatron/many1 (parsatron/digit)))                     \n" +
 				"                                                                        \n" +
@@ -467,14 +467,11 @@ public class ParsatronModuleTest {
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
 				"                                                                     \n" +
-				"   (defonce plus  (char \"+\"))                                      \n" +
-				"   (defonce minus (char \"-\"))                                      \n" +
-				"                                                                     \n" +
 				"   (parsatron/defparser sample []                                    \n" +
 				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
-				"                                 (parsatron/char plus)               \n" + 
-				"                                 (parsatron/char minus))             \n" + 
-				"                        word (if (== sign plus)                      \n" + 
+				"                                 (parsatron/char \"+\")              \n" + 
+				"                                 (parsatron/char \"-\"))             \n" + 
+				"                        word (if (== sign \"+\")                     \n" + 
 				"                                 (parsatron/string \"plus\")         \n" + 
 				"                                 (parsatron/string \"minus\"))]      \n" + 
 				"         (parsatron/always [sign word])))                            \n" +
@@ -490,14 +487,11 @@ public class ParsatronModuleTest {
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
 				"                                                                     \n" +
-				"   (defonce plus  (char \"+\"))                                      \n" +
-				"   (defonce minus (char \"-\"))                                      \n" +
-				"                                                                     \n" +
 				"   (parsatron/defparser sample []                                    \n" +
 				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
-				"                                 (parsatron/char plus)               \n" + 
-				"                                 (parsatron/char minus))             \n" + 
-				"                        word (if (== sign plus)                      \n" + 
+				"                                 (parsatron/char \"+\")              \n" + 
+				"                                 (parsatron/char \"-\"))             \n" + 
+				"                        word (if (== sign \"+\")                     \n" + 
 				"                                 (parsatron/string \"plus\")         \n" + 
 				"                                 (parsatron/string \"minus\"))]      \n" + 
 				"         (parsatron/always [sign word])))                            \n" +
@@ -513,13 +507,10 @@ public class ParsatronModuleTest {
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
 				"                                                                     \n" +
-				"   (defonce plus  (char \"+\"))                                      \n" +
-				"   (defonce minus (char \"-\"))                                      \n" +
-				"                                                                     \n" +
 				"   (parsatron/defparser sample []                                    \n" +
 				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
-				"                                 (parsatron/char plus)               \n" + 
-				"                                 (parsatron/char minus))             \n" + 
+				"                                 (parsatron/char \"+\")              \n" + 
+				"                                 (parsatron/char \"-\"))             \n" + 
 				"                        word (if (== sign plus)                      \n" + 
 				"                                 (parsatron/string \"plus\")         \n" + 
 				"                                 (parsatron/string \"minus\"))]      \n" + 
@@ -536,9 +527,6 @@ public class ParsatronModuleTest {
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
 				"                                                                     \n" +
-				"   (defonce dot  (char \".\"))                                       \n" +
-				"   (defonce bang (char \"!\"))                                       \n" +
-				"                                                                     \n" +
 				"   (parsatron/defparser word []                                      \n" +
 				"     (parsatron/many1 (parsatron/letter)))                           \n" +
 				"                                                                     \n" +
@@ -546,9 +534,9 @@ public class ParsatronModuleTest {
 				"     (parsatron/let->> [prefix      (parsatron/string \"Hello, \")   \n" +
 				"                        name        (word)                           \n" +
 				"                        punctuation (parsatron/choice                \n" +
-				"                                       (parsatron/char dot)          \n" +
-				"                                       (parsatron/char bang))]       \n" +
-				"       (if (== punctuation bang)                                     \n" +
+				"                                       (parsatron/char \".\")        \n" +
+				"                                       (parsatron/char \"!\"))]      \n" +
+				"       (if (== punctuation \"!\")                                    \n" +
 				"          (parsatron/always [(apply str name) :excited])             \n" +
 				"          (parsatron/always [(apply str name) :not-excited]))))      \n" +
 				"                                                                     \n" +
@@ -563,9 +551,6 @@ public class ParsatronModuleTest {
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
 				"                                                                     \n" +
-				"   (defonce dot  (char \".\"))                                       \n" +
-				"   (defonce bang (char \"!\"))                                       \n" +
-				"                                                                     \n" +
 				"   (parsatron/defparser word []                                      \n" +
 				"     (parsatron/many1 (parsatron/letter)))                           \n" +
 				"                                                                     \n" +
@@ -573,9 +558,9 @@ public class ParsatronModuleTest {
 				"     (parsatron/let->> [prefix      (parsatron/string \"Hello, \")   \n" +
 				"                        name        (word)                           \n" +
 				"                        punctuation (parsatron/choice                \n" +
-				"                                       (parsatron/char dot)          \n" +
-				"                                       (parsatron/char bang))]       \n" +
-				"       (if (== punctuation bang)                                     \n" +
+				"                                       (parsatron/char \".\")        \n" +
+				"                                       (parsatron/char \"!\"))]      \n" +
+				"       (if (== punctuation \"!\")                                    \n" +
 				"          (parsatron/always [(apply str name) :excited])             \n" +
 				"          (parsatron/always [(apply str name) :not-excited]))))      \n" +
 				"                                                                     \n" +
@@ -590,11 +575,9 @@ public class ParsatronModuleTest {
 				"(do                                                                      \n" +
 				"   (load-module :parsatron)                                              \n" +
 				"                                                                         \n" +
-				"   (defonce dot  (char \".\"))                                           \n" +
-				"                                                                         \n" +
 				"   (parsatron/defparser float []                                         \n" +
 				"     (parsatron/let->> [integral   (parsatron/many1 (parsatron/digit))   \n" + 
-				"                        _          (parsatron/char dot)                  \n" + 
+				"                        _          (parsatron/char \".\")                \n" + 
 				"                        fractional (parsatron/many1 (parsatron/digit))]  \n" + 
 				"        (let [integral   (apply str integral)                            \n" +
 				"              fractional (apply str fractional)]                         \n" +
