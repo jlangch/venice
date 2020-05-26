@@ -443,13 +443,101 @@ public class ParsatronModuleTest {
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
 				"                                                                     \n" +
+				"   (parsatron/defparser word []                                      \n" +
+				"     (parsatron/many1 (parsatron/letter)))                           \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser first-word []                                \n" +
+				"     (parsatron/let->> [name (word)]                                 \n" + 
+				"         (let [name (apply str name)]                                \n" + 
+				"           (parsatron/always name))))                                \n" +
+				"                                                                     \n" +
+				"   (parsatron/run (first-word) \"Hello, Cat!\"))                       ";
+		
+		assertEquals("Hello", new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_2a() {
+		final String script =
+				"(do                                                                  \n" +
+				"   (load-module :parsatron)                                          \n" +
+				"                                                                     \n" +
+				"   (defonce plus  (char \"+\"))                                      \n" +
+				"   (defonce minus (char \"-\"))                                      \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser sample []                                    \n" +
+				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
+				"                                 (parsatron/char plus)               \n" + 
+				"                                 (parsatron/char minus))             \n" + 
+				"                        word (if (== sign plus)                      \n" + 
+				"                                 (parsatron/string \"plus\")         \n" + 
+				"                                 (parsatron/string \"minus\"))]      \n" + 
+				"         (parsatron/always [sign word])))                            \n" +
+				"                                                                     \n" +
+				"   (pr-str (parsatron/run (sample) \"+plus\"))))                       ";
+		
+		assertEquals("[\"+\" \"plus\"]", new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_2b() {
+		final String script =
+				"(do                                                                  \n" +
+				"   (load-module :parsatron)                                          \n" +
+				"                                                                     \n" +
+				"   (defonce plus  (char \"+\"))                                      \n" +
+				"   (defonce minus (char \"-\"))                                      \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser sample []                                    \n" +
+				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
+				"                                 (parsatron/char plus)               \n" + 
+				"                                 (parsatron/char minus))             \n" + 
+				"                        word (if (== sign plus)                      \n" + 
+				"                                 (parsatron/string \"plus\")         \n" + 
+				"                                 (parsatron/string \"minus\"))]      \n" + 
+				"         (parsatron/always [sign word])))                            \n" +
+				"                                                                     \n" +
+				"   (pr-str (parsatron/run (sample) \"-minus\"))))                       ";
+		
+		assertEquals("[\"-\" \"minus\"]", new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_2c() {
+		final String script =
+				"(do                                                                  \n" +
+				"   (load-module :parsatron)                                          \n" +
+				"                                                                     \n" +
+				"   (defonce plus  (char \"+\"))                                      \n" +
+				"   (defonce minus (char \"-\"))                                      \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser sample []                                    \n" +
+				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
+				"                                 (parsatron/char plus)               \n" + 
+				"                                 (parsatron/char minus))             \n" + 
+				"                        word (if (== sign plus)                      \n" + 
+				"                                 (parsatron/string \"plus\")         \n" + 
+				"                                 (parsatron/string \"minus\"))]      \n" + 
+				"         (parsatron/always [sign word])))                            \n" +
+				"                                                                     \n" +
+				"   (pr-str (parsatron/run (sample) \"-plus\"))))                       ";
+		
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_3() {
+		final String script =
+				"(do                                                                  \n" +
+				"   (load-module :parsatron)                                          \n" +
+				"                                                                     \n" +
 				"   (defonce dot  (char \".\"))                                       \n" +
 				"   (defonce bang (char \"!\"))                                       \n" +
 				"                                                                     \n" +
 				"   (parsatron/defparser word []                                      \n" +
 				"     (parsatron/many1 (parsatron/letter)))                           \n" +
 				"                                                                     \n" +
-				"   (parsatron/defparser greeting[]                                   \n" +
+				"   (parsatron/defparser greeting []                                  \n" +
 				"     (parsatron/let->> [prefix      (parsatron/string \"Hello, \")   \n" +
 				"                        name        (word)                           \n" +
 				"                        punctuation (parsatron/choice                \n" +
@@ -465,7 +553,7 @@ public class ParsatronModuleTest {
 	}
 
 	@Test
-	public void test_defparser_let_2() {
+	public void test_defparser_let_4() {
 		final String script =
 				"(do                                                                  \n" +
 				"   (load-module :parsatron)                                          \n" +
@@ -476,7 +564,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/defparser word []                                      \n" +
 				"     (parsatron/many1 (parsatron/letter)))                           \n" +
 				"                                                                     \n" +
-				"   (parsatron/defparser greeting[]                                   \n" +
+				"   (parsatron/defparser greeting []                                  \n" +
 				"     (parsatron/let->> [prefix      (parsatron/string \"Hello, \")   \n" +
 				"                        name        (word)                           \n" +
 				"                        punctuation (parsatron/choice                \n" +
@@ -489,6 +577,29 @@ public class ParsatronModuleTest {
 				"   (pr-str (parsatron/run (greeting) \"Hello, Dog.\")))                ";
 		
 		assertEquals("[\"Dog\" :not-excited]", new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_5() {
+		final String script =
+				"(do                                                                      \n" +
+				"   (load-module :parsatron)                                              \n" +
+				"                                                                         \n" +
+				"   (defonce dot  (char \".\"))                                           \n" +
+				"                                                                         \n" +
+				"   (parsatron/defparser float []                                         \n" +
+				"     (parsatron/let->> [integral   (parsatron/many1 (parsatron/digit))   \n" + 
+				"                        _          (parsatron/char dot)                  \n" + 
+				"                        fractional (parsatron/many1 (parsatron/digit))]  \n" + 
+				"        (let [integral   (apply str integral)                            \n" +
+				"              fractional (apply str fractional)]                         \n" +
+				"          (parsatron/always (double (str integral \".\" fractional)))))) \n" +
+				"                                                                         \n" +
+				"   (pr-str [ (parsatron/run (float) \"1.4\")                             \n" +
+				"             (parsatron/run (float) \"1.04\")                            \n" +
+				"             (parsatron/run (float) \"1.04000\")]))                        ";
+			
+		assertEquals("[1.4 1.04 1.04]", new Venice().eval(script));
 	}
 
 }
