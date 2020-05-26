@@ -421,7 +421,7 @@ public class ParsatronModuleTest {
 
 
 	@Test
-	public void test_builtin_defparser_always() {
+	public void test_defparser_always() {
 		final String script =
 				"(do                                                      \n" +
 				"   (load-module :parsatron)                              \n" +
@@ -435,6 +435,60 @@ public class ParsatronModuleTest {
 				"   (parsatron/run my-sample-parser \"Hello, world!\"))     ";
 		
 		assertEquals(42L, (Long)new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_1() {
+		final String script =
+				"(do                                                                  \n" +
+				"   (load-module :parsatron)                                          \n" +
+				"                                                                     \n" +
+				"   (defonce dot  (char \".\"))                                       \n" +
+				"   (defonce bang (char \"!\"))                                       \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser word []                                      \n" +
+				"     (parsatron/many1 (parsatron/letter)))                           \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser greeting[]                                   \n" +
+				"     (parsatron/let->> [prefix      (parsatron/string \"Hello, \")   \n" +
+				"                        name        (word)                           \n" +
+				"                        punctuation (parsatron/choice                \n" +
+				"                                       (parsatron/char dot)          \n" +
+				"                                       (parsatron/char bang))]       \n" +
+				"       (if (== punctuation bang)                                     \n" +
+				"          (parsatron/always [(apply str name) :excited])             \n" +
+				"          (parsatron/always [(apply str name) :not-excited]))))      \n" +
+				"                                                                     \n" +
+				"   (pr-str (parsatron/run (greeting) \"Hello, Cat!\")))                ";
+		
+		assertEquals("[\"Cat\" :excited]", new Venice().eval(script));
+	}
+
+	@Test
+	public void test_defparser_let_2() {
+		final String script =
+				"(do                                                                  \n" +
+				"   (load-module :parsatron)                                          \n" +
+				"                                                                     \n" +
+				"   (defonce dot  (char \".\"))                                       \n" +
+				"   (defonce bang (char \"!\"))                                       \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser word []                                      \n" +
+				"     (parsatron/many1 (parsatron/letter)))                           \n" +
+				"                                                                     \n" +
+				"   (parsatron/defparser greeting[]                                   \n" +
+				"     (parsatron/let->> [prefix      (parsatron/string \"Hello, \")   \n" +
+				"                        name        (word)                           \n" +
+				"                        punctuation (parsatron/choice                \n" +
+				"                                       (parsatron/char dot)          \n" +
+				"                                       (parsatron/char bang))]       \n" +
+				"       (if (== punctuation bang)                                     \n" +
+				"          (parsatron/always [(apply str name) :excited])             \n" +
+				"          (parsatron/always [(apply str name) :not-excited]))))      \n" +
+				"                                                                     \n" +
+				"   (pr-str (parsatron/run (greeting) \"Hello, Dog.\")))                ";
+		
+		assertEquals("[\"Dog\" :not-excited]", new Venice().eval(script));
 	}
 
 }

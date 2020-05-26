@@ -209,8 +209,8 @@
   [[& bindings_] & body]
   (let [[bind-form p] (take 2 bindings_)]
     (if (== 2 (count bindings_))
-      `(bind ~p (fn [~bind-form] ~@body))
-      `(bind ~p (fn [~bind-form] (parsatron/let->> ~(drop 2 bindings_) ~@body))))))
+      `(parsatron/bind ~p (fn [~bind-form] ~@body))
+      `(parsatron/bind ~p (fn [~bind-form] (parsatron/let->> ~(drop 2 bindings_) ~@body))))))
 
 
 ;; -----------------------------------------------------------------------------
