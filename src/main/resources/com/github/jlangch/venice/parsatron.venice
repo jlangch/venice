@@ -355,6 +355,16 @@
   (reduce nxt (concat (map char s)
                       (list (always s)))))
 
+(defn any-char-of
+  ; Consume any of the characters given in the string
+  [s]
+  (token (fn [x] (str/contains? s x))))
+
+(defn none-char-of
+  ; Consume none of the characters given in the string
+  [s]
+  (token (fn [x] (not (str/contains? s x)))))
+
 (defn between
   ; arse p after parsing open and before parsing close, returning the
   ; value of p and discarding the values of open and close
