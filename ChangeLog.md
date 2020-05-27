@@ -23,6 +23,14 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
+## [1.8.2] - 2020-06-xx
+
+### Added
+
+- ...
+
+
+
 ## [1.8.1] - 2020-05-27
 
 ### Added

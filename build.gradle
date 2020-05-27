@@ -56,7 +56,7 @@
 //     This will create the release tag
 //   
 // Open new development cycle (after creating a Venice release):
-//   - Change version in 'gradle.properties' to '1.x.y-snapshot'
+//   - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
 //   - Add an empty ChangeLog entry for the new version
 //   - Update files with new dev cycle version: ./gradlew updateNewDevVersion
 // -----------------------------------------------------------------------------
