@@ -41,6 +41,15 @@ public class SpecialFormsTest_deftype_or {
 	}
 
 	@Test
+	public void test_deftype_invalid_name() {
+		final String script =
+				"(do                                        \n" +
+				"  (deftype-or :color. :red :green :blue))    ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
 	public void test_deftype_or_type_builder() {
 		final Venice venice = new Venice();
 

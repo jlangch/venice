@@ -44,6 +44,15 @@ public class SpecialFormsTest_deftype_of {
 	}
 
 	@Test
+	public void test_deftype_invalid_name() {
+		final String script =
+				"(do                                      \n" +
+				"  (deftype-of :email-address. :string))    ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
 	public void test_deftype_of_type_builder() {
 		final Venice venice = new Venice();
 

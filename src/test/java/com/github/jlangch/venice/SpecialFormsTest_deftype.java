@@ -44,6 +44,15 @@ public class SpecialFormsTest_deftype {
 	}
 
 	@Test
+	public void test_deftype_invalid_name() {
+		final String script =
+				"(do                                                  \n" +
+				"  (deftype :complex. [real :long, imaginary :long])    ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
 	public void test_deftype_type_builder() {
 		final Venice venice = new Venice();
 

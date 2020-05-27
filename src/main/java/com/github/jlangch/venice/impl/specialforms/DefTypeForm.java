@@ -82,6 +82,8 @@ public class DefTypeForm {
 		
 
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype");
+		
+		validateCustomTypeName(qualifiedType);
 
 		if (isCustomType(qualifiedType, env)) {
 			throw new VncException(String.format(
@@ -109,6 +111,8 @@ public class DefTypeForm {
 			final CustomWrappableTypes wrappableTypes
 	) {
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-of");
+
+		validateCustomTypeName(qualifiedType);
 
 		final VncKeyword qualifiedBaseType = qualifyBaseType(baseType, env);
 
@@ -143,10 +147,11 @@ public class DefTypeForm {
 	) {
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-or");
 
+		validateCustomTypeName(qualifiedType);
+
 		if (choiceVals.isEmpty()) {
 			throw new VncException("There is at least one value required for a choice type."); 
 		}
-
 
 		if (isCustomType(qualifiedType, env)) {
 			throw new VncException(String.format(
@@ -436,6 +441,16 @@ public class DefTypeForm {
 				"(defn %s? [v] (= :%s (type v)))", 
 				qualifiedTypeName, 
 				qualifiedTypeName);
+	}
+	
+	private static void validateCustomTypeName(final VncKeyword type) {
+		final String name = type.getValue();
+		
+		if (name.endsWith(".")) {
+			throw new VncException(String.format(
+					"A custom type %s name must not end with '.'.", 
+					name)); 
+		}
 	}
 
 }
