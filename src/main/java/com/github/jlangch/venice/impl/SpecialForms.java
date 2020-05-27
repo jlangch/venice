@@ -311,12 +311,18 @@ public class SpecialForms {
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
 						"  (deftype :complex [real :long, imaginary :long])       \n" +
+						"  ; explicitly creating a custom type value              \n" +
 						"  (def x (.: :complex 100 200))                          \n" +
-						"  x)                                                       ",
+						"  ; Venice implicitly creates a builder function         \n" +
+						"  ; suffixed with a '.'                                  \n" +
+						"  (def y (complex. 200 300))                             \n" +
+						"  ; ... and a type check function                        \n" +
+						"  (complex? y)                                           \n" +
+						"  y)                                                       ",
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
 						"  (deftype :complex [real :long, imaginary :long])       \n" +
-						"  (def x (.: :complex 100 200))                          \n" +
+						"  (def x (complex. 100 200))                             \n" +
 						"  (type x))                                                ",
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
@@ -325,13 +331,13 @@ public class SpecialForms {
 						"           (fn [t]                                                            \n" +
 						"              (assert (pos? (:real t)) \"real must be positive\")             \n" +
 						"              (assert (pos? (:imaginary t)) \"imaginary must be positive\"))) \n" +
-						"  (def x (.: :complex 100 200))                                               \n" +
+						"  (def x (complex. 100 200))                                                  \n" +
 						"  [(:real x) (:imaginary x)])                                                   ",
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
 						"  (deftype :named [name :string, value :any])            \n" +
-						"  (def x (.: :named \"count\" 200))                      \n" +
-						"  (def y (.: :named \"seq\" [1 2]))                      \n" +
+						"  (def x (named. \"count\" 200))                         \n" +
+						"  (def y (named. \"seq\" [1 2]))                         \n" +
 						"  [x y])                                                   ")
 					.build()
 		) {
@@ -359,7 +365,7 @@ public class SpecialForms {
 						"(do                                                 \n" +
 						"  (ns foo)                                          \n" +
 						"  (deftype :complex [real :long, imaginary :long])  \n" +
-						"  (def x (.: :complex 100 200))                     \n" +
+						"  (def x (complex. 100 200))                        \n" +
 						"  (deftype? (type x)))                                ")
 					.build()
 		) {
@@ -380,31 +386,39 @@ public class SpecialForms {
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
 						"  (deftype-of :email-address :string)                         \n" +
-						"  (.: :email-address \"foo@foo.org\"))                          ",
-						"(do                                                           \n" +
-						"  (ns foo)                                                    \n" +
-						"  (deftype-of :email-address :string)                         \n" +
-						"  (str \"Email: \" (.: :email-address \"foo@foo.org\")))        ",
-						"(do                                                           \n" +
-						"  (ns foo)                                                    \n" +
-						"  (deftype-of :email-address :string)                         \n" +
+						"  ; explicitly creating a wrapper type value                  \n" +
 						"  (def x (.: :email-address \"foo@foo.org\"))                 \n" +
+						"  ; Venice implicitly creates a builder function              \n" +
+						"  ; suffixed with a '.'                                       \n" +
+						"  (def y (email-address. \"foo@foo.org\"))                    \n" +
+						"  ; ... and a type check function                             \n" +
+						"  (email-address? y)                                          \n" +
+						"  y)                                                            ",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :email-address :string)                         \n" +
+						"  (str \"Email: \" (email-address. \"foo@foo.org\")))           ",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :email-address :string)                         \n" +
+						"  (def x (email-address. \"foo@foo.org\"))                    \n" +
 						"  [(type x) (supertype x)])                                     ",
-						"(do                                                                            \n" +
-						"  (ns foo)                                                                     \n" +
-						"  (deftype-of :email-address                                                   \n" +
-						"              :string                                                          \n" +
-						"              (fn [e]                                                          \n" +
-						"                (assert (str/valid-email-addr? e) \"invalid email address\"))) \n" +
-						"  (.: :email-address \"foo@foo.org\"))                                           ",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :email-address                                  \n" +
+						"              :string                                         \n" +
+						"              (fn [e]                                         \n" +
+						"                (assert (str/valid-email-addr? e)             \n" +
+						"                        \"invalid email address\")))          \n" +
+						"  (email-address. \"foo@foo.org\"))                             ",
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
 						"  (deftype-of :contract-id :long)                             \n" +
-						"  (.: :contract-id 100000))                                     ",
+						"  (contract-id. 100000))                                        ",
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
 						"  (deftype-of :my-long :long)                                 \n" +
-						"  (+ 10 (.: :my-long 100000)))                                  ")
+						"  (+ 10 (my-long. 100000)))                                     ")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
@@ -423,15 +437,22 @@ public class SpecialForms {
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
 						"  (deftype-or :color :red :green :blue)                       \n" +
-						"  (.: :color :red))                                             ",
+						"  ; explicitly creating a wrapper type value                  \n" +
+						"  (def x (.: :color :red))                                    \n" +
+						"  ; Venice implicitly creates a builder function              \n" +
+						"  ; suffixed with a '.'                                       \n" +
+						"  (def y (color. :red))                                       \n" +
+						"  ; ... and a type check function                             \n" +
+						"  (color? y)                                                  \n" +
+						"  y)                                                            ",
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
 						"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
-						"  (.: :digit 1))                                                ",
+						"  (digit. 1))                                                   ",
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
 						"  (deftype-or :long-or-double :long :double)                  \n" +
-						"  (.: :long-or-double 1000))                                    ")
+						"  (long-or-double. 1000))                                       ")
 				.build()
 		) {
 		    private static final long serialVersionUID = -1;
