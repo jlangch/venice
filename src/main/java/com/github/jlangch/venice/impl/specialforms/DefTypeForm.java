@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
@@ -73,7 +74,7 @@ public class DefTypeForm {
 					qualifyBaseType(
 						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
 						registry), 
-					ii));
+					new VncInteger(ii)));
 		}
 		
 
@@ -325,7 +326,7 @@ public class DefTypeForm {
 				"The type %s requires arg %d of type %s "
 						+ "instead of the passed %s", 
 					type.toString(), 
-					fieldDef.getIndex() + 1,
+					fieldDef.getIndex().getValue() + 1,
 					fieldDef.getType().toString(),
 					argType.toString())); 
 	}

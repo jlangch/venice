@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 
 public class VncCustomTypeFieldDef  {
@@ -28,7 +29,7 @@ public class VncCustomTypeFieldDef  {
 	public VncCustomTypeFieldDef(
 			final VncKeyword name,
 			final VncKeyword type,
-			final int index
+			final VncInteger index
 	) {
 		this.name = name;
 		this.type = type;
@@ -44,12 +45,12 @@ public class VncCustomTypeFieldDef  {
 		return type;
 	}
 	
-	public int getIndex() {
+	public VncInteger getIndex() {
 		return index;
 	}
 
 
 	private final VncKeyword name;
 	private final VncKeyword type;
-	private final int index;
+	private final VncInteger index;
 }
