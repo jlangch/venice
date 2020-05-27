@@ -28,6 +28,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - PDF watermark text outline customization
+- implicitly generated build and check functions for custom types
 
 ### Fixed
 
