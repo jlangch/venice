@@ -359,7 +359,7 @@
   (token (fn [x] (not (str/contains? s x)))))
 
 (defn between
-  ; arse p after parsing open and before parsing close, returning the
+  ; Parse p after parsing open and before parsing close, returning the
   ; value of p and discarding the values of open and close
   [open close p]
   (let->> [_ open
@@ -377,9 +377,10 @@
 ;; -----------------------------------------------------------------------------
 ;; run parsers
 (defn run-parser
-  ;Execute a parser p, given some state, Returns Ok or Err
+  ; Execute a parser p, given some state, Returns Ok or Err
   [p state]
-  (parsatron-poline p state
+  (parsatron-poline p
+                    state
                     (fn cok [item _]
                       (ok. item))
                     (fn cerr [err]
@@ -395,7 +396,9 @@
   ; in a VncException and thrown, and if the parser succeeds, its
   ; value is returned
   [p input]
-  (let [result (run-parser p (input-state. input (source-pos. 1 1)))]
+  (let [result (-<> (source-pos. 1 1)
+                    (input-state. input <>)
+                    (run-parser p <>))]
     (cond
       (ok? result) (:item result)
       (err? result) (throw (fail (:errmsg result))))))

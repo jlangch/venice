@@ -836,14 +836,7 @@ public class SpecialForms {
 					.meta()
 					.arglists("(import class)")		
 					.doc(
-						"Imports a Java class. Imports bound to the current namespace.\n\n" +
-						"Default imports: \n" +
-						"  java.lang.Throwable \n" +
-						"  java.lang.Exception \n" +
-						"  java.lang.RuntimeException \n" +
-						"  java.lang.NullPointerException \n" +
-						"  java.lang.IllegalArgumentException \n" +
-						"  com.github.jlangch.venice.VncException")
+						"Imports a Java class. Imports are bound to the current namespace.")
 					.examples(
 						"(do                        \n" +
 						"  (import :java.lang.Math) \n" +
