@@ -484,6 +484,24 @@ public class ParsatronModuleTest {
 		assertEquals("[\"1\" \"2\" \"3\"]", new Venice().eval(script));
 	}
 
+	@Test
+	public void test_lineno() {
+		final String script =     
+				"(do                                                                        \n" +
+				"   (load-module :parsatron)                                                \n" +
+				"   (parsatron/run (parsatron/let->> [_     (parsatron/many                 \n" +
+				"                                              (parsatron/not-char \"w\"))  \n" +
+				"                                     match (parsatron/char \"w\")          \n" +
+				"                                     pos   (parsatron/extract :pos)]       \n" +
+				"                     (parsatron/always (str match                          \n" +
+				"                                            \": \"                         \n" +
+				"                                            (:line pos)                    \n" +
+				"                                            \",\"                          \n" +
+				"                                            (:column pos))))               \n" +
+				"                  \"Hello, world!\"))                                       ";
+
+		assertEquals("w: 1,9", new Venice().eval(script));
+	}
 
 	@Test
 	public void test_defparser_always() {

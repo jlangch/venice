@@ -99,7 +99,7 @@
 
   ;(parsatron/run (lst-value) "42")
   ;(parsatron/run (lst-value) "'42'")
-  ;(parsatron/run (lst-value) "[0,1,2,3,4]")
+  ;(parsatron/run (lst-value) "[0, 1, 2, 3, 4]")
   ;(parsatron/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc']")
   ;(parsatron/run (lst-value) "{'a' 100, 'b' 200}")
   ;(parsatron/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc', {'a' 100, 'b' 200}]")

@@ -141,8 +141,8 @@
     (f value)))
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; host environment
+;; -----------------------------------------------------------------------------
+;; util
 (defn fail [message]
   (. :VncException :new message))
 
@@ -210,7 +210,8 @@
   (let [[bind-form p] (take 2 bindings_)]
     (if (== 2 (count bindings_))
       `(parsatron/bind ~p (fn [~bind-form] ~@body))
-      `(parsatron/bind ~p (fn [~bind-form] (parsatron/let->> ~(drop 2 bindings_) ~@body))))))
+      `(parsatron/bind ~p (fn [~bind-form]
+                            (parsatron/let->> ~(drop 2 bindings_) ~@body))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -361,7 +362,7 @@
                       (list (always s)))))
 
 (defn any-char-of
-  ; Consume any of the characters given in the string
+  ; Consume any of the characters given in the string. E.g.: (any-char-of "([{")
   [s]
   (token (fn [x] (str/contains? s x))))
 
