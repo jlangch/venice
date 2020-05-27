@@ -69,21 +69,6 @@
 
 (deftype :parse-error [pos :source-pos msgs :sequence])
 
-; type helpers
-(defn source-pos. [line column] (.: :source-pos line column))
-(defn input-state. [input pos] (.: :input-state input pos))
-
-(defn continue. [func] (.: :continue func))
-(defn continue? [v] (= :parsatron/continue (type v)))
-
-(defn ok. [item] (.: :ok item))
-(defn ok? [v] (= :parsatron/ok (type v)))
-
-(defn err. [errmsg] (.: :err errmsg))
-(defn err? [v] (= :parsatron/err (type v)))
-
-(defn parse-error. [pos msgs] (.: :parse-error pos msgs))
-
 
 
 ;; -----------------------------------------------------------------------------
