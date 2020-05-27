@@ -47,6 +47,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ## [1.8.0] - 2020-05-18
 
 ### Added
+
 - functions `deftype`, `deftype-of`, and `deftype-or`
 
 ### Fixed
