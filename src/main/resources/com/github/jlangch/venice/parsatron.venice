@@ -334,6 +334,11 @@
   [c]
   (token #(== c %)))
 
+(defn not-char
+  ; Consume all but the given character
+  [c]
+  (token #(not (== c %))))
+
 (defn any-char
   ; Consume any character
   []
@@ -361,7 +366,7 @@
   (token (fn [x] (str/contains? s x))))
 
 (defn none-char-of
-  ; Consume none of the characters given in the string
+  ; Consume all but the characters given in the string
   [s]
   (token (fn [x] (not (str/contains? s x)))))
 

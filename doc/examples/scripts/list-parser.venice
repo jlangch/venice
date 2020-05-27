@@ -1,0 +1,106 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2020 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; A simple Parsatron parser for lists
+
+(do
+  (load-module :parsatron)
+
+  (parsatron/defparser digits []
+    (parsatron/many1 (parsatron/digit)))
+
+  (parsatron/defparser positive-int []
+    (parsatron/let->> [i (digits)]
+      (parsatron/always (int (apply str i)))))
+
+  (parsatron/defparser negative-int []
+    (parsatron/let->> [i (parsatron/>> (parsatron/char "-")
+                                       (digits))]
+      (parsatron/always (int (str "-" (apply str i))))))
+
+  (parsatron/defparser lst-integer []
+    (parsatron/either (positive-int)
+                      (negative-int)))
+
+  (parsatron/defparser whitespaces []
+    (parsatron/many (parsatron/token str/whitespace?)))
+
+  (parsatron/defparser whitespaces1 []
+    (parsatron/many1 (parsatron/token str/whitespace?)))
+
+  (parsatron/defparser lst-string []
+    (parsatron/between (parsatron/char "'")
+                       (parsatron/char "'")
+                       (parsatron/let->> [s (parsatron/many (parsatron/not-char "'"))]
+                         (parsatron/always (apply str s)))))
+
+  (parsatron/defparser lst-list-next-value []
+    (parsatron/>> (whitespaces)
+                  (parsatron/char ",")
+                  (whitespaces)
+                  (lst-value)))
+
+  (parsatron/defparser lst-list-values []
+    (parsatron/let->> [first (lst-value)
+                       rest  (parsatron/many (lst-list-next-value))]
+      (parsatron/always (into [ first ] rest))))
+
+  (parsatron/defparser lst-list []
+    (parsatron/between (parsatron/>> (parsatron/char "[") (whitespaces))
+                       (parsatron/>> (whitespaces) (parsatron/char "]"))
+                       (lst-list-values)))
+
+  (parsatron/defparser lst-dictionary-entry []
+    (parsatron/let->> [key (lst-value)
+                       _   (whitespaces1)
+                       val (lst-value)]
+      (parsatron/always [key val])))
+
+  (parsatron/defparser lst-dictionary-next-entry []
+    (parsatron/>> (whitespaces)
+                  (parsatron/char ",")
+                  (whitespaces)
+                  (lst-dictionary-entry)))
+
+  (parsatron/defparser lst-dictionary-entries []
+    (parsatron/let->> [first (lst-dictionary-entry)
+                       rest  (parsatron/many (lst-dictionary-next-entry))]
+      (parsatron/always (into [ first ] rest))))
+
+  (parsatron/defparser lst-dictionary []
+    (parsatron/between (parsatron/>> (parsatron/char "{") (whitespaces))
+                       (parsatron/>> (whitespaces) (parsatron/char "}"))
+                       (parsatron/let->> [entries (lst-dictionary-entries)]
+                         (parsatron/always (into {} entries)))))
+
+  (parsatron/defparser lst-value []
+    (parsatron/choice (lst-integer)
+                      (lst-string)
+                      (lst-list)
+                      (lst-dictionary)))
+
+  ;(parsatron/run (lst-value) "42")
+  ;(parsatron/run (lst-value) "'42'")
+  ;(parsatron/run (lst-value) "[0,1,2,3,4]")
+  ;(parsatron/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc']")
+  ;(parsatron/run (lst-value) "{'a' 100, 'b' 200}")
+  ;(parsatron/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc', {'a' 100, 'b' 200}]")
+)

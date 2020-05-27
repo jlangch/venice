@@ -118,6 +118,26 @@ public class ParsatronModuleTest {
 	}
 
 	@Test
+	public void test_builtin_parser_not_char() {
+		final String script1 =
+				"(do                                                 \n" +
+				"   (load-module :parsatron)                         \n" +
+				"   (parsatron/run (parsatron/not-char \"C\")        \n" +
+				"                  \"Hello, world!\"))                 ";
+
+		assertEquals("H", new Venice().eval(script1));
+		
+		
+		final String script2 =
+				"(do                                                 \n" +
+				"   (load-module :parsatron)                         \n" +
+				"   (parsatron/run (parsatron/not-char \"H\")        \n" +
+				"                  \"Hello, world!\"))                 ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script2));
+	}
+
+	@Test
 	public void test_builtin_parser_anychar() {
 		final String script1 =
 				"(do                                     \n" +
@@ -177,6 +197,46 @@ public class ParsatronModuleTest {
 				"                  \"Hello, world!\"))                ";
 
 		assertEquals("Hello", new Venice().eval(script));
+	}
+
+	@Test
+	public void test_builtin_parser_any_char_of() {
+		final String script1 =
+				"(do                                                 \n" +
+				"   (load-module :parsatron)                         \n" +
+				"   (parsatron/run (parsatron/any-char-of \"ABC\")   \n" +
+				"                  \"Cats\"))                          ";
+
+		assertEquals("C", new Venice().eval(script1));
+
+		
+		final String script2 =
+				"(do                                                 \n" +
+				"   (load-module :parsatron)                         \n" +
+				"   (parsatron/run (parsatron/any-char-of \"DEF\")   \n" +
+				"                  \"Cats\"))                          ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script2));
+	}
+
+	@Test
+	public void test_builtin_parser_none_char_of() {
+		final String script1 =
+				"(do                                                 \n" +
+				"   (load-module :parsatron)                         \n" +
+				"   (parsatron/run (parsatron/none-char-of \"DEF\")  \n" +
+				"                  \"Cats\"))                          ";
+
+		assertEquals("C", new Venice().eval(script1));
+
+		
+		final String script2 =
+				"(do                                                 \n" +
+				"   (load-module :parsatron)                         \n" +
+				"   (parsatron/run (parsatron/none-char-of \"ABC\")  \n" +
+				"                  \"Cats\"))                          ";
+
+		assertThrows(VncException.class, () -> new Venice().eval(script2));
 	}
 
 	@Test
