@@ -29,9 +29,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.CustomTypeDefRegistry;
 import com.github.jlangch.venice.impl.CustomWrappableTypes;
+import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -58,7 +59,7 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final VncVector fields,
 			final VncFunction validationFn,
-			final CustomTypeDefRegistry registry
+			final Env env
 	) {											
 		if (fields.isEmpty() || ((fields.size() % 2) != 0)) {
 			throw new VncException("deftype invalid field definition."); 
@@ -73,21 +74,23 @@ public class DefTypeForm {
 						Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
 					qualifyBaseType(
 						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
-						registry), 
+						env), 
 					new VncInteger(ii)));
 		}
 		
 
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype");
-		
-		if (registry.existsCustomType(qualifiedType)) {
+
+		if (isCustomType(qualifiedType, env)) {
 			throw new VncException(String.format(
 					"deftype: the type %s already exists.", 
 					qualifiedType.toString())); 
 		}
 
 		
-		registry.addCustomType(new VncCustomTypeDef(qualifiedType, fieldDefs, validationFn));
+		final VncCustomTypeDef typeDef = new VncCustomTypeDef(qualifiedType, fieldDefs, validationFn);
+		
+		env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
 		
 		return qualifiedType;
 	}
@@ -96,12 +99,12 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final VncKeyword baseType,
 			final VncFunction validationFn,
-			final CustomTypeDefRegistry registry,
+			final Env env,
 			final CustomWrappableTypes wrappableTypes
 	) {
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-of");
 
-		final VncKeyword qualifiedBaseType = qualifyBaseType(baseType, registry);
+		final VncKeyword qualifiedBaseType = qualifyBaseType(baseType, env);
 
 		if (!wrappableTypes.isWrappable(qualifiedBaseType)) {
 			throw new VncException(String.format(
@@ -109,28 +112,38 @@ public class DefTypeForm {
 					baseType.toString())); 
 		}
 
-		if (registry.existsWrappedType(qualifiedType)) {
+		if (isCustomType(qualifiedType, env)) {
 			throw new VncException(String.format(
 					"deftype: the type %s already exists.", 
 					qualifiedType.toString())); 
 		}
-
-		registry.addWrappedType(new VncWrappingTypeDef(qualifiedType, qualifiedBaseType, validationFn));
 		
+		
+		final VncWrappingTypeDef typeDef = new VncWrappingTypeDef(qualifiedType, qualifiedBaseType, validationFn);
+
+		env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
+
 		return qualifiedType;
 	}
 
 	public static VncVal defineCustomChoiceType(
 			final VncKeyword type,
 			final VncList choiceVals,
-			final CustomTypeDefRegistry registry
+			final Env env
 	) {
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-or");
 
 		if (choiceVals.isEmpty()) {
 			throw new VncException("There is at least one value required for a choice type."); 
 		}
-		
+
+
+		if (isCustomType(qualifiedType, env)) {
+			throw new VncException(String.format(
+					"deftype-or: the type %s already exists.", 
+					qualifiedType.toString())); 
+		}
+
 		final Set<VncVal> choiceTypes = new HashSet<>();
 		final Set<VncVal> choiceValues = new HashSet<>();
 		
@@ -139,7 +152,7 @@ public class DefTypeForm {
 				final VncKeyword k = (VncKeyword)v;		
 				
 				if (Namespaces.isQualified(k)) {
-					if (registry.existsType(k)) {
+					if (isCustomType(k, env)) {
 						choiceTypes.add(k);
 					}
 					else {
@@ -149,8 +162,8 @@ public class DefTypeForm {
 					}
 				}
 				else {
-					final VncKeyword qualified = qualifyBaseType(k, registry);
-					if (registry.existsType(qualified)) {
+					final VncKeyword qualified = qualifyBaseType(k, env);
+					if (isCustomType(qualified, env)) {
 						choiceTypes.add(qualified);
 					}
 					else if (Types.isCorePrimitiveType(qualified)) {
@@ -167,68 +180,70 @@ public class DefTypeForm {
 			}
 		}
 		
-		registry.addChoiceType(
-					new VncChoiceTypeDef(
-							qualifiedType, 
-							VncHashSet.ofAll(choiceTypes), 
-							VncHashSet.ofAll(choiceValues)));
-		
-		
+		final VncChoiceTypeDef typeDef = new VncChoiceTypeDef(
+												qualifiedType, 
+												VncHashSet.ofAll(choiceTypes), 
+												VncHashSet.ofAll(choiceValues));
+
+		env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
+				
 		return qualifiedType;
 	}
 
 	public static boolean isCustomType(
-			final VncVal val,
-			final CustomTypeDefRegistry registry
+			final VncKeyword typeDef,
+			final Env env
 	) {	
+		return env.getGlobalOrNull(typeDef.toSymbol()) != null;
+	}
+
+	public static boolean isCustomType(final VncVal val, final Env env) {	
 		if (Types.isVncKeyword(val)) {
 			final VncKeyword type = Types.qualify(
 											Namespaces.getCurrentNS(), 
 											(VncKeyword)val);
-			return registry.existsType(type);
+			
+			return env.getGlobalOrNull(type.toSymbol()) != null;
 		}
 		else if (Types.isVncCustomType(val)) {
 			return true;
 		}
 		else if (val.isWrapped()) {
 			final VncKeyword type = val.getWrappingTypeDef().getType();
-			return registry.existsType(type);
+
+			return env.getGlobalOrNull(type.toSymbol()) != null;
 		}
 		else {
 			return false;
 		}
 	}
 
-	public static VncVal createType(
-			final List<VncVal> args, 
-			final CustomTypeDefRegistry registry
-	) {
+	public static VncVal createType(final List<VncVal> args, final Env env) {
 		final VncKeyword type = Coerce.toVncKeyword(args.get(0));
 
 		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
 
-		// custom type
-		final VncCustomTypeDef customTypeDef = registry.getCustomType(qualifiedType);
-		if (customTypeDef != null) {
+		final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
+		if (typeDef == null) {
+			throw new VncException(String.format(
+					"The custom type %s is not defined.", 
+					qualifiedType.toString())); 
+		}
+		else if (typeDef instanceof VncCustomTypeDef) {
 			final List<VncVal> typeArgs = args.subList(1, args.size());
-			return createCustomType(customTypeDef, typeArgs);
+			return createCustomType((VncCustomTypeDef)typeDef, typeArgs);
 		}
-		
-		// custom wrapped type
-		final VncWrappingTypeDef wrappedTypeDef = registry.getWrappedType(qualifiedType);
-		if (wrappedTypeDef != null) {
-			return createWrappedType(wrappedTypeDef, args.get(1));
+		else if (typeDef instanceof VncWrappingTypeDef) {
+			return createWrappedType((VncWrappingTypeDef)typeDef, args.get(1));
 		}
-		
-		// custom choice type (OR)
-		final VncChoiceTypeDef choiceTypeDef = registry.getChoiceType(qualifiedType);
-		if (choiceTypeDef != null) {
-			return createChoiceType(choiceTypeDef, args.get(1));
+		else if (typeDef instanceof VncChoiceTypeDef) {
+			return createChoiceType((VncChoiceTypeDef)typeDef, args.get(1));
 		}
-
-		throw new VncException(String.format(
-				"The custom type %s is not defined.", 
-				qualifiedType.toString())); 
+		else {
+			throw new VncException(String.format(
+					"The type %s is not a custom type.", 
+					qualifiedType.toString())); 
+		}
 	}
 
 	public static VncVal createCustomType(
@@ -333,7 +348,7 @@ public class DefTypeForm {
 	
 	private static VncKeyword qualifyBaseType(
 			final VncKeyword type,
-			final CustomTypeDefRegistry registry
+			final Env env
 	) {
 		if (Namespaces.isQualified(type)) {
 			return type;
@@ -343,7 +358,7 @@ public class DefTypeForm {
 										Namespaces.getCurrentNS(), 
 										type); 
 			
-			if (registry.existsType(type_)) {
+			if (isCustomType(type_, env)) {
 				return type_;
 			}
 			else {

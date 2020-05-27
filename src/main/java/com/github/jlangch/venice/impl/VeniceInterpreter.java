@@ -348,7 +348,7 @@ public class VeniceInterpreter implements Serializable  {
 															? Coerce.toVncFunction(evaluate(ast.fourth(), env))
 															: null;
 	
-						return DefTypeForm.defineCustomType(type, fields, validationFn, typeDefRegistry);
+						return DefTypeForm.defineCustomType(type, fields, validationFn, env);
 					}
 				}
 				
@@ -356,7 +356,7 @@ public class VeniceInterpreter implements Serializable  {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype?", ast))) {
 						final VncVal type = evaluate(ast.second(), env);
 
-						return VncBoolean.of(DefTypeForm.isCustomType(type, typeDefRegistry));
+						return VncBoolean.of(DefTypeForm.isCustomType(type, env));
 					}
 				}
 				
@@ -371,7 +371,7 @@ public class VeniceInterpreter implements Serializable  {
 									type, 
 									baseType, 
 									validationFn, 
-									typeDefRegistry,
+									env,
 									wrappableTypes);
 					}
 				}
@@ -381,10 +381,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncList choiceVals = ast.slice(2);
 
-						return DefTypeForm.defineCustomChoiceType(
-									type, 
-									choiceVals, 
-									typeDefRegistry);
+						return DefTypeForm.defineCustomChoiceType(type, choiceVals, env);
 					}
 				}
 
@@ -393,7 +390,7 @@ public class VeniceInterpreter implements Serializable  {
 					for(VncVal v : ast.rest().getList()) {
 						args.add(evaluate(v, env));
 					}
-					return DefTypeForm.createType(args, typeDefRegistry);
+					return DefTypeForm.createType(args, env);
 				}
 
 				case "set!": { // (set! name expr)
@@ -573,7 +570,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 				case "doc": // (doc conj)
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("doc", ast))) {
-						final VncString doc = DocForm.doc(ast.second(), env, typeDefRegistry);
+						final VncString doc = DocForm.doc(ast.second(), env);
 						orig_ast = VncTinyList.of(new VncSymbol("println"), doc);
 					}
 					break;
@@ -1611,7 +1608,6 @@ public class VeniceInterpreter implements Serializable  {
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
-	private final CustomTypeDefRegistry typeDefRegistry = new CustomTypeDefRegistry();
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
 	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);

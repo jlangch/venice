@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.CustomTypeDefRegistry;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.SpecialForms;
@@ -42,16 +41,12 @@ import com.github.jlangch.venice.impl.util.Doc;
 
 public class DocForm {
 
-	public static VncString doc(
-			final VncVal ref,
-			final Env env,
-			final CustomTypeDefRegistry typeDefRegistry
-	) {			
+	public static VncString doc(final VncVal ref, final Env env) {			
 		if (Types.isVncSymbol(ref)) {
 			return docForSymbol((VncSymbol)ref, env);
 		}
 		else if (Types.isVncKeyword(ref)) {
-			return docForCustomType((VncKeyword)ref, typeDefRegistry);
+			return docForCustomType((VncKeyword)ref, env);
 		}
 		else if (Types.isVncString(ref)) {
 			return docForSymbol(((VncString)ref).toSymbol(), env);
@@ -74,10 +69,24 @@ public class DocForm {
 	
 	private static VncString docForCustomType(
 			final VncKeyword type, 
-			final CustomTypeDefRegistry typeDefRegistry
+			final Env env
 	) {
-		if (typeDefRegistry.existsCustomType(type)) {
-			final VncCustomTypeDef typeDef = typeDefRegistry.getCustomType(type);
+		final VncVal tdef = env.getGlobalOrNull(type.toSymbol());
+
+		if (tdef == null) {
+			if (Namespaces.isQualified(type)) {
+				throw new VncException(String.format(
+						":%s is not a custom type. No documentation available!",
+						type.getValue()));
+			}
+			else {
+				throw new VncException(String.format(
+						":%s is not a custom type. Please qualify the type with its namespace!",
+						type.getValue()));
+			}
+		}
+		else if (tdef instanceof VncCustomTypeDef) {
+			final VncCustomTypeDef typeDef = (VncCustomTypeDef)tdef;
 			final StringBuilder sb = new StringBuilder();
 			
 			sb.append(String.format("Custom type :%s\n", type.getValue()));
@@ -92,8 +101,8 @@ public class DocForm {
 			
 			return new VncString(sb.toString());
 		}
-		else if (typeDefRegistry.existsWrappedType(type)) {
-			final VncWrappingTypeDef typeDef = typeDefRegistry.getWrappedType(type);
+		else if (tdef instanceof VncWrappingTypeDef) {
+			final VncWrappingTypeDef typeDef = (VncWrappingTypeDef)tdef;
 			final StringBuilder sb = new StringBuilder();
 			
 			sb.append(String.format("Custom wrapped type :%s\n", type.getValue()));
@@ -104,8 +113,8 @@ public class DocForm {
 			
 			return new VncString(sb.toString());
 		}
-		else if (typeDefRegistry.existsChoiceType(type)) {
-			final VncChoiceTypeDef typeDef = typeDefRegistry.getChoiceType(type);
+		else if (tdef instanceof VncChoiceTypeDef) {
+			final VncChoiceTypeDef typeDef = (VncChoiceTypeDef)tdef;
 			
 			final VncSet types = typeDef.typesOnly();
 			final VncSet values = typeDef.valuesOnly();
@@ -124,16 +133,9 @@ public class DocForm {
 			return new VncString(sb.toString());
 		}
 		else {
-			if (Namespaces.isQualified(type)) {
-				throw new VncException(String.format(
-						":%s is not a custom type. No documentation available!",
-						type.getValue()));
-			}
-			else {
-				throw new VncException(String.format(
-						":%s is not a custom type. Please qualify the type with its namespace!",
-						type.getValue()));
-			}
+			throw new VncException(String.format(
+					":%s is not a custom type. Please qualify the type with its namespace!",
+					type.getValue()));
 		}
 	}
 
