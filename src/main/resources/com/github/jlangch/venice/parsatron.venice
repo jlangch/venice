@@ -67,21 +67,23 @@
 (deftype :ok [item :any])
 (deftype :err [errmsg :string])
 
-(deftype :parse-err [pos :source-pos msgs :sequence])
+(deftype :parse-error [pos :source-pos msgs :sequence])
 
+; type helpers
+(defn source-pos. [line column] (.: :source-pos line column))
+(defn input-state. [input pos] (.: :input-state input pos))
 
-(defn InputState. [input pos] { :input input :pos pos })
-(defn SourcePos. [line column] { :line line :column column })
+(defn continue. [func] (.: :continue func))
+(defn continue? [v] (= :parsatron/continue (type v)))
 
-(defn Continue. [func] { :fn func :type :Continue })
-(defn Ok. [item] { :item item :type :Ok })
-(defn Err. [errmsg] { :errmsg errmsg :type :Err })
+(defn ok. [item] (.: :ok item))
+(defn ok? [v] (= :parsatron/ok (type v)))
 
-(defn Continue? [v]  (and (map? v) (== :Continue (:type v))))
-(defn Ok? [v]  (and (map? v) (== :Ok (:type v))))
-(defn Err? [v]  (and (map? v) (== :Err (:type v))))
+(defn err. [errmsg] (.: :err errmsg))
+(defn err? [v] (= :parsatron/err (type v)))
 
-(defn ParseError. [pos msgs] {:pos pos :msgs msgs})
+(defn parse-error. [pos msgs] (.: :parse-error pos msgs))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -94,8 +96,8 @@
   (let [line   (:line pos)
         column (:column pos)]
     (if (str/linefeed? c)
-      (SourcePos. (inc line) 1)
-      (SourcePos. line (inc column)))))
+      (source-pos. (inc line) 1)
+      (source-pos. line (inc column)))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -109,16 +111,16 @@
          " column: " (:column pos))))
 
 (defn unknown-error [state]
-  (ParseError. (:pos state) ["Error"]))
+  (parse-error. (:pos state) ["Error"]))
 
 (defn unexpect-error [msg pos]
-  (ParseError. pos [(str "Unexpected " msg)]))
+  (parse-error. pos [(str "Unexpected " msg)]))
 
 (defn expect-error [msg pos]
-  (ParseError. pos [(str "Expected " msg)]))
+  (parse-error. pos [(str "Expected " msg)]))
 
 (defn merge-errors [err other-err]
-  (ParseError. (:pos err) (flatten (concat (:msgs err) (:msgs other-err)))))
+  (parse-error. (:pos err) (flatten (concat (:msgs err) (:msgs other-err)))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -131,13 +133,13 @@
   ; the value is no longer a Continue record, returning that.
   [f & args]
   (loop [value (apply f args)]
-    (if (Continue? value)
-      (recur ((:fn value)))
+    (if (continue? value)
+      (recur ((:func value)))
       value)))
 
 (defn sequentially [f value]
-  (if (Continue? value)
-    (Continue. #(sequentially f ((:fn value))))
+  (if (continue? value)
+    (continue. #(sequentially f ((:func value))))
     (f value)))
 
 
@@ -169,13 +171,13 @@
   (fn [state cok cerr eok eerr]
     (let [pcok (fn [item state]
                    (sequentially
-                     (fn [q] (Continue. #(q state cok cerr cok cerr)))
+                     (fn [q] (continue. #(q state cok cerr cok cerr)))
                      (f item)))
           peok (fn [item state]
                    (sequentially
-                     (fn [q] (Continue. #(q state cok cerr eok eerr)))
+                     (fn [q] (continue. #(q state cok cerr eok eerr)))
                      (f item)))]
-      (Continue. #(p state pcok cerr peok eerr)))))
+      (continue. #(p state pcok cerr peok eerr)))))
 
 (defn nxt
   ; Parse p and then q, returning q's value and discarding p's
@@ -196,7 +198,7 @@
     `(defn ~name ~args
        (fn [~state ~cok ~cerr ~eok ~eerr]
          (let [~p (parsatron/>> ~@body)]
-           (parsatron/Continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
+           (parsatron/continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
 (defmacro >>
   ; Expands into nested nxt forms
@@ -230,15 +232,15 @@
     (let [peerr (fn [err-from-p]
                   (let [qeerr (fn [err-from-q]
                                 (eerr (merge-errors err-from-p err-from-q)))]
-                     (Continue. #(q state cok cerr eok qeerr))))]
-      (Continue. #(p state cok cerr eok peerr)))))
+                     (continue. #(q state cok cerr eok qeerr))))]
+      (continue. #(p state cok cerr eok peerr)))))
 
 (defn attempt
   ; A parser that will attempt to parse p, and upon failure never
   ; consume any input
   [p]
   (fn [state cok cerr eok eerr]
-    (Continue. #(p state cok eerr eok eerr))))
+    (continue. #(p state cok eerr eok eerr))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -275,7 +277,7 @@
     (if-not (empty? input)
       (let [tok (first input)]
         (if (consume? tok)
-          (cok tok (InputState. (rest input) (inc-sourcepos pos tok)))
+          (cok tok (input-state. (rest input) (inc-sourcepos pos tok)))
           (eerr (unexpect-error (str "token '" tok "'") pos))))
       (eerr (unexpect-error "end of input" pos)))))
 
@@ -287,7 +289,7 @@
   (let [many-err (fn [_ _]
                      (fail "Combinator '*' is applied to a parser that accepts an empty string"))
         safe-p (fn [state cok cerr eok eerr]
-                   (Continue. #(p state cok cerr many-err eerr)))]
+                   (continue. #(p state cok cerr many-err eerr)))]
     (either
      (let->> [x safe-p
               xs (many safe-p)]
@@ -309,7 +311,7 @@
   [p]
   (fn [state cok cerr eok eerr]
     (let [ok (fn [item _] (eok item state))]
-      (Continue. #(p state ok cerr eok eerr)))))
+      (continue. #(p state ok cerr eok eerr)))))
 
 (defn choice
   ; A varargs version of either that tries each given parser in turn,
@@ -394,13 +396,13 @@
   [p state]
   (parsatron-poline p state
                     (fn cok [item _]
-                      (Ok. item))
+                      (ok. item))
                     (fn cerr [err]
-                      (Err. (show-error err)))
+                      (err. (show-error err)))
                     (fn eok [item _]
-                      (Ok. item))
+                      (ok. item))
                     (fn eerr [err]
-                      (Err. (show-error err)))))
+                      (err. (show-error err)))))
 
 (defn run
   ; Run a parser p over some input. The input can be a string or a seq
@@ -408,7 +410,7 @@
   ; in a VncException and thrown, and if the parser succeeds, its
   ; value is returned
   [p input]
-  (let [result (run-parser p (InputState. input (SourcePos. 1 1)))]
+  (let [result (run-parser p (input-state. input (source-pos. 1 1)))]
     (cond
-      (Ok? result) (:item result)
-      (Err? result) (throw (fail (:errmsg result))))))
+      (ok? result) (:item result)
+      (err? result) (throw (fail (:errmsg result))))))
