@@ -29,7 +29,8 @@ public enum TypeRank {
 	MULTI_FUNCTION (62),
 	
 	JUST (70), 
-	
+
+	CUSTOM_TYPE_DEF (80), 
 	
 	LIST (100),	
 	JAVALIST (101),

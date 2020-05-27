@@ -27,23 +27,20 @@ import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 
 
-public class VncChoiceTypeDef {
+public class VncChoiceTypeDef extends VncCustomBaseTypeDef {
 
 	public VncChoiceTypeDef(
 			final VncKeyword type,
 			final VncSet choiceTypes,
 			final VncSet choiceValues
 	) {
-		this.type = type;
+		super(type);
+		
 		this.choiceTypes = choiceTypes;
 		this.choiceValues = choiceValues;
 	}
 
-
-	public VncKeyword getType() {
-		return type;
-	}
-
+		
 	public boolean isChoice(final VncVal val) {
 		return isChoiceType(val) || isChoiceValue(val);
 	}
@@ -71,7 +68,8 @@ public class VncChoiceTypeDef {
 	}
 
 
-	private final VncKeyword type;
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final VncSet choiceTypes;
 	private final VncSet choiceValues;
 }

@@ -27,7 +27,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class VncWrappingTypeDef {
+public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
 
 	public VncWrappingTypeDef(
 			final VncKeyword type,
@@ -41,15 +41,12 @@ public class VncWrappingTypeDef {
 			final VncKeyword baseType,
 			final VncFunction validationFn
 	) {
-		this.type = type;
+		super(type);
+		
 		this.baseType = baseType;
 		this.validationFn = validationFn;
 	}
 
-
-	public VncKeyword getType() {
-		return type;
-	}
  
 	public VncKeyword getBaseType() {
 		return baseType;
@@ -65,8 +62,9 @@ public class VncWrappingTypeDef {
 		}
 	}
 
-	
-	private final VncKeyword type;
+
+    private static final long serialVersionUID = -1848883965231344442L;
+
 	private final VncKeyword baseType;
 	private final VncFunction validationFn;
 }

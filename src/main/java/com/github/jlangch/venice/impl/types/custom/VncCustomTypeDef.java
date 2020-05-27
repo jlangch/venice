@@ -30,23 +30,20 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
-public class VncCustomTypeDef {
+public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 
 	public VncCustomTypeDef(
 			final VncKeyword type,
 			final List<VncCustomTypeFieldDef> fieldDefs,
 			final VncFunction validationFn
 	) {
-		this.type = type;
+		super(type);
+		
 		this.fieldDefs = fieldDefs;
 		this.validationFn = validationFn;
 	}
 
 
-	public VncKeyword getType() {
-		return type;
-	}
- 
 	public VncCustomTypeFieldDef getFieldDef(final int index) {
 		if (index >= 0 && index < fieldDefs.size()) {
 			return fieldDefs.get(index);
@@ -76,7 +73,8 @@ public class VncCustomTypeDef {
 	}
 	
 
-	private final VncKeyword type;
+    private static final long serialVersionUID = -1848883965231344442L;	
+
 	private final List<VncCustomTypeFieldDef> fieldDefs;
 	private final VncFunction validationFn;
 }
