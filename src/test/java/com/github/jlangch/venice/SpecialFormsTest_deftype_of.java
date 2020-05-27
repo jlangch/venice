@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,32 @@ public class SpecialFormsTest_deftype_of {
 
 		assertEquals("\"foo@foo.org\"", venice.eval(script));					
 	}
-	
+
+	@Test
+	public void test_deftype_of_type_builder() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype-of :email-address :string)               \n" +
+				"  (def x (email-address. \"foo@foo.org\"))          \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("\"foo@foo.org\"", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_of_type_checker() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                     \n" +
+				"  (deftype-of :email-address :string)                   \n" +
+				"  (email-address? (.: :email-address \"foo@foo.org\")))   ";
+
+		assertTrue((Boolean)venice.eval(script));					
+	}
+
 	@Test
 	public void test_deftype_of_type() {
 		final Venice venice = new Venice();

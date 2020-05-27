@@ -348,7 +348,7 @@ public class VeniceInterpreter implements Serializable  {
 															? Coerce.toVncFunction(evaluate(ast.fourth(), env))
 															: null;
 	
-						return DefTypeForm.defineCustomType(type, fields, validationFn, env);
+						return DefTypeForm.defineCustomType(type, fields, validationFn, this::RE, env);
 					}
 				}
 				
@@ -371,6 +371,7 @@ public class VeniceInterpreter implements Serializable  {
 									type, 
 									baseType, 
 									validationFn, 
+									this::RE, 
 									env,
 									wrappableTypes);
 					}
@@ -381,7 +382,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncList choiceVals = ast.slice(2);
 
-						return DefTypeForm.defineCustomChoiceType(type, choiceVals, env);
+						return DefTypeForm.defineCustomChoiceType(type, choiceVals, this::RE, env);
 					}
 				}
 

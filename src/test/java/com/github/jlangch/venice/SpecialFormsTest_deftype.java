@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,31 @@ public class SpecialFormsTest_deftype {
 				"  (pr-str x))                                         ";
 
 		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_type_builder() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_type_checker() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (complex? (.: :complex 100 200)))                   ";
+
+		assertTrue((Boolean)venice.eval(script));					
 	}
 
 	@Test

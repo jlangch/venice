@@ -32,6 +32,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.ReadEvalFunction;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -59,6 +60,7 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final VncVector fields,
 			final VncFunction validationFn,
+			final ReadEvalFunction interpreter,
 			final Env env
 	) {											
 		if (fields.isEmpty() || ((fields.size() % 2) != 0)) {
@@ -92,6 +94,9 @@ public class DefTypeForm {
 		
 		env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
 		
+		// create builder and type check function for the custom type
+		createBuildAndCheckFn(qualifiedType.toSymbol().getName(), fieldDefs.size(), interpreter, env);
+		
 		return qualifiedType;
 	}
 
@@ -99,6 +104,7 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final VncKeyword baseType,
 			final VncFunction validationFn,
+			final ReadEvalFunction interpreter,
 			final Env env,
 			final CustomWrappableTypes wrappableTypes
 	) {
@@ -123,12 +129,16 @@ public class DefTypeForm {
 
 		env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
 
+		// create builder and type check function for the custom type
+		createBuildAndCheckFn(qualifiedType.toSymbol().getName(), 1, interpreter, env);
+
 		return qualifiedType;
 	}
 
 	public static VncVal defineCustomChoiceType(
 			final VncKeyword type,
 			final VncList choiceVals,
+			final ReadEvalFunction interpreter,
 			final Env env
 	) {
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-or");
@@ -186,7 +196,10 @@ public class DefTypeForm {
 												VncHashSet.ofAll(choiceValues));
 
 		env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
-				
+
+		// create builder and type check function for the custom type
+		createBuildAndCheckFn(qualifiedType.toSymbol().getName(), 1, interpreter, env);
+
 		return qualifiedType;
 	}
 
@@ -388,6 +401,41 @@ public class DefTypeForm {
 		else {
 			return Namespaces.qualifyKeyword(Namespaces.getCurrentNS(), type);
 		}
+	}
+
+
+	private static void createBuildAndCheckFn(
+			final String qualifiedTypeName,
+			final int builderNumArgs,
+			final ReadEvalFunction interpreter,
+			final Env env
+	) {
+		final String typeBuildFn = createBuildTypeFn(qualifiedTypeName, builderNumArgs);
+		final String typeCheckFn = createCheckTypeFn(qualifiedTypeName);
+		
+		interpreter.eval(typeBuildFn, "custom-types", env);
+		interpreter.eval(typeCheckFn, "custom-types", env);
+	}
+
+	private static String createBuildTypeFn(final String qualifiedTypeName, final int builderNumArgs) {
+		final StringBuilder args = new StringBuilder();
+		args.append("x0");
+		for(int ii=1; ii<builderNumArgs; ii++) {
+			args.append(" ").append("x").append(ii);
+		}
+		return String.format(
+				"(defn %s. [%s] (.: :%s %s))", 
+				qualifiedTypeName, 
+				args,
+				qualifiedTypeName,
+				args);
+	}
+
+	private static String createCheckTypeFn(final String qualifiedTypeName) {
+		return String.format(
+				"(defn %s? [v] (= :%s (type v)))", 
+				qualifiedTypeName, 
+				qualifiedTypeName);
 	}
 
 }

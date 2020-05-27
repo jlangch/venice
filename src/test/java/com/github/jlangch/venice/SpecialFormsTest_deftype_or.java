@@ -39,6 +39,31 @@ public class SpecialFormsTest_deftype_or {
 
 		assertEquals("red", venice.eval(script));					
 	}
+
+	@Test
+	public void test_deftype_or_type_builder() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :color :red :green :blue)       \n" +
+				"  (def x (color. :red))                       \n" +
+				"  x)                                            ";
+
+		assertEquals("red", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_or_type_checker() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :color :red :green :blue)       \n" +
+				"  (color? (color. :red)))                       ";
+
+		assertTrue((Boolean)venice.eval(script));					
+	}
 	
 	@Test
 	public void test_deftype_or_values_keyword_FAILED() {
