@@ -381,14 +381,10 @@
   [p state]
   (parsatron-poline p
                     state
-                    (fn cok [item _]
-                      (ok. item))
-                    (fn cerr [err]
-                      (err. (show-error err)))
-                    (fn eok [item _]
-                      (ok. item))
-                    (fn eerr [err]
-                      (err. (show-error err)))))
+                    (fn cok [it _] (ok. it))
+                    (fn cerr [err] (err. (show-error err)))
+                    (fn eok [it _] (ok. it))
+                    (fn eerr [err] (err. (show-error err)))))
 
 (defn run
   ; Run a parser p over some input. The input can be a string or a seq
