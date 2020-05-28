@@ -23,11 +23,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.8.2] - 2020-06-xx
+## [1.8.2] - 2020-05-28
 
 ### Added
 
-- ...
+- Gradle build Maven publish
 
 
 

@@ -50,8 +50,14 @@
 //   - Commit the changes
 //   - Update the new Git Id for the cheatsheet URLs in 'README.md' 
 //   - Commit the 'README.md' change
-//   - Build the Maven upload bundle: ./gradlew bundle
-//   - Upload to Maven
+//   - Publish to Maven
+//         ./gradlew --warning-mode all
+//                   -Psigning.gnupg.keyName=[gpg-user-key-id]
+//                   -PsonatypeUsername=[name] -PsonatypePassword=[pw]
+//                   clean shadowJar publish
+//   - Manual publish to Maven
+//       o Build the Maven upload bundle: ./gradlew bundle
+//       o Upload to Maven
 //   - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //     This will create the release tag
 //   
@@ -63,7 +69,7 @@
 // Upgrade Gradle wrapper
 //   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
 //   Upgrade:
-//      $> ./gradlew wrapper --gradle-version=6.2.2
+//      $> ./gradlew wrapper --gradle-version=6.4.1
 //
 // Get initial Gradle wrapper
 //   See https://guides.gradle.org/creating-new-gradle-builds/
@@ -89,11 +95,22 @@
 
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'eclipse'
 }
 
+
+def group = 'com.github.jlangch'
+
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-snapshot)?'
+
+
+// -PsonatypeUsername=foo -PsonatypePassword=123
+def sonatypeUsername = project.properties['sonatypeUsername'] ?: "nokey"
+def sonatypePassword = project.properties['sonatypePassword'] ?: "nokey"
+
 
 compileJava {
     sourceCompatibility = 1.8
@@ -163,6 +180,67 @@ shadowJar {
    
     archiveFileName = "venice-${project.version}.jar"
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.github.jlangch'
+            artifactId = 'venice'
+            
+            from components.java
+            
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'Venice'
+                description = 'Venice, a sandboxed Lisp implemented in Java.'
+                url = 'https://github.com/jlangch/venice/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'jlangch'
+                        name = 'Juerg Lang'
+                        email = 'juerg.lang@ggaweb.ch'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:jlangch/venice.git'
+                    developerConnection = 'scm:git:git@github.com:jlangch/venice.git'
+                    url = 'http://github.com:jlangch/venice/tree/master'
+                    tag = 'HEAD'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            
+            credentials {
+                username sonatypeUsername
+                password sonatypePassword
+            }
+        }
+    }
+}
+
+signing {
+    // ./gradlew signMavenJavaPublication
+	useGpgCmd()
+    sign publishing.publications.mavenJava
+}
+
 
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     description="Generate cheatsheet"
