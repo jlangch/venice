@@ -54,18 +54,12 @@
 //       - Commit the 'README.md' change
 //
 //   [2] Publish to Maven
-//       - Automated publish to Maven
 //           o ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
 //                       --warning-mode all
 //                       -Psigning.gnupg.keyName=[gpg-user-key-id]
 //                       -PsonatypeUsername=[name] 
 //                       -PsonatypePassword=[pw]
 //                       clean shadowJar publish
-//           o Nexus Repository Manager GUI: close and release the uploaded
-//             repository
-//       - Manual publish to Maven
-//           o Build the Maven upload bundle: ./gradlew bundle
-//           o Nexus Repository Manager GUI: upload the bundle
 //           o Nexus Repository Manager GUI: close and release the uploaded
 //             repository
 //
@@ -76,7 +70,6 @@
 //   [4] Open new development cycle
 //       - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
 //       - Add an empty ChangeLog entry for the new version
-//       - Update files with new dev cycle version: ./gradlew updateNewDevVersion
 // -----------------------------------------------------------------------------
 // Upgrade Gradle wrapper
 //   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
@@ -279,28 +272,8 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     args "${project.version}"
 }
 
-task updateNewDevVersion {
-	doLast {	    
-	    println "Updating version ${project.version} -> 'pom.xml'"
-	    ant.replaceregexp(
-	    		match:   "<version>${version_regex}</version>", 
-	    		replace: "<version>${project.version}</version>"
-	    ) {
-	        fileset(dir: '.', includes: 'pom.xml')
-	    }
-	}
-}
-
 task updateReleaseVersion {
-	doLast {	    
-	    println "Updating version ${project.version} -> 'pom.xml'"
-	    ant.replaceregexp(
-	    		match:   "<version>${version_regex}", 
-	    		replace: "<version>${project.version}"
-	    ) {
-	        fileset(dir: '.', includes: 'pom.xml')
-	    }
-
+	doLast {
 	    println "Updating version ${project.version} -> 'maven-central.svg'"
 	    ant.replaceregexp(
 	    		match:   "v${version_regex}", 
@@ -319,27 +292,6 @@ task updateReleaseVersion {
 	        fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
 	    }
 	}
-}
-
-
-task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
-    workingDir 'build/libs'
-    
-    commandLine "/bin/sh", 
-                "-c", 
-                "cp ../../pom.xml ." + 
-                  "; echo 'Signing artifacts...'" +
-                  "; gpg2 -ab pom.xml" +
-                  "; gpg2 -ab venice-${project.version}-javadoc.jar" +
-                  "; gpg2 -ab venice-${project.version}-sources.jar" +
-                  "; gpg2 -ab venice-${project.version}.jar" +
-                  "; echo 'Bundling artifacts...'" +
-                  "; jar -cvf bundle.jar" +
-                         " pom.xml pom.xml.asc" +
-                         " venice-${project.version}-javadoc.jar venice-${project.version}-javadoc.jar.asc" +
-                         " venice-${project.version}-sources.jar venice-${project.version}-sources.jar.asc" +
-                         " venice-${project.version}.jar venice-${version}.jar.asc" +
-                  "; echo 'Bundling done.'"
 }
 
 task ('jmhHelp', description:'Print help for the jmh task') {
