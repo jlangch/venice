@@ -24,8 +24,8 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
-import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.math.BigDecimal;
@@ -49,9 +49,9 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.Reader;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -61,6 +61,7 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
@@ -1997,6 +1998,128 @@ public class CoreFunctions {
 		};
 
 
+	public static VncFunction fnil =
+		new VncFunction(
+				"fnil",
+				VncFunction
+					.meta()
+					.arglists(
+						"(fnil f x)",
+						"(fnil f x y)",
+						"(fnil f x y z)")
+					.doc(
+						"Takes a function f, and returns a function that calls f, replacing " + 
+						"a nil first argument to f with the supplied value x. Higher arity " + 
+						"versions can replace arguments in the second and third " + 
+						"positions (y, z). Note that the function f can take any number of " + 
+						"arguments, not just the one(s) being nil-patched.")
+					.examples(
+						"((fnil + 10) nil)",
+						"((fnil + 10) nil 1)",
+						"((fnil + 10) nil 1 2)",
+						"((fnil + 10) 20 1 2)",
+						"((fnil + 10) nil 1 2 3 4)",
+						"((fnil + 1000 100) nil nil)",
+						"((fnil + 1000 100) 2000 nil 1)",
+						"((fnil + 1000 100) nil 200 1 2)",
+						"((fnil + 1000 100) nil nil 1 2 3 4)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("fnil", args, 2, 3, 4);
+
+				final  List<VncFunction> functions = new ArrayList<>();
+				
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
+
+				if (args.size() == 2) {
+					final VncVal x = args.second();
+					
+					functions.add(
+						new VncFunction(
+								createAnonymousFuncName("fnil:wrapped"),
+								VncVector.of(new VncSymbol("&"), new VncString("args"))
+						) {
+							public VncVal apply(final VncList args) {
+								if (args.isEmpty()) {
+									throw new VncException("fnil: the passed fn function requires at least one arg");
+								}
+								else {
+									final VncVal a = args.first();
+									return fn.apply(args.rest().addAtStart(a == Nil ? x : a));
+								}
+							}
+	
+							private static final long serialVersionUID = -1848883965231344442L;
+						});					
+				}
+				else if (args.size() == 3) {
+					final VncVal x = args.second();
+					final VncVal y = args.third();
+
+					functions.add(
+					new VncFunction(
+								createAnonymousFuncName("fnil:wrapped"),
+								VncVector.of(new VncSymbol("&"), new VncString("args"))
+						) {
+							public VncVal apply(final VncList args) {
+								if (args.size() < 2) {
+									throw new VncException("fnil: the passed fn function requires at least two args");
+								}
+								else {
+									final VncVal a = args.first();
+									final VncVal b = args.second();
+									return fn.apply(args.rest()
+														.rest()
+														.addAtStart(b == Nil ? y : b)
+														.addAtStart(a == Nil ? x : a));
+								}
+							}
+	
+							private static final long serialVersionUID = -1848883965231344442L;
+						});					
+				}
+				else if (args.size() == 4) {
+					final VncVal x = args.second();
+					final VncVal y = args.third();
+					final VncVal z = args.fourth();
+					
+					functions.add(
+						new VncFunction(
+								createAnonymousFuncName("fnil:wrapped"),
+								VncVector.of(new VncSymbol("&"), new VncString("args"))
+						) {
+							public VncVal apply(final VncList args) {
+								if (args.size() < 3) {
+									throw new VncException("fnil: the passed fn function requires at least three args");
+								}
+								else {
+									final VncVal a = args.first();
+									final VncVal b = args.second();
+									final VncVal c = args.third();
+									return fn.apply(args.rest()
+														.rest()
+														.rest()
+														.addAtStart(c == Nil ? z : c)
+														.addAtStart(b == Nil ? y : b)
+														.addAtStart(a == Nil ? x : a));
+								}
+							}
+	
+							private static final long serialVersionUID = -1848883965231344442L;
+						});					
+				}
+				else {
+					return Nil; // we never get here, handled by arity check
+				}
+				
+				return new VncMultiArityFunction(createAnonymousFuncName("fnil"), functions);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 	///////////////////////////////////////////////////////////////////////////
 	// HashMap functions
 	///////////////////////////////////////////////////////////////////////////
@@ -6367,6 +6490,7 @@ public class CoreFunctions {
 				.add(union)
 				.add(intersection)
 				.add(juxt)
+				.add(fnil)
 				.add(shuffle)
 
 				.add(split_at)

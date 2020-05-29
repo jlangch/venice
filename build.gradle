@@ -216,6 +216,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
+            
             pom {
                 name = 'Venice'
                 description = 'Venice, a sandboxed Lisp implemented in Java.'
@@ -242,6 +243,7 @@ publishing {
             }
         }
     }
+    
     repositories {
         if(!version.endsWith('SNAPSHOT')) {
 	        maven {

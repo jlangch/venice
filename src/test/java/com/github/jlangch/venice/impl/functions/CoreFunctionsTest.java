@@ -1162,6 +1162,81 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(1), venice.eval("(first [1 2])"));
 		assertEquals(Long.valueOf(1), venice.eval("(first [1 2 3])"));
 	}
+	
+	@Test
+	public void test_fnil() {
+		final Venice venice = new Venice();
+
+		assertEquals(100L, venice.eval("((fnil + 100) nil)"));	
+		assertEquals(100L, venice.eval("((fnil + 100) nil)"));	
+		assertEquals(101L, venice.eval("((fnil + 100) nil 1)"));	
+		assertEquals(103L, venice.eval("((fnil + 100) nil 1 2)"));	
+		assertEquals(145L, venice.eval("((fnil + 100) nil 1 2 3 4 5 6 7 8 9)"));	
+
+		assertEquals(200L, venice.eval("((fnil + 100) 200)"));	
+		assertEquals(200L, venice.eval("((fnil + 100) 200)"));	
+		assertEquals(201L, venice.eval("((fnil + 100) 200 1)"));	
+		assertEquals(203L, venice.eval("((fnil + 100) 200 1 2)"));	
+		assertEquals(245L, venice.eval("((fnil + 100) 200 1 2 3 4 5 6 7 8 9)"));
+		
+		assertThrows(VncException.class, () -> new Venice().eval("((fnil + 10))"));
+
+		
+		
+		assertEquals(1100L, venice.eval("((fnil + 1000 100) nil nil)"));	
+		assertEquals(1101L, venice.eval("((fnil + 1000 100) nil nil 1)"));	
+		assertEquals(1103L, venice.eval("((fnil + 1000 100) nil nil 1 2)"));	
+		assertEquals(1145L, venice.eval("((fnil + 1000 100) nil nil 1 2 3 4 5 6 7 8 9)"));	
+
+		assertEquals(2100L, venice.eval("((fnil + 1000 100) 2000 nil)"));	
+		assertEquals(2101L, venice.eval("((fnil + 1000 100) 2000 nil 1)"));	
+		assertEquals(2103L, venice.eval("((fnil + 1000 100) 2000 nil 1 2)"));	
+		assertEquals(2145L, venice.eval("((fnil + 1000 100) 2000 nil 1 2 3 4 5 6 7 8 9)"));	
+
+		assertEquals(1200L, venice.eval("((fnil + 1000 100) nil 200)"));	
+		assertEquals(1201L, venice.eval("((fnil + 1000 100) nil 200 1)"));	
+		assertEquals(1203L, venice.eval("((fnil + 1000 100) nil 200 1 2)"));	
+		assertEquals(1245L, venice.eval("((fnil + 1000 100) nil 200 1 2 3 4 5 6 7 8 9)"));	
+
+		assertEquals(2200L, venice.eval("((fnil + 1000 100) 2000 200)"));	
+		assertEquals(2201L, venice.eval("((fnil + 1000 100) 2000 200 1)"));	
+		assertEquals(2203L, venice.eval("((fnil + 1000 100) 2000 200 1 2)"));	
+		assertEquals(2245L, venice.eval("((fnil + 1000 100) 2000 200 1 2 3 4 5 6 7 8 9)"));	
+		
+		assertThrows(VncException.class, () -> new Venice().eval("((fnil + 10 20))"));
+		assertThrows(VncException.class, () -> new Venice().eval("((fnil + 10 20) nil)"));
+
+		
+		
+		assertEquals(11100L, venice.eval("((fnil + 10000 1000 100) nil nil nil)"));	
+		assertEquals(11101L, venice.eval("((fnil + 10000 1000 100) nil nil nil 1)"));	
+		assertEquals(11103L, venice.eval("((fnil + 10000 1000 100) nil nil nil 1 2)"));	
+		assertEquals(11145L, venice.eval("((fnil + 10000 1000 100) nil nil nil 1 2 3 4 5 6 7 8 9)"));	
+		
+		assertEquals(21100L, venice.eval("((fnil + 10000 1000 100) 20000 nil nil)"));	
+		assertEquals(21101L, venice.eval("((fnil + 10000 1000 100) 20000 nil nil 1)"));	
+		assertEquals(21103L, venice.eval("((fnil + 10000 1000 100) 20000 nil nil 1 2)"));	
+		assertEquals(21145L, venice.eval("((fnil + 10000 1000 100) 20000 nil nil 1 2 3 4 5 6 7 8 9)"));	
+		
+		assertEquals(12100L, venice.eval("((fnil + 10000 1000 100) nil 2000 nil)"));	
+		assertEquals(12101L, venice.eval("((fnil + 10000 1000 100) nil 2000 nil 1)"));	
+		assertEquals(12103L, venice.eval("((fnil + 10000 1000 100) nil 2000 nil 1 2)"));	
+		assertEquals(12145L, venice.eval("((fnil + 10000 1000 100) nil 2000 nil 1 2 3 4 5 6 7 8 9)"));	
+		
+		assertEquals(11200L, venice.eval("((fnil + 10000 1000 100) nil nil 200)"));	
+		assertEquals(11201L, venice.eval("((fnil + 10000 1000 100) nil nil 200 1)"));	
+		assertEquals(11203L, venice.eval("((fnil + 10000 1000 100) nil nil 200 1 2)"));	
+		assertEquals(11245L, venice.eval("((fnil + 10000 1000 100) nil nil 200 1 2 3 4 5 6 7 8 9)"));	
+		
+		assertEquals(22200L, venice.eval("((fnil + 10000 1000 100) 20000 2000 200)"));	
+		assertEquals(22201L, venice.eval("((fnil + 10000 1000 100) 20000 2000 200 1)"));	
+		assertEquals(22203L, venice.eval("((fnil + 10000 1000 100) 20000 2000 200 1 2)"));	
+		assertEquals(22245L, venice.eval("((fnil + 10000 1000 100) 20000 2000 200 1 2 3 4 5 6 7 8 9)"));	
+		
+		assertThrows(VncException.class, () -> new Venice().eval("((fnil + 10 20 30))"));
+		assertThrows(VncException.class, () -> new Venice().eval("((fnil + 10 20 30) nil)"));
+		assertThrows(VncException.class, () -> new Venice().eval("((fnil + 10 20 30) nil nil)"));
+	}
 
 	@Test
 	public void test_fn_Q() {
