@@ -158,6 +158,11 @@ sourceSets {
     }
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 test {
     useJUnitPlatform {
     }
@@ -198,7 +203,7 @@ publishing {
             groupId = 'com.github.jlangch'
             artifactId = 'venice'
             
-            from components.java
+            from components.java            
             
             versionMapping {
                 usage('java-api') {
@@ -313,19 +318,6 @@ task updateReleaseVersion {
 	}
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-    
-    archiveFileName = "venice-${project.version}-sources.jar"
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-    
-    archiveFileName = "venice-${project.version}-javadoc.jar"
-}
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
     workingDir 'build/libs'
