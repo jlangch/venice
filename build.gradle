@@ -43,7 +43,7 @@
 // -----------------------------------------------------------------------------
 // Release Venice:
 //   - Verify that all unit tests pass
-//   - Change version in 'gradle.properties' to '1.x.y' (remove snapshot suffix)
+//   - Change version in 'gradle.properties' to '1.x.y' (remove SNAPSHOT suffix)
 //   - Update ChangeLog for the release version
 //   - Generate cheatsheets: ./gradlew cheatsheet
 //   - Update files with release version: ./gradlew updateReleaseVersion
@@ -51,9 +51,11 @@
 //   - Update the new Git Id for the cheatsheet URLs in 'README.md' 
 //   - Commit the 'README.md' change
 //   - Publish to Maven
-//         ./gradlew --warning-mode all
+//         ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
+//                   --warning-mode all
 //                   -Psigning.gnupg.keyName=[gpg-user-key-id]
-//                   -PsonatypeUsername=[name] -PsonatypePassword=[pw]
+//                   -PsonatypeUsername=[name] 
+//                   -PsonatypePassword=[pw]
 //                   clean shadowJar publish
 //   - Manual publish to Maven
 //       o Build the Maven upload bundle: ./gradlew bundle
@@ -84,15 +86,17 @@
 //    Requires the plugin 'eclipse' in the build.gradle
 //
 //    1.  Move to your projects path (where gradle or gradlew is found)
-//    2.  Unix: ./gradlew cleaneclipse    Win: gradlew cleaneclipse
+//    2.  Unix: ./gradlew cleaneclipse    
+//        Win:  gradlew cleaneclipse
 //    3.  Refresh your Project in Eclipse
-//    4.  After that for Unix: ./gradlew eclipse      Win: gradlew eclipse
+//    4.  After that for Unix: ./gradlew eclipse     
+//                       Win:  gradlew eclipse
 //    5.  Refresh your Project in Eclipse
 //
 //    Repeat step 4) whenever the Gradle build changes
 // -----------------------------------------------------------------------------
 
-
+// https://github.com/johnrengelman/shadow/
 plugins {
     id 'java'
     id 'maven-publish'
@@ -107,9 +111,9 @@ def group = 'com.github.jlangch'
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-snapshot)?'
 
 
-// -PsonatypeUsername=foo -PsonatypePassword=123
-def sonatypeUsername = project.properties['sonatypeUsername'] ?: "nokey"
-def sonatypePassword = project.properties['sonatypePassword'] ?: "nokey"
+// pass command line options -PsonatypeUsername=foo -PsonatypePassword=123
+def sonatypeUsername = project.properties['sonatypeUsername'] ?: "unknown"
+def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
 
 
 compileJava {
@@ -446,7 +450,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
     testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.20'
     testRuntimeOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20'
-    testRuntimeOnly 'com.github.librepdf:openpdf:1.3.16'
+    testRuntimeOnly 'com.github.librepdf:openpdf:1.3.17'
     testRuntimeOnly 'org.knowm.xchart:xchart:3.6.3'
     
     compileOnly 'org.openjdk.jmh:jmh-core:1.23'
@@ -455,12 +459,12 @@ dependencies {
     // required for cheatsheet generation
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.20'
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20'
-    compileOnly 'com.github.librepdf:openpdf:1.3.16'
+    compileOnly 'com.github.librepdf:openpdf:1.3.17'
 
     // WebApp support
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
  
     // runtime dependencies (repackaged)
     implementation 'io.vavr:vavr:0.10.2'
-    implementation 'org.jline:jline:3.14.1'
+    implementation 'org.jline:jline:3.15.0'
 }
