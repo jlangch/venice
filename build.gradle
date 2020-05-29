@@ -21,6 +21,8 @@
  */
  
 // -----------------------------------------------------------------------------
+// Gradle build
+// -----------------------------------------------------------------------------
 // Build commands
 //
 //   - Build the Venice jar
@@ -29,9 +31,6 @@
 //
 //   - Build the Venice cheatsheet (HTML & PDF)
 //     $> ./gradlew clean cheatsheet
-//
-//   - Build the Venice bundle for uploading to Maven
-//     $> ./gradlew bundle
 //
 //   - Run the unit tests
 //     $> ./gradlew test
@@ -42,31 +41,39 @@
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 // -----------------------------------------------------------------------------
 // Release Venice:
-//   - Verify that all unit tests pass
-//   - Change version in 'gradle.properties' to '1.x.y' (remove SNAPSHOT suffix)
-//   - Update ChangeLog for the release version
-//   - Generate cheatsheets: ./gradlew cheatsheet
-//   - Update files with release version: ./gradlew updateReleaseVersion
-//   - Commit the changes
-//   - Update the new Git Id for the cheatsheet URLs in 'README.md' 
-//   - Commit the 'README.md' change
-//   - Publish to Maven
-//         ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
-//                   --warning-mode all
-//                   -Psigning.gnupg.keyName=[gpg-user-key-id]
-//                   -PsonatypeUsername=[name] 
-//                   -PsonatypePassword=[pw]
-//                   clean shadowJar publish
-//   - Manual publish to Maven
-//       o Build the Maven upload bundle: ./gradlew bundle
-//       o Upload to Maven
-//   - Draft a new release in Git (https://github.com/jlangch/venice/releases)
-//     This will create the release tag
+//
+//   [1] Prepare Venice
+//       - Verify that all unit tests pass
+//       - Change version in 'gradle.properties' to '1.x.y' (remove the
+//         SNAPSHOT suffix)
+//       - Update the ChangeLog for the release version
+//       - Generate cheatsheets: ./gradlew cheatsheet
+//       - Update files with release version: ./gradlew updateReleaseVersion
+//       - Commit the changes
+//       - Update the new Git commit Id for the cheatsheet URLs in 'README.md' 
+//       - Commit the 'README.md' change
+//
+//   [2] Publish to Maven
+//       - Automated publish to Maven
+//           o ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
+//                       --warning-mode all
+//                       -Psigning.gnupg.keyName=[gpg-user-key-id]
+//                       -PsonatypeUsername=[name] 
+//                       -PsonatypePassword=[pw]
+//                       clean shadowJar publish
+//       - Manual publish to Maven
+//           o Build the Maven upload bundle: ./gradlew bundle
+//           o Sonatype GUI: upload the bundle
+//           o Sonatype GUI: relase and close the artifact
+//
+//   [3] Draft GitHub Venice release
+//      - Draft a new release in Git (https://github.com/jlangch/venice/releases)
+//        This will create the release tag
 //   
-// Open new development cycle (after creating a Venice release):
-//   - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
-//   - Add an empty ChangeLog entry for the new version
-//   - Update files with new dev cycle version: ./gradlew updateNewDevVersion
+//   [4] Open new development cycle
+//       - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
+//       - Add an empty ChangeLog entry for the new version
+//       - Update files with new dev cycle version: ./gradlew updateNewDevVersion
 // -----------------------------------------------------------------------------
 // Upgrade Gradle wrapper
 //   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
@@ -76,10 +83,10 @@
 // Get initial Gradle wrapper
 //   See https://guides.gradle.org/creating-new-gradle-builds/
 //
-//   Create and init a gradle project:
-//      $> mkdir test
-//      $> cd test
-//      $> gradle init
+// Create and init a gradle project:
+//    $> mkdir test
+//    $> cd test
+//    $> gradle init
 // -----------------------------------------------------------------------------
 // Gradle project configuration for Eclipse IDE
 //
