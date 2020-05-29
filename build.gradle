@@ -96,7 +96,7 @@
 //                       Win:  gradlew eclipse
 //    5.  Refresh your Project in Eclipse
 //
-//    Repeat step 4) whenever the Gradle build changes
+//    Repeat step 4) and 5) whenever the Gradle build changes
 // -----------------------------------------------------------------------------
 
 // https://github.com/johnrengelman/shadow/
