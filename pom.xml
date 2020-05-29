@@ -45,7 +45,7 @@
         <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>0.10.3</version>
             <scope>provided</scope>
          </dependency>
         <dependency>
