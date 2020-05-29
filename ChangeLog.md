@@ -31,6 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Changed
 
+- from manual Maven publishing to the "Maven Publisher" Gradle plugin
 - VAVR dependency to version 0.10.3
 - JLine dependency to version 3.15.0
 - optional OpenPDF dependency to version 1.3.17
