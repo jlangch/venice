@@ -61,10 +61,13 @@
 //                       -PsonatypeUsername=[name] 
 //                       -PsonatypePassword=[pw]
 //                       clean shadowJar publish
+//           o Nexus Repository Manager GUI: close and release the uploaded
+//             repository
 //       - Manual publish to Maven
 //           o Build the Maven upload bundle: ./gradlew bundle
-//           o Sonatype GUI: upload the bundle
-//           o Sonatype GUI: relase and close the artifact
+//           o Nexus Repository Manager GUI: upload the bundle
+//           o Nexus Repository Manager GUI: close and release the uploaded
+//             repository
 //
 //   [3] Draft GitHub Venice release
 //      - Draft a new release in Git (https://github.com/jlangch/venice/releases)
