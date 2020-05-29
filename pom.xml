@@ -6,7 +6,7 @@
 
     <groupId>com.github.jlangch</groupId>
     <artifactId>venice</artifactId>
-    <version>1.8.2-SNAPSHOT</version>
+    <version>1.8.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Venice</name>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
-            <version>3.14.1</version>
+            <version>3.15.0</version>
             <scope>provided</scope>
          </dependency>
     </dependencies>

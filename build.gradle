@@ -115,7 +115,7 @@ plugins {
 
 def group = 'com.github.jlangch'
 
-def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-snapshot)?'
+def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 
 
 // pass command line options -PsonatypeUsername=foo -PsonatypePassword=123
