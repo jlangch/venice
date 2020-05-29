@@ -133,9 +133,11 @@ compileTestJava {
     options.compilerArgs += "-parameters"
 }
 
+
 repositories {
     jcenter()
 }
+
 
 sourceSets {
     jmh {
@@ -154,20 +156,24 @@ sourceSets {
     }
 }
 
+
 java {
     withJavadocJar()
     withSourcesJar()
 }
+
 
 test {
     useJUnitPlatform {
     }
 }
 
+
 jar {
 	exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
 	exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
 }
+
 
 shadowJar {
     // https://github.com/johnrengelman/shadow/
@@ -192,6 +198,7 @@ shadowJar {
    
     archiveFileName = "venice-${project.version}.jar"
 }
+
 
 publishing {
     publications {
@@ -236,20 +243,23 @@ publishing {
         }
     }
     repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            
-            credentials {
-                username sonatypeUsername
-                password sonatypePassword
-            }
-        }
+        if(!version.endsWith('SNAPSHOT')) {
+	        maven {
+	            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+	            
+	            credentials {
+	                username sonatypeUsername
+	                password sonatypePassword
+	            }
+	        }
+	    }
     }
 }
 
+
 signing {
-    // ./gradlew signMavenJavaPublication
-	useGpgCmd()
+ 	useGpgCmd()  // use the local GPG agent to sign the artefacts
+    
     sign publishing.publications.mavenJava
 }
 
@@ -272,6 +282,7 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     args "${project.version}"
 }
 
+
 task updateReleaseVersion {
 	doLast {
 	    println "Updating version ${project.version} -> 'maven-central.svg'"
@@ -293,6 +304,7 @@ task updateReleaseVersion {
 	    }
 	}
 }
+
 
 task ('jmhHelp', description:'Print help for the jmh task') {
 	doLast {  
@@ -333,11 +345,13 @@ task ('jmhHelp', description:'Print help for the jmh task') {
 	}       
 }
 
+
 task jmhProfilers(type: JavaExec, description:'Lists the available profilers for the jmh task', group: 'Development') {
 	classpath = sourceSets.jmh.runtimeClasspath
 	main = 'org.openjdk.jmh.Main'
 	args '-lprof'
 }
+
 
 task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
 	classpath = sourceSets.jmh.runtimeClasspath
@@ -385,10 +399,12 @@ task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
 	}
 }
 
+
 artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
 
 dependencies {
     // JMH (the Java Microbenchmark Harness) has been added to the JDK 
