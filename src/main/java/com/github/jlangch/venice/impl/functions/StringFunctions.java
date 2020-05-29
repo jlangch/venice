@@ -556,21 +556,49 @@ public class StringFunctions {
 				"str/lower-case",
 				VncFunction
 					.meta()
-					.arglists("(str/lower-case s)")
+					.arglists(
+						"(str/lower-case s)",
+						"(str/lower-case locale s)")
 					.doc("Converts s to lowercase")
-					.examples("(str/lower-case \"aBcDeF\")")
+					.examples(
+						"(str/lower-case \"aBcDeF\")",
+						"(str/lower-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")",
+						"(str/lower-case (. :java.util.Locale :GERMANY) \"aBcDeF\")",
+						"(str/lower-case (. :java.util.Locale :new \"de\" \"CH\") \"aBcDeF\")",
+						"(str/lower-case [ \"de\"] \"aBcDeF\")",
+						"(str/lower-case [ \"de\" \"DE\"] \"aBcDeF\")",
+						"(str/lower-case [ \"de\" \"DE\"] \"aBcDeF\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("str/lower-case", args, 1);
+				assertArity("str/lower-case", args, 1, 2);
 
-				if (args.first() == Nil) {
-					return Nil;
+				if (args.size() == 1) {
+					if (args.first() == Nil) {
+						return Nil;
+					}				
+					return new VncString(Coerce
+											.toVncString(args.first())
+											.getValue()
+											.toLowerCase());
 				}
-
-				final VncString string = Coerce.toVncString(args.first());
-
-				return new VncString(string.getValue().toLowerCase());
+				else  {
+					final Locale locale = toLocale(args.first());
+					if (locale == null) {
+						throw new VncException(String.format(
+									"str/lower-case: the first arg is not a locale",
+									Types.getType(args.first())));
+					}
+					else if (args.second() == Nil) {
+						return Nil;
+					}
+					else {
+						return new VncString(Coerce
+												.toVncString(args.second())
+												.getValue()
+												.toLowerCase(locale));
+					}
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -581,21 +609,49 @@ public class StringFunctions {
 				"str/upper-case",
 				VncFunction
 					.meta()
-					.arglists("(str/upper-case s)")
+					.arglists(
+						"(str/upper-case s)",
+						"(str/upper-case locale s)")
 					.doc("Converts s to uppercase")
-					.examples("(str/upper-case \"aBcDeF\")")
+					.examples(
+						"(str/upper-case \"aBcDeF\")",
+						"(str/upper-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")",
+						"(str/upper-case (. :java.util.Locale :GERMANY) \"aBcDeF\")",
+						"(str/upper-case (. :java.util.Locale :new \"de\" \"CH\") \"aBcDeF\")",
+						"(str/upper-case [ \"de\"] \"aBcDeF\")",
+						"(str/upper-case [ \"de\" \"DE\"] \"aBcDeF\")",
+						"(str/upper-case [ \"de\" \"DE\"] \"aBcDeF\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("str/upper-case", args, 1);
+				assertArity("str/upper-case", args, 1, 2);
 
-				if (args.first() == Nil) {
-					return Nil;
+				if (args.size() == 1) {
+					if (args.first() == Nil) {
+						return Nil;
+					}				
+					return new VncString(Coerce
+											.toVncString(args.first())
+											.getValue()
+											.toUpperCase());
 				}
-
-				final VncString string = Coerce.toVncString(args.first());
-
-				return new VncString(string.getValue().toUpperCase());
+				else {
+					final Locale locale = toLocale(args.first());
+					if (locale == null) {
+						throw new VncException(String.format(
+									"str/upper-case: the first arg is not a locale",
+									Types.getType(args.first())));
+					}
+					else if (args.second() == Nil) {
+						return Nil;
+					}
+					else {
+						return new VncString(Coerce
+												.toVncString(args.second())
+												.getValue()
+												.toUpperCase(locale));
+					}
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -835,43 +891,16 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				if (Types.isVncJavaObject(args.first(), Locale.class)) {
-					final Locale locale = (Locale)((VncJavaObject)args.first()).getDelegate();
-					final VncString fmt = (VncString)args.second();
-					final VncList fmtArgs = args.slice(2);
-					return new VncString(String.format(locale, fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
-				}
-				else if (Types.isVncSequence(args.first())) {
-					final VncSequence localeSeq = (VncSequence)args.first();
-					final String fmt = Coerce.toVncString(args.second()).getValue();
-					final Object[] fmtArgs = toJavaObjects(args.slice(2)).toArray();
-					switch (localeSeq.size()) {
-						case 0:
-							return new VncString(String.format(fmt, fmtArgs));
-						case 1:
-							// language
-							final Locale locale1 = new Locale(
-														Coerce.toVncString(localeSeq.first()).getValue());
-							return new VncString(String.format(locale1, fmt, fmtArgs));
-						case 2:
-							// language, country
-							final Locale locale2 = new Locale(
-														Coerce.toVncString(localeSeq.first()).getValue(),
-														Coerce.toVncString(localeSeq.second()).getValue());
-							return new VncString(String.format(locale2, fmt, fmtArgs));
-						default:
-							// language, country, variant
-							final Locale locale3 = new Locale(
-														Coerce.toVncString(localeSeq.first()).getValue(),
-														Coerce.toVncString(localeSeq.second()).getValue(),
-														Coerce.toVncString(localeSeq.third()).getValue());
-							return new VncString(String.format(locale3, fmt, fmtArgs));
-					}
-				}
-				else {
+				if (Types.isVncString(args.first())) {
 					final VncString fmt = (VncString)args.first();
 					final VncList fmtArgs = args.rest();
 					return new VncString(String.format(fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
+				}
+				else {
+					final Locale locale = toLocale(args.first());
+					final VncString fmt = (VncString)args.second();
+					final VncList fmtArgs = args.slice(2);
+					return new VncString(String.format(locale, fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
 				}
 			}
 
@@ -1885,6 +1914,36 @@ public class StringFunctions {
 			s = s.replace(r._1, r._2);
 		}
 		return s;
+	}
+	
+	private static Locale toLocale(final VncVal locale) {
+		if (Types.isVncJavaObject(locale, Locale.class)) {
+			return (Locale)((VncJavaObject)locale).getDelegate();
+		}
+		else if (Types.isVncSequence(locale)) {
+			final VncSequence localeSeq = (VncSequence)locale;
+			switch (localeSeq.size()) {
+				case 0:
+					return Locale.getDefault();
+				case 1:
+					// language
+					return new Locale(Coerce.toVncString(localeSeq.first()).getValue());
+				case 2:
+					// language, country
+					return new Locale(
+								Coerce.toVncString(localeSeq.first()).getValue(),
+								Coerce.toVncString(localeSeq.second()).getValue());
+				default:
+					// language, country, variant
+					return new Locale(
+								Coerce.toVncString(localeSeq.first()).getValue(),
+								Coerce.toVncString(localeSeq.second()).getValue(),
+								Coerce.toVncString(localeSeq.third()).getValue());
+			}
+		}
+		else {
+			return null;
+		}
 	}
 
 	private static final List<Tuple2<String,String>> XML_ESCAPES =
