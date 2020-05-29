@@ -441,7 +441,7 @@ dependencies {
     // starting with JDK 12; for earlier versions, the dependencies 
 	// have to be added explicitly.
 	jmhImplementation project
-	jmhImplementation 'io.vavr:vavr:0.10.2'
+	jmhImplementation 'io.vavr:vavr:0.10.3'
 	jmhImplementation 'org.openjdk.jmh:jmh-core:1.23'
 	jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
 
@@ -465,6 +465,6 @@ dependencies {
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
  
     // runtime dependencies (repackaged)
-    implementation 'io.vavr:vavr:0.10.2'
+    implementation 'io.vavr:vavr:0.10.3'
     implementation 'org.jline:jline:3.15.0'
 }
