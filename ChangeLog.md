@@ -31,8 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Changed
 
-- function `str/lower-case` and `str/upper-case` to accept an optional locale 
-  (the change does not break the hitherto API) 
+- function `str/lower-case` and `str/upper-case` to accept an optional locale
 - from manual Maven publishing to the "Maven Publisher" Gradle plugin
 - VAVR dependency to version 0.10.3
 - JLine dependency to version 3.15.0
