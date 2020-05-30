@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.specialforms;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
@@ -46,7 +47,7 @@ public class DocForm {
 			return docForSymbol((VncSymbol)ref, env);
 		}
 		else if (Types.isVncKeyword(ref)) {
-			return docForCustomType((VncKeyword)ref, env);
+			return docForKeyword((VncKeyword)ref, env);
 		}
 		else if (Types.isVncString(ref)) {
 			return docForSymbol(((VncString)ref).toSymbol(), env);
@@ -65,6 +66,22 @@ public class DocForm {
 		}
 		
 		return Doc.getDoc(docVal);
+	}
+
+	private static VncString docForKeyword(final VncKeyword keyword, final Env env) {
+		if (ModuleLoader.isValidModule(keyword)) {
+			return docForModule(keyword, env);
+		}
+		else {
+			return docForCustomType(keyword, env);
+		}
+	}
+
+	private static VncString docForModule(
+			final VncKeyword module, 
+			final Env env
+	) {
+		return new VncString(ModuleLoader.loadModule(module.getValue()));
 	}
 	
 	private static VncString docForCustomType(

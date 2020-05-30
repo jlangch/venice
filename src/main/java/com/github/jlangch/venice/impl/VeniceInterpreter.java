@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Version;
@@ -265,19 +266,29 @@ public class VeniceInterpreter implements Serializable  {
 		loadedModules.add(new VncKeyword(module));
 	}
 	
-	private VncVal evaluate(VncVal orig_ast, Env env) {
+	/**
+	 * Evaluate the passed ast as sexpr, simple value, or list of values
+	 * 
+	 * @param ast_ an ast
+	 * @param env_ the env
+	 * @return the result
+	 */
+	private VncVal evaluate(final VncVal ast_, final Env env_) {
 		RecursionPoint recursionPoint = null;
+		
+		VncVal orig_ast = ast_;
+		Env env = env_;
 		
 		while (true) {
 			//System.out.println("EVAL: " + printer._pr_str(orig_ast, true));
 			if (!Types.isVncList(orig_ast)) {
-				return eval_ast(orig_ast, env);
+				return evaluate_values(orig_ast, env);
 			}
 	
 			// expand macros
 			final VncVal expanded = macroexpand(orig_ast, env);
 			if (!Types.isVncList(expanded)) {
-				return eval_ast(expanded, env);
+				return evaluate_values(expanded, env);
 			}
 			
 			final VncList ast = (VncList)expanded;
@@ -291,7 +302,7 @@ public class VeniceInterpreter implements Serializable  {
 			switch (a0sym) {		
 				case "do": {
 						final VncList expressions = ast.rest();						
-						eval_ast(expressions.butlast(), env);
+						evaluate_values(expressions.butlast(), env);
 						orig_ast = expressions.last();
 					}
 					break;
@@ -568,7 +579,7 @@ public class VeniceInterpreter implements Serializable  {
 				case "quasiquote":
 					orig_ast = quasiquote(ast.second());
 					break;
-	
+					
 				case "doc": // (doc conj)
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("doc", ast))) {
 						final VncString doc = DocForm.doc(ast.second(), env);
@@ -576,10 +587,22 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 					
+				case "modules": // (modules )
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("modules", ast))) {
+						return new VncList(
+								ModuleLoader
+									.VALID_MODULES
+									.stream()
+									.filter(s ->!s.equals("core"))  // skip core module
+									.sorted()
+									.map(s -> new VncKeyword(s))
+									.collect(Collectors.toList()));
+					}
+					
 				case "eval": {
 					final Namespace ns = Namespaces.getCurrentNamespace();
 					try {
-						return evaluate(Coerce.toVncSequence(eval_ast(ast.rest(), env)).last(), env);
+						return evaluate(Coerce.toVncSequence(evaluate_values(ast.rest(), env)).last(), env);
 					}
 					finally {
 						Namespaces.setCurrentNamespace(ns);
@@ -603,7 +626,7 @@ public class VeniceInterpreter implements Serializable  {
 						orig_ast = Constants.Nil;
 					}
 					else {
-						eval_ast(expressions.butlast(), env);
+						evaluate_values(expressions.butlast(), env);
 						orig_ast = expressions.last();
 					}
 					break;
@@ -647,7 +670,7 @@ public class VeniceInterpreter implements Serializable  {
 						orig_ast = expressions.first();
 					}
 					else {
-						eval_ast(expressions.butlast(), env);
+						evaluate_values(expressions.butlast(), env);
 						orig_ast = expressions.last();						
 					}
 				}
@@ -720,7 +743,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 					env = recur_env;
 					if (expressions.size() > 1) {
-						eval_ast(expressions.butlast(), env);
+						evaluate_values(expressions.butlast(), env);
 					}
 					orig_ast = expressions.last();						
 				}
@@ -770,7 +793,7 @@ public class VeniceInterpreter implements Serializable  {
 					return locking_(ast, env);
 	
 				default:					
-					final VncList el = (VncList)eval_ast((VncList)ast, env);
+					final VncList el = (VncList)evaluate_values((VncList)ast, env);
 					final VncVal elFirst = el.first();
 					final VncList elArgs = el.rest();
 					if (Types.isVncFunction(elFirst)) {
@@ -823,7 +846,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal eval_ast(final VncVal ast, final Env env) {
+	private VncVal evaluate_values(final VncVal ast, final Env env) {
 		if (Types.isVncSymbol(ast)) {
 			return env.get((VncSymbol)ast);
 		}
@@ -1229,7 +1252,7 @@ public class VeniceInterpreter implements Serializable  {
 		try {
 			vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
 			
-			eval_ast(expressions.butlast(), env);
+			evaluate_values(expressions.butlast(), env);
 			return evaluate(expressions.last(), env);
 		}
 		finally {
@@ -1256,7 +1279,7 @@ public class VeniceInterpreter implements Serializable  {
 		finally {
 			final VncList finallyBlock = findFirstFinallyBlock(ast);
 			if (finallyBlock != null) {
-				eval_ast(finallyBlock.rest(), env);
+				evaluate_values(finallyBlock.rest(), env);
 			}
 		}
 		
@@ -1304,7 +1327,7 @@ public class VeniceInterpreter implements Serializable  {
 				// finally is only for side effects
 				final VncList finallyBlock = findFirstFinallyBlock(ast);
 				if (finallyBlock != null) {
-					eval_ast(finallyBlock.rest(), env);
+					evaluate_values(finallyBlock.rest(), env);
 				}
 			}
 		}
@@ -1505,7 +1528,7 @@ public class VeniceInterpreter implements Serializable  {
 			return evaluate(body.last(), env);
 		}
 		else {
-			eval_ast(body.butlast(), env);
+			evaluate_values(body.butlast(), env);
 			return evaluate(body.last(), env);
 		}
 	}

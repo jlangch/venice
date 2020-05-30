@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.util.ClassPathResource;
 public class ModuleLoader {
 
 	public static String loadModule(final String module) {
-		if (!VALID_MODULES.contains(module)) {
+		if (!isValidModule(module)) {
 			throw new VncException(String.format(
 					"The Venice module '%s' does not exist",
 					module));
@@ -79,7 +79,16 @@ public class ModuleLoader {
 		}
 	}
 		
+	public static boolean isValidModule(final String module) {
+		return VALID_MODULES.contains(module);
+	}
+	
+	public static boolean isValidModule(final VncKeyword module) {
+		return isValidModule(module.getValue());
+	}
 		
+	
+	
 	private static final Map<String,String> modules = new ConcurrentHashMap<>();
 	private static final Map<String,String> classpathFiles = new ConcurrentHashMap<>();
 	
