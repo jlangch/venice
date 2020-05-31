@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
 
 
@@ -155,108 +154,193 @@ public class TokenizerTest {
 		tokens = Tokenizer.tokenize(" \" \" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\" \"", tokens.get(0).getToken());
-	}
-		
-//	@Test
-//	public void testTokenize_LF() {	
-//		final String s = 
-//				"(do                                  \n" +
-//				"   100                               \n" +
-//				"   ;comment                          \n" +
-//				"   \"abcdef\"                        \n" +
-//				"   \"abc\\\"def\"                    \n" +
-//				"   \"abc\ndef\"                      \n" +
-//				"   \"\"\"uvwxyz\"\"\"                \n" +
-//				"   \"\"\"uvw\"xyz\"\"\"              \n" +
-//				"   \"\"\"uvw\nxyz\"\"\"              \n" +
-//				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \n" +
-//				"   (+ 2 3)                           \n" +
-//				")                                      ";
-//		
-//		int pos = 0;
-//		
-//		final List<Token> tokens = Tokenizer.tokenize(s, "test");
-//		assertEquals("(", tokens.get(pos++).getToken());
-//		assertEquals("do", tokens.get(pos++).getToken());
-//		assertEquals("100", tokens.get(pos++).getToken());
-//		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
-//		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
-//		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvw\nxyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvw\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"xyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("(", tokens.get(pos++).getToken());
-//		assertEquals("+", tokens.get(pos++).getToken());
-//		assertEquals("2", tokens.get(pos++).getToken());
-//		assertEquals("3", tokens.get(pos++).getToken());
-//		assertEquals(")", tokens.get(pos++).getToken());
-//		assertEquals(")", tokens.get(pos++).getToken());
-//	}
-//
-//	@Test
-//	public void testTokenize_CR_LF() {	
-//		final String s = 
-//				"(do                                  \r\n" +
-//				"   100                               \r\n" +
-//				"   ;comment                          \r\n" +
-//				"   \"abcdef\"                        \r\n" +
-//				"   \"abc\\\"def\"                    \r\n" +
-//				"   \"abc\ndef\"                      \r\n" +
-//				"   \"\"\"uvwxyz\"\"\"                \r\n" +
-//				"   \"\"\"uvw\"xyz\"\"\"              \r\n" +
-//				"   \"\"\"uvw\nxyz\"\"\"              \r\n" +
-//				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \r\n" +
-//				"   (+ 2 3)                           \r\n" +
-//				")                                      ";
-//		
-//		int pos = 0;
-//		
-//		final List<Token> tokens = Tokenizer.tokenize(s, "test");
-//		assertEquals("(", tokens.get(pos++).getToken());
-//		assertEquals("do", tokens.get(pos++).getToken());
-//		assertEquals("100", tokens.get(pos++).getToken());
-//		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
-//		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
-//		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvw\nxyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"uvw\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("\"\"\"xyz\"\"\"", tokens.get(pos++).getToken());
-//		assertEquals("(", tokens.get(pos++).getToken());
-//		assertEquals("+", tokens.get(pos++).getToken());
-//		assertEquals("2", tokens.get(pos++).getToken());
-//		assertEquals("3", tokens.get(pos++).getToken());
-//		assertEquals(")", tokens.get(pos++).getToken());
-//		assertEquals(")", tokens.get(pos++).getToken());
-//	}
-//
-//	@Test
-//	public void testTokenizeTripleQuotedStringEof() {	
-//		assertThrows(EofException.class, () -> {
-//			Tokenizer.tokenize("\"\"\"uvwxyz", "test");
-//		});
-//	}
-//
-//	@Test
-//	public void testTokenizeSingleQuotedStringEol() {	
-//		assertThrows(ParseError.class, () -> {
-//			Tokenizer.tokenize("\"uvwxyz", "test");
-//		});
-//	}
-//
-//	@Test
-//	public void testEscapedString() {	
-//		List<Token> tokens = Tokenizer.tokenize("\"aaa\"", "test");
-//		assertEquals(1, tokens.size());
-//		assertEquals("\"aaa\"", tokens.get(0).getToken());
-//		
-//		tokens = Tokenizer.tokenize("\\S", "test");
-//		assertEquals(1, tokens.size());
-//		assertEquals("\\S", tokens.get(0).getToken());
-//	}
 
+		tokens = Tokenizer.tokenize(" \"a b c d\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"a b c d\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"a b \\\" c d\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"a b \\\" c d\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"\\\"\\\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\\\"\\\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"a b \\t c d\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"a b \\t c d\"", tokens.get(0).getToken());
+	}
+
+	@Test
+	public void test_single_quoted_string_errors() {
+		// premature EOL
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"a\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"ab\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"abc\n", "test"));
+		
+		// premature EOF
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"a", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"ab", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"abc", "test"));
+		
+		// invalid escape 
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\\\"", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"a\\\"", "test"));
+		
+		// invalid escape - premature EOL
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\\\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"a\\\n", "test"));
+		
+		// invalid escape - premature EOF
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\\", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"a\\", "test"));
+	}
+
+	@Test
+	public void test_triple_quoted_string() {
+		List<Token> tokens = Tokenizer.tokenize("\"\"\"\"\"\"", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"\"\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"\"\"\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"\"\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize("\"\"\" \"\"\"", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\" \"\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"\"\"a b c d\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"a b c d\"\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"\"\"a b \\S c d\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"a b \\S c d\"\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"\"\"a b \n 1 \n c d\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"a b \n 1 \n c d\"\"\"", tokens.get(0).getToken());
+
+		tokens = Tokenizer.tokenize(" \"\"\"a b \\\"\\\"\\\" c d\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"a b \\\"\\\"\\\" c d\"\"\"", tokens.get(0).getToken());
+
+	    // with quotes
+		tokens = Tokenizer.tokenize(" \"\"\"a b \"xy\" c d\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"a b \"xy\" c d\"\"\"", tokens.get(0).getToken());
+		
+		tokens = Tokenizer.tokenize(" \"\"\"\"a b c d\\\"\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"\"a b c d\\\"\"\"\"", tokens.get(0).getToken());
+	}
+	
+	@Test
+	public void test_triple_quoted_string_errors() {
+		// premature EOL
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"a\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"ab\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"abc\n", "test"));
+		
+		// premature EOF
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"a", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"ab", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"abc", "test"));
+		
+		// invalid escape 
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"\\\"", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"a\\\"", "test"));
+		
+		// invalid escape - premature EOL
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"\\\n", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"a\\\n", "test"));
+		
+		// invalid escape - premature EOF
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"\\", "test"));
+		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"a\\", "test"));
+	}
+	
+		
+	@Test
+	public void testTokenize_LF() {	
+		final String s = 
+				"(do                                  \n" +
+				"   100                               \n" +
+				"   ;comment                          \n" +
+				"   \"abcdef\"                        \n" +
+				"   \"abc\\\"def\"                    \n" +
+				"   \"abc\ndef\"                      \n" +
+				"   \"\"\"uvwxyz\"\"\"                \n" +
+				"   \"\"\"uvw\"xyz\"\"\"              \n" +
+				"   \"\"\"uvw\nxyz\"\"\"              \n" +
+				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \n" +
+				"   (+ 2 3)                           \n" +
+				")                                      ";
+		
+		int pos = 0;
+		
+		final List<Token> tokens = Tokenizer.tokenize(s, "test");
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("do", tokens.get(pos++).getToken());
+		assertEquals("100", tokens.get(pos++).getToken());
+		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\nxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("+", tokens.get(pos++).getToken());
+		assertEquals("2", tokens.get(pos++).getToken());
+		assertEquals("3", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+	}
+
+	@Test
+	public void testTokenize_CR_LF() {	
+		final String s = 
+				"(do                                  \r\n" +
+				"   100                               \r\n" +
+				"   ;comment                          \r\n" +
+				"   \"abcdef\"                        \r\n" +
+				"   \"abc\\\"def\"                    \r\n" +
+				"   \"abc\ndef\"                      \r\n" +
+				"   \"\"\"uvwxyz\"\"\"                \r\n" +
+				"   \"\"\"uvw\"xyz\"\"\"              \r\n" +
+				"   \"\"\"uvw\nxyz\"\"\"              \r\n" +
+				"   \"\"\"uvw\"\"\" \"\"\"xyz\"\"\"   \r\n" +
+				"   (+ 2 3)                           \r\n" +
+				")                                      ";
+		
+		int pos = 0;
+		
+		final List<Token> tokens = Tokenizer.tokenize(s, "test");
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("do", tokens.get(pos++).getToken());
+		assertEquals("100", tokens.get(pos++).getToken());
+		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
+		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvwxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\nxyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"uvw\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("\"\"\"xyz\"\"\"", tokens.get(pos++).getToken());
+		assertEquals("(", tokens.get(pos++).getToken());
+		assertEquals("+", tokens.get(pos++).getToken());
+		assertEquals("2", tokens.get(pos++).getToken());
+		assertEquals("3", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+		assertEquals(")", tokens.get(pos++).getToken());
+	}
 
 }

@@ -121,12 +121,12 @@ public class Tokenizer {
 				}
 				else if (ch == (int)'"') {  // string
 					final int chNext = reader.read();
-					if (chNext == LF) {
-						throwSingleQuotedStringEolError("\"", line, col);
+					if (chNext == EOF) {
+						throwSingleQuotedStringEofError("\"", line, col);
 					}
 					else {
 						final int chNextNext = reader.read();
-						if (chNextNext == LF || chNextNext == EOF) {
+						if (chNextNext == EOF) {
 							if (chNext == (int)'"') {
 								addToken("\"\"", line, col);	
 							}
@@ -187,10 +187,7 @@ public class Tokenizer {
 		int ch = reader.read();
 
 		while(true) {
-			if (ch == LF) {
-				throwSingleQuotedStringEolError(sb.toString(), lineStart, colStart);
-			}
-			else if (ch == EOF) {
+			if (ch == EOF) {
 				throwSingleQuotedStringEofError(sb.toString(), lineStart, colStart);
 			}
 			else if (ch == (int)'"') {
