@@ -282,7 +282,6 @@ public class Tokenizer {
 				|| ch == '\'' 
 				|| ch == '`' 
 				|| ch == '~' 
-				|| ch == '#'
 				|| ch == '@';
 	}
 
