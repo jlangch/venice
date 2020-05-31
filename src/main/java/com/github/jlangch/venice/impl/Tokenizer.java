@@ -117,32 +117,35 @@ public class Tokenizer {
 						ch = reader.read();
 					}
 				}
-				else if (isSpecialChar((char)ch)) {  // special:  ()[]{}^'`~#@
+				else if (isSpecialChar((char)ch)) {  // special:  ()[]{}^'`~@
 					addToken((char)ch, filePos, line, col);	
 				}
 				else if (ch == (int)'"') {  // string
 					final int chNext = reader.read();
-					if (chNext == EOF) {
+					if (chNext == LF) {
+						final String s = readSingleQuotedString("\"" + (char)LF, filePos, line, col);
+						addToken(s, filePos, line, col);
+					}
+					else if (chNext == EOF) {
 						throwSingleQuotedStringEofError("\"", filePos, line, col);
 					}
-					else {
+					else if (chNext == (int)'"') {
 						final int chNextNext = reader.read();
 						if (chNextNext == EOF) {
-							if (chNext == (int)'"') {
-								addToken("\"\"", filePos, line, col);	
-							}
-							else {
-								throwSingleQuotedStringEolError("\"" + (char)chNext, filePos, line, col);
-							}
+							addToken("\"\"", filePos, line, col);	
 						}
-						else if (chNext == (int)'"' && chNextNext == (int)'"') {
+						else if (chNextNext == (int)'"') {
 							addToken(readTripleQuotedString(filePos, line, col), filePos, line, col);
 						}
 						else {
 							reader.unread(chNextNext);
-							reader.unread(chNext);
-							addToken(readSingleQuotedString(filePos, line, col), filePos, line, col);
+							addToken("\"\"", filePos, line, col);	
 						}
+					}
+					else {
+						reader.unread(chNext);
+						final String s = readSingleQuotedString("\"", filePos, line, col);
+						addToken(s, filePos, line, col);
 					}
 				}
 				else {
@@ -177,12 +180,13 @@ public class Tokenizer {
 	}
 	
 	private String readSingleQuotedString(
+			final String lead,
 			final int filePosStart, 
 			final int lineStart, 
 			final int colStart
 	) throws IOException {
 		final StringBuilder sb = new StringBuilder();
-		sb.append('"');
+		sb.append(lead);
 
 		int filePos = reader.getPos();
 		int line = reader.getLineNumber();
@@ -324,12 +328,6 @@ public class Tokenizer {
 			final Object... args
 	) {
 		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(token);
-	}
-	
-	private void throwSingleQuotedStringEolError(final String s, final int filePos, final int line, final int col) {
-		throw new ParseError(formatParseError(
-				createToken(s, filePos, line, col), 
-				"Expected closing \" for single quoted string but got EOL"));
 	}
 	
 	private void throwSingleQuotedStringEofError(final String s, final int filePos, final int line, final int col) {
