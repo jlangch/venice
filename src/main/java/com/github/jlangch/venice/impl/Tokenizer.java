@@ -79,6 +79,7 @@ public class Tokenizer {
 
 		try {
 			while(true) {
+				int filePos = reader.getPos();
 				int line = reader.getLineNumber();
 				int col = reader.getColumnNumber();
 				
@@ -100,14 +101,14 @@ public class Tokenizer {
 				else if (ch == (int)'~') {  // unquote splicing
 					final int chNext = reader.read();
 					if (chNext == (int)'@') {
-						addToken("~@", line, col);	
+						addToken("~@", filePos, line, col);	
 					}
 					else if (chNext == LF) {
-						addToken("~", line, col);
+						addToken("~", filePos, line, col);
 					}
 					else {
 						reader.unread(chNext);
-						addToken((char)ch, line, col);	
+						addToken((char)ch, filePos, line, col);	
 					}
 				}
 				else if (ch == (int)';') {  // comment - read to EOL
@@ -117,30 +118,30 @@ public class Tokenizer {
 					}
 				}
 				else if (isSpecialChar((char)ch)) {  // special:  ()[]{}^'`~#@
-					addToken((char)ch, line, col);	
+					addToken((char)ch, filePos, line, col);	
 				}
 				else if (ch == (int)'"') {  // string
 					final int chNext = reader.read();
 					if (chNext == EOF) {
-						throwSingleQuotedStringEofError("\"", line, col);
+						throwSingleQuotedStringEofError("\"", filePos, line, col);
 					}
 					else {
 						final int chNextNext = reader.read();
 						if (chNextNext == EOF) {
 							if (chNext == (int)'"') {
-								addToken("\"\"", line, col);	
+								addToken("\"\"", filePos, line, col);	
 							}
 							else {
-								throwSingleQuotedStringEolError("\"" + (char)chNext, line, col);
+								throwSingleQuotedStringEolError("\"" + (char)chNext, filePos, line, col);
 							}
 						}
 						else if (chNext == (int)'"' && chNextNext == (int)'"') {
-							addToken(readTripleQuotedString(line, col), line, col);
+							addToken(readTripleQuotedString(filePos, line, col), filePos, line, col);
 						}
 						else {
 							reader.unread(chNextNext);
 							reader.unread(chNext);
-							addToken(readSingleQuotedString(line, col), line, col);
+							addToken(readSingleQuotedString(filePos, line, col), filePos, line, col);
 						}
 					}
 				}
@@ -164,7 +165,7 @@ public class Tokenizer {
 						reader.unread(ch);
 					}
 					
-					addToken(sb.toString(), line, col);	
+					addToken(sb.toString(), filePos, line, col);	
 				}
 			}
 		}
@@ -176,19 +177,21 @@ public class Tokenizer {
 	}
 	
 	private String readSingleQuotedString(
+			final int filePosStart, 
 			final int lineStart, 
 			final int colStart
 	) throws IOException {
 		final StringBuilder sb = new StringBuilder();
 		sb.append('"');
 
+		int filePos = reader.getPos();
 		int line = reader.getLineNumber();
 		int col = reader.getColumnNumber();
 		int ch = reader.read();
 
 		while(true) {
 			if (ch == EOF) {
-				throwSingleQuotedStringEofError(sb.toString(), lineStart, colStart);
+				throwSingleQuotedStringEofError(sb.toString(), filePosStart, lineStart, colStart);
 			}
 			else if (ch == (int)'"') {
 				sb.append((char)ch);
@@ -196,12 +199,13 @@ public class Tokenizer {
 			}
 			else if (ch == (int)'\\') {
 				sb.append((char)ch);
-				sb.append(readStringEscapeChar(line, col));
+				sb.append(readStringEscapeChar(filePos, line, col));
 			}
 			else {
 				sb.append((char)ch);
 			}		
 			
+			filePos = reader.getPos();
 			line = reader.getLineNumber();
 			col = reader.getColumnNumber();
 			ch = reader.read();
@@ -212,19 +216,21 @@ public class Tokenizer {
 
 	
 	private String readTripleQuotedString(
+			final int filePosStart, 
 			final int lineStart, 
 			final int colStart
 	) throws IOException {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("\"\"\"");
 
+		int filePos = reader.getPos();
 		int line = reader.getLineNumber();
 		int col = reader.getColumnNumber();
 		int ch = reader.read();
 
 		while(true) {
 			if (ch == EOF) {
-				throwTripleQuotedStringEofError(sb.toString(), lineStart, colStart);
+				throwTripleQuotedStringEofError(sb.toString(), filePosStart, lineStart, colStart);
 			}
 			else if (ch == LF) {
 				sb.append((char)ch);
@@ -250,12 +256,13 @@ public class Tokenizer {
 			}
 			else if (ch == (int)'\\') {
 				sb.append((char)ch);
-				sb.append(readStringEscapeChar(line, col));
+				sb.append(readStringEscapeChar(filePos, line, col));
 			}
 			else {
 				sb.append((char)ch);
 			}
 					
+			filePos = reader.getPos();
 			line = reader.getLineNumber();
 			col = reader.getColumnNumber();
 			ch = reader.read();
@@ -280,32 +287,32 @@ public class Tokenizer {
 	}
 
 
-	private Token createToken(char token, final int line, final int col) {
-		return new Token(String.valueOf(token), fileName, 0, line, col);	
+	private Token createToken(char token, final int filePos, final int line, final int col) {
+		return new Token(String.valueOf(token), fileName, filePos, line, col);	
 	}
 
-	private Token createToken(final String token, final int line, final int col) {
-		return new Token(token, fileName, 0, line, col);	
+	private Token createToken(final String token, final int filePos, final int line, final int col) {
+		return new Token(token, fileName, filePos, line, col);	
 	}
 
-	private void addToken(final char token, final int line, final int col) {
-		tokens.add(createToken(token, line, col));	
+	private void addToken(final char token, final int filePos, final int line, final int col) {
+		tokens.add(createToken(token, filePos, line, col));	
 	}
 
-	private void addToken(final String token, final int line, final int col) {
-		tokens.add(createToken(token, line, col));	
+	private void addToken(final String token, final int filePos, final int line, final int col) {
+		tokens.add(createToken(token, filePos, line, col));	
 	}
 	
-	private char readStringEscapeChar(final int line, final int col) throws IOException {
+	private char readStringEscapeChar(final int filePos, final int line, final int col) throws IOException {
 		final int ch = reader.read();
 		if (ch == LF) {
 			throw new ParseError(formatParseError(
-					createToken("\\", line, col), 
+					createToken("\\", filePos, line, col), 
 					"Expected escape char a string but got EOL"));
 		}
 		else if (ch == -1) {
 			throw new EofException(formatParseError(
-					createToken("\\", line, col), 
+					createToken("\\", filePos, line, col), 
 					"Expected escape char astring but got EOF"));
 		}
 		
@@ -320,21 +327,21 @@ public class Tokenizer {
 		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(token);
 	}
 	
-	private void throwSingleQuotedStringEolError(final String s, final int line, final int col) {
+	private void throwSingleQuotedStringEolError(final String s, final int filePos, final int line, final int col) {
 		throw new ParseError(formatParseError(
-				createToken(s, line, col), 
+				createToken(s, filePos, line, col), 
 				"Expected closing \" for single quoted string but got EOL"));
 	}
 	
-	private void throwSingleQuotedStringEofError(final String s, final int line, final int col) {
+	private void throwSingleQuotedStringEofError(final String s, final int filePos, final int line, final int col) {
 		throw new ParseError(formatParseError(
-				createToken(s, line, col), 
+				createToken(s, filePos, line, col), 
 				"Expected closing \" for single quoted string but got EOF"));
 	}
 	
-	private void throwTripleQuotedStringEofError(final String s, final int line, final int col) {
+	private void throwTripleQuotedStringEofError(final String s, final int filePos, final int line, final int col) {
 		throw new ParseError(formatParseError(
-				createToken(s, line, col), 
+				createToken(s, filePos, line, col), 
 				"Expected closing \" for triple quoted string but got EOF"));
 	}
 	

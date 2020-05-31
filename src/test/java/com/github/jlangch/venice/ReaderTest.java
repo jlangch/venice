@@ -23,15 +23,12 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.Reader;
-import com.github.jlangch.venice.impl.Token;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 

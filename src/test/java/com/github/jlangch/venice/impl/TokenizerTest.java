@@ -272,6 +272,8 @@ public class TokenizerTest {
 		final String s = 
 				"(do                                  \n" +
 				"   100                               \n" +
+				"   100.4                             \n" +
+				"   100.4M                            \n" +
 				"   ;comment                          \n" +
 				"   \"abcdef\"                        \n" +
 				"   \"abc\\\"def\"                    \n" +
@@ -289,6 +291,8 @@ public class TokenizerTest {
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
+		assertEquals("100.4", tokens.get(pos++).getToken());
+		assertEquals("100.4M", tokens.get(pos++).getToken());
 		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
 		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
 		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
@@ -310,6 +314,8 @@ public class TokenizerTest {
 		final String s = 
 				"(do                                  \r\n" +
 				"   100                               \r\n" +
+				"   100.4                             \r\n" +
+				"   100.4M                            \r\n" +
 				"   ;comment                          \r\n" +
 				"   \"abcdef\"                        \r\n" +
 				"   \"abc\\\"def\"                    \r\n" +
@@ -327,6 +333,8 @@ public class TokenizerTest {
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
+		assertEquals("100.4", tokens.get(pos++).getToken());
+		assertEquals("100.4M", tokens.get(pos++).getToken());
 		assertEquals("\"abcdef\"", tokens.get(pos++).getToken());
 		assertEquals("\"abc\\\"def\"", tokens.get(pos++).getToken());
 		assertEquals("\"abc\ndef\"", tokens.get(pos++).getToken());
@@ -341,6 +349,18 @@ public class TokenizerTest {
 		assertEquals("3", tokens.get(pos++).getToken());
 		assertEquals(")", tokens.get(pos++).getToken());
 		assertEquals(")", tokens.get(pos++).getToken());
+	}
+
+	@Test
+	public void test_position() {	
+		List<Token> tokens = Tokenizer.tokenize("   100.0  ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("100.0", tokens.get(0).getToken());
+		assertEquals("test", tokens.get(0).getFile());
+		assertEquals(1, tokens.get(0).getLine());
+		assertEquals(4, tokens.get(0).getColumn());
+		assertEquals(3, tokens.get(0).getFileStartPos());
+		assertEquals(7, tokens.get(0).getFileEndPos());
 	}
 
 }

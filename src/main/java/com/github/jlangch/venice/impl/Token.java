@@ -47,18 +47,22 @@ public class Token {
 		return file;
 	}
 	
+	// zero based start position
 	public int getFileStartPos() {
 		return filePos;
 	}
 	
+	// zero based end position
 	public int getFileEndPos() {
 		return filePos + token.length() - 1;
 	}
 	
+	// one based line number
 	public int getLine() {
-		return line;
+		return line;  
 	}
 	
+	// one based column number
 	public int getColumn() {
 		return col;
 	}

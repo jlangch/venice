@@ -135,4 +135,16 @@ public class RegexTokenizerTest {
 		assertEquals("\\S", tokens.get(0).getToken());
 	}
 
+	@Test
+	public void testPosition() {	
+		List<Token> tokens = RegexTokenizer.tokenize("   100.0  ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("100.0", tokens.get(0).getToken());
+		assertEquals("test", tokens.get(0).getFile());
+		assertEquals(1, tokens.get(0).getLine());
+		assertEquals(4, tokens.get(0).getColumn());
+		assertEquals(3, tokens.get(0).getFileStartPos());
+		assertEquals(7, tokens.get(0).getFileEndPos());
+	}
+
 }
