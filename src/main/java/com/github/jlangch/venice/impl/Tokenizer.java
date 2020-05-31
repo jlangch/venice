@@ -127,7 +127,9 @@ public class Tokenizer {
 						addToken(s, filePos, line, col);
 					}
 					else if (chNext == EOF) {
-						throwSingleQuotedStringEofError("\"", filePos, line, col);
+						if (errorOnUnbalancedStringQuotes) {
+							throwSingleQuotedStringEofError("\"", filePos, line, col);
+						}
 					}
 					else if (chNext == (int)'"') {
 						final int chNextNext = reader.read();
@@ -195,7 +197,10 @@ public class Tokenizer {
 
 		while(true) {
 			if (ch == EOF) {
-				throwSingleQuotedStringEofError(sb.toString(), filePosStart, lineStart, colStart);
+				if (errorOnUnbalancedStringQuotes) {
+					throwSingleQuotedStringEofError(sb.toString(), filePosStart, lineStart, colStart);
+				}
+				break;
 			}
 			else if (ch == (int)'"') {
 				sb.append((char)ch);
@@ -234,7 +239,10 @@ public class Tokenizer {
 
 		while(true) {
 			if (ch == EOF) {
-				throwTripleQuotedStringEofError(sb.toString(), filePosStart, lineStart, colStart);
+				if (errorOnUnbalancedStringQuotes) {
+					throwTripleQuotedStringEofError(sb.toString(), filePosStart, lineStart, colStart);
+				}
+				break;
 			}
 			else if (ch == LF) {
 				sb.append((char)ch);
