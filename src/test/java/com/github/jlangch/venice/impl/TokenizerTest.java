@@ -23,12 +23,14 @@ package com.github.jlangch.venice.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.impl.util.StopWatch;
 
 
 public class TokenizerTest {
@@ -471,8 +473,17 @@ public class TokenizerTest {
 		assertEquals("}",                   tokens.get(14).getToken());
 	}
 
-		
-	public static List<Token> tokenize(final String text, final String fileName) {
+	@Test
+	public void test_tokenize_core() {
+		final String core = ModuleLoader.loadModule("core");
+		final StopWatch sw = new StopWatch();
+		final List<Token> tokens = tokenize(core, "core");
+		System.out.println("Tokenizing :core module with Tokenizer: " + sw.stop().toString());
+		assertTrue(!tokens.isEmpty());
+	}
+	
+	
+	private static List<Token> tokenize(final String text, final String fileName) {
 		return Tokenizer.tokenize(text, fileName);
 	}
 
