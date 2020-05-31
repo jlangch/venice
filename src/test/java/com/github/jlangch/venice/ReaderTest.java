@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -117,7 +116,7 @@ public class ReaderTest {
 		
 		int pos = 0;
 		
-		final ArrayList<Token> tokens = Reader.tokenize(s,"test");
+		final List<Token> tokens = Reader.tokenize(s,"test");
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
@@ -155,7 +154,7 @@ public class ReaderTest {
 		
 		int pos = 0;
 		
-		final ArrayList<Token> tokens = Reader.tokenize(s,"test");
+		final List<Token> tokens = Reader.tokenize(s,"test");
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
