@@ -108,7 +108,7 @@ public class Tokenizer {
 					}
 					else {
 						reader.unread(chNext);
-						addToken((char)ch, filePos, line, col);	
+						addToken(String.valueOf((char)ch), filePos, line, col);	
 					}
 				}
 				else if (ch == (int)';') {  // comment - read to EOL
@@ -118,7 +118,7 @@ public class Tokenizer {
 					}
 				}
 				else if (isSpecialChar((char)ch)) {  // special:  ()[]{}^'`~@
-					addToken((char)ch, filePos, line, col);	
+					addToken(String.valueOf((char)ch), filePos, line, col);	
 				}
 				else if (ch == (int)'"') {  // string
 					final int chNext = reader.read();
@@ -298,16 +298,8 @@ public class Tokenizer {
 	}
 
 
-	private Token createToken(char token, final int filePos, final int line, final int col) {
-		return new Token(String.valueOf(token), fileName, filePos, line, col);	
-	}
-
 	private Token createToken(final String token, final int filePos, final int line, final int col) {
 		return new Token(token, fileName, filePos, line, col);	
-	}
-
-	private void addToken(final char token, final int filePos, final int line, final int col) {
-		tokens.add(createToken(token, filePos, line, col));	
 	}
 
 	private void addToken(final String token, final int filePos, final int line, final int col) {
