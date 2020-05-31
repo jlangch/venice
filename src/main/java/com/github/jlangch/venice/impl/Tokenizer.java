@@ -88,9 +88,13 @@ public class Tokenizer {
 				if (ch == EOF) {
 					break;
 				}
-				else if (ch == (int)',') {  // comma -> like a whitespace
+				
+				// comma -> like a whitespace ----------------------
+				else if (ch == (int)',') {  
 					continue;
 				}
+				
+				// whitespaces -------------------------------------
 				else if (Character.isWhitespace(ch)) {
 					ch = reader.read();
 					while(Character.isWhitespace(ch)) {		
@@ -98,7 +102,9 @@ public class Tokenizer {
 					}
 					reader.unread(ch);
 				}
-				else if (ch == (int)'~') {  // unquote splicing
+				
+				// unquote splicing --------------------------------
+				else if (ch == (int)'~') {   
 					final int chNext = reader.read();
 					if (chNext == (int)'@') {
 						addToken("~@", filePos, line, col);	
@@ -111,16 +117,22 @@ public class Tokenizer {
 						addToken(String.valueOf((char)ch), filePos, line, col);	
 					}
 				}
-				else if (ch == (int)';') {  // comment - read to EOL
+				
+				// comment - read to EOL --------------------------
+				else if (ch == (int)';') {  // 
 					ch = reader.read();
 					while(ch != LF && ch != EOF) {		
 						ch = reader.read();
 					}
 				}
-				else if (isSpecialChar((char)ch)) {  // special:  ()[]{}^'`~@
+				
+				// special chars:  ()[]{}^'`~@ -------------------
+				else if (isSpecialChar((char)ch)) {  
 					addToken(String.valueOf((char)ch), filePos, line, col);	
 				}
-				else if (ch == (int)'"') {  // string
+				
+				// string "xx" or """xx""" ------------------------
+				else if (ch == (int)'"') {  
 					final int chNext = reader.read();
 					if (chNext == LF) {
 						final String s = readSingleQuotedString("\"" + (char)LF, filePos, line, col);
@@ -150,6 +162,8 @@ public class Tokenizer {
 						addToken(s, filePos, line, col);
 					}
 				}
+				
+				//  anything else ---------------------------------
 				else {
 					final StringBuilder sb = new StringBuilder();
 					sb.append((char)ch);
