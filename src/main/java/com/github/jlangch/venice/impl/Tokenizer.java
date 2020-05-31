@@ -45,7 +45,7 @@ public class Tokenizer {
 			final boolean errorOnUnbalancedStringQuotes
 	) {
 		this(
-			new LineNumberingPushbackReader(new StringReader(text)), 
+			new StringReader(text), 
 			fileName, 
 			errorOnUnbalancedStringQuotes);
 	}
@@ -57,7 +57,7 @@ public class Tokenizer {
 	) {
 		this.reader = reader instanceof LineNumberingPushbackReader
 						? (LineNumberingPushbackReader)reader
-						: new LineNumberingPushbackReader(reader);
+						: new LineNumberingPushbackReader(reader, 10);
 		this.fileName = fileName;
 		this.errorOnUnbalancedStringQuotes = errorOnUnbalancedStringQuotes;
 	}
@@ -71,11 +71,7 @@ public class Tokenizer {
 			final String fileName,
 			final boolean errorOnUnbalancedStringQuotes
 	) {
-		return new Tokenizer(
-						new LineNumberingPushbackReader(new StringReader(text)), 
-						fileName, 
-						errorOnUnbalancedStringQuotes
-					).tokenize();
+		return new Tokenizer(text, fileName, errorOnUnbalancedStringQuotes).tokenize();
 	}
 	
 	private List<Token> tokenize() {
@@ -83,79 +79,85 @@ public class Tokenizer {
 
 		try {
 			while(true) {
-				int line = reader.getLineNumber() + 1;
-				int col = reader.getColumnNumber() + 1;
+				int line = reader.getLineNumber();
+				int col = reader.getColumnNumber();
 				
-				char ch = (char)reader.read();
+				int ch = reader.read();
 				
-				if (ch == -1) {
+				if (ch == EOF) {
 					break;
 				}
-				else if (ch == ',') {  // comma -> like a whitespace
+				else if (ch == (int)',') {  // comma -> like a whitespace
 					continue;
 				}
 				else if (Character.isWhitespace(ch)) {
-					ch = (char)reader.read();
+					ch = reader.read();
 					while(Character.isWhitespace(ch)) {		
-						ch = (char)reader.read();
+						ch = reader.read();
 					}
 					reader.unread(ch);
 				}
-				else if (ch == '~') {  // unquote splicing
-					final char chNext = (char)reader.read();
-					if (chNext == '@') {
+				else if (ch == (int)'~') {  // unquote splicing
+					final int chNext = reader.read();
+					if (chNext == (int)'@') {
 						addToken("~@", line, col);	
 					}
 					else if (chNext == LF) {
-						addToken("~", line, col);						
+						addToken("~", line, col);
 					}
 					else {
 						reader.unread(chNext);
-						reader.unread(ch);
+						addToken((char)ch, line, col);	
 					}
 				}
-				else if (ch == ';') {  // comment - read to EOL
-					ch = (char)reader.read();
-					while(ch != LF) {		
-						ch = (char)reader.read();
+				else if (ch == (int)';') {  // comment - read to EOL
+					ch = reader.read();
+					while(ch != LF && ch != EOF) {		
+						ch = reader.read();
 					}
 				}
-				else if (isSpecialChar(ch)) {  // special:  ()[]{}^\`~#@
-					addToken(ch, line, col);	
+				else if (isSpecialChar((char)ch)) {  // special:  ()[]{}^'`~#@
+					addToken((char)ch, line, col);	
 				}
-				else if (ch == '"') {  // string
-					final char chNext = (char)reader.read();
+				else if (ch == (int)'"') {  // string
+					final int chNext = reader.read();
 					if (chNext == LF) {
 						throwSingleQuotedStringEolError("\"", line, col);
 					}
 					else {
-						final char chNextNext = (char)reader.read();
-						if (chNextNext == LF) {
-							if (chNext == '"') {
+						final int chNextNext = reader.read();
+						if (chNextNext == LF || chNextNext == EOF) {
+							if (chNext == (int)'"') {
 								addToken("\"\"", line, col);	
 							}
 							else {
-								throwSingleQuotedStringEolError("\"" + chNext, line, col);
+								throwSingleQuotedStringEolError("\"" + (char)chNext, line, col);
 							}
 						}
-						else if (chNext == '"' && chNextNext == '"') {
-							addToken(readTripleQuotedString(line, col), line, col);					
+						else if (chNext == (int)'"' && chNextNext == (int)'"') {
+							addToken(readTripleQuotedString(line, col), line, col);
 						}
 						else {
 							reader.unread(chNextNext);
 							reader.unread(chNext);
-							addToken(readSingleQuotedString(line, col), line, col);					
+							addToken(readSingleQuotedString(line, col), line, col);
 						}
 					}
 				}
 				else {
 					final StringBuilder sb = new StringBuilder();
-					sb.append(ch);
+					sb.append((char)ch);
 					
-					ch = (char)reader.read();				
-					while(ch != -1 && ch != ',' && ch != ';'  && ch != '"' && !isSpecialChar(ch)) { 		
-						sb.append(ch);
-						ch = (char)reader.read();				
+					ch = reader.read();
+					while(ch != EOF 
+							&& ch != (int)',' 
+							&& ch != (int)';'  
+							&& ch != (int)'"' 
+							&& !Character.isWhitespace(ch) 
+							&& !isSpecialChar((char)ch)
+					) { 		
+						sb.append((char)ch);
+						ch = reader.read();
 					}
 					
 					if (ch != LF) {
@@ -180,32 +182,32 @@ public class Tokenizer {
 		final StringBuilder sb = new StringBuilder();
 		sb.append('"');
 
-		int line = reader.getLineNumber() + 1;
-		int col = reader.getColumnNumber() + 1;
-		char ch = (char)reader.read();
+		int line = reader.getLineNumber();
+		int col = reader.getColumnNumber();
+		int ch = reader.read();
 
 		while(true) {
 			if (ch == LF) {
 				throwSingleQuotedStringEolError(sb.toString(), lineStart, colStart);
 			}
-			else if (ch == -1) {
+			else if (ch == EOF) {
 				throwSingleQuotedStringEofError(sb.toString(), lineStart, colStart);
 			}
-			else if (ch == '"') {
-				sb.append(ch);
+			else if (ch == (int)'"') {
+				sb.append((char)ch);
 				break;
 			}
-			else if (ch == '\\') {
-				sb.append(ch);
+			else if (ch == (int)'\\') {
+				sb.append((char)ch);
 				sb.append(readStringEscapeChar(line, col));
 			}
 			else {
-				sb.append(ch);
+				sb.append((char)ch);
 			}		
 			
-			line = reader.getLineNumber() + 1;
-			col = reader.getColumnNumber() + 1;
-			ch = (char)reader.read();
+			line = reader.getLineNumber();
+			col = reader.getColumnNumber();
+			ch = reader.read();
 		}
 		
 		return sb.toString();
@@ -219,47 +221,47 @@ public class Tokenizer {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("\"\"\"");
 
-		int line = reader.getLineNumber() + 1;
-		int col = reader.getColumnNumber() + 1;
-		char ch = (char)reader.read();
+		int line = reader.getLineNumber();
+		int col = reader.getColumnNumber();
+		int ch = reader.read();
 
 		while(true) {
-			if (ch == -1) {
+			if (ch == EOF) {
 				throwTripleQuotedStringEofError(sb.toString(), lineStart, colStart);
 			}
 			else if (ch == LF) {
-				sb.append(ch);
+				sb.append((char)ch);
 			}
-			else if (ch == '"') {
-				final char chNext = (char)reader.read();
-				if (chNext == '"') {
-					final char chNextNext = (char)reader.read();
-					if (chNextNext == '"') {
+			else if (ch == (int)'"') {
+				final int chNext = reader.read();
+				if (chNext == (int)'"') {
+					final int chNextNext = reader.read();
+					if (chNextNext == (int)'"') {
 						sb.append("\"\"\"");
 						break;
 					}
 					else {
-						sb.append(ch);
-						sb.append(chNext);
-						sb.append(chNextNext);
+						sb.append((char)ch);
+						sb.append((char)chNext);
+						sb.append((char)chNextNext);
 					}
 				}
 				else {
-					sb.append(ch);
-					sb.append(chNext);
+					sb.append((char)ch);
+					sb.append((char)chNext);
 				}
 			}
-			else if (ch == '\\') {
-				sb.append(ch);
+			else if (ch == (int)'\\') {
+				sb.append((char)ch);
 				sb.append(readStringEscapeChar(line, col));
 			}
 			else {
-				sb.append(ch);
+				sb.append((char)ch);
 			}
 					
-			line = reader.getLineNumber() + 1;
-			col = reader.getColumnNumber() + 1;
-			ch = (char)reader.read();
+			line = reader.getLineNumber();
+			col = reader.getColumnNumber();
+			ch = reader.read();
 		}
 		
 		return sb.toString();
@@ -298,7 +300,7 @@ public class Tokenizer {
 	}
 	
 	private char readStringEscapeChar(final int line, final int col) throws IOException {
-		char ch = (char)reader.read();
+		final int ch = reader.read();
 		if (ch == LF) {
 			throw new ParseError(formatParseError(
 					createToken("\\", line, col), 
@@ -310,7 +312,7 @@ public class Tokenizer {
 					"Expected escape char astring but got EOF"));
 		}
 		
-		return ch;
+		return (char)ch;
 	}
 
 	private String formatParseError(
@@ -342,6 +344,7 @@ public class Tokenizer {
 	
 	
 	private static final int LF = (int)'\n';
+	private static final int EOF = -1;
 
 	private final LineNumberingPushbackReader reader;
 	private final String fileName;

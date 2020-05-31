@@ -34,7 +34,7 @@ public class LineNumberingPushbackReader extends PushbackReader {
 	}
 
 	public LineNumberingPushbackReader(final Reader r, final int bufSize) {
-		super(new LineNumberReader(r, bufSize));
+		super(new LineNumberReader(r), bufSize);
 	}
 
 	public int getLineNumber() {
