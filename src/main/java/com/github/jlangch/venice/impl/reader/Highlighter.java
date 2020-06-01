@@ -157,7 +157,7 @@ public class Highlighter {
 			final char end
 	) {
 		final Token startTok = next();
-		add(new HighlightItem(startTok.getToken(), HighlightClass.BRACE_BEGIN));
+		add(new HighlightItem(startTok.getToken(), parenToClass(start)));
 		
 		Token token = peek();
 		while (token.charAt(0) != end) {
@@ -166,7 +166,7 @@ public class Highlighter {
 		}
 		
 		final Token endTok = next();
-		add(new HighlightItem(endTok.getToken(), HighlightClass.BRACE_END));
+		add(new HighlightItem(endTok.getToken(), parenToClass(end)));
 	}
 
 	private void process_form() {
@@ -248,6 +248,19 @@ public class Highlighter {
 			default:  
 				process_atom();
 				break;
+		}
+	}
+	
+	
+	private HighlightClass parenToClass(final char ch) {
+		switch(ch) {
+			case '(': return HighlightClass.PARENTHESIS_BEGIN;
+			case ')': return HighlightClass.PARENTHESIS_END;
+			case '[': return HighlightClass.BRACKET_BEGIN;
+			case ']': return HighlightClass.BRACKET_END;
+			case '{': return HighlightClass.BRACE_BEGIN;
+			case '}': return HighlightClass.BRACE_END;
+			default: throw new RuntimeException("Invalid parentheris '" + ch + "'");
 		}
 	}
 	
