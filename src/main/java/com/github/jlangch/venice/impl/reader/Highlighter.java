@@ -262,7 +262,7 @@ public class Highlighter {
 			case ']': return HighlightClass.BRACKET_END;
 			case '{': return HighlightClass.BRACE_BEGIN;
 			case '}': return HighlightClass.BRACE_END;
-			default: throw new RuntimeException("Invalid parentheris '" + ch + "'");
+			default: throw new RuntimeException("Invalid parenthesis '" + ch + "'");
 		}
 	}
 

@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 

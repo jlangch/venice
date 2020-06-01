@@ -31,9 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.ModuleLoader;
-import com.github.jlangch.venice.impl.reader.RegexTokenizer;
-import com.github.jlangch.venice.impl.reader.Token;
-import com.github.jlangch.venice.impl.reader.Tokenizer;
 import com.github.jlangch.venice.impl.util.StopWatch;
 
 
@@ -374,11 +371,11 @@ public class TokenizerTest {
 
 	@Test
 	public void test_unquote_splicing() {	
-		List<Token> tokens = RegexTokenizer.tokenize(" ~@ ", "test");
+		List<Token> tokens = tokenize(" ~@ ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("~@", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" ~@body ", "test");
+		tokens = tokenize(" ~@body ", "test");
 		assertEquals(2, tokens.size());
 		assertEquals("~@", tokens.get(0).getToken());
 		assertEquals("body", tokens.get(1).getToken());
@@ -398,12 +395,12 @@ public class TokenizerTest {
 	
 	@Test
 	public void test_unquote() {	
-		List<Token> tokens = RegexTokenizer.tokenize("~expr", "test");
+		List<Token> tokens = tokenize("~expr", "test");
 		assertEquals(2,       tokens.size());
 		assertEquals("~",     tokens.get(0).getToken());
 		assertEquals("expr",   tokens.get(1).getToken());
 		
-		tokens = RegexTokenizer.tokenize("'~expr", "test");
+		tokens = tokenize("'~expr", "test");
 		assertEquals(3,       tokens.size());
 		assertEquals("'",     tokens.get(0).getToken());
 		assertEquals("~",     tokens.get(1).getToken());
