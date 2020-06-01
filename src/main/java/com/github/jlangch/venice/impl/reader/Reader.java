@@ -102,6 +102,9 @@ public class Reader {
 	}
    
 	private Token next() {
+		if (position >= tokens.size()) {
+			throw new ContinueException();
+		}
 		return tokens.get(position++);
 	}
 	
@@ -210,7 +213,7 @@ public class Reader {
 
 		final ArrayList<VncVal> items = new ArrayList<>();
 		
-		Token token = lstToken;
+		Token token;
 		while ((token = rdr.peek()) != null && token.charAt(0) != end) {
 			items.add(read_form(rdr));
 		}
@@ -218,6 +221,7 @@ public class Reader {
 		if (token == null) {
 			throw new EofException(formatParseError(token, "Expected '%c', got EOF", end));
 		}
+		
 		rdr.next();
 
 		return lst.withValues(items, MetaUtil.toMeta(lstToken));
@@ -529,7 +533,7 @@ public class Reader {
 	
 	private final String filename;
 	private final String form;
-	private List<Token> tokens;
+	private final List<Token> tokens;
 	private int position;
 	private final AnonymousFnArgs anonymousFnArgs = new AnonymousFnArgs();
 	

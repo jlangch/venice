@@ -81,6 +81,28 @@ public class Token {
 		return token.equals(str);
 	}
 
+	
+	public boolean isWhitespaces() {
+		return type == TokenType.WHITESPACES;
+	}
+
+	public boolean isComment() {
+		return type == TokenType.COMMENT;
+	}
+	
+	public boolean isWhitespacesOrComment() {
+		return isWhitespaces() || isComment();
+	}
+
+	public boolean isString() {
+		return type == TokenType.STRING;
+	}
+
+	public boolean isStringBlock() {
+		return type == TokenType.STRING_BLOCK;
+	}
+
+	
 	@Override
 	public String toString() {
 		return String.format("%s (file: %s, line %d, column %d)", token, file, line, col);

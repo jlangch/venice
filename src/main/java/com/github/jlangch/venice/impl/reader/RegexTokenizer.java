@@ -22,10 +22,8 @@
 package com.github.jlangch.venice.impl.reader;
 
 import static com.github.jlangch.venice.impl.reader.TokenType.ANY;
-import static com.github.jlangch.venice.impl.reader.TokenType.BLOCK_STRING;
-import static com.github.jlangch.venice.impl.reader.TokenType.SPECIAL_CHAR;
+import static com.github.jlangch.venice.impl.reader.TokenType.STRING_BLOCK;
 import static com.github.jlangch.venice.impl.reader.TokenType.STRING;
-import static com.github.jlangch.venice.impl.reader.TokenType.UNQUOTE_SPLICE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +35,7 @@ import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
+@Deprecated
 public class RegexTokenizer {
 
 	private RegexTokenizer(final String text, final String fileName) {
@@ -90,7 +89,7 @@ public class RegexTokenizer {
 				final int tokenStartPos = matcher.start(1);			
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
 				throw new EofException(formatParseError(
-							new Token(BLOCK_STRING, token, fileName, tokenStartPos, pos[0], pos[1]), 
+							new Token(STRING_BLOCK, token, fileName, tokenStartPos, pos[0], pos[1]), 
 							"Expected closing \"\"\" for triple quoted string but got EOF"));
 			}
 			else if (token.startsWith("\"") && !token.endsWith("\"") && errorOnUnbalancedStringQuotes) {

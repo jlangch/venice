@@ -181,7 +181,7 @@ public class Tokenizer {
 							addToken(STRING, "\"\"", filePos, line, col);	
 						}
 						else if (chNextNext == (int)'"') {
-							addToken(BLOCK_STRING, readTripleQuotedString(filePos, line, col), filePos, line, col);
+							addToken(STRING_BLOCK, readTripleQuotedString(filePos, line, col), filePos, line, col);
 						}
 						else {
 							reader.unread(chNextNext);
@@ -317,7 +317,7 @@ public class Tokenizer {
 			}
 			else if (ch == (int)'\\') {
 				sb.append((char)ch);
-				sb.append(readStringEscapeChar(BLOCK_STRING, filePos, line, col));
+				sb.append(readStringEscapeChar(STRING_BLOCK, filePos, line, col));
 			}
 			else {
 				sb.append((char)ch);
@@ -417,7 +417,7 @@ public class Tokenizer {
 			final int col
 	) {
 		throw new ParseError(formatParseError(
-				new Token(BLOCK_STRING, s, fileName, filePos, line, col), 
+				new Token(STRING_BLOCK, s, fileName, filePos, line, col), 
 				"Expected closing \" for triple quoted string but got EOF"));
 	}
 	
