@@ -21,6 +21,12 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.TokenType.*;
+import static com.github.jlangch.venice.impl.TokenType.BLOCK_STRING;
+import static com.github.jlangch.venice.impl.TokenType.SPECIAL_CHAR;
+import static com.github.jlangch.venice.impl.TokenType.STRING;
+import static com.github.jlangch.venice.impl.TokenType.UNQUOTE_SPLICE;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -35,43 +41,51 @@ import com.github.jlangch.venice.impl.util.LineNumberingPushbackReader;
 
 public class Tokenizer {
 
-	private Tokenizer(final String text, final String fileName) {
-		this(text, fileName, true);
+	private Tokenizer(
+			final String text, 
+			final String fileName
+	) {
+		this(text, fileName, true, true);
 	}
 
 	private Tokenizer(
 			final String text, 
 			final String fileName,
+			final boolean skipWhitespaces,
 			final boolean errorOnUnbalancedStringQuotes
 	) {
 		this(
 			new StringReader(text), 
 			fileName, 
+			skipWhitespaces,
 			errorOnUnbalancedStringQuotes);
 	}
 
 	private Tokenizer(
 			final Reader reader,
 			final String fileName,
+			final boolean skipWhitespaces,
 			final boolean errorOnUnbalancedStringQuotes
 	) {
 		this.reader = reader instanceof LineNumberingPushbackReader
 						? (LineNumberingPushbackReader)reader
 						: new LineNumberingPushbackReader(reader, 10);
 		this.fileName = fileName;
+		this.skipWhitespaces = skipWhitespaces;
 		this.errorOnUnbalancedStringQuotes = errorOnUnbalancedStringQuotes;
 	}
 	
 	public static List<Token> tokenize(final String text, final String fileName) {
-		return new Tokenizer(text, fileName, true).tokenize();
+		return new Tokenizer(text, fileName, true, true).tokenize();
 	}
 
 	public static List<Token> tokenize(
 			final String text, 
 			final String fileName,
+			final boolean skipWhitespaces,
 			final boolean errorOnUnbalancedStringQuotes
 	) {
-		return new Tokenizer(text, fileName, errorOnUnbalancedStringQuotes).tokenize();
+		return new Tokenizer(text, fileName, skipWhitespaces, errorOnUnbalancedStringQuotes).tokenize();
 	}
 	
 	private List<Token> tokenize() {
@@ -88,55 +102,77 @@ public class Tokenizer {
 				if (ch == EOF) {
 					break;
 				}
-				
-				// comma -> like a whitespace ----------------------
+
+				else if (ch == LF) {
+					addLinefeedToken(filePos, line, col);	
+					continue;
+				}
+
+				// - comma: , (treated like a whitespace) ---------------------
 				else if (ch == (int)',') {  
+					addToken(WHITESPACES, ",", filePos, line, col);	
 					continue;
 				}
 				
-				// whitespaces -------------------------------------
+				// - whitespaces ----------------------------------------------
 				else if (Character.isWhitespace(ch)) {
+					final StringBuilder sb = new StringBuilder();
+					sb.append((char)ch);
+
 					ch = reader.read();
 					while(Character.isWhitespace(ch)) {		
+						sb.append((char)ch);
 						ch = reader.read();
 					}
+					
+					addToken(WHITESPACES, sb.toString(), filePos, line, col);	
 					reader.unread(ch);
 				}
 				
-				// unquote splicing --------------------------------
+				// - unquote splicing: ~@ -------------------------------------
 				else if (ch == (int)'~') {   
 					final int chNext = reader.read();
 					if (chNext == (int)'@') {
-						addToken("~@", filePos, line, col);	
+						addToken(UNQUOTE_SPLICE, "~@", filePos, line, col);	
 					}
 					else if (chNext == LF) {
-						addToken("~", filePos, line, col);
+						addToken(SPECIAL_CHAR, "~", filePos, line, col);
+						addLinefeedToken(filePos, line, col+1);
 					}
 					else {
 						reader.unread(chNext);
-						addToken(String.valueOf((char)ch), filePos, line, col);	
+						addToken(SPECIAL_CHAR, String.valueOf((char)ch), filePos, line, col);	
 					}
 				}
 				
-				// comment - read to EOL --------------------------
+				// - comment:  ; ....  read to EOL ----------------------------
 				else if (ch == (int)';') {  // 
+					final StringBuilder sb = new StringBuilder();
+					sb.append((char)ch);
+
 					ch = reader.read();
 					while(ch != LF && ch != EOF) {		
+						sb.append((char)ch);
 						ch = reader.read();
+					}
+
+					addToken(COMMENT, sb.toString(), filePos, line, col);				
+					if (ch == LF) {
+						addLinefeedToken(filePos, line, col + sb.length());	
 					}
 				}
 				
-				// special chars:  ()[]{}^'`~@ -------------------
+				// - special chars:  ()[]{}^'`~@ ------------------------------
 				else if (isSpecialChar((char)ch)) {  
-					addToken(String.valueOf((char)ch), filePos, line, col);	
+					addToken(SPECIAL_CHAR, String.valueOf((char)ch), filePos, line, col);	
 				}
 				
-				// string "xx" or """xx""" ------------------------
+				// - string:  "xx" or """xx""" --------------------------------
 				else if (ch == (int)'"') {  
 					final int chNext = reader.read();
 					if (chNext == LF) {
 						final String s = readSingleQuotedString("\"" + (char)LF, filePos, line, col);
-						addToken(s, filePos, line, col);
+						addToken(STRING, s, filePos, line, col);
 					}
 					else if (chNext == EOF) {
 						if (errorOnUnbalancedStringQuotes) {
@@ -146,24 +182,24 @@ public class Tokenizer {
 					else if (chNext == (int)'"') {
 						final int chNextNext = reader.read();
 						if (chNextNext == EOF) {
-							addToken("\"\"", filePos, line, col);	
+							addToken(STRING, "\"\"", filePos, line, col);	
 						}
 						else if (chNextNext == (int)'"') {
-							addToken(readTripleQuotedString(filePos, line, col), filePos, line, col);
+							addToken(BLOCK_STRING, readTripleQuotedString(filePos, line, col), filePos, line, col);
 						}
 						else {
 							reader.unread(chNextNext);
-							addToken("\"\"", filePos, line, col);	
+							addToken(STRING, "\"\"", filePos, line, col);	
 						}
 					}
 					else {
 						reader.unread(chNext);
 						final String s = readSingleQuotedString("\"", filePos, line, col);
-						addToken(s, filePos, line, col);
+						addToken(STRING, s, filePos, line, col);
 					}
 				}
 				
-				//  anything else ---------------------------------
+				// - anything else --------------------------------------------
 				else {
 					final StringBuilder sb = new StringBuilder();
 					sb.append((char)ch);
@@ -180,11 +216,14 @@ public class Tokenizer {
 						ch = reader.read();
 					}
 					
-					if (ch != LF) {
+					if (ch == LF) {
+						addLinefeedToken(filePos, line, col);	
+					}
+					else {
 						reader.unread(ch);
 					}
 					
-					addToken(sb.toString(), filePos, line, col);	
+					addToken(ANY, sb.toString(), filePos, line, col);	
 				}
 			}
 		}
@@ -222,7 +261,7 @@ public class Tokenizer {
 			}
 			else if (ch == (int)'\\') {
 				sb.append((char)ch);
-				sb.append(readStringEscapeChar(filePos, line, col));
+				sb.append(readStringEscapeChar(STRING, filePos, line, col));
 			}
 			else {
 				sb.append((char)ch);
@@ -282,7 +321,7 @@ public class Tokenizer {
 			}
 			else if (ch == (int)'\\') {
 				sb.append((char)ch);
-				sb.append(readStringEscapeChar(filePos, line, col));
+				sb.append(readStringEscapeChar(BLOCK_STRING, filePos, line, col));
 			}
 			else {
 				sb.append((char)ch);
@@ -311,25 +350,43 @@ public class Tokenizer {
 				|| ch == '@';
 	}
 
-
-	private Token createToken(final String token, final int filePos, final int line, final int col) {
-		return new Token(token, fileName, filePos, line, col);	
+	private void addLinefeedToken(final int filePos, final int line, final int col) { 
+		addToken(WHITESPACES, "\n", filePos, line, col);
 	}
 
-	private void addToken(final String token, final int filePos, final int line, final int col) {
-		tokens.add(createToken(token, filePos, line, col));	
+	private void addToken(
+			final TokenType type,
+			final String token, 
+			final int filePos, 
+			final int line, 
+			final int col
+	) { 
+		if (skipWhitespaces) {
+			if (type != WHITESPACES && type != COMMENT) {
+				tokens.add(new Token(type, token, fileName, filePos, line, col));	
+			}
+		}
+		else {
+			tokens.add(new Token(type, token, fileName, filePos, line, col));	
+		}
 	}
 	
-	private char readStringEscapeChar(final int filePos, final int line, final int col) throws IOException {
+	private char readStringEscapeChar(
+			final TokenType type,
+			final int filePos, 
+			final int line, 
+			final int col
+	) throws IOException {
 		final int ch = reader.read();
+		
 		if (ch == LF) {
 			throw new ParseError(formatParseError(
-					createToken("\\", filePos, line, col), 
+					new Token(type, "\\", fileName, filePos, line, col), 
 					"Expected escape char a string but got EOL"));
 		}
 		else if (ch == -1) {
 			throw new EofException(formatParseError(
-					createToken("\\", filePos, line, col), 
+					new Token(type, "\\", fileName, filePos, line, col), 
 					"Expected escape char astring but got EOF"));
 		}
 		
@@ -341,18 +398,30 @@ public class Tokenizer {
 			final String format, 
 			final Object... args
 	) {
-		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(token);
+		return String.format(format, args) 
+				+ ". " 
+				+ ErrorMessage.buildErrLocation(token);
 	}
 	
-	private void throwSingleQuotedStringEofError(final String s, final int filePos, final int line, final int col) {
+	private void throwSingleQuotedStringEofError(
+			final String s, 
+			final int filePos, 
+			final int line, 
+			final int col
+	) {
 		throw new ParseError(formatParseError(
-				createToken(s, filePos, line, col), 
+				new Token(STRING, s, fileName, filePos, line, col), 
 				"Expected closing \" for single quoted string but got EOF"));
 	}
 	
-	private void throwTripleQuotedStringEofError(final String s, final int filePos, final int line, final int col) {
+	private void throwTripleQuotedStringEofError(
+			final String s, 
+			final int filePos, 
+			final int line, 
+			final int col
+	) {
 		throw new ParseError(formatParseError(
-				createToken(s, filePos, line, col), 
+				new Token(BLOCK_STRING, s, fileName, filePos, line, col), 
 				"Expected closing \" for triple quoted string but got EOF"));
 	}
 	
@@ -363,6 +432,7 @@ public class Tokenizer {
 
 	private final LineNumberingPushbackReader reader;
 	private final String fileName;
+	private final boolean skipWhitespaces;
 	private final boolean errorOnUnbalancedStringQuotes;
 	private final List<Token> tokens = new ArrayList<>();
 }

@@ -112,7 +112,7 @@ public class Reader {
 			final String filename, 
 			final boolean errorOnUnbalancedStringQuotes
 	) {
-		return Tokenizer.tokenize(str, filename, errorOnUnbalancedStringQuotes);
+		return Tokenizer.tokenize(str, filename, true, errorOnUnbalancedStringQuotes);
 	}
 
 	private static VncVal read_atom(final Reader rdr) {

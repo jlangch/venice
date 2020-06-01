@@ -21,6 +21,12 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.TokenType.ANY;
+import static com.github.jlangch.venice.impl.TokenType.BLOCK_STRING;
+import static com.github.jlangch.venice.impl.TokenType.SPECIAL_CHAR;
+import static com.github.jlangch.venice.impl.TokenType.STRING;
+import static com.github.jlangch.venice.impl.TokenType.UNQUOTE_SPLICE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -84,7 +90,7 @@ public class RegexTokenizer {
 				final int tokenStartPos = matcher.start(1);			
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
 				throw new EofException(formatParseError(
-							new Token(token, fileName, tokenStartPos, pos[0], pos[1]), 
+							new Token(BLOCK_STRING, token, fileName, tokenStartPos, pos[0], pos[1]), 
 							"Expected closing \"\"\" for triple quoted string but got EOF"));
 			}
 			else if (token.startsWith("\"") && !token.endsWith("\"") && errorOnUnbalancedStringQuotes) {
@@ -92,7 +98,7 @@ public class RegexTokenizer {
 				final int tokenStartPos = matcher.start(1);			
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);				
 				throw new ParseError(formatParseError(
-							new Token(token, fileName, tokenStartPos, pos[0], pos[1]), 
+							new Token(STRING, token, fileName, tokenStartPos, pos[0], pos[1]), 
 							"Expected closing \" for single quoted string but got EOL"));
 			}
 			else if (token.charAt(0) != ';') {
@@ -101,7 +107,7 @@ public class RegexTokenizer {
 				
 				final int[] pos = getTextPosition(strArr, tokenStartPos, lastStartPos, lastPos[0], lastPos[1]);
 				
-				tokens.add(new Token(token, fileName, tokenStartPos, pos[0], pos[1]));
+				tokens.add(new Token(ANY, token, fileName, tokenStartPos, pos[0], pos[1]));
 				
 				lastStartPos = tokenStartPos;
 				lastPos = pos;

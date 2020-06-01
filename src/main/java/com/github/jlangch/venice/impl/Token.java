@@ -25,12 +25,14 @@ package com.github.jlangch.venice.impl;
 public class Token {
 	
 	public Token(
+			final TokenType type,
 			final String token, 
 			final String file, 
 			final int filePos, 
 			final int line, 
 			final int col
 	) {
+		this.type = type;
 		this.token = token;
 		this.file = file == null || file.isEmpty() ? "unknown" : file;
 		this.filePos = filePos;
@@ -38,6 +40,10 @@ public class Token {
 		this.col = col;
 	}
 	
+	
+	public TokenType getType() {
+		return type;
+	}
 	
 	public String getToken() {
 		return token;
@@ -81,6 +87,7 @@ public class Token {
 	}
 
 	
+	private final TokenType type;
 	private final String token;
 	private final String file;
 	private final int filePos;
