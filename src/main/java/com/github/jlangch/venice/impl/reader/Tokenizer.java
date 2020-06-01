@@ -19,13 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.reader;
 
-import static com.github.jlangch.venice.impl.TokenType.*;
-import static com.github.jlangch.venice.impl.TokenType.BLOCK_STRING;
-import static com.github.jlangch.venice.impl.TokenType.SPECIAL_CHAR;
-import static com.github.jlangch.venice.impl.TokenType.STRING;
-import static com.github.jlangch.venice.impl.TokenType.UNQUOTE_SPLICE;
+import static com.github.jlangch.venice.impl.reader.TokenType.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -382,12 +378,12 @@ public class Tokenizer {
 		if (ch == LF) {
 			throw new ParseError(formatParseError(
 					new Token(type, "\\", fileName, filePos, line, col), 
-					"Expected escape char a string but got EOL"));
+					"Expected escaped char in a string but got EOL"));
 		}
 		else if (ch == -1) {
 			throw new EofException(formatParseError(
 					new Token(type, "\\", fileName, filePos, line, col), 
-					"Expected escape char astring but got EOF"));
+					"Expected escaped char in a string but got EOF"));
 		}
 		
 		return (char)ch;

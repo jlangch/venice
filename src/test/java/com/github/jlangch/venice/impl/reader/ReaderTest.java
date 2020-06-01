@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.impl.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +28,8 @@ import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.Reader;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 

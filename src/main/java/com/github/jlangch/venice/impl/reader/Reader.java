@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.reader;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.impl.AnonymousFnArgs;
+import com.github.jlangch.venice.impl.AutoGenSym;
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -120,7 +123,10 @@ public class Reader {
 		final Matcher matcher = atom_pattern.matcher(token.getToken());
 		
 		if (!matcher.find()) {
-			throw new ParseError(formatParseError(token, "Unrecognized token '%s'", token.getToken()));
+			throw new ParseError(formatParseError(
+									token, 
+									"Unrecognized token '%s'", 
+									token.getToken()));
 		}
 		
 		if (matcher.group(1) != null) {

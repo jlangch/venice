@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.impl.util;
 
 import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.Token;
+import com.github.jlangch.venice.impl.reader.Token;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,53 +30,57 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.reader.RegexTokenizer;
+import com.github.jlangch.venice.impl.reader.Token;
+import com.github.jlangch.venice.impl.reader.Tokenizer;
 import com.github.jlangch.venice.impl.util.StopWatch;
 
 
-public class RegexTokenizerTest {
+public class TokenizerTest {
 
 	@Test
 	public void test_empty() {	
-		final List<Token> tokens = RegexTokenizer.tokenize("", "test");
+		final List<Token> tokens = tokenize("", "test");
 		assertEquals(0, tokens.size());
 	}
 
 	@Test
 	public void test_whitespaces() {	
-		List<Token> tokens = RegexTokenizer.tokenize(" \t \r ", "test");
+		List<Token> tokens = tokenize(" \t \r ", "test");
 		assertEquals(0, tokens.size());
 		
-		tokens = RegexTokenizer.tokenize(" , \t , \r , ", "test");
+		tokens = tokenize(" , \t , \r , ", "test");
 		assertEquals(0, tokens.size());
 	}
 
 	@Test
 	public void test_comment() {	
-		List<Token> tokens = RegexTokenizer.tokenize(" ; comment ", "test");
+		List<Token> tokens = tokenize(" ; comment ", "test");
 		assertEquals(0, tokens.size());
 
-		tokens = RegexTokenizer.tokenize(" abc ; comment ", "test");
+		tokens = tokenize(" abc ; comment ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("abc", tokens.get(0).getToken());
 	}
 
 	@Test
 	public void test_any() {	
-		final List<Token> tokens = RegexTokenizer.tokenize("abc", "test");
+		final List<Token> tokens = tokenize("abc", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("abc", tokens.get(0).getToken());
 	}
 
 	@Test
 	public void test_any_with_whitespaces() {	
-		final List<Token> tokens = RegexTokenizer.tokenize(" abc ", "test");
+		final List<Token> tokens = tokenize(" abc ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("abc", tokens.get(0).getToken());
 	}
 
 	@Test
 	public void test_special() {	
-		List<Token> tokens = RegexTokenizer.tokenize("^'`~#@", "test");
+		List<Token> tokens = tokenize("^'`~#@", "test");
 		assertEquals(6, tokens.size());
 		assertEquals("^",   tokens.get(0).getToken());
 		assertEquals("'",   tokens.get(1).getToken());
@@ -85,7 +89,7 @@ public class RegexTokenizerTest {
 		assertEquals("#",   tokens.get(4).getToken());
 		assertEquals("@",   tokens.get(5).getToken());
 		
-		tokens = RegexTokenizer.tokenize(" ^ ' ` ~ # @ ", "test");
+		tokens = tokenize(" ^ ' ` ~ # @ ", "test");
 		assertEquals(6, tokens.size());
 		assertEquals("^",   tokens.get(0).getToken());
 		assertEquals("'",   tokens.get(1).getToken());
@@ -94,7 +98,7 @@ public class RegexTokenizerTest {
 		assertEquals("#",   tokens.get(4).getToken());
 		assertEquals("@",   tokens.get(5).getToken());
 		
-		tokens = RegexTokenizer.tokenize(" ^ , ' , ` , ~ , # , @ ", "test");
+		tokens = tokenize(" ^ , ' , ` , ~ , # , @ ", "test");
 		assertEquals(6, tokens.size());
 		assertEquals("^",   tokens.get(0).getToken());
 		assertEquals("'",   tokens.get(1).getToken());
@@ -106,25 +110,25 @@ public class RegexTokenizerTest {
 
 	@Test
 	public void test_any_with_special() {	
-		List<Token> tokens = RegexTokenizer.tokenize("(abc)", "test");
+		List<Token> tokens = tokenize("(abc)", "test");
 		assertEquals(3, tokens.size());
 		assertEquals("(",   tokens.get(0).getToken());
 		assertEquals("abc", tokens.get(1).getToken());
 		assertEquals(")",   tokens.get(2).getToken());
 
-		tokens = RegexTokenizer.tokenize("[abc]", "test");
+		tokens = tokenize("[abc]", "test");
 		assertEquals(3, tokens.size());
 		assertEquals("[",   tokens.get(0).getToken());
 		assertEquals("abc", tokens.get(1).getToken());
 		assertEquals("]",   tokens.get(2).getToken());
 
-		tokens = RegexTokenizer.tokenize("{abc}", "test");
+		tokens = tokenize("{abc}", "test");
 		assertEquals(3, tokens.size());
 		assertEquals("{",   tokens.get(0).getToken());
 		assertEquals("abc", tokens.get(1).getToken());
 		assertEquals("}",   tokens.get(2).getToken());
 
-		tokens = RegexTokenizer.tokenize("^\\`~#@abc^", "test");
+		tokens = tokenize("^\\`~#@abc^", "test");
 		assertEquals(8, tokens.size());
 		assertEquals("^",   tokens.get(0).getToken());
 		assertEquals("\\",  tokens.get(1).getToken());
@@ -138,31 +142,31 @@ public class RegexTokenizerTest {
 
 	@Test
 	public void test_single_quoted_string() {	
-		List<Token> tokens = RegexTokenizer.tokenize("\"\"", "test");
+		List<Token> tokens = tokenize("\"\"", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\" ", "test");
+		tokens = tokenize(" \"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \" \" ", "test");
+		tokens = tokenize(" \" \" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\" \"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"a b c d\" ", "test");
+		tokens = tokenize(" \"a b c d\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"a b c d\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"a b \\\" c d\" ", "test");
+		tokens = tokenize(" \"a b \\\" c d\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"a b \\\" c d\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\\\"\\\"\" ", "test");
+		tokens = tokenize(" \"\\\"\\\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\\\"\\\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"a b \\t c d\" ", "test");
+		tokens = tokenize(" \"a b \\t c d\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"a b \\t c d\"", tokens.get(0).getToken());
 	}
@@ -196,43 +200,42 @@ public class RegexTokenizerTest {
 
 	@Test
 	public void test_triple_quoted_string() {
-		List<Token> tokens = RegexTokenizer.tokenize("\"\"\"\"\"\"", "test");
+		List<Token> tokens = tokenize("\"\"\"\"\"\"", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"\"\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\"\"\"\"\" ", "test");
+		tokens = tokenize(" \"\"\"\"\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"\"\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize("\"\"\" \"\"\"", "test");
+		tokens = tokenize("\"\"\" \"\"\"", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\" \"\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\"\"a b c d\"\"\" ", "test");
+		tokens = tokenize(" \"\"\"a b c d\"\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"a b c d\"\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\"\"a b \\S c d\"\"\" ", "test");
+		tokens = tokenize(" \"\"\"a b \\S c d\"\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"a b \\S c d\"\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\"\"a b \n 1 \n c d\"\"\" ", "test");
+		tokens = tokenize(" \"\"\"a b \n 1 \n c d\"\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"a b \n 1 \n c d\"\"\"", tokens.get(0).getToken());
 
-		tokens = RegexTokenizer.tokenize(" \"\"\"a b \\\"\\\"\\\" c d\"\"\" ", "test");
+		tokens = tokenize(" \"\"\"a b \\\"\\\"\\\" c d\"\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"a b \\\"\\\"\\\" c d\"\"\"", tokens.get(0).getToken());
 
 	    // with quotes
-		tokens = RegexTokenizer.tokenize(" \"\"\"a b \"xy\" c d\"\"\" ", "test");
+		tokens = tokenize(" \"\"\"a b \"xy\" c d\"\"\" ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"a b \"xy\" c d\"\"\"", tokens.get(0).getToken());
-	
-		// not working
-//		tokens = RegexTokenizer.tokenize(" \"\"\"\"a b c d\\\"\"\"\" ", "test");
-//		assertEquals(1, tokens.size());
-//		assertEquals("\"\"\"\"a b c d\\\"\"\"\"", tokens.get(0).getToken());
+		
+		tokens = tokenize(" \"\"\"\"a b c d\\\"\"\"\" ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"\"a b c d\\\"\"\"\"", tokens.get(0).getToken());
 	}
 	
 	@Test
@@ -283,7 +286,7 @@ public class RegexTokenizerTest {
 		
 		int pos = 0;
 		
-		final List<Token> tokens = RegexTokenizer.tokenize(s, "test");
+		final List<Token> tokens = tokenize(s, "test");
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
@@ -325,7 +328,7 @@ public class RegexTokenizerTest {
 		
 		int pos = 0;
 		
-		final List<Token> tokens = RegexTokenizer.tokenize(s, "test");
+		final List<Token> tokens = tokenize(s, "test");
 		assertEquals("(", tokens.get(pos++).getToken());
 		assertEquals("do", tokens.get(pos++).getToken());
 		assertEquals("100", tokens.get(pos++).getToken());
@@ -349,7 +352,7 @@ public class RegexTokenizerTest {
 
 	@Test
 	public void test_position() {	
-		List<Token> tokens = RegexTokenizer.tokenize("   100.0  ", "test");
+		List<Token> tokens = tokenize("   100.0  ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("100.0", tokens.get(0).getToken());
 		assertEquals("test", tokens.get(0).getFile());
@@ -361,7 +364,7 @@ public class RegexTokenizerTest {
 
 	@Test
 	public void test_sexpr() {	
-		List<Token> tokens = RegexTokenizer.tokenize("(do 100.2)", "test");
+		List<Token> tokens = tokenize("(do 100.2)", "test");
 		assertEquals(4, tokens.size());
 		assertEquals("(",     tokens.get(0).getToken());
 		assertEquals("do",    tokens.get(1).getToken());
@@ -383,7 +386,7 @@ public class RegexTokenizerTest {
 
 	@Test
 	public void test_syntax_quote() {	
-		List<Token> tokens = RegexTokenizer.tokenize("`(if true 1)", "test");
+		List<Token> tokens = tokenize("`(if true 1)", "test");
 		assertEquals(6,      tokens.size());
 		assertEquals("`",    tokens.get(0).getToken());
 		assertEquals("(",    tokens.get(1).getToken());
@@ -479,13 +482,13 @@ public class RegexTokenizerTest {
 		final String core = ModuleLoader.loadModule("core");
 		final StopWatch sw = new StopWatch();
 		final List<Token> tokens = tokenize(core, "core");
-		System.out.println("Tokenizing :core module with RegexTokenizer: " + sw.stop().toString());
+		System.out.println("Tokenizing :core module with Tokenizer: " + sw.stop().toString());
 		assertTrue(!tokens.isEmpty());
 	}
-
+	
 	
 	private static List<Token> tokenize(final String text, final String fileName) {
-		return RegexTokenizer.tokenize(text, fileName);
+		return Tokenizer.tokenize(text, fileName);
 	}
 
 }

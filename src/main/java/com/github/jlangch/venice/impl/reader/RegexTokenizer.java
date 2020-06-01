@@ -19,13 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.reader;
 
-import static com.github.jlangch.venice.impl.TokenType.ANY;
-import static com.github.jlangch.venice.impl.TokenType.BLOCK_STRING;
-import static com.github.jlangch.venice.impl.TokenType.SPECIAL_CHAR;
-import static com.github.jlangch.venice.impl.TokenType.STRING;
-import static com.github.jlangch.venice.impl.TokenType.UNQUOTE_SPLICE;
+import static com.github.jlangch.venice.impl.reader.TokenType.ANY;
+import static com.github.jlangch.venice.impl.reader.TokenType.BLOCK_STRING;
+import static com.github.jlangch.venice.impl.reader.TokenType.SPECIAL_CHAR;
+import static com.github.jlangch.venice.impl.reader.TokenType.STRING;
+import static com.github.jlangch.venice.impl.reader.TokenType.UNQUOTE_SPLICE;
 
 import java.util.ArrayList;
 import java.util.List;
