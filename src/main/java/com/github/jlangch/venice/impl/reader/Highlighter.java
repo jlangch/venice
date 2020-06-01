@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.ParseError;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class Highlighter {
@@ -229,21 +227,24 @@ public class Highlighter {
 				break;
 			
 			case ')': 
-				throw new ParseError(formatParseError(token, "Unexpected ')'"));
+				add(new HighlightItem('}', HighlightClass.PARENTHESIS_END));
+				break;
 			
 			case '[': 
 				process_list('[' , ']'); 
 				break;
 			
 			case ']': 
-				throw new ParseError(formatParseError(token, "Unexpected ']'"));
+				add(new HighlightItem('}', HighlightClass.BRACKET_END));
+				break;
 				
 			case '{': 
 				process_list('{', '}');
 				break;
 				
 			case '}': 
-				throw new ParseError(formatParseError(token, "Unexpected '}'"));
+				add(new HighlightItem('}', HighlightClass.BRACE_END));
+				break;
 				
 			default:  
 				process_atom();
@@ -262,11 +263,6 @@ public class Highlighter {
 			case '}': return HighlightClass.BRACE_END;
 			default: throw new RuntimeException("Invalid parentheris '" + ch + "'");
 		}
-	}
-	
-	
-	private static String formatParseError(final Token token, final String format, final Object... args) {
-		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(token);
 	}
 
 	
