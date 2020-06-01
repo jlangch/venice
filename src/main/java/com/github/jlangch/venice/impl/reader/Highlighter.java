@@ -38,11 +38,12 @@ public class Highlighter {
 		this.position = 0;
 	}
 
+	
 	public static List<HighlightItem> highlight(final String str) {
-		final Highlighter hl = new Highlighter(
-										str,
-										Tokenizer.tokenize(
-											str, "highlighter", false, false));
+		final List<Token> tokens = Tokenizer.tokenize(
+										str, "highlighter", false, false);
+		
+		final Highlighter hl = new Highlighter(str, tokens);
 
 		try {
 			hl.process_form();		
@@ -54,6 +55,7 @@ public class Highlighter {
 		}
 	}
 
+	
 	private List<HighlightItem> items() {
 		return items;
 	}
@@ -251,7 +253,6 @@ public class Highlighter {
 				break;
 		}
 	}
-	
 	
 	private HighlightClass parenToClass(final char ch) {
 		switch(ch) {
