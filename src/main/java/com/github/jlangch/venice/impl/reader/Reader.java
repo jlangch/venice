@@ -123,7 +123,7 @@ public class Reader {
 
 	private static VncVal read_atom(final Reader rdr) {
 		final Token token = rdr.next();
-		final Matcher matcher = atom_pattern.matcher(token.getToken());
+		final Matcher matcher = ATOM_PATTERN.matcher(token.getToken());
 		
 		if (!matcher.find()) {
 			throw new ParseError(formatParseError(
@@ -317,7 +317,7 @@ public class Reader {
 					rdr.anonymousFnArgs.stopCapture();
 				}
 				else {
-					throw new ParseError(formatParseError(t, "Expected '{' or '('"));
+					throw new ParseError(formatParseError(t, "Expected '#{' or '#('"));
 				}
 				break;
 			
@@ -517,7 +517,7 @@ public class Reader {
 	//     9: string => ^"(.*)"$
 	//    10: keyword => :(.*)
 	//    11: symbol => (^[^"]*$)
-	private static final Pattern atom_pattern = Pattern.compile(
+	public static final Pattern ATOM_PATTERN = Pattern.compile(
 													"(?s)"  
 													+ "(^-?[0-9]+$)"
 													+ "|(^-?[0-9]+I$)"
