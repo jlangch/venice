@@ -138,10 +138,6 @@ public class REPL {
 											.dumb(dumbTerminal)
 											.jna(false);
 
-		// On GitPod we get a wrong terminal type 'xterm-color' instead of 'xterm-256color'
-		// resulting in just 8 colors for highlighting
-		// PosixSysTerminal
-		
 		if (OSUtils.IS_WINDOWS) {
 			builder.jansi(!dumbTerminal);
 		}
