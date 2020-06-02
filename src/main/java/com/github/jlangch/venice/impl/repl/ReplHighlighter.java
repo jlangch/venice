@@ -160,9 +160,9 @@ public class ReplHighlighter implements Highlighter {
 
 	// dark mode
 	private static String DARK_PURPLE   = "\u001b[38;5;164m";
-	private static String DARK_GREY     = "\u001b[38;5;41m";
+	private static String DARK_GREY     = "\u001b[38;5;252m";
 	private static String DARK_BLUE     = "\u001b[38;5;39m";
-	private static String DARK_GREEN    = "\u001b[38;5;34m";
+	private static String DARK_GREEN    = "\u001b[38;5;41m";
 	private static String DARK_ORANGE   = "\u001b[38;5;208m";
 	
 	private static String ANSI_RESET = "\u001b[0m";
