@@ -151,6 +151,7 @@ public class ReplHighlighter implements Highlighter {
 		return null;
 	}
 
+	
 	// light mode
 	private static String LIGHT_PURPLE  = "\u001b[38;5;128m";
 	private static String LIGHT_GREY    = "\u001b[38;5;235m";

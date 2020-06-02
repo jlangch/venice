@@ -41,6 +41,7 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.OSUtils;
+import org.jline.utils.InfoCmp.Capability;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
@@ -352,6 +353,10 @@ public class REPL {
 			printer.println("error",     "error");
 			printer.println("system",    "system");
 			printer.println("interrupt", "interrupt");
+		}
+		else if (cmd.equals("terminal")) {
+			final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
+			printer.println("stdout", "Max colors: " + maxColors);
 		}
 		else {	
 			printer.println("error", "invalid command");
