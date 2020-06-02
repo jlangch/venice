@@ -37,11 +37,12 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.history.DefaultHistory;
+import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.Terminal.Signal;
 import org.jline.terminal.TerminalBuilder;
-import org.jline.utils.OSUtils;
 import org.jline.utils.InfoCmp.Capability;
+import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
@@ -356,6 +357,10 @@ public class REPL {
 		}
 		else if (cmd.equals("terminal")) {
 			final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
+			final Size size = terminal.getSize();
+			printer.println("stdout", "Name:       " + terminal.getName());
+			printer.println("stdout", "Type:       " + terminal.getType());
+			printer.println("stdout", "Size:       " + size.getRows() + "x" + size.getColumns());
 			printer.println("stdout", "Max colors: " + maxColors);
 		}
 		else {	
