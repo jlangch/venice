@@ -134,7 +134,7 @@ public class REPL {
 		final TerminalBuilder builder = TerminalBuilder
 											.builder()
 											.streams(System.in, System.out)
-											//.system(true)
+											.system(true)
 											.dumb(dumbTerminal)
 											.jna(false);
 
