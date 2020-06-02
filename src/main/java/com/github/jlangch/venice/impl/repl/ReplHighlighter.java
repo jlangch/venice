@@ -37,7 +37,7 @@ import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 public class ReplHighlighter implements Highlighter {
 
 	public ReplHighlighter(final ReplConfig config) {
-		this.lightColorMode = config.getColorMode() != ColorMode.Dark;
+		this.colorMode = config.getColorMode();
 	}
 	
 	@Override
@@ -63,15 +63,22 @@ public class ReplHighlighter implements Highlighter {
 	}
 
 	private String highlight(final HighlightItem item) {
-		final String style = lightColorMode 
-								? getLightModeStyle(item.getClazz())
-								: getDarkModeStyle(item.getClazz());
+		final String style = getStyle(item);
 								
 		return style == null 
 				? item.getForm() 
 				: style + item.getForm() + ANSI_RESET;
 	}
 	
+	private String getStyle(final HighlightItem item) {
+		switch(colorMode) {
+			case Light: return getLightModeStyle(item.getClazz());
+			case Dark:  return getDarkModeStyle(item.getClazz());
+			case None:  return getNoneModeStyle(item.getClazz());
+			default:    return getNoneModeStyle(item.getClazz());
+		}
+	}
+
 	private String getLightModeStyle(final HighlightClass clazz) {
 		switch(clazz) {
 			case COMMENT:				return LIGHT_GREY;
@@ -139,22 +146,26 @@ public class ReplHighlighter implements Highlighter {
 			default:					return DARK_GREY;
 		}
 	}
+	
+	private String getNoneModeStyle(final HighlightClass clazz) {
+		return null;
+	}
 
 	// light mode
 	private static String LIGHT_PURPLE  = "\u001b[38;5;128m";
-	private static String LIGHT_GREY    = "\u001b[38;5;248m";
+	private static String LIGHT_GREY    = "\u001b[38;5;235m";
 	private static String LIGHT_BLUE    = "\u001b[38;5;20m";
 	private static String LIGHT_GREEN   = "\u001b[38;5;28m";
 	private static String LIGHT_ORANGE  = "\u001b[38;5;208m";
 
 	// dark mode
 	private static String DARK_PURPLE   = "\u001b[38;5;134m";
-	private static String DARK_GREY     = "\u001b[38;5;235m";
+	private static String DARK_GREY     = "\u001b[38;5;248m";
 	private static String DARK_BLUE     = "\u001b[38;5;32m";
 	private static String DARK_GREEN    = "\u001b[38;5;34m";
 	private static String DARK_ORANGE   = "\u001b[38;5;208m";
 	
 	private static String ANSI_RESET = "\u001b[0m";
 	
-	private final boolean lightColorMode;
+	private final ColorMode colorMode;
 }

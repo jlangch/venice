@@ -163,6 +163,10 @@ public class REPL {
 		
 		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
 		
+		final ReplHighlighter highlighter = config.getColorMode() == ColorMode.None
+												? null
+												: new ReplHighlighter(config);
+		
 		final History history = new DefaultHistory();
 		
 		final LineReader reader = LineReaderBuilder
@@ -171,7 +175,7 @@ public class REPL {
 									.terminal(terminal)
 									.history(history)
 									.completer(completer)
-									.highlighter(new ReplHighlighter(config))
+									.highlighter(highlighter)
 									.parser(parser)
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.variable(LineReader.INDENTATION, 2)
@@ -617,11 +621,14 @@ public class REPL {
 	
 	private String getTerminalInfo() {
 		if (ansiTerminal) {
-			if (config.getColorMode() == ColorMode.None) {
-				return "Using ansi terminal (colors turned off, turn on with option '-colors')";
-			}
-			else {
-				return "Using ansi terminal (colors turned on)";
+			switch(config.getColorMode()) {
+				case Light:
+					return "Using ansi terminal (light color mode turned on)";
+				case Dark:
+					return "Using ansi terminal (dark color mode turned on)";
+				case None:
+				default:
+					return "Using ansi terminal (colors turned off, turn on with option '-colors')";
 			}
 		}
 		else {
