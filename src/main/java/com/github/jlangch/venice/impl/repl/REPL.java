@@ -145,7 +145,9 @@ public class REPL {
 		if (OSUtils.IS_WINDOWS) {
 			builder.jansi(!dumbTerminal);
 		}
-		else if ("Linux".equals(System.getProperty("os.name"))) {
+		else if (isRunningOnLinuxGitPod()) {
+			// The terminal detection on GitPod is wrong "xterm-color" so set
+			// it explicitly to "xterm-256color"!
 			builder.encoding("UTF-8");
 			builder.type("xterm-256color");
 		}
@@ -371,6 +373,9 @@ public class REPL {
 			printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
 			printer.println("stdout", "Terminal Colors: " + maxColors);
 			printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
+			printer.println("stdout", "");
+			printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
+			printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
 			printer.println("stdout", "");
 			printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
 			printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
@@ -678,6 +683,10 @@ public class REPL {
 			    || cli.switchPresent("-setup-extended");
 	}
 	
+	private boolean isRunningOnLinuxGitPod() {
+		return  "Linux".equals(System.getProperty("os.name"))
+					&& System.getenv("GITPOD_REPO_ROOT") != null;
+	}
 	
 	public static enum SetupMode { Minimal, Extended };
 	
