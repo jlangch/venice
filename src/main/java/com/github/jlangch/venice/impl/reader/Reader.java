@@ -132,11 +132,11 @@ public class Reader {
 									token.getToken()));
 		}
 		
-		if (matcher.group(1) != null) {
+		else if (matcher.group(1) != null) {
 			// 1: long
 			return new VncLong(Long.parseLong(matcher.group(1)), MetaUtil.toMeta(token));
 		} 
-		if (matcher.group(2) != null) {
+		else if (matcher.group(2) != null) {
 			// 2: int
 			String intVal = matcher.group(2);
 			intVal = intVal.substring(0, intVal.length()-1);

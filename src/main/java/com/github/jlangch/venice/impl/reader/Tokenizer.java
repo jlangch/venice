@@ -21,7 +21,13 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
-import static com.github.jlangch.venice.impl.reader.TokenType.*;
+import static com.github.jlangch.venice.impl.reader.TokenType.ANY;
+import static com.github.jlangch.venice.impl.reader.TokenType.COMMENT;
+import static com.github.jlangch.venice.impl.reader.TokenType.SPECIAL_CHAR;
+import static com.github.jlangch.venice.impl.reader.TokenType.STRING;
+import static com.github.jlangch.venice.impl.reader.TokenType.STRING_BLOCK;
+import static com.github.jlangch.venice.impl.reader.TokenType.UNQUOTE_SPLICE;
+import static com.github.jlangch.venice.impl.reader.TokenType.WHITESPACES;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -101,13 +107,11 @@ public class Tokenizer {
 
 				else if (ch == LF) {
 					addLinefeedToken(filePos, line, col);	
-					continue;
 				}
 
 				// - comma: , (treated like a whitespace) ---------------------
 				else if (ch == (int)',') {  
 					addToken(WHITESPACES, ",", filePos, line, col);	
-					continue;
 				}
 				
 				// - whitespaces ----------------------------------------------
@@ -211,15 +215,15 @@ public class Tokenizer {
 						sb.append((char)ch);
 						ch = reader.read();
 					}
-					
+
+					addToken(ANY, sb.toString(), filePos, line, col);	
+
 					if (ch == LF) {
 						addLinefeedToken(filePos, line, col);	
 					}
 					else {
 						reader.unread(ch);
-					}
-					
-					addToken(ANY, sb.toString(), filePos, line, col);	
+					}				
 				}
 			}
 		}

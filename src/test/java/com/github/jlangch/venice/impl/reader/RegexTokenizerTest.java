@@ -482,7 +482,7 @@ public class RegexTokenizerTest {
 	public void test_tokenize_core() {
 		final String core = ModuleLoader.loadModule("core");
 		final StopWatch sw = new StopWatch();
-		final List<Token> tokens = tokenize(core, "core");
+		final List<Token> tokens = tokenize("(do " + core + ")", "core");
 		System.out.println("Tokenizing :core module with RegexTokenizer: " + sw.stop().toString());
 		assertTrue(!tokens.isEmpty());
 	}

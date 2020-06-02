@@ -37,6 +37,7 @@ public class DocItem {
 			final String id
 	) {
 		this.name = name;
+		this.altName = convertSlash(convertDash(name));
 		this.signatures = signatures;
 		this.description = description;
 		this.examples = examples;
@@ -46,12 +47,15 @@ public class DocItem {
 	public DocItem(final String name, final String id) {
 		this(name, null, null, null, id);
 	}
-
 	
 	public String getName() {
 		return name;
 	}
-	
+
+	public String getAltName() {
+		return altName;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -104,8 +108,22 @@ public class DocItem {
 
 	
 	
+	private String convertSlash(final String s) {
+		// prevent hyphenation within name symbols
+		return s; //s.replace('/', '\u2044');
+	}
 
+	private String convertDash(final String s) {
+		// prevent hyphenation within name symbols
+		return s.replace('-', '\u2212');  
+	}
+
+	// https://www.key-shortcut.com/zeichentabellen/unicode-2000-2fff
+	// https://css-tricks.com/almanac/properties/w/whitespace/
+	//https://www.cjcid.com/articles/wrapping-long-words-css-html/
+	
 	private final String name;
+	private final String altName;
 	private final String id;
 	
 	private final List<String> signatures;

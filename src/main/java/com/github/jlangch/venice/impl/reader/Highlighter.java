@@ -21,6 +21,26 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
+import static com.github.jlangch.venice.impl.reader.HighlightClass.AT;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.BRACE_BEGIN;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.BRACE_END;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.BRACKET_BEGIN;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.BRACKET_END;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.CONSTANT;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.HASH;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.KEYWORD;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.META;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.NUMBER;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.PARENTHESIS_BEGIN;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.PARENTHESIS_END;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.QUASI_QUOTE;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.QUOTE;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.STRING;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.UNKNOWN;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE_SPLICING;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -60,32 +80,34 @@ public class Highlighter {
 		return items;
 	}
 	
-	private void add(final HighlightItem item) {
-		items.add(item);
+	private void addItem(final String token, final HighlightClass clazz) {
+		items.add(new HighlightItem(token, clazz));
+	}
+	
+	private void addItem(final char token, final HighlightClass clazz) {
+		items.add(new HighlightItem(token, clazz));
 	}
 
-	private Token peek() {
-		if (position >= tokens.size()) {
-			throw new EofException("Unexpected EOF");
-		}
-		
-		Token tok = tokens.get(position);
-		while(tok.isWhitespacesOrComment()) {
-			if (tok.isWhitespaces()) {
-				add(new HighlightItem(tok.getToken(), HighlightClass.WHITESPACES));
-			}
-			else if (tok.isComment()) {
-				add(new HighlightItem(tok.getToken(), HighlightClass.COMMENT));
-			}
-			
-			position++;
+	private Token peek() {	
+		while(true) {
 			if (position >= tokens.size()) {
 				throw new EofException("Unexpected EOF");
 			}
-			tok = tokens.get(position);
+
+			final Token token = tokens.get(position);
+
+			if (token.isWhitespaces()) {
+				addItem(token.getToken(), HighlightClass.WHITESPACES);
+				position++;
+			}
+			else if (token.isComment()) {
+				addItem(token.getToken(), HighlightClass.COMMENT);
+				position++;
+			}
+			else {
+				return token;
+			}
 		}
-		
-		return tok;
 	}
    
 	private Token next() {
@@ -100,55 +122,55 @@ public class Highlighter {
 		final Matcher matcher = Reader.ATOM_PATTERN.matcher(token.getToken());
 		
 		if (!matcher.find()) {
-			add(new HighlightItem(token.getToken(), HighlightClass.UNKNOWN));
+			addItem(token.getToken(), UNKNOWN);
 		}
 		
-		if (matcher.group(1) != null) {
+		else if (matcher.group(1) != null) {
 			// 1: long
-			add(new HighlightItem(token.getToken(), HighlightClass.NUMBER));
+			addItem(token.getToken(), NUMBER);
 		} 
-		if (matcher.group(2) != null) {
+		else if (matcher.group(2) != null) {
 			// 2: int
-			add(new HighlightItem(token.getToken(), HighlightClass.NUMBER));
+			addItem(token.getToken(), NUMBER);
 		} 
 		else if (matcher.group(3) != null) {
 			// 3: double
-			add(new HighlightItem(token.getToken(), HighlightClass.NUMBER));
+			addItem(token.getToken(), NUMBER);
 		} 
 		else if (matcher.group(4) != null) {
 			// 4: bigdecimal
-			add(new HighlightItem(token.getToken(), HighlightClass.NUMBER));
+			addItem(token.getToken(), NUMBER);
 		} 
 		else if (matcher.group(5) != null) {
 			// 5: nil
-			add(new HighlightItem(token.getToken(), HighlightClass.CONSTANT));
+			addItem(token.getToken(), CONSTANT);
 		} 
 		else if (matcher.group(6) != null) {
 			// 6: true
-			add(new HighlightItem(token.getToken(), HighlightClass.CONSTANT));
+			addItem(token.getToken(), CONSTANT);
 		} 
 		else if (matcher.group(7) != null) {
 			// 7: false
-			add(new HighlightItem(token.getToken(), HighlightClass.CONSTANT));
+			addItem(token.getToken(), CONSTANT);
 		} 
 		else if (matcher.group(8) != null) {
 			// 8: string """
-			add(new HighlightItem(token.getToken(), HighlightClass.STRING));
+			addItem(token.getToken(), STRING);
 		} 
 		else if (matcher.group(9) != null) {
 			// 9: string "
-			add(new HighlightItem(token.getToken(), HighlightClass.STRING));
+			addItem(token.getToken(), STRING);
 		} 
 		else if (matcher.group(10) != null) {
 			// 10: keyword
-			add(new HighlightItem(token.getToken(), HighlightClass.KEYWORD));
+			addItem(token.getToken(), KEYWORD);
 		} 
 		else if (matcher.group(11) != null) {
 			// 11: symbol
-			add(new HighlightItem(token.getToken(), HighlightClass.SYMBOL));
+			addItem(token.getToken(), SYMBOL);
 		} 
 		else {
-			add(new HighlightItem(token.getToken(), HighlightClass.UNKNOWN));
+			addItem(token.getToken(), UNKNOWN);
 		}
 	}
 
@@ -157,7 +179,7 @@ public class Highlighter {
 			final char end
 	) {
 		final Token startTok = next();
-		add(new HighlightItem(startTok.getToken(), parenToClass(start)));
+		addItem(startTok.getToken(), parenToClass(start));
 		
 		Token token = peek();
 		while (token.charAt(0) != end) {
@@ -166,7 +188,7 @@ public class Highlighter {
 		}
 		
 		final Token endTok = next();
-		add(new HighlightItem(endTok.getToken(), parenToClass(end)));
+		addItem(endTok.getToken(), parenToClass(end));
 	}
 
 	private void process_form() {
@@ -175,45 +197,45 @@ public class Highlighter {
 		switch (token.charAt(0)) {
 			case '\'': 
 				next();
-				add(new HighlightItem('\'', HighlightClass.QUOTE));
+				addItem('\'', QUOTE);
 				process_form();
 				break;
 			
 			case '`': 
 				next();
-				add(new HighlightItem('`', HighlightClass.QUASI_QUOTE));
+				addItem('`', QUASI_QUOTE);
 				process_form();
 				break;
 			
 			case '~':
 				if (token.equals("~")) {
 					next();
-					add(new HighlightItem('~', HighlightClass.UNQUOTE));
+					addItem('~', UNQUOTE);
 					process_form();
 				} 
 				else {
 					next();
-					add(new HighlightItem("~@", HighlightClass.UNQUOTE_SPLICING));
+					addItem("~@", UNQUOTE_SPLICING);
 					process_form();
 				}
 				break;
 			
 			case '^':
 				next();
-				add(new HighlightItem('^', HighlightClass.META));			
+				addItem('^', META);			
 				process_form();
 				break;
 			
 			
 			case '@': 
 				next();
-				add(new HighlightItem("@", HighlightClass.AT));
+				addItem("@", AT);
 				process_form();
 				break;
 				
 			case '#': 
 				next();
-				add(new HighlightItem("#", HighlightClass.HASH));
+				addItem("#", HASH);
 
 				Token t = peek();
 				if (t.charAt(0) == '{') { // set literal #{1 2}
@@ -229,7 +251,7 @@ public class Highlighter {
 				break;
 			
 			case ')': 
-				add(new HighlightItem('}', HighlightClass.PARENTHESIS_END));
+				addItem('}', PARENTHESIS_END);
 				break;
 			
 			case '[': 
@@ -237,7 +259,7 @@ public class Highlighter {
 				break;
 			
 			case ']': 
-				add(new HighlightItem('}', HighlightClass.BRACKET_END));
+				addItem('}', BRACKET_END);
 				break;
 				
 			case '{': 
@@ -245,7 +267,7 @@ public class Highlighter {
 				break;
 				
 			case '}': 
-				add(new HighlightItem('}', HighlightClass.BRACE_END));
+				addItem('}', BRACE_END);
 				break;
 				
 			default:  
@@ -256,12 +278,12 @@ public class Highlighter {
 	
 	private HighlightClass parenToClass(final char ch) {
 		switch(ch) {
-			case '(': return HighlightClass.PARENTHESIS_BEGIN;
-			case ')': return HighlightClass.PARENTHESIS_END;
-			case '[': return HighlightClass.BRACKET_BEGIN;
-			case ']': return HighlightClass.BRACKET_END;
-			case '{': return HighlightClass.BRACE_BEGIN;
-			case '}': return HighlightClass.BRACE_END;
+			case '(': return PARENTHESIS_BEGIN;
+			case ')': return PARENTHESIS_END;
+			case '[': return BRACKET_BEGIN;
+			case ']': return BRACKET_END;
+			case '{': return BRACE_BEGIN;
+			case '}': return BRACE_END;
 			default: throw new RuntimeException("Invalid parenthesis '" + ch + "'");
 		}
 	}

@@ -1704,7 +1704,7 @@ public class DocGenerator {
 	
 	private void save(final File file, final byte[] data) throws Exception {
 		try(FileOutputStream fos = new FileOutputStream(file)) {
-			fos.write(data, 0, data.length);					
+			fos.write(data, 0, data.length);
 			fos.flush();
 		}
 	}
@@ -1721,6 +1721,7 @@ public class DocGenerator {
 	private String id() {
 		return String.valueOf(gen.getAndIncrement());
 	}
+	
 	
 	
 	private final AtomicLong gen = new AtomicLong(1000);
