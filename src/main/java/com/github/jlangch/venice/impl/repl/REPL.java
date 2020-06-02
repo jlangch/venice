@@ -362,6 +362,7 @@ public class REPL {
 			printer.println("stdout", "Terminal Type:   " + terminal.getType());
 			printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
 			printer.println("stdout", "Terminal Colors: " + maxColors);
+			printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
 			printer.println("stdout", "");
 			printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
 			printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
