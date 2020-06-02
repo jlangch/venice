@@ -138,13 +138,21 @@ public class REPL {
 											.dumb(dumbTerminal)
 											.jna(false);
 
-		final Terminal terminal = OSUtils.IS_WINDOWS
-									? builder
-										.jansi(!dumbTerminal)
-										.build()
-									: builder
-										.encoding("UTF-8")
-										.build();
+		// On GitPod we get a wrong terminal type 'xterm-color' instead of 'xterm-256color'
+		// resulting in just 8 colors for highlighting
+		// PosixSysTerminal
+		
+		if (OSUtils.IS_WINDOWS) {
+			builder.jansi(!dumbTerminal);
+		}
+		else if ("Linux".equals(System.getProperty("os.name"))) {
+			builder.encoding("UTF-8");
+			builder.type("xterm-256color");
+		}
+		else {
+			builder.encoding("UTF-8");
+		}	
+		final Terminal terminal = builder.build();
 	 
 		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
        
