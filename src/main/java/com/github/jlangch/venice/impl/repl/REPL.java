@@ -171,6 +171,7 @@ public class REPL {
 									.terminal(terminal)
 									.history(history)
 									.completer(completer)
+									//.highlighter(new ReplHighlighter())
 									.parser(parser)
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.variable(LineReader.INDENTATION, 2)

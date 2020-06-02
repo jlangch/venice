@@ -33,13 +33,13 @@ import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.util.StopWatch;
 
 
-public class HighlighterTest {
+public class HighlightParserTest {
 
 	@Test
-	public void test_highlight_core() {
+	public void test_core() {
 		final String core = ModuleLoader.loadModule("core");
 		final StopWatch sw = new StopWatch();
-		final List<HighlightItem> items = Highlighter.highlight("(do\n" + core + "\n)");
+		final List<HighlightItem> items = HighlightParser.parse("(do\n" + core + "\n)");
 		System.out.println("Highlighting :core module with Highlighter: " + sw.stop().toString());
 		assertTrue(!items.isEmpty());
 		

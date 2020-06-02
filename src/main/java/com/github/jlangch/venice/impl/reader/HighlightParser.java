@@ -48,9 +48,9 @@ import java.util.regex.Matcher;
 import com.github.jlangch.venice.EofException;
 
 
-public class Highlighter {
+public class HighlightParser {
 	
-	private Highlighter(
+	private HighlightParser(
 			final String form, 
 			final List<Token> formTokens
 	) {
@@ -59,11 +59,11 @@ public class Highlighter {
 	}
 
 	
-	public static List<HighlightItem> highlight(final String str) {
+	public static List<HighlightItem> parse(final String str) {
 		final List<Token> tokens = Tokenizer.tokenize(
 										str, "highlighter", false, false);
 		
-		final Highlighter hl = new Highlighter(str, tokens);
+		final HighlightParser hl = new HighlightParser(str, tokens);
 
 		try {
 			hl.process_form();		
