@@ -146,8 +146,8 @@ public class REPL {
 			builder.jansi(!dumbTerminal);
 		}
 		else if (isRunningOnLinuxGitPod()) {
-			// The terminal detection on GitPod is wrong "xterm-color" so set
-			// it explicitly to "xterm-256color"!
+			// The terminal detection on Linux GitPod instances is wrong "xterm-color"
+			// so set it explicitly to "xterm-256color"!
 			builder.encoding("UTF-8");
 			builder.type("xterm-256color");
 		}
