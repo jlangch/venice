@@ -326,6 +326,7 @@ public class Reader {
 				break;
 			
 			case ')': 
+				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected ')'"));
 			
 			case '[': 
@@ -333,6 +334,7 @@ public class Reader {
 				break;
 			
 			case ']': 
+				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected ']'"));
 				
 			case '{': 
@@ -340,6 +342,7 @@ public class Reader {
 				break;
 				
 			case '}': 
+				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected '}'"));
 				
 			default:  

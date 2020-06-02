@@ -27,81 +27,134 @@ import org.jline.reader.Highlighter;
 import org.jline.reader.LineReader;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
-import org.jline.utils.AttributedStyle;
 
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
+import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 
 
 public class ReplHighlighter implements Highlighter {
 
+	public ReplHighlighter(final ReplConfig config) {
+		this.lightColorMode = config.getColorMode() != ColorMode.Dark;
+	}
+	
 	@Override
-	public AttributedString highlight(final LineReader reader, final String buffer) {
+	public AttributedString highlight(
+			final LineReader reader, 
+			final String buffer
+	) {
 		final AttributedStringBuilder sb = new AttributedStringBuilder();
-	       	
-		// -------------------------------------------------
-		//        W O R K   I N    P R O G R E S S
-		// -------------------------------------------------
 		
 		HighlightParser
 			.parse(buffer)
 			.forEach(it -> sb.ansiAppend(highlight(it)));
-				
-        if (errorPattern != null) {
-            sb.styleMatches(errorPattern, AttributedStyle.INVERSE);
-        }
 		
 		return sb.toAttributedString();
 	}
 
 	@Override
 	public void setErrorPattern(final Pattern errorPattern) {
-		this.errorPattern = errorPattern;
 	}
 
 	@Override
 	public void setErrorIndex(final int errorIndex) {
-		this.errorIndex = errorIndex;
 	}
 
 	private String highlight(final HighlightItem item) {
-		return getColor(item.getClazz()) + item.getForm() +"\u001b[0m";
+		final String style = lightColorMode 
+								? getLightModeStyle(item.getClazz())
+								: getDarkModeStyle(item.getClazz());
+								
+		return style == null 
+				? item.getForm() 
+				: style + item.getForm() + ANSI_RESET;
 	}
 	
-	private String getColor(final HighlightClass clazz) {
+	private String getLightModeStyle(final HighlightClass clazz) {
 		switch(clazz) {
-		case COMMENT:			return "\u001b[38;5;243m";
-		case WHITESPACES:		return "\u001b[38;5;243m";
-			
-		case STRING:			return "\u001b[38;5;243m";
-		case NUMBER:			return "\u001b[38;5;243m";
-		case CONSTANT:			return "\u001b[38;5;243m";
-		case KEYWORD:			return "\u001b[38;5;243m";
-		case SYMBOL:			return "\u001b[38;5;243m";
-			
-		case QUOTE:				return "\u001b[38;5;243m";
-		case QUASI_QUOTE:		return "\u001b[38;5;243m";
-		case UNQUOTE:			return "\u001b[38;5;243m";
-		case UNQUOTE_SPLICING:	return "\u001b[38;5;243m";
-	
-		case META:				return "\u001b[38;5;243m";
-		case AT:				return "\u001b[38;5;243m";
-		case HASH:				return "\u001b[38;5;243m";
-			
-		case BRACE_BEGIN:		return "\u001b[38;5;243m";
-		case BRACE_END:			return "\u001b[38;5;243m";
-		case BRACKET_BEGIN:		return "\u001b[38;5;243m";
-		case BRACKET_END:		return "\u001b[38;5;243m";
-		case PARENTHESIS_BEGIN:	return "\u001b[38;5;243m";
-		case PARENTHESIS_END:	return "\u001b[38;5;243m";
-	
-		case UNKNOWN:	
-		default:				return "\u001b[38;5;243m";
+			case COMMENT:				return LIGHT_GREY;
+			case WHITESPACES:			return null;
+				
+			case STRING:				return LIGHT_GREEN;
+			case NUMBER:				return LIGHT_ORANGE;
+			case CONSTANT:				return LIGHT_ORANGE;
+			case KEYWORD:				return LIGHT_ORANGE;
+			case SYMBOL:				return LIGHT_GREY;
+			case SYMBOL_SPECIAL_FORM:	return LIGHT_PURPLE;
+			case SYMBOL_FUNCTION_NAME:	return LIGHT_BLUE;
+				
+			case QUOTE:					return LIGHT_GREY;	
+			case QUASI_QUOTE:			return LIGHT_GREY;	
+			case UNQUOTE:				return LIGHT_GREY;		
+			case UNQUOTE_SPLICING:		return LIGHT_GREY;
+		
+			case META:					return LIGHT_GREY;
+			case AT:					return LIGHT_GREY;
+			case HASH:					return LIGHT_GREY;
+				
+			case BRACE_BEGIN:			return LIGHT_GREY;
+			case BRACE_END:				return LIGHT_GREY;
+			case BRACKET_BEGIN:			return LIGHT_GREY;
+			case BRACKET_END:			return LIGHT_GREY;
+			case PARENTHESIS_BEGIN:		return LIGHT_GREY;
+			case PARENTHESIS_END:		return LIGHT_GREY;
+		
+			case UNKNOWN:				return LIGHT_GREY;
+			default:					return LIGHT_GREY;
+		}
 	}
+	
+	private String getDarkModeStyle(final HighlightClass clazz) {
+		switch(clazz) {
+			case COMMENT:				return DARK_GREY;
+			case WHITESPACES:			return null;
+				
+			case STRING:				return DARK_GREEN;
+			case NUMBER:				return DARK_ORANGE;
+			case CONSTANT:				return DARK_ORANGE;
+			case KEYWORD:				return DARK_ORANGE;
+			case SYMBOL:				return DARK_GREY;
+			case SYMBOL_SPECIAL_FORM:	return DARK_PURPLE;
+			case SYMBOL_FUNCTION_NAME:	return DARK_BLUE;
+				
+			case QUOTE:					return DARK_GREY;	
+			case QUASI_QUOTE:			return DARK_GREY;	
+			case UNQUOTE:				return DARK_GREY;		
+			case UNQUOTE_SPLICING:		return DARK_GREY;
+		
+			case META:					return DARK_GREY;
+			case AT:					return DARK_GREY;
+			case HASH:					return DARK_GREY;
+				
+			case BRACE_BEGIN:			return DARK_GREY;
+			case BRACE_END:				return DARK_GREY;
+			case BRACKET_BEGIN:			return DARK_GREY;
+			case BRACKET_END:			return DARK_GREY;
+			case PARENTHESIS_BEGIN:		return DARK_GREY;
+			case PARENTHESIS_END:		return DARK_GREY;
+		
+			case UNKNOWN:				return DARK_GREY;
+			default:					return DARK_GREY;
+		}
 	}
+
+	// light mode
+	private static String LIGHT_PURPLE  = "\u001b[38;5;128m";
+	private static String LIGHT_GREY    = "\u001b[38;5;248m";
+	private static String LIGHT_BLUE    = "\u001b[38;5;20m";
+	private static String LIGHT_GREEN   = "\u001b[38;5;28m";
+	private static String LIGHT_ORANGE  = "\u001b[38;5;208m";
+
+	// dark mode
+	private static String DARK_PURPLE   = "\u001b[38;5;134m";
+	private static String DARK_GREY     = "\u001b[38;5;235m";
+	private static String DARK_BLUE     = "\u001b[38;5;32m";
+	private static String DARK_GREEN    = "\u001b[38;5;34m";
+	private static String DARK_ORANGE   = "\u001b[38;5;208m";
 	
+	private static String ANSI_RESET = "\u001b[0m";
 	
-	private Pattern errorPattern;
-	private int errorIndex = -1;
+	private final boolean lightColorMode;
 }

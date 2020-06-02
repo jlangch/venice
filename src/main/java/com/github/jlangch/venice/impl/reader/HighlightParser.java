@@ -37,12 +37,17 @@ import static com.github.jlangch.venice.impl.reader.HighlightClass.QUASI_QUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.QUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.STRING;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_FUNCTION_NAME;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_SPECIAL_FORM;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNKNOWN;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE_SPLICING;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 
 import com.github.jlangch.venice.EofException;
@@ -87,7 +92,11 @@ public class HighlightParser {
 	private void addItem(final char token, final HighlightClass clazz) {
 		items.add(new HighlightItem(token, clazz));
 	}
-
+	
+	private HighlightItem lastItem() {
+		return items.isEmpty() ? null : items.get(items.size()-1);
+	}
+	
 	private Token peek() {	
 		while(true) {
 			if (position >= tokens.size()) {
@@ -167,7 +176,18 @@ public class HighlightParser {
 		} 
 		else if (matcher.group(11) != null) {
 			// 11: symbol
-			addItem(token.getToken(), SYMBOL);
+			final HighlightItem last = lastItem();
+			if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
+				if (SPECIAL_FORMS.contains(token.getToken())) {
+					addItem(token.getToken(), SYMBOL_SPECIAL_FORM);
+				}
+				else {
+					addItem(token.getToken(), SYMBOL_FUNCTION_NAME);
+				}
+			}
+			else {
+				addItem(token.getToken(), SYMBOL);
+			}
 		} 
 		else {
 			addItem(token.getToken(), UNKNOWN);
@@ -251,7 +271,8 @@ public class HighlightParser {
 				break;
 			
 			case ')': 
-				addItem('}', PARENTHESIS_END);
+				next();
+				addItem(')', PARENTHESIS_END);
 				break;
 			
 			case '[': 
@@ -259,7 +280,8 @@ public class HighlightParser {
 				break;
 			
 			case ']': 
-				addItem('}', BRACKET_END);
+				next();
+				addItem(']', BRACKET_END);
 				break;
 				
 			case '{': 
@@ -267,6 +289,7 @@ public class HighlightParser {
 				break;
 				
 			case '}': 
+				next();
 				addItem('}', BRACE_END);
 				break;
 				
@@ -288,6 +311,32 @@ public class HighlightParser {
 		}
 	}
 
+	
+	private static Set<String> SPECIAL_FORMS = new HashSet<>(
+			Arrays.asList(
+					"def",
+					"defonce",
+					"def-dynamic",
+					"defmacro",
+					"defn",
+					"defmulti",
+					"defmethod",
+					"deftype",
+					"deftype?",		
+					"deftype-of",
+					"deftype-or",
+					"import",
+					"if",
+					"do",
+					"eval",
+					"resolve",
+					"loop",
+					"recur",
+					"try",
+					"try-with",
+					"catch",
+					"finally",
+					"macroexpand"));
 	
 	private final List<HighlightItem> items= new ArrayList<>();
 	private final List<Token> tokens;

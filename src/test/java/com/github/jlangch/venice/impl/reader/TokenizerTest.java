@@ -62,6 +62,24 @@ public class TokenizerTest {
 	}
 
 	@Test
+	public void test_braces() {	
+		List<Token> tokens = tokenize("(", "test");
+		assertEquals(1, tokens.size());
+		
+		tokens = tokenize("()", "test");
+		assertEquals(2, tokens.size());
+		
+		tokens = tokenize("((", "test");
+		assertEquals(2, tokens.size());
+		
+		tokens = tokenize("({)", "test");
+		assertEquals(3, tokens.size());
+		
+		tokens = tokenize("({{)", "test");
+		assertEquals(4, tokens.size());
+	}
+
+	@Test
 	public void test_any() {	
 		final List<Token> tokens = tokenize("abc", "test");
 		assertEquals(1, tokens.size());

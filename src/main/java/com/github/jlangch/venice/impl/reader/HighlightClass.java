@@ -32,6 +32,8 @@ public enum HighlightClass {
 	CONSTANT,
 	KEYWORD,
 	SYMBOL,
+	SYMBOL_SPECIAL_FORM,
+	SYMBOL_FUNCTION_NAME,
 	
 	// quotes
 	QUOTE,
@@ -51,6 +53,6 @@ public enum HighlightClass {
 	
 	PARENTHESIS_BEGIN, // (
 	PARENTHESIS_END,   // )
-
+	
 	UNKNOWN;
 }

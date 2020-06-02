@@ -36,6 +36,36 @@ import com.github.jlangch.venice.impl.util.StopWatch;
 public class HighlightParserTest {
 
 	@Test
+	public void test_empty() {	
+		final List<HighlightItem> items = HighlightParser.parse("");
+		assertEquals(0, items.size());
+	}
+
+	@Test
+	public void test_whitespaces() {	
+		List<HighlightItem> items = HighlightParser.parse(" \t \r ");
+		assertEquals(1, items.size());
+
+		items = HighlightParser.parse(" , \t , \r , ");
+		assertEquals(7, items.size());
+	}
+
+	@Test
+	public void test_braces() {	
+		List<HighlightItem> items = HighlightParser.parse("(");
+		assertEquals(1, items.size());
+
+		items = HighlightParser.parse("((");
+		assertEquals(2, items.size());
+
+		items = HighlightParser.parse("({)");
+		assertEquals(3, items.size());
+
+		items = HighlightParser.parse("(({{)");
+		assertEquals(5, items.size());
+	}
+
+	@Test
 	public void test_core() {
 		final String core = ModuleLoader.loadModule("core");
 		final StopWatch sw = new StopWatch();
