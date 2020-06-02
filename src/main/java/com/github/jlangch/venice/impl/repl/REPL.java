@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -134,7 +135,7 @@ public class REPL {
 		final TerminalBuilder builder = TerminalBuilder
 											.builder()
 											.streams(System.in, System.out)
-											.system(true)
+											//.system(true)
 											.dumb(dumbTerminal)
 											.jna(false);
 
@@ -358,10 +359,20 @@ public class REPL {
 		else if (cmd.equals("terminal")) {
 			final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
 			final Size size = terminal.getSize();
-			printer.println("stdout", "Name:       " + terminal.getName());
-			printer.println("stdout", "Type:       " + terminal.getType());
-			printer.println("stdout", "Size:       " + size.getRows() + "x" + size.getColumns());
-			printer.println("stdout", "Max colors: " + maxColors);
+			printer.println("stdout", "Name:    " + terminal.getName());
+			printer.println("stdout", "Type:    " + terminal.getType());
+			printer.println("stdout", "Size:    " + size.getRows() + "x" + size.getColumns());
+			printer.println("stdout", "Colors:  " + maxColors);
+			printer.println("stdout", "");
+			printer.println("stdout", "OS Arch:   " + System.getProperty("os.arch"));
+			printer.println("stdout", "OS Name:   " + System.getProperty("os.name"));
+			printer.println("stdout", "OS Version:" + System.getProperty("os.version"));
+			printer.println("stdout", "");
+			printer.println("stdout", "Java Version:   " + System.getProperty("java.version"));
+			printer.println("stdout", "Java Vendor:    " + System.getProperty("java.vendor"));
+			printer.println("stdout", "Java VM Version:" + System.getProperty("java.vm.version"));
+			printer.println("stdout", "Java VM Name:   " + System.getProperty("java.vm.name"));
+			printer.println("stdout", "Java VM Vendor: " + System.getProperty("java.vm.vendor"));
 		}
 		else {	
 			printer.println("error", "invalid command");
