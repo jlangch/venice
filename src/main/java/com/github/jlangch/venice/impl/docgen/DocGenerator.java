@@ -817,7 +817,6 @@ public class DocGenerator {
 		all.addSection(misc);
 		misc.addItem(getDocItem("nil?"));
 		misc.addItem(getDocItem("some?"));
-		misc.addItem(getDocItem("doc"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
 		misc.addItem(getDocItem("callstack"));
@@ -840,6 +839,11 @@ public class DocGenerator {
 		meta.addItem(getDocItem("meta"));
 		meta.addItem(getDocItem("with-meta"));
 		meta.addItem(getDocItem("vary-meta"));
+
+		final DocSection doc = new DocSection("Documentation");
+		all.addSection(doc);
+		doc.addItem(getDocItem("doc"));
+		doc.addItem(getDocItem("modules"));
 
 		final DocSection syntax = new DocSection("Syntax");
 		all.addSection(syntax);

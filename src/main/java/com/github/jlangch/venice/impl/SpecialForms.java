@@ -50,6 +50,18 @@ public class SpecialForms {
 		    private static final long serialVersionUID = -1;
 		};
 	
+	public static VncFunction modules = 
+		new SpecialFormsDocFunction(
+				"modules",
+				VncFunction
+					.meta()
+					.arglists("(modules )")		
+					.doc("Lists the available modules")
+					.build()
+		) {
+		    private static final long serialVersionUID = -1;
+		};
+			
 	public static VncFunction list = 
 		new SpecialFormsDocFunction(
 				"()",
@@ -1015,6 +1027,7 @@ public class SpecialForms {
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap.Builder()
 					.put("doc", 			doc)
+					.put("modules", 		modules)
 					.put("()", 				list)
 					.put("[]", 				vector)
 					.put("#{}",				set)
