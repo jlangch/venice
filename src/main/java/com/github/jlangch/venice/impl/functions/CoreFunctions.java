@@ -6323,7 +6323,7 @@ public class CoreFunctions {
 					.arglists("(highlight form)")
 					.doc(
 						"Syntax highlighting. Reads the form and returns a list of " +
-						"token, token-class tuples. \n\n" +
+						"(token, token-class) tuples. \n\n" +
 						"Classes: \n" +
 						"   :comment                 ; .... \n" +
 						"   :whitespaces             \"  \", \"\\n\", \"  \\n\"  \n" +
