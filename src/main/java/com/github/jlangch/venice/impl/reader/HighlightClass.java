@@ -45,14 +45,13 @@ public enum HighlightClass {
 	AT,                    // @
 	HASH,                  // #
 	
+	// braces
 	BRACE_BEGIN,           // {
 	BRACE_END,             // {
-	
 	BRACKET_BEGIN,         // [
 	BRACKET_END,           // ]
-	
 	PARENTHESIS_BEGIN,     // (
 	PARENTHESIS_END,       // )
 	
-	UNKNOWN;               
+	UNKNOWN;               // anything that could not be classified     
 }
