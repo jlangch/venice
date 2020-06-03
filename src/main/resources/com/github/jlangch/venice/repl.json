@@ -23,6 +23,10 @@
     "interrupt": "\u001b[48;5;196m\u001b[38;5;15m"
   },
     
+  "syntax-highlighting": {
+    "enabled": true
+  },
+  
   "jline": {
     "loglevel": null,
     "dumb-terminal": false

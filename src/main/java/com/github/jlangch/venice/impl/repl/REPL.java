@@ -52,7 +52,6 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -171,9 +170,9 @@ public class REPL {
 		
 		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
 		
-		final ReplHighlighter highlighter = config.getColorMode() == ColorMode.None
-												? null
-												: new ReplHighlighter(config);
+		final ReplHighlighter highlighter = config.isSyntaxHighlighting()
+												? new ReplHighlighter(config)
+												: null;
 		
 		final History history = new DefaultHistory();
 		
@@ -369,6 +368,9 @@ public class REPL {
 			printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
 			printer.println("stdout", "Terminal Colors: " + maxColors);
 			printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
+			printer.println("stdout", "");
+			printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
+			printer.println("stdout", "Highlighting:    " + config.isSyntaxHighlighting());
 			printer.println("stdout", "");
 			printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
 			printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
@@ -653,12 +655,12 @@ public class REPL {
 		if (ansiTerminal) {
 			switch(config.getColorMode()) {
 				case Light:
-					return "Using ansi terminal (light color mode turned on)";
+					return "Using Ansi terminal (light color mode turned on)";
 				case Dark:
-					return "Using ansi terminal (dark color mode turned on)";
+					return "Using Ansi terminal (dark color mode turned on)";
 				case None:
 				default:
-					return "Using ansi terminal (colors turned off, turn on with option '-colors')";
+					return "Using Ansi terminal (colors turned off, turn on with option '-colors')";
 			}
 		}
 		else {
@@ -691,6 +693,7 @@ public class REPL {
 			"Commands: \n" +	
 			"  !reload      reload Venice environment\n" +	
 			"  !?, !help    help\n" +	
+			"  !info        show REPL setup context data\n" +	
 			"  !config      show a sample REPL config\n" +	
 			"  !lic         prints the licenses for 3rd party\n" +
 			"               libs included with Venice\n" +	

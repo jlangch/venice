@@ -57,6 +57,7 @@ public class ReplConfig {
 			final String prompt,
 			final String secondaryPrompt,
 			final String resultPrefix,
+			final boolean syntaxHighlighting,
 			final Level jlineLoglevel,
 			final boolean jlineDumbTerminal,
 			final Map<String,String> colors
@@ -69,6 +70,8 @@ public class ReplConfig {
 		this.prompt = orDefault(prompt, DEFAULT_PROMPT);
 		this.secondaryPrompt = orDefault(secondaryPrompt, DEFAULT_SECONDARY_PROMPT);		
 		this.resultPrefix = orDefault(resultPrefix , DEFAULT_RESULT_PREFIX);
+		
+		this.syntaxHighlighting = syntaxHighlighting;
 		
 		this.jlineLoglevel = jlineLoglevel;
 		this.jlineDumbTerminal = jlineDumbTerminal;
@@ -91,6 +94,10 @@ public class ReplConfig {
 			final String secondaryPrompt = jsonObj.getString("secondary-prompt");
 			final String resultPrefix =  jsonObj.getString("result-prefix");
 
+			// Colors
+			final ColorMode colorMode = getColorMode(cli);
+			
+			// Colors light mode
 			JsonObject obj = (JsonObject)jsonObj.get("colors");
 			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
@@ -98,13 +105,28 @@ public class ReplConfig {
 				}
 			}
 
+			// Colors dark mode
 			obj = (JsonObject)jsonObj.get("colors-darkmode");
 			if (obj != null) {
 				for(String cname : COLOR_NAMES) {
 					colors.put("dark." + cname, StringUtil.emptyToNull(obj.getString(cname)));
 				}
 			}
+
+			// Syntax highlighting
+			boolean highlight = true;
+			obj = (JsonObject)jsonObj.get("syntax-highlighting");
+			if (obj != null) {
+				try {
+					highlight = obj.getBoolean("enabled", Boolean.TRUE);
+				}
+				catch(Exception ex) { }
+			}
+			if (colorMode == ColorMode.None) {
+				highlight = false; // turn off
+			}
 			
+			// JLine
 			Level jlineLoglevel = null;
 			boolean jlineDumbTerminal = false;
 			obj = (JsonObject)jsonObj.get("jline");
@@ -124,11 +146,12 @@ public class ReplConfig {
 
 			return new ReplConfig(
 						jsonConfigSource,
-						getColorMode(cli), 
+						colorMode, 
 						loadFile,
 						prompt,
 						secondaryPrompt,
 						resultPrefix,
+						highlight,
 						jlineLoglevel,
 						jlineDumbTerminal,
 						colors);
@@ -174,10 +197,14 @@ public class ReplConfig {
 		return resultPrefix;
 	}
 	
+	public boolean isSyntaxHighlighting() {
+		return syntaxHighlighting;
+	}
+	
 	public Level getJLineLogLevel() {
 		return jlineLoglevel;
 	}
-	
+
 	public boolean isJLineDumbTerminal() {
 		return jlineDumbTerminal;
 	}
@@ -273,6 +300,7 @@ public class ReplConfig {
 	}
 	
 	
+	
 	public static final String ANSI_RESET = "\u001b[0m";
 	
 	public static enum ColorMode { Light, Dark, None };
@@ -296,6 +324,7 @@ public class ReplConfig {
 	private final String prompt;
 	private final String secondaryPrompt;
 	private final String resultPrefix;
+	private final boolean syntaxHighlighting;
 	
 	private final Level jlineLoglevel;
 	private final boolean jlineDumbTerminal;
