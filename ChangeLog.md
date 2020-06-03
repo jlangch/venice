@@ -27,7 +27,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- improvements to syntax highlighting color themes
+- function `highlight` to make syntax highlighting available to the user
 
 
 
