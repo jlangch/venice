@@ -188,13 +188,15 @@ public class TokenizerTest {
 
 	@Test
 	public void test_single_quoted_string_unbalanced() {	
-		List<Token> tokens =  tokenize_unbalanced("\"", "test");
+		List<Token> tokens =  tokenize_unbalanced("  \"", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"", tokens.get(0).getToken());
+		assertEquals(TokenType.STRING, tokens.get(0).getType());
 		
-		tokens =  tokenize_unbalanced("\"a", "test");
+		tokens =  tokenize_unbalanced("  \"a", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"a", tokens.get(0).getToken());
+		assertEquals(TokenType.STRING, tokens.get(0).getType());
 	}
 
 	@Test
@@ -293,13 +295,15 @@ public class TokenizerTest {
 	
 	@Test
 	public void test_triple_quoted_string_unbalanced() {	
-		List<Token> tokens =  tokenize_unbalanced("\"\"\"", "test");
+		List<Token> tokens =  tokenize_unbalanced("   \"\"\"", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"", tokens.get(0).getToken());
+		assertEquals(TokenType.STRING_BLOCK, tokens.get(0).getType());
 		
-		tokens =  tokenize_unbalanced("\"\"\"a", "test");
+		tokens =  tokenize_unbalanced("   \"\"\"a", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("\"\"\"a", tokens.get(0).getToken());
+		assertEquals(TokenType.STRING_BLOCK, tokens.get(0).getType());
 	}
 		
 	@Test
