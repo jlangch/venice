@@ -389,7 +389,7 @@ public class REPL {
 		}
 		else if (cmd.startsWith("highlight")) {
 			if (cmd.equals("highlight")) {
-				printer.println("stdout", "Highlighting:    " + (highlight ? "on" : "off"));
+				printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
 			}
 			else {
 				final String param = StringUtil.trimToEmpty(cmd.substring("highlight".length()));
