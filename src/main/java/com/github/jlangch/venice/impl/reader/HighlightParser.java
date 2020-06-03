@@ -93,14 +93,6 @@ public class HighlightParser {
 		items.add(new HighlightItem(token, clazz));
 	}
 	
-	private HighlightItem lastItem() {
-		return items.size() < 1 ? null : items.get(items.size()-1);
-	}
-	
-	private HighlightItem secondLastItem() {
-		return items.size() < 2 ? null : items.get(items.size()-2);
-	}
-	
 	private Token peek() {	
 		while(true) {
 			if (position >= tokens.size()) {
@@ -187,8 +179,8 @@ public class HighlightParser {
 			} 
 			else if (matcher.group(11) != null) {
 				// 11: symbol
-				final HighlightItem last = lastItem();
-				final HighlightItem secondLast = secondLastItem();
+				final HighlightItem last = items.size() < 1 ? null : items.get(items.size()-1);
+				final HighlightItem secondLast = items.size() < 2 ? null : items.get(items.size()-2);
 				
 				if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
 					if (secondLast != null && secondLast.getClazz() == QUOTE) {
