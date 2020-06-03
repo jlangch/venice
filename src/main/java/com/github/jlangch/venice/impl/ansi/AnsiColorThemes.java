@@ -69,7 +69,7 @@ public class AnsiColorThemes {
 	public static AnsiColorTheme getLightTheme() {
 		final Map<VncKeyword,String> colors = new HashMap<>();
 	
-		colors.put(map(COMMENT), 				LIGHT_GREY);
+		colors.put(map(COMMENT), 				LIGHT_GREY_LIGHT);
 		colors.put(map(WHITESPACES), 			null);
 		
 		colors.put(map(STRING), 				LIGHT_GREEN);
@@ -85,7 +85,7 @@ public class AnsiColorThemes {
 		colors.put(map(UNQUOTE),				LIGHT_GREY);		
 		colors.put(map(UNQUOTE_SPLICING),		LIGHT_GREY);
 
-		colors.put(map(META),					LIGHT_GREY);
+		colors.put(map(META),					LIGHT_GREY_LIGHT);
 		colors.put(map(AT),						LIGHT_GREY);
 		colors.put(map(HASH),					LIGHT_GREY);
 		
@@ -104,7 +104,7 @@ public class AnsiColorThemes {
 	public static AnsiColorTheme getDarkTheme() {
 		final Map<VncKeyword,String> colors = new HashMap<>();
 	
-		colors.put(map(COMMENT), 				DARK_GREY);
+		colors.put(map(COMMENT), 				DARK_GREY_DARK);
 		colors.put(map(WHITESPACES), 			null);
 		
 		colors.put(map(STRING), 				DARK_GREEN);
@@ -120,7 +120,7 @@ public class AnsiColorThemes {
 		colors.put(map(UNQUOTE),				DARK_GREY);		
 		colors.put(map(UNQUOTE_SPLICING),		DARK_GREY);
 
-		colors.put(map(META),					DARK_GREY);
+		colors.put(map(META),					DARK_GREY_DARK);
 		colors.put(map(AT),						DARK_GREY);
 		colors.put(map(HASH),					DARK_GREY);
 		
@@ -142,16 +142,18 @@ public class AnsiColorThemes {
 
 	
 	// light mode
-	private static String LIGHT_PURPLE  = "\u001b[38;5;128m";
-	private static String LIGHT_GREY    = "\u001b[38;5;235m";
-	private static String LIGHT_BLUE    = "\u001b[38;5;20m";
-	private static String LIGHT_GREEN   = "\u001b[38;5;28m";
-	private static String LIGHT_ORANGE  = "\u001b[38;5;208m";
+	private static String LIGHT_PURPLE      = "\u001b[38;5;128m";
+	private static String LIGHT_GREY        = "\u001b[38;5;235m";
+	private static String LIGHT_GREY_LIGHT  = "\u001b[38;5;249m";
+	private static String LIGHT_BLUE        = "\u001b[38;5;20m";
+	private static String LIGHT_GREEN       = "\u001b[38;5;28m";
+	private static String LIGHT_ORANGE      = "\u001b[38;5;208m";
 
 	// dark mode
-	private static String DARK_PURPLE   = "\u001b[38;5;164m";
-	private static String DARK_GREY     = "\u001b[38;5;252m";
-	private static String DARK_BLUE     = "\u001b[38;5;39m";
-	private static String DARK_GREEN    = "\u001b[38;5;41m";
-	private static String DARK_ORANGE   = "\u001b[38;5;208m";
+	private static String DARK_PURPLE     = "\u001b[38;5;164m";
+	private static String DARK_GREY       = "\u001b[38;5;252m";
+	private static String DARK_GREY_DARK  = "\u001b[38;5;244m";
+	private static String DARK_BLUE       = "\u001b[38;5;39m";
+	private static String DARK_GREEN      = "\u001b[38;5;41m";
+	private static String DARK_ORANGE     = "\u001b[38;5;208m";
 }

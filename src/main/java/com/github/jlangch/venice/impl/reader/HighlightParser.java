@@ -86,11 +86,11 @@ public class HighlightParser {
 	}
 	
 	private void addItem(final String token, final HighlightClass clazz) {
-		items.add(new HighlightItem(token, clazz));
+		items.add(new HighlightItem(token, pinnedClass == null ? clazz : pinnedClass));
 	}
 	
 	private void addItem(final char token, final HighlightClass clazz) {
-		items.add(new HighlightItem(token, clazz));
+		addItem(String.valueOf(token), clazz);
 	}
 	
 	private Token peek() {	
@@ -254,10 +254,11 @@ public class HighlightParser {
 			
 			case '^':
 				next();
-				addItem('^', META);			
+				addItem('^', META);
+				pinnedClass = META;
 				process_form();
+				pinnedClass = null;
 				break;
-			
 			
 			case '@': 
 				next();
@@ -353,4 +354,5 @@ public class HighlightParser {
 	private final List<HighlightItem> items= new ArrayList<>();
 	private final List<Token> tokens;
 	private int position;
+	private HighlightClass pinnedClass = null;
 }
