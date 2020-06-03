@@ -42,9 +42,18 @@ public class SpecialForms {
 				"doc",
 				VncFunction
 					.meta()
-					.arglists("(doc name)")		
-					.doc("Prints documentation for a var or special form given its name")
-					.examples("(doc +)")
+					.arglists("(doc x)")		
+					.doc(
+						"Prints documentation for a var or special form given x as its name. " +
+						"Prints the definition of custom types. \n\n" +
+						"Displays the source of a module if x is a module: (doc :ansi)")
+					.examples(
+						"(doc +)",
+						"(doc def)",
+						"(do \n" +
+						"   (deftype :complex [real :long, imaginary :long]) \n" +
+						"   (doc :complex))"
+						)
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
