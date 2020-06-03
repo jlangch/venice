@@ -56,7 +56,7 @@ venice>
 
 #### 3.2 Windows
 
-On Windows the 'jansi' library is required. Download the libary from
+On Windows the 'jansi' library is required. Download the library from
 Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar)
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
