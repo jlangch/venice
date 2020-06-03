@@ -128,69 +128,77 @@ public class HighlightParser {
 	private void process_atom() {
 		final Token token = next();
 
-		final Matcher matcher = Reader.ATOM_PATTERN.matcher(token.getToken());
-		
-		if (!matcher.find()) {
-			addItem(token.getToken(), UNKNOWN);
+		if (token.isString()) {
+			addItem(token.getToken(), STRING);
 		}
-		
-		else if (matcher.group(1) != null) {
-			// 1: long
-			addItem(token.getToken(), NUMBER);
-		} 
-		else if (matcher.group(2) != null) {
-			// 2: int
-			addItem(token.getToken(), NUMBER);
-		} 
-		else if (matcher.group(3) != null) {
-			// 3: double
-			addItem(token.getToken(), NUMBER);
-		} 
-		else if (matcher.group(4) != null) {
-			// 4: bigdecimal
-			addItem(token.getToken(), NUMBER);
-		} 
-		else if (matcher.group(5) != null) {
-			// 5: nil
-			addItem(token.getToken(), CONSTANT);
-		} 
-		else if (matcher.group(6) != null) {
-			// 6: true
-			addItem(token.getToken(), CONSTANT);
-		} 
-		else if (matcher.group(7) != null) {
-			// 7: false
-			addItem(token.getToken(), CONSTANT);
-		} 
-		else if (matcher.group(8) != null) {
-			// 8: string """
+		else if (token.isStringBlock()) {
 			addItem(token.getToken(), STRING);
-		} 
-		else if (matcher.group(9) != null) {
-			// 9: string "
-			addItem(token.getToken(), STRING);
-		} 
-		else if (matcher.group(10) != null) {
-			// 10: keyword
-			addItem(token.getToken(), KEYWORD);
-		} 
-		else if (matcher.group(11) != null) {
-			// 11: symbol
-			final HighlightItem last = lastItem();
-			if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
-				if (SPECIAL_FORMS.contains(token.getToken())) {
-					addItem(token.getToken(), SYMBOL_SPECIAL_FORM);
+		}
+		else {
+			final Matcher matcher = Reader.ATOM_PATTERN.matcher(token.getToken());
+			
+			if (!matcher.find()) {
+				addItem(token.getToken(), UNKNOWN);
+			}
+			
+			else if (matcher.group(1) != null) {
+				// 1: long
+				addItem(token.getToken(), NUMBER);
+			} 
+			else if (matcher.group(2) != null) {
+				// 2: int
+				addItem(token.getToken(), NUMBER);
+			} 
+			else if (matcher.group(3) != null) {
+				// 3: double
+				addItem(token.getToken(), NUMBER);
+			} 
+			else if (matcher.group(4) != null) {
+				// 4: bigdecimal
+				addItem(token.getToken(), NUMBER);
+			} 
+			else if (matcher.group(5) != null) {
+				// 5: nil
+				addItem(token.getToken(), CONSTANT);
+			} 
+			else if (matcher.group(6) != null) {
+				// 6: true
+				addItem(token.getToken(), CONSTANT);
+			} 
+			else if (matcher.group(7) != null) {
+				// 7: false
+				addItem(token.getToken(), CONSTANT);
+			} 
+			else if (matcher.group(8) != null) {
+				// 8: string """
+				addItem(token.getToken(), STRING);
+			} 
+			else if (matcher.group(9) != null) {
+				// 9: string "
+				addItem(token.getToken(), STRING);
+			} 
+			else if (matcher.group(10) != null) {
+				// 10: keyword
+				addItem(token.getToken(), KEYWORD);
+			} 
+			else if (matcher.group(11) != null) {
+				// 11: symbol
+				final HighlightItem last = lastItem();
+				if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
+					if (SPECIAL_FORMS.contains(token.getToken())) {
+						addItem(token.getToken(), SYMBOL_SPECIAL_FORM);
+					}
+					else {
+						addItem(token.getToken(), SYMBOL_FUNCTION_NAME);
+					}
 				}
 				else {
-					addItem(token.getToken(), SYMBOL_FUNCTION_NAME);
+					addItem(token.getToken(), SYMBOL);
 				}
-			}
+			} 
 			else {
-				addItem(token.getToken(), SYMBOL);
+				addItem(token.getToken(), UNKNOWN);
 			}
-		} 
-		else {
-			addItem(token.getToken(), UNKNOWN);
 		}
 	}
 

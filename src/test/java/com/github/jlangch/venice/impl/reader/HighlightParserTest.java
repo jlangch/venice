@@ -66,6 +66,32 @@ public class HighlightParserTest {
 	}
 
 	@Test
+	public void test_single_quoted_string_unbalanced() {	
+		List<HighlightItem> items =  HighlightParser.parse("\"");
+		assertEquals(1, items.size());
+		assertEquals("\"", items.get(0).getForm());
+		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
+		
+		items = HighlightParser.parse("\"a");
+		assertEquals(1, items.size());
+		assertEquals("\"a", items.get(0).getForm());
+		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
+	}
+
+	@Test
+	public void test_triple_quoted_string_unbalanced() {	
+		List<HighlightItem> items =  HighlightParser.parse("\"\"\"");
+		assertEquals(1, items.size());
+		assertEquals("\"\"\"", items.get(0).getForm());
+		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
+		
+		items = HighlightParser.parse("\"\"\"a");
+		assertEquals(1, items.size());
+		assertEquals("\"\"\"a", items.get(0).getForm());
+		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
+	}
+
+	@Test
 	public void test_core() {
 		final String core = ModuleLoader.loadModule("core");
 		final StopWatch sw = new StopWatch();
