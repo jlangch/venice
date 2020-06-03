@@ -23,36 +23,36 @@ package com.github.jlangch.venice.impl.reader;
 
 public enum HighlightClass {
 	// whitespaces
-	COMMENT,
-	WHITESPACES,
+	COMMENT,               // "; ...."
+	WHITESPACES,           // " \t", "\n", "  \n"
 	
 	// atoms
-	STRING,
-	NUMBER,
-	CONSTANT,
-	KEYWORD,
-	SYMBOL,
-	SYMBOL_SPECIAL_FORM,
-	SYMBOL_FUNCTION_NAME,
+	STRING,                // "lorem", """lorem"""
+	NUMBER,                // 100, 100I, 100.0, 100.23M
+	CONSTANT,              // nil, true, false
+	KEYWORD,               // :alpha
+	SYMBOL,                // alpha
+	SYMBOL_SPECIAL_FORM,   // def, loop, ...
+	SYMBOL_FUNCTION_NAME,  // +, println, ...
 	
 	// quotes
-	QUOTE,
-	QUASI_QUOTE,
-	UNQUOTE,
-	UNQUOTE_SPLICING,
+	QUOTE,                 // '
+	QUASI_QUOTE,           // `
+	UNQUOTE,               // ~
+	UNQUOTE_SPLICING,      // ~@
 
-	META,
-	AT,
-	HASH,
+	META,                  // ^private, ^{:arglist '() :doc "...."}
+	AT,                    // @
+	HASH,                  // #
 	
-	BRACE_BEGIN, // {
-	BRACE_END,   // {
+	BRACE_BEGIN,           // {
+	BRACE_END,             // {
 	
-	BRACKET_BEGIN, // [
-	BRACKET_END,   // ]
+	BRACKET_BEGIN,         // [
+	BRACKET_END,           // ]
 	
-	PARENTHESIS_BEGIN, // (
-	PARENTHESIS_END,   // )
+	PARENTHESIS_BEGIN,     // (
+	PARENTHESIS_END,       // )
 	
-	UNKNOWN;
+	UNKNOWN;               
 }
