@@ -178,6 +178,7 @@ public class Tokenizer {
 						if (errorOnUnbalancedStringQuotes) {
 							throwSingleQuotedStringEofError("\"", filePos, line, col);
 						}
+						addToken(STRING, "\"", filePos, line, col);	
 					}
 					else if (chNext == (int)'"') {
 						final int chNextNext = reader.read();

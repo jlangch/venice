@@ -187,6 +187,17 @@ public class TokenizerTest {
 	}
 
 	@Test
+	public void test_single_quoted_string_unbalanced() {	
+		List<Token> tokens =  tokenize_unbalanced("\"", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"", tokens.get(0).getToken());
+		
+		tokens =  tokenize_unbalanced("\"a", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"a", tokens.get(0).getToken());
+	}
+
+	@Test
 	public void test_single_quoted_string_errors() {
 		// premature EOL
 		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\n", "test"));
@@ -280,6 +291,16 @@ public class TokenizerTest {
 		assertThrows(ParseError.class, () ->  Tokenizer.tokenize("\"\"\"\"a\\", "test"));
 	}
 	
+	@Test
+	public void test_triple_quoted_string_unbalanced() {	
+		List<Token> tokens =  tokenize_unbalanced("\"\"\"", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"", tokens.get(0).getToken());
+		
+		tokens =  tokenize_unbalanced("\"\"\"a", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("\"\"\"a", tokens.get(0).getToken());
+	}
 		
 	@Test
 	public void testTokenize_LF() {	
@@ -504,6 +525,10 @@ public class TokenizerTest {
 	
 	private static List<Token> tokenize(final String text, final String fileName) {
 		return Tokenizer.tokenize(text, fileName);
+	}
+
+	private static List<Token> tokenize_unbalanced(final String text, final String fileName) {
+		return Tokenizer.tokenize(text, fileName, true, false);
 	}
 
 }
