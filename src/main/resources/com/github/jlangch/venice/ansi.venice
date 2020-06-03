@@ -294,7 +294,9 @@
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))
                 value   (str/format "%3s%%" percent)]
-            (print (ansi/style "" :clear-line :cursor-left-1000))
+            (if (= status :progress)
+              (print (ansi/style "" :cursor-left-1000))
+              (print (ansi/style "" :clear-line :cursor-left-1000)))
             (case status
               :start    (print start-msg)
               :progress (print (str caption
@@ -380,7 +382,9 @@
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
-          (print (ansi/style "" :clear-line :cursor-left-1000))
+          (if (= status :progress)
+            (print (ansi/style "" :cursor-left-1000))
+            (print (ansi/style "" :clear-line :cursor-left-1000)))
           (case status
             :start    (print start-msg)
             :progress (print (bar percent))
