@@ -69,34 +69,34 @@ public class AnsiColorThemes {
 	public static AnsiColorTheme getLightTheme() {
 		final Map<VncKeyword,String> colors = new HashMap<>();
 	
-		colors.put(map(COMMENT), 				LIGHT_GREY_LIGHT);
+		colors.put(map(COMMENT), 				LIC_GREY_LIGHT);
 		colors.put(map(WHITESPACES), 			null);
 		
-		colors.put(map(STRING), 				LIGHT_GREEN);
-		colors.put(map(NUMBER), 				LIGHT_ORANGE);
-		colors.put(map(CONSTANT),				LIGHT_ORANGE);
-		colors.put(map(KEYWORD), 				LIGHT_ORANGE);
-		colors.put(map(SYMBOL), 				LIGHT_GREY);
-		colors.put(map(SYMBOL_SPECIAL_FORM), 	LIGHT_PURPLE);
-		colors.put(map(SYMBOL_FUNCTION_NAME),	LIGHT_BLUE);
+		colors.put(map(STRING), 				LIC_GREEN);
+		colors.put(map(NUMBER), 				LIC_ORANGE);
+		colors.put(map(CONSTANT),				LIC_ORANGE);
+		colors.put(map(KEYWORD), 				LIC_ORANGE);
+		colors.put(map(SYMBOL), 				LIC_GREY);
+		colors.put(map(SYMBOL_SPECIAL_FORM), 	LIC_PURPLE);
+		colors.put(map(SYMBOL_FUNCTION_NAME),	LIC_BLUE);
 		
-		colors.put(map(QUOTE),					LIGHT_GREY);	
-		colors.put(map(QUASI_QUOTE),			LIGHT_GREY);	
-		colors.put(map(UNQUOTE),				LIGHT_GREY);		
-		colors.put(map(UNQUOTE_SPLICING),		LIGHT_GREY);
+		colors.put(map(QUOTE),					LIC_GREY);	
+		colors.put(map(QUASI_QUOTE),			LIC_GREY);	
+		colors.put(map(UNQUOTE),				LIC_GREY);		
+		colors.put(map(UNQUOTE_SPLICING),		LIC_GREY);
 
-		colors.put(map(META),					LIGHT_GREY_LIGHT);
-		colors.put(map(AT),						LIGHT_GREY);
-		colors.put(map(HASH),					LIGHT_GREY);
+		colors.put(map(META),					LIC_GREY_LIGHT);
+		colors.put(map(AT),						LIC_GREY);
+		colors.put(map(HASH),					LIC_GREY);
 		
-		colors.put(map(BRACE_BEGIN),			LIGHT_GREY);
-		colors.put(map(BRACE_END),				LIGHT_GREY);
-		colors.put(map(BRACKET_BEGIN),			LIGHT_GREY);
-		colors.put(map(BRACKET_END),			LIGHT_GREY);
-		colors.put(map(PARENTHESIS_BEGIN),		LIGHT_GREY);
-		colors.put(map(PARENTHESIS_END),		LIGHT_GREY);
+		colors.put(map(BRACE_BEGIN),			LIC_GREY);
+		colors.put(map(BRACE_END),				LIC_GREY);
+		colors.put(map(BRACKET_BEGIN),			LIC_GREY);
+		colors.put(map(BRACKET_END),			LIC_GREY);
+		colors.put(map(PARENTHESIS_BEGIN),		LIC_GREY);
+		colors.put(map(PARENTHESIS_END),		LIC_GREY);
 
-		colors.put(map(UNKNOWN),				LIGHT_GREY);
+		colors.put(map(UNKNOWN),				LIC_GREY);
 
 		return new AnsiColorTheme("light", colors);
 	}
@@ -104,34 +104,34 @@ public class AnsiColorThemes {
 	public static AnsiColorTheme getDarkTheme() {
 		final Map<VncKeyword,String> colors = new HashMap<>();
 	
-		colors.put(map(COMMENT), 				DARK_GREY_DARK);
+		colors.put(map(COMMENT), 				DAC_GREY_DARK);
 		colors.put(map(WHITESPACES), 			null);
 		
-		colors.put(map(STRING), 				DARK_GREEN);
-		colors.put(map(NUMBER), 				DARK_ORANGE);
-		colors.put(map(CONSTANT),				DARK_ORANGE);
-		colors.put(map(KEYWORD), 				DARK_ORANGE);
-		colors.put(map(SYMBOL), 				DARK_GREY);
-		colors.put(map(SYMBOL_SPECIAL_FORM), 	DARK_PURPLE);
-		colors.put(map(SYMBOL_FUNCTION_NAME),	DARK_BLUE);
+		colors.put(map(STRING), 				DAC_GREEN);
+		colors.put(map(NUMBER), 				DAC_ORANGE);
+		colors.put(map(CONSTANT),				DAC_ORANGE);
+		colors.put(map(KEYWORD), 				DAC_ORANGE);
+		colors.put(map(SYMBOL), 				DAC_GREY);
+		colors.put(map(SYMBOL_SPECIAL_FORM), 	DAC_PURPLE);
+		colors.put(map(SYMBOL_FUNCTION_NAME),	DAC_BLUE);
 		
-		colors.put(map(QUOTE),					DARK_GREY);	
-		colors.put(map(QUASI_QUOTE),			DARK_GREY);	
-		colors.put(map(UNQUOTE),				DARK_GREY);		
-		colors.put(map(UNQUOTE_SPLICING),		DARK_GREY);
+		colors.put(map(QUOTE),					DAC_GREY);	
+		colors.put(map(QUASI_QUOTE),			DAC_GREY);	
+		colors.put(map(UNQUOTE),				DAC_GREY);		
+		colors.put(map(UNQUOTE_SPLICING),		DAC_GREY);
 
-		colors.put(map(META),					DARK_GREY_DARK);
-		colors.put(map(AT),						DARK_GREY);
-		colors.put(map(HASH),					DARK_GREY);
+		colors.put(map(META),					DAC_GREY_DARK);
+		colors.put(map(AT),						DAC_GREY);
+		colors.put(map(HASH),					DAC_GREY);
 		
-		colors.put(map(BRACE_BEGIN),			DARK_GREY);
-		colors.put(map(BRACE_END),				DARK_GREY);
-		colors.put(map(BRACKET_BEGIN),			DARK_GREY);
-		colors.put(map(BRACKET_END),			DARK_GREY);
-		colors.put(map(PARENTHESIS_BEGIN),		DARK_GREY);
-		colors.put(map(PARENTHESIS_END),		DARK_GREY);
+		colors.put(map(BRACE_BEGIN),			DAC_GREY);
+		colors.put(map(BRACE_END),				DAC_GREY);
+		colors.put(map(BRACKET_BEGIN),			DAC_GREY);
+		colors.put(map(BRACKET_END),			DAC_GREY);
+		colors.put(map(PARENTHESIS_BEGIN),		DAC_GREY);
+		colors.put(map(PARENTHESIS_END),		DAC_GREY);
 
-		colors.put(map(UNKNOWN),				DARK_GREY);
+		colors.put(map(UNKNOWN),				DAC_GREY);
 
 		return new AnsiColorTheme("dark", colors);
 	}
@@ -142,18 +142,18 @@ public class AnsiColorThemes {
 
 	
 	// light mode
-	private static String LIGHT_PURPLE      = "\u001b[38;5;128m";
-	private static String LIGHT_GREY        = "\u001b[38;5;235m";
-	private static String LIGHT_GREY_LIGHT  = "\u001b[38;5;249m";
-	private static String LIGHT_BLUE        = "\u001b[38;5;20m";
-	private static String LIGHT_GREEN       = "\u001b[38;5;28m";
-	private static String LIGHT_ORANGE      = "\u001b[38;5;208m";
+	private static String LIC_PURPLE      = "\u001b[38;5;128m";
+	private static String LIC_GREY        = "\u001b[38;5;235m";
+	private static String LIC_GREY_LIGHT  = "\u001b[38;5;245m";
+	private static String LIC_BLUE        = "\u001b[38;5;20m";
+	private static String LIC_GREEN       = "\u001b[38;5;28m";
+	private static String LIC_ORANGE      = "\u001b[38;5;208m";
 
 	// dark mode
-	private static String DARK_PURPLE     = "\u001b[38;5;164m";
-	private static String DARK_GREY       = "\u001b[38;5;252m";
-	private static String DARK_GREY_DARK  = "\u001b[38;5;244m";
-	private static String DARK_BLUE       = "\u001b[38;5;39m";
-	private static String DARK_GREEN      = "\u001b[38;5;41m";
-	private static String DARK_ORANGE     = "\u001b[38;5;208m";
+	private static String DAC_PURPLE     = "\u001b[38;5;164m";
+	private static String DAC_GREY       = "\u001b[38;5;252m";
+	private static String DAC_GREY_DARK  = "\u001b[38;5;244m";
+	private static String DAC_BLUE       = "\u001b[38;5;39m";
+	private static String DAC_GREEN      = "\u001b[38;5;41m";
+	private static String DAC_ORANGE     = "\u001b[38;5;208m";
 }
