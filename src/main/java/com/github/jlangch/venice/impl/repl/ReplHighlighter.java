@@ -28,7 +28,8 @@ import org.jline.reader.LineReader;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 
-import com.github.jlangch.venice.impl.reader.HighlightClass;
+import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
+import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
@@ -37,7 +38,7 @@ import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 public class ReplHighlighter implements Highlighter {
 
 	public ReplHighlighter(final ReplConfig config) {
-		this.colorMode = config.getColorMode();
+		this.theme = getAnsiColorTheme(config.getColorMode());
 	}
 	
 	public void enable(final boolean val) {
@@ -75,116 +76,33 @@ public class ReplHighlighter implements Highlighter {
 	public void setErrorIndex(final int errorIndex) {
 	}
 
+	
 	private String highlight(final HighlightItem item) {
-		final String style = getStyle(item);
-								
-		return style == null 
-				? item.getForm() 
+		final String style = theme == null 
+								? null 
+								: theme.getColor(item.getClazz());
+			
+		return style == null
+				? item.getForm()
 				: style + item.getForm() + ANSI_RESET;
 	}
 	
-	private String getStyle(final HighlightItem item) {
-		switch(colorMode) {
-			case Light: return getLightModeStyle(item.getClazz());
-			case Dark:  return getDarkModeStyle(item.getClazz());
-			case None:  return getNoneModeStyle(item.getClazz());
-			default:    return getNoneModeStyle(item.getClazz());
+	private AnsiColorTheme getAnsiColorTheme(final ColorMode mode) {
+		switch(mode) {
+			case Light: return AnsiColorThemes.getLightTheme();
+			case Dark:  return AnsiColorThemes.getDarkTheme();
+			case None:  return null;
+			default:    return null;
 		}
 	}
 
-	private String getLightModeStyle(final HighlightClass clazz) {
-		switch(clazz) {
-			case COMMENT:				return LIGHT_GREY;
-			case WHITESPACES:			return null;
-				
-			case STRING:				return LIGHT_GREEN;
-			case NUMBER:				return LIGHT_ORANGE;
-			case CONSTANT:				return LIGHT_ORANGE;
-			case KEYWORD:				return LIGHT_ORANGE;
-			case SYMBOL:				return LIGHT_GREY;
-			case SYMBOL_SPECIAL_FORM:	return LIGHT_PURPLE;
-			case SYMBOL_FUNCTION_NAME:	return LIGHT_BLUE;
-				
-			case QUOTE:					return LIGHT_GREY;	
-			case QUASI_QUOTE:			return LIGHT_GREY;	
-			case UNQUOTE:				return LIGHT_GREY;		
-			case UNQUOTE_SPLICING:		return LIGHT_GREY;
-		
-			case META:					return LIGHT_GREY;
-			case AT:					return LIGHT_GREY;
-			case HASH:					return LIGHT_GREY;
-				
-			case BRACE_BEGIN:			return LIGHT_GREY;
-			case BRACE_END:				return LIGHT_GREY;
-			case BRACKET_BEGIN:			return LIGHT_GREY;
-			case BRACKET_END:			return LIGHT_GREY;
-			case PARENTHESIS_BEGIN:		return LIGHT_GREY;
-			case PARENTHESIS_END:		return LIGHT_GREY;
-		
-			case UNKNOWN:				return LIGHT_GREY;
-			default:					return LIGHT_GREY;
-		}
-	}
-	
-	private String getDarkModeStyle(final HighlightClass clazz) {
-		switch(clazz) {
-			case COMMENT:				return DARK_GREY;
-			case WHITESPACES:			return null;
-				
-			case STRING:				return DARK_GREEN;
-			case NUMBER:				return DARK_ORANGE;
-			case CONSTANT:				return DARK_ORANGE;
-			case KEYWORD:				return DARK_ORANGE;
-			case SYMBOL:				return DARK_GREY;
-			case SYMBOL_SPECIAL_FORM:	return DARK_PURPLE;
-			case SYMBOL_FUNCTION_NAME:	return DARK_BLUE;
-				
-			case QUOTE:					return DARK_GREY;	
-			case QUASI_QUOTE:			return DARK_GREY;	
-			case UNQUOTE:				return DARK_GREY;		
-			case UNQUOTE_SPLICING:		return DARK_GREY;
-		
-			case META:					return DARK_GREY;
-			case AT:					return DARK_GREY;
-			case HASH:					return DARK_GREY;
-				
-			case BRACE_BEGIN:			return DARK_GREY;
-			case BRACE_END:				return DARK_GREY;
-			case BRACKET_BEGIN:			return DARK_GREY;
-			case BRACKET_END:			return DARK_GREY;
-			case PARENTHESIS_BEGIN:		return DARK_GREY;
-			case PARENTHESIS_END:		return DARK_GREY;
-		
-			case UNKNOWN:				return DARK_GREY;
-			default:					return DARK_GREY;
-		}
-	}
-	
-	private String getNoneModeStyle(final HighlightClass clazz) {
-		return null;
-	}
-	
 	private boolean isReplCommand(final String buffer) {
 		return buffer.startsWith("!");
 	}
 
 	
-	// light mode
-	private static String LIGHT_PURPLE  = "\u001b[38;5;128m";
-	private static String LIGHT_GREY    = "\u001b[38;5;235m";
-	private static String LIGHT_BLUE    = "\u001b[38;5;20m";
-	private static String LIGHT_GREEN   = "\u001b[38;5;28m";
-	private static String LIGHT_ORANGE  = "\u001b[38;5;208m";
-
-	// dark mode
-	private static String DARK_PURPLE   = "\u001b[38;5;164m";
-	private static String DARK_GREY     = "\u001b[38;5;252m";
-	private static String DARK_BLUE     = "\u001b[38;5;39m";
-	private static String DARK_GREEN    = "\u001b[38;5;41m";
-	private static String DARK_ORANGE   = "\u001b[38;5;208m";
-	
 	private static String ANSI_RESET = "\u001b[0m";
 	
-	private final ColorMode colorMode;
+	private final AnsiColorTheme theme;
 	private boolean enabled = true;
 }
