@@ -6322,36 +6322,37 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(highlight form)")
 					.doc(
-						"Syntax highlighting. \n\n" +
+						"Syntax highlighting. Reads the form and returns a list of " +
+						"token, token-class tuples. \n\n" +
 						"Classes: \n" +
-						"   :comment                // ; .... \n" +
-						"   :whitespaces            // \"  \", \"\\n\", \"  \\n\"  \n" +
+						"   :comment                 ; .... \n" +
+						"   :whitespaces             \"  \", \"\\n\", \"  \\n\"  \n" +
 						"\n" +
-						"   :string                 // \"lorem\", \"\"\"lorem\"\"\"  \n" +
-						"   :number                 // 100, 100I, 100.0, 100.23M  \n" +
-						"   :constant               // nil, true, false  \n" +
-						"   :keyword                // :alpha  \n" +
-						"   :symbol                 // alpha  \n" +
-						"   :symbol-special-form    // def, loop, ...  \n" +
-						"   :symbol-function-name   // +, println, ...  \n" +
+						"   :string                  \"lorem\", \"\"\"lorem\"\"\"  \n" +
+						"   :number                  100, 100I, 100.0, 100.23M  \n" +
+						"   :constant                nil, true, false  \n" +
+						"   :keyword                 :alpha  \n" +
+						"   :symbol                  alpha  \n" +
+						"   :symbol-special-form     def, loop, ...  \n" +
+						"   :symbol-function-name    +, println, ...  \n" +
 						"\n" +
-						"   :quote                  // '  \n" +
-						"   :quasi-quote            // `  \n" +
-						"   :unquote                // ~  \n" +
-						"   :unquote-splicing       // ~@  \n" +
+						"   :quote                   '  \n" +
+						"   :quasi-quote             `  \n" +
+						"   :unquote                 ~  \n" +
+						"   :unquote-splicing        ~@  \n" +
 						"\n" +
-						"   :meta                   // ^private, ^{:arglist '() :doc \"....\"}\n" +
-						"   :at                     // @  \n" +
-						"   :hash                   // #  \n" +
+						"   :meta                    ^private, ^{:arglist '() :doc \"....\"}\n" +
+						"   :at                      @  \n" +
+						"   :hash                    #  \n" +
 						
-						"   :brace-begin            // {  \n" +
-						"   :brace-end              // {  \n" +
-						"   :bracket-begin          // [  \n" +
-						"   :bracket-end            // ]  \n" +
-						"   :parenthesis-begin      // (  \n" +
-						"   :parenthesis-end        // )  \n" +
+						"   :brace-begin             {  \n" +
+						"   :brace-end               {  \n" +
+						"   :bracket-begin           [  \n" +
+						"   :bracket-end             ]  \n" +
+						"   :parenthesis-begin       (  \n" +
+						"   :parenthesis-end         )  \n" +
 						"\n" +
-						"   :unknown                // anything that could not be classified")
+						"   :unknown                 anything that could not be classified")
 					.examples(
 						"(highlight \"(+ 10 20)\")",
 						"(highlight \"(if (= 1 2) true false)\")")
