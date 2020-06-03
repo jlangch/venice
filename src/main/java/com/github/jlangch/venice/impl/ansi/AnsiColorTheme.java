@@ -59,7 +59,15 @@ public class AnsiColorTheme {
 		return colors.get(clazz);
 	}
 
-		
+	public String style(final String text, final HighlightClass clazz) {
+		final String style = clazz == null ? null : getColor(clazz);			
+		return style == null ? text : style + text + AnsiColorTheme.ANSI_RESET;
+	}
+
+
+	public static String ANSI_RESET = "\u001b[0m";
+
+	
 	private final String name;
 	private final Map<VncKeyword,String> colors = new HashMap<>();
 	private final Map<HighlightClass,VncKeyword> mapper;

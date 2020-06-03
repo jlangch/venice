@@ -50,6 +50,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class AnsiColorThemes {
@@ -57,6 +58,13 @@ public class AnsiColorThemes {
 	public AnsiColorThemes() {
 	}
 	
+	public static AnsiColorTheme getTheme(final String name) {
+		switch(StringUtil.trimToEmpty(name)) {
+			case "light": return getLightTheme();
+			case "dark":  return getDarkTheme();
+			default:      return null;
+		}
+	}
 		
 	public static AnsiColorTheme getLightTheme() {
 		final Map<VncKeyword,String> colors = new HashMap<>();

@@ -78,13 +78,9 @@ public class ReplHighlighter implements Highlighter {
 
 	
 	private String highlight(final HighlightItem item) {
-		final String style = theme == null 
-								? null 
-								: theme.getColor(item.getClazz());
-			
-		return style == null
-				? item.getForm()
-				: style + item.getForm() + ANSI_RESET;
+		return theme == null 
+				? item.getForm() 
+				: theme.style(item.getForm(), item.getClazz());
 	}
 	
 	private AnsiColorTheme getAnsiColorTheme(final ColorMode mode) {
@@ -101,7 +97,6 @@ public class ReplHighlighter implements Highlighter {
 	}
 
 	
-	private static String ANSI_RESET = "\u001b[0m";
 	
 	private final AnsiColorTheme theme;
 	private boolean enabled = true;

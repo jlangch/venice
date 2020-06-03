@@ -21,12 +21,19 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.SpecialForms;
+import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
+import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.reader.HighlightItem;
+import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -81,7 +88,23 @@ public class DocForm {
 			final VncKeyword module, 
 			final Env env
 	) {
-		return new VncString(ModuleLoader.loadModule(module.getValue()));
+		final AnsiColorTheme theme = AnsiColorThemes.getTheme(getColorTheme(env));
+
+		final String script = ModuleLoader.loadModule(module.getValue());
+		
+		if (theme == null) {
+			return new VncString(script);
+		}
+		else {			
+			final List<HighlightItem> items = HighlightParser.parse("(do " + script + ")");
+			
+			return new VncString(
+					AnsiColorTheme.ANSI_RESET +
+					items.subList(3, items.size()-2)
+						 .stream()
+						 .map(it -> theme.style(it.getForm(), it.getClazz()))
+						 .collect(Collectors.joining()));
+		}
 	}
 	
 	private static VncString docForCustomType(
@@ -155,5 +178,22 @@ public class DocForm {
 					type.getValue()));
 		}
 	}
-
+	
+	private static String getColorTheme(final Env env) {
+		// Note: there is a color theme only if we're running in a REPL!
+		
+		final VncVal runMode = env.get(new VncSymbol("*run-mode*"));
+		if (Types.isVncKeyword(runMode)) {
+			final String sRunMode = ((VncKeyword)runMode).getValue();
+			if ("repl".equals(sRunMode)) {
+				final VncVal theme = env.get(new VncSymbol("*repl-color-theme*"));
+				if (Types.isVncKeyword(theme)) {
+					final String sTheme = ((VncKeyword)theme).getValue();
+					return "none".equals(sTheme) ? null : sTheme;
+				}
+			}
+		}
+				
+		return null;
+	}
 }

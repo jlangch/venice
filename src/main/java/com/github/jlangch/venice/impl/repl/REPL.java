@@ -169,6 +169,10 @@ public class REPL {
 		
 		Env env = loadEnv(cli, out, err, in);
 
+		env.setGlobal(new Var(
+						new VncSymbol("*repl-color-theme*"), 
+						new VncKeyword(config.getColorMode().name().toLowerCase()),
+						false));
 		
 		final ReplParser parser = new ReplParser(venice);
 		
