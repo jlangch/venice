@@ -6324,7 +6324,7 @@ public class CoreFunctions {
 					.doc(
 						"Syntax highlighting. Reads the form and returns a list of " +
 						"(token, token-class) tuples. \n\n" +
-						"Classes: \n" +
+						"Token classes: \n" +
 						"   :comment                 ; .... \n" +
 						"   :whitespaces             \"  \", \"\\n\", \"  \\n\"  \n" +
 						"\n" +
