@@ -39,12 +39,11 @@ public class AnsiColorTheme {
 		this.name = name;
 		this.colors.putAll(colors);
 		this.mapper = Arrays.stream(HighlightClass.values())
-							.collect(
-								Collectors.toMap(
-									p -> p,
-									p -> new VncKeyword(p.name()
-														 .toLowerCase()
-														 .replace('_', '-'))));
+							.collect(Collectors.toMap(
+										p -> p,
+										p -> new VncKeyword(p.name()
+															 .toLowerCase()
+															 .replace('_', '-'))));
 	}
 	
 	public String getName() {
