@@ -94,7 +94,11 @@ public class HighlightParser {
 	}
 	
 	private HighlightItem lastItem() {
-		return items.isEmpty() ? null : items.get(items.size()-1);
+		return items.size() < 1 ? null : items.get(items.size()-1);
+	}
+	
+	private HighlightItem secondLastItem() {
+		return items.size() < 2 ? null : items.get(items.size()-2);
 	}
 	
 	private Token peek() {	
@@ -184,11 +188,19 @@ public class HighlightParser {
 			else if (matcher.group(11) != null) {
 				// 11: symbol
 				final HighlightItem last = lastItem();
+				final HighlightItem secondLast = secondLastItem();
+				
 				if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
-					if (SPECIAL_FORMS.contains(token.getToken())) {
+					if (secondLast != null && secondLast.getClazz() == QUOTE) {
+						// '(a 2 3)
+						addItem(token.getToken(), SYMBOL);
+					}
+					else if (SPECIAL_FORMS.contains(token.getToken())) {
+						// (def a 10)
 						addItem(token.getToken(), SYMBOL_SPECIAL_FORM);
 					}
 					else {
+						// (+ 1 2)
 						addItem(token.getToken(), SYMBOL_FUNCTION_NAME);
 					}
 				}

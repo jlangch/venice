@@ -6366,7 +6366,7 @@ public class CoreFunctions {
 						Arrays.stream(HighlightClass.values())
 							  .collect(Collectors.toMap(
 											p -> p,
-											p -> new VncKeyword(p.name().toLowerCase())));
+											p -> new VncKeyword(p.name().toLowerCase().replace('_', '-'))));
 				
 				VncList list = new VncList();
 				for(HighlightItem it : HighlightParser.parse(form)) {
