@@ -150,10 +150,10 @@ public class AnsiColorThemes {
 	private static String LIC_ORANGE      = "\u001b[38;5;208m";
 
 	// dark mode
-	private static String DAC_PURPLE     = "\u001b[38;5;164m";
+	private static String DAC_PURPLE     = "\u001b[38;5;128m";
 	private static String DAC_GREY       = "\u001b[38;5;252m";
 	private static String DAC_GREY_DARK  = "\u001b[38;5;244m";
-	private static String DAC_BLUE       = "\u001b[38;5;39m";
-	private static String DAC_GREEN      = "\u001b[38;5;41m";
-	private static String DAC_ORANGE     = "\u001b[38;5;208m";
+	private static String DAC_BLUE       = "\u001b[38;5;27m";
+	private static String DAC_GREEN      = "\u001b[38;5;112m";
+	private static String DAC_ORANGE     = "\u001b[38;5;172m";
 }
