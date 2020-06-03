@@ -66,6 +66,7 @@
 //   [3] Draft GitHub Venice release
 //      - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //        This will create the release tag
+//      - Pull the changes (commit tag)
 //   
 //   [4] Open new development cycle
 //       - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
