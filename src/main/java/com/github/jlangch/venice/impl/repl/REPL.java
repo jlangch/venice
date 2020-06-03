@@ -163,16 +163,16 @@ public class REPL {
 		
 		venice = new VeniceInterpreter(interceptor, loadPaths);
 		
+		highlighter = config.isSyntaxHighlighting()
+						? new ReplHighlighter(config)
+						: null;
+		
 		Env env = loadEnv(cli, out, err, in);
 
 		
 		final ReplParser parser = new ReplParser(venice);
 		
 		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
-		
-		final ReplHighlighter highlighter = config.isSyntaxHighlighting()
-												? new ReplHighlighter(config)
-												: null;
 		
 		final History history = new DefaultHistory();
 		
@@ -204,6 +204,8 @@ public class REPL {
 			return; // stop REPL
 		}
 
+		highlight = highlighter != null;
+				
 		// REPL loop
 		while (true) {
 			resultHistory.mergeToEnv(env);
@@ -384,6 +386,25 @@ public class REPL {
 			printer.println("stdout", "Java VM Version: " + System.getProperty("java.vm.version"));
 			printer.println("stdout", "Java VM Name:    " + System.getProperty("java.vm.name"));
 			printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
+		}
+		else if (cmd.startsWith("highlight")) {
+			if (cmd.equals("highlight")) {
+				printer.println("stdout", "Highlighting:    " + (highlight ? "on" : "off"));
+			}
+			else {
+				final String param = StringUtil.trimToEmpty(cmd.substring("highlight".length()));
+				if ("on".equals(param)) {
+					highlight = true;
+					if (highlighter != null) highlighter.enable(true);
+				}
+				else if ("off".equals(param)) {
+					highlight = false;
+					if (highlighter != null) highlighter.enable(false);
+				}
+				else {
+					printer.println("error", "Invalid parameter. Use !highlight {on|off}.");
+				}
+			}
 		}
 		else {	
 			printer.println("error", "invalid command");
@@ -695,6 +716,8 @@ public class REPL {
 			"  !?, !help    help\n" +	
 			"  !info        show REPL setup context data\n" +	
 			"  !config      show a sample REPL config\n" +	
+			"  !highlight   turn highlighting dynamically on or off\n" +
+			"                 !highlight {on/off}\n" +	
 			"  !lic         prints the licenses for 3rd party\n" +
 			"               libs included with Venice\n" +	
 			"  !macroexpand enable macro expansion while loading\n" +
@@ -763,6 +786,8 @@ public class REPL {
 	private IInterceptor interceptor;
 	private VeniceInterpreter venice;
 	private TerminalPrinter printer;
+	private ReplHighlighter highlighter;
 	private boolean macroexpand = false;
 	private boolean ansiTerminal = false;
+	private boolean highlight = true;
 }

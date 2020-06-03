@@ -40,6 +40,14 @@ public class ReplHighlighter implements Highlighter {
 		this.colorMode = config.getColorMode();
 	}
 	
+	public void enable(final boolean val) {
+		enabled = val;
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
 	@Override
 	public AttributedString highlight(
 			final LineReader reader, 
@@ -47,9 +55,14 @@ public class ReplHighlighter implements Highlighter {
 	) {
 		final AttributedStringBuilder sb = new AttributedStringBuilder();
 		
-		HighlightParser
-			.parse(buffer)
-			.forEach(it -> sb.ansiAppend(highlight(it)));
+		if (enabled && !isReplCommand(buffer)) {
+			HighlightParser
+				.parse(buffer)
+				.forEach(it -> sb.ansiAppend(highlight(it)));		
+		}
+		else {
+			sb.append(buffer);
+		}
 		
 		return sb.toAttributedString();
 	}
@@ -150,6 +163,10 @@ public class ReplHighlighter implements Highlighter {
 	private String getNoneModeStyle(final HighlightClass clazz) {
 		return null;
 	}
+	
+	private boolean isReplCommand(final String buffer) {
+		return buffer.startsWith("!");
+	}
 
 	
 	// light mode
@@ -169,4 +186,5 @@ public class ReplHighlighter implements Highlighter {
 	private static String ANSI_RESET = "\u001b[0m";
 	
 	private final ColorMode colorMode;
+	private boolean enabled = true;
 }
