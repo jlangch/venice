@@ -840,6 +840,10 @@ public class DocGenerator {
 		meta.addItem(getDocItem("meta"));
 		meta.addItem(getDocItem("with-meta"));
 		meta.addItem(getDocItem("vary-meta"));
+
+		final DocSection syntax = new DocSection("Syntax");
+		all.addSection(syntax);
+		syntax.addItem(getDocItem("highlight"));
 		
 		return section;
 	}

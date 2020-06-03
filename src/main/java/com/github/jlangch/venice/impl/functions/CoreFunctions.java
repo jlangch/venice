@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -47,6 +48,9 @@ import com.github.jlangch.venice.impl.GenSym;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.impl.reader.HighlightClass;
+import com.github.jlangch.venice.impl.reader.HighlightItem;
+import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -6202,7 +6206,6 @@ public class CoreFunctions {
 	// Utilities
 	///////////////////////////////////////////////////////////////////////////
 
-
 	public static VncFunction gensym =
 		new VncFunction(
 				"gensym",
@@ -6312,7 +6315,50 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction highlight =
+		new VncFunction(
+				"highlight",
+				VncFunction
+					.meta()
+					.arglists("(highlight form)")
+					.doc("Syntax highlighting.")
+					.examples(
+						"(highlight \"(+ 10 20)\")",
+						"(highlight \"(if (= 1 2) true false)\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("highlight", args, 1);
+				
+				final String form = Coerce.toVncString(args.first()).getValue();
+				
+				final Map<HighlightClass,VncKeyword> classMap = 
+						Arrays.stream(HighlightClass.values())
+							  .collect(Collectors.toMap(
+											p -> p,
+											p -> new VncKeyword(p.name().toLowerCase())));
+				
+				VncList list = new VncList();
+				for(HighlightItem it : HighlightParser.parse(form)) {
+					list = list.addAtEnd(
+								VncList.of(
+									new VncString(it.getForm()),
+									classMap.get(it.getClazz())));
+				}
+				
+				return list;
+			}
 
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
+		
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Helpers
+	///////////////////////////////////////////////////////////////////////////
+	
 	private static VncVal sort(
 			final String fnName,
 			final VncVal coll,
@@ -6379,6 +6425,7 @@ public class CoreFunctions {
 		}
 	}
 
+	
 
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -6567,6 +6614,7 @@ public class CoreFunctions {
 				.add(type)
 				.add(supertype)
 				.add(instance_Q)
+				.add(highlight)
 
 				.toMap();
 
