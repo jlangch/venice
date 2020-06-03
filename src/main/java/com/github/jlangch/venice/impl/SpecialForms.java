@@ -52,8 +52,7 @@ public class SpecialForms {
 						"(doc def)",
 						"(do \n" +
 						"   (deftype :complex [real :long, imaginary :long]) \n" +
-						"   (doc :complex))"
-						)
+						"   (doc :complex))")
 					.build()
 		) {
 		    private static final long serialVersionUID = -1;
