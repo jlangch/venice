@@ -125,7 +125,7 @@ public class AnsiColorThemes {
 
 		colors.put(map(UNKNOWN),				DARK_GREY);
 
-		return new AnsiColorTheme("light", colors);
+		return new AnsiColorTheme("dark", colors);
 	}
 
 	private static VncKeyword map(final HighlightClass clazz) {
