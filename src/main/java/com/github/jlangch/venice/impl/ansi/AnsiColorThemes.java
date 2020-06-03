@@ -153,7 +153,7 @@ public class AnsiColorThemes {
 	private static String DAC_PURPLE     = "\u001b[38;5;140m";
 	private static String DAC_GREY       = "\u001b[38;5;252m";
 	private static String DAC_GREY_DARK  = "\u001b[38;5;244m";
-	private static String DAC_BLUE       = "\u001b[38;5;75m";
+	private static String DAC_BLUE       = "\u001b[38;5;111m";
 	private static String DAC_GREEN      = "\u001b[38;5;157m";
 	private static String DAC_ORANGE     = "\u001b[38;5;216m";
 }
