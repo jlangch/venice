@@ -277,7 +277,7 @@ public class ReaderTest {
 		sw.stop();
 		
 		System.out.println(String.format(
-				"Reading :core module: %s at %d lines/s",
+				"Reading :core module in %s at %d lines/s",
 				sw.toString(),
 				(lines * 1000L) / sw.elapsedMillis()));
 		

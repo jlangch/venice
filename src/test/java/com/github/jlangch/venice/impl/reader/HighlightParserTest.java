@@ -102,7 +102,7 @@ public class HighlightParserTest {
 		sw.stop();
 		
 		System.out.println(String.format(
-				"Highlighting :core module: %s at %d lines/s",
+				"Highlighting :core module in %s at %d lines/s",
 				sw.toString(),
 				(lines * 1000L) / sw.elapsedMillis()));
 		

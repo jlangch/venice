@@ -529,7 +529,8 @@ public class TokenizerTest {
 		sw.stop();
 		
 		System.out.println(String.format(
-				"Tokenizing :core module: %s at %d lines/s",
+				"Tokenizing :core module with %d tokens in %s at %d lines/s",
+				tokens.size(),
 				sw.toString(),
 				(lines * 1000L) / sw.elapsedMillis()));
 
