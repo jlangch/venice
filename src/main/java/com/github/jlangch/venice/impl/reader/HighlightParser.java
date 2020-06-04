@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 
 import com.github.jlangch.venice.EofException;
 
@@ -123,86 +122,62 @@ public class HighlightParser {
 	
 	private void process_atom() {
 		final Token token = next();
-
-		if (token.isString()) {
-			addItem(token.getToken(), STRING);
-		}
-		else if (token.isStringBlock()) {
-			addItem(token.getToken(), STRING);
-		}
-		else {
-			final Matcher matcher = Reader.ATOM_PATTERN.matcher(token.getToken());
-			
-			if (!matcher.find()) {
-				addItem(token.getToken(), UNKNOWN);
-			}
-			
-			else if (matcher.group(1) != null) {
-				// 1: long
-				addItem(token.getToken(), NUMBER);
-			} 
-			else if (matcher.group(2) != null) {
-				// 2: int
-				addItem(token.getToken(), NUMBER);
-			} 
-			else if (matcher.group(3) != null) {
-				// 3: double
-				addItem(token.getToken(), NUMBER);
-			} 
-			else if (matcher.group(4) != null) {
-				// 4: bigdecimal
-				addItem(token.getToken(), NUMBER);
-			} 
-			else if (matcher.group(5) != null) {
-				// 5: nil
-				addItem(token.getToken(), CONSTANT);
-			} 
-			else if (matcher.group(6) != null) {
-				// 6: true
-				addItem(token.getToken(), CONSTANT);
-			} 
-			else if (matcher.group(7) != null) {
-				// 7: false
-				addItem(token.getToken(), CONSTANT);
-			} 
-			else if (matcher.group(8) != null) {
-				// 8: string """
-				addItem(token.getToken(), STRING);
-			} 
-			else if (matcher.group(9) != null) {
-				// 9: string "
-				addItem(token.getToken(), STRING);
-			} 
-			else if (matcher.group(10) != null) {
-				// 10: keyword
-				addItem(token.getToken(), KEYWORD);
-			} 
-			else if (matcher.group(11) != null) {
-				// 11: symbol
-				final HighlightItem last = items.size() < 1 ? null : items.get(items.size()-1);
-				final HighlightItem secondLast = items.size() < 2 ? null : items.get(items.size()-2);
+		final String sToken = token.getToken();
 				
-				if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
-					if (secondLast != null && secondLast.getClazz() == QUOTE) {
-						// '(a 2 3)
-						addItem(token.getToken(), SYMBOL);
-					}
-					else if (SPECIAL_FORMS.contains(token.getToken())) {
-						// (def a 10)
-						addItem(token.getToken(), SYMBOL_SPECIAL_FORM);
+		switch(Reader.getAtomType(token)) {
+			case NIL:				
+			case TRUE:
+			case FALSE:
+				addItem(sToken, CONSTANT);
+				break;
+				
+			case INTEGER: 
+			case LONG:
+			case DOUBLE:
+			case DECIMAL:
+				addItem(sToken, NUMBER);
+				break;
+				
+			case STRING: 
+				addItem(sToken, STRING);
+				break;
+			
+			case STRING_BLOCK:
+				addItem(sToken, STRING);
+				break;
+			
+			case KEYWORD:
+				addItem(sToken, KEYWORD);
+				break;
+				
+			case SYMBOL: {
+					final HighlightItem last = items.size() < 1 ? null : items.get(items.size()-1);
+					final HighlightItem secondLast = items.size() < 2 ? null : items.get(items.size()-2);
+					
+					if (last != null && last.getClazz() == PARENTHESIS_BEGIN) {
+						if (secondLast != null && secondLast.getClazz() == QUOTE) {
+							// '(a 2 3)
+							addItem(sToken, SYMBOL);
+						}
+						else if (SPECIAL_FORMS.contains(sToken)) {
+							// (def a 10)
+							addItem(sToken, SYMBOL_SPECIAL_FORM);
+						}
+						else {
+							// (+ 1 2)
+							addItem(sToken, SYMBOL_FUNCTION_NAME);
+						}
 					}
 					else {
-						// (+ 1 2)
-						addItem(token.getToken(), SYMBOL_FUNCTION_NAME);
+						addItem(sToken, SYMBOL);
 					}
 				}
-				else {
-					addItem(token.getToken(), SYMBOL);
-				}
-			} 
-			else {
-				addItem(token.getToken(), UNKNOWN);
-			}
+				break;
+			
+			case UNKNOWN:
+			default:
+				addItem(sToken, UNKNOWN);
+				break;
 		}
 	}
 

@@ -24,8 +24,6 @@ package com.github.jlangch.venice.impl.reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
@@ -36,8 +34,8 @@ import com.github.jlangch.venice.impl.AutoGenSym;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -123,79 +121,75 @@ public class Reader {
 
 	private static VncVal read_atom(final Reader rdr) {
 		final Token token = rdr.next();
-		final Matcher matcher = ATOM_PATTERN.matcher(token.getToken());
 		
-		if (!matcher.find()) {
-			throw new ParseError(formatParseError(
-									token, 
-									"Unrecognized token '%s'", 
-									token.getToken()));
-		}
+		final String sToken = token.getToken();
 		
-		else if (matcher.group(1) != null) {
-			// 1: long
-			return new VncLong(Long.parseLong(matcher.group(1)), MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(2) != null) {
-			// 2: int
-			String intVal = matcher.group(2);
-			intVal = intVal.substring(0, intVal.length()-1);
-			return new VncInteger(Integer.parseInt(intVal), MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(3) != null) {
-			// 3: double
-			return new VncDouble(Double.parseDouble(matcher.group(3)), MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(4) != null) {
-			// 4: bigdecimal
-			String dec = matcher.group(4);
-			dec = dec.substring(0, dec.length()-1);
-			return new VncBigDecimal(new BigDecimal(dec), MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(5) != null) {
-			// 5: nil
-			return Constants.Nil;
-		} 
-		else if (matcher.group(6) != null) {
-			// 6: true
-			return VncBoolean.True;
-		} 
-		else if (matcher.group(7) != null) {
-			// 7: false
-			return VncBoolean.False;
-		} 
-		else if (matcher.group(8) != null) {
-			// 8: string """
-			String s = StringUtil.stripIndentIfFirstLineEmpty(
-							unescapeAndDecodeUnicode(matcher.group(8)));
+		switch(getAtomType(token)) {
+			case NIL:
+				return Constants.Nil;
+				
+			case TRUE:
+				return VncBoolean.True;
+				
+			case FALSE:
+				return VncBoolean.False;
+				
+			case INTEGER: 
+				return new VncInteger(
+							Integer.parseInt(sToken.substring(0, sToken.length()-1)), 
+							MetaUtil.toMeta(token));
+				
+			case LONG:
+				return new VncLong(
+							Long.parseLong(sToken), 
+							MetaUtil.toMeta(token));
+				
+			case DOUBLE:
+				return new VncDouble(
+							Double.parseDouble(sToken), 
+							MetaUtil.toMeta(token));
+				
+			case DECIMAL:
+				return new VncBigDecimal(
+							new BigDecimal(sToken.substring(0, sToken.length()-1)), 
+							MetaUtil.toMeta(token));
+				
+			case STRING: {
+					String s = StringUtil.removeEnd(sToken.substring(1), "\"");
+					s = unescapeAndDecodeUnicode(s);			
+					return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
+							.withMeta(MetaUtil.toMeta(token));
+				}
 			
-			return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
-						.withMeta(MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(9) != null) {
-			// 9: string "
-			final String s = unescapeAndDecodeUnicode(matcher.group(9));			
-			return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
-					.withMeta(MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(10) != null) {
-			// 10: keyword
-			return new VncKeyword(matcher.group(10), MetaUtil.toMeta(token));
-		} 
-		else if (matcher.group(11) != null) {
-			// 11: symbol
-			final VncSymbol sym = new VncSymbol(matcher.group(11));
-			if (rdr.autoGenSym.isWithinSyntaxQuote() && rdr.autoGenSym.isAutoGenSymbol(sym)) {
-				// auto gen symbols within syntax quote
-				return rdr.autoGenSym.lookup(sym);
-			}
-			else {
-				rdr.anonymousFnArgs.addSymbol(sym);
-				return sym.withMeta(MetaUtil.toMeta(token));
-			}
-		} 
-		else {
-			throw new ParseError(formatParseError(token, "Unrecognized '%s'", matcher.group(0)));
+			case STRING_BLOCK: {
+					String s = StringUtil.removeEnd(sToken.substring(3), "\"\"\"");
+					s = StringUtil.stripIndentIfFirstLineEmpty(
+							unescapeAndDecodeUnicode(s));			
+					return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
+								.withMeta(MetaUtil.toMeta(token));
+				}
+			
+			case KEYWORD:
+				return new VncKeyword(sToken, MetaUtil.toMeta(token));
+				
+			case SYMBOL: {
+					final VncSymbol sym = new VncSymbol(sToken);
+					if (rdr.autoGenSym.isWithinSyntaxQuote() && rdr.autoGenSym.isAutoGenSymbol(sym)) {
+						// auto gen symbols within syntax quote
+						return rdr.autoGenSym.lookup(sym);
+					}
+					else {
+						rdr.anonymousFnArgs.addSymbol(sym);
+						return sym.withMeta(MetaUtil.toMeta(token));
+					}
+				}
+			
+			case UNKNOWN:
+			default:
+				throw new ParseError(formatParseError(
+						token, 
+						"Unrecognized token '%s'", 
+						token.getToken()));
 		}
 	}
 
@@ -353,6 +347,50 @@ public class Reader {
 		return form;
 	}
 	
+	public static AtomType getAtomType(final Token token) {
+		switch(token.getType()) {
+			case STRING: 
+				return AtomType.STRING;
+				
+			case STRING_BLOCK: 
+				return AtomType.STRING_BLOCK;
+				
+			case ANY: {
+					final String sToken = token.getToken();
+					final char first = sToken.charAt(0);
+					final char second = sToken.length() > 1 ? sToken.charAt(1) : ' ';
+					if (first == ':') {
+						return AtomType.KEYWORD;
+					}
+					else if (Character.isDigit(first) || (first == '-' && Character.isDigit(second))) {
+						final char lastCh = sToken.charAt(sToken.length()-1);
+						if (lastCh == 'I') {
+							return AtomType.INTEGER;
+						}
+						else if (lastCh == 'M') {
+							return AtomType.DECIMAL;
+						}
+						else {
+							return sToken.indexOf('.') > 0 
+										? AtomType.DOUBLE 
+										: AtomType.LONG;
+						}
+					}
+					else {
+						switch(sToken) {
+							case "nil":   return AtomType.NIL;
+							case "true":  return AtomType.TRUE;
+							case "false": return AtomType.FALSE;
+							default:      return AtomType.SYMBOL;
+						}
+					}
+				}
+			
+			default: 
+				return AtomType.UNKNOWN;
+		}
+	}
+	
 	public static VncVal interpolate(final String s, final String filename, final int line, final int column) {
 		// this is a reader macro implemented in Java
 		
@@ -505,34 +543,6 @@ public class Reader {
 	private static String formatParseError(final String filename, final int line, final int column, final String format, final Object... args) {
 		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(filename, line, column);
 	}
-
-	// (?s) makes the dot match all characters, including line breaks.
-	//
-	// groups:
-	//     1: long => (^-?[0-9]+$)
-	//     2: int => (^-?[0-9]+I$)
-	//     3: double => (^-?[0-9]+[.][0-9]*$)
-	//     4: bigdecimal => (^-?[0-9]+[.][0-9]*M$)
-	//     5: nil => (^nil$)
-	//     6: true => (^true$)
-	//     7: false => (^false$)
-	//     8: string => ^"""(.*)"""$
-	//     9: string => ^"(.*)"$
-	//    10: keyword => :(.*)
-	//    11: symbol => (^[^"]*$)
-	public static final Pattern ATOM_PATTERN = Pattern.compile(
-													"(?s)"  
-													+ "(^-?[0-9]+$)"
-													+ "|(^-?[0-9]+I$)"
-													+ "|(^-?[0-9][0-9.]*$)"
-													+ "|(^-?[0-9][0-9.]*M$)"
-													+ "|(^nil$)"
-													+ "|(^true$)"
-													+ "|(^false$)"
-													+ "|^\"{3}(.*)\"{3}$"
-													+ "|^\"(.*)\"$"
-													+ "|:(.*)"
-													+ "|(^[^\"]*$)");
 	
 	private final String filename;
 	private final String form;
