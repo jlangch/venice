@@ -43,7 +43,7 @@
 // Release Venice:
 //
 //   [1] Prepare Venice
-//       - Verify that all unit tests pass
+//       - Verify that all unit tests pass: ./gradlew clean test
 //       - Change version in 'gradle.properties' to '1.x.y' (remove the
 //         SNAPSHOT suffix)
 //       - Update the ChangeLog for the release version
