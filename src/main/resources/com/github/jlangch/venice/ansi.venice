@@ -105,6 +105,9 @@
     :cursor-pos-save       "[s"
     :cursor-pos-restore    "[u"
 
+    :cursor-hide           "[?25l"
+    :cursor-show           "[?25h"
+
     :cursor-left-1         "[1D"
     :cursor-left-2         "[2D"
     :cursor-left-3         "[3D"
@@ -131,6 +134,9 @@
 
 (defn cursor-pos-save [] "[s")
 (defn cursor-pos-restore [] "[u")
+
+(defn cursor-hide [] "[?25l")
+(defn cursor-show [] "[?25h")
 
 
 
@@ -294,17 +300,21 @@
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))
                 value   (str/format "%3s%%" percent)]
-            (if (and (= status :progress) (pos? percent))
-              (print (ansi/style "" :cursor-left-1000))
-              (print (ansi/style "" :clear-line :cursor-left-1000)))
-            (case status
-              :start    (print start-msg)
-              :progress (print (str caption
-                                    (apply ansi/style value percent-styles)
-                                    " "))
-              :end      (println end-msg)
-              :failed   (println failed-msg)
-                        (println (str "Invalid status '" status "'")))
+            (try
+              (print (ansi/style "" :cursor-hide))
+              (if (and (= status :progress) (pos? percent))
+                (print (ansi/style "" :cursor-left-1000))
+                (print (ansi/style "" :clear-line :cursor-left-1000)))
+              (case status
+                :start    (print start-msg)
+                :progress (print (str caption
+                                      (apply ansi/style value percent-styles)
+                                      " "))
+                :end      (println end-msg)
+                :failed   (println failed-msg)
+                          (println (str "Invalid status '" status "'")))
+              (finally
+                (print (ansi/style "" :cursor-show))))
             nil))
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))]
@@ -382,15 +392,19 @@
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
-          (if (and (= status :progress) (pos? percent))
-            (print (ansi/style "" :cursor-left-1000))
-            (print (ansi/style "" :clear-line :cursor-left-1000)))
-          (case status
-            :start    (print start-msg)
-            :progress (print (bar percent))
-            :end      (println end-msg)
-            :failed   (println failed-msg)
-                      (println (str "Invalid status '" status "'")))
+          (try
+            (print (ansi/style "" :cursor-hide))
+            (if (and (= status :progress) (pos? percent))
+              (print (ansi/style "" :cursor-left-1000))
+              (print (ansi/style "" :clear-line :cursor-left-1000)))
+            (case status
+              :start    (print start-msg)
+              :progress (print (bar percent))
+              :end      (println end-msg)
+              :failed   (println failed-msg)
+                        (println (str "Invalid status '" status "'")))
+          (finally
+            (print (ansi/style "" :cursor-show))))
           nil))
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
