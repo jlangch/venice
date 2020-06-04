@@ -338,17 +338,23 @@ public class Tokenizer {
 	}
 		
 	private boolean isSpecialChar(final char ch) {
-		return ch == '(' 
-				|| ch == ')' 
-				|| ch == '[' 
-				|| ch == ']'
-				|| ch == '{' 
-				|| ch == '}'
-				|| ch == '^' 
-				|| ch == '\'' 
-				|| ch == '`' 
-				|| ch == '~' 
-				|| ch == '@';
+		switch(ch) {
+			case '(':
+			case ')': 
+			case '[': 
+			case ']':
+			case '{': 
+			case '}':
+			case '^':
+			case '\'': 
+			case '`':
+			case '~':
+			case '@':
+				return true;
+				
+			default:
+				return false;
+		}
 	}
 
 	private void addLinefeedToken(final int filePos, final int line, final int col) { 
