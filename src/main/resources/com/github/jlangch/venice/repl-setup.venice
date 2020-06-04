@@ -244,10 +244,10 @@
         (println )
         (println *err*
                  """
-                 --------------------------------------------------------
-                 !WARNING! The Jansi JAR could not be downloaded. Without
-                 this JAR the REPL has limited features!
-                 --------------------------------------------------------
+                 -------------------------------------------------------------
+                 !WARNING! The Jansi JAR could not be downloaded. Without this
+                           JAR the REPL has limited features!
+                 -------------------------------------------------------------
                  """)
         (println )))))
 
@@ -256,14 +256,13 @@
   (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
     (println """
-             ----------------------------------------------------------
-             The Venice REPL has been successfuly configured and setup.
-             The original Venice JAR is not needed anymore, it has been
-             copied to the 'libs' directory that holds all JAR files
-             and resources.
+             ----------------------------------------------------------------
+             The Venice REPL has been successfuly configured and setup. The
+             original Venice JAR is not needed anymore, it has been copied to
+             the 'libs' directory that holds all JAR files and resources.
 
-             !!!! Start the REPL with ~{launch-script} !!!!
-             ----------------------------------------------------------
+             !!! Start the REPL with ~{launch-script}
+             ----------------------------------------------------------------
              """)))
 
 
