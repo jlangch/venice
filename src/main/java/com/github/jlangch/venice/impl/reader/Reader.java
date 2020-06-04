@@ -66,14 +66,14 @@ public class Reader {
 		this.tokens = formTokens;
 		this.position = 0;
 	}
-	
-	public static Reader reader(final String str, final String filename) {
-		// Modules.validateFileName(filename);		
-		return new Reader(filename, str, tokenize(str, filename));
-	}
 
 	public static VncVal read_str(final String str, final String filename) {
 		return read_form(reader(str, filename));
+	}
+	
+	private static Reader reader(final String str, final String filename) {
+		// Modules.validateFileName(filename);		
+		return new Reader(filename, str, tokenize(str, filename));
 	}
 
 	public String unprocessedRest() {

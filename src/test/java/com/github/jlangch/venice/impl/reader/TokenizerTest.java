@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class TokenizerTest {
@@ -520,9 +521,18 @@ public class TokenizerTest {
 	@Test
 	public void test_tokenize_core() {
 		final String core = ModuleLoader.loadModule("core");
+		final String core_ = "(do\n" + core + "\n)";
+		final long lines = StringUtil.splitIntoLines(core_).size();
+		
 		final StopWatch sw = new StopWatch();
-		final List<Token> tokens = tokenize("(do " + core + ")", "core");
-		System.out.println("Tokenizing :core module with Tokenizer: " + sw.stop().toString());
+		final List<Token> tokens = tokenize(core_, "core");
+		sw.stop();
+		
+		System.out.println(String.format(
+				"Tokenizing :core module: %s at %d lines/s",
+				sw.toString(),
+				(lines * 1000L) / sw.elapsedMillis()));
+
 		assertTrue(!tokens.isEmpty());
 	}
 	

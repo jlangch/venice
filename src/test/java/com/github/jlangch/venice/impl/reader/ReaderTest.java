@@ -29,7 +29,10 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReaderTest {
@@ -261,6 +264,24 @@ public class ReaderTest {
 	public void test_interpolate_2() {
 		final VncVal val = Reader.interpolate(" \"~(str x)\" ", "test", 1, 1);
 		assertNotNull(val);
+	}
+
+	@Test
+	public void test_read_core() {
+		final String core = ModuleLoader.loadModule("core");
+		final String core_ = "(do\n" + core + "\n)";
+		final long lines = StringUtil.splitIntoLines(core_).size();
+		
+		final StopWatch sw = new StopWatch();
+		final VncVal ast = Reader.read_str(core_, "core");
+		sw.stop();
+		
+		System.out.println(String.format(
+				"Reading :core module: %s at %d lines/s",
+				sw.toString(),
+				(lines * 1000L) / sw.elapsedMillis()));
+		
+		assertNotNull(ast);
 	}
 
 }

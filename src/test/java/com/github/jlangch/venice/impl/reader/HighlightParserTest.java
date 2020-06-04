@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.util.StopWatch;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class HighlightParserTest {
@@ -94,18 +94,25 @@ public class HighlightParserTest {
 	@Test
 	public void test_core() {
 		final String core = ModuleLoader.loadModule("core");
+		final String core_ = "(do\n" + core + "\n)";
+		final long lines = StringUtil.splitIntoLines(core_).size();
+
 		final StopWatch sw = new StopWatch();
-		final List<HighlightItem> items = HighlightParser.parse("(do\n" + core + "\n)");
-		System.out.println("Highlighting :core module with Highlighter: " + sw.stop().toString());
-		assertTrue(!items.isEmpty());
+		final List<HighlightItem> items = HighlightParser.parse(core_);
+		sw.stop();
 		
-		final String core_ = items.subList(3, items.size()-2)
+		System.out.println(String.format(
+				"Highlighting :core module: %s at %d lines/s",
+				sw.toString(),
+				(lines * 1000L) / sw.elapsedMillis()));
+		
+		final String joined = items.subList(3, items.size()-2)
 								  .stream()
 								  .map(i -> i.getForm())
 								  .collect(Collectors.joining());
 		
-		assertEquals(core.length(), core_.length());
-		assertEquals(core, core_);
+		assertEquals(core.length(), joined.length());
+		assertEquals(core, joined);
 	}
 
 //	private void diff(final String s1, final String s2) {
