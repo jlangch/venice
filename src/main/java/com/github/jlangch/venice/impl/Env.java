@@ -26,6 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -402,7 +403,9 @@ public class Env implements Serializable {
 	public Env setStdoutPrintStream(final PrintStream ps) {
 		replaceGlobalDynamic(
 				new VncSymbol("*out*"), 
-				new VncJavaObject(ps != null ? ps : nullPrintStream()));
+				VncJavaObject.from(
+						ps != null ? ps : nullPrintStream(),
+						PrintStream.class));
 		
 		return this;
 	}
@@ -410,7 +413,9 @@ public class Env implements Serializable {
 	public Env setStderrPrintStream(final PrintStream ps) {
 		replaceGlobalDynamic(
 				new VncSymbol("*err*"), 
-				new VncJavaObject(ps != null ? ps : nullPrintStream()));
+				VncJavaObject.from(
+						ps != null ? ps : nullPrintStream(),
+						PrintStream.class));
 		
 		return this;
 	}
@@ -419,13 +424,19 @@ public class Env implements Serializable {
 		final VncSymbol sym = new VncSymbol("*in*");
 		
 		if (rd == null) {
-			replaceGlobalDynamic(sym, new VncJavaObject(nullBufferedReader()));
+			replaceGlobalDynamic(
+					sym, 
+					VncJavaObject.from(nullBufferedReader(), Reader.class));
 		}
 		else if (rd instanceof BufferedReader) {
-			replaceGlobalDynamic(sym, new VncJavaObject(rd));
+			replaceGlobalDynamic(
+					sym, 
+					VncJavaObject.from(rd, Reader.class));
 		}
 		else {
-			replaceGlobalDynamic(sym, new VncJavaObject(new BufferedReader(rd)));
+			replaceGlobalDynamic(
+					sym,
+					VncJavaObject.from(new BufferedReader(rd), Reader.class));
 		}
 		
 		return this;
@@ -442,10 +453,10 @@ public class Env implements Serializable {
 				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
 				   .filter(v -> regexFilter == null ? true : v.getName().getName().matches(regexFilter))
 				   .map(v -> String.format(
-								"%s%s: %s", 
+								"%s%s (:%s)", 
 								indent,
-								v.getName().getName(), 
-								Printer.pr_str(v.getVal(), true)))
+								v.getName().getName(),
+								Types.getType(v.getVal()).getValue()))
 				   .collect(Collectors.joining("\n"));
 	}
 	
