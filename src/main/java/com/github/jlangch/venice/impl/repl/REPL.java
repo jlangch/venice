@@ -468,12 +468,6 @@ public class REPL {
 			printer.println("stdout", HELP_ENV);
 			return;
 		}
-		else if (params[0].equals("levels")) {
-			if (params.length == 1) {
-				printer.println("stdout", "Levels: " + (env.level() + 1));
-				return;
-			}
-		}
 		else if (params[0].equals("print")) {
 			if (params.length == 2) {
 				final VncVal val = env.get(new VncSymbol(params[1]));
@@ -808,9 +802,7 @@ public class REPL {
 			"   !env print {symbol-name}\n" +	
 			"   !env global\n" +	
 			"   !env global io/*\n" +	
-			"   !env global *file*\n" +	
-			"   !env local {level}\n" +	
-			"   !env levels\n";
+			"   !env global *file*\n";
 
 	private final static String HELP_SANDBOX =
 			"Please choose from:\n" +	
