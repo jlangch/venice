@@ -234,8 +234,6 @@ public class Reader {
 			throw new ContinueException(); 
 		}
 		
-		VncVal form;
-
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
@@ -296,7 +294,7 @@ public class Reader {
 				Token t = rdr.peek();
 				if (t.charAt(0) == '{') {
 					// set literal #{1 2}
-					form = VncHashSet.ofAll(read_list(rdr, VncTinyList.empty(), '{' , '}')); 
+					return VncHashSet.ofAll(read_list(rdr, VncTinyList.empty(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
 					final VncVal meta = MetaUtil.toMeta(t);
@@ -307,44 +305,38 @@ public class Reader {
 					rdr.anonymousFnArgs.startCapture();
 					final VncVal body = read_list(rdr, VncTinyList.empty(), '(' , ')').withMeta(meta);
 					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
-					form = VncTinyList.of(new VncSymbol("fn", meta), argsDef, body);
+					final VncVal s_expr = VncTinyList.of(new VncSymbol("fn", meta), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
+					return s_expr;
 				}
 				else {
 					throw new ParseError(formatParseError(t, "Expected '#{' or '#('"));
 				}
-				break;
 			
 			case '(': 
-				form = read_list(rdr, VncTinyList.empty(), '(' , ')'); 
-				break;
+				return read_list(rdr, VncTinyList.empty(), '(' , ')'); 
 			
 			case ')': 
 				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected ')'"));
 			
 			case '[': 
-				form = read_list(rdr, VncTinyVector.empty(), '[' , ']'); 
-				break;
+				return read_list(rdr, VncTinyVector.empty(), '[' , ']'); 
 			
 			case ']': 
 				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected ']'"));
 				
 			case '{': 
-				form = read_hash_map(rdr); 
-				break;
+				return read_hash_map(rdr); 
 				
 			case '}': 
 				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected '}'"));
 				
 			default:  
-				form = read_atom(rdr);
-				break;
+				return read_atom(rdr);
 		}
-		
-		return form;
 	}
 	
 	public static AtomType getAtomType(final Token token) {
