@@ -376,27 +376,8 @@ public class Env implements Serializable {
 	public String toString() {
 		return new StringBuilder()
 					.append("level ").append(level).append(":")
-					.append("\n   [local]\n").append(toString(localSymbols, "      ", null))
-					.append("\n   [global]\n").append(toString(getAllGlobalSymbols(), "      ", null))
-					.toString();
-	}
-	
-	public String localsToString() {
-		return new StringBuilder()
-					.append("level ").append(level).append(":")
-					.append("\n   [local]\n").append(toString(localSymbols, "      ", null))
-					.toString();
-	}
-	
-	public String globalsToString() {
-		return new StringBuilder()
-					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   ", null))
-					.toString();
-	}
-	
-	public String globalsToString(final String regexFilter) {
-		return new StringBuilder()
-					.append("[global]\n").append(toString(getAllGlobalSymbols(), "   ", regexFilter))
+					.append("\n   [local]\n").append(toString(localSymbols, "      "))
+					.append("\n   [global]\n").append(toString(getAllGlobalSymbols(), "      "))
 					.toString();
 	}
 		
@@ -442,16 +423,13 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	
 	private String toString(
 			final Map<VncSymbol,Var> vars, 
-			final String indent, final 
-			String regexFilter
+			final String indent
 	) {
 		return vars.values()
 				   .stream()
 				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
-				   .filter(v -> regexFilter == null ? true : v.getName().getName().matches(regexFilter))
 				   .map(v -> String.format(
 								"%s%s (:%s)", 
 								indent,
@@ -569,7 +547,7 @@ public class Env implements Serializable {
 		return localSymbols.containsKey(sym);
 	}
 	
-	private Map<VncSymbol,Var> getAllGlobalSymbols() {
+	public Map<VncSymbol,Var> getAllGlobalSymbols() {
 		final Map<VncSymbol,Var> all = new HashMap<>();
 		
 		if (precompiledGlobalSymbols != null) {

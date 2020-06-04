@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -53,10 +54,12 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.Licenses;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -480,20 +483,13 @@ public class REPL {
 		}
 		else if (params[0].equals("global")) {
 			if (params.length == 1) {
-				printer.println("stdout", env.globalsToString());
+				printer.println("stdout", envGlobalsToString(env));
 				return;
 			}
 			else if (params.length == 2) {
 				String filter = StringUtil.trimToNull(params[1]);
 				filter = filter == null ? null : filter.replaceAll("[*]", ".*");
-				printer.println("stdout", env.globalsToString(filter));
-				return;
-			}
-		}
-		else if (params[0].equals("local")) {
-			if (params.length == 2) {
-				final int level = Integer.valueOf(params[1]);
-				printer.println("stdout", env.getLevelEnv(level).localsToString());
+				printer.println("stdout", envGlobalsToString(env, filter));
 				return;
 			}
 		}
@@ -651,7 +647,55 @@ public class REPL {
 		this.venice = new VeniceInterpreter(interceptor, loadPaths);
 		JavaInterop.register(interceptor);			
 	}
+
 	
+	private String envGlobalsToString(final Env env) {
+		return new StringBuilder()
+					.append(formatGlobalVars(
+								env.getAllGlobalSymbols(), 
+								null))
+					.toString();
+	}
+	
+	private String envGlobalsToString(final Env env, final String regexFilter) {
+		return new StringBuilder()
+					.append(formatGlobalVars(
+								env.getAllGlobalSymbols(), 
+								regexFilter))
+					.toString();
+	}
+
+	private String formatGlobalVars(
+			final Map<VncSymbol,Var> vars, 
+			final String regexFilter
+	) {
+		return vars.values()
+				   .stream()
+				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
+				   .filter(v -> regexFilter == null ? true : v.getName().getName().matches(regexFilter))
+				   .map(v -> String.format(
+								"%s (:%s)", 
+								v.getName().getName(),
+								formatGlobalVarType(v).getValue()))
+				   .collect(Collectors.joining("\n"));
+	}
+	
+	public VncKeyword formatGlobalVarType(final Var var_) {
+		final VncVal val = var_.getVal();
+		if (Types.isVncJavaObject(val)) {
+			final VncJavaObject vJava = (VncJavaObject)val;
+			if (vJava.getDelegateFormalType() != null) {
+				return new VncKeyword(vJava.getDelegateFormalType().getName());
+			}
+			else {
+				return new VncKeyword(vJava.getDelegate().getClass().getName());
+			}
+		}
+		else {
+			return Types.getType(val);
+		}
+	}
+
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
 		return new ReplPrintStream(terminal, config.getColor(context));	
 	}
@@ -734,7 +778,6 @@ public class REPL {
 			"                 !env global\n" +	
 			"                 !env global io/*\n" +	
 			"                 !env global *file*\n" +	
-			"                 !env local {level}\n" +	
 			"                 !env levels\n" +	
 			"  !sandbox     sandbox\n" +	
 			"                 !sandbox status\n" +	
