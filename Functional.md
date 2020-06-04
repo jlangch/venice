@@ -22,6 +22,11 @@
 [Lisp 1.5 programmer's manual](http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf)
 
 
+## Functional Architecture
+
+https://m.heise.de/developer/artikel/Episode-69-Funktionale-Softwarearchitektur-4656125.html?wt_ref=https%3A%2F%2Fwww.heise.de%2F&wt_t=1583254262221
+
+
 
 ## Alan Kay
 
