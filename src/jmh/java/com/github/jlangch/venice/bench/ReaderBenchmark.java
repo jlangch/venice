@@ -72,7 +72,7 @@ public class ReaderBenchmark {
 	 *     Benchmark               Mode  Cnt  Score   Error  Units
 	 *     ReaderBenchmark.reader  avgt    3  2.961 ± 1.019  ms/op
 	 * 
-	 * ------------------------------------------------------------------------*/
+	 * ------------------------------------------------------------------------ */
 	@Benchmark
 	public VncVal reader() {
 		return Reader.read_str(core, "core");
