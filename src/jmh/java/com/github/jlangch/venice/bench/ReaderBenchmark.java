@@ -53,7 +53,26 @@ public class ReaderBenchmark {
 		System.out.print("(Core lines: " + StringUtil.splitIntoLines(core).size() + ") ");
 	}
 	
-	
+	/* ------------------------------------------------------------------------
+	 *  Venice 1.8.4   
+	 *  
+	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
+	 *                             Java 8 server VM
+	 * 
+	 *     Benchmark               Mode  Cnt  Score   Error  Units
+	 *     ReaderBenchmark.reader  avgt    3  1.685 ± 0.411  ms/op
+	 * 
+	 * 
+	 * 
+	 *  Venice 1.8.0  
+	 * 
+	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
+	 *                             Java 8 server VM
+	 * 
+	 *     Benchmark               Mode  Cnt  Score   Error  Units
+	 *     ReaderBenchmark.reader  avgt    3  2.961 ± 1.019  ms/op
+	 * 
+	 * ------------------------------------------------------------------------*/
 	@Benchmark
 	public VncVal reader() {
 		return Reader.read_str(core, "core");
