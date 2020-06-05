@@ -30,20 +30,15 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 public class VncBoolean extends VncVal {
 
-	public VncBoolean(final Boolean v) { 
-		this(v, null, Constants.Nil); 
+	private VncBoolean(final Boolean v) { 
+		this(v, null); 
 	}
 
-	public VncBoolean(final Boolean v, final VncVal meta) { 
-		this(v, null, meta);
-	}
-
-	public VncBoolean(
+	private VncBoolean(
 			final Boolean v, 
-			final VncWrappingTypeDef wrappingTypeDef, 
-			final VncVal meta
+			final VncWrappingTypeDef wrappingTypeDef
 	) { 
-		super(wrappingTypeDef, meta);
+		super(wrappingTypeDef, Constants.Nil);
 		value = v; 
 	}
 	
@@ -61,12 +56,12 @@ public class VncBoolean extends VncVal {
 	
 	@Override
 	public VncBoolean withMeta(final VncVal meta) {
-		return new VncBoolean(value, getWrappingTypeDef(), meta);
+		return this;
 	}
 	
 	@Override
 	public VncBoolean wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		return new VncBoolean(value, wrappingTypeDef, meta); 
+		return new VncBoolean(value, wrappingTypeDef);
 	}
 	
 	@Override

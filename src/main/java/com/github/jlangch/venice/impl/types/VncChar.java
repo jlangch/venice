@@ -32,28 +32,18 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class VncChar extends VncVal {
 	
 	public VncChar(final char v) { 
-		this(v, Constants.Nil); 
-	}
-
-	public VncChar(final char v, final VncVal meta) { 
-		super(meta);
-		value = v; 
+		this(new Character(v), null); 
 	}
 
 	public VncChar(final Character v) { 
-		this(v, Constants.Nil); 
-	}
-	
-	public VncChar(final Character v, final VncVal meta) { 
-		this(v, null, meta);
+		this(v, null); 
 	}
 
 	public VncChar(
 			final Character v, 
-			final VncWrappingTypeDef wrappingTypeDef, 
-			final VncVal meta
+			final VncWrappingTypeDef wrappingTypeDef
 	) { 
-		super(wrappingTypeDef, meta);
+		super(wrappingTypeDef, Constants.Nil);
 		value = v; 
 	}
 
@@ -64,12 +54,12 @@ public class VncChar extends VncVal {
 	
 	@Override
 	public VncChar withMeta(final VncVal meta) {
-		return new VncChar(value, meta); 
+		return this; 
 	}
 	
 	@Override
 	public VncChar wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		return new VncChar(value, wrappingTypeDef, meta); 
+		return new VncChar(value, wrappingTypeDef); 
 	}
 	
 	@Override

@@ -322,12 +322,7 @@ public class Tokenizer {
 			final int line, 
 			final int col
 	) { 
-		if (skipWhitespaces) {
-			if (type != WHITESPACES && type != COMMENT) {
-				tokens.add(new Token(type, token, fileName, filePos, line, col));	
-			}
-		}
-		else {
+		if (!skipWhitespaces || (type != WHITESPACES && type != COMMENT)) {
 			tokens.add(new Token(type, token, fileName, filePos, line, col));	
 		}
 	}
