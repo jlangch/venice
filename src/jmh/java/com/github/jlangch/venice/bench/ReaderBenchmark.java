@@ -54,7 +54,7 @@ public class ReaderBenchmark {
 	}
 	
 	/* ------------------------------------------------------------------------
-	 *  Venice 1.8.4   
+	 *  Venice 1.8.4 (05.06.2020)
 	 *  
 	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
 	 *                             Java 8 server VM
@@ -64,7 +64,7 @@ public class ReaderBenchmark {
 	 * 
 	 * 
 	 * 
-	 *  Venice 1.8.0  
+	 *  Venice 1.8.0 (05.06.2020) 
 	 * 
 	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
 	 *                             Java 8 server VM
