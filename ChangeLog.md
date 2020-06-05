@@ -40,6 +40,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Changed
 
+- Refactored the Venice reader (parser) to not use regular expressions anymore
+  for tokenizing and reading S-expressions, resulting in a 50% performance
+  improvement.
 - ansi module progress bars to reduce flickering on slower systems
 
 
