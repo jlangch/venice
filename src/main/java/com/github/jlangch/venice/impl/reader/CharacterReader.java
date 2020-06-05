@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
+
 public class CharacterReader {
 
 	public CharacterReader(final String str) {
@@ -65,33 +66,9 @@ public class CharacterReader {
 	public int getColumnNumber() {
 		return columnNr;
 	}
-	
-	@Override
-	public String toString() {
-		return String.format(
-					"(%d,%d) %s at pos %d", 
-					lineNr, 
-					columnNr, 
-					toDisplay(peek()), 
-					pos);
-	}
-
-	private String toDisplay(final int ch) {
-		switch(ch) {
-			case EOF:  return "EOF";
-			case TAB:  return "TAB";
-			case CR:   return "CR";
-			case LF:   return "LF";
-			default:   return ch < 32 
-							? String.format("%03x", ch) 
-							: "'" + String.valueOf((char)ch) + "'";
-		}
-	}
-	
+		
 	
 	private static final int LF  = (int)'\n';
-	private static final int CR  = (int)'\r';
-	private static final int TAB = (int)'\t';
 	private static final int EOF = -1;
 	
 	private final String str;
