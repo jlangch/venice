@@ -90,7 +90,7 @@
 //    Requires the plugin 'eclipse' in the build.gradle
 //
 //    1.  Move to your projects path (where gradle or gradlew is found)
-//    2.  Unix: ./gradlew cleaneclipse    
+//    2.  Unix: ./gradlew cleaneclipse
 //        Win:  gradlew cleaneclipse
 //    3.  Refresh your Project in Eclipse
 //    4.  After that for Unix: ./gradlew eclipse     
