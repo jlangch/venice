@@ -772,7 +772,6 @@ public class REPL {
 			"                 !env global\n" +	
 			"                 !env global io/*\n" +	
 			"                 !env global *file*\n" +	
-			"                 !env levels\n" +	
 			"  !sandbox     sandbox\n" +	
 			"                 !sandbox status\n" +	
 			"                 !sandbox config\n" +	
