@@ -58,7 +58,7 @@
           strategy quotes identifiers with `.
           """ }
 
-   as-sql-name [f x]
+  as-sql-name [f x]
 
   (let [n (name x)
         i (str/index-of n ".")]
@@ -81,17 +81,14 @@
 
   quoted [q]
 
-  (cond (vector? q)
-          (fn [x]
-            (str (first q) x (last q)))
-        (keyword? q)
-          (case q
-            :ansi      (quoted double-quote)
-            :mysql     (quoted back-tick)
-            :oracle    (quoted double-quote)
-            :sqlserver (quoted ["[" "]"]))
-        :else
-          (quoted [q q])))
+  (cond
+    (vector? q)   (fn [s] (str (first q) s (last q)))
+    (keyword? q)  (case q
+                    :ansi      (quoted double-quote)
+                    :mysql     (quoted back-tick)
+                    :oracle    (quoted double-quote)
+                    :sqlserver (quoted ["[" "]"]))
+    :else         (quoted [q q])))
 
 
 (defn-
@@ -102,6 +99,7 @@
           """ }
 
   table-str [table entities]
+
   (let [entities (or entities identity)]
     (if (map? table)
       (let [[k v] (first table)]
@@ -120,6 +118,7 @@
           """ }
 
   kv-sql [ks vs entities null-op]
+
   (let [entities (or entities identity)]
     (if (map? table)
       (let [[k v] (first table)]
