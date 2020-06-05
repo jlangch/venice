@@ -24,7 +24,11 @@
 
 ## Functional Architecture
 
-https://m.heise.de/developer/artikel/Episode-69-Funktionale-Softwarearchitektur-4656125.html?wt_ref=https%3A%2F%2Fwww.heise.de%2F&wt_t=1583254262221
+[Episode 69 Funktionale Softwarearchitektur](https://m.heise.de/developer/artikel/Episode-69-Funktionale-Softwarearchitektur-4656125.html?wt_ref=https%3A%2F%2Fwww.heise.de%2F&wt_t=1583254262221)
+
+[Composing Contracts](https://www.microsoft.com/en-us/research/publication/composing-contracts-an-adventure-in-financial-engineering/)
+
+[Paper: How to write a financial contract](https://www.microsoft.com/en-us/research/uploads/prod/2000/09/pj-eber.pdf)
 
 
 
