@@ -53,13 +53,62 @@ public class TokenizerTest {
 	}
 
 	@Test
+	public void test_whitespaces_as_token() {	
+		List<Token> tokens = tokenize_whitespaces(" \t \r ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals(" \t \r ", tokens.get(0).getToken());
+		
+		tokens = tokenize_whitespaces(" , \t , \r , ", "test");
+		assertEquals(7, tokens.size());
+		assertEquals(" ", tokens.get(0).getToken());
+		assertEquals(",", tokens.get(1).getToken());
+		assertEquals(" \t ", tokens.get(2).getToken());
+		assertEquals(",", tokens.get(3).getToken());
+		assertEquals(" \r ", tokens.get(4).getToken());
+		assertEquals(",", tokens.get(5).getToken());
+		assertEquals(" ", tokens.get(6).getToken());
+	}
+
+	@Test
 	public void test_comment() {	
-		List<Token> tokens = tokenize(" ; comment ", "test");
+		List<Token> tokens = tokenize("; comment ", "test");
 		assertEquals(0, tokens.size());
+
+		tokens = tokenize(" ; comment ", "test");
+		assertEquals(0, tokens.size());
+
+		tokens = tokenize(";;;; comment \nabc", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("abc", tokens.get(0).getToken());
 
 		tokens = tokenize(" abc ; comment ", "test");
 		assertEquals(1, tokens.size());
 		assertEquals("abc", tokens.get(0).getToken());
+	}
+
+	@Test
+	public void test_comment_as_token() {	
+		List<Token> tokens = tokenize_whitespaces("; comment ", "test");
+		assertEquals(1, tokens.size());
+		assertEquals("; comment ", tokens.get(0).getToken());
+
+		tokens = tokenize_whitespaces(" ; comment ", "test");
+		assertEquals(2, tokens.size());
+		assertEquals(" ", tokens.get(0).getToken());
+		assertEquals("; comment ", tokens.get(1).getToken());
+
+		tokens = tokenize_whitespaces(";;;; comment \nabc", "test");
+		assertEquals(3, tokens.size());
+		assertEquals(";;;; comment ", tokens.get(0).getToken());
+		assertEquals("\n", tokens.get(1).getToken());
+		assertEquals("abc", tokens.get(2).getToken());
+
+		tokens = tokenize_whitespaces(" abc ; comment ", "test");
+		assertEquals(4, tokens.size());
+		assertEquals(" ", tokens.get(0).getToken());
+		assertEquals("abc", tokens.get(1).getToken());
+		assertEquals(" ", tokens.get(2).getToken());
+		assertEquals("; comment ", tokens.get(3).getToken());
 	}
 
 	@Test
@@ -540,6 +589,10 @@ public class TokenizerTest {
 	
 	private static List<Token> tokenize(final String text, final String fileName) {
 		return Tokenizer.tokenize(text, fileName);
+	}
+
+	private static List<Token> tokenize_whitespaces(final String text, final String fileName) {
+		return Tokenizer.tokenize(text, fileName, false, true);
 	}
 
 	private static List<Token> tokenize_unbalanced(final String text, final String fileName) {

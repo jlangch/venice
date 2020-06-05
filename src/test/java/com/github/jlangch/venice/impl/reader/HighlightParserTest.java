@@ -135,7 +135,7 @@ public class HighlightParserTest {
 //				System.out.println();
 //				for(int jj=-3; jj<=3; jj++) System.out.print("'" + s2.charAt(ii+jj) + "', ");
 //				System.out.println();
-//				System.out.println(String.format("Diff: %d/%d   '%c' :: '%c'", line, col, u, v));
+//				System.out.println(String.format("Diff: line=%d / col=%d   '%c' :: '%c'", line, col, u, v));
 //				break;
 //			}
 //		}
