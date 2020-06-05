@@ -34,7 +34,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - Refactored the Venice tokenizer to improve performance by another 20%
   by simplifying character look ahead.
   The Venice reader processes now 950'000 source lines per second measured
-  for 'core.venice' on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz), Java 8 
+  for `core.venice` on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz), Java 8 
   server VM. See the JMH reader benchmark 'ReaderBenchmark.java'
 
 
@@ -56,7 +56,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   for tokenizing and reading S-expressions, resulting in a 50% performance
   improvement.
   The Venice reader processes now 750'000 source lines per second measured
-  for 'core.venice' on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz), Java 8 
+  for `core.venice` on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz), Java 8 
   server VM. See the JMH reader benchmark 'ReaderBenchmark.java'
 
 

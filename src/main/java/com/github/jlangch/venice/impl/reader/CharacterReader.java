@@ -46,7 +46,7 @@ public class CharacterReader {
 				columnNr++;
 			}
 			
-			chNext = pos >= length ? EOF : str.charAt(pos);
+			chNext = eof() ? EOF : str.charAt(pos);
 		}
 	}
 
