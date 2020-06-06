@@ -65,7 +65,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- syntax highlighting for the REPL. The syntax highlighting can be dynamically
+- syntax highlighting for the REPL. REPL syntax highlighting can be
   turned on/off.
 - function `fnil`
 
