@@ -34,8 +34,9 @@
      (when progress-fn
        (println (str "Downloading " uri))
        (println (str "         to " target "...")))
-     (->> (io/download uri :binary true :progress-fn progress-fn)
-          (io/spit target))))
+     (ansi/without-cursor
+       (->> (io/download uri :binary true :progress-fn progress-fn)
+          (io/spit target)))))
 
 
 (defn
