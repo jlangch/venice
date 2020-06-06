@@ -82,6 +82,16 @@ public class ReaderTest {
 	}
 
 	@Test
+	public void testAtomString_escape() {
+		assertEquals("a\nb\tc", new Venice().eval("(do \"a\\nb\\tc\")"));
+	}
+
+	@Test
+	public void testAtomString_unicode() {
+		assertEquals("abc", new Venice().eval("(do \"\\u0061\\u0062\\u0063\")"));
+	}
+
+	@Test
 	public void testAtomString_TripleQuotes() {
 		assertEquals("abc", new Venice().eval("(do \"\"\"abc\"\"\")"));
 		assertEquals("a\"b\"c", new Venice().eval("(do \"\"\"a\"b\"c\"\"\")"));

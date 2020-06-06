@@ -157,7 +157,7 @@ public class Tokenizer {
 					final StringBuilder sb = new StringBuilder();
 					sb.append(';');
 
-					while(!isLForEOF(reader.peek())) {		
+					while(LF != reader.peek() && EOF != reader.peek()) {		
 						sb.append((char)reader.peek());
 						reader.consume();
 					}
@@ -359,10 +359,6 @@ public class Tokenizer {
 		return String.format(format, args) 
 				+ ". " 
 				+ ErrorMessage.buildErrLocation(token);
-	}
-		
-	private boolean isLForEOF(final int ch) {
-		return ch == LF || ch == EOF;
 	}
 	
 	
