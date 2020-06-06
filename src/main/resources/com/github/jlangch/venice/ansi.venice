@@ -222,6 +222,21 @@
 ;; -----------------------------------------------------------------------------
 
 (defmacro
+  ^{ :arglists '("(without-cursor & forms)")
+     :doc """
+          Runs the given forms with the cursor turned off.
+          """ }
+
+  without-cursor [& forms]
+
+  `(try
+     (print (ansi/style "" :cursor-hide))
+     (do ~@forms)
+     (finally
+       (print (ansi/style "" :cursor-show)))))
+
+
+(defmacro
   ^{ :arglists '("(with-ansi & forms)")
      :doc """
           Runs the given forms with the *use-ansi* variable temporarily bound
@@ -300,21 +315,17 @@
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))
                 value   (str/format "%3s%%" percent)]
-            (try
-              (print (ansi/style "" :cursor-hide))
-              (if (and (= status :progress) (pos? percent))
-                (print (ansi/style "" :cursor-left-1000))
-                (print (ansi/style "" :clear-line :cursor-left-1000)))
-              (case status
-                :start    (print start-msg)
-                :progress (print (str caption
-                                      (apply ansi/style value percent-styles)
-                                      " "))
-                :end      (println end-msg)
-                :failed   (println failed-msg)
-                          (println (str "Invalid status '" status "'")))
-              (finally
-                (print (ansi/style "" :cursor-show))))
+            (if (and (= status :progress) (pos? percent))
+              (print (ansi/style "" :cursor-left-1000))
+              (print (ansi/style "" :clear-line :cursor-left-1000)))
+            (case status
+              :start    (print start-msg)
+              :progress (print (str caption
+                                    (apply ansi/style value percent-styles)
+                                    " "))
+              :end      (println end-msg)
+              :failed   (println failed-msg)
+                        (println (str "Invalid status '" status "'")))
             nil))
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))]
@@ -392,19 +403,15 @@
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
-          (try
-            (print (ansi/style "" :cursor-hide))
-            (if (and (= status :progress) (pos? percent))
-              (print (ansi/style "" :cursor-left-1000))
-              (print (ansi/style "" :clear-line :cursor-left-1000)))
-            (case status
-              :start    (print start-msg)
-              :progress (print (bar percent))
-              :end      (println end-msg)
-              :failed   (println failed-msg)
-                        (println (str "Invalid status '" status "'")))
-          (finally
-            (print (ansi/style "" :cursor-show))))
+          (if (and (= status :progress) (pos? percent))
+            (print (ansi/style "" :cursor-left-1000))
+            (print (ansi/style "" :clear-line :cursor-left-1000)))
+          (case status
+            :start    (print start-msg)
+            :progress (print (bar percent))
+            :end      (println end-msg)
+            :failed   (println failed-msg)
+                      (println (str "Invalid status '" status "'")))
           nil))
       (fn progress-handler [percent status]
         (let [percent (max 0 (min 100 percent))]
@@ -515,31 +522,33 @@
     (println)))
 
 (defn demo-progress []
-  (let [pg (ansi/progress
-               :caption     "Download: "
-               :start-msg   "Download started"
-               :end-msg     "Download ok"
-               :failed-msg  "Download failed")]
+  (without-cursor
+    (let [pg (ansi/progress
+                 :caption     "Download: "
+                 :start-msg   "Download started"
+                 :end-msg     "Download ok"
+                 :failed-msg  "Download failed")]
 
-    (println "Progress demo")
-    (pg 0 :start)
-    (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
-    (pg 100 :end)))
+      (println "Progress demo")
+      (pg 0 :start)
+      (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
+      (pg 100 :end))))
 
 
 (defn demo-progress-bar []
-  (let [pg (ansi/progress-bar
-               :width        25
-               :caption      "Download: "
-               :start-msg    "Download started"
-               :end-msg      "Download ok"
-               :failed-msg   "Download failed"
-               :show-percent true)]
+  (without-cursor
+    (let [pg (ansi/progress-bar
+                 :width        25
+                 :caption      "Download: "
+                 :start-msg    "Download started"
+                 :end-msg      "Download ok"
+                 :failed-msg   "Download failed"
+                 :show-percent true)]
 
-    (println "Progress bar demo")
-    (pg 0 :start)
-    (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
-    (pg 100 :end)))
+      (println "Progress bar demo")
+      (pg 0 :start)
+      (docoll (fn [x] (pg x :progress) (sleep 100)) (range 0 101))
+      (pg 100 :end))))
 
 
 (defn demo []
