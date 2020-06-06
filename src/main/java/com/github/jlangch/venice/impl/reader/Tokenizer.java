@@ -182,7 +182,7 @@ public class Tokenizer {
 							&& ch != (int)',' 
 							&& ch != (int)';'  
 							&& ch != (int)'"' 
-							&& !Character.isWhitespace(ch) 
+							&& !Character.isWhitespace((char)ch) 
 							&& !isSpecialChar((char)ch)
 					) { 		
 						sb.append((char)ch);
@@ -365,7 +365,6 @@ public class Tokenizer {
 	private static final int LF = (int)'\n';
 	private static final int EOF = -1;
 
-	//private final LineNumberingPushbackReader reader;
 	private final CharacterReader reader;
 	private final String fileName;
 	private final boolean skipWhitespaces;
