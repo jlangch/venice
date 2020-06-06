@@ -199,6 +199,7 @@ public class ReaderTest {
 		assertEquals("123", new Venice().eval("\"\"\"123\"\"\")"));
 		assertEquals("  123  ", new Venice().eval("\"\"\"  123  \"\"\")"));
 		assertEquals("1\n2", new Venice().eval("\"\"\"\n  1\n  2\"\"\")"));
+		assertEquals("\"1 2 3\"", new Venice().eval("\"\"\"\n  \"1 2 3\"\n  \"\"\")"));
 	}
 
 	@Test

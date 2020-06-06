@@ -442,14 +442,57 @@ public class TokenizerTest {
 
 	@Test
 	public void test_position() {	
-		List<Token> tokens = tokenize("   100.0  ", "test");
-		assertEquals(1, tokens.size());
-		assertEquals("100.0", tokens.get(0).getToken());
-		assertEquals("test", tokens.get(0).getFile());
-		assertEquals(1, tokens.get(0).getLine());
-		assertEquals(4, tokens.get(0).getColumn());
-		assertEquals(3, tokens.get(0).getFileStartPos());
-		assertEquals(7, tokens.get(0).getFileEndPos());
+		List<Token> tokens = tokenize("(if true\n   100\n   200)", "test");
+		assertEquals(6, tokens.size());
+		
+		int token = 0;
+		
+		assertEquals("(", tokens.get(token).getToken());
+		assertEquals("test", tokens.get(token).getFile());
+		assertEquals(1, tokens.get(token).getLine());
+		assertEquals(1, tokens.get(token).getColumn());
+		assertEquals(0, tokens.get(token).getFileStartPos());
+		assertEquals(0, tokens.get(token).getFileEndPos());
+		
+		token++;
+		assertEquals("if", tokens.get(token).getToken());
+		assertEquals("test", tokens.get(token).getFile());
+		assertEquals(1, tokens.get(token).getLine());
+		assertEquals(2, tokens.get(token).getColumn());
+		assertEquals(1, tokens.get(token).getFileStartPos());
+		assertEquals(2, tokens.get(token).getFileEndPos());
+		
+		token++;
+		assertEquals("true", tokens.get(token).getToken());
+		assertEquals("test", tokens.get(token).getFile());
+		assertEquals(1, tokens.get(token).getLine());
+		assertEquals(5, tokens.get(token).getColumn());
+		assertEquals(4, tokens.get(token).getFileStartPos());
+		assertEquals(7, tokens.get(token).getFileEndPos());
+		
+		token++;
+		assertEquals("100", tokens.get(token).getToken());
+		assertEquals("test", tokens.get(token).getFile());
+		assertEquals(2, tokens.get(token).getLine());
+		assertEquals(4, tokens.get(token).getColumn());
+		assertEquals(12, tokens.get(token).getFileStartPos());
+		assertEquals(14, tokens.get(token).getFileEndPos());
+		
+		token++;
+		assertEquals("200", tokens.get(token).getToken());
+		assertEquals("test", tokens.get(token).getFile());
+		assertEquals(3, tokens.get(token).getLine());
+		assertEquals(4, tokens.get(token).getColumn());
+		assertEquals(19, tokens.get(token).getFileStartPos());
+		assertEquals(21, tokens.get(token).getFileEndPos());
+		
+		token++;
+		assertEquals(")", tokens.get(token).getToken());
+		assertEquals("test", tokens.get(token).getFile());
+		assertEquals(3, tokens.get(token).getLine());
+		assertEquals(7, tokens.get(token).getColumn());
+		assertEquals(22, tokens.get(token).getFileStartPos());
+		assertEquals(22, tokens.get(token).getFileEndPos());
 	}
 
 	@Test
