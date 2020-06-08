@@ -89,15 +89,16 @@
 //
 //    Requires the plugin 'eclipse' in the build.gradle
 //
-//    1.  Move to your projects path (where gradle or gradlew is found)
-//    2.  Unix: ./gradlew cleaneclipse
+//    1.  Project checkout
+//    2.  Move to your projects path (where gradle or gradlew is found)
+//    3.  Unix: ./gradlew cleaneclipse
 //        Win:  gradlew cleaneclipse
-//    3.  Refresh your Project in Eclipse
-//    4.  After that for Unix: ./gradlew eclipse     
+//    4.  Refresh your Project in Eclipse
+//    5.  After that for Unix: ./gradlew eclipse     
 //                       Win:  gradlew eclipse
-//    5.  Refresh your Project in Eclipse
+//    6.  Refresh your Project in Eclipse
 //
-//    Repeat step 4) and 5) whenever the Gradle build changes
+//    Repeat step 5) and 6) whenever the Gradle build changes
 // -----------------------------------------------------------------------------
 
 // https://github.com/johnrengelman/shadow/
@@ -114,8 +115,6 @@ def group = 'com.github.jlangch'
 
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 
-
-// pass command line options -PsonatypeUsername=foo -PsonatypePassword=123
 def sonatypeUsername = project.properties['sonatypeUsername'] ?: "unknown"
 def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
 
@@ -232,7 +231,7 @@ publishing {
                     developer {
                         id = 'jlangch'
                         name = 'Juerg Lang'
-                        email = 'juerg.lang@ggaweb.ch'
+                        email = 'juerg.ch@ggaweb.ch'
                     }
                 }
                 scm {
