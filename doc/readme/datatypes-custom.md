@@ -11,7 +11,7 @@ Venice is validating the instantiation of the custom types by checking the value
 for type compliance. With value immutability the instantiated values are guaranteed
 to be valid for their lifetime.
 
-Venice custom types are composed from 'smaller' types.
+Venice custom types are composed from 'smaller' types:
 
 - Composing types with "AND" (records)
 - Composing types with "OR" (choices)
@@ -141,7 +141,7 @@ signature: `(deftype name fields validator)`
                        (-> payment :method :type)
                        (-> payment :method :number)))
             
-  ; => "Payment: 2000.00 CHF by mastercard '"0800-0000-0000-0000'"  
+  ; => "Payment: 2000.00 CHF by mastercard '0800-0000-0000-0000'"  
 )
 ```
 
