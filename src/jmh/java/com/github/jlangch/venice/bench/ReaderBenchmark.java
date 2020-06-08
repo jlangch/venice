@@ -54,13 +54,23 @@ public class ReaderBenchmark {
 	}
 	
 	/* ------------------------------------------------------------------------
-	 *  Venice 1.8.4 (08.06.2020)
+	 *  Venice 1.8.5 (08.06.2020)
 	 *  
 	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
 	 *                             Java 8 server VM
 	 * 
 	 *     Benchmark               Mode  Cnt  Score   Error  Units
 	 *     ReaderBenchmark.reader  avgt    3  1.278 ± 0.069  ms/op
+	 * 
+	 * 
+	 * 
+	 *  Venice 1.8.4 (05.06.2020)
+	 *  
+	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
+	 *                             Java 8 server VM
+	 * 
+	 *     Benchmark               Mode  Cnt  Score   Error  Units
+	 *     ReaderBenchmark.reader  avgt    3  1.685 ± 0.411  ms/op
 	 * 
 	 * 
 	 * 
