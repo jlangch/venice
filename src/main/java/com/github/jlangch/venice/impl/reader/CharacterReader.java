@@ -51,10 +51,6 @@ public class CharacterReader {
 		}
 	}
 
-	public boolean eof() {
-		return pos >= length;
-	}
-
 	public int getPos() {
 		return pos;
 	}
@@ -65,6 +61,10 @@ public class CharacterReader {
 	
 	public int getColumnNumber() {
 		return columnNr;
+	}
+
+	private boolean eof() {
+		return pos >= length;
 	}
 		
 	

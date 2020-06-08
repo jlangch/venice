@@ -95,12 +95,12 @@ public class Tokenizer {
 				}
 				
 				// - whitespaces ----------------------------------------------
-				else if (Character.isWhitespace((char)ch)) {
+				else if (isWhitespace((char)ch)) {
 					final StringBuilder sb = new StringBuilder();
 					sb.append((char)ch);
 					reader.consume();
 
-					while(Character.isWhitespace((char)reader.peek())) {		
+					while(isWhitespace((char)reader.peek())) {		
 						sb.append((char)reader.peek());
 						reader.consume();
 					}
@@ -178,11 +178,11 @@ public class Tokenizer {
 					sb.append((char)ch);
 					
 					ch = reader.peek();
-					while(ch != EOF 
+					while(ch != EOF
+							&& !isWhitespace((char)ch) 
 							&& ch != (int)',' 
 							&& ch != (int)';'  
 							&& ch != (int)'"' 
-							&& !Character.isWhitespace((char)ch) 
 							&& !isSpecialChar((char)ch)
 					) { 		
 						sb.append((char)ch);
@@ -308,6 +308,20 @@ public class Tokenizer {
 			case '`':
 			case '~':
 			case '@':
+				return true;
+				
+			default:
+				return false;
+		}
+	}
+	
+	private boolean isWhitespace(final char ch) {
+		switch(ch) {
+			case '\r': 
+			case '\n': 
+			case '\f': 
+			case '\t':
+			case ' ': 
 				return true;
 				
 			default:
