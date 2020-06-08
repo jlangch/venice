@@ -25,66 +25,57 @@ the instantiation of the type.
 ## Composing types with "AND"
 
 
-signature: `(deftype name fields)` 
+### Define a custom type 
+
+A custom "AND" type has a name for reference and at least one field. The type's name 
+is defined as a keyword and the fields are tuples of name and type.
+
+
+```clojure
+(deftype :complex [real      :long
+                   imaginary :long])
+ ```
+ 
+Venice implicitly creates a builder function suffixed with a '.'
+  
+```clojure
+(complex. 200 300)
+```
+
+... and a type check function 
+
+```clojure
+(complex? (complex. 200 300))
+```
+
+Custom "AND" types are implemented as maps, so all map functions can be applied:
+
+ ```clojure
+(def x (complex. 200 300))
+
+(println (str/format "(re: %d, im: %d)" (:real x) (:imaginary x)))
+```
+ 
+
+The field type :any is representing any type
 
 ```clojure
 (do
-  (ns foo)
-  
-  (deftype :complex [real      :long
-                     imaginary :long]) 
-
-  ; Venice implicitly creates a builder function suffixed with a '.'
-  (def y (complex. 200 300))
-
-  ; ... and a type check function 
-  (complex? y)
-  
-  y  ;; => #:foo/complex{:real 200 :imaginary 300}
-)
-```
-
-```clojure
-do
-  (ns foo)
-  
   (deftype :named [name :string, value :any]) 
   
   (def x (named. "count" 200))
-  (def y (named. "seq" [1 2]))
-  
-  [x y]
-  
-  ;;=> [#:foo/named{:name "count" :value 200} #:foo/named{:name "seq" :value [1 2]}]
-)
+  (def y (named. "seq" [1 2])))
 ```
 
-
-signature: `(deftype name fields validator)`
-
-```clojure
-(do
-  (ns foo)
-  
-  (deftype :complex
-           [real :long, imaginary :long]
-           (fn [t]
-              (assert (pos? (:real t)) "real must be positive")
-              (assert (pos? (:imaginary t)) "imaginary must be positive")))
-
-  (def x (complex. 100 200))
-  
-  [(:real x) (:imaginary x)]
-  
-  ;;=> [100 200]
-)
-```
 
 ## Composing types with "OR"
+
+TODO
 
 
 ## Wrapper types
 
+TODO
 
 
 

@@ -47,6 +47,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/a0905ae/cheatsheet.htm
 * [Execute Venice scripts](doc/readme/execute-scripts.md)
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
+* [Custom Datatypes](doc/readme/datatypes-custom.md)
 * [Functions](doc/readme/functions.md)
 * [Control Flow](doc/readme/control-flow.md)
 * [Filter-Map-Reduce](doc/readme/filter-map-reduce.md)
