@@ -109,7 +109,7 @@ public class CustomREPL {
 				System.out.println("Type '!' for help.");
 			}
 
-			repl(cli, dumbTerminal);
+			repl(cli);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -130,8 +130,8 @@ public class CustomREPL {
 		this.secondaryPrompt = secondaryPrompt;
 	}
 
-	private void repl(final CommandLineArgs cli, final boolean dumbTerminal) throws Exception {
-		setPrompt(config.getPrompt(), dumbTerminal ? "" : config.getSecondaryPrompt());
+	private void repl(final CommandLineArgs cli) throws Exception {
+		setPrompt(config.getPrompt(), ansiTerminal ? config.getSecondaryPrompt() : "");
 
 		final Thread mainThread = Thread.currentThread();
 
@@ -139,12 +139,12 @@ public class CustomREPL {
 											.builder()
 											.streams(System.in, System.out)
 											.system(true)
-											.dumb(dumbTerminal)
+											.dumb(!ansiTerminal)
 											.jna(false);
 							
 		final Terminal terminal = OSUtils.IS_WINDOWS
 									? builder
-										.jansi(!dumbTerminal)
+										.jansi(ansiTerminal)
 										.build()
 									: builder
 										.encoding("UTF-8")
@@ -158,7 +158,7 @@ public class CustomREPL {
 		
 		final BufferedReader in = createBufferedReader("stdin", terminal);
 
-		final TerminalPrinter printer = new TerminalPrinter(config, terminal, dumbTerminal, false);
+		final TerminalPrinter printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 		
@@ -241,7 +241,9 @@ public class CustomREPL {
 	}
 	
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
-		return new ReplPrintStream(terminal, config.getColor(context));	
+		return new ReplPrintStream(
+					terminal, 
+					ansiTerminal ? config.getColor(context) : null);	
 	}
 	
 	private BufferedReader createBufferedReader(final String context, final Terminal terminal) {

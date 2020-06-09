@@ -119,16 +119,16 @@ public class REPL {
 				System.out.println("Type '!' for help.");
 			}
 			
-			repl(cli, dumbTerminal);
+			repl(cli);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}	
 	}
 
-	private void repl(final CommandLineArgs cli, final boolean dumbTerminal) throws Exception {
+	private void repl(final CommandLineArgs cli) throws Exception {
 		final String prompt = config.getPrompt();
-		final String secondaryPrompt = dumbTerminal ? "" : config.getSecondaryPrompt();
+		final String secondaryPrompt = ansiTerminal ? config.getSecondaryPrompt() : "";
 		final String resultPrefix = config.getResultPrefix();
 
 		final Thread mainThread = Thread.currentThread();
@@ -137,11 +137,11 @@ public class REPL {
 											.builder()
 											.streams(System.in, System.out)
 											.system(true)
-											.dumb(dumbTerminal)
+											.dumb(!ansiTerminal)
 											.jna(false);
 
 		if (OSUtils.IS_WINDOWS) {
-			builder.jansi(!dumbTerminal);
+			builder.jansi(ansiTerminal);
 		}
 		else if (isRunningOnLinuxGitPod()) {
 			// The terminal detection on Linux GitPod instances is wrong "xterm-color"
@@ -162,7 +162,7 @@ public class REPL {
 		
 		final BufferedReader in = createBufferedReader("stdin", terminal);
 
-		printer = new TerminalPrinter(config, terminal, dumbTerminal, false);
+		printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
 		venice = new VeniceInterpreter(interceptor, loadPaths);
 		
@@ -437,11 +437,14 @@ public class REPL {
 			
 			final String script = 
 				String.format(
-					"(do                                                \n" +
-		            "  (load-module :repl-setup)                        \n" +
-		            "  (repl-setup/setup :setup-mode %s :color-mode %s))  \n",
+					"(do                                     \n" +
+		            "  (load-module :repl-setup)             \n" +
+		            "  (repl-setup/setup :setup-mode %s      \n" +
+		            "                    :color-mode %s      \n" +
+		            "                    :ansi-terminal %s))   ",
 		            setupModeMode,
-		            colorMode);
+		            colorMode,
+		            ansiTerminal ? "true" : "false");
 			
 			venice.RE(script, "user", env);
 		}
@@ -691,7 +694,9 @@ public class REPL {
 	}
 
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
-		return new ReplPrintStream(terminal, config.getColor(context));	
+		return new ReplPrintStream(
+					terminal, 
+					ansiTerminal ? config.getColor(context) : null);	
 	}
 	
 	private BufferedReader createBufferedReader(final String context, final Terminal terminal) {

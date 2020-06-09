@@ -98,12 +98,14 @@
        (map first)))
 
 
-(defn download-libs [dir libs]
+(defn download-libs [dir libs show-progress]
   (let [artefacts (repl-setup/missing-libs dir libs)]
     (when-not (empty? artefacts)
       (println "Downloading Java libraries...")
       (if (io/internet-avail?)
-         (docoll #(maven/download % :dir dir :silent false) artefacts)
+         (docoll #(maven/download % :dir dir
+                                    :silent (not show-progress))
+                 artefacts)
          (println *err* "Internet is not available!")))))
 
 
@@ -114,27 +116,30 @@
        (map first)))
 
 
-(defn- download-font [uri dir font-name]
+(defn- download-font [uri dir font-name show-progress]
   (let [target (io/file dir font-name)
-        progress-fn (ansi/progress-bar
-                        :caption     (str "   " font-name " ")
-                        :start-msg   "   "
-                        :end-msg     (str "   " font-name " ok")
-                        :failed-msg  (str "   " font-name " failed"))]
+        progress-fn (if show-progress
+                      (ansi/progress-bar
+                              :caption     (str "   " font-name " ")
+                              :start-msg   "   "
+                              :end-msg     (str "   " font-name " ok")
+                              :failed-msg  (str "   " font-name " failed"))
+                      nil)]
     (io/spit target (io/download uri
                         :binary true
                         :user-agent "Mozilla"
                         :progress-fn progress-fn))))
 
 
-(defn download-fonts [dir fonts]
+(defn download-fonts [dir fonts show-progress]
   (let [required-fonts (repl-setup/missing-fonts dir fonts)]
     (when-not (empty? required-fonts)
       (println (str "Downloading fonts from '" fonts-base-url "'..."))
       (if (io/internet-avail?)
           (docoll #(repl-setup/download-font (str fonts-base-url %)
                                              dir
-                                             (io/file-name %))
+                                             (io/file-name %)
+                                             show-progress)
                   required-fonts)
           (println *err* "Internet is not available!")))))
 
@@ -267,12 +272,13 @@
 
 
 (defn setup [& options]
-  (let [options     (apply hash-map options)
-        setup-mode  (:setup-mode options :minimal)   ;; {:minimal :extended}
-        color-mode  (:color-mode options :none)      ;; {:none :light :dark}
-        libs        (if (= setup-mode :extended) libs-ext libs-min)
-        fonts       (if (= setup-mode :extended) fonts-ext fonts-min)
-        charset     (name (charset-default-encoding))]
+  (let [options       (apply hash-map options)
+        setup-mode    (:setup-mode options :minimal)   ;; {:minimal :extended}
+        color-mode    (:color-mode options :none)      ;; {:none :light :dark}
+        show-progress (:ansi-terminal options false)   ;; {true false}
+        libs          (if (= setup-mode :extended) libs-ext libs-min)
+        fonts         (if (= setup-mode :extended) fonts-ext fonts-min)
+        charset       (name (charset-default-encoding))]
     (when-not (io/exists-dir? "libs")
       (io/mkdirs "libs"))
 
@@ -292,8 +298,8 @@
       (println))
 
     (repl-setup/copy-venice-jar "libs")
-    (repl-setup/download-libs "libs" libs)
-    (repl-setup/download-fonts "fonts" fonts)
+    (repl-setup/download-libs "libs" libs show-progress)
+    (repl-setup/download-fonts "fonts" fonts show-progress)
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)
     (repl-setup/setup-scripts "scripts")

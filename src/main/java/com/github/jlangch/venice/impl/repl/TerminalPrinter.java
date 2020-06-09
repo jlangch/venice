@@ -35,12 +35,12 @@ public class TerminalPrinter {
 	public TerminalPrinter(
 			final ReplConfig config,
 			final Terminal terminal,
-			final boolean dumbTerminal,
+			final boolean ansiTerminal,
 			final boolean printJavaEx
 	) {
 		this.config = config;
 		this.terminal = terminal;
-		this.dumbTerminal = dumbTerminal;
+		this.ansiTerminal = ansiTerminal;
 		this.printJavaEx = printJavaEx;
 	}
 	
@@ -108,12 +108,12 @@ public class TerminalPrinter {
 	}
 	
 	private String getColor(final String colorID) {
-		return dumbTerminal ? null : config.getColor(colorID);
+		return ansiTerminal ? config.getColor(colorID) : null;
 	}
 	
 	
 	private final Terminal terminal;
-	private final boolean dumbTerminal;
+	private final boolean ansiTerminal;
 	private final ReplConfig config;
 	private boolean printJavaEx;
 }
