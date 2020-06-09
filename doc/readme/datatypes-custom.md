@@ -24,6 +24,8 @@ the instantiation of the type.
 
 ## Composing types with "AND"
 
+The custom "AND" type defines a type composed of one or multiple simpler types.
+
 
 ### Define a custom type 
 
@@ -70,12 +72,86 @@ The field type :any is representing any type
 
 ## Composing types with "OR"
 
-TODO
+The custom "OR" type defines a set of values for the type.
+
+
+### Define a custom type 
+
+The set of values for the "OR" type can be composed of individual values and/or
+all values defined by a simpler type.
+
+
+```clojure
+
+; individual keyword values 
+(deftype-or :color :red :green :blue)
+
+; individual string values 
+(deftype-or :fruits "apple" "peach" "banana")
+
+; individual integer values
+(deftype-or :small-numbers 0 1 2 3 4 5 6 7 8 9)
+
+; optional string type (all string values and nil)
+(deftype-or :middle-name :string nil)
+
+; all numbers defined by the primitive number types
+(deftype-or :number :long :integer :double :decimal)
+
+ ```
+
+Venice implicitly creates a builder function suffixed with a '.'
+  
+```clojure
+(color. :blue)
+```
+
+... and a type check function 
+
+```clojure
+(color? (color. :blue))
+```
+
+
 
 
 ## Wrapper types
 
-TODO
+Wrapper types put a constraint on simpler types. An eMail address is not just a
+string it's a string with well defined constraints.
+
+
+```clojure
+(do
+  ; the type :first-name is a string (it cannot be nil)
+  (deftype-of :first-name :string)
+  
+  ; if a first name must not be empty a constraint can be added
+  (deftype-of :first-name2 
+              :string 
+              (fn [s] (assert (not-empty? s) "must not be empty")))
+ 
+  (def name (first-name. "John"))
+  
+  ; the value 'name' is of type :first-name and of type :string, so
+  ; all string functions can be applied to it
+  ;   (first-name? name) => true
+  ;   (string? name) => true 
+  (println (str/format "%s: length=%d" name (count name))))
+```
+
+
+```clojure
+(do
+  (deftype-of :email-address 
+              :string
+              (fn [e] 
+                (assert (str/valid-email-addr? e) "invalid email address")))
+  (def email (email-address. "foo@foo.org"))
+  
+  (println email))
+```
+
 
 
 
