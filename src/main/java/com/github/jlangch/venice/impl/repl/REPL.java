@@ -433,6 +433,7 @@ public class REPL {
 			final TerminalPrinter printer
 	) {
 		try {
+			// on Windows enforce dark mode
 			final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
 											? ColorMode.Dark
 											: config.getColorMode();			
