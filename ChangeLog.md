@@ -23,11 +23,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.8.5] - 2020-06-xx
+## [1.8.5] - 2020-06-11
 
-### Added
+### Changed
 
-- ...
+- REPL setup on Windows
 
 ### Performance
 

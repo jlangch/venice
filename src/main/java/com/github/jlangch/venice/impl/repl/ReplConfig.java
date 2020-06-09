@@ -169,6 +169,18 @@ public class ReplConfig {
 		return colorMode;
 	}
 
+	public boolean isColorModeLight() {
+		return colorMode == ColorMode.Light;
+	}
+
+	public boolean isColorModeDark() {
+		return colorMode == ColorMode.Dark;
+	}
+
+	public boolean isColorModeNone() {
+		return colorMode == ColorMode.None;
+	}
+
 	public String getColor(final String key) {
 		switch(colorMode) {
 			case Light: return lookupColor("light." + key);

@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
+import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -428,12 +429,16 @@ public class REPL {
 	private void handleSetupCommand(
 			final VeniceInterpreter venice, 
 			final Env env, 
-			final SetupMode mode,
+			final SetupMode setupMode,
 			final TerminalPrinter printer
 	) {
 		try {
-			final String setupModeMode = ":" + mode.name().toLowerCase();
-			final String colorMode = ":" + config.getColorMode().name().toLowerCase();
+			final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
+											? ColorMode.Dark
+											: config.getColorMode();			
+			
+			final String sSetupMode = ":" + setupMode.name().toLowerCase();
+			final String sColorMode = ":" + colorMode.name().toLowerCase();
 			
 			final String script = 
 				String.format(
@@ -442,8 +447,8 @@ public class REPL {
 		            "  (repl-setup/setup :setup-mode %s      \n" +
 		            "                    :color-mode %s      \n" +
 		            "                    :ansi-terminal %s))   ",
-		            setupModeMode,
-		            colorMode,
+		            sSetupMode,
+		            sColorMode,
 		            ansiTerminal ? "true" : "false");
 			
 			venice.RE(script, "user", env);
