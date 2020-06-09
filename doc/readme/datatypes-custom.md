@@ -2,26 +2,27 @@
 
 Venice is dynamically typed and provides a rich set of datatypes. But with domain
 modelling primitive types like longs, strings, and maps are not as expressive as 
-we are used to with languages that have a type system.
+we are used to with languages that allow you to define your own types.
 
 Even though Venice will never progress into a statically typed language, the ability
-to define custom types will make a domain model more expressive. 
+to define custom types will make a domain model more expressive and type safe. 
 
-Venice is validating the instantiation of the custom types by checking the values 
+Venice is validating the instantiation of custom types by checking the values 
 for type compliance. With value immutability the instantiated values are guaranteed
 to be valid for their lifetime.
 
-Due to the dynamic nature of Venice, function arguments are not type checked 
-implicitly, if required so preconditions can be added for runtime checking. 
+Due to the dynamic nature of Venice, types cannot not be checked at read time and
+function arguments are not type checked implicitly, if required so function
+preconditions can be added for runtime checking. 
 
 Venice custom types are composed from 'smaller' types:
 
 - Composing types with "AND" (records)
 - Composing types with "OR" (choices)
-- Wrapper types (constraints)
+- Wrapping types (constraints)
 
 Custom types can be defined with an optional validation function that validates
-the instantiation of the type.
+the instantiation of a type.
 
 
 
@@ -53,7 +54,8 @@ Venice implicitly creates a builder function suffixed with a '.'
 (complex? (complex. 200 300))  ; => true
 ```
 
-Custom "AND" types are implemented as maps, so all map functions can be applied:
+Custom "AND" types are implemented in terms of maps, so all map functions
+can be applied:
 
  ```clojure
 (def x (complex. 200 300))
@@ -76,8 +78,8 @@ The field type :any is representing any type
 ## Composing types with "OR"
 
 The custom "OR" type defines a set of values for the type. The set of values 
-for the "OR" type can be composed of individual values and/or all values 
-defined by a simpler type.
+can be composed of individual values and/or all values defined by a simpler 
+type.
 
 
 ### Define a custom type 
