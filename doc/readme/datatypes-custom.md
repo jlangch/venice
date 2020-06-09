@@ -4,12 +4,15 @@ Venice is dynamically typed and provides a rich set of datatypes. But with domai
 modelling primitive types like longs, strings, and maps are not as expressive as 
 we're used with languages that have a type system.
 
-Even though Venice will never progess into a statically typed language, the ability
+Even though Venice will never progress into a statically typed language, the ability
 to define custom types will make a domain model more expressive. 
 
 Venice is validating the instantiation of the custom types by checking the values 
 for type compliance. With value immutability the instantiated values are guaranteed
 to be valid for their lifetime.
+
+Due to the dynamic nature of Venice, function arguments are not type checked 
+implicitly, if required so preconditions can be added. 
 
 Venice custom types are composed from 'smaller' types:
 
