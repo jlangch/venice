@@ -47,7 +47,7 @@ Venice implicitly creates a builder function suffixed with a '.'
 ... and a type check function 
 
 ```clojure
-(complex? (complex. 200 300))
+(complex? (complex. 200 300))  ; => true
 ```
 
 Custom "AND" types are implemented as maps, so all map functions can be applied:
@@ -72,14 +72,12 @@ The field type :any is representing any type
 
 ## Composing types with "OR"
 
-The custom "OR" type defines a set of values for the type.
+The custom "OR" type defines a set of values for the type. The set of values 
+for the "OR" type can be composed of individual values and/or all values 
+defined by a simpler type.
 
 
 ### Define a custom type 
-
-The set of values for the "OR" type can be composed of individual values and/or
-all values defined by a simpler type.
-
 
 ```clojure
 
@@ -87,10 +85,10 @@ all values defined by a simpler type.
 (deftype-or :color :red :green :blue)
 
 ; individual string values 
-(deftype-or :fruits "apple" "peach" "banana")
+(deftype-or :fruit "apple" "peach" "banana")
 
 ; individual integer values
-(deftype-or :small-numbers 0 1 2 3 4 5 6 7 8 9)
+(deftype-or :small-number 0 1 2 3 4 5 6 7 8 9)
 
 ; optional string type (all string values and nil)
 (deftype-or :middle-name :string nil)
@@ -104,12 +102,24 @@ Venice implicitly creates a builder function suffixed with a '.'
   
 ```clojure
 (color. :blue)
+
+(fruit. "apple")
+
+(fruit. "apple")
+
+(small-number. 6)
+
+(number. 10)
+(number. 10.4567M)
 ```
 
 ... and a type check function 
 
 ```clojure
-(color? (color. :blue))
+(color? (color. :blue))  ; => true
+
+(fruit? (fruit. "apple"))  ; => true
+(string? (fruit. "apple"))  ; => true
 ```
 
 
@@ -123,7 +133,7 @@ string it's a string with well defined constraints.
 
 ```clojure
 (do
-  ; the type :first-name is a string (it cannot be nil)
+  ; the type :first-name is a string (values cannot be nil)
   (deftype-of :first-name :string)
   
   ; if a first name must not be empty a constraint can be added
@@ -151,7 +161,6 @@ string it's a string with well defined constraints.
   
   (println email))
 ```
-
 
 
 
