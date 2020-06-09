@@ -105,9 +105,10 @@ Venice implicitly creates a builder function suffixed with a '.'
 
 (fruit. "apple")
 
-(fruit. "apple")
-
 (small-number. 6)
+
+(middle-name. "John")
+(middle-name. nil)
 
 (number. 10)
 (number. 10.4567M)
