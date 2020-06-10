@@ -134,8 +134,8 @@ Venice implicitly creates a builder function suffixed with a '.'
 ## Wrapper types
 
 Wrapper types give simpler types a name and can add a constraint 
-on them. An eMail address is not just a
-string it's a string with well defined constraints.
+on them. An eMail address is not just a string it's represented by
+a string and has well defined constraints.
 
 
 ```clojure
