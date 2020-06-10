@@ -27,7 +27,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- Gradle Maven publication task to publish the shadow Jar instead of the plain Jar
+- Gradle Maven publication task to publish the shadow Jar instead of the plain
+  Jar. The releases 1.8.3 to 1.8.5 contained the plain Jar that missed the 
+  repacked JLine and Vavr libs.
+  
 
 
 
@@ -35,7 +38,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- publish to Maven
+- publish to Maven with falling back to manual publication. The Gradle Maven 
+  publication task published the plain Jar instead of the shadow Jar.
 
 
 
