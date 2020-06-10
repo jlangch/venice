@@ -30,6 +30,13 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - ...
 
 
+## [1.8.6] - 2020-06-10
+
+### Fixed
+
+- publish to Maven
+
+
 
 ## [1.8.5] - 2020-06-09
 
