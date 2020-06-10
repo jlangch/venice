@@ -38,7 +38,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- publish to Maven with falling back to manual publication. The Gradle Maven 
+- publish to Maven by falling back to manual publication. The Gradle Maven 
   publication task published the plain Jar instead of the shadow Jar.
 
 
