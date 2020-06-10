@@ -23,11 +23,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.8.7] - 2020-06-xx
+## [1.8.7] - 2020-06-10
 
-### Added
+### Fixed
 
-- ...
+- Gradle Maven publication task to publish the shadow Jar instead of the plain Jar
 
 
 
