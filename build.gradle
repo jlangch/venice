@@ -172,6 +172,8 @@ test {
 jar {
 	exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
 	exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
+	
+    archiveFileName = "venice-raw-${project.version}.jar"
 }
 
 
@@ -202,11 +204,16 @@ shadowJar {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        venicePublication(MavenPublication) {
             groupId = 'com.github.jlangch'
             artifactId = 'venice'
             
-            from components.java            
+            artifact sourcesJar 
+            artifact javadocJar 
+      		
+            //artifact shadowJar
+      		artifact "build/libs/venice-${project.version}.jar"
+            
             
             versionMapping {
                 usage('java-api') {
@@ -262,7 +269,7 @@ publishing {
 signing {
  	useGpgCmd()  // use the local GPG agent to sign the artefacts
     
-    sign publishing.publications.mavenJava
+    sign publishing.publications.venicePublication
 }
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
