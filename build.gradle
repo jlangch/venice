@@ -290,7 +290,7 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
                          " pom.xml pom.xml.asc" +
                          " venice-${project.version}-javadoc.jar venice-${project.version}-javadoc.jar.asc" +
                          " venice-${project.version}-sources.jar venice-${project.version}-sources.jar.asc" +
-                         " venice-${project.version}.jar venice-${version}.jar.asc" +
+                         " venice-${project.version}.jar venice-${project.version}.jar.asc" +
                   "; echo 'Bundling done.'"
 }
 
