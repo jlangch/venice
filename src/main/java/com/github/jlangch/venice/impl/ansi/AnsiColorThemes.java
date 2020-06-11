@@ -147,7 +147,7 @@ public class AnsiColorThemes {
 	private static String LIC_GREY_LIGHT  = "\u001b[38;5;245m";
 	private static String LIC_BLUE        = "\u001b[38;5;20m";
 	private static String LIC_GREEN       = "\u001b[38;5;28m";
-	private static String LIC_ORANGE      = "\u001b[38;5;208m";
+	private static String LIC_ORANGE      = "\u001b[38;5;130m";
 
 	// dark mode
 	private static String DAC_PURPLE     = "\u001b[38;5;140m";
