@@ -141,7 +141,7 @@ repositories {
 
 sourceSets {
     jmh {
-    	java.srcDirs = ['src/jmh/java']
+        java.srcDirs = ['src/jmh/java']
     }
     
     main {
@@ -149,8 +149,8 @@ sourceSets {
             srcDirs = ['src/main/java']
         }
         resources {
-            srcDirs = ['src/main/resources', 
-                       'doc/examples/webapp', 
+            srcDirs = ['src/main/resources',
+                       'doc/examples/webapp',
                        'doc/examples/scripts']
         }
     }
@@ -170,9 +170,9 @@ test {
 
 
 jar {
-	exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
-	exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
-	
+    exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
+    exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
+    
     archiveFileName = "venice-raw-${project.version}.jar"
 }
 
@@ -193,10 +193,10 @@ shadowJar {
                    'Implementation-Version': "${project.version}"
     }
  
-	exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
-	exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
+    exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
+    exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
    
-	mergeServiceFiles()
+    mergeServiceFiles()
    
     archiveFileName = "venice-${project.version}.jar"
 }
@@ -210,9 +210,9 @@ publishing {
             
             artifact sourcesJar 
             artifact javadocJar 
-      		
+              
             //artifact shadowJar
-      		artifact "build/libs/venice-${project.version}.jar"
+            artifact "build/libs/venice-${project.version}.jar"
             
             
             versionMapping {
@@ -253,21 +253,21 @@ publishing {
     
     repositories {
         if(!version.endsWith('SNAPSHOT')) {
-	        maven {
-	            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-	            
-	            credentials {
-	                username sonatypeUsername
-	                password sonatypePassword
-	            }
-	        }
-	    }
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                
+                credentials {
+                    username sonatypeUsername
+                    password sonatypePassword
+                }
+            }
+        }
     }
 }
 
 
 signing {
- 	useGpgCmd()  // use the local GPG agent to sign the artefacts
+    useGpgCmd()  // use the local GPG agent to sign the artefacts
     
     sign publishing.publications.venicePublication
 }
@@ -304,129 +304,125 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
         sourceSets.main.compileClasspath,
         "src/main/resources" ]
     }
-    
-    // add more stack space to prevent StackOverflowError at
-    // java.util.regex.Pattern$CharProperty$1.isSatisfiedBy(...)   
-    jvmArgs(["-Xss4096k"])
-    
+
     args "${project.version}"
 }
 
 
 task updateReleaseVersion {
-	doLast {
-	    println "Updating version ${project.version} -> 'maven-central.svg'"
-	    ant.replaceregexp(
-	    		match:   "v${version_regex}", 
-	    		replace: "v${project.version}", 
- 	    		flags:   'g'
-	    ) {
-	        fileset(dir: 'doc', includes: 'maven-central.svg')
-	    }
-	    
-	    println "Updating version ${project.version} -> 'build-dependencies.md'"
-	    ant.replaceregexp(
-	    		match:   "${version_regex}", 
-	    		replace: "${project.version}", 
- 	    		flags:   'g'
-	    ) {
-	        fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
-	    }
-	}
+    doLast {
+        println "Updating version ${project.version} -> 'maven-central.svg'"
+        ant.replaceregexp(
+                match:   "v${version_regex}", 
+                replace: "v${project.version}", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'doc', includes: 'maven-central.svg')
+        }
+        
+        println "Updating version ${project.version} -> 'build-dependencies.md'"
+        ant.replaceregexp(
+                match:   "${version_regex}", 
+                replace: "${project.version}", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
+        }
+    }
 }
 
 
 task ('jmhHelp', description:'Print help for the jmh task') {
-	doLast {  
-		println ""
-		println "Usage of jmh tasks:"
-		println ""
-		
-		println "Only execute specific benchmark(s):"
-		println "\t./gradlew jmh -Pinclude=\".*MyBenchmark.*\""
-		
-		println ""
-		println "Specify extra profilers:"
-		println "\t./gradlew jmh -Pprofilers=\"gc,stack\""
-		
-		println ""
-		println "Prominent profilers (for full list call jmhProfilers task):"
-		println "\tcomp - JitCompilations, tune your iterations"
-		println "\tstack - which methods used most time"
-		println "\tgc - print garbage collection stats"
-		println "\ths_thr - thread usage"
-		
-		println ""
-		println "Change report format from JSON to one of [CSV, JSON, NONE, SCSV, TEXT]:"
-		println "\t./gradlew jmh -Pformat=csv"
-		
-		println ""
-		println "Specify JVM arguments:"
-		println "\t./gradlew jmh -PjvmArgs=\"-Dtest.cluster=local\""
-		
-		println ""
-		println "Run in verification mode (execute benchmarks with minimum of fork/warmup-/benchmark-iterations):"
-		println "\tgw jmh -Pverify"
-		
-		println ""
-		println "Resources:"
-		println "\thttp://tutorials.jenkov.com/java-performance/jmh.html (Introduction)"
-		println "\thttp://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/ (Samples)"
-	}       
+    doLast {  
+        println ""
+        println "Usage of jmh tasks:"
+        println ""
+        
+        println "Only execute specific benchmark(s):"
+        println "\t./gradlew jmh -Pinclude=\".*MyBenchmark.*\""
+        
+        println ""
+        println "Specify extra profilers:"
+        println "\t./gradlew jmh -Pprofilers=\"gc,stack\""
+        
+        println ""
+        println "Prominent profilers (for full list call jmhProfilers task):"
+        println "\tcomp - JitCompilations, tune your iterations"
+        println "\tstack - which methods used most time"
+        println "\tgc - print garbage collection stats"
+        println "\ths_thr - thread usage"
+        
+        println ""
+        println "Change report format from JSON to one of [CSV, JSON, NONE, SCSV, TEXT]:"
+        println "\t./gradlew jmh -Pformat=csv"
+        
+        println ""
+        println "Specify JVM arguments:"
+        println "\t./gradlew jmh -PjvmArgs=\"-Dtest.cluster=local\""
+        
+        println ""
+        println "Run in verification mode (execute benchmarks with minimum of fork/warmup-/benchmark-iterations):"
+        println "\tgw jmh -Pverify"
+        
+        println ""
+        println "Resources:"
+        println "\thttp://tutorials.jenkov.com/java-performance/jmh.html (Introduction)"
+        println "\thttp://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/ (Samples)"
+    }
 }
 
 
 task jmhProfilers(type: JavaExec, description:'Lists the available profilers for the jmh task', group: 'Development') {
-	classpath = sourceSets.jmh.runtimeClasspath
-	main = 'org.openjdk.jmh.Main'
-	args '-lprof'
+    classpath = sourceSets.jmh.runtimeClasspath
+    main = 'org.openjdk.jmh.Main'
+    args '-lprof'
 }
 
 
 task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
-	classpath = sourceSets.jmh.runtimeClasspath
-	main = 'org.openjdk.jmh.Main'
+    classpath = sourceSets.jmh.runtimeClasspath
+    main = 'org.openjdk.jmh.Main'
 
-	def include = project.properties.get('include', '');
-	def exclude = project.properties.get('exclude');
-	def format = project.properties.get('format', 'json');
-	def profilers = project.properties.get('profilers');
-	def jvmArgs = project.properties.get('jvmArgs')
-	def verify =  project.properties.get('verify');
+    def include = project.properties.get('include', '');
+    def exclude = project.properties.get('exclude');
+    def format = project.properties.get('format', 'json');
+    def profilers = project.properties.get('profilers');
+    def jvmArgs = project.properties.get('jvmArgs')
+    def verify =  project.properties.get('verify');
 
-	def resultFile = file("build/reports/jmh/result.${format}")
-	
-	args include
-	if (exclude) {
-		args '-e', exclude
-	}
-	if (verify != null) { // execute benchmarks with the minimum amount of execution (only to check if they are working)
-		println ">> Running in verify mode"
-		args '-f' , 1
-		args '-wi' , 1
-		args '-i' , 1
-	}
-	args '-foe', 'true'   //fail-on-error
-	args '-v', 'NORMAL'   //verbosity [SILENT, NORMAL, EXTRA]
-	if (profilers) {
-		profilers.split(',').each {
-			args '-prof', it
-		}
-	}
-	args '-jvmArgsPrepend', '-Xmx3072m'
-	args '-jvmArgsPrepend', '-Xms3072m'
-	if (jvmArgs) {
-		for (jvmArg in jvmArgs.split(' ')) {
-			args '-jvmArgsPrepend', jvmArg
-		}
-	}
-	args '-rf', format
-	args '-rff', resultFile
-	
-	doFirst {
-		println "\nExecuting JMH with: $args \n"
-		resultFile.parentFile.mkdirs()
-	}
+    def resultFile = file("build/reports/jmh/result.${format}")
+    
+    args include
+    if (exclude) {
+        args '-e', exclude
+    }
+    if (verify != null) { // execute benchmarks with the minimum amount of execution (only to check if they are working)
+        println ">> Running in verify mode"
+        args '-f' , 1
+        args '-wi' , 1
+        args '-i' , 1
+    }
+    args '-foe', 'true'   //fail-on-error
+    args '-v', 'NORMAL'   //verbosity [SILENT, NORMAL, EXTRA]
+    if (profilers) {
+        profilers.split(',').each {
+            args '-prof', it
+        }
+    }
+    args '-jvmArgsPrepend', '-Xmx3072m'
+    args '-jvmArgsPrepend', '-Xms3072m'
+    if (jvmArgs) {
+        for (jvmArg in jvmArgs.split(' ')) {
+            args '-jvmArgsPrepend', jvmArg
+        }
+    }
+    args '-rf', format
+    args '-rff', resultFile
+    
+    doFirst {
+        println "\nExecuting JMH with: $args \n"
+        resultFile.parentFile.mkdirs()
+    }
 }
 
 
@@ -439,11 +435,11 @@ artifacts {
 dependencies {
     // JMH (the Java Microbenchmark Harness) has been added to the JDK 
     // starting with JDK 12; for earlier versions, the dependencies 
-	// have to be added explicitly.
-	jmhImplementation project
-	jmhImplementation 'io.vavr:vavr:0.10.3'
-	jmhImplementation 'org.openjdk.jmh:jmh-core:1.23'
-	jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+    // have to be added explicitly.
+    jmhImplementation project
+    jmhImplementation 'io.vavr:vavr:0.10.3'
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.23'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
 
     // unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
@@ -454,7 +450,7 @@ dependencies {
     testRuntimeOnly 'org.knowm.xchart:xchart:3.6.3'
     
     compileOnly 'org.openjdk.jmh:jmh-core:1.23'
-	compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+    compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
 
     // required for cheatsheet generation
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.20'
