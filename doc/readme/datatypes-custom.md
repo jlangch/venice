@@ -146,7 +146,7 @@ a string and has well defined constraints.
   ; if a first name must not be empty a constraint can be added
   (deftype-of :first-name2 
               :string 
-              (fn [s] (assert (not-empty? s) "must not be empty")))
+              not-empty?)
  
   (def name (first-name. "John"))
   
@@ -162,8 +162,8 @@ a string and has well defined constraints.
 (do
   (deftype-of :email-address 
               :string
-              (fn [e] 
-                (assert (str/valid-email-addr? e) "invalid email address")))
+              str/valid-email-addr?)
+              
   (def email (email-address. "foo@foo.org"))
   
   (println email))

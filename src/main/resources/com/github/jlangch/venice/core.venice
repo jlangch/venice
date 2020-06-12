@@ -44,7 +44,8 @@
 
   assert [expr message]
 
-  `(if ~message
+  `(do
+     (if ~message
        (when-not ~expr
          (throw (. :com.github.jlangch.venice.AssertionException
                    :new
@@ -52,7 +53,8 @@
        (when-not ~expr
          (throw (. :com.github.jlangch.venice.AssertionException
                    :new
-                   (str "Assert failed: " (pr-str '~expr)))))))
+                   (str "Assert failed: " (pr-str '~expr))))))
+     true))
 
 
 (defmacro

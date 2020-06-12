@@ -104,7 +104,7 @@ public class SpecialFormsTest_deftype_of {
 	}
 
 	@Test
-	public void test_deftype_of_validation_OK() {
+	public void test_deftype_of_validation_OK_1() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -120,13 +120,41 @@ public class SpecialFormsTest_deftype_of {
 	}
 
 	@Test
-	public void test_deftype_of_validation_FAILED() {
+	public void test_deftype_of_validation_OK_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                            \n" +
+				"  (deftype-of :user/email-address                              \n" +
+				"              :string                                          \n" +
+				"              str/valid-email-addr?)                           \n" +
+				"  (def x (.: :user/email-address \"foo@foo.org\"))             \n" +
+				"  (pr-str x))                                                    ";
+
+		assertEquals("\"foo@foo.org\"", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_of_validation_FAILED_1() {
 		final String script =
 				"(do                                                            \n" +
 				"  (deftype-of :user/email-address                              \n" +
 				"              :string                                          \n" +
 				"              (fn [e] (assert (str/valid-email-addr? e)        \n" +
 				"                              \"invalid email address\")))     \n" +
+				"  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
+				"  (pr-str x))                                                    ";
+
+		assertThrows(AssertionException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
+	public void test_deftype_of_validation_FAILED_2() {
+		final String script =
+				"(do                                                            \n" +
+				"  (deftype-of :user/email-address                              \n" +
+				"              :string                                          \n" +
+				"              str/valid-email-addr?)                           \n" +
 				"  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
 				"  (pr-str x))                                                    ";
 

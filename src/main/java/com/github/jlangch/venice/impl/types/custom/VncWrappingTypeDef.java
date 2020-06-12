@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
+import com.github.jlangch.venice.AssertionException;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -58,7 +61,24 @@ public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
 
 	public void validate(final VncVal val) {
 		if (validationFn != null) {
-			validationFn.apply(VncList.of(val));
+			try {
+				final VncVal valid = validationFn.apply(VncList.of(val));
+				if (valid == Constants.Nil || valid == VncBoolean.False) {
+					throw new AssertionException(String.format(
+							"Invalid value for custom type :%s",
+							getType().getValue()));
+				}
+			}
+			catch(AssertionException ex) {
+				throw ex;
+			}
+			catch(Exception ex) {
+				throw new AssertionException(
+						String.format(
+								"Invalid value for custom type :%s",
+								getType().getValue()),
+						ex);
+			}
 		}
 	}
 

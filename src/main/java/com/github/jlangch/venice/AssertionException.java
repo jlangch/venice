@@ -27,6 +27,15 @@ public class AssertionException extends VncException {
 	public AssertionException(final String message) {
 		super(message);
 	}
+
+	public AssertionException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+
+	public AssertionException(final Throwable cause) {
+		super(cause);
+	}
+
 	
 	private static final long serialVersionUID = 1349237272157335345L;
 }

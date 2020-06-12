@@ -427,9 +427,7 @@ public class SpecialForms {
 						"  (ns foo)                                                    \n" +
 						"  (deftype-of :email-address                                  \n" +
 						"              :string                                         \n" +
-						"              (fn [e]                                         \n" +
-						"                (assert (str/valid-email-addr? e)             \n" +
-						"                        \"invalid email address\")))          \n" +
+						"              str/valid-email-addr?)                          \n" +
 						"  (email-address. \"foo@foo.org\"))                             ",
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +

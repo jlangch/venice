@@ -23,11 +23,14 @@ package com.github.jlangch.venice.impl.types.custom;
 
 import java.util.List;
 
+import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class VncCustomTypeDef extends VncCustomBaseTypeDef {
@@ -66,9 +69,26 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 		return fieldDefs.size();
 	}
 
-	public void validate(final VncMap data) {
+	public void validate(final VncVal val) {
 		if (validationFn != null) {
-			validationFn.apply(VncList.of(data));
+			try {
+				final VncVal valid = validationFn.apply(VncList.of(val));
+				if (valid == Constants.Nil || valid == VncBoolean.False) {
+					throw new AssertionException(String.format(
+							"Invalid value for custom type :%s",
+							getType().getValue()));
+				}
+			}
+			catch(AssertionException ex) {
+				throw ex;
+			}
+			catch(Exception ex) {
+				throw new AssertionException(
+						String.format(
+								"Invalid value for custom type :%s",
+								getType().getValue()),
+						ex);
+			}
 		}
 	}
 	

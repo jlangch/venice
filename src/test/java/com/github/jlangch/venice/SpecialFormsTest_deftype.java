@@ -272,7 +272,7 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
-	public void test_deftype_validation_OK() {
+	public void test_deftype_validation_OK_1() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -288,6 +288,36 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
+	public void test_deftype_validation_OK_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                               \n" +
+				"  (deftype :complex                                               \n" +
+				"           [real :long, imaginary :long]                          \n" +
+				"           #(assert (pos? (:real %)) \"real must be positive\"))  \n" +
+				"  (def x (complex. 100 200))                                      \n" +
+				"  (pr-str [(:real x) (:imaginary x)]))                              ";
+
+		assertEquals("[100 200]", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_validation_OK_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                               \n" +
+				"  (deftype :complex                                               \n" +
+				"           [real :long, imaginary :long]                          \n" +
+				"           #(and (pos? (:real %)) (pos? (:imaginary %))))         \n" +
+				"  (def x (complex. 100 200))                                      \n" +
+				"  (pr-str [(:real x) (:imaginary x)]))                              ";
+
+		assertEquals("[100 200]", venice.eval(script));					
+	}
+	
+	@Test
 	public void test_deftype_validation_FAILED() {
 		final String script =
 				"(do                                                      \n" +
@@ -296,6 +326,32 @@ public class SpecialFormsTest_deftype {
 				"           (fn [t] (assert (pos? (:real t))              \n" +
 				"                   \"real must be positive\")))          \n" +
 				"  (def x (complex. -100 200))                            \n" +
+				"  (pr-str [(:real x) (:imaginary x)]))                     ";
+
+		assertThrows(AssertionException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
+	public void test_deftype_validation_FAILED_2() {
+		final String script =
+				"(do                                                               \n" +
+				"  (deftype :complex                                               \n" +
+				"           [real :long, imaginary :long]                          \n" +
+				"           #(assert (pos? (:real %)) \"real must be positive\"))  \n" +
+				"  (def x (complex. -100 200))                                     \n" +
+				"  (pr-str [(:real x) (:imaginary x)]))                              ";
+
+		assertThrows(AssertionException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
+	public void test_deftype_validation_FAILED_3() {
+		final String script =
+				"(do                                                        \n" +
+				"  (deftype :complex                                        \n" +
+				"           [real :long, imaginary :long]                   \n" +
+				"           #(and (pos? (:real %)) (pos? (:imaginary %))))  \n" +
+				"  (def x (complex. -100 200))                              \n" +
 				"  (pr-str [(:real x) (:imaginary x)]))                     ";
 
 		assertThrows(AssertionException.class, () -> new Venice().eval(script));
