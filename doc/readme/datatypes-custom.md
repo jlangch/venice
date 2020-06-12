@@ -144,9 +144,7 @@ a string and has well defined constraints.
   (deftype-of :first-name :string)
   
   ; if a first name must not be empty a constraint can be added
-  (deftype-of :first-name2 
-              :string 
-              not-empty?)
+  (deftype-of :first-name2 :string not-empty?)
  
   (def name (first-name. "John"))
   
@@ -160,9 +158,7 @@ a string and has well defined constraints.
 
 ```clojure
 (do
-  (deftype-of :email-address 
-              :string
-              str/valid-email-addr?)
+  (deftype-of :email-address :string str/valid-email-addr?)
               
   (def email (email-address. "foo@foo.org"))
   
