@@ -73,7 +73,7 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 		if (validationFn != null) {
 			try {
 				final VncVal valid = validationFn.apply(VncList.of(val));
-				if (valid == Constants.Nil || valid == VncBoolean.False) {
+				if (valid == Constants.Nil || VncBoolean.isFalse(valid)) {
 					throw new AssertionException(String.format(
 							"Invalid value for custom type :%s",
 							getType().getValue()));

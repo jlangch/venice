@@ -137,7 +137,7 @@ public class VncBoolean extends VncVal {
 		return value.toString();
 	}
 
-	
+	// Note: never use  "val == VncBoolean.False" use "VncBoolean.isFalse(val)"
 	public static final VncBoolean True = new VncBoolean(true);
 	public static final VncBoolean False = new VncBoolean(false);
     
