@@ -157,4 +157,50 @@ public class SpecialFormsTest_deftype_or {
 
 		assertThrows(VncException.class, () -> new Venice().eval(script));
 	}
+
+	@Test
+	public void test_deftype_or_types_nillable_1() {
+		final Venice venice = new Venice();
+	
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :test :string nil)              \n" +
+				"  (test. nil))                                ";
+	
+		assertNull(venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_or_types_nillable_2() {
+		final Venice venice = new Venice();
+	
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :test :string nil)              \n" +
+				"  (test. \"abc\"))                              ";
+	
+		assertEquals("abc", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_or_types_nillable_invalid_type() {
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :test :string nil)              \n" +
+				"  (test. 6))                                    ";
+	
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+
+	@Test
+	public void test_deftype_or_types_nonsense_but_valid() {
+		final Venice venice = new Venice();
+	
+		final String script =
+				"(do                                           \n" +
+				"  (deftype-or :test :string \"23\")           \n" +
+				"  (test. \"23\"))                               ";
+	
+		assertEquals("23", venice.eval(script));					
+	}
 }

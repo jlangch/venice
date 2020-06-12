@@ -310,12 +310,16 @@ public class DefTypeForm {
 	public static VncVal createChoiceType(
 			final VncChoiceTypeDef typeDef, 
 			final VncVal val
-	) {		
-
+	) {
 		if (typeDef.valuesOnly().contains(val)) {
-			return val.wrap(
-					new VncWrappingTypeDef(typeDef.getType(), val.getType()), 
-					val.getMeta());
+			if (val == Constants.Nil) {
+				return val;
+			}
+			else {
+				return val.wrap(
+						new VncWrappingTypeDef(typeDef.getType(), val.getType()), 
+						val.getMeta());
+			}
 		}
 		
 		final VncKeyword type = val.isWrapped()
