@@ -27,7 +27,12 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- `deftype-of` validation with predicate functions as an alternative to use `assert`
+
+### Fixed
+
+- missing type check for 'deftype-of' builder
+- 'deftype-or' with 'nil' choice (optional)
 
 
 
