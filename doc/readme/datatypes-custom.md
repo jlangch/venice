@@ -145,7 +145,10 @@ a string and has well defined constraints.
   
   ; if a first name must not be empty a constraint can be added
   (deftype-of :first-name2 :string not-empty?)
- 
+  
+  ; the constraint (validation) can also be written as
+  (deftype-of :first-name3 :string #(assert (not-empty? %)))
+  
   (def name (first-name. "John"))
   
   ; the value 'name' is of type :first-name and of type :string, so
