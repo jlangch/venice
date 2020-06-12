@@ -1,7 +1,7 @@
 # Custom Datatypes
 
 Venice is dynamically typed and provides a rich set of datatypes. But with domain
-modelling primitive types like longs, strings, and maps are not as expressive as 
+modeling primitive types like longs, strings, and maps are not as expressive as 
 we are used to with languages that allow you to define your own types.
 
 Even though Venice will never progress into a statically typed language, the ability
@@ -11,7 +11,7 @@ Venice is validating the instantiation of custom types by checking the values
 for type compliance. With value immutability the instantiated values are guaranteed
 to be valid for their lifetime.
 
-Due to the dynamic nature of Venice, types cannot not be checked at read time and
+Due to the dynamic nature of Venice, types cannot not be checked at Reader time and
 function arguments are not type checked implicitly, if required so function
 preconditions can be added for runtime checking. 
 
