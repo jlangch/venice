@@ -42,9 +42,19 @@ public class SpecialFormsTest_deftype_of {
 
 		assertEquals("\"foo@foo.org\"", venice.eval(script));					
 	}
+	
+	@Test
+	public void test_deftype_of_invalid_type() {
+		final String script =
+				"(do                                          \n" +
+				"  (deftype-of :user/email-address :string)   \n" +
+				"  (user/email-address. 200))                   ";
+	
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
 
 	@Test
-	public void test_deftype_invalid_name() {
+	public void test_deftype_of_invalid_name() {
 		final String script =
 				"(do                                      \n" +
 				"  (deftype-of :email-address. :string))    ";

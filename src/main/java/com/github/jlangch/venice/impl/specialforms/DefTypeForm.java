@@ -300,7 +300,9 @@ public class DefTypeForm {
 	public static VncVal createWrappedType(
 			final VncWrappingTypeDef typeDef, 
 			final VncVal val
-	) {		
+	) {
+		validateTypeCompatibility(typeDef, val);
+
 		typeDef.validate(val);
 		return val.wrap(typeDef, val.getMeta());
 	}
@@ -363,7 +365,27 @@ public class DefTypeForm {
 					fieldDef.getType().toString(),
 					argType.toString())); 
 	}
-	
+
+	private static void validateTypeCompatibility(
+			final VncWrappingTypeDef typeDef,
+			final VncVal arg
+	) {
+		if (Types.ANY.equals(typeDef.getBaseType())) {
+			return;
+		}
+
+		if (Types.isInstanceOf(typeDef.getBaseType(), arg)) {
+			return;
+		}
+		
+		throw new VncException(String.format(
+				"The type %s requires an arg of type %s "
+						+ "instead of the passed %s", 
+					typeDef.getType().toString(), 
+					typeDef.getBaseType().toString(),
+					arg.getType().toString())); 
+	}
+
 	private static VncKeyword qualifyBaseType(
 			final VncKeyword type,
 			final Env env
