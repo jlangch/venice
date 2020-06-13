@@ -95,7 +95,7 @@ public class HighlightParserTest {
 	@Test
 	public void test_unprocessed_input() {
 		// no unprocessed chars
-		HighlightedForm hf = HighlightParser.parse("(+ 1 2)");
+		HighlightedFormItems hf = HighlightParser.parse("(+ 1 2)");
 		assertEquals(7, hf.items().size());
 		assertFalse(hf.hasUnprocessed());
 		assertNull(hf.getUnprocessed());

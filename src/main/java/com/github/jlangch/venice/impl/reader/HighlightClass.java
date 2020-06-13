@@ -53,5 +53,7 @@ public enum HighlightClass {
 	PARENTHESIS_BEGIN,     // (
 	PARENTHESIS_END,       // )
 	
-	UNKNOWN;               // anything that could not be classified     
+	UNKNOWN,               // anything that could not be classified
+	
+	UNPROCESSED;           // unprocessed input
 }

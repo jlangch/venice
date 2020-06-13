@@ -24,13 +24,13 @@ package com.github.jlangch.venice.impl.reader;
 import java.util.List;
 
 
-public class HighlightedForm {
+public class HighlightedFormItems {
 
-	public HighlightedForm(final List<HighlightItem> items) {
+	public HighlightedFormItems(final List<HighlightItem> items) {
 		this(items, null);
 	}
 
-	public HighlightedForm(
+	public HighlightedFormItems(
 			final List<HighlightItem> items,
 			final String unprocessed
 	) {

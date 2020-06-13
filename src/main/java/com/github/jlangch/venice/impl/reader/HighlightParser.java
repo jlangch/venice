@@ -64,7 +64,7 @@ public class HighlightParser {
 	}
 
 	
-	public static HighlightedForm parse(final String str) {
+	public static HighlightedFormItems parse(final String str) {
 		final List<Token> tokens = Tokenizer.tokenize(
 										str, "highlighter", false, false);
 		
@@ -75,15 +75,15 @@ public class HighlightParser {
 			hl.finish();
 			
 			if (hl.hasUnprocessedForm()) {
-				return new HighlightedForm(hl.items(), hl.getUnprocessedForm());
+				return new HighlightedFormItems(hl.items(), hl.getUnprocessedForm());
 			}
 			else {
-				return new HighlightedForm(hl.items());
+				return new HighlightedFormItems(hl.items());
 			}
 		}
 		catch(EofException ex) {
 			// return what we've got so far
-			return new HighlightedForm(hl.items());
+			return new HighlightedFormItems(hl.items());
 		}
 	}
 
