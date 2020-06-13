@@ -64,7 +64,7 @@ public class HighlightParser {
 	}
 
 	
-	public static HighlightedFormItems parse(final String str) {
+	public static List<HighlightItem> parse(final String str) {
 		final List<Token> tokens = Tokenizer.tokenize(
 										str, "highlighter", false, false);
 		
@@ -73,26 +73,12 @@ public class HighlightParser {
 		try {
 			hl.process_form();
 			hl.finish();
-			
-			if (hl.hasUnprocessedForm()) {
-				return new HighlightedFormItems(hl.items(), hl.getUnprocessedForm());
-			}
-			else {
-				return new HighlightedFormItems(hl.items());
-			}
+			return hl.items();
 		}
 		catch(EofException ex) {
 			// return what we've got so far
-			return new HighlightedFormItems(hl.items());
+			return hl.items();
 		}
-	}
-
-	private boolean hasUnprocessedForm() {
-		return unprocessedForm != null;
-	}
-
-	private String getUnprocessedForm() {
-		return unprocessedForm;
 	}
 	
 	private List<HighlightItem> items() {
@@ -318,17 +304,16 @@ public class HighlightParser {
 		final int numTokens = tokens.size();
 		if (position >= numTokens) {
 			// all tokens processed
-			unprocessedForm = null; 
 		}
 		else if (position == numTokens-1) {
 			final Token tok = tokens.get(position);
-			unprocessedForm = tok.getType() == TokenType.WHITESPACES
-								? null
-								: form.substring(tok.getFileStartPos());
+			if (tok.getType() != TokenType.WHITESPACES) {
+				addItem(form.substring(tok.getFileStartPos()), HighlightClass.UNPROCESSED);
+			}
 		}
 		else {
 			final Token tok = tokens.get(position);
-			unprocessedForm = form.substring(tok.getFileStartPos());
+			addItem(form.substring(tok.getFileStartPos()), HighlightClass.UNPROCESSED);
 		}
 	}
 	
@@ -364,5 +349,4 @@ public class HighlightParser {
 	private final List<Token> tokens;
 	private int position;
 	private HighlightClass pinnedClass = null;
-	private String unprocessedForm = null;
 }

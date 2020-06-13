@@ -6370,7 +6370,7 @@ public class CoreFunctions {
 											p -> new VncKeyword(p.name().toLowerCase().replace('_', '-'))));
 				
 				VncList list = new VncList();
-				for(HighlightItem it : HighlightParser.parse(form).items()) {
+				for(HighlightItem it : HighlightParser.parse(form)) {
 					list = list.addAtEnd(
 								VncList.of(
 									new VncString(it.getForm()),

@@ -59,7 +59,6 @@ public class ReplHighlighter implements Highlighter {
 		if (enabled && !isReplCommand(buffer)) {
 			HighlightParser
 				.parse(buffer)
-				.items()
 				.forEach(it -> sb.ansiAppend(highlight(it)));		
 		}
 		else {

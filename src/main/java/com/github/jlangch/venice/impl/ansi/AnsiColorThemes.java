@@ -43,6 +43,7 @@ import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_SPECIA
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNKNOWN;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE_SPLICING;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.UNPROCESSED;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.WHITESPACES;
 
 import java.util.HashMap;
@@ -98,6 +99,8 @@ public class AnsiColorThemes {
 
 		colors.put(map(UNKNOWN),				LIC_GREY);
 
+		colors.put(map(UNPROCESSED),			LIC_RED);
+
 		return new AnsiColorTheme("light", colors);
 	}
 	
@@ -133,6 +136,8 @@ public class AnsiColorThemes {
 
 		colors.put(map(UNKNOWN),				DAC_GREY);
 
+		colors.put(map(UNPROCESSED),			DAC_RED);
+
 		return new AnsiColorTheme("dark", colors);
 	}
 
@@ -148,6 +153,7 @@ public class AnsiColorThemes {
 	private static String LIC_BLUE        = "\u001b[38;5;20m";
 	private static String LIC_GREEN       = "\u001b[38;5;28m";
 	private static String LIC_ORANGE      = "\u001b[38;5;130m";
+	private static String LIC_RED         = "\u001b[38;5;9m";
 
 	// dark mode
 	private static String DAC_PURPLE     = "\u001b[38;5;140m";
@@ -156,4 +162,5 @@ public class AnsiColorThemes {
 	private static String DAC_BLUE       = "\u001b[38;5;111m";
 	private static String DAC_GREEN      = "\u001b[38;5;157m";
 	private static String DAC_ORANGE     = "\u001b[38;5;216m";
+	private static String DAC_RED        = "\u001b[38;5;196m";
 }
