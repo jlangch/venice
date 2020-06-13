@@ -27,7 +27,12 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- Highlighter marks unprocessed forms like `(inc 1)` in `(do (+ 1 2)) (inc 1)` 
+  with a special color. 
+
+### Fixed
+
+- REPL to handle an edge case of unprocessed forms gracefully
 
 
 
