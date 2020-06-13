@@ -58,27 +58,42 @@ public class HighlightParser {
 			final String form, 
 			final List<Token> formTokens
 	) {
+		this.form = form;
 		this.tokens = formTokens;
 		this.position = 0;
 	}
 
 	
-	public static List<HighlightItem> parse(final String str) {
+	public static HighlightedForm parse(final String str) {
 		final List<Token> tokens = Tokenizer.tokenize(
 										str, "highlighter", false, false);
 		
 		final HighlightParser hl = new HighlightParser(str, tokens);
 
 		try {
-			hl.process_form();		
-			return hl.items();
+			hl.process_form();
+			hl.finish();
+			
+			if (hl.hasUnprocessedForm()) {
+				return new HighlightedForm(hl.items(), hl.getUnprocessedForm());
+			}
+			else {
+				return new HighlightedForm(hl.items());
+			}
 		}
 		catch(EofException ex) {
 			// return what we've got so far
-			return hl.items(); 
+			return new HighlightedForm(hl.items());
 		}
 	}
 
+	private boolean hasUnprocessedForm() {
+		return unprocessedForm != null;
+	}
+
+	private String getUnprocessedForm() {
+		return unprocessedForm;
+	}
 	
 	private List<HighlightItem> items() {
 		return items;
@@ -299,6 +314,23 @@ public class HighlightParser {
 		}
 	}
 
+	private void finish() {
+		final int numTokens = tokens.size();
+		if (position >= numTokens) {
+			// all tokens processed
+			unprocessedForm = null; 
+		}
+		else if (position == numTokens-1) {
+			final Token tok = tokens.get(position);
+			unprocessedForm = tok.getType() == TokenType.WHITESPACES
+								? null
+								: form.substring(tok.getFileStartPos());
+		}
+		else {
+			final Token tok = tokens.get(position);
+			unprocessedForm = form.substring(tok.getFileStartPos());
+		}
+	}
 	
 	private static Set<String> SPECIAL_FORMS = new HashSet<>(
 			Arrays.asList(
@@ -326,8 +358,11 @@ public class HighlightParser {
 					"finally",
 					"macroexpand"));
 	
+	
+	private final String form;
 	private final List<HighlightItem> items= new ArrayList<>();
 	private final List<Token> tokens;
 	private int position;
 	private HighlightClass pinnedClass = null;
+	private String unprocessedForm = null;
 }

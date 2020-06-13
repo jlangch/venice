@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
@@ -30,12 +30,24 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReaderTest {
+
+	@Test
+	public void test_too_much_input() {
+		final VeniceInterpreter vi = new VeniceInterpreter();
+		
+		final VncVal ast = vi.READ("(+ 1 2)\n(+ 3 4)", "test");
+		
+		assertTrue(ast instanceof VncList);
+		assertEquals(3, ((VncList)ast).size());
+	}
 
 	@Test
 	public void testMeta() {	

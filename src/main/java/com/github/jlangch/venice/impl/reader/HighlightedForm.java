@@ -21,33 +21,36 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
+import java.util.List;
 
-public class HighlightItem {
 
-	public HighlightItem(final char form, final HighlightClass clazz) {
-		this(String.valueOf(form), clazz);
-	}
+public class HighlightedForm {
 
-	public HighlightItem(final String form, final HighlightClass clazz) {
-		this.form = form;
-		this.clazz = clazz;
-	}
-	
-	
-	public String getForm() {
-		return form;
-	}
-	
-	public HighlightClass getClazz() {
-		return clazz;
+	public HighlightedForm(final List<HighlightItem> items) {
+		this(items, null);
 	}
 
-	@Override
-	public String toString() {
-		return clazz.name() + ": " + form;
+	public HighlightedForm(
+			final List<HighlightItem> items,
+			final String unprocessed
+	) {
+		this.items = items;
+		this.unprocessed = unprocessed;
+	}
+	
+	public boolean hasUnprocessed() {
+		return unprocessed != null;
+	}
+
+	public String getUnprocessed() {
+		return unprocessed;
+	}
+	
+	public List<HighlightItem> items() {
+		return items;
 	}
 	
 	
-	private final String form;
-	private final HighlightClass clazz;
+	private final List<HighlightItem> items;
+	private final String unprocessed;
 }

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,42 +38,42 @@ public class HighlightParserTest {
 
 	@Test
 	public void test_empty() {	
-		final List<HighlightItem> items = HighlightParser.parse("");
+		final List<HighlightItem> items = HighlightParser.parse("").items();
 		assertEquals(0, items.size());
 	}
 
 	@Test
 	public void test_whitespaces() {	
-		List<HighlightItem> items = HighlightParser.parse(" \t \r ");
+		List<HighlightItem> items = HighlightParser.parse(" \t \r ").items();
 		assertEquals(1, items.size());
 
-		items = HighlightParser.parse(" , \t , \r , ");
+		items = HighlightParser.parse(" , \t , \r , ").items();
 		assertEquals(7, items.size());
 	}
 
 	@Test
 	public void test_braces() {	
-		List<HighlightItem> items = HighlightParser.parse("(");
+		List<HighlightItem> items = HighlightParser.parse("(").items();
 		assertEquals(1, items.size());
 
-		items = HighlightParser.parse("((");
+		items = HighlightParser.parse("((").items();
 		assertEquals(2, items.size());
 
-		items = HighlightParser.parse("({)");
+		items = HighlightParser.parse("({)").items();
 		assertEquals(3, items.size());
 
-		items = HighlightParser.parse("(({{)");
+		items = HighlightParser.parse("(({{)").items();
 		assertEquals(5, items.size());
 	}
 
 	@Test
 	public void test_single_quoted_string_unbalanced() {	
-		List<HighlightItem> items =  HighlightParser.parse("\"");
+		List<HighlightItem> items =  HighlightParser.parse("\"").items();
 		assertEquals(1, items.size());
 		assertEquals("\"", items.get(0).getForm());
 		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
 		
-		items = HighlightParser.parse("\"a");
+		items = HighlightParser.parse("\"a").items();
 		assertEquals(1, items.size());
 		assertEquals("\"a", items.get(0).getForm());
 		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
@@ -80,15 +81,71 @@ public class HighlightParserTest {
 
 	@Test
 	public void test_triple_quoted_string_unbalanced() {	
-		List<HighlightItem> items =  HighlightParser.parse("\"\"\"");
+		List<HighlightItem> items =  HighlightParser.parse("\"\"\"").items();
 		assertEquals(1, items.size());
 		assertEquals("\"\"\"", items.get(0).getForm());
 		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
 		
-		items = HighlightParser.parse("\"\"\"a");
+		items = HighlightParser.parse("\"\"\"a").items();
 		assertEquals(1, items.size());
 		assertEquals("\"\"\"a", items.get(0).getForm());
 		assertEquals(HighlightClass.STRING, items.get(0).getClazz());
+	}
+	
+	@Test
+	public void test_unprocessed_input() {
+		// no unprocessed chars
+		HighlightedForm hf = HighlightParser.parse("(+ 1 2)");
+		assertEquals(7, hf.items().size());
+		assertFalse(hf.hasUnprocessed());
+		assertNull(hf.getUnprocessed());
+
+		// only unprocessed whitespaces -> omit
+		hf = HighlightParser.parse("(+ 1 2)  ");
+		assertEquals(7, hf.items().size());
+		assertFalse(hf.hasUnprocessed());
+		assertNull(hf.getUnprocessed());
+
+		// only unprocessed whitespaces -> omit
+		hf = HighlightParser.parse("(+ 1 2) \n ");
+		assertEquals(7, hf.items().size());
+		assertFalse(hf.hasUnprocessed());
+		assertNull(hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2)  ,");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals("  ,", hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2)  , ");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals("  , ", hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2)  (+ 3 4)");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals("  (+ 3 4)", hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2),(+ 3 4)");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals(",(+ 3 4)", hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2) , (+ 3 4)");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals(" , (+ 3 4)", hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2)\n(+ 3 4)");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals("\n(+ 3 4)", hf.getUnprocessed());
+
+		hf = HighlightParser.parse("(+ 1 2) \n (+ 3 4)");
+		assertEquals(7, hf.items().size());
+		assertTrue(hf.hasUnprocessed());
+		assertEquals(" \n (+ 3 4)", hf.getUnprocessed());
 	}
 
 	@Test
@@ -98,7 +155,7 @@ public class HighlightParserTest {
 		final long lines = StringUtil.splitIntoLines(core_).size();
 
 		final StopWatch sw = new StopWatch();
-		final List<HighlightItem> items = HighlightParser.parse(core_);
+		final List<HighlightItem> items = HighlightParser.parse(core_).items();
 		sw.stop();
 		
 		System.out.println(String.format(

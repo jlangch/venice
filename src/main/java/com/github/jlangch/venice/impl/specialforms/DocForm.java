@@ -96,7 +96,9 @@ public class DocForm {
 			return new VncString(script);
 		}
 		else {			
-			final List<HighlightItem> items = HighlightParser.parse("(do " + script + ")");
+			final List<HighlightItem> items = HighlightParser
+												.parse("(do " + script + ")")
+												.items();
 			
 			return new VncString(
 					AnsiColorTheme.ANSI_RESET +
