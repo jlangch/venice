@@ -52,7 +52,6 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
  
 
 
-
 ## [1.8.7] - 2020-06-10
 
 ### Fixed
@@ -61,7 +60,6 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   Jar. The published releases 1.8.3 to 1.8.5 contained the plain Jar that missed the 
   repackaged JLine and Vavr libs.
   
-
 
 
 ## [1.8.6] - 2020-06-10
