@@ -778,6 +778,7 @@ public class REPL {
 			"  !?, !help    help\n" +	
 			"  !info        show REPL setup context data\n" +	
 			"  !config      show a sample REPL config\n" +	
+			"  !classpath   show the REPL classpath\n" +	
 			"  !highlight   turn highlighting dynamically on or off\n" +
 			"                 !highlight {on/off}\n" +	
 			"  !lic         prints the licenses for 3rd party\n" +
