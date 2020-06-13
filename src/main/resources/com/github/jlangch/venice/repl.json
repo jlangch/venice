@@ -2,6 +2,7 @@
   "prompt": "venice> ",
   "secondary-prompt": "      | ", 
   "result-prefix": "=> ",
+  "clear-cmd-history-on-exit": false,
 
   "colors": {
     "prompt": null,

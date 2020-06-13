@@ -60,6 +60,7 @@ public class ReplConfig {
 			final boolean syntaxHighlighting,
 			final Level jlineLoglevel,
 			final boolean jlineDumbTerminal,
+			final boolean clearCmdHistoryOnExit,
 			final Map<String,String> colors
 	) {
 		this.configSource = configSource;
@@ -75,6 +76,8 @@ public class ReplConfig {
 		
 		this.jlineLoglevel = jlineLoglevel;
 		this.jlineDumbTerminal = jlineDumbTerminal;
+		
+		this.clearCmdHistoryOnExit = clearCmdHistoryOnExit;
 		
 		this.colors.putAll(colors);
 	}
@@ -93,6 +96,7 @@ public class ReplConfig {
 			final String prompt = jsonObj.getString("prompt");
 			final String secondaryPrompt = jsonObj.getString("secondary-prompt");
 			final String resultPrefix =  jsonObj.getString("result-prefix");
+			final boolean clearCmdHistoryOnExit = jsonObj.getBoolean("clear-cmd-history-on-exit", false);
 
 			// Colors
 			final ColorMode colorMode = getColorMode(cli);
@@ -154,6 +158,7 @@ public class ReplConfig {
 						highlight,
 						jlineLoglevel,
 						jlineDumbTerminal,
+						clearCmdHistoryOnExit,
 						colors);
 		} 
 		catch (Exception ex) {
@@ -239,7 +244,7 @@ public class ReplConfig {
 	}
 	
 	public boolean isClearCommandHistoryOnExit() {
-		return false;
+		return clearCmdHistoryOnExit;
 	}
 
 	public static String getDefaultClasspathConfig() {
@@ -344,6 +349,8 @@ public class ReplConfig {
 	
 	private final Level jlineLoglevel;
 	private final boolean jlineDumbTerminal;
+	
+	private final boolean clearCmdHistoryOnExit;
 
 	private final Map<String,String> colors = new HashMap<>();
 }
