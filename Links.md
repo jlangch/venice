@@ -23,4 +23,4 @@
 
 ## Class Loading
 
-[Dynamic Clöass Reloading](http://tutorials.jenkov.com/java-reflection/dynamic-class-loading-reloading.html)
+[Dynamic Class Reloading](http://tutorials.jenkov.com/java-reflection/dynamic-class-loading-reloading.html)
