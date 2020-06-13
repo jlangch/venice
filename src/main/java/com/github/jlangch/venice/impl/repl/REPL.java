@@ -195,6 +195,7 @@ public class REPL {
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.variable(LineReader.INDENTATION, 2)
 				                    .variable(LineReader.LIST_MAX, 100)
+									.variable(LineReader.HISTORY_FILE, HISTORY_FILE)
 									.build();
 
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
@@ -242,7 +243,7 @@ public class REPL {
 						printer.println("system", "reloaded");					
 						continue;
 					}
-					else if (cmd.equals("exit")) {
+					else if (cmd.equals("quit") || cmd.equals("q")) {
 						printer.println("interrupt", " good bye ");
 						Thread.sleep(1000);
 						break;
@@ -799,7 +800,7 @@ public class REPL {
 			"                 !sandbox customized\n" +	
 			"                 !sandbox add-rule rule\n" +
 			"  !java-ex     print Java exception\n" +	
-			"  !exit        quit the REPL\n\n" +	
+			"  !quit, !q    quit the REPL\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
 			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +	
@@ -836,6 +837,7 @@ public class REPL {
 			"   !sandbox add-rule venice:module:shell\n";	
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
+	private final static String HISTORY_FILE = ".repl.history";
 
 	private final List<String> loadPaths;
 
