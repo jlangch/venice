@@ -752,10 +752,10 @@ public class REPL {
 	}
 	
 	private void handleReplClasspathCommand() {
-		printer.println("stdout", "REPL classpath:");					
-		for (String f : System.getProperty("java.class.path").split(File.pathSeparator)) {
-			printer.println("stdout", "  " + f);					
-		}			
+		printer.println("stdout", "REPL classpath:");		
+		Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+		      .sorted()
+		      .forEach(f -> printer.println("stdout", "  " + f));					
 	}
 	
 	private boolean isSetupMode(final CommandLineArgs cli) {
