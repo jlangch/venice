@@ -222,7 +222,15 @@ public class REPL {
 			try {
 				Thread.interrupted(); // reset the thread's interrupt status
 				
-				line = reader.readLine(prompt, null, (MaskingCallback)null, null);
+				try {
+					line = reader.readLine(prompt, null, (MaskingCallback)null, null);
+				}
+				catch (UserInterruptException ex) {
+					// gracefully handle ctrl-c when reading a line
+					Thread.interrupted(); // reset the thread's interrupt status
+					line = null;
+				}
+				
 				if (line == null) { 
 					continue; 
 				}
