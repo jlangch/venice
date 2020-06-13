@@ -35,7 +35,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - REPL to handle an edge case of unprocessed forms gracefully. E.g.: adding
   `(+ 1 2)\n(+ 2 3)` with copy/paste to the REPL.
-- REPL to handle Ctrl-C gracefully when the user interrupts the REPL while 
+- REPL to handle [ctrl-c] gracefully when the user interrupts the REPL while 
   reading user input
 
 
