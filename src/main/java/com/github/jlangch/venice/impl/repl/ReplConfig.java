@@ -237,6 +237,10 @@ public class ReplConfig {
 		}
 		return null;
 	}
+	
+	public boolean isClearCommandHistoryOnExit() {
+		return false;
+	}
 
 	public static String getDefaultClasspathConfig() {
 		return new ClassPathResource(getVeniceBasePath() + "repl.json")

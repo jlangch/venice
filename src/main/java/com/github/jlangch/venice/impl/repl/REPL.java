@@ -245,6 +245,9 @@ public class REPL {
 						continue;
 					}
 					else if (cmd.equals("quit") || cmd.equals("q")) {
+						if (config.isClearCommandHistoryOnExit()) {
+							clearCommandHistory(terminal, history);
+						}
 						printer.println("interrupt", " good bye ");
 						Thread.sleep(1000);
 						break;
@@ -357,11 +360,7 @@ public class REPL {
 			printer.println("stdout", "Printing Java exceptions");
 		}
 		else if (cmd.equals("clear-history")) {
-			try {
-				history.purge();
-			}
-			catch(IOException ex) {}
-			printer.println("stdout", "Cleared REPL command history");
+			clearCommandHistory(terminal, history);
 		}
 		else if (cmd.equals("sandbox")) {
 			handleSandboxCommand(new String[0], terminal, env);
@@ -777,6 +776,18 @@ public class REPL {
 		return  "Linux".equals(System.getProperty("os.name"))
 					&& System.getenv("GITPOD_REPO_ROOT") != null;
 	}
+
+	private void clearCommandHistory(
+			final Terminal terminal,
+			final History history
+	) {
+		try {
+			history.purge();
+			printer.println("stdout", "Cleared REPL command history");
+		}
+		catch(IOException ex) {}	
+	}
+
 	
 	public static enum SetupMode { Minimal, Extended };
 	
