@@ -28,7 +28,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - Highlighter to mark unprocessed forms like `(inc 1)` in `(do (+ 1 2)) (inc 1)` 
-  with a special color. 
+  with a special color. As a side effect this makes unbalanced parenthesis
+  visible by the highlighter's unprocessed form color.
 
 ### Fixed
 
