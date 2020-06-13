@@ -34,6 +34,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Fixed
 
 - REPL to handle an edge case of unprocessed forms gracefully
+- REPL to handle Ctrl-C gracefully when the user interrupts the REPL reading 
+  user input
 
 
 
