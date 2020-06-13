@@ -31,6 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   with a special color. As a side effect this makes unbalanced parenthesis
   visible by the highlighter's unprocessed form color.
 - a history file for the REPL commands
+- a clear history command to the REPL
 
 ### Fixed
 

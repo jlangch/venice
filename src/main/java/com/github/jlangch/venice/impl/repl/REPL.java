@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.repl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
@@ -249,7 +250,7 @@ public class REPL {
 						break;
 					}
 					else {			
-						handleCommand(cmd, env, terminal);
+						handleCommand(cmd, env, terminal, history);
 						continue;
 					}
 				}
@@ -318,7 +319,8 @@ public class REPL {
 	private void handleCommand(
 			final String cmd, 
 			final Env env, 
-			final Terminal terminal
+			final Terminal terminal,
+			final History history
 	) {
 		if (cmd.equals("macroexpand") || cmd.equals("me")) {
 			macroexpand = true;
@@ -353,6 +355,13 @@ public class REPL {
 		else if (cmd.startsWith("java-ex")) {
 			printer.setPrintJavaEx(true);
 			printer.println("stdout", "Printing Java exceptions");
+		}
+		else if (cmd.equals("clear-history")) {
+			try {
+				history.purge();
+			}
+			catch(IOException ex) {}
+			printer.println("stdout", "Cleared REPL command history");
 		}
 		else if (cmd.equals("sandbox")) {
 			handleSandboxCommand(new String[0], terminal, env);
