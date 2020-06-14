@@ -201,11 +201,9 @@ public class CustomREPL {
 				Thread.interrupted(); // reset the thread's interrupt status
 				
 				line = reader.readLine(prompt, null, (MaskingCallback)null, null);
-				if (line == null) { 
-					continue; 
-				}
-				
-				cmdHandler.accept(line);
+				if (line != null) { 
+					cmdHandler.accept(line);
+				}				
 			} 
 			catch (UserInterruptException ex) {
 				Thread.interrupted(); // reset the thread's interrupt status
@@ -220,7 +218,6 @@ public class CustomREPL {
 			} 
 			catch (Exception ex) {
 				printer.printex("error", ex);
-				continue;
 			}
 		}
 	}

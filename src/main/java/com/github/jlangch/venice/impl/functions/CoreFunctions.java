@@ -3782,13 +3782,10 @@ public class CoreFunctions {
 						for(VncVal arg : args.getList()) {
 							for(VncFunction pred : predicates) {
 								final VncVal res = pred.apply(VncList.of(arg));
-								if (VncBoolean.isTrue(res)) {
-									continue;
-								}
-								else if (VncBoolean.isFalse(res)) {
+								if (VncBoolean.isFalse(res)) {
 									return False;
 								}
-								else {
+								else if (!VncBoolean.isTrue(res)) {
 									throw new VncException(String.format(
 											"every-pred: The predicate function %s did not return a boolean value",
 											pred.getQualifiedName()));
@@ -3840,10 +3837,7 @@ public class CoreFunctions {
 								if (VncBoolean.isTrue(res)) {
 									return True;
 								}
-								else if (VncBoolean.isFalse(res)) {
-									continue;
-								}
-								else {
+								else if (!VncBoolean.isFalse(res)) {
 									throw new VncException(String.format(
 											"any-pred: The predicate function %s did not return a boolean value",
 											pred.getQualifiedName()));

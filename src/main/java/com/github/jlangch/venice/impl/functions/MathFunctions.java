@@ -371,15 +371,12 @@ public class MathFunctions {
 
 				VncVal max = args.first();
 				for(VncVal op : args.rest().getList()) {
-					if (op == Nil) {
-						continue;
-					}
-					else if (Types.isVncNumber(op)) {
+					if (Types.isVncNumber(op)) {
 						max = max == Nil
 								? op
 								: (op.compareTo(max) > 0 ? op : max);
 					}
-					else {
+					else if (op != Nil){
 						throw new VncException(String.format(
 												"Function 'max' does not allow %s as operand",
 												Types.getType(max)));
@@ -414,15 +411,12 @@ public class MathFunctions {
 
 				VncVal min = args.first();
 				for(VncVal op : args.rest().getList()) {
-					if (op == Nil) {
-						continue;
-					}
-					else if (Types.isVncNumber(op)) {
+					if (Types.isVncNumber(op)) {
 						min = min == Nil
 								? op
 								: (op.compareTo(min) < 0 ? op : min);
 					}
-					else {
+					else if (op != Nil) {
 						throw new VncException(String.format(
 												"Function 'min' does not allow %s as operand",
 												Types.getType(min)));

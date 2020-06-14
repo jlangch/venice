@@ -1454,7 +1454,8 @@ public class ConcurrencyFunctions {
 						future.get();
 					}
 					catch(ExecutionException | CancellationException ex) {
-						continue; // ok
+						// ok, continue with next future. We just wait for termination and
+						// do not care about the future's result!
 					}
 					catch(InterruptedException ex) {
 						// cancel all futures

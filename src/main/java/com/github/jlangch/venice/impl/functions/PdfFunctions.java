@@ -304,16 +304,16 @@ public class PdfFunctions {
 				
 				        document.open();
 				        for (VncVal val : pdfs){
-				        	if (val == Nil) continue;
-				        	
-				        	final ByteBuffer pdf = Coerce.toVncByteBuffer(val).getValue();
-				        	
-				            final PdfReader reader = new PdfReader(pdf.array());
-				            for (int ii=1; ii<=reader.getNumberOfPages(); ii++){
-				                copy.addPage(copy.getImportedPage(reader, ii));
-				            }
-				            copy.freeReader(reader);
-				            reader.close();
+				        	if (val != Nil) {				        	
+					        	final ByteBuffer pdf = Coerce.toVncByteBuffer(val).getValue();
+					        	
+					            final PdfReader reader = new PdfReader(pdf.array());
+					            for (int ii=1; ii<=reader.getNumberOfPages(); ii++){
+					                copy.addPage(copy.getImportedPage(reader, ii));
+					            }
+					            copy.freeReader(reader);
+					            reader.close();
+				        	}
 				        }
 				        document.close();
 				        copy.close();

@@ -269,6 +269,7 @@ public class MathFunctionsTest {
 
 		// Integer
 		assertEquals(Integer.valueOf(3), venice.eval("(max (int 3))"));
+		assertEquals(Integer.valueOf(3), venice.eval("(max (int 3) nil)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(max (int 1) (int 3))"));
 		assertEquals(Integer.valueOf(3), venice.eval("(max (int 1) (int 2) (int 3))"));
 		assertEquals(Integer.valueOf(3), venice.eval("(max 1 2 (int 3))"));
@@ -279,6 +280,7 @@ public class MathFunctionsTest {
 
 		// Long
 		assertEquals(Long.valueOf(3), venice.eval("(max 3)"));
+		assertEquals(Long.valueOf(3), venice.eval("(max 3 nil)"));
 		assertEquals(Long.valueOf(3), venice.eval("(max 1 3)"));
 		assertEquals(Long.valueOf(3), venice.eval("(max 1 2 3)"));
 		assertEquals(Long.valueOf(3), venice.eval("(max 1 2 3 1.0)"));
@@ -288,6 +290,7 @@ public class MathFunctionsTest {
 
 		// Double
 		assertEquals(Double.valueOf(3.0D), venice.eval("(max 3.0)"));
+		assertEquals(Double.valueOf(3.0D), venice.eval("(max 3.0 nil)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(max 1.0 3.0)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(max 1.0 2.0 3.0)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(max 1.0 2.0 3.0 2)"));
@@ -297,6 +300,7 @@ public class MathFunctionsTest {
 
 		// Decimal
 		assertEquals(new BigDecimal("3.0"), venice.eval("(max 3.0M)"));
+		assertEquals(new BigDecimal("3.0"), venice.eval("(max 3.0M nil)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(max 1.0M 3.0M)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(max 1.0M 2.0M 3.0M)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(max 1.0M 2.0M 3.0M 2)"));
@@ -311,6 +315,7 @@ public class MathFunctionsTest {
 
 		// Integer
 		assertEquals(Integer.valueOf(3), venice.eval("(min (int 3))"));
+		assertEquals(Integer.valueOf(3), venice.eval("(min (int 3) nil)"));
 		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) (int 3))"));
 		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) (int 2) (int 3))"));
 		assertEquals(Integer.valueOf(1), venice.eval("(min (int 1) 2 (int 3) 4.0)"));
@@ -321,6 +326,7 @@ public class MathFunctionsTest {
 
 		// Long
 		assertEquals(Long.valueOf(3), venice.eval("(min 3)"));
+		assertEquals(Long.valueOf(3), venice.eval("(min 3 nil)"));
 		assertEquals(Long.valueOf(1), venice.eval("(min 1 3)"));
 		assertEquals(Long.valueOf(1), venice.eval("(min 1 2 3)"));
 		assertEquals(Long.valueOf(1), venice.eval("(min 1 2 3 2.0)"));
@@ -330,6 +336,7 @@ public class MathFunctionsTest {
 
 		// Double
 		assertEquals(Double.valueOf(3.0D), venice.eval("(min 3.0)"));
+		assertEquals(Double.valueOf(3.0D), venice.eval("(min 3.0 nil)"));
 		assertEquals(Double.valueOf(1.0D), venice.eval("(min 1.0 3.0)"));
 		assertEquals(Double.valueOf(1.0D), venice.eval("(min 1.0 2.0 3.0)"));
 		assertEquals(Double.valueOf(1.0D), venice.eval("(min 1.0 2.0 3.0 2)"));
@@ -339,6 +346,7 @@ public class MathFunctionsTest {
 
 		// Decimal
 		assertEquals(new BigDecimal("3.0"), venice.eval("(min 3.0M)"));
+		assertEquals(new BigDecimal("3.0"), venice.eval("(min 3.0M nil)"));
 		assertEquals(new BigDecimal("1.0"), venice.eval("(min 1.0M 3.0M)"));
 		assertEquals(new BigDecimal("1.0"), venice.eval("(min 1.0M 2.0M 3.0M)"));
 		assertEquals(new BigDecimal("1.0"), venice.eval("(min 1.0M 2.0M 3.0M 2)"));
