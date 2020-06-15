@@ -1463,7 +1463,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("loop"));
 		generic.addItem(getDocItem("recur"));
 		generic.addItem(getDocItem("set!"));
-		generic.addItem(getDocItem("try", true, true));   // FIXME: try
+		generic.addItem(getDocItem("try", true, true));
 		generic.addItem(getDocItem("try-with", true, true));
 
 		final DocSection profiling = new DocSection("Profiling");

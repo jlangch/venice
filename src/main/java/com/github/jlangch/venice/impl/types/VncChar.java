@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class VncChar extends VncVal {
 	
 	public VncChar(final char v) { 
-		this(new Character(v), null); 
+		this(Character.valueOf(v), null); 
 	}
 
 	public VncChar(final Character v) { 
