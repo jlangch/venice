@@ -153,7 +153,8 @@ public class REPL {
 		}
 		else {
 			builder.encoding("UTF-8");
-		}	
+		}
+		
 		final Terminal terminal = builder.build();
 	 
 		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
@@ -233,33 +234,37 @@ public class REPL {
 					line = null;
 				}
 				
-				if (line == null) { 
-					continue; 
-				}
-				
-				if (line.startsWith("!")) {
-					final String cmd = StringUtil.trimToEmpty(line.substring(1));				
-					if (cmd.equals("reload")) {
-						env = loadEnv(cli, out, err, in);
-						printer.println("system", "reloaded");					
-						continue;
-					}
-					else if (cmd.equals("quit") || cmd.equals("q")) {
-						if (config.isClearCommandHistoryOnExit()) {
-							clearCommandHistory(terminal, history);
+				if (line != null) { 
+					if (line.startsWith("!")) {
+						final String cmd = StringUtil.trimToEmpty(line.substring(1));				
+						if (cmd.equals("reload")) {
+							env = loadEnv(cli, out, err, in);
+							printer.println("system", "reloaded");					
 						}
-						printer.println("interrupt", " good bye ");
-						Thread.sleep(1000);
-						break;
+						else if (cmd.equals("quit") || cmd.equals("q")) {
+							if (config.isClearCommandHistoryOnExit()) {
+								clearCommandHistory(terminal, history);
+							}
+							printer.println("interrupt", " good bye ");
+							Thread.sleep(1000);
+							break; // quit the REPL
+						}
+						else {			
+							handleCommand(cmd, env, terminal, history);
+						}
 					}
-					else {			
-						handleCommand(cmd, env, terminal, history);
-						continue;
+					else {
+						ThreadLocalMap.clearCallStack();			
+						final VncVal result = venice.RE(line, "user", env, macroexpand);
+						if (result != null) {
+							printer.println("result", resultPrefix + venice.PRINT(result));
+							resultHistory.add(result);
+						}
 					}
 				}
 			} 
 			catch (ContinueException ex) {
-				continue;
+				// ok, just continue
 			}
 			catch (UserInterruptException ex) {
 				Thread.interrupted(); // reset the thread's interrupt status
@@ -269,13 +274,12 @@ public class REPL {
 					// cancel multi-line edit
 					printer.println("interrupt", " cancel ");					
 					parser.reset();
-					continue;
 				}
 				else {
 					// quit the REPL
 					printer.println("interrupt", " ! interrupted ! ");
 					Thread.sleep(1000);
-					break;
+					break; 
 				}
 			} 
 			catch (EofException | EndOfFileException ex) {
@@ -285,37 +289,10 @@ public class REPL {
 				// put the script to the history to allow to fix it
 				history.add(reader.getBuffer().toString());
 				printer.printex("error", ex);
-				continue;
 			}
 			catch (Exception ex) {
 				printer.printex("error", ex);
-				continue;
 			}
-			
-			final VncVal result = runCodeFragment(line, env);
-			if (result != null) {
-				printer.println("result", resultPrefix + venice.PRINT(result));
-				resultHistory.add(result);
-			}
-		}
-	}
-
-	private VncVal runCodeFragment(final String snippet, final Env env) {
-		try {				
-			ThreadLocalMap.clearCallStack();			
-			return venice.RE(snippet, "user", env, macroexpand);
-		} 
-		catch (ContinueException ex) {
-			// just continue
-			return null;
-		} 
-		catch (Exception ex) {
-			printer.printex("error", ex);
-			return null;
-		}
-		catch (Throwable ex) {
-			printer.printex("error", ex);
-			return null;
 		}
 	}
 	
