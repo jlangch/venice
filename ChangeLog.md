@@ -40,6 +40,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - REPL to handle [ctrl-c] gracefully when the user interrupts the REPL while 
   reading user input
 
+### Changed
+
+- exit from REPL with command `!q` or `!quit` 
+
 
 
 ## [1.8.9] - 2020-06-13
