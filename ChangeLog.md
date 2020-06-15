@@ -29,7 +29,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - Highlighter to mark unprocessed forms like `(inc 1)` in `(do (+ 1 2)) (inc 1)` 
   with a special color. As a side effect this makes unbalanced parenthesis
-  visible by the highlighter's unprocessed form color.
+  visible.
 - a history file for the REPL commands
 - a clear history command to the REPL
 

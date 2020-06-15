@@ -347,47 +347,13 @@ public class REPL {
 			handleSandboxCommand(params, terminal, env);
 		}
 		else if (cmd.equals("lic")) {
-			Licenses.lics().entrySet().forEach(e -> {
-				printer.println("stdout", "");
-				printer.println("stdout", DELIM);
-				printer.println("stdout", e.getKey() + " License");
-				printer.println("stdout", DELIM);
-				printer.println("stdout", e.getValue());
-			});
+			printLicenses();
 		}
 		else if (cmd.equals("colors")) {
-			printer.println("default",   "default");
-			printer.println("result",    "result");
-			printer.println("stdout",    "stdout");
-			printer.println("stderr",    "stderr");
-			printer.println("error",     "error");
-			printer.println("system",    "system");
-			printer.println("interrupt", "interrupt");
+			printConfiguredColors();
 		}
 		else if (cmd.equals("info")) {
-			final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
-			final Size size = terminal.getSize();
-			printer.println("stdout", "Terminal Name:   " + terminal.getName());
-			printer.println("stdout", "Terminal Type:   " + terminal.getType());
-			printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
-			printer.println("stdout", "Terminal Colors: " + maxColors);
-			printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
-			printer.println("stdout", "");
-			printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
-			printer.println("stdout", "Highlighting:    " + config.isSyntaxHighlighting());
-			printer.println("stdout", "");
-			printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
-			printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
-			printer.println("stdout", "");
-			printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
-			printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
-			printer.println("stdout", "OS Version:      " + System.getProperty("os.version"));
-			printer.println("stdout", "");
-			printer.println("stdout", "Java Version:    " + System.getProperty("java.version"));
-			printer.println("stdout", "Java Vendor:     " + System.getProperty("java.vendor"));
-			printer.println("stdout", "Java VM Version: " + System.getProperty("java.vm.version"));
-			printer.println("stdout", "Java VM Name:    " + System.getProperty("java.vm.name"));
-			printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
+			printInfo(terminal);
 		}
 		else if (cmd.startsWith("highlight")) {
 			if (cmd.equals("highlight")) {
@@ -734,6 +700,52 @@ public class REPL {
 		else {
 			return "Using dumb terminal (colors turned off)";
 		}
+	}
+
+	private void printLicenses() {
+		Licenses.lics().entrySet().forEach(e -> {
+			printer.println("stdout", "");
+			printer.println("stdout", DELIM);
+			printer.println("stdout", e.getKey() + " License");
+			printer.println("stdout", DELIM);
+			printer.println("stdout", e.getValue());
+		});
+	}
+
+	private void printConfiguredColors() {
+		printer.println("default",   "default");
+		printer.println("result",    "result");
+		printer.println("stdout",    "stdout");
+		printer.println("stderr",    "stderr");
+		printer.println("error",     "error");
+		printer.println("system",    "system");
+		printer.println("interrupt", "interrupt");
+	}
+	
+	private void printInfo(final Terminal terminal) {
+		final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
+		final Size size = terminal.getSize();
+		printer.println("stdout", "Terminal Name:   " + terminal.getName());
+		printer.println("stdout", "Terminal Type:   " + terminal.getType());
+		printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
+		printer.println("stdout", "Terminal Colors: " + maxColors);
+		printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
+		printer.println("stdout", "");
+		printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
+		printer.println("stdout", "Highlighting:    " + config.isSyntaxHighlighting());
+		printer.println("stdout", "");
+		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
+		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
+		printer.println("stdout", "");
+		printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
+		printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
+		printer.println("stdout", "OS Version:      " + System.getProperty("os.version"));
+		printer.println("stdout", "");
+		printer.println("stdout", "Java Version:    " + System.getProperty("java.version"));
+		printer.println("stdout", "Java Vendor:     " + System.getProperty("java.vendor"));
+		printer.println("stdout", "Java VM Version: " + System.getProperty("java.vm.version"));
+		printer.println("stdout", "Java VM Name:    " + System.getProperty("java.vm.name"));
+		printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
 	}
 	
 	private void handleReplClasspathCommand() {
