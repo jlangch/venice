@@ -44,6 +44,44 @@ public class SpecialFormsTest_deftype_of {
 	}
 	
 	@Test
+	public void test_deftype_of_long_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                             \n" +
+				"  (deftype-of :my-long :long)   \n" +
+				"  (+ 10 (my-long. 20)))           ";
+
+		assertEquals(30L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_of_long_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                             \n" +
+				"  (deftype-of :my-long :long)   \n" +
+				"  (+ (my-long. 20) 10))           ";
+
+		assertEquals(30L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_of_long_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       \n" +
+				"  (deftype-of :my-long-1 :long)           \n" +
+				"  (deftype-of :my-long-2 :long)           \n" +
+				"                                          \n" +
+				"  (+ (my-long-1. 10) (my-long-2. 20)))      ";
+
+		venice.eval(script);					
+	}
+	
+	@Test
 	public void test_deftype_of_invalid_type() {
 		final String script =
 				"(do                                          \n" +
