@@ -155,16 +155,20 @@ public class Reader {
 							MetaUtil.toMeta(token));
 				
 			case STRING: {
-					String s = StringUtil.removeEnd(sToken.substring(1), "\"");
-					s = unescapeAndDecodeUnicode(s);			
+					final String s = unescapeAndDecodeUnicode(
+										StringUtil.removeEnd(
+												sToken.substring(1), 
+												"\""));			
 					return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
 							.withMeta(MetaUtil.toMeta(token));
 				}
 			
 			case STRING_BLOCK: {
-					String s = StringUtil.removeEnd(sToken.substring(3), "\"\"\"");
-					s = StringUtil.stripIndentIfFirstLineEmpty(
-							unescapeAndDecodeUnicode(s));			
+					final String s = StringUtil.stripIndentIfFirstLineEmpty(
+										unescapeAndDecodeUnicode(
+												StringUtil.removeEnd(
+														sToken.substring(3), 
+														"\"\"\"")));			
 					return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
 								.withMeta(MetaUtil.toMeta(token));
 				}
@@ -429,44 +433,6 @@ public class Reader {
 							filename, line, column,
 							"Interpolation error. Expected \"~(\" or \"~{\""));
 				}
-				
-				pos = getFirstInterpolationFormStartPos(tail);
-				if (pos < 0) {
-					if (!tail.isEmpty()) {
-						list.add(new VncString(tail));
-					}
-					return new VncList(list);
-				}
-				
-				str = tail;
-			}						
-		}
-	}
-
-	public static VncVal interpolate_(final String s, final String filename) {
-		// this is a reader macro implemented in Java
-		
-		int pos = getFirstInterpolationFormStartPos(s);
-		if (pos < 0) {
-			return new VncString(s);
-		}
-		else {
-			final List<VncVal> list = new ArrayList<>();
-			list.add(CoreFunctions.str);
-			
-			String str = s;
-			while (true) {
-				if (pos > 0) {
-					list.add(new VncString(str.substring(0, pos)));
-				}
-				
-				final String rest = str.substring(pos);
-				final int offset = rest.startsWith("~{") ? 2 : 1;
-				
-				final Reader rdr = reader(rest.substring(offset), filename);
-				list.add(read_form(rdr));
-				
-				final String tail = rdr.unprocessedRest().substring(offset);
 				
 				pos = getFirstInterpolationFormStartPos(tail);
 				if (pos < 0) {
