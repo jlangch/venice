@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.reflect;
+package com.github.jlangch.venice.javainterop;
 
 
 public class ReturnValue {

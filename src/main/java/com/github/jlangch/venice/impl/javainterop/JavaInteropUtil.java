@@ -62,7 +62,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
+import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
 public class JavaInteropUtil {

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
-
 public interface IInvoker {
  
 	ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args);

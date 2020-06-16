@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 
 
 public class RejectAllInterceptor extends Interceptor {

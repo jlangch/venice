@@ -22,8 +22,8 @@
 package com.github.jlangch.venice.impl.javainterop;
 
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 import com.github.jlangch.venice.javainterop.IInvoker;
+import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
 public class Invoker implements IInvoker {

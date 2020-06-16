@@ -44,9 +44,9 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.IInvoker;
+import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
 public class VncJavaObject extends VncMap implements IVncJavaObject {

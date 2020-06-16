@@ -23,7 +23,6 @@ package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
 
 
 public abstract class Interceptor implements IInterceptor {

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import com.github.jlangch.venice.impl.util.reflect.ReturnValue;
-
 /**
  * Defines a Venice interceptor
  */
