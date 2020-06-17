@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,10 +78,9 @@ public class CallStack {
 	}
 
 	
-	// A call stack is used only as a thread local variable. So it
-	// does face concurrent usage. Hence a LinkedList is faster than
-	// a ConcurrentLinkedDeque.
-	private final LinkedList<CallFrame> queue = new LinkedList<>();
+	// A call stack is used only as a thread local variable. So it does
+	// not face concurrent usage. ArrayDeque is the fastest Deque available.
+	private final ArrayDeque<CallFrame> queue = new ArrayDeque<>(32);
 
 	//private final ArrayListStack<CallFrame> queue = new ArrayListStack<>(20);
 	//private final ConcurrentLinkedDeque<CallFrame> queue = new ConcurrentLinkedDeque<>();

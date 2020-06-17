@@ -624,7 +624,7 @@ public class TokenizerTest {
 				"Tokenizing :core module with %d tokens in %s at %d lines/s",
 				tokens.size(),
 				sw.toString(),
-				(lines * 1000L) / sw.elapsedMillis()));
+				(lines * 1_000_000_000L) / sw.elapsedNanos()));
 
 		assertTrue(!tokens.isEmpty());
 	}
