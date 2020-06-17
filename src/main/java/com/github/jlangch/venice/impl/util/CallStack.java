@@ -30,8 +30,12 @@ import java.util.stream.Collectors;
 public class CallStack {
 
 	public CallStack() {
+		this.queue = new ArrayDeque<>(32);
 	}
 	
+	private CallStack(ArrayDeque<CallFrame> queue) {
+		this.queue = queue;
+	}
 	
 	public void push(final CallFrame frame) {
 		queue.push(frame);
@@ -54,20 +58,20 @@ public class CallStack {
 	}
 	
 	public CallStack copy() {
-		final CallStack stack = new CallStack();
-		queue.forEach(f -> stack.queue.add(f));
-		return stack;
+		return new CallStack(queue.clone());
 	}
 
 	public List<String> toList() {
-		return Arrays
-				.stream(queue.toArray(new CallFrame[] {}))
-				.map(f -> f.toString())
-				.collect(Collectors.toList());
+		final String[] stack = new String[queue.size()];	
+		int ii=0;
+		for(CallFrame f : queue.toArray(new CallFrame[queue.size()])) {
+			stack[ii++] = f.toString();
+		}
+		return Arrays.asList(stack);
 	}
 
 	public List<CallFrame> callstack() {
-		return Arrays.asList(queue.toArray(new CallFrame[] {}));
+		return Arrays.asList(queue.toArray(new CallFrame[queue.size()]));
 	}
 
 	@Override
@@ -80,7 +84,7 @@ public class CallStack {
 	
 	// A call stack is used only as a thread local variable. So it does
 	// not face concurrent usage. ArrayDeque is the fastest Deque available.
-	private final ArrayDeque<CallFrame> queue = new ArrayDeque<>(32);
+	private final ArrayDeque<CallFrame> queue;
 
 	//private final ArrayListStack<CallFrame> queue = new ArrayListStack<>(20);
 	//private final ConcurrentLinkedDeque<CallFrame> queue = new ConcurrentLinkedDeque<>();
