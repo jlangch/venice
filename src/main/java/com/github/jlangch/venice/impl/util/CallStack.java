@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+/**
+ * Defines a call stack for function calls that represents the nested order
+ * of function calls
+ */
 public class CallStack {
 
 	public CallStack() {
@@ -37,30 +41,69 @@ public class CallStack {
 		this.queue = queue;
 	}
 	
+    /**
+     * Pushes a frame onto the call stack.
+     *
+     * @param frame the frame to push
+     * @throws NullPointerException if the specified frame is null
+     */
 	public void push(final CallFrame frame) {
 		queue.push(frame);
 	}
 	
+    /**
+     * Pops an frame from the call stack.
+     *
+     * @return the head of this call stack, or {@code null} if this
+     *         if this call stack is empty
+     */
 	public CallFrame pop() {
 		return isEmpty() ? null : queue.pop();
 	}
 	
+    /**
+     * Retrieves, but does not remove, the head of the call stack
+     * or returns {@code null} if this call stack is empty.
+     *
+     * @return the head of this call stack, or {@code null} if this
+     *         if this call stack is empty
+     */
 	public CallFrame peek() {
 		return queue.peek();
 	}
 	
+    /**
+     * Returns {@code true} if this call stack contains no elements.
+     *
+     * @return {@code true} if this call stack contains no elements
+     */
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}
 	
+    /**
+     * Removes all of the elements from this call stack.
+     * The call stack will be empty after this call returns.
+     */
 	public void clear() {
 		queue.clear();
 	}
 	
+	/**
+	 * @return a copy of this call stack
+	 */
 	public CallStack copy() {
 		return new CallStack(queue.clone());
 	}
 
+    /**
+     * Returns a list of stringified call frames in this call stack.  The elements
+     * will be ordered from first (head) to last (tail). This is the same
+     * order that elements would be dequeued (via successive calls to {@link #pop}).
+     * The head element will be stored at index 0 in the list.
+     *
+     * @return a list of stringified call frames in this call stack
+     */
 	public List<String> toList() {
 		final String[] stack = new String[queue.size()];	
 		int ii=0;
@@ -70,6 +113,14 @@ public class CallStack {
 		return Arrays.asList(stack);
 	}
 
+    /**
+     * Returns a list of call frames in this call stack.  The elements
+     * will be ordered from first (head) to last (tail). This is the same
+     * order that elements would be dequeued (via successive calls to {@link #pop}).
+     * The head element will be stored at index 0 in the list.
+     *
+     * @return a list ofcall frames in this call stack
+     */
 	public List<CallFrame> callstack() {
 		return Arrays.asList(queue.toArray(new CallFrame[queue.size()]));
 	}

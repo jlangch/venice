@@ -268,7 +268,10 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	/**
-	 * Evaluate the passed ast as sexpr, simple value, or list of values
+	 * Evaluate the passed ast as s-expr, simple value, or collection of values.
+	 * 
+	 * <p>An s-expr is a list with at least one value and the first value being a 
+	 * symbol.
 	 * 
 	 * @param ast_ an ast
 	 * @param env_ the env
@@ -283,12 +286,14 @@ public class VeniceInterpreter implements Serializable  {
 		while (true) {
 			//System.out.println("EVAL: " + printer._pr_str(orig_ast, true));
 			if (!Types.isVncList(orig_ast)) {
+				// not an s-expr
 				return evaluate_values(orig_ast, env);
 			}
 	
 			// expand macros
 			final VncVal expanded = macroexpand(orig_ast, env);
 			if (!Types.isVncList(expanded)) {
+				// not an s-expr
 				return evaluate_values(expanded, env);
 			}
 			
@@ -858,7 +863,7 @@ public class VeniceInterpreter implements Serializable  {
 				switch(seq.size()) {
 					case 0: 
 						return seq;
-					case 1: 
+					case 1:
 						return seq.withVariadicValues(
 									evaluate(seq.first(), env));
 					case 2: 
