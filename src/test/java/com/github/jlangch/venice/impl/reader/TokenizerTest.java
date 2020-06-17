@@ -616,7 +616,7 @@ public class TokenizerTest {
 		final String core_ = "(do\n" + core + "\n)";
 		final long lines = StringUtil.splitIntoLines(core_).size();
 		
-		final StopWatch sw = new StopWatch();
+		final StopWatch sw = StopWatch.nanos();
 		final List<Token> tokens = tokenize(core_, "core");
 		sw.stop();
 		
