@@ -48,6 +48,19 @@ public class CallstackTest {
 	}
 
 	@Test
+	public void testClear() {
+		final CallStack stack = new CallStack();
+		
+		stack.push(CallFrame.fromVal("fn-1", new VncLong(1)));
+		stack.push(CallFrame.fromVal("fn-2", new VncLong(2)));
+		stack.push(CallFrame.fromVal("fn-3", new VncLong(3)));
+			
+		stack.clear();
+		
+		assertTrue(stack.isEmpty());
+	}
+
+	@Test
 	public void testCopy() {
 		final CallStack stack = new CallStack();
 		
