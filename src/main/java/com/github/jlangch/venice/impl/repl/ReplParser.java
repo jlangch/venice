@@ -34,8 +34,11 @@ public class ReplParser extends DefaultParser {
 	
 	public ReplParser(final VeniceInterpreter venice) {
 		this.venice = venice;
+		
+		setQuoteChars(new char[] { '"'});
 	}
 
+	@Override
 	public ParsedLine parse(
 			final String line, 
 			final int cursor, 
@@ -63,7 +66,26 @@ public class ReplParser extends DefaultParser {
 		eof = false;
 	}
 	
+	public static boolean isCommand(final String buffer) {
+		final int len = buffer.length();
 
+		if (len == 0) {
+			return false;
+		}
+		else {
+			int pos = 0;
+			
+			// skip spaces
+			while(pos < len) {
+				if (buffer.charAt(pos) != ' ') break;
+				pos++;
+			}
+			
+			return pos < len && buffer.charAt(pos) == '!';
+		}
+	}
+
+	
 	private final VeniceInterpreter venice;
 	
 	private boolean eof = false;

@@ -186,6 +186,7 @@ public class CustomREPL {
 									.appName("Venice")
 									.terminal(terminal)
 									.history(history)
+									.expander(new NullExpander())
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.build();
 

@@ -39,6 +39,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   `(+ 1 2)\n(+ 2 3)` with copy/paste to the REPL.
 - REPL to handle [ctrl-c] gracefully when the user interrupts the REPL while 
   reading user input
+- REPL problem with command expansion
 
 ### Changed
 

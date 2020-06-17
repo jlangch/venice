@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.jline.reader.EndOfFileException;
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -47,8 +46,6 @@ import org.jline.utils.InfoCmp.Capability;
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
-import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Var;
@@ -191,6 +188,7 @@ public class REPL {
 									.appName("Venice")
 									.terminal(terminal)
 									.history(history)
+									.expander(new NullExpander())
 									.completer(completer)
 									.highlighter(highlighter)
 									.parser(parser)
@@ -235,8 +233,8 @@ public class REPL {
 				}
 				
 				if (line != null) { 
-					if (line.startsWith("!")) {
-						final String cmd = StringUtil.trimToEmpty(line.substring(1));				
+					if (ReplParser.isCommand(line)) {
+						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));				
 						if (cmd.equals("reload")) {
 							env = loadEnv(cli, out, err, in);
 							printer.println("system", "reloaded");					
@@ -266,30 +264,6 @@ public class REPL {
 			catch (ContinueException ex) {
 				// ok, just continue
 			}
-			catch (UserInterruptException ex) {
-				Thread.interrupted(); // reset the thread's interrupt status
-
-				// User typed ctrl-C
-				if (parser.isEOF()) {
-					// cancel multi-line edit
-					printer.println("interrupt", " cancel ");					
-					parser.reset();
-				}
-				else {
-					// quit the REPL
-					printer.println("interrupt", " ! interrupted ! ");
-					Thread.sleep(1000);
-					break; 
-				}
-			} 
-			catch (EofException | EndOfFileException ex) {
-				break;
-			} 
-			catch (ParseError ex) {
-				// put the script to the history to allow to fix it
-				history.add(reader.getBuffer().toString());
-				printer.printex("error", ex);
-			}
 			catch (Exception ex) {
 				printer.printex("error", ex);
 			}
@@ -302,80 +276,86 @@ public class REPL {
 			final Terminal terminal,
 			final History history
 	) {
-		if (cmd.equals("macroexpand") || cmd.equals("me")) {
-			macroexpand = true;
-			setMacroexpandOnLoad(env, true);
-			printer.println("system", "macroexpansion enabled");					
-		}
-		else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
-			printer.println("stdout", HELP);					
-		}
-		else if (cmd.equals("config")) {
-			handleConfigCommand();
-		}
-		else if (cmd.equals("setup")) {
-			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
-		}
-		else if (cmd.equals("setup-ext")) {
-			handleSetupCommand(venice, env, SetupMode.Extended, printer);
-		}
-		else if (cmd.equals("classpath")) {
-			handleReplClasspathCommand();
-		}
-		else if (cmd.equals("launcher")) {
-			handleLauncherCommand();
-		}
-		else if (cmd.equals("env")) {
-			handleEnvCommand(new String[0], env);
-		}
-		else if (cmd.startsWith("env ")) {
-			final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
-			handleEnvCommand(params, env);
-		}
-		else if (cmd.startsWith("java-ex")) {
-			printer.setPrintJavaEx(true);
-			printer.println("stdout", "Printing Java exceptions");
-		}
-		else if (cmd.equals("clear-history")) {
-			clearCommandHistory(terminal, history);
-		}
-		else if (cmd.equals("sandbox")) {
-			handleSandboxCommand(new String[0], terminal, env);
-		}
-		else if (cmd.startsWith("sandbox ")) {
-			final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
-			handleSandboxCommand(params, terminal, env);
-		}
-		else if (cmd.equals("lic")) {
-			printLicenses();
-		}
-		else if (cmd.equals("colors")) {
-			printConfiguredColors();
-		}
-		else if (cmd.equals("info")) {
-			printInfo(terminal);
-		}
-		else if (cmd.startsWith("highlight")) {
-			if (cmd.equals("highlight")) {
-				printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
+		try {
+			if (cmd.equals("macroexpand") || cmd.equals("me")) {
+				macroexpand = true;
+				setMacroexpandOnLoad(env, true);
+				printer.println("system", "macroexpansion enabled");					
 			}
-			else {
-				final String param = StringUtil.trimToEmpty(cmd.substring("highlight".length()));
-				if ("on".equals(param)) {
-					highlight = true;
-					if (highlighter != null) highlighter.enable(true);
-				}
-				else if ("off".equals(param)) {
-					highlight = false;
-					if (highlighter != null) highlighter.enable(false);
+			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
+				printer.println("stdout", HELP);					
+			}
+			else if (cmd.equals("config")) {
+				handleConfigCommand();
+			}
+			else if (cmd.equals("setup")) {
+				handleSetupCommand(venice, env, SetupMode.Minimal, printer);
+			}
+			else if (cmd.equals("setup-ext")) {
+				handleSetupCommand(venice, env, SetupMode.Extended, printer);
+			}
+			else if (cmd.equals("classpath")) {
+				handleReplClasspathCommand();
+			}
+			else if (cmd.equals("launcher")) {
+				handleLauncherCommand();
+			}
+			else if (cmd.equals("env")) {
+				handleEnvCommand(new String[0], env);
+			}
+			else if (cmd.startsWith("env ")) {
+				final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
+				handleEnvCommand(params, env);
+			}
+			else if (cmd.startsWith("java-ex")) {
+				printer.setPrintJavaEx(true);
+				printer.println("stdout", "Printing Java exceptions");
+			}
+			else if (cmd.equals("clear-history")) {
+				clearCommandHistory(terminal, history);
+			}
+			else if (cmd.equals("sandbox")) {
+				handleSandboxCommand(new String[0], terminal, env);
+			}
+			else if (cmd.startsWith("sandbox ")) {
+				final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
+				handleSandboxCommand(params, terminal, env);
+			}
+			else if (cmd.equals("lic")) {
+				printLicenses();
+			}
+			else if (cmd.equals("colors")) {
+				printConfiguredColors();
+			}
+			else if (cmd.equals("info")) {
+				printInfo(terminal);
+			}
+			else if (cmd.startsWith("highlight")) {
+				if (cmd.equals("highlight")) {
+					printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
 				}
 				else {
-					printer.println("error", "Invalid parameter. Use !highlight {on|off}.");
+					final String param = StringUtil.trimToEmpty(cmd.substring("highlight".length()));
+					if ("on".equals(param)) {
+						highlight = true;
+						if (highlighter != null) highlighter.enable(true);
+					}
+					else if ("off".equals(param)) {
+						highlight = false;
+						if (highlighter != null) highlighter.enable(false);
+					}
+					else {
+						printer.println("error", "Invalid parameter. Use !highlight {on|off}.");
+					}
 				}
 			}
+			else {	
+				printer.println("error", "invalid command");
+			}
 		}
-		else {	
-			printer.println("error", "invalid command");
+		catch(RuntimeException ex) {
+			printer.println("error", "Failed to handle command");
+			printer.println("error", ex.getMessage());
 		}
 	}
 
@@ -776,7 +756,7 @@ public class REPL {
 		}
 		catch(IOException ex) {}	
 	}
-
+	
 	
 	public static enum SetupMode { Minimal, Extended };
 	

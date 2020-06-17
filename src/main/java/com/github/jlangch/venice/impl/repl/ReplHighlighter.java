@@ -56,7 +56,7 @@ public class ReplHighlighter implements Highlighter {
 	) {
 		final AttributedStringBuilder sb = new AttributedStringBuilder();
 		
-		if (enabled && !isReplCommand(buffer)) {
+		if (enabled && !ReplParser.isCommand(buffer)) {
 			HighlightParser
 				.parse(buffer)
 				.forEach(it -> sb.ansiAppend(highlight(it)));		
@@ -90,10 +90,6 @@ public class ReplHighlighter implements Highlighter {
 			case None:  return null;
 			default:    return null;
 		}
-	}
-
-	private boolean isReplCommand(final String buffer) {
-		return buffer.startsWith("!");
 	}
 
 	
