@@ -113,14 +113,14 @@ public class AcceptAllInterceptor extends Interceptor {
 	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {
-		super.validateVeniceFunction(funcName);
+		// ok
 	}
 	
 	@Override
 	public void validateLoadModule(
 			final String moduleName
 	) throws SecurityException {
-		super.validateVeniceFunction(moduleName);
+		// ok
 	}
 
 }
