@@ -241,7 +241,9 @@ public class REPL {
 							env = loadEnv(cli, out, err, in);
 							printer.println("system", "reloaded");					
 						}
-						else if (cmd.equals("quit") || cmd.equals("q")) {
+						else if (cmd.equals("quit") || cmd.equals("q") 
+									|| cmd.equals("exit") || cmd.equals("e")
+						) {
 							if (config.isClearCommandHistoryOnExit()) {
 								clearCommandHistory(terminal, history);
 							}
@@ -282,7 +284,7 @@ public class REPL {
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
 				macroexpand = true;
 				setMacroexpandOnLoad(env, true);
-				printer.println("system", "macroexpansion enabled");					
+				printer.println("system", "Macro expansion enabled");					
 			}
 			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
 				printer.println("stdout", HELP);					
@@ -308,10 +310,6 @@ public class REPL {
 			else if (cmd.startsWith("env ")) {
 				final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
 				handleEnvCommand(params, env);
-			}
-			else if (cmd.startsWith("java-ex")) {
-				printer.setPrintJavaEx(true);
-				printer.println("stdout", "Printing Java exceptions");
 			}
 			else if (cmd.equals("clear-history")) {
 				clearCommandHistory(terminal, history);
@@ -351,8 +349,29 @@ public class REPL {
 					}
 				}
 			}
+			else if (cmd.startsWith("java-ex")) {
+				if (cmd.equals("java-ex")) {
+					printer.println("stdout", "Java Exception: " + (javaException ? "on" : "off"));
+				}
+				else {
+					final String param = StringUtil.trimToEmpty(cmd.substring("java-ex".length()));
+					if ("on".equals(param)) {
+						javaException = true;
+						printer.setPrintJavaEx(javaException);
+						printer.println("stdout", "Printing Java exceptions");
+					}
+					else if ("off".equals(param)) {
+						javaException = false;
+						printer.setPrintJavaEx(javaException);
+						printer.println("stdout", "Printing Venice exceptions");
+					}
+					else {
+						printer.println("error", "Invalid parameter. Use !java-ex {on|off}.");
+					}
+				}
+			}
 			else {	
-				printer.println("error", "invalid command");
+				printer.println("error", "Invalid command");
 			}
 		}
 		catch(RuntimeException ex) {
@@ -363,7 +382,7 @@ public class REPL {
 
 	private void handleConfigCommand() {
 		printer.println("stdout", "Sample REPL configuration. Save it as 'repl.json'");
-		printer.println("stdout", "in the REPL's working directory:");
+		printer.println("stdout", "to the REPL's working directory:");
 		printer.println();
 		printer.println("stdout", ReplConfig.getDefaultClasspathConfig());
 	}
@@ -406,7 +425,7 @@ public class REPL {
 		final String name = ReplConfig.getLauncherScriptName();
 		
 		printer.println("stdout", "Sample REPL launcher script. Save it as '" + name + "'");
-		printer.println("stdout", "in the REPL's working directory:");
+		printer.println("stdout", "to the REPL's working directory:");
 		printer.println();
 		printer.println("stdout", ReplConfig.getDefaultClasspathLauncherScript());
 	}
@@ -439,7 +458,7 @@ public class REPL {
 			}
 		}
 				
-		printer.println("error", "invalid env command");					
+		printer.println("error", "Invalid env command");					
 	}
 
 	private void handleSandboxCommand(
@@ -841,4 +860,5 @@ public class REPL {
 	private boolean macroexpand = false;
 	private boolean ansiTerminal = false;
 	private boolean highlight = true;
+	private boolean javaException = false;
 }
