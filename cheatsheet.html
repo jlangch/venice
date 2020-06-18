@@ -205,7 +205,7 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.8.9</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.8.10</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -1762,7 +1762,7 @@ form, etc.</code>
 
 ;; invoke static method 
 (. :java.time.ZonedDateTime :now)
-=&gt; 2020-06-13T13:01:39.492+02:00[Europe/Zurich]
+=&gt; 2020-06-18T09:05:54.907+02:00[Europe/Zurich]
 
 ;; invoke static method 
 (. :java.lang.Math :min 10 20)
@@ -3479,7 +3479,7 @@ of test-constant result-expr</code>
          gd (cast :Graphics (. img :createGraphics))] 
      (. gd :fillOval 10 20 5 5)
      img))
-=&gt; BufferedImage@2c6a3f77: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
+=&gt; BufferedImage@1324409e: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
                     </div>
                 </div>
                 
@@ -3917,7 +3917,7 @@ the same effects, if any, and returns the opposite truth value.</code>
                     </div>
                     <div class="examples">
                         <code>(complement even?)
-=&gt; function anonymous-2d5004e9-7e16-4344-b3d8-a19130b5acda {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-d853d464-b75e-44fc-8ff3-c93211d1d04a {visibility :public, ns &quot;core&quot;}
 
 (filter (complement even?) &apos;(1 2 3 4))
 =&gt; (1 3)</code>
@@ -4655,7 +4655,7 @@ Options:
                     </div>
                     <div class="examples">
                         <code>(current-time-millis)
-=&gt; 1592046105017</code>
+=&gt; 1592463959888</code>
                     </div>
                 </div>
                 
@@ -5763,7 +5763,7 @@ Test...
                     </div>
                     <div class="examples">
                         <code>(dobench 10 (+ 1 1))
-=&gt; (5252 1774 2322 1846 1584 1652 1633 1314 1144 1174)</code>
+=&gt; (4308 3093 3861 2963 2163 1565 1418 1205 1231 1086)</code>
                     </div>
                 </div>
                 
@@ -7139,8 +7139,8 @@ After 300ms: done=true
     (fn [] (log &quot;Worker&quot; n)))                    
   (apply futures-wait (futures-fork 3 factory)))     
 Worker0
-Worker1
 Worker2
+Worker1
 =&gt; nil</code>
                     </div>
                 </div>
@@ -7474,7 +7474,7 @@ Token classes:
                     </div>
                     <div class="examples">
                         <code>(host-address)
-=&gt; &quot;10.0.1.3&quot;</code>
+=&gt; &quot;127.0.0.1&quot;</code>
                     </div>
                 </div>
                 
@@ -11208,7 +11208,7 @@ To recursively expand all macros in a form use (macroexpand-all form).</code>
           :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
   (time (fibonacci 25)))
-Elapsed time: 6.50 ms
+Elapsed time: 6.83 ms
 =&gt; 75025</code>
                     </div>
                 </div>
@@ -11614,7 +11614,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     </div>
                     <div class="examples">
                         <code>(nano-time)
-=&gt; 83307953922933</code>
+=&gt; 186919579359898</code>
                     </div>
                 </div>
                 
@@ -12824,7 +12824,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                     </div>
                     <div class="examples">
                         <code>(pid)
-=&gt; &quot;17226&quot;</code>
+=&gt; &quot;65239&quot;</code>
                     </div>
                 </div>
                 
@@ -13482,10 +13482,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-double)
-=&gt; 0.04456029076379919
+=&gt; 0.920908520399247
 
 (rand-double 100.0)
-=&gt; 81.8631346066956</code>
+=&gt; 58.81993846296968</code>
                     </div>
                 </div>
                 
@@ -13511,10 +13511,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-gaussian)
-=&gt; -0.29895409190425065
+=&gt; -0.2889093273167677
 
 (rand-gaussian 0.0 5.0)
-=&gt; 3.613705361085169</code>
+=&gt; -2.066803614396792</code>
                     </div>
                 </div>
                 
@@ -13540,10 +13540,10 @@ This function is based on a cryptographically strong random number generator (RN
                     </div>
                     <div class="examples">
                         <code>(rand-long)
-=&gt; 8470640863981999034
+=&gt; 8826393904285258885
 
 (rand-long 100)
-=&gt; 47</code>
+=&gt; 35</code>
                     </div>
                 </div>
                 
@@ -14261,7 +14261,7 @@ nil
                     </div>
                     <div class="examples">
                         <code>(repeatedly 5 #(rand-long 11))
-=&gt; (6 2 5 3 5)
+=&gt; (9 10 10 8 4)
 
 ;; compare with repeat, which only calls the &apos;rand-long&apos;
 ;; function once, repeating the value five times. 
@@ -15074,13 +15074,13 @@ sh returns a map of
                     </div>
                     <div class="examples">
                         <code>(shuffle &apos;(1 2 3 4 5 6))
-=&gt; (2 1 6 5 3 4)
+=&gt; (1 5 4 3 2 6)
 
 (shuffle [1 2 3 4 5 6])
-=&gt; [1 3 2 4 6 5]
+=&gt; [1 2 5 6 3 4]
 
 (shuffle &quot;abcdef&quot;)
-=&gt; (&quot;f&quot; &quot;c&quot; &quot;e&quot; &quot;b&quot; &quot;a&quot; &quot;d&quot;)</code>
+=&gt; (&quot;a&quot; &quot;c&quot; &quot;b&quot; &quot;f&quot; &quot;d&quot; &quot;e&quot;)</code>
                     </div>
                 </div>
                 
@@ -17889,7 +17889,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     </div>
                     <div class="examples">
                         <code>(time (+ 100 200))
-Elapsed time: 10.83 µs
+Elapsed time: 13.95 µs
 =&gt; 300</code>
                     </div>
                 </div>
@@ -17961,7 +17961,7 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/date)
-=&gt; Sat Jun 13 13:01:37 CEST 2020</code>
+=&gt; Thu Jun 18 09:05:53 CEST 2020</code>
                     </div>
                 </div>
                 
@@ -18007,13 +18007,13 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-month (time/local-date))
-=&gt; 13
+=&gt; 18
 
 (time/day-of-month (time/local-date-time))
-=&gt; 13
+=&gt; 18
 
 (time/day-of-month (time/zoned-date-time))
-=&gt; 13</code>
+=&gt; 18</code>
                     </div>
                 </div>
                 
@@ -18036,13 +18036,13 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-week (time/local-date))
-=&gt; :SATURDAY
+=&gt; :THURSDAY
 
 (time/day-of-week (time/local-date-time))
-=&gt; :SATURDAY
+=&gt; :THURSDAY
 
 (time/day-of-week (time/zoned-date-time))
-=&gt; :SATURDAY</code>
+=&gt; :THURSDAY</code>
                     </div>
                 </div>
                 
@@ -18065,13 +18065,13 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/day-of-year (time/local-date))
-=&gt; 165
+=&gt; 170
 
 (time/day-of-year (time/local-date-time))
-=&gt; 165
+=&gt; 170
 
 (time/day-of-year (time/zoned-date-time))
-=&gt; 165</code>
+=&gt; 170</code>
                     </div>
                 </div>
                 
@@ -18148,19 +18148,19 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/format (time/local-date) &quot;dd-MM-yyyy&quot;)
-=&gt; &quot;13-06-2020&quot;
+=&gt; &quot;18-06-2020&quot;
 
 (time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)
-=&gt; &quot;2020-06-13T13:01:38.334CEST&quot;
+=&gt; &quot;2020-06-18T09:05:53.579CEST&quot;
 
 (time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)
-=&gt; &quot;2020-06-13T13:01:38.336+02:00&quot;
+=&gt; &quot;2020-06-18T09:05:53.581+02:00&quot;
 
 (time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))
-=&gt; &quot;2020-06-13T13:01:38.338CEST&quot;
+=&gt; &quot;2020-06-18T09:05:53.584CEST&quot;
 
 (time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))
-=&gt; &quot;2020-06-13T13:01:38.341+02:00&quot;</code>
+=&gt; &quot;2020-06-18T09:05:53.586+02:00&quot;</code>
                     </div>
                 </div>
                 
@@ -18221,10 +18221,10 @@ Elapsed time: 10.83 µs
 =&gt; 0
 
 (time/hour (time/local-date-time))
-=&gt; 13
+=&gt; 9
 
 (time/hour (time/zoned-date-time))
-=&gt; 13</code>
+=&gt; 9</code>
                     </div>
                 </div>
                 
@@ -18399,7 +18399,7 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date)
-=&gt; 2020-06-13
+=&gt; 2020-06-18
 
 (time/local-date 2018 8 1)
 =&gt; 2018-08-01
@@ -18411,7 +18411,7 @@ Elapsed time: 10.83 µs
 =&gt; 2013-08-01
 
 (time/local-date (. :java.util.Date :new))
-=&gt; 2020-06-13</code>
+=&gt; 2020-06-18</code>
                     </div>
                 </div>
                 
@@ -18465,7 +18465,7 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/local-date-time)
-=&gt; 2020-06-13T13:01:38.077
+=&gt; 2020-06-18T09:05:53.287
 
 (time/local-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00
@@ -18483,7 +18483,7 @@ Elapsed time: 10.83 µs
 =&gt; 2013-08-01T02:00
 
 (time/local-date-time (. :java.util.Date :new))
-=&gt; 2020-06-13T13:01:38.104</code>
+=&gt; 2020-06-18T09:05:53.319</code>
                     </div>
                 </div>
                 
@@ -18578,13 +18578,13 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/minus (time/local-date) :days 2)
-=&gt; 2020-06-11
+=&gt; 2020-06-16
 
 (time/minus (time/local-date-time) :days 2)
-=&gt; 2020-06-11T13:01:38.380
+=&gt; 2020-06-16T09:05:53.626
 
 (time/minus (time/zoned-date-time) :days 2)
-=&gt; 2020-06-11T13:01:38.382+02:00[Europe/Zurich]</code>
+=&gt; 2020-06-16T09:05:53.628+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -18610,10 +18610,10 @@ Elapsed time: 10.83 µs
 =&gt; 0
 
 (time/minute (time/local-date-time))
-=&gt; 1
+=&gt; 5
 
 (time/minute (time/zoned-date-time))
-=&gt; 1</code>
+=&gt; 5</code>
                     </div>
                 </div>
                 
@@ -18740,13 +18740,13 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/plus (time/local-date) :days 2)
-=&gt; 2020-06-15
+=&gt; 2020-06-20
 
 (time/plus (time/local-date-time) :days 2)
-=&gt; 2020-06-15T13:01:38.373
+=&gt; 2020-06-20T09:05:53.619
 
 (time/plus (time/zoned-date-time) :days 2)
-=&gt; 2020-06-15T13:01:38.375+02:00[Europe/Zurich]</code>
+=&gt; 2020-06-20T09:05:53.621+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -18772,10 +18772,10 @@ Elapsed time: 10.83 µs
 =&gt; 0
 
 (time/second (time/local-date-time))
-=&gt; 38
+=&gt; 53
 
 (time/second (time/zoned-date-time))
-=&gt; 38</code>
+=&gt; 53</code>
                     </div>
                 </div>
                 
@@ -18798,7 +18798,7 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/to-millis (time/local-date))
-=&gt; 1591999200000</code>
+=&gt; 1592431200000</code>
                     </div>
                 </div>
                 
@@ -18823,13 +18823,13 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/with-time (time/local-date) 22 00 15 333)
-=&gt; 2020-06-13T22:00:15.333
+=&gt; 2020-06-18T22:00:15.333
 
 (time/with-time (time/local-date-time) 22 00 15 333)
-=&gt; 2020-06-13T22:00:15.333
+=&gt; 2020-06-18T22:00:15.333
 
 (time/with-time (time/zoned-date-time) 22 00 15 333)
-=&gt; 2020-06-13T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2020-06-18T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                 </div>
                 
@@ -18994,7 +18994,7 @@ Elapsed time: 10.83 µs
                     </div>
                     <div class="examples">
                         <code>(time/zoned-date-time)
-=&gt; 2020-06-13T13:01:38.123+02:00[Europe/Zurich]
+=&gt; 2020-06-18T09:05:53.339+02:00[Europe/Zurich]
 
 (time/zoned-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -19012,10 +19012,10 @@ Elapsed time: 10.83 µs
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 (time/zoned-date-time (. :java.util.Date :new))
-=&gt; 2020-06-13T13:01:38.150+02:00[Europe/Zurich]
+=&gt; 2020-06-18T09:05:53.370+02:00[Europe/Zurich]
 
 (time/zoned-date-time :UTC)
-=&gt; 2020-06-13T11:01:38.154Z[UTC]
+=&gt; 2020-06-18T07:05:53.374Z[UTC]
 
 (time/zoned-date-time :UTC 2018 8 1)
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -19033,7 +19033,7 @@ Elapsed time: 10.83 µs
 =&gt; 2013-08-01T00:00Z[UTC]
 
 (time/zoned-date-time :UTC (. :java.util.Date :new))
-=&gt; 2020-06-13T11:01:38.178Z[UTC]</code>
+=&gt; 2020-06-18T07:05:53.404Z[UTC]</code>
                     </div>
                 </div>
                 
@@ -19539,7 +19539,7 @@ unpack it after trampoline returns.</code>
                     </div>
                     <div class="examples">
                         <code>(uuid )
-=&gt; &quot;ccac0820-c779-4008-9a4e-d0f57b8d413c&quot;</code>
+=&gt; &quot;482489f9-3969-4a65-91c2-c67044765849&quot;</code>
                     </div>
                 </div>
                 
