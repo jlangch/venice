@@ -241,9 +241,7 @@ public class REPL {
 							env = loadEnv(cli, out, err, in);
 							printer.println("system", "reloaded");					
 						}
-						else if (cmd.equals("quit") || cmd.equals("q") 
-									|| cmd.equals("exit") || cmd.equals("e")
-						) {
+						else if (isExitCommand(cmd)) {
 							if (config.isClearCommandHistoryOnExit()) {
 								clearCommandHistory(terminal, history);
 							}
@@ -351,18 +349,18 @@ public class REPL {
 			}
 			else if (cmd.startsWith("java-ex")) {
 				if (cmd.equals("java-ex")) {
-					printer.println("stdout", "Java Exception: " + (javaException ? "on" : "off"));
+					printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
 				}
 				else {
 					final String param = StringUtil.trimToEmpty(cmd.substring("java-ex".length()));
 					if ("on".equals(param)) {
-						javaException = true;
-						printer.setPrintJavaEx(javaException);
+						javaExceptions = true;
+						printer.setPrintJavaEx(javaExceptions);
 						printer.println("stdout", "Printing Java exceptions");
 					}
 					else if ("off".equals(param)) {
-						javaException = false;
-						printer.setPrintJavaEx(javaException);
+						javaExceptions = false;
+						printer.setPrintJavaEx(javaExceptions);
 						printer.println("stdout", "Printing Venice exceptions");
 					}
 					else {
@@ -733,7 +731,9 @@ public class REPL {
 		printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
 		printer.println("stdout", "");
 		printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
-		printer.println("stdout", "Highlighting:    " + config.isSyntaxHighlighting());
+		printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
+		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
+		printer.println("stdout", "Macro Expansion: " + (macroexpand ? "on" : "off"));
 		printer.println("stdout", "");
 		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
 		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
@@ -747,6 +747,13 @@ public class REPL {
 		printer.println("stdout", "Java VM Version: " + System.getProperty("java.vm.version"));
 		printer.println("stdout", "Java VM Name:    " + System.getProperty("java.vm.name"));
 		printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
+	}
+	
+	private boolean isExitCommand(final String cmd) {
+		return cmd.equals("quit") 
+					|| cmd.equals("q") 
+					|| cmd.equals("exit") 
+					|| cmd.equals("e");
 	}
 	
 	private void handleReplClasspathCommand() {
@@ -860,5 +867,5 @@ public class REPL {
 	private boolean macroexpand = false;
 	private boolean ansiTerminal = false;
 	private boolean highlight = true;
-	private boolean javaException = false;
+	private boolean javaExceptions = false;
 }
