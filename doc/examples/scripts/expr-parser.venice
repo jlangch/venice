@@ -28,13 +28,11 @@
 ;;;; MulExpression          ::=  UnaryExpression [ ( "*" | "/" | "%" ) UnaryExpression ]*
 ;;;; UnaryExpression        ::=  ( "+" | "-" ) UnaryExpression | Primary
 ;;;;
-;;;; Primary                ::=  ParExpression
-;;;;                                | Literal
+;;;; Primary                ::=  ParExpression | Literal
 ;;;;
 ;;;; ParExpression          ::=  "(" Expression ")"
 ;;;;
-;;;; Literal                ::=  FloatLiteral
-;;;;                                | IntegerLiteral
+;;;; Literal                ::=  FloatLiteral | IntegerLiteral
 ;;;;
 ;;;; IntegerLiteral         ::=  "0" | ( "1" .. "9" ) [ Digit ]*
 ;;;; FloatLiteral           ::=  ( [ Digit ]+ "." [ Digit ]* | "." [ Digit ]+ )
