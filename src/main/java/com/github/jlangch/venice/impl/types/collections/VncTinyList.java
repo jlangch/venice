@@ -407,6 +407,11 @@ public class VncTinyList extends VncList {
 		return TypeRank.LIST;
 	}
 
+	@Override 
+	public boolean isVncList() {
+		return true;
+	}
+
 	@Override
 	public Object convertToJavaObject() {
 		final ArrayList<Object> list = new ArrayList<>(len);
