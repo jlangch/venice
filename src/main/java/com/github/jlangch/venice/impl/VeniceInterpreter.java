@@ -856,7 +856,7 @@ public class VeniceInterpreter implements Serializable  {
 		if (Types.isVncSymbol(ast)) {
 			return env.get((VncSymbol)ast);
 		}
-		else if (ast.isVncCollection()) {
+		else if (Types.isVncCollection(ast)) {
 			if (Types.isVncSequence(ast)) {
 				final VncSequence seq = (VncSequence)ast;
 				

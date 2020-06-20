@@ -36,6 +36,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
@@ -53,27 +54,31 @@ public class InstanceOfBenchmark {
 	
 	
 	@Benchmark
-	public Object test_instanceofVncList() {
-		int sum = 0;
-		for(int ii=0; ii<1000; ii++) {
-			sum = sum + (items[ii%4] instanceof VncList ? 1 : 0);
-		}
-		return sum;
+	public Object test_instanceof_VncList() {
+		return list instanceof VncList;
+	}
+	
+	@Benchmark
+	public Object test_instanceof_VncCollection() {
+		return list instanceof VncCollection;
 	}
 
 	@Benchmark
-	public Object test_isVncList() {
-		int sum = 0;
-		for(int ii=0; ii<1000; ii++) {
-			sum = sum + (items[ii%4].isVncList() ? 1 : 0);
-		}
-		return sum;
+	public Object test_is_VncList() {
+		return list.isVncList();
+	}
+	
+	@Benchmark
+	public Object test_instanceof_VncLong() {
+		return number instanceof VncList;
+	}
+
+	@Benchmark
+	public Object test_is_VncLong() {
+		return number.isVncList();
 	}
 
 	
-	private final VncVal[] items = {
-			VncList.of(new VncLong(0L)), 
-			VncList.of(new VncLong(0L)), 
-			new VncLong(0L), 
-			new VncLong(0L)};
+	private final VncVal list = VncList.of(new VncLong(0L));
+	private final VncVal number = new VncLong(0L);
 }

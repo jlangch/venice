@@ -71,11 +71,6 @@ public abstract class VncCollection extends VncVal {
 	public abstract int size();
 	
 	public abstract boolean isEmpty();
-
-	@Override
-	public boolean isVncCollection() {
-		return true;
-	}
 	
 	
 	public static final VncKeyword TYPE = new VncKeyword(":core/collection");
