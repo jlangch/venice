@@ -35,9 +35,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- a highlighter to the REPL to mark unprocessed forms like `(inc 1)` 
-  in `(do (+ 1 2)) (inc 1)` with a special color. As a side effect 
-  this makes unbalanced parenthesis visible.
+- an enhancement to the syntax highlighter to mark unprocessed forms like 
+  `(inc 1)` in `(do (+ 1 2)) (inc 1)` in the REPL with a special color. This 
+  feature also makes unbalanced parenthesis visible.
 - a history file for the REPL commands
 - a clear history command to the REPL
 
