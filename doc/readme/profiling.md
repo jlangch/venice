@@ -169,10 +169,10 @@ The profiler runs the sum function 100 times as warm-up followed by 100 times to
 ```clojure
 (do
    (defn sum [n]
-      (loop [i 0]
+      (loop [i 0 acc 0]
          (if (< i n)
-            (recur (inc i))
-            i)))
+            (recur (inc i) (+ acc i))
+            acc)))
             
    (perf (sum 100000) 100 100)
    
@@ -188,20 +188,21 @@ total and average time for the function's calls:
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
-user/_test  [       1]:    10,13 s             
-user/sum    [     100]:    10,13 s    101,31 ms
-inc         [10000000]:   690,65 ms       69 ns
-<           [10000100]:   674,62 ms       67 ns
+user/_test  [       1]:    16,49 s             
+user/sum    [     100]:    16,49 s    164,92 ms
++           [10000000]:   981,09 ms       98 ns
+<           [10000100]:   871,62 ms       87 ns
+inc         [10000000]:   773,00 ms       77 ns
 -----------------------------------------------
 ```
 
 Analysis loop-recur performance:
 
-* `(sum 100000)` takes 101.3ms
-* the functions `inc`  and `<` take 100'000 * 136ns = 13.6ms
-* the loop-recur overhead is (101.3ms - 13.6ms) / 100'000 = 877ns
-* every loop-recur iteration takes 877ns to process the `if` logic, initiate a new 
-  iteration and setup the local environment with the loop variables.
+* `(sum 100000)` takes 164.9ms
+* the functions `inc` and `<` take 100'000 * 262ns = 26.2ms
+* the loop-recur overhead is (164.9ms - 26.2ms) / 100'000 = 1027ns
+* every loop-recur iteration takes 1027ns to process the `if` logic, initiate a new 
+  iteration, and setup the local environment with the loop variables.
 
 
 

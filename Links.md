@@ -24,3 +24,10 @@
 ## Class Loading
 
 [Dynamic Class Reloading](http://tutorials.jenkov.com/java-reflection/dynamic-class-loading-reloading.html)
+
+
+## Java Tools
+
+[Java VisualVM](https://visualvm.github.io/download.html)
+
+[Zulu Mission Control](https://www.azul.com/products/zulu-mission-control/)

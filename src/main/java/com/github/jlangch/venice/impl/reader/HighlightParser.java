@@ -37,7 +37,9 @@ import static com.github.jlangch.venice.impl.reader.HighlightClass.QUASI_QUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.QUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.STRING;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_EAR_MUFFS;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_FUNCTION_NAME;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_MACRO_NAME;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_SPECIAL_FORM;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNKNOWN;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE;
@@ -163,6 +165,14 @@ public class HighlightParser {
 						else if (SPECIAL_FORMS.contains(sToken)) {
 							// (def a 10)
 							addItem(sToken, SYMBOL_SPECIAL_FORM);
+						}
+						else if (CORE_MACROS.contains(sToken)) {
+							// (and true false)
+							addItem(sToken, SYMBOL_MACRO_NAME);
+						}
+						else if (sToken.startsWith("*") && sToken.endsWith("*")){
+							// (*out*)
+							addItem(sToken, SYMBOL_EAR_MUFFS);
 						}
 						else {
 							// (+ 1 2)
@@ -319,6 +329,7 @@ public class HighlightParser {
 	
 	private static Set<String> SPECIAL_FORMS = new HashSet<>(
 			Arrays.asList(
+					"gensym",
 					"doc",
 					"modules",
 					"fn",
@@ -326,6 +337,8 @@ public class HighlightParser {
 					"resolve",
 					"var-get",
 					"def",
+					"defn",
+					"defn-",
 					"defonce",
 					"defmulti",
 					"defmethod",
@@ -365,7 +378,47 @@ public class HighlightParser {
 					"*ns*",
 					"*run-mode*",
 					"*ansi-term*"));
-	
+
+	private static Set<String> CORE_MACROS = new HashSet<>(
+			Arrays.asList(
+					"assert",
+					"and",
+					"or",
+					"cond",
+					"condp",
+					"case",
+					"when",
+					"when-not",
+					"coalesce",
+					"if-let",
+					"when-let",
+					"dotimes",
+					"while",
+					"doto",
+					"->",
+					"->>",
+					"-<>",
+					"as->",
+					"list-comp",
+					"time",
+					"perf",
+					"load-string",
+					"load-file",
+					"load-classpath-file",
+					"load-module",
+					"with-sh-dir",
+					"with-sh-throw",
+					"with-out-str",
+					"with-err-str",
+					"delay",
+					"print",
+					"printf",
+					"println",
+					"newline",
+					"flush",
+					"read-line",
+					"read-char"));
+
 	
 	private final String form;
 	private final List<HighlightItem> items= new ArrayList<>();

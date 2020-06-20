@@ -38,12 +38,14 @@ import static com.github.jlangch.venice.impl.reader.HighlightClass.QUASI_QUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.QUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.STRING;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_EAR_MUFFS;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_FUNCTION_NAME;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_MACRO_NAME;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.SYMBOL_SPECIAL_FORM;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNKNOWN;
+import static com.github.jlangch.venice.impl.reader.HighlightClass.UNPROCESSED;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.UNQUOTE_SPLICING;
-import static com.github.jlangch.venice.impl.reader.HighlightClass.UNPROCESSED;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.WHITESPACES;
 
 import java.util.HashMap;
@@ -80,6 +82,8 @@ public class AnsiColorThemes {
 		colors.put(map(SYMBOL), 				LIC_GREY);
 		colors.put(map(SYMBOL_SPECIAL_FORM), 	LIC_PURPLE);
 		colors.put(map(SYMBOL_FUNCTION_NAME),	LIC_BLUE);
+		colors.put(map(SYMBOL_MACRO_NAME),		LIC_BLUE);
+		colors.put(map(SYMBOL_EAR_MUFFS),		LIC_BLUE);
 		
 		colors.put(map(QUOTE),					LIC_GREY);	
 		colors.put(map(QUASI_QUOTE),			LIC_GREY);	
@@ -117,6 +121,8 @@ public class AnsiColorThemes {
 		colors.put(map(SYMBOL), 				DAC_GREY);
 		colors.put(map(SYMBOL_SPECIAL_FORM), 	DAC_PURPLE);
 		colors.put(map(SYMBOL_FUNCTION_NAME),	DAC_BLUE);
+		colors.put(map(SYMBOL_MACRO_NAME),		DAC_BLUE);
+		colors.put(map(SYMBOL_EAR_MUFFS),		DAC_BLUE);
 		
 		colors.put(map(QUOTE),					DAC_GREY);	
 		colors.put(map(QUASI_QUOTE),			DAC_GREY);	
