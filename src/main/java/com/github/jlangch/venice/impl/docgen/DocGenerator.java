@@ -1300,6 +1300,10 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 
+		final DocSection open = new DocSection("Open");
+		all.addSection(open);
+		open.addItem(getDocItem("ns"));
+
 		final DocSection curr = new DocSection("Current");
 		all.addSection(curr);
 		curr.addItem(getDocItem("*ns*"));
@@ -1465,7 +1469,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("set!"));
 		generic.addItem(getDocItem("try", true, true));
 		generic.addItem(getDocItem("try-with", true, true));
-
+		
 		final DocSection profiling = new DocSection("Profiling");
 		all.addSection(profiling);
 

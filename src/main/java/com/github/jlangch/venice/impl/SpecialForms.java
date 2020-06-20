@@ -899,10 +899,12 @@ public class SpecialForms {
 					.arglists("(ns sym)")
 					.doc("Opens a namespace.")
 					.examples(
-						"(do                    \n" + 
-						"  (ns xxx)             \n" + 
-						"  (def foo 1)          \n" + 
-						"  (println xxx/foo))     ")
+						"(do                               \n" + 
+						"  (ns xxx)                        \n" + 
+						"  (def foo 1)                     \n" + 
+						"  (ns yyy)                        \n" + 
+						"  (def foo 5)                     \n" + 
+						"  (println xxx/foo foo yyy/foo))    ")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
