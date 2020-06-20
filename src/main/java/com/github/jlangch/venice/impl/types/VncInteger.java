@@ -29,7 +29,7 @@ import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
-public class VncInteger extends VncVal {
+public class VncInteger extends VncNumber {
 
 	public VncInteger(final Integer v) { 
 		this(v, null, Constants.Nil); 

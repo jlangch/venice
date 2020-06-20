@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncMultiFunction;
+import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
@@ -137,7 +138,7 @@ public class Types {
 	}
 
 	public static boolean isVncNumber(final VncVal val) {
-		return val != null && (isVncLong(val) || isVncInteger(val) || isVncDouble(val) || isVncBigDecimal(val));
+		return val != null && (val instanceof VncNumber);
 	}
 
 	public static boolean isVncJust(final VncVal val) {

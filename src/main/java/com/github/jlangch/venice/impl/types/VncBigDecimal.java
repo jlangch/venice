@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
-public class VncBigDecimal extends VncVal {
+public class VncBigDecimal extends VncNumber {
 
 	public VncBigDecimal(final BigDecimal v) { 
 		this(v, null, Constants.Nil); 
