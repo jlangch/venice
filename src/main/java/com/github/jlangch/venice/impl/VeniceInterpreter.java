@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.io.Closeable;
@@ -47,8 +47,8 @@ import com.github.jlangch.venice.impl.sandbox.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.DocForm;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -58,6 +58,7 @@ import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
@@ -853,11 +854,11 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal evaluate_values(final VncVal ast, final Env env) {
-		if (Types.isVncSymbol(ast)) {
+		if (ast instanceof VncSymbol) {
 			return env.get((VncSymbol)ast);
 		}
-		else if (Types.isVncCollection(ast)) {
-			if (Types.isVncSequence(ast)) {
+		else if (ast instanceof VncCollection) {
+			if (ast instanceof VncSequence) {
 				final VncSequence seq = (VncSequence)ast;
 				
 				switch(seq.size()) {
@@ -889,7 +890,7 @@ public class VeniceInterpreter implements Serializable  {
 						return seq.withValues(vals);
 				}
 			}
-			else if (Types.isVncMap(ast)) {
+			else if (ast instanceof VncMap) {
 				final VncMap map = (VncMap)ast;
 				
 				final Map<VncVal,VncVal> vals = new HashMap<>();
@@ -900,7 +901,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				return map.withValues(vals);
 			} 
-			else if (Types.isVncSet(ast)) {
+			else if (ast instanceof VncSet) {
 				final VncSet set = (VncSet)ast;
 				
 				final List<VncVal> vals = new ArrayList<>();
