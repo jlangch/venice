@@ -297,7 +297,7 @@ public class MathFunctions {
 					return new VncDouble(((VncDouble)arg).getValue() + 1D);
 				}
 				else if (Types.isVncBigDecimal(arg)) {
-					return new VncBigDecimal(((VncBigDecimal)arg).getValue().add(new BigDecimal(1)));
+					return new VncBigDecimal(((VncBigDecimal)arg).getValue().add(BigDecimal.ONE));
 				}
 				else {
 					throw new VncException(String.format(
@@ -337,7 +337,7 @@ public class MathFunctions {
 					return new VncDouble(((VncDouble)arg).getValue() - 1D);
 				}
 				else if (Types.isVncBigDecimal(arg)) {
-					return new VncBigDecimal(((VncBigDecimal)arg).getValue().subtract(new BigDecimal(1)));
+					return new VncBigDecimal(((VncBigDecimal)arg).getValue().subtract(BigDecimal.ONE));
 				}
 				else {
 					throw new VncException(String.format(
