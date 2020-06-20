@@ -58,7 +58,6 @@ import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
@@ -857,63 +856,58 @@ public class VeniceInterpreter implements Serializable  {
 		if (ast instanceof VncSymbol) {
 			return env.get((VncSymbol)ast);
 		}
-		else if (ast instanceof VncCollection) {
-			if (ast instanceof VncSequence) {
-				final VncSequence seq = (VncSequence)ast;
-				
-				switch(seq.size()) {
-					case 0: 
-						return seq;
-					case 1:
-						return seq.withVariadicValues(
-									evaluate(seq.first(), env));
-					case 2: 
-						return seq.withVariadicValues(
-									evaluate(seq.first(), env), 
-									evaluate(seq.second(), env));
-					case 3: 
-						return seq.withVariadicValues(
-									evaluate(seq.first(), env), 
-									evaluate(seq.second(), env),
-									evaluate(seq.third(), env));
-					case 4: 
-						return seq.withVariadicValues(
-									evaluate(seq.first(), env), 
-									evaluate(seq.second(), env),
-									evaluate(seq.third(), env),
-									evaluate(seq.fourth(), env));
-					default: 
-						final List<VncVal> vals = new ArrayList<>();
-						for(VncVal v : seq.getList()) {
-							vals.add(evaluate(v, env));
-						}
-						return seq.withValues(vals);
-				}
-			}
-			else if (ast instanceof VncMap) {
-				final VncMap map = (VncMap)ast;
-				
-				final Map<VncVal,VncVal> vals = new HashMap<>();
-				for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
-					vals.put(
-						evaluate(e.getKey(), env), 
-						evaluate(e.getValue(), env));
-				}
-				return map.withValues(vals);
-			} 
-			else if (ast instanceof VncSet) {
-				final VncSet set = (VncSet)ast;
-				
-				final List<VncVal> vals = new ArrayList<>();
-				for(VncVal v: set.getList()) {
-					vals.add(evaluate(v, env));
-				}
-				return set.withValues(vals);
-			} 
-			else {
-				return ast;
+		else if (ast instanceof VncSequence) {
+			final VncSequence seq = (VncSequence)ast;
+			
+			switch(seq.size()) {
+				case 0: 
+					return seq;
+				case 1:
+					return seq.withVariadicValues(
+								evaluate(seq.first(), env));
+				case 2: 
+					return seq.withVariadicValues(
+								evaluate(seq.first(), env), 
+								evaluate(seq.second(), env));
+				case 3: 
+					return seq.withVariadicValues(
+								evaluate(seq.first(), env), 
+								evaluate(seq.second(), env),
+								evaluate(seq.third(), env));
+				case 4: 
+					return seq.withVariadicValues(
+								evaluate(seq.first(), env), 
+								evaluate(seq.second(), env),
+								evaluate(seq.third(), env),
+								evaluate(seq.fourth(), env));
+				default: 
+					final List<VncVal> vals = new ArrayList<>();
+					for(VncVal v : seq.getList()) {
+						vals.add(evaluate(v, env));
+					}
+					return seq.withValues(vals);
 			}
 		}
+		else if (ast instanceof VncMap) {
+			final VncMap map = (VncMap)ast;
+			
+			final Map<VncVal,VncVal> vals = new HashMap<>();
+			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
+				vals.put(
+					evaluate(e.getKey(), env), 
+					evaluate(e.getValue(), env));
+			}
+			return map.withValues(vals);
+		} 
+		else if (ast instanceof VncSet) {
+			final VncSet set = (VncSet)ast;
+			
+			final List<VncVal> vals = new ArrayList<>();
+			for(VncVal v: set.getList()) {
+				vals.add(evaluate(v, env));
+			}
+			return set.withValues(vals);
+		} 
 		else {
 			return ast;
 		}
