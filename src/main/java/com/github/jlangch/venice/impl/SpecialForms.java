@@ -42,7 +42,7 @@ public class SpecialForms {
 				"doc",
 				VncFunction
 					.meta()
-					.arglists("(doc x)")		
+					.arglists("(doc x)")
 					.doc(
 						"Prints documentation for a var or special form given x as its name. " +
 						"Prints the definition of custom types. \n\n" +
@@ -55,7 +55,7 @@ public class SpecialForms {
 						"   (doc :complex))")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 	
 	public static VncFunction modules = 
@@ -63,11 +63,11 @@ public class SpecialForms {
 				"modules",
 				VncFunction
 					.meta()
-					.arglists("(modules )")		
+					.arglists("(modules )")
 					.doc("Lists the available modules")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 			
 	public static VncFunction list = 
@@ -79,7 +79,7 @@ public class SpecialForms {
 					.examples("'(10 20 30)")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction vector = 
@@ -91,7 +91,7 @@ public class SpecialForms {
 					.examples("[10 20 30]")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction set = 
@@ -103,7 +103,7 @@ public class SpecialForms {
 					.examples("#{10 20 30}")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction map = 
@@ -115,7 +115,7 @@ public class SpecialForms {
 					.examples("{:a 10 :b 20}")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction resolve = 
@@ -123,7 +123,7 @@ public class SpecialForms {
 				"resolve",
 				VncFunction
 					.meta()
-					.arglists("(resolve symbol)")		
+					.arglists("(resolve symbol)")
 					.doc("Resolves a symbol.")
 					.examples(
 						"(resolve '+)", 
@@ -140,13 +140,13 @@ public class SpecialForms {
 				"var-get",
 				VncFunction
 					.meta()
-					.arglists("(var-get sym)")		
+					.arglists("(var-get sym)")
 					.doc("Returns the var associated with the symbol")
 					.examples(
 						"(var-get '+)")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction fn = 
@@ -154,7 +154,7 @@ public class SpecialForms {
 				"fn",
 				VncFunction
 					.meta()
-					.arglists("(fn name? [params*] condition-map? expr*)")		
+					.arglists("(fn name? [params*] condition-map? expr*)")
 					.doc("Defines an anonymous function.")
 					.examples(
 						"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
@@ -185,7 +185,7 @@ public class SpecialForms {
 						"   ((discount 50) 300))                                              ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction eval = 
@@ -193,7 +193,7 @@ public class SpecialForms {
 				"eval",
 				VncFunction
 					.meta()
-					.arglists("(eval form)")	
+					.arglists("(eval form)")
 					.doc("Evaluates the form data structure (not text!) and returns the result.")
 					.examples(
 						"(eval '(let [a 10] (+ 3 4 a)))",
@@ -202,7 +202,7 @@ public class SpecialForms {
 					 	"   (eval (read-string s))))     ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction def = 
@@ -210,14 +210,14 @@ public class SpecialForms {
 				"def",
 				VncFunction
 					.meta()
-					.arglists("(def name expr)")		
+					.arglists("(def name expr)")
 					.doc("Creates a global variable.")
 					.examples(
 						 "(def x 5)",
 						 "(def sum (fn [x y] (+ x y)))")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction defonce = 
@@ -225,12 +225,12 @@ public class SpecialForms {
 				"defonce",
 				VncFunction
 					.meta()
-					.arglists("(defonce name expr)")		
+					.arglists("(defonce name expr)")
 					.doc("Creates a global variable that can not be overwritten")
 					.examples("(defonce x 5)")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction set_BANG = 
@@ -238,7 +238,7 @@ public class SpecialForms {
 				"set!",
 				VncFunction
 					.meta()
-					.arglists("(set! var-symbol expr)")		
+					.arglists("(set! var-symbol expr)")
 					.doc("Sets a global or thread-local variable to the value of the expression.")
 					.examples(
 						"(do                             \n" +
@@ -262,7 +262,7 @@ public class SpecialForms {
 						"      (print (str \"-\" x))))     ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction defmulti = 
@@ -270,7 +270,7 @@ public class SpecialForms {
 				"defmulti",
 				VncFunction
 					.meta()
-					.arglists("(defmulti name dispatch-fn)")		
+					.arglists("(defmulti name dispatch-fn)")
 					.doc("Creates a new multimethod with the associated dispatch function.")
 					.examples(
 						"(do                                                                       \n" +
@@ -288,7 +288,7 @@ public class SpecialForms {
 						")                                                                           ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction defmethod = 
@@ -314,7 +314,7 @@ public class SpecialForms {
 							")                                                                           ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction deftype = 
@@ -324,7 +324,7 @@ public class SpecialForms {
 					.meta()
 					.arglists(
 						"(deftype name fields)",
-						"(deftype name fields validator)")		
+						"(deftype name fields validator)")
 					.doc(
 						"Defines a new custom type for the name with the fields.")
 					.examples(
@@ -361,7 +361,7 @@ public class SpecialForms {
 						"  [x y])                                                   ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction deftypeQ = 
@@ -370,7 +370,7 @@ public class SpecialForms {
 				VncFunction
 					.meta()
 					.arglists(
-						"(deftype? type)")		
+						"(deftype? type)")
 					.doc(
 						"Returns true if type is a custom type else false.")
 					.examples(
@@ -389,7 +389,7 @@ public class SpecialForms {
 						"  (deftype? (type x)))                                ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction deftype_of = 
@@ -399,7 +399,7 @@ public class SpecialForms {
 					.meta()
 					.arglists(
 						"(deftype-of name base-type)",
-						"(deftype-of name base-type validator)")		
+						"(deftype-of name base-type validator)")
 					.doc(
 						"Defines a new custom type wrapper based on a base type.")
 					.examples(
@@ -439,7 +439,7 @@ public class SpecialForms {
 						"  (+ 10 (my-long. 100000)))                                     ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction deftype_or = 
@@ -448,7 +448,7 @@ public class SpecialForms {
 				VncFunction
 					.meta()
 					.arglists(
-						"(deftype-or name val*)")		
+						"(deftype-or name val*)")
 					.doc(
 						"Defines a new custom or type.")
 					.examples(
@@ -473,7 +473,7 @@ public class SpecialForms {
 						"  (long-or-double. 1000))                                       ")
 				.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction deftype_new = 
@@ -481,7 +481,7 @@ public class SpecialForms {
 				".:",
 				VncFunction
 					.meta()
-					.arglists("(.: type-name args*)")		
+					.arglists("(.: type-name args*)")
 					.doc("Instantiates a custom type.")
 					.examples(
 						"(do                                                      \n" +
@@ -491,7 +491,7 @@ public class SpecialForms {
 						"  [(:real x) (:imaginary x)])                              ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction def_dynamic = 
@@ -499,7 +499,7 @@ public class SpecialForms {
 				"def-dynamic",
 				VncFunction
 					.meta()
-					.arglists("(def-dynamic name expr)")		
+					.arglists("(def-dynamic name expr)")
 					.doc(
 						"Creates a dynamic variable that starts off as a global variable " +
 						"and can be bound with 'binding' to a new value on the local thread.")
@@ -512,7 +512,7 @@ public class SpecialForms {
 						"   (println x)))           ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction binding = 
@@ -520,7 +520,7 @@ public class SpecialForms {
 				"binding",
 				VncFunction
 					.meta()
-					.arglists("(binding [bindings*] exprs*)")		
+					.arglists("(binding [bindings*] exprs*)")
 					.doc("Evaluates the expressions and binds the values to dynamic (thread-local) symbols")
 					.examples(
 						"(do                      \n" +
@@ -531,7 +531,7 @@ public class SpecialForms {
 						"      (println x)))        ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction bound_Q = 
@@ -539,14 +539,14 @@ public class SpecialForms {
 				"bound?",
 				VncFunction
 					.meta()
-					.arglists("(bound? s)")		
+					.arglists("(bound? s)")
 					.doc("Returns true if the symbol is bound to a value else false")
 					.examples(
 						"(bound? 'test)",
 						"(let [test 100] (bound? 'test))" )
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction do_ = 
@@ -554,12 +554,12 @@ public class SpecialForms {
 				"do",
 				VncFunction
 					.meta()
-					.arglists("(do exprs)")		
+					.arglists("(do exprs)")
 					.doc("Evaluates the expressions in order and returns the value of the last.")
 					.examples("(do (println \"Test...\") (+ 1 1))")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction dorun = 
@@ -567,7 +567,7 @@ public class SpecialForms {
 				"dorun",
 				VncFunction
 					.meta()
-					.arglists("(dorun count expr)")		
+					.arglists("(dorun count expr)")
 					.doc(
 						"Runs the expr count times in the most effective way. It's main purpose is " +
 						"supporting benchmark test. Returns the expression result of the first " +
@@ -575,7 +575,7 @@ public class SpecialForms {
 					.examples("(dorun 10 (+ 1 1))")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction dobench = 
@@ -583,7 +583,7 @@ public class SpecialForms {
 				"dobench",
 				VncFunction
 					.meta()
-					.arglists("(dobench count expr)")		
+					.arglists("(dobench count expr)")
 					.doc(
 						"Runs the expr count times in the most effective way and returns a list of " +
 						"elapsed nanoseconds for each invocation. It's main purpose is supporting " +
@@ -591,7 +591,7 @@ public class SpecialForms {
 					.examples("(dobench 10 (+ 1 1))")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction prof = 
@@ -599,7 +599,7 @@ public class SpecialForms {
 				"prof",
 				VncFunction
 					.meta()
-					.arglists("(prof opts)")		
+					.arglists("(prof opts)")
 					.doc(
 						"Controls the code profiling. See the companion functions/macros 'dorun' and 'perf'. " +
 						"The perf macro is built on prof and dorun and provides all to do simple Venice profiling.")
@@ -615,7 +615,7 @@ public class SpecialForms {
 						"  nil)  ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction if_ = 
@@ -623,12 +623,12 @@ public class SpecialForms {
 				"if",
 				VncFunction
 					.meta()
-					.arglists("(if test true-expr false-expr)")		
+					.arglists("(if test true-expr false-expr)")
 					.doc("Evaluates test.")
 					.examples("(if (< 10 20) \"yes\" \"no\")")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction let = 
@@ -636,7 +636,7 @@ public class SpecialForms {
 				"let",
 				VncFunction
 					.meta()
-					.arglists("(let [bindings*] exprs*)")		
+					.arglists("(let [bindings*] exprs*)")
 					.doc(
 						"Evaluates the expressions and binds the values to symbols in " +
 						"the new local context.")
@@ -654,7 +654,7 @@ public class SpecialForms {
 						"     (println \"styles: \" styles))       ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction loop = 
@@ -662,7 +662,7 @@ public class SpecialForms {
 				"loop",
 				VncFunction
 					.meta()
-					.arglists("(loop [bindings*] exprs*)")		
+					.arglists("(loop [bindings*] exprs*)")
 					.doc(
 						"Evaluates the exprs and binds the bindings. " + 
 						"Creates a recursion point with the bindings.")
@@ -683,7 +683,7 @@ public class SpecialForms {
 						"   (sum 10000))                                       ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction recur = 
@@ -691,7 +691,7 @@ public class SpecialForms {
 				"recur",
 				VncFunction
 					.meta()
-					.arglists("(recur expr*)")		
+					.arglists("(recur expr*)")
 					.doc(
 						"Evaluates the exprs and rebinds the bindings of the recursion " + 
 						"point to the values of the exprs. The recur expression must be " +
@@ -714,7 +714,7 @@ public class SpecialForms {
 						"   (sum 10000))                                       ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction try_ = 
@@ -725,7 +725,7 @@ public class SpecialForms {
 					.arglists(
 						"(try expr)",
 						"(try expr (catch exClass exSym expr))",
-						"(try expr (catch exClass exSym expr) (finally expr))")		
+						"(try expr (catch exClass exSym expr) (finally expr))")
 					.doc("Exception handling: try - catch -finally ")
 					.examples(
 						"(try (throw))",
@@ -760,7 +760,7 @@ public class SpecialForms {
 						"      (finally (println \"...finally\"))))             ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction try_with = 
@@ -784,7 +784,7 @@ public class SpecialForms {
 						"           (io/slurp-stream is :binary false))))        ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 
@@ -793,7 +793,7 @@ public class SpecialForms {
 				"locking",
 				VncFunction
 					.meta()
-					.arglists("(locking x & exprs)")		
+					.arglists("(locking x & exprs)")
 					.doc(
 						"Executes exprs in an implicit do, while holding the monitor of x. \n" + 
 						"Will release the monitor of x in all circumstances. \n" +
@@ -813,7 +813,7 @@ public class SpecialForms {
 						"      (println \"out\")))    ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction defmacro = 
@@ -821,14 +821,14 @@ public class SpecialForms {
 				"defmacro",
 				VncFunction
 					.meta()
-					.arglists("(defmacro name [params*] body)")		
+					.arglists("(defmacro name [params*] body)")
 					.doc("Macro definition")
 					.examples(
 						"(defmacro unless [pred a b]   \n" + 
 						"  `(if (not ~pred) ~a ~b))      ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction macroexpand = 
@@ -844,7 +844,7 @@ public class SpecialForms {
 					.examples("(macroexpand '(-> c (+ 3) (* 2)))")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction import_ = 
@@ -852,7 +852,7 @@ public class SpecialForms {
 				"import",
 				VncFunction
 					.meta()
-					.arglists("(import class)")		
+					.arglists("(import class)")
 					.doc(
 						"Imports a Java class. Imports are bound to the current namespace.")
 					.examples(
@@ -872,7 +872,7 @@ public class SpecialForms {
 						")")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction imports_ = 
@@ -880,7 +880,7 @@ public class SpecialForms {
 				"imports",
 				VncFunction
 					.meta()
-					.arglists("(imports)")		
+					.arglists("(imports)")
 					.doc("List the registered imports for the current namespace.")
 					.examples(
 						"(do                        \n" +
@@ -888,7 +888,24 @@ public class SpecialForms {
 						"  (imports))                 ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction ns_new = 
+		new SpecialFormsDocFunction(
+				"ns",
+				VncFunction
+					.meta()
+					.arglists("(ns sym)")
+					.doc("Opens a namespace.")
+					.examples(
+						"(do                    \n" + 
+						"  (ns xxx)             \n" + 
+						"  (def foo 1)          \n" + 
+						"  (println xxx/foo))     ")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction ns_unmap = 
@@ -896,7 +913,7 @@ public class SpecialForms {
 				"ns-unmap",
 				VncFunction
 					.meta()
-					.arglists("(ns-unmap ns sym)")		
+					.arglists("(ns-unmap ns sym)")
 					.doc("Removes the mappings for the symbol from the namespace.")
 					.examples(
 						"(do                    \n" + 
@@ -906,7 +923,7 @@ public class SpecialForms {
 						"  (ns-unmap *ns* foo))   ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction ns_remove = 
@@ -914,7 +931,7 @@ public class SpecialForms {
 				"ns-remove",
 				VncFunction
 					.meta()
-					.arglists("(ns-remove ns)")		
+					.arglists("(ns-remove ns)")
 					.doc("Removes the mappings for all symbols from the namespace.")
 					.examples(
 						"(do                     \n" + 
@@ -925,7 +942,7 @@ public class SpecialForms {
 						"  (ns-remove *ns* foo))   ")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction var_version = 
@@ -937,7 +954,7 @@ public class SpecialForms {
 					.examples("*version*")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction var_newline = 
@@ -949,7 +966,7 @@ public class SpecialForms {
 					.examples("*newline*")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction var_loaded_modules = 
@@ -961,7 +978,7 @@ public class SpecialForms {
 					.examples("*loaded-modules*")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction var_loaded_files = 
@@ -973,7 +990,7 @@ public class SpecialForms {
 					.examples("*loaded-files*")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction var_ns = 
@@ -987,7 +1004,7 @@ public class SpecialForms {
 						"(do\n  (ns test)\n  *ns*)")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 
 	public static VncFunction var_run_mode = 
@@ -1000,7 +1017,7 @@ public class SpecialForms {
 						"*run-mode*")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 	
 
@@ -1014,7 +1031,7 @@ public class SpecialForms {
 						"*ansi-term*")
 					.build()
 		) {
-		    private static final long serialVersionUID = -1;
+			private static final long serialVersionUID = -1;
 		};
 	
 	private static class SpecialFormsDocFunction extends VncFunction {
@@ -1026,7 +1043,7 @@ public class SpecialForms {
 			return Nil;
 		}
 		
-	    private static final long serialVersionUID = -1;
+		private static final long serialVersionUID = -1;
 	};
 	
 	
@@ -1040,17 +1057,17 @@ public class SpecialForms {
 					.put("{}", 				map)
 					.put("fn", 				fn)
 					.put("eval",			eval)
-					.put("resolve",			resolve)				
-					.put("var-get",			var_get)				
+					.put("resolve",			resolve)
+					.put("var-get",			var_get)
 					.put("def",				def)
 					.put("defonce",			defonce)
 					.put("defmulti",		defmulti)
 					.put("defmethod",		defmethod)
 					.put("deftype",			deftype)
-					.put("deftype?",		deftypeQ)			
+					.put("deftype?",		deftypeQ)
 					.put("deftype-of",		deftype_of)
 					.put("deftype-or",		deftype_or)
-					.put(".:",				deftype_new)		
+					.put(".:",				deftype_new)
 					.put("def-dynamic",		def_dynamic)
 					.put("binding",			binding)
 					.put("bound?",			bound_Q)
@@ -1065,6 +1082,7 @@ public class SpecialForms {
 					.put("locking",			locking)
 					.put("defmacro",		defmacro)
 					.put("macroexpand",		macroexpand)
+					.put("ns",				ns_new)
 					.put("ns-unmap",		ns_unmap)
 					.put("ns-remove",		ns_remove)
 					.put("import",			import_)
