@@ -259,32 +259,38 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncVal last() {
-		if (len == 0) return Constants.Nil;
-		if (len == 1) return first;
-		if (len == 2) return second;
-		if (len == 3) return third;
-		if (len == 4) return fourth;
-		else throw new IllegalStateException("Length out of range");
+		switch(len) {
+			case 0:	return Constants.Nil;
+			case 1:	return first;
+			case 2:	return second;
+			case 3:	return third;
+			case 4:	return fourth;
+			default: throw new IllegalStateException("Length out of range");
+		}
 	}
 	
 	@Override
 	public VncList rest() {
-		if (len == 0) return this;
-		if (len == 1) return new VncTinyList(getMeta());
-		if (len == 2) return new VncTinyList(second, getMeta());
-		if (len == 3) return new VncTinyList(second, third, getMeta());
-		if (len == 4) return new VncTinyList(second, third, fourth, getMeta());
-		else throw new IllegalStateException("Length out of range");
+		switch(len) {
+			case 0:	return this;
+			case 1:	return new VncTinyList(getMeta());
+			case 2:	return new VncTinyList(second, getMeta());
+			case 3:	return new VncTinyList(second, third, getMeta());
+			case 4:	return new VncTinyList(second, third, fourth, getMeta());
+			default: throw new IllegalStateException("Length out of range");
+		}
 	}
 	
 	@Override
 	public VncList butlast() {
-		if (len == 0) return this;
-		if (len == 1) return new VncTinyList(getMeta());
-		if (len == 2) return new VncTinyList(first, getMeta());
-		if (len == 3) return new VncTinyList(first, second, getMeta());
-		if (len == 4) return new VncTinyList(first, second, third, getMeta());
-		else throw new IllegalStateException("Length out of range");
+		switch(len) {
+			case 0:	return this;
+			case 1:	return new VncTinyList(getMeta());
+			case 2:	return new VncTinyList(first, getMeta());
+			case 3:	return new VncTinyList(first, second, getMeta());
+			case 4:	return new VncTinyList(first, second, third, getMeta());
+			default: throw new IllegalStateException("Length out of range");
+		}
 	}
 
 	@Override
