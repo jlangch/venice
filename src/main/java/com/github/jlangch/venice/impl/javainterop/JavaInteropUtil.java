@@ -377,7 +377,7 @@ public class JavaInteropUtil {
 				for(int ii=0; ii<Array.getLength(value); ii++) {
 					vec.add(convertToVncVal(Array.get(value, ii)));
 				}
-				return VncVector.ofColl(vec);
+				return VncVector.ofList(vec);
 			}
 		}
 		else if (value instanceof Class) {

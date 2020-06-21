@@ -75,7 +75,7 @@ public class AnonymousFnArgs {
 			}
 		}
 
-		return VncVector.ofColl(argDef);
+		return VncVector.ofList(argDef);
 	}
 	
 	

@@ -54,7 +54,7 @@ public class VncTinyList extends VncList {
 	}
 	
 	public VncTinyList(final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 0;
 		this.first = Constants.Nil;
 		this.second = Constants.Nil;
@@ -63,7 +63,7 @@ public class VncTinyList extends VncList {
 	}
 	
 	public VncTinyList(final VncVal first, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 1;
 		this.first = first;
 		this.second = Constants.Nil;
@@ -72,7 +72,7 @@ public class VncTinyList extends VncList {
 	}
 
 	public VncTinyList(final VncVal first, final VncVal second, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 2;
 		this.first = first;
 		this.second = second;
@@ -81,7 +81,7 @@ public class VncTinyList extends VncList {
 	}
 
 	public VncTinyList(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 3;
 		this.first = first;
 		this.second = second;
@@ -90,7 +90,7 @@ public class VncTinyList extends VncList {
 	}
 
 	public VncTinyList(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 4;
 		this.first = first;
 		this.second = second;
@@ -99,7 +99,7 @@ public class VncTinyList extends VncList {
 	}
 
 	private VncTinyList(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = len;
 		this.first = first;
 		this.second = second;
@@ -120,18 +120,7 @@ public class VncTinyList extends VncList {
 	public static VncList range(final int from, final int toExclusive) {
 		final List<VncVal> list = new ArrayList<>();
 		for(int ii=from; ii<toExclusive; ii++) list.add(new VncLong(ii));
-		return VncTinyList.ofList(list, null);
-	}
-
-	public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
-		switch (list.size()) {
-			case 0:	return new VncTinyList(meta);
-			case 1:	return new VncTinyList(list.get(0), meta);
-			case 2:	return new VncTinyList(list.get(0), list.get(1), meta);
-			case 3:	return new VncTinyList(list.get(0), list.get(1), list.get(2), meta);
-			case 4:	return new VncTinyList(list.get(0), list.get(1), list.get(2), list.get(3), meta);
-			default: return new VncList(list, meta);
-		}
+		return VncList.ofList(list, null);
 	}
 	
 	@Override
@@ -156,17 +145,17 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncTinyList.of(replaceVals).withMeta(getMeta());
+		return VncList.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals) {
-		return VncTinyList.ofList(replaceVals, getMeta());
+		return VncList.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncTinyList.ofList(replaceVals, meta);
+		return VncList.ofList(replaceVals, meta);
 	}
 
 	@Override
@@ -303,7 +292,7 @@ public class VncTinyList extends VncList {
 	public VncList slice(final int start, final int end) {
 		return start == 0 && end >= len
 				? this
-				: VncTinyList.ofList(getList().subList(start, end), getMeta());
+				: VncList.ofList(getList().subList(start, end), getMeta());
 	}
 	
 	@Override
@@ -315,7 +304,7 @@ public class VncTinyList extends VncList {
 			return rest();
 		}
 		else {
-			return VncTinyList.ofList(getList().subList(start, len), getMeta());
+			return VncList.ofList(getList().subList(start, len), getMeta());
 		}
 	}
 	
@@ -355,7 +344,7 @@ public class VncTinyList extends VncList {
 		Collections.reverse(vals);
 		vals.addAll(getList());
 
-		return VncTinyList.ofList(vals, getMeta());
+		return VncList.ofList(vals, getMeta());
 	}
 	
 	@Override
@@ -375,7 +364,7 @@ public class VncTinyList extends VncList {
 		final List<VncVal> vals = getList();
 		vals.addAll(list.getList());
 		
-		return VncTinyList.ofList(vals, getMeta());
+		return VncList.ofList(vals, getMeta());
 	}
 	
 	@Override
@@ -383,7 +372,7 @@ public class VncTinyList extends VncList {
 		final List<VncVal> vals = getList();
 		vals.set(idx, val);
 		
-		return VncTinyList.ofList(vals, getMeta());
+		return VncList.ofList(vals, getMeta());
 	}
 	
 	@Override
@@ -398,7 +387,7 @@ public class VncTinyList extends VncList {
 			final List<VncVal> vals = getList();
 			vals.remove(idx);
 			
-			return VncTinyList.ofList(vals, getMeta());
+			return VncList.ofList(vals, getMeta());
 		}
 	}
 	
@@ -468,16 +457,15 @@ public class VncTinyList extends VncList {
 		return super.compareTo(o);
 	}
 
-
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
+		result = prime * result + len;
 		result = prime * result + ((first == null) ? 0 : first.hashCode());
-		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		result = prime * result + ((second == null) ? 0 : second.hashCode());
 		result = prime * result + ((third == null) ? 0 : third.hashCode());
+		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		return result;
 	}
 
@@ -490,15 +478,12 @@ public class VncTinyList extends VncList {
 		if (getClass() != obj.getClass())
 			return false;
 		VncTinyList other = (VncTinyList) obj;
+		if (len != other.len)
+			return false;
 		if (first == null) {
 			if (other.first != null)
 				return false;
 		} else if (!first.equals(other.first))
-			return false;
-		if (fourth == null) {
-			if (other.fourth != null)
-				return false;
-		} else if (!fourth.equals(other.fourth))
 			return false;
 		if (second == null) {
 			if (other.second != null)
@@ -509,6 +494,11 @@ public class VncTinyList extends VncList {
 			if (other.third != null)
 				return false;
 		} else if (!third.equals(other.third))
+			return false;
+		if (fourth == null) {
+			if (other.fourth != null)
+				return false;
+		} else if (!fourth.equals(other.fourth))
 			return false;
 		return true;
 	}
@@ -528,6 +518,7 @@ public class VncTinyList extends VncList {
 	
 	
 	public static final VncKeyword TYPE = new VncKeyword(":core/list");
+	public static final int MAX_ELEMENTS = 4;
 	
     private static final long serialVersionUID = -1848883965231344442L;
     private static final VncTinyList EMPTY = new VncTinyList();

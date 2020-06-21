@@ -1234,7 +1234,7 @@ public class TransducerFunctions {
 				else {
 					final VncCollection coll = Coerce.toVncCollection(args.first());
 					final List<VncVal> result = flatten(coll);
-					return Types.isVncVector(coll) ? VncVector.ofColl(result) : VncList.ofColl(result);
+					return Types.isVncVector(coll) ? VncVector.ofList(result) : VncList.ofColl(result);
 				}
 			}
 
@@ -1364,7 +1364,7 @@ public class TransducerFunctions {
 	private static VncVector reverseVector(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.reverse(copy);
-		return VncVector.ofColl(copy);
+		return VncVector.ofList(copy);
 	}
 
 	private static VncSequence coerceToSequence(final VncVal val) {

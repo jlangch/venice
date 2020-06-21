@@ -1557,7 +1557,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return VncVector.ofColl(args.getList());
+				return VncVector.ofList(args.getList());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1610,7 +1610,7 @@ public class CoreFunctions {
 				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
 
-				return VncVector.ofColl(
+				return VncVector.ofList(
 								to == null
 									? vec.getList().subList(from.getValue().intValue(), vec.size())
 									: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
@@ -1991,7 +1991,7 @@ public class CoreFunctions {
 							.stream()
 							.forEach(f -> values.add(f.apply(args)));
 
-						return VncVector.ofColl(values);
+						return VncVector.ofList(values);
 					}
 
 					private static final long serialVersionUID = -1848883965231344442L;
@@ -4770,7 +4770,7 @@ public class CoreFunctions {
 					n = Math.max(0, Math.min(vec.size(), n));
 					return vec.isEmpty()
 							? VncTinyVector.empty()
-							: VncVector.ofColl(vec.getList().subList(0, n));
+							: VncVector.ofList(vec.getList().subList(0, n));
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncSequence list = (VncSequence)args.first();
@@ -4835,7 +4835,7 @@ public class CoreFunctions {
 					n = Math.max(0, Math.min(vec.size(), n));
 					return vec.isEmpty()
 							? VncTinyVector.empty()
-							: VncVector.ofColl(vec.getList().subList(vec.size()-n, vec.size()));
+							: VncVector.ofList(vec.getList().subList(vec.size()-n, vec.size()));
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncSequence list = (VncSequence)args.first();
@@ -5594,7 +5594,7 @@ public class CoreFunctions {
 					}
 				}
 
-				return VncVector.ofColl(result);
+				return VncVector.ofList(result);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -6390,7 +6390,7 @@ public class CoreFunctions {
 			final Comparator<VncVal> c
 	) {
 		if (Types.isVncVector(coll)) {
-			return VncVector.ofColl(
+			return VncVector.ofList(
 					((VncVector)coll)
 						.getList()
 						.stream()
@@ -6438,7 +6438,7 @@ public class CoreFunctions {
 	private static VncVector shuffleVector(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.shuffle(copy, random);
-		return VncVector.ofColl(copy);
+		return VncVector.ofList(copy);
 	}
 	
 	private static boolean matchesRegex(VncVal text, VncVal regex) {

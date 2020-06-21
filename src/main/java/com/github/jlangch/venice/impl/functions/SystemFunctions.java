@@ -426,7 +426,7 @@ public class SystemFunctions {
 
 				final CallStack stack = ThreadLocalMap.getCallStack();
 
-				return VncVector.ofColl(
+				return VncVector.ofList(
 						stack
 							.callstack()
 							.stream()

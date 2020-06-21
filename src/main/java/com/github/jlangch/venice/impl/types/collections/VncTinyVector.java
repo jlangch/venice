@@ -72,7 +72,7 @@ public class VncTinyVector extends VncVector {
 	}
 	
 	public VncTinyVector(final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 0;
 		this.first = Constants.Nil;
 		this.second = Constants.Nil;
@@ -81,7 +81,7 @@ public class VncTinyVector extends VncVector {
 	}
 	
 	public VncTinyVector(final VncVal first, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 1;
 		this.first = first;
 		this.second = Constants.Nil;
@@ -90,7 +90,7 @@ public class VncTinyVector extends VncVector {
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 2;
 		this.first = first;
 		this.second = second;
@@ -99,7 +99,7 @@ public class VncTinyVector extends VncVector {
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 3;
 		this.first = first;
 		this.second = second;
@@ -108,7 +108,7 @@ public class VncTinyVector extends VncVector {
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = 4;
 		this.first = first;
 		this.second = second;
@@ -117,42 +117,21 @@ public class VncTinyVector extends VncVector {
 	}
 
 	public VncTinyVector(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta);
 		this.len = len;
 		this.first = first;
 		this.second = second;
 		this.third = third;
 		this.fourth = fourth;
 	}
-	
-	public static VncVector of(final VncVal... mvs) {
-		switch (mvs.length) {
-			case 0:	return VncTinyVector.empty();
-			case 1:	return new VncTinyVector(mvs[0], null);
-			case 2:	return new VncTinyVector(mvs[0], mvs[1], null);
-			case 3:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], null);
-			case 4:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], mvs[3], null);
-			default: return VncVector.of(mvs);
-		}
-	}
-	
+		
 	public static VncVector range(final int from, final int toExclusive) {
 		final List<VncVal> list = new ArrayList<>();
 		for(int ii=from; ii<toExclusive; ii++) list.add(new VncLong(ii));
-		return VncTinyVector.ofList(list, null);
-	}
-	
-	private static VncVector ofList(final List<? extends VncVal> list, final VncVal meta) {
-		switch (list.size()) {
-			case 0:	return new VncTinyVector(meta);
-			case 1:	return new VncTinyVector(list.get(0), meta);
-			case 2:	return new VncTinyVector(list.get(0), list.get(1), meta);
-			case 3:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), meta);
-			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), meta);
-			default: return new VncVector(list, meta);
-		}
+		return VncVector.ofList(list, null);
 	}
 
+	
 	@Override
 	public VncVal apply(final VncList args) {
 		FunctionsUtil.assertArity("nth", args, 1);
@@ -167,17 +146,17 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector withVariadicValues(final VncVal... replaceVals) {
-		return VncTinyVector.of(replaceVals).withMeta(getMeta());
+		return VncVector.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override
 	public VncVector withValues(final List<? extends VncVal> replaceVals) {
-		return VncTinyVector.ofList(replaceVals, getMeta());
+		return VncVector.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncVector withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncTinyVector.ofList(replaceVals, meta);
+		return VncVector.ofList(replaceVals, meta);
 	}
 
 	@Override
@@ -329,7 +308,7 @@ public class VncTinyVector extends VncVector {
 	public VncVector slice(final int start, final int end) {
 		return start == 0 && end >= len
 				? this
-				: VncTinyVector.ofList(getList().subList(start, end), getMeta());
+				: VncVector.ofList(getList().subList(start, end), getMeta());
 	}
 	
 	@Override
@@ -341,7 +320,7 @@ public class VncTinyVector extends VncVector {
 			return rest();
 		}
 		else {
-			return VncTinyVector.ofList(getList().subList(start, len), getMeta());
+			return VncVector.ofList(getList().subList(start, len), getMeta());
 		}
 	}
 	
@@ -379,7 +358,7 @@ public class VncTinyVector extends VncVector {
 		Collections.reverse(vals);
 		vals.addAll(getList());
 
-		return VncTinyVector.ofList(vals, getMeta());
+		return VncVector.ofList(vals, getMeta());
 	}
 	
 	@Override
@@ -399,7 +378,7 @@ public class VncTinyVector extends VncVector {
 		final List<VncVal> vals = getList();
 		vals.addAll(list.getList());
 		
-		return VncTinyVector.ofList(vals, getMeta());
+		return VncVector.ofList(vals, getMeta());
 	}
 	
 	@Override
@@ -407,7 +386,7 @@ public class VncTinyVector extends VncVector {
 		final List<VncVal> vals = getList();
 		vals.set(idx, val);
 		
-		return VncTinyVector.ofList(vals, getMeta());
+		return VncVector.ofList(vals, getMeta());
 	}
 	
 	@Override
@@ -422,7 +401,7 @@ public class VncTinyVector extends VncVector {
 			final List<VncVal> vals = getList();
 			vals.remove(idx);
 			
-			return VncTinyVector.ofList(vals, getMeta());
+			return VncVector.ofList(vals, getMeta());
 		}
 	}
 	
@@ -493,11 +472,11 @@ public class VncTinyVector extends VncVector {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((first == null) ? 0 : first.hashCode());
-		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		result = prime * result + len;
+		result = prime * result + ((first == null) ? 0 : first.hashCode());
 		result = prime * result + ((second == null) ? 0 : second.hashCode());
 		result = prime * result + ((third == null) ? 0 : third.hashCode());
+		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		return result;
 	}
 
@@ -510,17 +489,12 @@ public class VncTinyVector extends VncVector {
 		if (getClass() != obj.getClass())
 			return false;
 		VncTinyVector other = (VncTinyVector) obj;
+		if (len != other.len)
+			return false;
 		if (first == null) {
 			if (other.first != null)
 				return false;
 		} else if (!first.equals(other.first))
-			return false;
-		if (fourth == null) {
-			if (other.fourth != null)
-				return false;
-		} else if (!fourth.equals(other.fourth))
-			return false;
-		if (len != other.len)
 			return false;
 		if (second == null) {
 			if (other.second != null)
@@ -531,6 +505,11 @@ public class VncTinyVector extends VncVector {
 			if (other.third != null)
 				return false;
 		} else if (!third.equals(other.third))
+			return false;
+		if (fourth == null) {
+			if (other.fourth != null)
+				return false;
+		} else if (!fourth.equals(other.fourth))
 			return false;
 		return true;
 	}
@@ -550,6 +529,7 @@ public class VncTinyVector extends VncVector {
 
 
 	public static final VncKeyword TYPE = new VncKeyword(":core/vector");
+	public static final int MAX_ELEMENTS = 4;
 
     private static final long serialVersionUID = -1848883965231344442L;
     private static final VncTinyVector EMPTY = new VncTinyVector();

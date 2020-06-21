@@ -40,10 +40,6 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncList extends VncSequence {
 
-	protected VncList() {
-		this((io.vavr.collection.Seq<VncVal>)null, null);
-	}
-
 	protected VncList(final VncVal meta) {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
@@ -67,7 +63,36 @@ public class VncList extends VncSequence {
 	
 	
 	public static VncList of(final VncVal... mvs) {
-		return new VncList(io.vavr.collection.Vector.of(mvs), Constants.Nil);
+		switch (mvs.length) {
+			case 0:	return VncTinyList.empty();
+			case 1:	return new VncTinyList(mvs[0], null);
+			case 2:	return new VncTinyList(mvs[0], mvs[1], null);
+			case 3:	return new VncTinyList(mvs[0], mvs[1], mvs[2], null);
+			case 4:	return new VncTinyList(mvs[0], mvs[1], mvs[2], mvs[3], null);
+			default: return new VncList(io.vavr.collection.Vector.of(mvs), null);
+		}
+	}
+	
+	public static VncList ofList(final List<? extends VncVal> list) {
+		switch (list.size()) {
+			case 0:	return new VncTinyList(null);
+			case 1:	return new VncTinyList(list.get(0), null);
+			case 2:	return new VncTinyList(list.get(0), list.get(1), null);
+			case 3:	return new VncTinyList(list.get(0), list.get(1), list.get(2), null);
+			case 4:	return new VncTinyList(list.get(0), list.get(1), list.get(2), list.get(3), null);
+			default: return new VncList(list, null);
+		}
+	}
+	
+	public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
+		switch (list.size()) {
+			case 0:	return new VncTinyList(meta);
+			case 1:	return new VncTinyList(list.get(0), meta);
+			case 2:	return new VncTinyList(list.get(0), list.get(1), meta);
+			case 3:	return new VncTinyList(list.get(0), list.get(1), list.get(2), meta);
+			case 4:	return new VncTinyList(list.get(0), list.get(1), list.get(2), list.get(3), meta);
+			default: return new VncList(list, meta);
+		}
 	}
 
 	public static VncList ofColl(final Collection<? extends VncVal> vals) {

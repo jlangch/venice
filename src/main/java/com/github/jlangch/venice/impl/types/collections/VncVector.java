@@ -42,10 +42,6 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncVector extends VncSequence implements IVncFunction {
 
-	protected VncVector() {
-		this((io.vavr.collection.Seq<VncVal>)null, null);
-	}
-
 	protected VncVector(final VncVal meta) {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
@@ -67,19 +63,39 @@ public class VncVector extends VncSequence implements IVncFunction {
 		}
 	}
 	
-	
 	public static VncVector of(final VncVal... mvs) {
-		return new VncVector(io.vavr.collection.Vector.of(mvs), Constants.Nil);
-	}
-
-	public static VncVector ofColl(final Collection<? extends VncVal> vals) {
-		return new VncVector(vals, Constants.Nil);
-	}
-
-	public static VncVector ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
-		return new VncVector(vals, meta);
+		switch (mvs.length) {
+			case 0:	return VncTinyVector.empty();
+			case 1:	return new VncTinyVector(mvs[0], null);
+			case 2:	return new VncTinyVector(mvs[0], mvs[1], null);
+			case 3:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], null);
+			case 4:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], mvs[3], null);
+			default: return new VncVector(io.vavr.collection.Vector.of(mvs), null);
+		}
 	}
 	
+	public static VncVector ofList(final List<? extends VncVal> list) {
+		switch (list.size()) {
+			case 0:	return new VncTinyVector(null);
+			case 1:	return new VncTinyVector(list.get(0), null);
+			case 2:	return new VncTinyVector(list.get(0), list.get(1), null);
+			case 3:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), null);
+			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), null);
+			default: return new VncVector(list, null);
+		}
+	}
+	
+	public static VncVector ofList(final List<? extends VncVal> list, final VncVal meta) {
+		switch (list.size()) {
+			case 0:	return new VncTinyVector(meta);
+			case 1:	return new VncTinyVector(list.get(0), meta);
+			case 2:	return new VncTinyVector(list.get(0), list.get(1), meta);
+			case 3:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), meta);
+			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), meta);
+			default: return new VncVector(list, meta);
+		}
+	}
+		
 
 	@Override
 	public VncVal apply(final VncList args) {
