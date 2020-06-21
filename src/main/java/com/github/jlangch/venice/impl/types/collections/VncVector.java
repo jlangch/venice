@@ -207,7 +207,15 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector butlast() {
-		return new VncVector(value.dropRight(1), getMeta());
+		if (value.isEmpty()) {
+			return new VncTinyVector(getMeta());
+		}
+		else {
+			final io.vavr.collection.Vector<VncVal> butlast = value.dropRight(1);
+			return butlast.size() < VncTinyVector.MAX_ELEMENTS
+					? VncTinyVector.ofList(butlast.asJava(), getMeta())
+					: new VncVector(butlast, getMeta());
+		}
 	}
 
 	@Override

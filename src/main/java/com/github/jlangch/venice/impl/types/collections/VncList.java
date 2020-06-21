@@ -203,7 +203,15 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList butlast() {
-		return new VncList(value.dropRight(1), getMeta());
+		if (value.isEmpty()) {
+			return new VncTinyList(getMeta());
+		}
+		else {
+			final io.vavr.collection.Vector<VncVal> butlast = value.dropRight(1);
+			return butlast.size() < VncTinyList.MAX_ELEMENTS
+					? VncTinyList.ofList(butlast.asJava(), getMeta())
+					: new VncList(butlast, getMeta());
+		}
 	}
 
 	@Override

@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -390,16 +389,6 @@ public class VncTinyList extends VncList {
 			return VncList.ofList(vals, getMeta());
 		}
 	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.LIST;
-	}
-
-	@Override 
-	public boolean isVncList() {
-		return true;
-	}
 
 	@Override
 	public Object convertToJavaObject() {
@@ -438,14 +427,14 @@ public class VncTinyList extends VncList {
 		}
 		else if (Types.isVncList(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncTinyList)o).size();
+			final Integer sizeOther = ((VncList)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
 			}
 			else {
 				for(int ii=0; ii<sizeThis; ii++) {
-					c = nth(ii).compareTo(((VncTinyList)o).nth(ii));
+					c = nth(ii).compareTo(((VncList)o).nth(ii));
 					if (c != 0) {
 						return c;
 					}
@@ -462,9 +451,9 @@ public class VncTinyList extends VncList {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + len;
-		result = prime * result + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((first == null)  ? 0 : first.hashCode());
 		result = prime * result + ((second == null) ? 0 : second.hashCode());
-		result = prime * result + ((third == null) ? 0 : third.hashCode());
+		result = prime * result + ((third == null)  ? 0 : third.hashCode());
 		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		return result;
 	}
@@ -510,10 +499,6 @@ public class VncTinyList extends VncList {
 	
 	public String toString(final boolean print_readably) {
 		return "(" + Printer.join(getList(), " ", print_readably) + ")";
-	}
-
-	public static VncTinyList empty() {
-		return EMPTY;
 	}
 	
 	

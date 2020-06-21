@@ -31,7 +31,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -344,12 +343,14 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector addAtStart(final VncVal val) {
-		if (len == 0) return new VncTinyVector(val, getMeta()); 
-		if (len == 1) return new VncTinyVector(val, first, getMeta()); 
-		if (len == 2) return new VncTinyVector(val, first, second, getMeta()); 
-		if (len == 3) return new VncTinyVector(val, first, second, third, getMeta());
-		if (len == 4) return VncVector.of(val, first, second, third, fourth).withMeta(getMeta());
-		else throw new IllegalStateException("Vector length out of range");
+		switch (len) {
+			case 0:	return new VncTinyVector(val, getMeta()); 
+			case 1: return new VncTinyVector(val, first, getMeta()); 
+			case 2:	return new VncTinyVector(val, first, second, getMeta()); 
+			case 3:	return new VncTinyVector(val, first, second, third, getMeta());
+			case 4:	return VncVector.of(val, first, second, third, fourth).withMeta(getMeta());
+			default: throw new IllegalStateException("Vector length out of range");
+		}
 	}
 	
 	@Override
@@ -404,11 +405,6 @@ public class VncTinyVector extends VncVector {
 			return VncVector.ofList(vals, getMeta());
 		}
 	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.VECTOR;
-	}
 
 	@Override
 	public Object convertToJavaObject() {
@@ -445,16 +441,16 @@ public class VncTinyVector extends VncVector {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (Types.isVncList(o)) {
+		else if (Types.isVncVector(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncTinyVector)o).size();
+			final Integer sizeOther = ((VncVector)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
 			}
 			else {
 				for(int ii=0; ii<sizeThis; ii++) {
-					c = nth(ii).compareTo(((VncTinyVector)o).nth(ii));
+					c = nth(ii).compareTo(((VncVector)o).nth(ii));
 					if (c != 0) {
 						return c;
 					}
@@ -473,9 +469,9 @@ public class VncTinyVector extends VncVector {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + len;
-		result = prime * result + ((first == null) ? 0 : first.hashCode());
+		result = prime * result + ((first == null)  ? 0 : first.hashCode());
 		result = prime * result + ((second == null) ? 0 : second.hashCode());
-		result = prime * result + ((third == null) ? 0 : third.hashCode());
+		result = prime * result + ((third == null)  ? 0 : third.hashCode());
 		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
 		return result;
 	}
@@ -521,10 +517,6 @@ public class VncTinyVector extends VncVector {
 	
 	public String toString(final boolean print_readably) {
 		return "[" + Printer.join(getList(), " ", print_readably) + "]";
-	}
-
-	public static VncTinyVector empty() {
-		return EMPTY;
 	}
 
 
