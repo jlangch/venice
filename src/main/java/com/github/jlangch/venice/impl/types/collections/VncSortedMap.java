@@ -163,7 +163,7 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return VncList.ofColl(new ArrayList<>(value.keySet().toJavaList()));
+		return VncList.ofList(new ArrayList<>(value.keySet().toJavaList()));
 	}
 
 	@Override

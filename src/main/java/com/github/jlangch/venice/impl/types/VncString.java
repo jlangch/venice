@@ -124,7 +124,7 @@ public class VncString extends VncVal {
 		for(char c : value.toCharArray()) {
 			list.add(new VncString(String.valueOf(c)));
 		}
-		return VncList.ofColl(list);
+		return VncList.ofList(list);
 	}
 
 	public VncSymbol toSymbol() {

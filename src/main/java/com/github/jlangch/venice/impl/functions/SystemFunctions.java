@@ -23,8 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -51,7 +51,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -388,7 +387,7 @@ public class SystemFunctions {
 							ThreadLocalMap.clearCallStack();
 							JavaInterop.register(parentInterceptor);
 
-							fn.apply(VncTinyList.empty());
+							fn.apply(VncList.empty());
 						}
 						finally {
 							// clean up

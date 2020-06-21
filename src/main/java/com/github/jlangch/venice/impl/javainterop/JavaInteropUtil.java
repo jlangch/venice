@@ -332,7 +332,7 @@ public class JavaInteropUtil {
 				for(Object o : (List<Object>)value) {
 					list.add(convertToVncVal(o, null, recursive));
 				}
-				return VncList.ofColl(list);
+				return VncList.ofList(list);
 			}
 			else {
 				return new VncJavaList((List<Object>)value);

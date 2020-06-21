@@ -1580,7 +1580,7 @@ public class MathFunctions {
 					}
 				}
 
-				return VncList.ofColl(values);
+				return VncList.ofList(values);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

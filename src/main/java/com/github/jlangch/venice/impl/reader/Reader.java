@@ -47,8 +47,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -228,7 +227,7 @@ public class Reader {
 	private static VncHashMap read_hash_map(final Reader rdr) {
 		final Token refToken = rdr.peek();
 		
-		final VncSequence lst = read_list(rdr, VncTinyList.empty(), '{', '}');
+		final VncSequence lst = read_list(rdr, VncList.empty(), '{', '}');
 		return VncHashMap.ofAll(lst).withMeta(MetaUtil.toMeta(refToken));
 	}
 
@@ -241,8 +240,8 @@ public class Reader {
 		switch (token.charAt(0)) {
 			case '\'': 
 				rdr.next();
-				return VncTinyList.of(new VncSymbol("quote"), read_form(rdr))
-								  .withMeta(MetaUtil.toMeta(token));
+				return VncList.of(new VncSymbol("quote"), read_form(rdr))
+							  .withMeta(MetaUtil.toMeta(token));
 			
 			case '`': 
 				rdr.next();
@@ -251,8 +250,8 @@ public class Reader {
 					//       Use gensym in these cases.
 					rdr.autoGenSym.enterSyntaxQuote();
 					
-					return VncTinyList.of(new VncSymbol("quasiquote"), read_form(rdr))
-									  .withMeta(MetaUtil.toMeta(token));
+					return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
+								  .withMeta(MetaUtil.toMeta(token));
 				}
 				finally {
 					rdr.autoGenSym.leaveSyntaxQuote();
@@ -261,13 +260,13 @@ public class Reader {
 			case '~':
 				if (token.equals("~")) {
 					rdr.next();
-					return VncTinyList.of(new VncSymbol("unquote"), read_form(rdr))
-								      .withMeta(MetaUtil.toMeta(token));
+					return VncList.of(new VncSymbol("unquote"), read_form(rdr))
+								  .withMeta(MetaUtil.toMeta(token));
 				} 
 				else {
 					rdr.next();
-					return VncTinyList.of(new VncSymbol("splice-unquote"), read_form(rdr))
-								      .withMeta(MetaUtil.toMeta(token));
+					return VncList.of(new VncSymbol("splice-unquote"), read_form(rdr))
+								  .withMeta(MetaUtil.toMeta(token));
 				}
 			
 			case '^': {
@@ -290,15 +289,15 @@ public class Reader {
 			
 			case '@': 
 				rdr.next();
-				return VncTinyList.of(new VncSymbol("deref"), read_form(rdr))
-							      .withMeta(MetaUtil.toMeta(token));
+				return VncList.of(new VncSymbol("deref"), read_form(rdr))
+							  .withMeta(MetaUtil.toMeta(token));
 				
 			case '#': 
 				rdr.next();
 				Token t = rdr.peek();
 				if (t.charAt(0) == '{') {
 					// set literal #{1 2}
-					return VncHashSet.ofAll(read_list(rdr, VncTinyList.empty(), '{' , '}')); 
+					return VncHashSet.ofAll(read_list(rdr, VncList.empty(), '{' , '}')); 
 				}
 				else if (t.charAt(0) == '(') {
 					final VncVal meta = MetaUtil.toMeta(t);
@@ -307,9 +306,9 @@ public class Reader {
 						throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
 					}
 					rdr.anonymousFnArgs.startCapture();
-					final VncVal body = read_list(rdr, VncTinyList.empty(), '(' , ')').withMeta(meta);
+					final VncVal body = read_list(rdr, VncList.empty(), '(' , ')').withMeta(meta);
 					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
-					final VncVal s_expr = VncTinyList.of(new VncSymbol("fn", meta), argsDef, body);
+					final VncVal s_expr = VncList.of(new VncSymbol("fn", meta), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
 					return s_expr;
 				}
@@ -318,14 +317,14 @@ public class Reader {
 				}
 			
 			case '(': 
-				return read_list(rdr, VncTinyList.empty(), '(' , ')'); 
+				return read_list(rdr, VncList.empty(), '(' , ')'); 
 			
 			case ')': 
 				rdr.next();
 				throw new ParseError(formatParseError(token, "Unexpected ')'"));
 			
 			case '[': 
-				return read_list(rdr, VncTinyVector.empty(), '[' , ']'); 
+				return read_list(rdr, VncVector.empty(), '[' , ']'); 
 			
 			case ']': 
 				rdr.next();
@@ -410,7 +409,7 @@ public class Reader {
 				if (rest.startsWith("~(")) {
 					final String s_ = rest.substring(1);
 					final Reader rdr = new Reader(filename, s_, tokenize(s_, filename, false));
-					list.add(read_list(rdr, VncTinyList.empty(), '(' , ')'));
+					list.add(read_list(rdr, VncList.empty(), '(' , ')'));
 					
 					tail = rdr.unprocessedRest().substring(1);
 				}
@@ -439,7 +438,7 @@ public class Reader {
 					if (!tail.isEmpty()) {
 						list.add(new VncString(tail));
 					}
-					return VncList.ofColl(list);
+					return VncList.ofList(list);
 				}
 				
 				str = tail;

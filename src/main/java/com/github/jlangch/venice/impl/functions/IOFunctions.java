@@ -70,7 +70,6 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
@@ -620,7 +619,7 @@ public class IOFunctions {
 						}
 					}
 
-					return VncList.ofColl(files);
+					return VncList.ofList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
@@ -667,7 +666,7 @@ public class IOFunctions {
 							}
 				    	 });						
 
-					return VncList.ofColl(files);
+					return VncList.ofList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
@@ -709,7 +708,7 @@ public class IOFunctions {
 				        dirStream.forEach(path -> files.add(new VncJavaObject(path.toFile())));
 				    }
 
-					return VncList.ofColl(files);
+					return VncList.ofList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
@@ -1004,7 +1003,7 @@ public class IOFunctions {
 									 .map(s -> new VncString(s))
 									 .collect(Collectors.toList());
 
-						return VncList.ofColl(lines);
+						return VncList.ofList(lines);
 					}
 					else if (Types.isVncJavaObject(arg, InputStream.class)) {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
@@ -1013,14 +1012,14 @@ public class IOFunctions {
 						final String encoding = encoding(encVal);
 
 						try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding))) {
-							return VncList.ofColl(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+							return VncList.ofList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 						}
 					}
 					else if (Types.isVncJavaObject(arg, Reader.class)) {
 						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
 												
 						try (BufferedReader brd = new BufferedReader(rd)) {
-							return VncList.ofColl(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+							return VncList.ofList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 						}
 					}
 					else {
@@ -1919,7 +1918,7 @@ public class IOFunctions {
 			final VncKeyword status
 	) {
 		try {
-			fn.apply(VncTinyList.of(new VncLong(percentage), status));
+			fn.apply(VncList.of(new VncLong(percentage), status));
 		}
 		catch(Exception ex) {
 			// do nothing

@@ -63,7 +63,6 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -589,13 +588,13 @@ public class VeniceInterpreter implements Serializable  {
 				case "doc": // (doc conj)
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("doc", ast))) {
 						final VncString doc = DocForm.doc(ast.second(), env);
-						orig_ast = VncTinyList.of(new VncSymbol("println"), doc);
+						orig_ast = VncList.of(new VncSymbol("println"), doc);
 					}
 					break;
 					
 				case "modules": // (modules )
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("modules", ast))) {
-						return VncList.ofColl(
+						return VncList.ofList(
 									ModuleLoader
 										.VALID_MODULES
 										.stream()
@@ -671,7 +670,7 @@ public class VeniceInterpreter implements Serializable  {
 						//}
 					}
 					
-					recursionPoint = new RecursionPoint(VncTinyList.ofList(bindingNames, Nil), expressions, env);
+					recursionPoint = new RecursionPoint(VncList.ofList(bindingNames, Nil), expressions, env);
 					if (expressions.size() == 1) {
 						orig_ast = expressions.first();
 					}
@@ -967,7 +966,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private static VncVal quasiquote(final VncVal ast) {
 		if (!is_pair(ast)) {
-			return VncTinyList.of(new VncSymbol("quote"), ast);
+			return VncList.of(new VncSymbol("quote"), ast);
 		} 
 		else {
 			final VncVal a0 = Coerce.toVncSequence(ast).first();
@@ -977,13 +976,13 @@ public class VeniceInterpreter implements Serializable  {
 			else if (is_pair(a0)) {
 				final VncVal a00 = Coerce.toVncSequence(a0).first();
 				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
-					return VncTinyList.of(
+					return VncList.of(
 								new VncSymbol("concat"),
 								Coerce.toVncSequence(a0).second(),
 								quasiquote(((VncSequence)ast).rest()));
 				}
 			}
-			return VncTinyList.of(
+			return VncList.of(
 						new VncSymbol("cons"),
 						quasiquote(a0),
 						quasiquote(((VncSequence)ast).rest()));
@@ -1028,7 +1027,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncFunction macroFn = buildFunction(
 											macroName_.getName(), 
 											params, 
-											VncTinyList.of(body), 
+											VncList.of(body), 
 											null, 
 											env);
 	
@@ -1122,7 +1121,7 @@ public class VeniceInterpreter implements Serializable  {
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
 			}
 			
-			return VncList.ofColl(elapsed);
+			return VncList.ofList(elapsed);
 		}
 		finally {
 			ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
@@ -1383,7 +1382,7 @@ public class VeniceInterpreter implements Serializable  {
 			body.add(e);
 		}
 		
-		return VncList.ofColl(body);
+		return VncList.ofList(body);
 	}
 	
 	private CatchBlock findCatchBlockMatchingThrowable(
@@ -1510,7 +1509,7 @@ public class VeniceInterpreter implements Serializable  {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fnName, v))) {
 						throw new AssertionException(String.format(
 								"pre-condition assert failed: %s",
-								((VncString)CoreFunctions.str.apply(VncTinyList.of(v))).getValue()));
+								((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
 					}
 				}
  			}

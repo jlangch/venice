@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -94,7 +93,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	public abstract VncVal apply(final VncList args);
 
 	public VncVal applyOf(final VncVal... mvs) {
-		return apply(VncTinyList.of(mvs));
+		return apply(VncList.of(mvs));
 	}
 
 	
@@ -128,7 +127,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 
 	public VncList getArgLists() { 
-		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncTinyList.empty());
+		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncList.empty());
 	}
 	
 	public VncVal getDoc() { 
@@ -136,7 +135,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	}
 	
 	public VncList getExamples() { 
-		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncTinyList.empty());
+		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
 	}
 	
 	public int getFixedArgsCount() {
@@ -248,7 +247,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		public MetaBuilder arglists(final String... arglists) {
 			meta.put(
 				MetaUtil.ARGLIST, 
-				VncList.ofColl(Arrays.stream(arglists).map(s -> new VncString(s)).collect(Collectors.toList())));
+				VncList.ofList(Arrays.stream(arglists).map(s -> new VncString(s)).collect(Collectors.toList())));
 			return this;
 		}
 		
@@ -260,7 +259,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		public MetaBuilder examples(final String... examples) { 
 			meta.put(
 				MetaUtil.EXAMPLES, 
-				VncList.ofColl(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
+				VncList.ofList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
 			return this;
 		}
 			

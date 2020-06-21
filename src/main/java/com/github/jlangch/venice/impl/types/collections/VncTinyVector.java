@@ -529,10 +529,10 @@ public class VncTinyVector extends VncVector {
 
 
 	public static final VncKeyword TYPE = new VncKeyword(":core/vector");
+	public static final VncTinyVector EMPTY = new VncTinyVector();
 	public static final int MAX_ELEMENTS = 4;
 
     private static final long serialVersionUID = -1848883965231344442L;
-    private static final VncTinyVector EMPTY = new VncTinyVector();
 
     private final int len;
 	private final VncVal first;

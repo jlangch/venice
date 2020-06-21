@@ -54,7 +54,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
@@ -261,7 +260,7 @@ public class PdfFunctions {
 				assertArity("pdf/available?", args, 0);
 				
 				try {
-					pdf_check_required_libs.apply(VncTinyList.empty());
+					pdf_check_required_libs.apply(VncList.empty());
 					return VncBoolean.True;
 				}
 				catch(Exception ex) {

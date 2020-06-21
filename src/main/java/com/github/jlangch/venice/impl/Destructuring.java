@@ -37,7 +37,6 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -97,7 +96,7 @@ public class Destructuring {
 			}
 
 			else if (bindVal == Nil) {
-				sequential_list_destructure((VncSequence)symVal, VncTinyList.empty(), bindings);
+				sequential_list_destructure((VncSequence)symVal, VncList.empty(), bindings);
 			}
 			else {
 				throw new VncException(
@@ -238,7 +237,7 @@ public class Destructuring {
 					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
 					final VncVal val = valIdx < values.size() 
 									? (((VncString)bindVal).toVncList()).slice(valIdx) 
-									: VncTinyList.empty();
+									: VncList.empty();
 					bindings.add(new Binding(sym, val));
 					symIdx += 2; 
 					valIdx = values.size(); // all values read

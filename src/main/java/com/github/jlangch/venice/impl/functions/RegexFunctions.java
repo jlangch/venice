@@ -158,7 +158,7 @@ public class RegexFunctions {
 						groups.add(group == null ? Nil : new VncString(group));
 					}
 				}
-				return VncList.ofColl(groups);
+				return VncList.ofList(groups);
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -245,7 +245,7 @@ public class RegexFunctions {
 				while (m.find()) {
 					matches.add(new VncString(m.group()));
 				}
-				return VncList.ofColl(matches);
+				return VncList.ofList(matches);
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -309,7 +309,7 @@ public class RegexFunctions {
 									new VncKeyword("end"),  new VncLong(m.end()),
 									new VncKeyword("group"), new VncString(m.group())));
 					}
-					return VncList.ofColl(groups);
+					return VncList.ofList(groups);
 				}
 		
 				private static final long serialVersionUID = -1848883965231344442L;

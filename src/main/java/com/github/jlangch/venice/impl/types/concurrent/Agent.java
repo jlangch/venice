@@ -42,7 +42,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
@@ -154,8 +153,8 @@ public class Agent implements IDeref {
 		};
 		
 		try {
-			agents.forEach(a -> a.send(fn, VncTinyList.empty()));			
-			agents.forEach(a -> a.send_off(fn, VncTinyList.empty()));			
+			agents.forEach(a -> a.send(fn, VncList.empty()));			
+			agents.forEach(a -> a.send_off(fn, VncList.empty()));			
 			
 			if (timeoutMillis <= 0) {
 				latch.await(); 

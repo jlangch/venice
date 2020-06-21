@@ -100,7 +100,7 @@ public class VncByteBuffer extends VncVal {
 		for(int ii=0; ii<buf.length; ii++) {
 			list.add(new VncLong(buf[ii] & 0x0FF));
 		}
-		return VncList.ofColl(list);
+		return VncList.ofList(list);
 	}
 	
 	@Override 

@@ -61,7 +61,7 @@ public class CommandLineArgs {
 	
 	
 	public VncList argsAsList() {
-		return VncList.ofColl(
+		return VncList.ofList(
 					Arrays.asList(args)
 						  .stream()
 						  .map(s -> new VncString(s))

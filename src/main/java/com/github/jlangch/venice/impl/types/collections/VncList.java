@@ -99,10 +99,6 @@ public class VncList extends VncSequence {
 		return new VncList(vals, Constants.Nil);
 	}
 
-	public static VncList ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
-		return new VncList(vals, meta);
-	}
-
 	
 	@Override
 	public VncList emptyWithMeta() {
@@ -111,17 +107,17 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncTinyList.of(replaceVals).withMeta(getMeta());
+		return VncList.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals) {
-		return VncTinyList.ofList(replaceVals, getMeta());
+		return VncList.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncTinyList.ofList(replaceVals, meta);
+		return VncList.ofList(replaceVals, meta);
 	}
 
 	@Override
@@ -194,7 +190,15 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList rest() {
-		return isEmpty() ? new VncList(getMeta()) : new VncList(value.tail(), getMeta());
+		if (value.isEmpty()) {
+			return new VncTinyList(getMeta());
+		}
+		else {
+			final io.vavr.collection.Vector<VncVal> rest = value.tail();
+			return rest.size() < VncTinyList.MAX_ELEMENTS
+					? VncTinyList.ofList(rest.asJava(), getMeta())
+					: new VncList(rest, getMeta());
+		}
 	}
 	
 	@Override
@@ -334,7 +338,7 @@ public class VncList extends VncSequence {
 	}
 
 	public static VncList empty() {
-		return VncTinyList.empty();
+		return VncTinyList.EMPTY;
 	}
 
 

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -59,8 +58,8 @@ public class LoadPath {
 
 	public static VncList toVncList(final List<String> paths) {
 		return paths == null || paths.isEmpty()
-				? VncTinyList.empty()
-				: VncList.ofColl(paths
+				? VncList.empty()
+				: VncList.ofList(paths
 									.stream()
 									.map(p -> new VncString(p))
 									.collect(Collectors.toList()));

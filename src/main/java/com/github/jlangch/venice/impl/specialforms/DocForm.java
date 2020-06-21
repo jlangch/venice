@@ -38,8 +38,8 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
@@ -61,7 +61,7 @@ public class DocForm {
 		}
 		else {
 			// last resort
-			final VncString name = (VncString)CoreFunctions.name.apply(VncTinyList.of(ref));
+			final VncString name = (VncString)CoreFunctions.name.apply(VncList.of(ref));
 			return docForSymbol(name.toSymbol(), env);
 		}
 	}

@@ -42,7 +42,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
@@ -241,7 +240,7 @@ public class ArrayFunctions {
 					final int[] src = (int[])arr;
 					final int[] dst = (int[])retArr;
 					for(int ii=0; ii<len; ii++) {
-						dst[ii] = Coerce.toVncInteger(fn.apply(new VncTinyList(new VncInteger(src[ii]), null)))
+						dst[ii] = Coerce.toVncInteger(fn.apply(VncList.of(new VncInteger(src[ii]))))
 										.getValue()
 										.intValue();
 					}
@@ -250,7 +249,7 @@ public class ArrayFunctions {
 					final long[] src = (long[])arr;
 					final long[] dst = (long[])retArr;
 					for(int ii=0; ii<len; ii++) {
-						dst[ii] = Coerce.toVncLong(fn.apply(new VncTinyList(new VncLong(src[ii]), null)))
+						dst[ii] = Coerce.toVncLong(fn.apply(VncList.of(new VncLong(src[ii]))))
 										.getValue()
 										.longValue();
 					}
@@ -260,7 +259,7 @@ public class ArrayFunctions {
 					final float[] dst = (float[])retArr;
 					
 					for(int ii=0; ii<len; ii++) {
-						dst[ii] = Coerce.toVncDouble(fn.apply(new VncTinyList(new VncDouble(src[ii]), null)))
+						dst[ii] = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(src[ii]))))
 										.getValue()
 										.floatValue();
 					}
@@ -269,7 +268,7 @@ public class ArrayFunctions {
 					final double[] src = (double[])arr;
 					final double[] dst = (double[])retArr;
 					for(int ii=0; ii<len; ii++) {
-						dst[ii] = Coerce.toVncDouble(fn.apply(new VncTinyList(new VncDouble(src[ii]), null)))
+						dst[ii] = Coerce.toVncDouble(fn.apply(VncList.of(new VncDouble(src[ii]))))
 										.getValue()
 										.doubleValue();
 					}
@@ -278,7 +277,7 @@ public class ArrayFunctions {
 					final String[] src = (String[])arr;
 					final String[] dst = (String[])retArr;
 					for(int ii=0; ii<len; ii++) {
-						dst[ii] = Coerce.toVncString(fn.apply(new VncTinyList(new VncString(src[ii]), null)))
+						dst[ii] = Coerce.toVncString(fn.apply(VncList.of(new VncString(src[ii]))))
 										.getValue();
 					}
 				}
@@ -286,7 +285,7 @@ public class ArrayFunctions {
 					final Object[] src = (Object[])arr;
 					final Object[] dst = (Object[])retArr;
 					for(int ii=0; ii<len; ii++) {
-						dst[ii] = fn.apply(new VncTinyList(JavaInteropUtil.convertToVncVal(src[ii]), null))
+						dst[ii] = fn.apply(VncList.of(JavaInteropUtil.convertToVncVal(src[ii])))
 									.convertToJavaObject();	
 					}
 				}

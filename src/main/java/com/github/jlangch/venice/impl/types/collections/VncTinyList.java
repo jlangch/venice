@@ -518,10 +518,10 @@ public class VncTinyList extends VncList {
 	
 	
 	public static final VncKeyword TYPE = new VncKeyword(":core/list");
+	public static final VncTinyList EMPTY = new VncTinyList();
 	public static final int MAX_ELEMENTS = 4;
 	
     private static final long serialVersionUID = -1848883965231344442L;
-    private static final VncTinyList EMPTY = new VncTinyList();
 
     private final int len;
 	private final VncVal first;

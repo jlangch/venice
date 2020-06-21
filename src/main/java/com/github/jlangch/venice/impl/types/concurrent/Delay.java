@@ -27,7 +27,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class Delay implements IDeref {
@@ -47,7 +47,7 @@ public class Delay implements IDeref {
 	
 	private Result compute() {
 		try {
-			return new Result(fn.apply(VncTinyList.empty()), null);
+			return new Result(fn.apply(VncList.empty()), null);
 		}
 		catch(RuntimeException ex) {
 			return new Result(null, ex);

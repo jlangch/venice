@@ -194,7 +194,15 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector rest() {
-		return isEmpty() ? new VncVector(getMeta()) : new VncVector(value.tail(), getMeta());
+		if (value.isEmpty()) {
+			return new VncTinyVector(getMeta());
+		}
+		else {
+			final io.vavr.collection.Vector<VncVal> rest = value.tail();
+			return rest.size() < VncTinyVector.MAX_ELEMENTS
+					? VncTinyVector.ofList(rest.asJava(), getMeta())
+					: new VncVector(rest, getMeta());
+		}
 	}
 	
 	@Override
@@ -327,7 +335,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 	}
 
 	public static VncVector empty() {
-		return VncTinyVector.empty();
+		return VncTinyVector.EMPTY;
 	}
 
 

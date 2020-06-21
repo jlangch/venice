@@ -52,7 +52,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.HexFormatter;
@@ -735,12 +734,12 @@ public class StringFunctions {
 					assertArity("str/chars", args, 1);
 
 					if (args.first() == Nil) {
-						return VncTinyList.empty();
+						return VncList.empty();
 					}
 					else {
 						final String s = Coerce.toVncString(args.first()).getValue();
 		
-						return VncList.ofColl(
+						return VncList.ofList(
 									s.chars()
 									 .mapToObj(c -> new VncChar((char)c))
 									 .collect(Collectors.toList()));
@@ -768,13 +767,13 @@ public class StringFunctions {
 				assertArity("str/split", args, 2);
 
 				if (args.first() == Nil) {
-					return VncTinyList.empty();
+					return VncList.empty();
 				}
 				else {
 					final VncString string = Coerce.toVncString(args.first());
 					final VncString regex = Coerce.toVncString(args.second());
 	
-					return VncList.ofColl(
+					return VncList.ofList(
 							Arrays
 								.asList(string.getValue().split(regex.getValue()))
 								.stream()
@@ -800,8 +799,8 @@ public class StringFunctions {
 				assertArity("str/split-lines", args, 1);
 
 				return args.first() == Nil
-						? VncTinyList.empty()
-						: VncList.ofColl(
+						? VncList.empty()
+						: VncList.ofList(
 								StringUtil
 									.splitIntoLines(Coerce.toVncString(args.first()).getValue())
 									.stream()

@@ -54,7 +54,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -351,7 +350,7 @@ public class ShellFunctions {
 		final VncThreadLocal th = new VncThreadLocal();
 	
 		VncHashMap options = new VncHashMap();
-		VncList cmd = VncTinyList.empty();		
+		VncList cmd = VncList.empty();		
 		VncList args_ = args;
 		while(!args_.isEmpty()) {
 			final VncVal v = args_.first();

@@ -35,7 +35,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -167,7 +166,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	private static VncList toVncArgs(final Object[] args) {
 		if (args == null || args.length == 0) {
-			return VncTinyList.empty();
+			return VncList.empty();
 		}
 		else {
 			final VncVal[] vncArgs = new VncVal[args.length];		

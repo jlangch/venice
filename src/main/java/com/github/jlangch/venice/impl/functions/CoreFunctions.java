@@ -88,8 +88,6 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
-import com.github.jlangch.venice.impl.types.collections.VncTinyList;
-import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -1422,7 +1420,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return VncList.ofColl(args.getList());
+				return VncList.ofList(args.getList());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1458,7 +1456,7 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (args.last() == Nil) {
-					return VncList.ofColl(args.slice(0, args.size()-1).getList());
+					return VncList.ofList(args.slice(0, args.size()-1).getList());
 				}
 				else if (!Types.isVncSequence(args.last())) {
 					throw new VncException(String.format(
@@ -1466,7 +1464,7 @@ public class CoreFunctions {
 							Types.getType(args.last())));
 				}
 				else {
-					return VncTinyList.empty()
+					return VncList.empty()
 								.addAllAtEnd(args.slice(0, args.size()-1))
 								.addAllAtEnd((VncSequence)args.last());
 				}
@@ -3169,7 +3167,7 @@ public class CoreFunctions {
 				assertArity("entries", args, 1);
 
 				final VncMap mhm = Coerce.toVncMap(args.first());
-				return VncList.ofColl(mhm.entries());
+				return VncList.ofList(mhm.entries());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -3286,7 +3284,7 @@ public class CoreFunctions {
 				assertArity("split-at", args, 2);
 
 				if (args.second() == Nil) {
-					return VncVector.of(VncTinyList.empty(), VncTinyList.empty());
+					return VncVector.of(VncList.empty(), VncList.empty());
 				}
 
 				final List<VncVal> items = Coerce.toVncSequence(args.second()).getList();
@@ -3296,9 +3294,9 @@ public class CoreFunctions {
 									0,
 									Coerce.toVncLong(args.first()).getValue().intValue()));
 
-				return VncTinyVector.of(
-						VncList.ofColl(items.subList(0, n)),
-						VncList.ofColl(items.subList(n, items.size())));
+				return VncVector.of(
+						VncList.ofList(items.subList(0, n)),
+						VncList.ofList(items.subList(n, items.size())));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -3321,7 +3319,7 @@ public class CoreFunctions {
 				assertArity("split-with", args, 2);
 
 				if (args.second() == Nil) {
-					return VncVector.of(VncTinyList.empty(), VncTinyList.empty());
+					return VncVector.of(VncList.empty(), VncList.empty());
 				}
 
 				final IVncFunction pred = Coerce.toIVncFunction(args.first());
@@ -3341,15 +3339,15 @@ public class CoreFunctions {
 				}
 
 				if (splitPos == 0) {
-					return VncTinyVector.of(VncTinyList.empty(), VncList.ofColl(items));
+					return VncVector.of(VncList.empty(), VncList.ofList(items));
 				}
 				else if (splitPos < items.size()) {
-					return VncTinyVector.of(
-								VncList.ofColl(items.subList(0, splitPos)),
-								VncList.ofColl(items.subList(splitPos, items.size())));
+					return VncVector.of(
+								VncList.ofList(items.subList(0, splitPos)),
+								VncList.ofList(items.subList(splitPos, items.size())));
 				}
 				else {
-					return VncTinyVector.of(VncList.ofColl(items), VncTinyList.empty());
+					return VncVector.of(VncList.ofList(items), VncList.empty());
 				}
 			}
 
@@ -3395,7 +3393,7 @@ public class CoreFunctions {
 				assertArity("into", args, 0, 1, 2);
 
 				if (args.size() == 0) {
-					return VncTinyList.empty();
+					return VncList.empty();
 				}
 				else if (args.size() == 1) {
 					return args.first();
@@ -4089,7 +4087,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.isEmpty()) {
-					return VncTinyVector.empty();
+					return VncVector.empty();
 				}
 				else if (args.size() == 1) {
 					return args.first();
@@ -4097,7 +4095,7 @@ public class CoreFunctions {
 				else {
 					VncVal coll = args.first();
 					if (coll == Nil) {
-						coll = VncTinyList.empty();
+						coll = VncList.empty();
 					}
 
 					if (Types.isVncVector(coll)) {
@@ -4323,7 +4321,7 @@ public class CoreFunctions {
 					}
 				});
 
-				return VncList.ofColl(result);
+				return VncList.ofList(result);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -4358,7 +4356,7 @@ public class CoreFunctions {
 					}
 				}
 
-				return VncList.ofColl(result);
+				return VncList.ofList(result);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -4390,7 +4388,7 @@ public class CoreFunctions {
 					});
 				}
 
-				return VncList.ofColl(result);
+				return VncList.ofList(result);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -4671,10 +4669,10 @@ public class CoreFunctions {
 						for (char c : s.toCharArray()) {
 							lst.add(new VncString(String.valueOf(c)));
 						}
-						return VncList.ofColl(lst).rest();
+						return VncList.ofList(lst).rest();
 					}
 					else {
-						return VncTinyList.empty();
+						return VncList.empty();
 					}
 				}
 				else {
@@ -4722,10 +4720,10 @@ public class CoreFunctions {
 						for (char c : s.toCharArray()) {
 							lst.add(new VncString(String.valueOf(c)));
 						}
-						return VncList.ofColl(lst).slice(0, s.length()-1);
+						return VncList.ofList(lst).slice(0, s.length()-1);
 					}
 					else {
-						return VncTinyList.empty();
+						return VncList.empty();
 					}
 				}
 				else {
@@ -4763,21 +4761,21 @@ public class CoreFunctions {
 				int n = Coerce.toVncLong(args.second()).getValue().intValue();
 				
 				if (coll == Nil) {
-					return VncTinyList.empty();
+					return VncList.empty();
 				}
 				else if (Types.isVncVector(coll)) {
 					final VncVector vec = (VncVector)coll;
 					n = Math.max(0, Math.min(vec.size(), n));
 					return vec.isEmpty()
-							? VncTinyVector.empty()
+							? VncVector.empty()
 							: VncVector.ofList(vec.getList().subList(0, n));
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncSequence list = (VncSequence)args.first();
 					n = Math.max(0, Math.min(list.size(), n));
 					return list.isEmpty()
-							? VncTinyList.empty()
-							: VncList.ofColl(list.getList().subList(0, n));
+							? VncList.empty()
+							: VncList.ofList(list.getList().subList(0, n));
 				}
 				else if (Types.isVncMutableList(coll)) {
 					final VncMutableList list = (VncMutableList)args.first();
@@ -4828,21 +4826,21 @@ public class CoreFunctions {
 				int n = Coerce.toVncLong(args.second()).getValue().intValue();
 
 				if (args.first() == Nil) {
-					return VncTinyList.empty();
+					return VncList.empty();
 				}
 				else if (Types.isVncVector(coll)) {
 					final VncVector vec = (VncVector)coll;
 					n = Math.max(0, Math.min(vec.size(), n));
 					return vec.isEmpty()
-							? VncTinyVector.empty()
+							? VncVector.empty()
 							: VncVector.ofList(vec.getList().subList(vec.size()-n, vec.size()));
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncSequence list = (VncSequence)args.first();
 					n = Math.max(0, Math.min(list.size(),n));
 					return list.isEmpty()
-							? VncTinyList.empty()
-							: VncList.ofColl(list.getList().subList(list.size()-n, list.size()));
+							? VncList.empty()
+							: VncList.ofList(list.getList().subList(list.size()-n, list.size()));
 				}
 				else if (Types.isVncMutableList(coll)) {
 					final VncMutableList list = (VncMutableList)args.first();
@@ -4910,20 +4908,20 @@ public class CoreFunctions {
 					splits.add(coll.subList(ii, Math.min(ii + step, coll.size())));
 				}
 
-				VncList result = VncTinyList.empty();
+				VncList result = VncList.empty();
 				for(List<VncVal> split : splits) {
 					if (n == split.size()) {
-						result = result.addAtEnd(VncList.ofColl(split));
+						result = result.addAtEnd(VncList.ofList(split));
 					}
 					else if (n < split.size()) {
-						result = result.addAtEnd(VncList.ofColl(split.subList(0, n)));
+						result = result.addAtEnd(VncList.ofList(split.subList(0, n)));
 					}
 					else {
 						final List<VncVal> split_ = new ArrayList<>(split);
 						for(int ii=0; ii<(n-split.size()) && ii<padcoll.size(); ii++) {
 							split_.add(padcoll.get(ii));
 						}
-						result = result.addAtEnd(VncList.ofColl(split_));
+						result = result.addAtEnd(VncList.ofList(split_));
 					}
 				}
 				return result;
@@ -5021,11 +5019,11 @@ public class CoreFunctions {
 
 				if (Types.isVncVector(val)) {
 					final VncVector vec = (VncVector)val;
-					return vec.size() < 2 ? VncTinyVector.empty() : vec.slice(0, vec.size()-1);
+					return vec.size() < 2 ? VncVector.empty() : vec.slice(0, vec.size()-1);
 				}
 				else if (Types.isVncSequence(val)) {
 					final VncSequence seq = (VncSequence)val;
-					return seq.isEmpty() ? VncTinyList.empty() : seq.rest();
+					return seq.isEmpty() ? VncList.empty() : seq.rest();
 				}
 				else {
 					throw new VncException(String.format(
@@ -5589,7 +5587,7 @@ public class CoreFunctions {
 					}
 
 					if (hasMore) {
-						result.add(fn.apply(VncList.ofColl(fnArgs)));
+						result.add(fn.apply(VncList.ofList(fnArgs)));
 						index += 1;
 					}
 				}
@@ -5819,7 +5817,7 @@ public class CoreFunctions {
 
 				if (noInitValue) {
 					if (coll.isEmpty()) {
-						return reduceFn.apply(VncTinyList.empty());
+						return reduceFn.apply(VncList.empty());
 					}
 					else if (coll.size() == 1) {
 						return coll.get(0);
@@ -6036,7 +6034,7 @@ public class CoreFunctions {
 					if (((VncMap)val).isEmpty()) {
 						return Nil;
 					}
-					return VncList.ofColl(
+					return VncList.ofList(
 							((VncMap)val)
 								.entries()
 								.stream()
@@ -6084,7 +6082,7 @@ public class CoreFunctions {
 				for(int ii=0; ii<repeat; ii++) {
 					values.add(val);
 				}
-				return VncList.ofColl(values);
+				return VncList.ofList(values);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -6118,9 +6116,9 @@ public class CoreFunctions {
 
 				final List<VncVal> values = new ArrayList<>();
 				for(int ii=0; ii<repeat; ii++) {
-					values.add(fn.apply(VncTinyList.empty()));
+					values.add(fn.apply(VncList.empty()));
 				}
-				return VncList.ofColl(values);
+				return VncList.ofList(values);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -6363,7 +6361,7 @@ public class CoreFunctions {
 											p -> p,
 											p -> new VncKeyword(p.name().toLowerCase().replace('_', '-'))));
 				
-				VncList list = VncTinyList.empty();
+				VncList list = VncList.empty();
 				for(HighlightItem it : HighlightParser.parse(form)) {
 					list = list.addAtEnd(
 								VncList.of(
@@ -6398,7 +6396,7 @@ public class CoreFunctions {
 						.collect(Collectors.toList()));
 		}
 		else if (Types.isVncSequence(coll)) {
-			return VncList.ofColl(
+			return VncList.ofList(
 					((VncSequence)coll)
 						.getList()
 						.stream()
@@ -6406,7 +6404,7 @@ public class CoreFunctions {
 						.collect(Collectors.toList()));
 		}
 		else if (Types.isVncSet(coll)) {
-			return VncList.ofColl(
+			return VncList.ofList(
 					((VncSet)coll)
 						.getList()
 						.stream()
@@ -6414,7 +6412,7 @@ public class CoreFunctions {
 						.collect(Collectors.toList()));
 		}
 		else if (Types.isVncMap(coll)) {
-			return VncList.ofColl(
+			return VncList.ofList(
 					 ((VncMap)coll)
 					 	.toVncList()
 						.getList()
@@ -6432,7 +6430,7 @@ public class CoreFunctions {
 	private static VncList shuffleList(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.shuffle(copy, random);
-		return VncList.ofColl(copy);
+		return VncList.ofList(copy);
 	}
 
 	private static VncVector shuffleVector(final List<VncVal> list) {

@@ -130,7 +130,7 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return VncList.ofColl(new ArrayList<>(getMap().keySet()));
+		return VncList.ofList(new ArrayList<>(getMap().keySet()));
 	}
 
 	@Override

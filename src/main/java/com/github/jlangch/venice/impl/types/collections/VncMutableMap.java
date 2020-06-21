@@ -140,7 +140,7 @@ public class VncMutableMap extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return VncList.ofColl(new ArrayList<>(value.keySet()));
+		return VncList.ofList(new ArrayList<>(value.keySet()));
 	}
 
 	@Override
