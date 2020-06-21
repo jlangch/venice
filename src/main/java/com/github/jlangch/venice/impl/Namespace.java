@@ -44,7 +44,7 @@ public class Namespace {
 	}
 	
 	public VncList getJavaImportsAsVncList() {
-		return VncList.ofList(
+		return VncList.ofColl(
 				javaImports
 					.list()
 					.stream().map(s -> new VncKeyword(s))

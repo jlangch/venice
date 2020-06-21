@@ -103,7 +103,7 @@ public class VncMultiArityFunction extends VncFunction {
 		}
 		list.addAll(variadicArgFunctions);
 		
-		return VncList.ofList(list);
+		return VncList.ofColl(list);
 	}
 	
 	private VncFunction findFunction(final int arity) {

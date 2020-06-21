@@ -57,7 +57,7 @@ public class FunctionsUtil {
 	}
 
 	public static VncList removeNilValues(final VncList list) {
-		return VncList.ofList(removeNilValues(list.getList()));
+		return VncList.ofColl(removeNilValues(list.getList()));
 	}
 
 	public static List<VncVal> removeNilValues(final List<VncVal> items) {

@@ -330,7 +330,7 @@ public class JavaInteropFunctions {
 			classes.addAll(superclasses);
 			classes.addAll(interfaces);
 	
-			return VncList.ofList(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
+			return VncList.ofColl(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -363,7 +363,7 @@ public class JavaInteropFunctions {
 			}
 			classes.addAll(ReflectionUtil.getAllDirectInterfaces(clazz));
 	
-			return VncList.ofList(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
+			return VncList.ofColl(JavaInteropUtil.toVncKeywords(ReflectionUtil.distinct(classes)));
 		}
 	
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -393,7 +393,7 @@ public class JavaInteropFunctions {
 			
 			map = map.assoc(
 						new VncKeyword("constructors"),
-						VncList.ofList(
+						VncList.ofColl(
 								ReflectionUtil
 									.getPublicConstructors(clazz)
 									.stream()
@@ -404,7 +404,7 @@ public class JavaInteropFunctions {
 					new VncKeyword("methods"),
 					VncTinyList.empty()
 						.addAllAtEnd(
-							VncList.ofList(
+							VncList.ofColl(
 								ReflectionUtil
 									.getAllPublicInstanceMethods(clazz, true)
 									.stream()
@@ -412,7 +412,7 @@ public class JavaInteropFunctions {
 									.map(m -> mapMethod(m))
 									.collect(Collectors.toList())))
 						.addAllAtEnd(
-							VncList.ofList(
+							VncList.ofColl(
 								ReflectionUtil
 									.getAllPublicStaticMethods(clazz, true)
 									.stream()
@@ -424,14 +424,14 @@ public class JavaInteropFunctions {
 					new VncKeyword("fields"),
 					VncTinyList.empty()
 						.addAllAtEnd(
-							VncList.ofList(
+							VncList.ofColl(
 								ReflectionUtil
 									.getPublicInstanceFields(clazz)
 									.stream()
 									.map(m -> mapField(m))
 									.collect(Collectors.toList())))
 						.addAllAtEnd(
-							VncList.ofList(
+							VncList.ofColl(
 								ReflectionUtil
 									.getPublicStaticFields(clazz)
 									.stream()
@@ -442,14 +442,14 @@ public class JavaInteropFunctions {
 					new VncKeyword("bean"),
 					VncTinyList.empty()
 						.addAllAtEnd(
-							VncList.ofList(
+							VncList.ofColl(
 								ReflectionUtil
 									.getBeanGetterMethods(clazz)
 									.stream()
 									.map(m -> mapBeanGetter(m))
 									.collect(Collectors.toList())))
 						.addAllAtEnd(
-							VncList.ofList(
+							VncList.ofColl(
 								ReflectionUtil
 									.getBeanSetterMethods(clazz)
 									.stream()
@@ -506,7 +506,7 @@ public class JavaInteropFunctions {
 											 .map(v -> JavaInteropUtil.convertToVncVal(v))
 											 .collect(Collectors.toList());
 				
-				return VncList.ofList(list); 
+				return VncList.ofColl(list); 
 			}
 			else {
 				throw new VncException(String.format(
@@ -539,7 +539,7 @@ public class JavaInteropFunctions {
 												.stream(i)
 												.map(v -> JavaInteropUtil.convertToVncVal(v))
 												.collect(Collectors.toList());
-				return VncList.ofList(list); 
+				return VncList.ofColl(list); 
 			}
 			else {
 				throw new VncException(String.format(

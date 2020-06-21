@@ -62,7 +62,7 @@ public class Inspector {
 					new VncKeyword("name"), new VncString(((VncFunction)val).getQualifiedName()),
 					new VncKeyword("type"), Types.getType(val),
 					new VncKeyword("meta"), toNil(val.getMeta()),
-					new VncKeyword("arity-fn"), VncList.ofList(arityFunctions));
+					new VncKeyword("arity-fn"), VncList.ofColl(arityFunctions));
 		}
 		else if (Types.isVncMultiFunction(val)) {
 			return VncOrderedMap.of(

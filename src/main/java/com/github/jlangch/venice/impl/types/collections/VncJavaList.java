@@ -150,7 +150,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 			return VncTinyList.empty();
 		} 
 		else {
-			return VncList.ofList(
+			return VncList.ofColl(
 						value
 							.subList(1, value.size())
 							.stream()
@@ -165,7 +165,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 			return VncTinyList.empty();
 		} 
 		else {
-			return VncList.ofList(
+			return VncList.ofColl(
 						value
 							.subList(0, value.size()-1)
 							.stream()
@@ -176,7 +176,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncList slice(final int start, final int end) {
-		return VncList.ofList(
+		return VncList.ofColl(
 					value
 						.subList(start, end)
 						.stream()

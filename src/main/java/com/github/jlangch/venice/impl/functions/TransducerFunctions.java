@@ -247,13 +247,13 @@ public class TransducerFunctions {
 						}
 
 						if (hasMore) {
-							final VncVal val = fn.apply(VncList.ofList(fnArgs));
+							final VncVal val = fn.apply(VncList.ofColl(fnArgs));
 							result.add(val);
 							index += 1;
 						}
 					}
 
-					return VncList.ofList(result);
+					return VncList.ofColl(result);
 				}
 			}
 
@@ -355,7 +355,7 @@ public class TransducerFunctions {
 						list.add(fn.apply(VncList.of(new VncLong(index++), v)));
 					}
 
-					return VncList.ofList(list);
+					return VncList.ofColl(list);
 				}
 			}
 
@@ -1047,7 +1047,7 @@ public class TransducerFunctions {
 									}
 									else if (args.size() == 1) {
 										VncVal result = args.first();
-										final VncVal sortedList = CoreFunctions.sort.apply(VncList.of(compfn, VncList.ofList(list)));
+										final VncVal sortedList = CoreFunctions.sort.apply(VncList.of(compfn, VncList.ofColl(list)));
 
 										result = CoreFunctions.reduce.apply(VncList.of(rf, result, sortedList));
 										return rf.apply(VncList.of(result));
@@ -1114,7 +1114,7 @@ public class TransducerFunctions {
 										VncVal result = args.first();
 										Collections.reverse(list);
 
-										result = CoreFunctions.reduce.apply(VncList.of(rf, result, VncList.ofList(list)));
+										result = CoreFunctions.reduce.apply(VncList.of(rf, result, VncList.ofColl(list)));
 										return rf.apply(VncList.of(result));
 									}
 									else {
@@ -1234,7 +1234,7 @@ public class TransducerFunctions {
 				else {
 					final VncCollection coll = Coerce.toVncCollection(args.first());
 					final List<VncVal> result = flatten(coll);
-					return Types.isVncVector(coll) ? new VncVector(result) : VncList.ofList(result);
+					return Types.isVncVector(coll) ? VncVector.ofColl(result) : VncList.ofColl(result);
 				}
 			}
 
@@ -1352,7 +1352,7 @@ public class TransducerFunctions {
 	private static VncList reverseList(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.reverse(copy);
-		return VncList.ofList(copy);
+		return VncList.ofColl(copy);
 	}
 
 	private static VncMutableList reverseMutableList(final List<VncVal> list) {
@@ -1364,12 +1364,12 @@ public class TransducerFunctions {
 	private static VncVector reverseVector(final List<VncVal> list) {
 		final List<VncVal> copy = new ArrayList<>(list);
 		Collections.reverse(copy);
-		return new VncVector(copy);
+		return VncVector.ofColl(copy);
 	}
 
 	private static VncSequence coerceToSequence(final VncVal val) {
 		if (Types.isVncMap(val)) {
-			return VncList.ofList(((VncMap)val).entries());
+			return VncList.ofColl(((VncMap)val).entries());
 		}
 		else if (Types.isVncSet(val)) {
 			return ((VncSet)val).toVncList();

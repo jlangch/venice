@@ -595,7 +595,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "modules": // (modules )
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("modules", ast))) {
-						return VncList.ofList(
+						return VncList.ofColl(
 									ModuleLoader
 										.VALID_MODULES
 										.stream()
@@ -1122,7 +1122,7 @@ public class VeniceInterpreter implements Serializable  {
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
 			}
 			
-			return VncList.ofList(elapsed);
+			return VncList.ofColl(elapsed);
 		}
 		finally {
 			ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
@@ -1383,7 +1383,7 @@ public class VeniceInterpreter implements Serializable  {
 			body.add(e);
 		}
 		
-		return VncList.ofList(body);
+		return VncList.ofColl(body);
 	}
 	
 	private CatchBlock findCatchBlockMatchingThrowable(

@@ -50,11 +50,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
 
-	public VncVector(final Collection<? extends VncVal> vals) {
-		this(vals, null);
-	}
-
-	public VncVector(final Collection<? extends VncVal> vals, final VncVal meta) {
+	protected VncVector(final Collection<? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
 	}
 
@@ -74,6 +70,14 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	public static VncVector of(final VncVal... mvs) {
 		return new VncVector(io.vavr.collection.Vector.of(mvs), Constants.Nil);
+	}
+
+	public static VncVector ofColl(final Collection<? extends VncVal> vals) {
+		return new VncVector(vals, Constants.Nil);
+	}
+
+	public static VncVector ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
+		return new VncVector(vals, meta);
 	}
 	
 

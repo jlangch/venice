@@ -90,7 +90,7 @@ public class MeterRegistry implements Serializable {
 	}
 	
 	public VncList getVncTimerData() {
-		return VncList.ofList(
+		return VncList.ofColl(
 					getTimerData()
 						.stream()
 						.map(t -> convertToVncMap(t))

@@ -740,7 +740,7 @@ public class StringFunctions {
 					else {
 						final String s = Coerce.toVncString(args.first()).getValue();
 		
-						return VncList.ofList(
+						return VncList.ofColl(
 									s.chars()
 									 .mapToObj(c -> new VncChar((char)c))
 									 .collect(Collectors.toList()));
@@ -774,7 +774,7 @@ public class StringFunctions {
 					final VncString string = Coerce.toVncString(args.first());
 					final VncString regex = Coerce.toVncString(args.second());
 	
-					return VncList.ofList(
+					return VncList.ofColl(
 							Arrays
 								.asList(string.getValue().split(regex.getValue()))
 								.stream()
@@ -801,7 +801,7 @@ public class StringFunctions {
 
 				return args.first() == Nil
 						? VncTinyList.empty()
-						: VncList.ofList(
+						: VncList.ofColl(
 								StringUtil
 									.splitIntoLines(Coerce.toVncString(args.first()).getValue())
 									.stream()

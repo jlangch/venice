@@ -70,11 +70,11 @@ public class VncList extends VncSequence {
 		return new VncList(io.vavr.collection.Vector.of(mvs), Constants.Nil);
 	}
 
-	public static VncList ofList(final Collection<? extends VncVal> vals) {
+	public static VncList ofColl(final Collection<? extends VncVal> vals) {
 		return new VncList(vals, Constants.Nil);
 	}
 
-	public static VncList ofList(final Collection<? extends VncVal> vals, final VncVal meta) {
+	public static VncList ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
 		return new VncList(vals, meta);
 	}
 

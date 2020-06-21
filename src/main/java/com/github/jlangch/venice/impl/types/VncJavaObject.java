@@ -163,7 +163,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncList keys() {
-		return VncList.ofList(new ArrayList<>(getMap().keySet()));
+		return VncList.ofColl(new ArrayList<>(getMap().keySet()));
 	}
 
 	@Override
