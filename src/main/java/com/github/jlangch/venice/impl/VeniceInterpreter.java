@@ -595,14 +595,14 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "modules": // (modules )
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("modules", ast))) {
-						return new VncList(
-								ModuleLoader
-									.VALID_MODULES
-									.stream()
-									.filter(s ->!s.equals("core"))  // skip core module
-									.sorted()
-									.map(s -> new VncKeyword(s))
-									.collect(Collectors.toList()));
+						return VncList.ofList(
+									ModuleLoader
+										.VALID_MODULES
+										.stream()
+										.filter(s ->!s.equals("core"))  // skip core module
+										.sorted()
+										.map(s -> new VncKeyword(s))
+										.collect(Collectors.toList()));
 					}
 					
 				case "eval": {
@@ -671,7 +671,7 @@ public class VeniceInterpreter implements Serializable  {
 						//}
 					}
 					
-					recursionPoint = new RecursionPoint(new VncList(bindingNames), expressions, env);
+					recursionPoint = new RecursionPoint(VncTinyList.ofList(bindingNames, Nil), expressions, env);
 					if (expressions.size() == 1) {
 						orig_ast = expressions.first();
 					}
@@ -1122,7 +1122,7 @@ public class VeniceInterpreter implements Serializable  {
 				ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
 			}
 			
-			return new VncList(elapsed);
+			return VncList.ofList(elapsed);
 		}
 		finally {
 			ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
@@ -1383,7 +1383,7 @@ public class VeniceInterpreter implements Serializable  {
 			body.add(e);
 		}
 		
-		return new VncList(body);
+		return VncList.ofList(body);
 	}
 	
 	private CatchBlock findCatchBlockMatchingThrowable(

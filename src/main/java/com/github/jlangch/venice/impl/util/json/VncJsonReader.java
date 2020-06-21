@@ -110,7 +110,7 @@ public class VncJsonReader {
 		while(reader.next()) {
 			list.add(readAny());
 		}
-		return new VncList(list);
+		return VncList.ofList(list);
 	}
 
 	private VncVal readNumber() throws JsonParserException {

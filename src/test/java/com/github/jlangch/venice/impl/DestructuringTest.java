@@ -96,7 +96,7 @@ public class DestructuringTest {
 		// [[x y] []]
 
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
-		final VncVal bindVal = new VncList();
+		final VncVal bindVal = VncList.empty();
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 
@@ -114,7 +114,7 @@ public class DestructuringTest {
 		// [[x & y] []]
 
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
-		final VncVal bindVal = new VncList();
+		final VncVal bindVal =VncList.empty();
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 
@@ -149,8 +149,8 @@ public class DestructuringTest {
 	public void test_sequential_multiple_empty_all() {
 		// [[] []]
 
-		final VncVal symVal = new VncList();
-		final VncVal bindVal = new VncList();
+		final VncVal symVal = VncList.empty();
+		final VncVal bindVal = VncList.empty();
 		
 		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
 

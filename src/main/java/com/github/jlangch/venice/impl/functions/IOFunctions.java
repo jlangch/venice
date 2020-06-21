@@ -620,7 +620,7 @@ public class IOFunctions {
 						}
 					}
 
-					return new VncList(files);
+					return VncList.ofList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
@@ -667,7 +667,7 @@ public class IOFunctions {
 							}
 				    	 });						
 
-					return new VncList(files);
+					return VncList.ofList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
@@ -709,7 +709,7 @@ public class IOFunctions {
 				        dirStream.forEach(path -> files.add(new VncJavaObject(path.toFile())));
 				    }
 
-					return new VncList(files);
+					return VncList.ofList(files);
 				}
 				catch(Exception ex) {
 					throw new VncException(
@@ -1004,7 +1004,7 @@ public class IOFunctions {
 									 .map(s -> new VncString(s))
 									 .collect(Collectors.toList());
 
-						return new VncList(lines);
+						return VncList.ofList(lines);
 					}
 					else if (Types.isVncJavaObject(arg, InputStream.class)) {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
@@ -1013,14 +1013,14 @@ public class IOFunctions {
 						final String encoding = encoding(encVal);
 
 						try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding))) {
-							return new VncList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+							return VncList.ofList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 						}
 					}
 					else if (Types.isVncJavaObject(arg, Reader.class)) {
 						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
 												
 						try (BufferedReader brd = new BufferedReader(rd)) {
-							return new VncList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+							return VncList.ofList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 						}
 					}
 					else {

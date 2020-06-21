@@ -1418,7 +1418,7 @@ public class ConcurrencyFunctions {
 					futures.add(future.apply(VncList.of(worker)));
 				}
 				
-				return new VncList(futures);
+				return VncList.ofList(futures);
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;

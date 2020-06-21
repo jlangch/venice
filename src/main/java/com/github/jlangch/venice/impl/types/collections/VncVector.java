@@ -42,11 +42,11 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncVector extends VncSequence implements IVncFunction {
 
-	public VncVector() {
+	protected VncVector() {
 		this((io.vavr.collection.Seq<VncVal>)null, null);
 	}
 
-	public VncVector(final VncVal meta) {
+	protected VncVector(final VncVal meta) {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
 
@@ -304,6 +304,10 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	public String toString(final boolean print_readably) {
 		return "[" + Printer.join(value.toJavaList(), " ", print_readably) + "]";
+	}
+
+	public static VncVector empty() {
+		return VncTinyVector.empty();
 	}
 
 

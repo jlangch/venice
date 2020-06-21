@@ -40,19 +40,15 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class VncList extends VncSequence {
 
-	public VncList() {
+	protected VncList() {
 		this((io.vavr.collection.Seq<VncVal>)null, null);
 	}
 
-	public VncList(final VncVal meta) {
+	protected VncList(final VncVal meta) {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
 
-	public VncList(final Collection<? extends VncVal> vals) {
-		this(vals, null);
-	}
-
-	public VncList(final Collection<? extends VncVal> vals, final VncVal meta) {
+	protected VncList(final Collection<? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
 	}
 
@@ -73,7 +69,15 @@ public class VncList extends VncSequence {
 	public static VncList of(final VncVal... mvs) {
 		return new VncList(io.vavr.collection.Vector.of(mvs), Constants.Nil);
 	}
-	
+
+	public static VncList ofList(final Collection<? extends VncVal> vals) {
+		return new VncList(vals, Constants.Nil);
+	}
+
+	public static VncList ofList(final Collection<? extends VncVal> vals, final VncVal meta) {
+		return new VncList(vals, meta);
+	}
+
 	
 	@Override
 	public VncList emptyWithMeta() {
@@ -82,17 +86,17 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncList.of(replaceVals).withMeta(getMeta());
+		return VncTinyList.of(replaceVals).withMeta(getMeta());
 	}
 	
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals) {
-		return new VncList(replaceVals, getMeta());
+		return VncTinyList.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncList(replaceVals, meta);
+		return VncTinyList.ofList(replaceVals, meta);
 	}
 
 	@Override
@@ -302,6 +306,10 @@ public class VncList extends VncSequence {
 	
 	public String toString(final boolean print_readably) {
 		return "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")";
+	}
+
+	public static VncList empty() {
+		return VncTinyList.empty();
 	}
 
 

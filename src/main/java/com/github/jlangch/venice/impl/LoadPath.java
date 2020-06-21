@@ -60,9 +60,10 @@ public class LoadPath {
 	public static VncList toVncList(final List<String> paths) {
 		return paths == null || paths.isEmpty()
 				? VncTinyList.empty()
-				: new VncList(paths.stream()
-							 	   .map(p -> new VncString(p))
-							 	   .collect(Collectors.toList()));
+				: VncList.ofList(paths
+									.stream()
+									.map(p -> new VncString(p))
+									.collect(Collectors.toList()));
 	}
 	
 	

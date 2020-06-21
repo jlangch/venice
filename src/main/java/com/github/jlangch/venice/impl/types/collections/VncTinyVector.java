@@ -116,7 +116,7 @@ public class VncTinyVector extends VncVector {
 		this.fourth = fourth;
 	}
 
-	private VncTinyVector(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
+	public VncTinyVector(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.len = len;
 		this.first = first;

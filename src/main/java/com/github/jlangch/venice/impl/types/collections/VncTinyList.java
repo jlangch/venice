@@ -123,7 +123,7 @@ public class VncTinyList extends VncList {
 		return VncTinyList.ofList(list, null);
 	}
 
-	private static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
+	public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
 		switch (list.size()) {
 			case 0:	return new VncTinyList(meta);
 			case 1:	return new VncTinyList(list.get(0), meta);

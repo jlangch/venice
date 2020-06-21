@@ -248,7 +248,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		public MetaBuilder arglists(final String... arglists) {
 			meta.put(
 				MetaUtil.ARGLIST, 
-				new VncList(Arrays.stream(arglists).map(s -> new VncString(s)).collect(Collectors.toList())));
+				VncList.ofList(Arrays.stream(arglists).map(s -> new VncString(s)).collect(Collectors.toList())));
 			return this;
 		}
 		
@@ -260,7 +260,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		public MetaBuilder examples(final String... examples) { 
 			meta.put(
 				MetaUtil.EXAMPLES, 
-				new VncList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
+				VncList.ofList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
 			return this;
 		}
 			

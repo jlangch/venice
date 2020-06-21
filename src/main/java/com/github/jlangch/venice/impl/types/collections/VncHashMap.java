@@ -166,7 +166,7 @@ public class VncHashMap extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return new VncList(new ArrayList<>(value.keySet().toJavaList()));
+		return VncList.ofList(new ArrayList<>(value.keySet().toJavaList()));
 	}
 
 	@Override

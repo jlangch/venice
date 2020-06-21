@@ -61,11 +61,11 @@ public class CommandLineArgs {
 	
 	
 	public VncList argsAsList() {
-		return new VncList(Arrays
-							.asList(args)
-							.stream()
-							.map(s -> new VncString(s))
-							.collect(Collectors.toList()));
+		return VncList.ofList(
+					Arrays.asList(args)
+						  .stream()
+						  .map(s -> new VncString(s))
+						  .collect(Collectors.toList()));
 	}
 
 	

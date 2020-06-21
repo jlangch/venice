@@ -47,7 +47,7 @@ public class ReplResultHistory {
 		IntStream.rangeClosed(1, results.size())
 				 .forEach(ii -> addToEnv(env, "*" + ii, results.get(ii-1)));
 
-		addToEnv(env, "**", new VncList(results));
+		addToEnv(env, "**", VncList.ofList(results));
 	}
 	
 	public void addToEnv(final Env env, final String name, final VncVal val) {

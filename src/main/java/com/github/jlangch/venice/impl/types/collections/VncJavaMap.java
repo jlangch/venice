@@ -126,7 +126,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncList keys() {
-		return new VncList(
+		return VncList.ofList(
 					value
 						.keySet()
 						.stream()

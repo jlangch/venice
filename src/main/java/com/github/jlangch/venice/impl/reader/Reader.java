@@ -439,7 +439,7 @@ public class Reader {
 					if (!tail.isEmpty()) {
 						list.add(new VncString(tail));
 					}
-					return new VncList(list);
+					return VncList.ofList(list);
 				}
 				
 				str = tail;

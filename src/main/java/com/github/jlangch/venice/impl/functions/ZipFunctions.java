@@ -779,7 +779,7 @@ public class ZipFunctions {
 								Types.getType(f)));
 					}
 
-					return new VncList(entries.stream().map(s -> new VncString(s)).collect(Collectors.toList()));
+					return VncList.ofList(entries.stream().map(s -> new VncString(s)).collect(Collectors.toList()));
 				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);

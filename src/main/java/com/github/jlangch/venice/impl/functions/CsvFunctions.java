@@ -246,9 +246,9 @@ public class CsvFunctions {
 			for(String s : record) {
 				vncRecord.add(s == null ? Constants.Nil : new VncString(s));
 			}
-			vncRecords.add(new VncList(vncRecord));
+			vncRecords.add(VncList.ofList(vncRecord));
 		}
-		return new VncList(vncRecords);
+		return VncList.ofList(vncRecords);
 	}
 		
 	private static char toChar(final VncVal v, final char defaultChar) {
