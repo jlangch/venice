@@ -163,9 +163,9 @@ public class Reader {
 				}
 			
 			case STRING_BLOCK: {
-					final String s = StringUtil.stripIndentIfFirstLineEmpty(
-										unescapeAndDecodeUnicode(
-												StringUtil.removeEnd(
+					final String s = unescapeAndDecodeUnicode(
+										StringUtil.stripIndentIfFirstLineEmpty(
+											StringUtil.removeEnd(
 														sToken.substring(3), 
 														"\"\"\"")));			
 					return interpolate(s, rdr.filename, token.getLine(), token.getColumn())

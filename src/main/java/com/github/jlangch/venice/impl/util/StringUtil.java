@@ -254,12 +254,16 @@ public class StringUtil {
 			return text;
 		}
 
-		final List<String> lines = StringUtil.splitIntoLines(text);
+		List<String> lines = StringUtil.splitIntoLines(text);
 		
 		// get the indent from the first line
 		final String indent = indentStr(lines.get(0)) ;
 		
-		return indent == null ? text : String.join("\n", stripIndent(indent, lines));
+		if (indent != null) {
+			lines = stripIndent(indent, lines);
+		}
+		
+		return String.join("\n", lines);
 	}
 	
 	public static String stripIndentIfFirstLineEmpty(final String text) {
@@ -270,7 +274,7 @@ public class StringUtil {
 		List<String> lines = StringUtil.splitIntoLines(text);
 		if (lines.size() == 1 || !lines.get(0).isEmpty()) {
 			// just a single line or does not start with an empty line
-			return text; 
+			return String.join("\n", lines);
 		}
 
 		// skip the first empty line
@@ -278,19 +282,18 @@ public class StringUtil {
 		
 		final String indent = indentStr(lines.get(0)) ;
 		
-		if (indent == null) {
-			return text;
-		}
-		else {
+		if (indent != null) {
 			lines = stripIndent(indent, lines);
 			
 			// remove an optional last empty line
 			if (lines.get(lines.size()-1).isEmpty()) {
 				lines = lines.subList(0, lines.size()-1);
 			}
-			
-			return String.join("\n", lines);
 		}
+		
+		lines = joinLinesEndingWithBackslash(lines);
+		
+		return String.join("\n", lines);
 	}
 	
 	public static String stripMargin(final String text, final char margin) {
@@ -477,5 +480,29 @@ public class StringUtil {
 			final int firstNonBlankPos = StringUtil.indexNotOf(line, " \t", 0);			
 			return firstNonBlankPos < 0 ? line : line.substring(0, firstNonBlankPos);
 		}
+	}
+	
+	private static List<String> joinLinesEndingWithBackslash(final List<String> lines) {
+		final List<String> joined = new ArrayList<>();
+		
+		// join lines if the line ends with a '\'
+		String joinLine = null;
+		for(int ii=0;  ii<lines.size(); ii++) {
+			String line = lines.get(ii);
+			if (line.endsWith("\\")) {
+				line = line.substring(0, line.length()-1);
+				joinLine = joinLine == null ? line : joinLine + line; 
+			}
+			else {
+				joined.add(joinLine == null ? line : joinLine + line);
+				joinLine = null;
+			}
+		}
+		
+		if (joinLine != null) {
+			joined.add(joinLine);
+		}
+
+		return joined;
 	}
 }

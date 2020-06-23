@@ -23,6 +23,8 @@ package com.github.jlangch.venice.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -58,6 +60,47 @@ public class StringUtilTest {
 		
 		assertEquals(" \\n \\r \\t \\\" \\\\ ", StringUtil.escape(" \n \r \t \" \\ "));				
 	}
+
+	@Test
+	public void testSplitIntoLines() {
+		List<String> lines = StringUtil.splitIntoLines(null);
+		assertEquals(0, lines.size());
+
+		lines = StringUtil.splitIntoLines("");
+		assertEquals(0, lines.size());
+
+		lines = StringUtil.splitIntoLines("123");
+		assertEquals(1, lines.size());
+		assertEquals("123", lines.get(0));
+
+		lines = StringUtil.splitIntoLines("\n");
+		assertEquals(1, lines.size());
+		assertEquals("", lines.get(0));
+
+		lines = StringUtil.splitIntoLines("\r\n");
+		assertEquals(1, lines.size());
+		assertEquals("", lines.get(0));
+
+		lines = StringUtil.splitIntoLines("123\n456");
+		assertEquals(2, lines.size());
+		assertEquals("123", lines.get(0));
+		assertEquals("456", lines.get(1));
+
+		lines = StringUtil.splitIntoLines("123\r\n456");
+		assertEquals(2, lines.size());
+		assertEquals("123", lines.get(0));
+		assertEquals("456", lines.get(1));	
+
+		lines = StringUtil.splitIntoLines("123\n456\n");
+		assertEquals(2, lines.size());
+		assertEquals("123", lines.get(0));
+		assertEquals("456", lines.get(1));
+
+		lines = StringUtil.splitIntoLines("123\r\n456\r\n");
+		assertEquals(2, lines.size());
+		assertEquals("123", lines.get(0));
+		assertEquals("456", lines.get(1));	
+	}
 	
 	@Test
 	public void testStripMargin() {
@@ -74,8 +117,9 @@ public class StringUtilTest {
 		assertEquals("", StringUtil.stripIndent(""));
 		assertEquals("123", StringUtil.stripIndent("123"));
 		assertEquals("123", StringUtil.stripIndent("  123"));
-		assertEquals("\n", StringUtil.stripIndent("\n"));
+		assertEquals("", StringUtil.stripIndent("\n"));
 		assertEquals("\n  ", StringUtil.stripIndent("\n  "));
+		assertEquals("\n123", StringUtil.stripIndent("\n123"));
 
 		assertEquals("1\n2\n3", StringUtil.stripIndent("1\n2\n3"));
 		assertEquals("1\n  2\n  3", StringUtil.stripIndent("1\n  2\n  3"));
@@ -84,12 +128,29 @@ public class StringUtilTest {
 	}
 	
 	@Test
+	public void testStripIndent_CR() {
+		assertEquals(null, StringUtil.stripIndent(null));
+		assertEquals("", StringUtil.stripIndent(""));
+		assertEquals("123", StringUtil.stripIndent("123"));
+		assertEquals("123", StringUtil.stripIndent("  123"));
+		assertEquals("", StringUtil.stripIndent("\r\n"));
+		assertEquals("\n  ", StringUtil.stripIndent("\r\n  "));
+		assertEquals("\n123", StringUtil.stripIndent("\r\n123"));
+
+		assertEquals("1\n2\n3", StringUtil.stripIndent("1\r\n2\r\n3"));
+		assertEquals("1\n  2\n  3", StringUtil.stripIndent("1\r\n  2\r\n  3"));
+
+		assertEquals("1\n2\n3", StringUtil.stripIndent("  1\r\n  2\r\n  3"));
+	}
+	
+	@Test
 	public void testStripIndentIfFirstLineEmpty() {
 		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("123"));
 		assertEquals("  123", StringUtil.stripIndentIfFirstLineEmpty("  123"));
-		assertEquals("\n", StringUtil.stripIndentIfFirstLineEmpty("\n"));
-		assertEquals("\n123", StringUtil.stripIndentIfFirstLineEmpty("\n123"));
-		assertEquals("\n123\n456", StringUtil.stripIndentIfFirstLineEmpty("\n123\n456"));
+		assertEquals("", StringUtil.stripIndentIfFirstLineEmpty("\n"));
+		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("\n123"));
+		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("\n123\n"));
+		assertEquals("123\n456", StringUtil.stripIndentIfFirstLineEmpty("\n123\n456"));
 
 		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("1\n2\n3"));
 		assertEquals("1\n  2\n  3", StringUtil.stripIndentIfFirstLineEmpty("1\n  2\n  3"));
@@ -102,5 +163,60 @@ public class StringUtilTest {
 
 		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\n    3"));
 		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\n    3\n"));
+	}
+	
+	@Test
+	public void testStripIndentIfFirstLineEmpty_CR() {
+		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("123"));
+		assertEquals("  123", StringUtil.stripIndentIfFirstLineEmpty("  123"));
+		assertEquals("", StringUtil.stripIndentIfFirstLineEmpty("\r\n"));
+		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("\r\n123"));
+		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("\r\n123\r\n"));
+		assertEquals("123\n456", StringUtil.stripIndentIfFirstLineEmpty("\r\n123\r\n456"));
+
+		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("1\r\n2\r\n3"));
+		assertEquals("1\n  2\n  3", StringUtil.stripIndentIfFirstLineEmpty("1\r\n  2\r\n  3"));
+
+		assertEquals("", StringUtil.stripIndentIfFirstLineEmpty("\r\n  "));
+		assertEquals("", StringUtil.stripIndentIfFirstLineEmpty("\r\n  \r\n"));
+
+		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("\r\n  1\r\n  2\r\n  3"));
+		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("\r\n  1\r\n  2\r\n  3\r\n"));
+
+		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\r\n  1\r\n   2\r\n    3"));
+		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\r\n  1\r\n   2\r\n    3\r\n"));
+	}
+	
+	@Test
+	public void testStripIndentIfFirstLineEmpty_Join() {
+		assertEquals("123456", StringUtil.stripIndentIfFirstLineEmpty("\n123\\\n456"));
+
+		assertEquals("1\\\n2\\\n3", StringUtil.stripIndentIfFirstLineEmpty("1\\\n2\\\n3"));
+		assertEquals("1\\\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("1\\\n2\n3"));
+		assertEquals("1\n2\\\n3", StringUtil.stripIndentIfFirstLineEmpty("1\n2\\\n3"));
+		assertEquals("1\\\n  2\\\n  3", StringUtil.stripIndentIfFirstLineEmpty("1\\\n  2\\\n  3"));
+
+		assertEquals("", StringUtil.stripIndentIfFirstLineEmpty("\n  "));
+		assertEquals("", StringUtil.stripIndentIfFirstLineEmpty("\n  \\\n"));
+
+		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n  2\n  3"));
+		assertEquals("12\n3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\\\n  2\n  3"));
+		assertEquals("1\n23", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n  2\\\n  3"));
+		assertEquals("123", StringUtil.stripIndentIfFirstLineEmpty("\n  1\\\n  2\\\n  3"));
+		
+		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n  2\n  3\n"));
+		assertEquals("12\n3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\\\n  2\n  3\n"));
+		assertEquals("1\n23", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n  2\\\n  3\n"));
+		assertEquals("1\n2\n3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n  2\n  3\\\n"));
+
+		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\n    3"));
+		assertEquals("1 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\\\n   2\n    3"));
+		assertEquals("1\n 2  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\\\n    3"));
+		assertEquals("1 2  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\\\n   2\\\n    3"));
+		
+		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\n    3\n"));
+		assertEquals("1 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\\\n   2\n    3\n"));
+		assertEquals("1\n 2  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\\\n    3\n"));
+		assertEquals("1\n 2\n  3", StringUtil.stripIndentIfFirstLineEmpty("\n  1\n   2\n    3\\\n"));
 	}
 }
