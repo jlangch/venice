@@ -106,8 +106,22 @@ public class ReaderTest {
 	@Test
 	public void testAtomString_TripleQuotes() {
 		assertEquals("abc", new Venice().eval("(do \"\"\"abc\"\"\")"));
+		assertEquals("abc", new Venice().eval("(do \"\"\"\\u0061\\u0062\\u0063\"\"\")"));		
 		assertEquals("a\"b\"c", new Venice().eval("(do \"\"\"a\"b\"c\"\"\")"));
 		assertEquals("a\nb\nc", new Venice().eval("(do \"\"\"a\nb\nc\"\"\")"));
+		
+		assertEquals("   1\n   2\n   3", new Venice().eval("(do \"\"\"   1\n   2\n   3\"\"\")"));
+	}
+
+	@Test
+	public void testAtomString_TripleQuotes_indent() {
+		assertEquals("1\n2\n3", new Venice().eval("(do \"\"\"\n   1\n   2\n   3\"\"\")"));
+		assertEquals("1\n2\n3", new Venice().eval("(do \"\"\"\n   1\n   2\n   3\n\"\"\")"));
+		assertEquals("1\n2\n3", new Venice().eval("(do \"\"\"\n   1\n   2\n   3\n   \"\"\")"));
+
+		assertEquals("1\n 2\n 3", new Venice().eval("(do \"\"\"\n   1\n    2\n    3\"\"\")"));
+		assertEquals("1\n 2\n 3", new Venice().eval("(do \"\"\"\n   1\n    2\n    3\n\"\"\")"));
+		assertEquals("1\n 2\n 3", new Venice().eval("(do \"\"\"\n   1\n    2\n    3\n   \"\"\")"));
 	}
 
 	@Test

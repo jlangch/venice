@@ -33,18 +33,18 @@ import java.util.stream.Collectors;
 public class StringUtil {
 	
 	/**
-     * <p>Replaces a String with another String inside a larger String,
-     * for the first {@code max} values of the search String,
-     * case sensitively/insensitively based on {@code ignoreCase} value.</p>
-     *
-     * <p>A {@code null} reference passed to this method is a no-op.</p>
+	 * <p>Replaces a String with another String inside a larger String,
+	 * for the first {@code max} values of the search String,
+	 * case sensitively/insensitively based on {@code ignoreCase} value.</p>
+	 *
+	 * <p>A {@code null} reference passed to this method is a no-op.</p>
 	 * 
-     * @param text  text to search and replace in, may be null
-     * @param searchString  the String to search for (case insensitive), may be null
-     * @param replacement  the String to replace it with, may be null
-     * @param max  maximum number of values to replace, or {@code -1} if no maximum
-     * @param ignoreCase if true replace is case insensitive, otherwise case sensitive
-     * @return the text with any replacements processed,
+	 * @param text  text to search and replace in, may be null
+	 * @param searchString  the String to search for (case insensitive), may be null
+	 * @param replacement  the String to replace it with, may be null
+	 * @param max  maximum number of values to replace, or {@code -1} if no maximum
+	 * @param ignoreCase if true replace is case insensitive, otherwise case sensitive
+	 * @return the text with any replacements processed,
 	 */
 	public static String replace(
 			final String text, 
@@ -91,17 +91,17 @@ public class StringUtil {
 	}
 
 	/**
-     * <p>Replaces a String with another String inside a larger String,
-     * for the last value of the search String,
-     * case sensitively/insensitively based on {@code ignoreCase} value.</p>
-     *
-     * <p>A {@code null} reference passed to this method is a no-op.</p>
+	 * <p>Replaces a String with another String inside a larger String,
+	 * for the last value of the search String,
+	 * case sensitively/insensitively based on {@code ignoreCase} value.</p>
+	 *
+	 * <p>A {@code null} reference passed to this method is a no-op.</p>
 	 * 
-     * @param text  text to search and replace in, may be null
-     * @param searchString  the String to search for (case insensitive), may be null
-     * @param replacement  the String to replace it with, may be null
-      * @param ignoreCase if true replace is case insensitive, otherwise case sensitive
-     * @return the text with any replacements processed,
+	 * @param text  text to search and replace in, may be null
+	 * @param searchString  the String to search for (case insensitive), may be null
+	 * @param replacement  the String to replace it with, may be null
+	 * @param ignoreCase if true replace is case insensitive, otherwise case sensitive
+	 * @return the text with any replacements processed,
 	 */
 	public static String replaceLast(
 			final String text, 
@@ -254,7 +254,12 @@ public class StringUtil {
 			return text;
 		}
 
-		return stripIndentRaw(text, StringUtil.splitIntoLines(text));
+		final List<String> lines = StringUtil.splitIntoLines(text);
+		
+		// get the indent from the first line
+		final String indent = indentStr(lines.get(0)) ;
+		
+		return indent == null ? text : String.join("\n", stripIndent(indent, lines));
 	}
 	
 	public static String stripIndentIfFirstLineEmpty(final String text) {
@@ -262,15 +267,30 @@ public class StringUtil {
 			return text;
 		}
 
-		final List<String> lines = StringUtil.splitIntoLines(text);
+		List<String> lines = StringUtil.splitIntoLines(text);
 		if (lines.size() == 1 || !lines.get(0).isEmpty()) {
 			// just a single line or does not start with an empty line
 			return text; 
 		}
 
-		return removeEnd(
-				stripIndentRaw(text, lines.subList(1, lines.size())),
-				"\n");
+		// skip the first empty line
+		lines = lines.subList(1, lines.size());
+		
+		final String indent = indentStr(lines.get(0)) ;
+		
+		if (indent == null) {
+			return text;
+		}
+		else {
+			lines = stripIndent(indent, lines);
+			
+			// remove an optional last empty line
+			if (lines.get(lines.size()-1).isEmpty()) {
+				lines = lines.subList(0, lines.size()-1);
+			}
+			
+			return String.join("\n", lines);
+		}
 	}
 	
 	public static String stripMargin(final String text, final char margin) {
@@ -428,36 +448,34 @@ public class StringUtil {
 		
 		final int count = StringUtil.indexNotOf(text, " ", 0);
 		
-	    if (count > 0) {
-			final StringBuilder sb = new StringBuilder();		
-	    	sb.append(repeat(replaceChar, count));
-	    	sb.append(text.substring(count));
-		    return sb.toString();
-	    }
-	    else {
-    		return text;
-	    }
-	}
-	
-	private static String stripIndentRaw(final String text, final List<String> lines) {
-		final String first = lines.get(0);
-		
-		final int firstNonBlankPos = StringUtil.indexNotOf(first, " \t", 0);
-		final int firstBlankPos = StringUtil.indexOneCharOf(first, " \t", 0);
-
-		if (firstBlankPos < 0) {
+		if (count > 0) {
+			final StringBuilder sb = new StringBuilder();
+			sb.append(repeat(replaceChar, count));
+			sb.append(text.substring(count));
+			return sb.toString();
+		}
+		else {
 			return text;
 		}
-		
-		final String indent = firstNonBlankPos < 0 
-								? first
-								: first.substring(0, firstNonBlankPos);
-		
+	}
+	
+	private static List<String> stripIndent(final String indent, final List<String> lines) {
 		final int skipChars = indent.length();
 		return lines
 				.stream()
 				.map(s -> s.startsWith(indent) ? s.substring(skipChars) : s)
-				.collect(Collectors.joining("\n"));
+				.collect(Collectors.toList());
 	}
 
+	private static String indentStr(final String line) {
+		final int firstBlankPos = StringUtil.indexOneCharOf(line, " \t", 0);
+
+		if (firstBlankPos < 0) {
+			return null;
+		}
+		else {
+			final int firstNonBlankPos = StringUtil.indexNotOf(line, " \t", 0);			
+			return firstNonBlankPos < 0 ? line : line.substring(0, firstNonBlankPos);
+		}
+	}
 }

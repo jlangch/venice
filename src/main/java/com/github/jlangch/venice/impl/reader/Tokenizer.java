@@ -283,8 +283,17 @@ public class Tokenizer {
 				final int line = reader.getLineNumber();
 				final int col = reader.getColumnNumber();
 				reader.consume();
-				sb.append((char)ch);
-				sb.append(readStringEscapeChar(STRING, filePos, line, col));
+				
+				final int chNext = reader.peek();
+				if (chNext == LF || chNext == CR) {
+					reader.consume();
+					sb.append((char)ch);
+					sb.append((char)chNext);
+				}
+				else {
+					sb.append((char)ch);
+					sb.append(readStringEscapeChar(STRING, filePos, line, col));
+				}
 			}
 			else {
 				reader.consume();
@@ -349,7 +358,7 @@ public class Tokenizer {
 	) throws IOException {
 		final int ch = reader.peek();
 		
-		if (ch == LF) {
+		if (ch == LF || ch == CR) {
 			throw new ParseError(formatParseError(
 					new Token(type, "\\", fileName, filePos, line, col), 
 					"Expected escaped char in a string but got EOL"));
@@ -377,6 +386,7 @@ public class Tokenizer {
 	
 	
 	private static final int LF = (int)'\n';
+	private static final int CR = (int)'\r';
 	private static final int EOF = -1;
 
 	private final CharacterReader reader;

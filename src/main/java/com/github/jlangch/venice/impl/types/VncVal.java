@@ -46,7 +46,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 			final VncWrappingTypeDef wrappingTypeDef, 
 			final VncVal meta
 	) {	
-		this.meta = meta;
+		this.meta = meta == null ? Nil : meta;
 		this.wrappingTypeDef = wrappingTypeDef;
 		this._private = MetaUtil.isPrivate(meta);
 	}
