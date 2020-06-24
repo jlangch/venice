@@ -111,7 +111,14 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector withVariadicValues(final VncVal... replaceVals) {
-		return VncVector.of(replaceVals).withMeta(getMeta());
+		switch (replaceVals.length) {
+			case 0:	return VncTinyVector.empty();
+			case 1:	return new VncTinyVector(replaceVals[0], getMeta());
+			case 2:	return new VncTinyVector(replaceVals[0], replaceVals[1], getMeta());
+			case 3:	return new VncTinyVector(replaceVals[0], replaceVals[1], replaceVals[2], getMeta());
+			case 4:	return new VncTinyVector(replaceVals[0], replaceVals[1], replaceVals[2], replaceVals[3], getMeta());
+			default: return new VncVector(io.vavr.collection.Vector.of(replaceVals), getMeta());
+		}
 	}
 	
 	@Override

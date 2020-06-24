@@ -107,7 +107,14 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return VncList.of(replaceVals).withMeta(getMeta());
+		switch (replaceVals.length) {
+			case 0:	return VncTinyList.empty();
+			case 1:	return new VncTinyList(replaceVals[0], getMeta());
+			case 2:	return new VncTinyList(replaceVals[0], replaceVals[1], getMeta());
+			case 3:	return new VncTinyList(replaceVals[0], replaceVals[1], replaceVals[2], getMeta());
+			case 4:	return new VncTinyList(replaceVals[0], replaceVals[1], replaceVals[2], replaceVals[3], getMeta());
+			default: return new VncList(io.vavr.collection.Vector.of(replaceVals), getMeta());
+		}
 	}
 	
 	@Override

@@ -100,6 +100,9 @@ public class VeniceInterpreter implements Serializable  {
 		this.meterRegistry = perfmeter;
 		this.interceptor = interceptor;
 		this.loadPaths = loadPaths;
+		
+		// performance optimization
+		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
 	}
 	
 	public void initNS() {
@@ -284,14 +287,14 @@ public class VeniceInterpreter implements Serializable  {
 		
 		while (true) {
 			//System.out.println("EVAL: " + printer._pr_str(orig_ast, true));
-			if (!Types.isVncList(orig_ast)) {
+			if (!(orig_ast instanceof VncList)) {
 				// not an s-expr
 				return evaluate_values(orig_ast, env);
 			}
 	
 			// expand macros
 			final VncVal expanded = macroexpand(orig_ast, env);
-			if (!Types.isVncList(expanded)) {
+			if (!(expanded instanceof VncList)) {
 				// not an s-expr
 				return evaluate_values(expanded, env);
 			}
@@ -656,7 +659,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncVector bindings = Coerce.toVncVector(ast.second());
 					final VncList expressions = ast.slice(2);
 					
-					final List<VncSymbol> bindingNames = new ArrayList<>();
+					final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
 					for(int i=0; i<bindings.size(); i+=2) {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = evaluate(bindings.nth(i+1), env);
@@ -670,7 +673,7 @@ public class VeniceInterpreter implements Serializable  {
 						//}
 					}
 					
-					recursionPoint = new RecursionPoint(VncList.ofList(bindingNames, Nil), expressions, env);
+					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
 					if (expressions.size() == 1) {
 						orig_ast = expressions.first();
 					}
@@ -801,20 +804,23 @@ public class VeniceInterpreter implements Serializable  {
 					final VncList el = (VncList)evaluate_values((VncList)ast, env);
 					final VncVal elFirst = el.first();
 					final VncList elArgs = el.rest();
-					if (Types.isVncFunction(elFirst)) {
+					if (elFirst instanceof VncFunction) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
 						final String fnName = fn.getQualifiedName();
 
-						final long nanos = System.nanoTime();
+						final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
 						
 						// validate function call allowed by sandbox
-						interceptor.validateVeniceFunction(fnName);	
-	
-						checkInterrupted(fnName);
-						if (sandboxMaxExecutionTimeChecker.enabled) {
-							sandboxMaxExecutionTimeChecker.check();
+						if (checkSandbox) {
+							interceptor.validateVeniceFunction(fnName);	
+
+							if (sandboxMaxExecutionTimeChecker.enabled) {
+								sandboxMaxExecutionTimeChecker.check();
+							}
 						}
+						
+						checkInterrupted(fnName);
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
@@ -835,7 +841,7 @@ public class VeniceInterpreter implements Serializable  {
 							}
 						}
 					}
-					else if (Types.isIVncFunction(elFirst)) {
+					else if (elFirst instanceof IVncFunction) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
 						return ((IVncFunction)elFirst).apply(elArgs);
@@ -931,27 +937,29 @@ public class VeniceInterpreter implements Serializable  {
 	 * @return the expanded macro
 	 */
 	private VncVal macroexpand(final VncVal ast, final Env env) {
-		final long nanos = System.nanoTime();
+		final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
 		
 		VncVal ast_ = ast;
 		boolean expanded = false;
 		
-		do {
+		while (ast_ instanceof VncList) {
 			final VncVal a0 = ((VncList)ast_).first();
-			if (!Types.isVncSymbol(a0)) break;
+			if (!(a0 instanceof VncSymbol)) break;
 			
 			final VncVal fn = env.getGlobalOrNull((VncSymbol)a0);
-			if (!Types.isVncMacro(fn)) break;
+			if (!(fn != null && fn instanceof VncFunction && ((VncFunction)fn).isMacro())) break;
 			
 			final VncFunction macro = (VncFunction)fn;
 
 			// validate that the macro is allowed by the sandbox
-			interceptor.validateVeniceFunction(macro.getQualifiedName());					
-
+			if (checkSandbox) {
+				interceptor.validateVeniceFunction(macro.getQualifiedName());					
+			}
+			
 			expanded = true; 
 
 			ast_ = macro.apply(((VncList)ast_).rest());
-		} while(Types.isVncList(ast_));
+		}
 	
 		if (expanded && meterRegistry.enabled) {
 			meterRegistry.record("macroexpand", System.nanoTime() - nanos);
@@ -1628,6 +1636,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final Var DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR = new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, False, true);
 	
 	private final IInterceptor interceptor;	
+	private final boolean checkSandbox;
 	private final List<String> loadPaths;
 	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
