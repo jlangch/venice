@@ -219,7 +219,7 @@ public class Env implements Serializable {
 	}
 
 	public Env setLocal(final VncSymbol sym, final VncVal val) {
-		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
+		if (sym.getName().equals(Namespaces.NS_CURRENT_NAME)) {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
@@ -458,7 +458,7 @@ public class Env implements Serializable {
 	}
 	
 	private VncVal getOrElse(final VncSymbol sym, final VncVal defaultVal) {
-		final String ns = Namespaces.getNamespace(sym.getName());
+		final String ns = sym.getNamespace();
 		if (ns != null) {
 			// if we got a namespace it must be a global var
 			final Var glob = getGlobalVar(sym);

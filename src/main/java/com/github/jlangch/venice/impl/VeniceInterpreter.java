@@ -215,7 +215,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(NEWLINE_VAR);
 
 		// ansi terminal
-		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
+		env.setGlobal(new Var(ANSI_TERM_SYMBOL, VncBoolean.of(ansiTerminal), false));
 
 		// set the load path
 		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));
@@ -1626,6 +1626,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final VncSymbol NEWLINE_SYMBOL = new VncSymbol("*newline*");
 	private static final VncSymbol LOAD_PATH_SYMBOL = new VncSymbol("*load-path*");
 	private static final VncSymbol RUN_MODE_SYMBOL = new VncSymbol("*run-mode*");
+	private static final VncSymbol ANSI_TERM_SYMBOL = new VncSymbol("*ansi-term*");
 	private static final VncSymbol MACRO_EXPAND_ON_LOAD_SYMBOL = new VncSymbol("*macroexpand-on-load*");
 
 	private static final VncString VERSION = new VncString(Version.VERSION);

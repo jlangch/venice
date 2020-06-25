@@ -102,13 +102,13 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList emptyWithMeta() {
-		return new VncList(getMeta());
+		return new VncTinyList(getMeta());
 	}
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
 		switch (replaceVals.length) {
-			case 0:	return VncTinyList.empty();
+			case 0:	return new VncTinyList(getMeta());
 			case 1:	return new VncTinyList(replaceVals[0], getMeta());
 			case 2:	return new VncTinyList(replaceVals[0], replaceVals[1], getMeta());
 			case 3:	return new VncTinyList(replaceVals[0], replaceVals[1], replaceVals[2], getMeta());

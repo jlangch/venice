@@ -31,3 +31,10 @@
 [Java VisualVM](https://visualvm.github.io/download.html)
 
 [Zulu Mission Control](https://www.azul.com/products/zulu-mission-control/)
+
+
+## Clojure socket REPL
+
+[Clojure socket REPL](https://clojure.org/reference/repl_and_main)
+
+[Clojure socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)

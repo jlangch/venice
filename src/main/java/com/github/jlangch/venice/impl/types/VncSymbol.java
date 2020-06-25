@@ -24,17 +24,10 @@ package com.github.jlangch.venice.impl.types;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 public class VncSymbol extends VncVal {
-
-	public VncSymbol(final VncString v) { 
-		this(v.getValue(), Constants.Nil); 
-	}
-
-	public VncSymbol(final VncString v, final VncVal meta) { 
-		this(v.getValue(), meta); 
-	}
 
 	public VncSymbol(final String v) { 
 		this(v, Constants.Nil); 
@@ -43,6 +36,7 @@ public class VncSymbol extends VncVal {
 	public VncSymbol(final String v, final VncVal meta) { 
 		super(meta);
 		value = v; 
+		ns = Namespaces.getNamespace(v);
 	}
 	
 	
@@ -72,6 +66,10 @@ public class VncSymbol extends VncVal {
 
 	public String getValue() { 
 		return value; 
+	}
+	
+	public String getNamespace() {
+		return ns;
 	}
 	
 	@Override 
@@ -132,4 +130,5 @@ public class VncSymbol extends VncVal {
     private static final long serialVersionUID = -1848883965231344442L;
 
 	private final String value;
+	private final String ns;
 }

@@ -101,6 +101,9 @@ public class ReservedSymbols {
 				Arrays.asList(
 					".",
 					"proxify",
+					"*in*",
+					"*out*",
+					"*err*",
 					"*version*",
 					"*newline*",
 					"*ns*",
@@ -108,6 +111,9 @@ public class ReservedSymbols {
 					"*loaded-files*",
 					"*load-path*",
 					"*run-mode*",
-					"*macroexpand-on-load*"));
-	
+					"*macroexpand-on-load*",
+					"*ansi-term*",
+					"*app-name*",
+					"*app-archive*",
+					"*ARGV*"));
 }

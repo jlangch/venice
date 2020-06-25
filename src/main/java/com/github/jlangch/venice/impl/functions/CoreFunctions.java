@@ -533,7 +533,7 @@ public class CoreFunctions {
 					return args.first();
 				}
 				else if (Types.isVncString(args.first())) {
-					return new VncSymbol((VncString)args.first());
+					return new VncSymbol(((VncString)args.first()).getValue());
 				}
 				else {
 					throw new VncException(String.format(
