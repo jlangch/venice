@@ -148,7 +148,7 @@ public class Env implements Serializable {
 	}
 
 	/**
-	 * Look up a global symbol' value
+	 * Look up a global symbol's value
 	 * 
 	 * <p>Unqualified symbol resolution:
 	 * <ol>
@@ -399,7 +399,7 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public Env setStdinReader(final java.io.Reader rd) {
+	public Env setStdinReader(final Reader rd) {
 		final VncSymbol sym = new VncSymbol("*in*");
 		
 		if (rd == null) {

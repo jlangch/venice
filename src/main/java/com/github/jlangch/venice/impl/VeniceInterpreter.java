@@ -664,11 +664,6 @@ public class VeniceInterpreter implements Serializable  {
 	
 						env.setLocal(sym, val);
 						bindingNames.add(sym);
-	
-						//for(Binding b : Destructuring.destructure(sym, val)) {
-						//	env.set(b.sym, b.val);
-						//	bindingNames.add(b.sym);
-						//}
 					}
 					
 					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
