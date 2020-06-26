@@ -43,7 +43,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.reader.Reader;
-import com.github.jlangch.venice.impl.sandbox.SandboxMaxExecutionTimeChecker;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.DocForm;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -96,7 +95,6 @@ public class VeniceInterpreter implements Serializable  {
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this.sandboxMaxExecutionTimeChecker = new SandboxMaxExecutionTimeChecker();
 		this.meterRegistry = perfmeter;
 		this.interceptor = interceptor;
 		this.loadPaths = loadPaths;
@@ -814,10 +812,7 @@ public class VeniceInterpreter implements Serializable  {
 						// validate function call allowed by sandbox
 						if (checkSandbox) {
 							interceptor.validateVeniceFunction(fnName);	
-
-							if (sandboxMaxExecutionTimeChecker.enabled) {
-								sandboxMaxExecutionTimeChecker.check();
-							}
+							interceptor.validateMaxExecutionTime();
 						}
 						
 						checkInterrupted(fnName);
@@ -833,9 +828,9 @@ public class VeniceInterpreter implements Serializable  {
 						finally {
 							callStack.pop();
 							checkInterrupted(fnName);
-							if (sandboxMaxExecutionTimeChecker.enabled) {
-								sandboxMaxExecutionTimeChecker.check();
-							}							
+							if (checkSandbox) {
+								interceptor.validateMaxExecutionTime();
+							}
 							if (meterRegistry.enabled) {
 								meterRegistry.record(fn.getQualifiedName(), System.nanoTime() - nanos);
 							}
@@ -1639,7 +1634,6 @@ public class VeniceInterpreter implements Serializable  {
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
 	private final List<String> loadPaths;
-	private final SandboxMaxExecutionTimeChecker sandboxMaxExecutionTimeChecker;	
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();

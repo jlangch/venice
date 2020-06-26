@@ -138,6 +138,10 @@ public abstract class Interceptor implements IInterceptor {
 	}
 
 	@Override
+	public void validateMaxExecutionTime() throws SecurityException {
+	}
+
+	@Override
 	public Integer getMaxExecutionTimeSeconds() {
 		return null;
 	}

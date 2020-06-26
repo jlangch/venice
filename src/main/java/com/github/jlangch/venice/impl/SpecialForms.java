@@ -1003,7 +1003,9 @@ public class SpecialForms {
 					.doc("The current namespace")
 					.examples(
 						"*ns*", 
-						"(do\n  (ns test)\n  *ns*)")
+						"(do \n" +
+						"  (ns test) \n" +
+						"  *ns*)")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

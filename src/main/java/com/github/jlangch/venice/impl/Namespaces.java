@@ -168,7 +168,9 @@ public class Namespaces {
 			Collections.unmodifiableSet(
 				new HashSet<>(
 					Arrays.asList(
-							"core", "cidr", "csv", "io", "str", "regex", "time",
+							"local",
+							"core", 
+							"cidr", "csv", "io", "str", "regex", "time",
 							"crypt", "json", "pdf", "xml", "bench",
 							"test",
 							"xchart", "kira", "parsatron",

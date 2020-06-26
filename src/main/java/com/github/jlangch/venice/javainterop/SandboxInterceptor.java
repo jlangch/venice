@@ -30,6 +30,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	public SandboxInterceptor(final SandboxRules rules) {
 		this.sandboxRulesOrg = rules;
 		this.sandboxRules = CompiledSandboxRules.compile(rules);
+
+		this.executionTimeDeadline = getExecutionTimeDeadlineTime();
 	}
 	
 	public SandboxRules getRules() {
@@ -169,6 +171,14 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 	}
 
 	@Override
+	public void validateMaxExecutionTime() throws SecurityException {
+		if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
+			throw new SecurityException(
+					"Venice Sandbox: The sandbox exceeded the max execution time");
+		}
+	}
+
+	@Override
 	public Integer getMaxExecutionTimeSeconds() {
 		return sandboxRules.getMaxExecTimeSeconds();
 	}
@@ -274,10 +284,19 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
 			return null;
 		}
 	}
-	
+
+	private long getExecutionTimeDeadlineTime() {
+		final Integer maxExecTimeSeconds = getMaxExecutionTimeSeconds();
+		return maxExecTimeSeconds == null 
+					? -1L
+					: System.currentTimeMillis() + 1000L * maxExecTimeSeconds.longValue();
+	}
+
 	
 	private static final String PREFIX = "Venice Sandbox";
 	
 	private final SandboxRules sandboxRulesOrg;
 	private final CompiledSandboxRules sandboxRules;
+	
+	private final long executionTimeDeadline;
 }
