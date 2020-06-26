@@ -659,11 +659,11 @@ public class VeniceInterpreter implements Serializable  {
 					
 					final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
 					for(int i=0; i<bindings.size(); i+=2) {
-						final VncVal sym = bindings.nth(i);
+						final VncSymbol sym = Coerce.toVncSymbol(bindings.nth(i));
 						final VncVal val = evaluate(bindings.nth(i+1), env);
 	
-						env.setLocal((VncSymbol)sym, val);
-						bindingNames.add((VncSymbol)sym);
+						env.setLocal(sym, val);
+						bindingNames.add(sym);
 	
 						//for(Binding b : Destructuring.destructure(sym, val)) {
 						//	env.set(b.sym, b.val);

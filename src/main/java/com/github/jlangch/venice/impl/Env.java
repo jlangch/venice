@@ -120,10 +120,8 @@ public class Env implements Serializable {
 			return getGlobalVar(sym) != null;
 		}
 		else {
-			final Env e = findEnv(sym);
-			return e != null
-					? e.getLocalVar(sym) != null
-					: getGlobalVar(sym) != null;
+			final VncVal v = findLocalVar(sym);
+			return v != null ? true : getGlobalVar(sym) != null;
 		}
 	}
 
@@ -465,10 +463,9 @@ public class Env implements Serializable {
 			return glob == null ? defaultVal : glob.getVal();
 		}
 		else {
-			final Env e = findEnv(sym);
-			if (e != null) {
-				final Var loc = e.getLocalVar(sym);
-				return loc == null ? defaultVal : loc.getVal();
+			final VncVal local = findLocalVar(sym);
+			if (local != null) {
+				return local;
 			}
 			else {
 				final Var glob = getGlobalVar(sym);
@@ -477,16 +474,15 @@ public class Env implements Serializable {
 		}
 	}
 	
-	private Env findEnv(final VncSymbol sym) {		
-		if (hasLocalVar(sym)) {
-			return this;
-		} 
-		else if (outer != null) {
-			return outer.findEnv(sym);
-		} 
-		else {
-			return null;
+	private VncVal findLocalVar(final VncSymbol sym) {
+		Env env = this;	
+		while(env != null) {
+			final Var v = env.localSymbols.get(sym);
+			if (v != null) return v.getVal();
+			env = env.outer;
 		}
+		
+		return null;
 	}
 	
 	private Var getGlobalVar(final VncSymbol sym) {
@@ -535,16 +531,8 @@ public class Env implements Serializable {
 		globalSymbols.put(sym, value);
 	}
 
-	private Var getLocalVar(final VncSymbol sym) {
-		return localSymbols.get(sym);
-	}
-
 	private void setLocalVar(final VncSymbol sym, final Var value) {
 		localSymbols.put(sym, value);
-	}
-
-	private boolean hasLocalVar(final VncSymbol sym) {
-		return localSymbols.containsKey(sym);
 	}
 	
 	public Map<VncSymbol,Var> getAllGlobalSymbols() {

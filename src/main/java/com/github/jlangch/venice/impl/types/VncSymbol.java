@@ -30,7 +30,9 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class VncSymbol extends VncVal {
 
 	public VncSymbol(final String v) { 
-		this(v, Constants.Nil); 
+		super(Constants.Nil);
+		value = v; 
+		ns = Namespaces.getNamespace(v);
 	}
 
 	public VncSymbol(final String v, final VncVal meta) { 
@@ -38,7 +40,6 @@ public class VncSymbol extends VncVal {
 		value = v; 
 		ns = Namespaces.getNamespace(v);
 	}
-	
 	
 	@Override
 	public VncSymbol withMeta(final VncVal meta) {
