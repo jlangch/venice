@@ -360,8 +360,9 @@
           """
           (do
             (def a (atom 5))
-            (while (pos? (deref a))
-              (do (println (deref a)) (swap! a dec))))
+            (while (pos? @a)
+              (println @a)
+              (swap! a dec)))
           """ ) }
 
   while [test & body]

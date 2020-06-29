@@ -702,6 +702,8 @@ public class VeniceInterpreter implements Serializable  {
 	
 					// denormalize for best performance (short loops are performance critical)
 					switch(ast.size()) {
+						case 1:
+							break;
 						case 2:
 							// [1][2] calculate and bind the single new value
 							recur_env.setLocal(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env));
@@ -1568,7 +1570,7 @@ public class VeniceInterpreter implements Serializable  {
 		if (sym == null) {
 			return null;
 		}	
-		else if (Namespaces.isQualified(sym)) {
+		else if (sym.hasNamespace()) {
 			return new VncSymbol(
 						sym.getName(),
 						MetaUtil.setNamespace(

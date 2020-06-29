@@ -73,6 +73,10 @@ public class VncSymbol extends VncVal {
 		return ns;
 	}
 	
+	public boolean hasNamespace() {
+		return ns != null;
+	}
+	
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.SYMBOL;

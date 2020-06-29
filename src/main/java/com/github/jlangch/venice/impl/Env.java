@@ -114,8 +114,7 @@ public class Env implements Serializable {
 	 * @return returns true if a symbol is bound to a value else false
 	 */
 	public boolean isBound(final VncSymbol sym) {
-		final String ns = Namespaces.getNamespace(sym.getName());
-		if (ns != null) {
+		if (sym.hasNamespace()) {
 			// if we got a namespace it must be a global var
 			return getGlobalVar(sym) != null;
 		}
@@ -333,14 +332,14 @@ public class Env implements Serializable {
 			precompiledGlobalSymbols
 				.keySet()
 				.stream()
-				.filter(s -> nsName.equals(Namespaces.getNamespace(s.getName())))
+				.filter(s -> nsName.equals(s.getNamespace()))
 				.forEach(s -> precompiledGlobalSymbols.remove(s));
 		}	
 
 		globalSymbols
 			.keySet()
 			.stream()
-			.filter(s -> nsName.equals(Namespaces.getNamespace(s.getName())))
+			.filter(s -> nsName.equals(s.getNamespace()))
 			.forEach(s -> globalSymbols.remove(s));
 	}
 
@@ -456,8 +455,7 @@ public class Env implements Serializable {
 	}
 	
 	private VncVal getOrElse(final VncSymbol sym, final VncVal defaultVal) {
-		final String ns = sym.getNamespace();
-		if (ns != null) {
+		if (sym.hasNamespace()) {
 			// if we got a namespace it must be a global var
 			final Var glob = getGlobalVar(sym);
 			return glob == null ? defaultVal : glob.getVal();

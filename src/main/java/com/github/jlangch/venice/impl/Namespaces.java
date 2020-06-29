@@ -91,7 +91,7 @@ public class Namespaces {
 	}
 
 	public static VncSymbol qualifySymbol(final VncSymbol ns, final VncSymbol sym) {
-		if (Namespaces.isQualified(sym)) {
+		if (sym.hasNamespace()) {
 			throw new VncException(String.format(
 					"The symbol '%s' is already qualified with a namespace",
 					sym.getName()));
