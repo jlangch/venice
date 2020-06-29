@@ -14,9 +14,9 @@ For example:
 (do
   (load-module :kira)
 
-  (kira/eval "Hello <% (kira/emit name) %>" {:name "Alice"}))
-
-;;=> "Hello Alice"
+  (kira/eval "Hello <% (kira/emit name) %>" {:name "Alice"})
+  ;; => "Hello Alice"
+)
 ```
 
 The `<%= %>` tags will be substituted for the value of the expression within them. 
@@ -28,9 +28,9 @@ For example:
 (do
   (load-module :kira)
 
-  (kira/eval "Hello <%= name %>" {:name "Alice"}))
-
-;;=> "Hello Alice"
+  (kira/eval "Hello <%= name %>" {:name "Alice"})
+  ;; => "Hello Alice"
+)
 ```
 
 ### Customized Delimiters
@@ -41,9 +41,9 @@ The delimiters can be customized:
 (do
   (load-module :kira)
 
-  (kira/eval "Hello $(= name )$" ["$(" ")$"] {:name "Alice"}))
-  
-;;=> "Hello Alice"
+  (kira/eval "Hello $(= name )$" ["$(" ")$"] {:name "Alice"})
+  ;;=> "Hello Alice"
+)
 ```
 
 ## API Documentation
@@ -91,8 +91,9 @@ Examples of use:
   
   (def hello (kira/fn [name] "Hello <%= name %>"))
 
-  (println (hello "Alice"))
-  (println (hello "Bob")))
+  (println (hello "Alice"))  ;; => "Hello Alice"
+  (println (hello "Bob"))    ;; => "Hello Bob"
+)
 ```
 
 Defining a template with two scalar parameters:
@@ -104,8 +105,9 @@ Defining a template with two scalar parameters:
   (def hello
     (kira/fn [name1 name2] "Hello <%= name1 %> and <% (kira/emit name2) %>"))
 
-  (hello "Alice" "Bob")
-  (hello "Miss Piggy" "Kermit"))
+  (hello "Alice" "Bob")          ;; => "Hello Alice and Bob"
+  (hello "Miss Piggy" "Kermit")  ;; => "Hello Miss Piggy and Kermit"
+)
 ```
 
 Defining a template with parameters passed in a vector:
@@ -117,8 +119,29 @@ Defining a template with parameters passed in a vector:
   (def hello
     (kira/fn [names] "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>"))
 
-  (hello ["Alice" "Bob"])
-  (hello ["Miss Piggy" "Kermit"]))
+  (hello ["Alice" "Bob"])          ;; => "Hello Alice and Bob"
+  (hello ["Miss Piggy" "Kermit"])  ;; => "Hello Miss Piggy and Kermit"
+)
+```
+
+### kira/emit
+
+```clojure
+(kira/emit value)
+```
+
+Emit the passed value as string
+
+```clojure
+(do
+  (load-module :kira)
+  
+  (def hello
+    (kira/fn [v] "Hello <% (kira/emit v) %>"))
+
+  (hello "Alice")  ;; => "Hello Alice"
+  (hello 123)      ;; => "Hello 123"
+)
 ```
 
 
@@ -190,7 +213,7 @@ Output:
 Any Venice functions can be used to escape/convert/format output:
 
 ```text
-<% (print (format x)) %>
+<% (kira/emit (format x)) %>
 ```
 
 Example:
@@ -243,7 +266,7 @@ Loop over a collection of items:
        </users>
        """)
 
-  (def data { :users [ {:first "Thomas" :last "Meier" }
+  (def data { :users [ {:first "Thomas" :last "Meier&Müller" }
                        {:first "Anna" :last "Steiger" } ]  })
 
   (println (kira/eval template data)))
@@ -255,7 +278,7 @@ Output:
 <users>
   
   <user>
-    <firstname>Thomas</firstname>
+    <firstname>Thomas&amp;Müller</firstname>
     <lastname>Meier</lastname>
   </user>
   
@@ -325,7 +348,7 @@ Output:
 #### if - then - else with value
 
 ```text
-<% (print (if (== font :large) 36 12)) %>
+<% (kira/emit (if (== font :large) 36 12)) %>
 ```
 
 Example: 
@@ -340,7 +363,7 @@ Example:
          background-color: white;
          font-family: 'Open Sans', sans-serif;
          color: #444;
-         font-size: <% (print (if (== font :large) 36 12)) %>px;
+         font-size: <% (kira/emit (if (== font :large) 36 12)) %>px;
          line-height: 1.5em;
          font-weight: <%= weight %>;
        """)
