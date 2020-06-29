@@ -76,18 +76,21 @@
     (print expr)))
 
 
-(defn kira/parse-string [source delimiters]
-  (let [regex (kira/parser-regex delimiters)]
-    (with-out-str
-      (print "(do ")
-      (loop [src source]
-        (let [[_ before expr after] (regex/matches regex src)]
-          (if expr
-            (do (kira/emit-string before)
-                (kira/emit-expr expr)
-                (recur after))
-            (kira/emit-string after))))
-      (print ")"))))
+(defn kira/parse-string
+  ([source]
+    (kira/parse-string source kira/delimiters))
+  ([source delimiters]
+    (let [regex (kira/parser-regex delimiters)]
+      (with-out-str
+        (print "(do ")
+        (loop [src source]
+          (let [[_ before expr after] (regex/matches regex src)]
+            (if expr
+              (do (kira/emit-string before)
+                  (kira/emit-expr expr)
+                  (recur after))
+              (kira/emit-string after))))
+        (print ")")))))
 
 
 (defn kira/compile-fn [args src delimiters]
@@ -116,6 +119,18 @@
   kira/escape-xml
   ([s]   (kira/escape-xml s identity))
   ([s f] (kira/emit (str/escape-xml (str (f s))))))
+
+
+(defn
+  ^{ :doc """
+          HTML escapes a string and emits it. If the passed data is not of
+          type string it will be converted first to a string using the
+          'str' function.
+          An optional function f transforms the string before being escaped.
+          """ }
+  kira/escape-html
+  ([s]   (kira/escape-html s identity))
+  ([s f] (kira/emit (str/escape-html (str (f s))))))
 
 
 (defn

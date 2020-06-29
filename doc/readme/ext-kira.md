@@ -153,6 +153,8 @@ Emit the passed value as string
 #### Kira has built-in support for escaping XML/HTML:
 
 ```text
+<% (kira/escape-html text) %>
+
 <% (kira/escape-xml text) %>
 ```
 
@@ -449,7 +451,7 @@ Output:
 
 ### XML
 
-The XML example demonstrates _Kira_ loops, nested loops and conditionals.
+The XML example demonstrates  _Kira_  loops, nested loops and conditionals.
 
 Template blueprint:
 
