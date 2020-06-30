@@ -77,7 +77,7 @@
 // Upgrade Gradle wrapper
 //   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
 //   Upgrade:
-//      $> ./gradlew wrapper --gradle-version=6.4.1
+//      $> ./gradlew wrapper --gradle-version=6.5.1 --distribution-type=bin
 //
 // Get initial Gradle wrapper
 //   See https://guides.gradle.org/creating-new-gradle-builds/
@@ -108,7 +108,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'eclipse'
 }
 
