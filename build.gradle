@@ -166,7 +166,7 @@ java {
 
 
 test {
-    // prevent units checking exception to fail intermittently
+    // prevent units that check exceptions to fail intermittently
     jvmArgs '-XX:-OmitStackTraceInFastThrow'
 
     useJUnitPlatform {
