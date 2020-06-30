@@ -345,11 +345,11 @@ public class ConcurrencyFunctionsTest {
 				"   (defn err-handler-fn [ag ex]                  \n" +
 				"      (println (stacktrace ex))                  \n" +
 				"      (log* (str \"error occured: \"             \n" +
-				"                (type ex)                        \n" +
-				"                \"> \"                           \n" +
-				"                (:message ex)                    \n" +
-				"                \" and we still have value \"    \n" +
-				"                @ag)))                           \n" +
+				"                 (type ex)                       \n" +
+				"                 \"> \"                          \n" +
+				"                 (:message ex)                   \n" +
+				"                 \" and we still have value \"   \n" +
+				"                 @ag)))                          \n" +
 				"                                                 \n" +
 				"   (set-error-handler! a err-handler-fn)         \n" +
 				"   (send a (fn [x] (/ x 0)))                     \n" +
