@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,13 +40,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -138,9 +140,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			if (args.size() != 2) {
-				throw new ArityException(2, "proxify");
-			}
+			assertArity("proxify", args, 2);
 
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -180,9 +180,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			if (args.size() != 2) {
-				throw new ArityException(2, "cast");
-			}
+			assertArity("cast", args, 2);
 
 			if (Types.isVncJavaObject(args.second())) {
 				final Class<?> clazz = JavaInteropUtil.toClass(
@@ -225,9 +223,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			if (args.size() != 1) {
-				throw new ArityException(1, "formal-type");
-			}
+			assertArity("formal-type", args, 1);
 
 			if (Types.isVncJavaObject(args.first())) {
 				final VncJavaObject obj = (VncJavaObject)args.first();
@@ -266,6 +262,47 @@ public class JavaInteropFunctions {
 						JavaInteropUtil.toClass(
 							args.first(), 
 							Namespaces.getCurrentNamespace().getJavaImports()));
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaExStacktraceFn extends AbstractJavaFn {
+		public JavaExStacktraceFn() {
+			super(
+				"stacktrace", 
+				VncFunction
+					.meta()
+					.arglists("(stacktrace ex)")
+					.doc("Returns the stacktrace of a java exception")
+					.examples("(println (stacktrace (. :VncException :new (str \"test\"))))")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity("stacktrace", args, 1);
+
+			if (Types.isVncJavaObject(args.first())) {
+				final VncJavaObject obj = (VncJavaObject)args.first();
+				if (obj.getDelegate() instanceof Exception) {
+					final Exception ex = (Exception)obj.getDelegate();
+					final StringWriter wr = new StringWriter();
+					ex.printStackTrace(new PrintWriter(wr));
+					return new VncString(wr.getBuffer().toString());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'stacktrace' accepts only Java objects holding "
+								+ "objects of type :java.lang.Exception type. Got a %s.", 
+							new VncKeyword(obj.getDelegate().getClass().getName())));
+				}
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'stacktrace' requires a Java exception object. Got a %s.", 
+						Types.getType(args.second())));
+			}
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -691,5 +728,6 @@ public class JavaInteropFunctions {
 					.add(new JavaIterToListFn())
 					.add(new JavaObjWrapFn())
 					.add(new JavaObjUnwrapFn())
+					.add(new JavaExStacktraceFn())
 					.toMap();	
 }
