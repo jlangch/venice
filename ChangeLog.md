@@ -27,7 +27,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- block strings line joining (backslash at the end of a line)
+- line joining for text blocks (backslash at the end of a line)
 
 
 
