@@ -23,11 +23,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.8.11] - 2020-06-xx
+## [1.8.11] - 2020-07-xx
 
 ### Added
 
-- ... 
+- block strings line joining (backslash at the end of a line)
 
 
 
