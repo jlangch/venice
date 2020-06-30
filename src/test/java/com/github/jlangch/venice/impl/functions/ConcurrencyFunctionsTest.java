@@ -343,6 +343,7 @@ public class ConcurrencyFunctionsTest {
 				"   (def a (agent 100))                           \n" +
 				"                                                 \n" +
 				"   (defn err-handler-fn [ag ex]                  \n" +
+				"      (println (stacktrace ex))                  \n" +
 				"      (log* (str \"error occured: \"             \n" +
 				"                (type ex)                        \n" +
 				"                \"> \"                           \n" +
