@@ -103,14 +103,17 @@ public class Launcher {
 				runApp(cli, macroexpand, interceptor, appBootstrap, appName, appFile);
 			}
 			else if (cli.switchPresent("-app-repl")) {
+				// run a custom application repl
 				final String file = cli.switchValue("-app-repl");
 					
 				new CustomREPL(interceptor, loadPaths, new File(file)).run(args);
 			}
 			else if (cli.switchPresent("-repl")) {
+				// run the Venice repl
 				new REPL(interceptor, loadPaths).run(args);
 			}
 			else {
+				// run the Venice repl
 				new REPL(interceptor, loadPaths).run(args);
 			}
 			

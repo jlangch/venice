@@ -344,6 +344,8 @@ public class ConcurrencyFunctionsTest {
 				"                                                 \n" +
 				"   (defn err-handler-fn [ag ex]                  \n" +
 				"      (log* (str \"error occured: \"             \n" +
+				"                (type ex)                        \n" +
+				"                \"> \"                           \n" +
 				"                (:message ex)                    \n" +
 				"                \" and we still have value \"    \n" +
 				"                @ag)))                           \n" +
@@ -354,7 +356,7 @@ public class ConcurrencyFunctionsTest {
 				"   (with-out-str (print @logger)))                 ";
 
 		assertEquals(
-				"(error occured: / by zero and we still have value 100)", 
+				"(error occured: :com.github.jlangch.venice.VncException> / by zero and we still have value 100)", 
 				venice.eval(script));
 	}
 
