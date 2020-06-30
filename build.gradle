@@ -166,6 +166,8 @@ java {
 
 
 test {
+    jvmArgs '-XX:-OmitStackTraceInFastThrow'
+
     useJUnitPlatform {
     }
 }
