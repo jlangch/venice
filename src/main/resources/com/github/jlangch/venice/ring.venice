@@ -70,9 +70,9 @@
 
 (defn
   ^{ :doc """
-          Returns the value of the specified request parameter. If the request
-          did not include a parameter of the specified name, this method returns
-          nil. If there are multiple parameters with the same name, this method
+          Returns the value of the specified request parameter. If the request \
+          did not include a parameter of the specified name, this method returns \
+          nil. If there are multiple parameters with the same name, this method \
           returns the first parameter in the request.
           """ }
 
@@ -91,9 +91,9 @@
 
 (defn
   ^{ :doc """
-          Returns the value of the specified request header. If the request
-          did not include a header of the specified name, this method returns
-          nil. If there are multiple header with the same name, this method
+          Returns the value of the specified request header. If the request \
+          did not include a header of the specified name, this method returns \
+          nil. If there are multiple header with the same name, this method \
           returns the first header in the request.
           """  }
 
@@ -112,7 +112,7 @@
 
 (defn
   ^{ :doc """
-          Returns all 'Accept' header mime-types of the request as a set.
+          Returns all 'Accept' header mime-types of the request as a set. \
           Strips off the ratings
           """ }
 
@@ -224,7 +224,7 @@
 
 (defn
   ^{ :doc """
-          Turns handler debug flag on the request on/off and then calls
+          Turns handler debug flag on the request on/off and then calls \
           the handler with the modified request.
           """ }
 
@@ -248,7 +248,7 @@
 
 (defn
   ^{ :doc """
-          Increments the number requests, stores it in the attribute
+          Increments the number requests, stores it in the attribute \
           'request-counter' in the session, and then calls the handler.
           """ }
 
@@ -265,11 +265,11 @@
 
 (defn
   ^{ :doc """
-          Adds the session to the request. If a new session is created
-          the given timeout is set as the MaxInactiveInterval. If a
+          Adds the session to the request. If a new session is created \
+          the given timeout is set as the MaxInactiveInterval. If a \
           timeout is not given the session will never timeout.
-          Adds the session to the request and then calls the handler
-          with the modified request.$
+          Adds the session to the request and then calls the handler \
+          with the modified request.
           """ }
 
   mw-add-session [handler timeout]
@@ -338,7 +338,7 @@
 
 (defn
   ^{ :doc """
-          Compile the routes and return a function that calls the handler
+          Compile the routes and return a function that calls the handler \
           matching the URI.
           """ }
 
@@ -400,7 +400,7 @@
 
 (defn-
   ^{ :doc """
-          Looks up a header in a Ring response (or request) case insensitively,
+          Looks up a header in a Ring response (or request) case insensitively, \
           returning the header map entry, or nil if not present.
           """  }
 
@@ -574,8 +574,8 @@
 
 (defn
   ^{ :doc """
-          Turns a handler into a function that takes the same arguments
-          and has the same return value as the service method in the
+          Turns a handler into a function that takes the same arguments \
+          and has the same return value as the service method in the \
           HttpServlet class.
           """ }
   make-service-method
@@ -803,12 +803,12 @@
 
 (defn
   ^{ :doc """
-          Bootstrap the handler chain. Builds the request from then
-          HttpServletRequest and calls the handler with the request.
-          Builds the HttpServletResponse from the handler's response.
-          Sends a not-found HTTP response if the handler returned a
-          nil response. Sends a redirect if a handler raises a
-          RingRedirectException. In case of any other exception sends
+          Bootstrap the handler chain. Builds the request from then \
+          HttpServletRequest and calls the handler with the request. \
+          Builds the HttpServletResponse from the handler's response. \
+          Sends a not-found HTTP response if the handler returned a \
+          nil response. Sends a redirect if a handler raises a \
+          RingRedirectException. In case of any other exception sends \
           an internal-error (HTTP status 500) response.
           """ }
 

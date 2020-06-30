@@ -50,11 +50,11 @@
 (defn
   ^{ :arglists '("(as-sql-name f x)")
      :doc """
-          Given a naming strategy function and a keyword or string, return
+          Given a naming strategy function and a keyword or string, return \
           a string per that naming strategy.
-          A name of the form x.y is treated as multiple names, x, y, etc,
-          and each are turned into strings via the naming strategy and then
-          joined back together so x.y might become `x`.`y` if the naming
+          A name of the form x.y is treated as multiple names, x, y, etc, \
+          and each are turned into strings via the naming strategy and then \
+          joined back together so x.y might become `x`.`y` if the naming \
           strategy quotes identifiers with `.
           """ }
 

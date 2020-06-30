@@ -33,7 +33,10 @@
 
 (defn
   ^{ :arglists '("(crypt/md5-hash data)")
-     :doc "Hashes a string or a bytebuf using MD5. Note: MD5 is not safe any more use PBKDF2."
+     :doc """
+          Hashes a string or a bytebuf using MD5.
+          Note: MD5 is not safe any more use PBKDF2.
+          """
      :examples (list
           """
           (do
@@ -76,7 +79,10 @@
 (defn
   ^{ :arglists '("(crypt/pbkdf2-hash text salt)",
                  "(crypt/pbkdf2-hash text salt iterations key-length)")
-     :doc "Hashes a string using PBKDF2. iterations default to 1000, key-length defaults to 256"
+     :doc """
+          Hashes a string using PBKDF2. iterations default to 1000, key-length \
+          defaults to 256
+          """
      :examples (list
           """
           (do
@@ -104,9 +110,9 @@
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
      :doc """
-          Returns a new function to encrypt a string or a bytebuf given
-          the algorithm and passphrase. If a string is passed it is
-          encrypted and returned as a base64 encoded string. If a bytebuf
+          Returns a new function to encrypt a string or a bytebuf given \
+          the algorithm and passphrase. If a string is passed it is \
+          encrypted and returned as a base64 encoded string. If a bytebuf \
           is passed the encryped bytebuf is returned.
           Supported algorithms: "DES", "3DES", "AES256"
 
@@ -142,9 +148,9 @@
 (defn
   ^{ :arglists '("(crypt/decrypt algorithm passphrase & options)")
   :doc """
-       Returns a new function to decrypt a string or a bytebuf given the
-       algorithm and passphrase. If a string is passed it is base64 decoded,
-       decrypted, and returned as string. If a bytebuf is passed the decrypted
+       Returns a new function to decrypt a string or a bytebuf given the \
+       algorithm and passphrase. If a string is passed it is base64 decoded, \
+       decrypted, and returned as string. If a bytebuf is passed the decrypted \
        bytebuf is returned.
        Supported algorithms: "DES", "3DES", "AES256"
 

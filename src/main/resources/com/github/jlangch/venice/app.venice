@@ -27,7 +27,7 @@
 (defn
   ^{ :arglists '("(app/build name main-file file-map dest-dir)")
      :doc """
-          Creates a Venice application archive that can be distributed
+          Creates a Venice application archive that can be distributed \
           and executed as a single file.
 
           E.g.:
@@ -37,9 +37,9 @@
                        "utils.venice" "./foo/utils.venice" }
                      ".")
 
-          Loading Venice files works relative to the application. You can
+          Loading Venice files works relative to the application. You can \
           only load files that are in the app archive.
-          If for instances "chart.venice" in the above example requires
+          If for instances "chart.venice" in the above example requires \
           "utils.venice" just add (load-file "utils") to "chart.venice".
 
           The app can be run from the command line as:
