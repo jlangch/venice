@@ -202,7 +202,7 @@ public class VncList extends VncSequence {
 		}
 		else {
 			final io.vavr.collection.Vector<VncVal> rest = value.tail();
-			return rest.size() < VncTinyList.MAX_ELEMENTS
+			return rest.size() <= VncTinyList.MAX_ELEMENTS
 					? VncTinyList.ofList(rest.asJava(), getMeta())
 					: new VncList(rest, getMeta());
 		}

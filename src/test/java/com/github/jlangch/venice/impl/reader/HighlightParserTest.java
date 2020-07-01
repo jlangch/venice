@@ -97,52 +97,47 @@ public class HighlightParserTest {
 		List<HighlightItem> items = HighlightParser.parse("(+ 1 2)");
 		assertEquals(7, items.size());
 
-		// only unprocessed whitespaces -> OK not counted
+		// only unprocessed whitespaces -> OK
 		items = HighlightParser.parse("(+ 1 2)  ");
-		assertEquals(7, items.size());
+		assertEquals(8, items.size());
 
-		// only unprocessed whitespaces -> OK not counted
+		// only unprocessed whitespaces -> OK
 		items = HighlightParser.parse("(+ 1 2) \n ");
-		assertEquals(7, items.size());
+		assertEquals(8, items.size());
 
+		items = HighlightParser.parse("(+ 1 2)  ,");
+		assertEquals(9, items.size());
+
+		items = HighlightParser.parse("(+ 1 2)  , ");
+		assertEquals(10, items.size());
 		
 		
 		// cases with unprocessed input ...
 		
-		items = HighlightParser.parse("(+ 1 2)  ,");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals("  ,", items.get(7).getForm());
-
-		items = HighlightParser.parse("(+ 1 2)  , ");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals("  , ", items.get(7).getForm());
-
 		items = HighlightParser.parse("(+ 1 2)  (+ 3 4)");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals("  (+ 3 4)", items.get(7).getForm());
+		assertEquals(9, items.size());
+		assertEquals(HighlightClass.UNPROCESSED, items.get(8).getClazz());
+		assertEquals("(+ 3 4)", items.get(8).getForm());
 
 		items = HighlightParser.parse("(+ 1 2),(+ 3 4)");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals(",(+ 3 4)", items.get(7).getForm());
+		assertEquals(9, items.size());
+		assertEquals(HighlightClass.UNPROCESSED, items.get(8).getClazz());
+		assertEquals("(+ 3 4)", items.get(8).getForm());
 
 		items = HighlightParser.parse("(+ 1 2) , (+ 3 4)");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals(" , (+ 3 4)", items.get(7).getForm());
+		assertEquals(11, items.size());
+		assertEquals(HighlightClass.UNPROCESSED, items.get(10).getClazz());
+		assertEquals("(+ 3 4)", items.get(10).getForm());
 
 		items = HighlightParser.parse("(+ 1 2)\n(+ 3 4)");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals("\n(+ 3 4)", items.get(7).getForm());
+		assertEquals(9, items.size());
+		assertEquals(HighlightClass.UNPROCESSED, items.get(8).getClazz());
+		assertEquals("(+ 3 4)", items.get(8).getForm());
 
 		items = HighlightParser.parse("(+ 1 2) \n (+ 3 4)");
-		assertEquals(8, items.size());
-		assertEquals(HighlightClass.UNPROCESSED, items.get(7).getClazz());
-		assertEquals(" \n (+ 3 4)", items.get(7).getForm());
+		assertEquals(9, items.size());
+		assertEquals(HighlightClass.UNPROCESSED, items.get(8).getClazz());
+		assertEquals("(+ 3 4)", items.get(8).getForm());
 	}
 
 	@Test

@@ -311,21 +311,27 @@ public class HighlightParser {
 	}
 
 	private void finish() {
-		final int numTokens = tokens.size();
-		if (position >= numTokens) {
-			// all tokens processed
-		}
-		else if (position == numTokens-1) {
-			final Token tok = tokens.get(position);
-			if (tok.getType() != TokenType.WHITESPACES) {
+		while (hasUnprocessedTokens()) {
+			final Token tok = next();
+			
+			if (tok.getType() == TokenType.COMMENT) {
+				addItem(tok.getToken(), HighlightClass.COMMENT);
+			}
+			else if (tok.getType() == TokenType.WHITESPACES) {
+				addItem(tok.getToken(), HighlightClass.WHITESPACES);
+			}
+			else {
 				addItem(form.substring(tok.getFileStartPos()), HighlightClass.UNPROCESSED);
+				break;
 			}
 		}
-		else {
-			final Token tok = tokens.get(position);
-			addItem(form.substring(tok.getFileStartPos()), HighlightClass.UNPROCESSED);
-		}
 	}
+	
+	private boolean hasUnprocessedTokens() {
+		return position < tokens.size();
+	}
+
+	
 	
 	private static Set<String> SPECIAL_FORMS = new HashSet<>(
 			Arrays.asList(

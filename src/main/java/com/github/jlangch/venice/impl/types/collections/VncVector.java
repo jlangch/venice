@@ -206,7 +206,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 		}
 		else {
 			final io.vavr.collection.Vector<VncVal> rest = value.tail();
-			return rest.size() < VncTinyVector.MAX_ELEMENTS
+			return rest.size() <= VncTinyVector.MAX_ELEMENTS
 					? VncTinyVector.ofList(rest.asJava(), getMeta())
 					: new VncVector(rest, getMeta());
 		}

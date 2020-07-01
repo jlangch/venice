@@ -28,7 +28,7 @@ the instantiation of a type.
 
 ## Composing types with "AND"
 
-The custom "AND" type defines a type composed of one or multiple simpler types.
+A custom "AND" type defines a type composed of one or multiple simpler types.
 
 
 ### Define a custom type 
@@ -77,7 +77,7 @@ The field type :any is representing any type
 
 ## Composing types with "OR"
 
-The custom "OR" type defines a set of values for the type. The set of values 
+A custom "OR" type defines a set of values for the type. The set of values 
 can be composed of individual values and/or all values defined by a simpler 
 type.
 
