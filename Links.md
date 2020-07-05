@@ -1,12 +1,15 @@
 # Links
 
-[Font](https://fonts.google.com/specimen/Audiowide)
+
+## Release to Maven
 
 [OSSRH Guide](https://central.sonatype.org/pages/ossrh-guide.html)
 
 [OSSRH Manual Deploy](https://central.sonatype.org/pages/manual-staging-bundle-creation-and-deployment.html)
 
-[Dali SVG](https://github.com/stathissideris/dali)
+[Deploying to Sonatype OSSRH using Gradle](https://central.sonatype.org/pages/gradle.html)
+
+[Releasing an artifact in Sonatype OSSRH](https://central.sonatype.org/pages/releasing-the-deployment.html)
 
 
 ## Build
@@ -38,3 +41,10 @@
 [Clojure socket REPL](https://clojure.org/reference/repl_and_main)
 
 [Clojure socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
+
+
+## etc
+
+[Font](https://fonts.google.com/specimen/Audiowide)
+
+[Dali SVG](https://github.com/stathissideris/dali)

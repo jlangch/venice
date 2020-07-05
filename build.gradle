@@ -62,8 +62,12 @@
 //                       -PsonatypeUsername=[name] 
 //                       -PsonatypePassword=[pw]
 //                       clean shadowJar publish
-//           o Nexus Repository Manager GUI: close and release the uploaded
-//             repository
+//           o Log in to Sonatype OSSRH (https://oss.sonatype.org/)
+//           o Click Staging Repositories
+//           o Find the release com.github.jlangch.*
+//           o Verify the contents are ok
+//           o Click Close (wait for validation steps under the Activity tab to complete)
+//           o Click Release
 //
 //   [3] Draft GitHub Venice release
 //      - Draft a new release in Git (https://github.com/jlangch/venice/releases)

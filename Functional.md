@@ -15,6 +15,8 @@
 
 [Designing with Capabilities - Scott Wlaschin](https://www.youtube.com/watch?v=fi1FsDW1QeY)
 
+[Thirteen ways of looking at a Turtle - Scott Wlaschin](https://www.youtube.com/watch?v=AG3KuqDbmhM)
+
 [Functors](https://www.youtube.com/watch?v=JUVMiRRq6wU)
 
 [Project Euler](https://projecteuler.net/)
