@@ -498,19 +498,33 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "ns": { // (ns alpha)
 					final VncSymbol ns = Coerce.toVncSymbol(ast.second());
-					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
-						// prevent Venice's system namespaces from being altered
-						throw new VncException("Namespace '" + ns.getName() + "' cannot be reopened!");
+					if (ns.hasNamespace()) {
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns", ast))) {
+							throw new VncException(String.format(
+									"A namespace '%s' must not have itself a namespace! However you can use '%s'.",
+									ns.getQualifiedName(),
+									ns.getNamespace() + "." + ns.getSimpleName()));
+						}
 					}
-					Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns));
-					return ns;
+					else {
+						if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
+							// prevent Venice's system namespaces from being altered
+							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns", ast))) {
+								throw new VncException("Namespace '" + ns.getName() + "' cannot be reopened!");
+							}
+						}
+						Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns));
+						return ns;
+					}
 				}
 				
 				case "ns-remove": { // (ns-remove ns)
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 						// prevent Venice's system namespaces from being altered
-						throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns-remove", ast))) {
+							throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
+						}
 					}
 					else {
 						env.removeGlobalSymbolsByNS(ns);
@@ -523,12 +537,28 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 						// prevent Venice's system namespaces from being altered
-						throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns-unmap", ast))) {
+							throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
+						}
 					}
 					else {
 						final VncSymbol sym = Namespaces.qualifySymbol(ns, Coerce.toVncSymbol(ast.third()));
 						env.removeGlobalSymbol(sym);
 						return Nil;
+					}
+				}
+
+				case "namespace": { // (namespace x)
+					final VncVal val = evaluate(ast.second(), env);
+					if (val instanceof INamespaceAware) {
+						return new VncString(((INamespaceAware)val).getNamespace());
+					}
+					else {
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("namespace", ast))) {
+							throw new VncException(String.format(
+									"The type '%s' does not support namespaces!",
+									Types.getType(val)));
+						}
 					}
 				}
 				
@@ -573,20 +603,6 @@ public class VeniceInterpreter implements Serializable  {
 				case "inspect": { // (inspect sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return Inspector.inspect(env.get(sym));
-				}
-
-				case "namespace": { // (namespace x)
-					final VncVal val = evaluate(ast.second(), env);
-					if (val instanceof INamespaceAware) {
-						return new VncString(((INamespaceAware)val).getNamespace());
-					}
-					else {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("namespace", ast))) {
-							throw new VncException(String.format(
-									"The type '%s' does not support namespaces!",
-									Types.getType(val)));
-						}
-					}
 				}
 
 				case "macroexpand": 
@@ -1312,10 +1328,12 @@ public class VeniceInterpreter implements Serializable  {
 				boundResources.add(new Binding((VncSymbol)sym, val));
 			}
 			else {
-				throw new VncException(
-						String.format(
-								"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
-								Types.getType(sym)));
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+					throw new VncException(
+							String.format(
+									"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
+									Types.getType(sym)));
+				}
 			}
 		}
 
@@ -1356,10 +1374,12 @@ public class VeniceInterpreter implements Serializable  {
 							((AutoCloseable)r).close();
 						}
 						catch(Exception ex) {
-							throw new VncException(
-									String.format(
-											"'try-with' failed to close resource %s.",
-											b.sym.getName()));
+							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+								throw new VncException(
+										String.format(
+												"'try-with' failed to close resource %s.",
+												b.sym.getName()));
+							}
 						}
 					}
 					else if (r instanceof Closeable) {
@@ -1367,10 +1387,12 @@ public class VeniceInterpreter implements Serializable  {
 							((Closeable)r).close();
 						}
 						catch(Exception ex) {
-							throw new VncException(
-									String.format(
-											"'try-with' failed to close resource %s.",
-											b.sym.getName()));
+							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+								throw new VncException(
+										String.format(
+												"'try-with' failed to close resource %s.",
+												b.sym.getName()));
+							}
 						}
 					}
 				}
@@ -1609,12 +1631,14 @@ public class VeniceInterpreter implements Serializable  {
 			// do not allow to hijack another namespace
 			final String ns = Namespaces.getNamespace(sym.getName());
 			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
-				throw new VncException(String.format(
-						"Special form '%s': Invalid use of namespace. "
-							+ "The symbol '%s' can only be defined for the current namespace '%s'.",
-							specialFormName,
-						Namespaces.getName(sym.getName()),
-						Namespaces.getCurrentNS().toString())); 
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(specialFormName, sym))) {
+					throw new VncException(String.format(
+							"Special form '%s': Invalid use of namespace. "
+								+ "The symbol '%s' can only be defined for the current namespace '%s'.",
+								specialFormName,
+							Namespaces.getName(sym.getName()),
+							Namespaces.getCurrentNS().toString()));
+				}
 			}
 		}
 		

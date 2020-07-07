@@ -67,9 +67,7 @@ public class NamespaceTest {
 		final String script =
 				"(do                         \n" +
 				"   (ns xxx)                 \n" +
-				"                            \n" +
 				"   (defn f1 [x] (+ x 1))    \n" +
-				"                            \n" +
 				"   (namespace f1))            ";
 
 		assertEquals("xxx", venice.eval(script));
