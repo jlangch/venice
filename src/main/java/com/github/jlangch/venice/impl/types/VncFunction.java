@@ -36,7 +36,9 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public abstract class VncFunction extends VncVal implements IVncFunction {
+public abstract class VncFunction 
+	extends VncVal 
+	implements IVncFunction {
 
 	public VncFunction(final String name) {
 		this(name, null, null);
@@ -60,7 +62,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 		this.qualifiedName = "core".equals(ns) ? simpleName : ns + "/" + simpleName;
 		
 		this.fnMeta.set(MetaUtil.setNamespace(meta, ns));
-		this._private = MetaUtil.isPrivate(meta);
+		this.fnPrivate = MetaUtil.isPrivate(meta);
 		this.ns = ns;
 		
 		this.fixedArgsCount = params == null ? 0 : countFixedArgs(params);
@@ -70,7 +72,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	@Override
 	public VncFunction withMeta(final VncVal meta) {
 		this.fnMeta.set(meta);
-		this._private = MetaUtil.isPrivate(meta);
+		this.fnPrivate = MetaUtil.isPrivate(meta);
 		return this;
 	}
 	
@@ -157,7 +159,7 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 	@Override
 	public boolean isPrivate() {
-		return _private;
+		return fnPrivate;
 	}
 	
 	public String getNamespace() {
@@ -285,6 +287,6 @@ public abstract class VncFunction extends VncVal implements IVncFunction {
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
-	private volatile boolean _private;
+	private volatile boolean fnPrivate;
 	private volatile String ns;
 }

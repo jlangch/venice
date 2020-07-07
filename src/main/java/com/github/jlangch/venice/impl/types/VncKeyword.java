@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
-public class VncKeyword extends VncString implements IVncFunction {
+public class VncKeyword extends VncString implements IVncFunction, INamespaceAware {
 	
 	public VncKeyword(final String v) { 
 		this(v, Constants.Nil); 
@@ -40,6 +40,29 @@ public class VncKeyword extends VncString implements IVncFunction {
 
 	public VncKeyword(final String v, final VncVal meta) {
 		super(v.startsWith(":") ? v.substring(1): v, meta); 
+		
+		final String name = v.startsWith(":") ? v.substring(1): v;
+		final int pos = name.indexOf("/");
+
+		qualifiedName = name;
+		simpleName = pos < 0 ? name : name.substring(pos+1); 	
+		namespace = pos < 0 ? null : name.substring(0, pos);
+	}
+
+	private VncKeyword(final String namespace, final String simpleName, final String qualifiedName, final VncVal meta) { 
+		super(qualifiedName, meta);
+		
+		this.qualifiedName = qualifiedName;
+		this.simpleName = simpleName;
+		this.namespace = namespace;
+	}
+
+	private VncKeyword(final VncKeyword other, final VncVal meta) { 
+		super(other.qualifiedName, meta);
+		
+		qualifiedName = other.qualifiedName;
+		simpleName = other.simpleName;
+		namespace = other.namespace;
 	}
 
 	
@@ -88,6 +111,26 @@ public class VncKeyword extends VncString implements IVncFunction {
 		return new VncKeyword(getValue(), meta);
 	}
 	
+	public VncKeyword withNamespace(final VncSymbol namespace) {
+		if (namespace.hasNamespace()) {
+			throw new VncException(String.format(
+					"A namespace '%s' must not be qualified with an other namespace",
+					namespace));
+		}
+
+		return withNamespace(namespace.getName());
+	}
+	
+	public VncKeyword withNamespace(final String namespace) {
+		if (hasNamespace()) {
+			throw new VncException(String.format(
+					"The keyword '%s' is already qualified with a namespace",
+					qualifiedName));
+		}
+		
+		return new VncKeyword(namespace, simpleName, namespace + "/" + simpleName, getMeta());
+	}
+	
 	@Override
 	public VncKeyword getType() {
 		return TYPE;
@@ -103,8 +146,34 @@ public class VncKeyword extends VncString implements IVncFunction {
 		return Arrays.asList(VncString.TYPE, VncVal.TYPE);
 	}
 
+	@Override
+	public String getValue() { 
+		return qualifiedName; 
+	}
+
+	@Override
+	public String getQualifiedName() {
+		return qualifiedName;
+	}
+
+	@Override
+	public String getSimpleName() {
+		return simpleName;
+	}
+
+	@Override
+	public String getNamespace() {
+		return namespace;
+	}
+	
+	@Override
+	public boolean hasNamespace() {
+		return namespace != null;
+	}
+	
+	
 	public VncSymbol toSymbol() {
-		return new VncSymbol(getValue());
+		return new VncSymbol(qualifiedName);
 	}
 	
 	@Override 
@@ -118,7 +187,7 @@ public class VncKeyword extends VncString implements IVncFunction {
 			return 1;
 		}
 		else if (Types.isVncKeyword(o)) {
-			return getValue().compareTo(((VncKeyword)o).getValue());
+			return qualifiedName.compareTo(((VncKeyword)o).qualifiedName);
 		}
 
 		return super.compareTo(o);
@@ -137,4 +206,9 @@ public class VncKeyword extends VncString implements IVncFunction {
     public static final VncKeyword TYPE = new VncKeyword(":core/keyword");
 	
     private static final long serialVersionUID = -1848883965231344442L;
+    
+
+	private final String qualifiedName;
+	private final String simpleName;
+	private final String namespace;
 }

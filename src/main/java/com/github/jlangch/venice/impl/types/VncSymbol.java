@@ -24,27 +24,72 @@ package com.github.jlangch.venice.impl.types;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.util.Types;
 
-public class VncSymbol extends VncVal {
+public class VncSymbol extends VncVal implements INamespaceAware {
 
 	public VncSymbol(final String v) { 
 		super(Constants.Nil);
-		value = v; 
-		ns = Namespaces.getNamespace(v);
+
+		final int pos = v.indexOf("/");
+
+		qualifiedName = v;
+		simpleName = pos < 0 ? v : v.substring(pos+1); 	
+		namespace = pos < 0 ? null : v.substring(0, pos);
 	}
 
 	public VncSymbol(final String v, final VncVal meta) { 
 		super(meta);
-		value = v; 
-		ns = Namespaces.getNamespace(v);
+		
+		final int pos = v.indexOf("/");
+
+		qualifiedName = v;
+		simpleName = pos < 0 ? v : v.substring(pos+1); 	
+		namespace = pos < 0 ? null : v.substring(0, pos);
+	}
+
+	private VncSymbol(final String ns, final String name, final VncVal meta) { 
+		super(meta);
+		
+		qualifiedName = ns + "/" + name;
+		simpleName = name;
+		namespace = ns;
+	}
+
+	private VncSymbol(final VncSymbol other, final VncVal meta) { 
+		super(meta);
+		
+		qualifiedName = other.qualifiedName;
+		simpleName = other.simpleName;
+		namespace = other.namespace;
 	}
 	
 	@Override
 	public VncSymbol withMeta(final VncVal meta) {
-		return new VncSymbol(value, meta);
+		return new VncSymbol(this, meta);
 	}
+
+	public VncSymbol withNamespace(final VncSymbol namespace) {
+		if (namespace.hasNamespace()) {
+			throw new VncException(String.format(
+					"A namespace '%s' must not be qualified with an other namespace",
+					namespace));
+		}
+
+		return withNamespace(namespace.getName());
+	}
+
+	public VncSymbol withNamespace(final String namespace) {
+		if (hasNamespace()) {
+			throw new VncException(String.format(
+					"The symbol '%s' is already qualified with a namespace",
+					qualifiedName));
+		}
+		
+		return new VncSymbol(namespace, simpleName, getMeta());
+	}
+
 	
 	@Override
 	public VncKeyword getType() {
@@ -62,21 +107,42 @@ public class VncSymbol extends VncVal {
 	}
 
 	public String getName() { 
-		return value; 
+		return qualifiedName; 
 	}
 
 	public String getValue() { 
-		return value; 
+		return qualifiedName; 
 	}
-	
+
+	@Override
+	public String getQualifiedName() {
+		return qualifiedName;
+	}
+
+	@Override
+	public String getSimpleName() {
+		return simpleName;
+	}
+
+	@Override
 	public String getNamespace() {
-		return ns;
+		return namespace;
 	}
 	
+	@Override
 	public boolean hasNamespace() {
-		return ns != null;
+		return namespace != null;
 	}
 	
+	public static VncSymbol qualifySymbol(final VncSymbol ns, final VncSymbol sym) {
+		if (sym.hasNamespace()) {
+			throw new VncException(String.format(
+					"The symbol '%s' is already qualified with a namespace",
+					sym.getName()));
+		}
+		return new VncSymbol(ns.getName() + "/" + sym.getName());
+	}
+
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.SYMBOL;
@@ -84,7 +150,7 @@ public class VncSymbol extends VncVal {
 	
 	@Override
 	public Object convertToJavaObject() {
-		return value;
+		return qualifiedName;
 	}
 
 	@Override 
@@ -103,7 +169,7 @@ public class VncSymbol extends VncVal {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
 		return result;
 	}
 
@@ -116,17 +182,17 @@ public class VncSymbol extends VncVal {
 		if (getClass() != obj.getClass())
 			return false;
 		VncSymbol other = (VncSymbol) obj;
-		if (value == null) {
-			if (other.value != null)
+		if (qualifiedName == null) {
+			if (other.qualifiedName != null)
 				return false;
-		} else if (!value.equals(other.value))
+		} else if (!qualifiedName.equals(other.qualifiedName))
 			return false;
 		return true;
 	}
 
 	@Override 
 	public String toString() {
-		return value;
+		return qualifiedName;
 	}
 	
 
@@ -134,6 +200,7 @@ public class VncSymbol extends VncVal {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final String value;
-	private final String ns;
+	private final String qualifiedName;
+	private final String simpleName;
+	private final String namespace;
 }

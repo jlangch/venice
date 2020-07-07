@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.types;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +31,60 @@ import com.github.jlangch.venice.Venice;
 
 
 public class KeywordTest {
+
+	@Test
+	public void test_toString() {
+		assertEquals(":alpha", new VncKeyword("alpha").toString());
+		assertEquals(":xx/alpha", new VncKeyword("xx/alpha").toString());
+
+		assertEquals(":alpha", new VncKeyword(":alpha").toString());
+		assertEquals(":xx/alpha", new VncKeyword(":xx/alpha").toString());
+
+		assertEquals(":alpha", new VncKeyword("alpha").toString(true));
+		assertEquals(":xx/alpha", new VncKeyword("xx/alpha").toString(true));
+
+		assertEquals(":alpha", new VncKeyword(":alpha").toString(true));
+		assertEquals(":xx/alpha", new VncKeyword(":xx/alpha").toString(true));
+	}
+
+	@Test
+	public void test_convertToJavaObject() {
+		assertEquals("alpha", new VncKeyword("alpha").convertToJavaObject());
+		assertEquals("xx/alpha", new VncKeyword("xx/alpha").convertToJavaObject());
+		
+		assertEquals("alpha", new VncKeyword(":alpha").convertToJavaObject());
+		assertEquals("xx/alpha", new VncKeyword(":xx/alpha").convertToJavaObject());
+	}
+
+	@Test
+	public void test_WithoutNamespace() {
+		assertEquals("alpha", new VncKeyword("alpha").getValue());
+		assertEquals("alpha", new VncKeyword("alpha").getQualifiedName());
+		assertEquals("alpha", new VncKeyword("alpha").getSimpleName());
+		assertEquals(null, new VncKeyword("alpha").getNamespace());
+		assertFalse(new VncKeyword("alpha").hasNamespace());
+
+		assertEquals("alpha", new VncKeyword(":alpha").getValue());
+		assertEquals("alpha", new VncKeyword(":alpha").getQualifiedName());
+		assertEquals("alpha", new VncKeyword(":alpha").getSimpleName());
+		assertEquals(null, new VncKeyword(":alpha").getNamespace());
+		assertFalse(new VncKeyword(":alpha").hasNamespace());
+	}
+
+	@Test
+	public void test_WithNamespace() {
+		assertEquals("xx/alpha", new VncKeyword("xx/alpha").getValue());
+		assertEquals("xx/alpha", new VncKeyword("xx/alpha").getQualifiedName());
+		assertEquals("alpha", new VncKeyword("xx/alpha").getSimpleName());
+		assertEquals("xx", new VncKeyword("xx/alpha").getNamespace());
+		assertTrue(new VncKeyword("xx/alpha").hasNamespace());
+
+		assertEquals("xx/alpha", new VncKeyword(":xx/alpha").getValue());
+		assertEquals("xx/alpha", new VncKeyword(":xx/alpha").getQualifiedName());
+		assertEquals("alpha", new VncKeyword(":xx/alpha").getSimpleName());
+		assertEquals("xx", new VncKeyword(":xx/alpha").getNamespace());
+		assertTrue(new VncKeyword(":xx/alpha").hasNamespace());
+	}
 
 	@Test
 	public void test_KeywordAsFunction() {

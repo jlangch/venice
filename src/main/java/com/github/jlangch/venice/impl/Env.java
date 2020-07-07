@@ -496,7 +496,7 @@ public class Env implements Serializable {
 		
 		// validatePrivateSymbolAccess(sym);
 		
-		final boolean qualified = Namespaces.isQualified(name);
+		final boolean qualified = sym.hasNamespace();
 		
 		if (qualified && name.startsWith("core/")) {
 			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
