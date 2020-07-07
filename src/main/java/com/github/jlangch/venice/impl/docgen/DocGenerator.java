@@ -1312,6 +1312,10 @@ public class DocGenerator {
 		all.addSection(remove);
 		remove.addItem(getDocItem("ns-unmap"));
 		remove.addItem(getDocItem("ns-remove"));
+
+		final DocSection util = new DocSection("Util");
+		all.addSection(util);
+		util.addItem(getDocItem("namespace"));
 	
 		return section;
 	}

@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.DocForm;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -573,7 +574,21 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return Inspector.inspect(env.get(sym));
 				}
-	
+
+				case "namespace": { // (namespace x)
+					final VncVal val = evaluate(ast.second(), env);
+					if (val instanceof INamespaceAware) {
+						return new VncString(((INamespaceAware)val).getNamespace());
+					}
+					else {
+						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("namespace", ast))) {
+							throw new VncException(String.format(
+									"The type '%s' does not support namespaces!",
+									Types.getType(val)));
+						}
+					}
+				}
+
 				case "macroexpand": 
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
 						return macroexpand(evaluate(ast.second(), env), env);
@@ -1032,7 +1047,6 @@ public class VeniceInterpreter implements Serializable  {
 											env);
 	
 			macroFn.setMacro();
-			macroFn.setNamespace(ns);
 			env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
 
 			return macroFn;
@@ -1057,7 +1071,6 @@ public class VeniceInterpreter implements Serializable  {
 			final VncFunction macroFn = new VncMultiArityFunction(macroName_.getName(), fns).withMeta(meta);
 			
 			macroFn.setMacro();
-			macroFn.setNamespace(ns);
 			env.setGlobal(new Var(macroName_, macroFn, false));
 
 			return macroFn;

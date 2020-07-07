@@ -45,6 +45,37 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_namespace_symbol() {
+		final Venice venice = new Venice();
+
+		assertEquals("", venice.eval("(namespace 'foo)"));
+		assertEquals("xxx", venice.eval("(namespace 'xxx/foo)"));
+	}
+
+	@Test
+	public void test_namespace_keyword() {
+		final Venice venice = new Venice();
+
+		assertEquals("", venice.eval("(namespace :alpha)"));
+		assertEquals("user", venice.eval("(namespace :user/alpha)"));
+	}
+
+	@Test
+	public void test_namespace_function() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                         \n" +
+				"   (ns xxx)                 \n" +
+				"                            \n" +
+				"   (defn f1 [x] (+ x 1))    \n" +
+				"                            \n" +
+				"   (namespace f1))            ";
+
+		assertEquals("xxx", venice.eval(script));
+	}
+
+	@Test
 	public void test_def() {
 		final Venice venice = new Venice();
 

@@ -947,6 +947,21 @@ public class SpecialForms {
 			private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction namespace = 
+		new SpecialFormsDocFunction(
+				"namespace",
+				VncFunction
+					.meta()
+					.arglists("(namespace x)")
+					.doc("Returns the namespace String of a symbol or keyword, or nil if not present.")
+					.examples(
+						"(namespace 'user/foo)",
+						"(namespace :user/foo)")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction var_version = 
 		new SpecialFormsDocFunction(
 				"*version*",
@@ -1089,6 +1104,7 @@ public class SpecialForms {
 					.put("ns",				ns_new)
 					.put("ns-unmap",		ns_unmap)
 					.put("ns-remove",		ns_remove)
+					.put("namespace",		namespace)
 					.put("import",			import_)
 					.put("imports",			imports_)
 					.put("dobench",			dobench)
