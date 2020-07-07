@@ -30,13 +30,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class VncSymbol extends VncVal implements INamespaceAware {
 
 	public VncSymbol(final String v) { 
-		super(Constants.Nil);
-
-		final int pos = v.indexOf("/");
-
-		qualifiedName = v;
-		simpleName = pos < 0 ? v : v.substring(pos+1); 	
-		namespace = pos < 0 ? null : v.substring(0, pos);
+		this(v, Constants.Nil);
 	}
 
 	public VncSymbol(final String v, final VncVal meta) { 

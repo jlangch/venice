@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public abstract class VncFunction 
 	extends VncVal 
-	implements IVncFunction {
+	implements IVncFunction, INamespaceAware {
 
 	public VncFunction(final String name) {
 		this(name, null, null);
@@ -63,7 +63,7 @@ public abstract class VncFunction
 		
 		this.fnMeta.set(MetaUtil.setNamespace(meta, ns));
 		this.fnPrivate = MetaUtil.isPrivate(meta);
-		this.ns = ns;
+		this.namespace = ns;
 		
 		this.fixedArgsCount = params == null ? 0 : countFixedArgs(params);
 		this.variadicArgs = params == null ? false : hasRemaingsArgs(params);
@@ -98,12 +98,6 @@ public abstract class VncFunction
 		return apply(VncList.of(mvs));
 	}
 
-	
-	public void setNamespace(final String ns) { 
-		this.fnMeta.set(MetaUtil.setNamespace(fnMeta.get(), ns));
-		this.ns = ns;
-	}
-
 	public boolean isRedefinable() { 
 		return true; 
 	}
@@ -120,12 +114,24 @@ public abstract class VncFunction
 		macro = true; 
 	}
 	
+	@Override
 	public String getSimpleName() { 
 		return simpleName; 
 	}
 	
+	@Override
 	public String getQualifiedName() { 
 		return qualifiedName; 
+	}
+	
+	@Override
+	public String getNamespace() {
+		return namespace;
+	}
+	
+	@Override
+	public boolean hasNamespace() {
+		return namespace != null;
 	}
 
 	public VncList getArgLists() { 
@@ -162,10 +168,6 @@ public abstract class VncFunction
 		return fnPrivate;
 	}
 	
-	public String getNamespace() {
-		return ns;
-	}
-	
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.FUNCTION;
@@ -187,7 +189,7 @@ public abstract class VncFunction
 					.append("visibility ")
 					.append(isPrivate() ? ":private" : ":public")
 					.append(", ns ")
-					.append(StringUtil.quote(ns == null ? "" : ns, '\"'))
+					.append(StringUtil.quote(namespace == null ? "" : namespace, '\"'))
 					.append("}"));
 	}
 
@@ -279,14 +281,14 @@ public abstract class VncFunction
     private static final long serialVersionUID = -1848883965231344442L;
 
 	private final VncVector params;
-	private volatile boolean macro = false;
 	private final String simpleName;
 	private final String qualifiedName;
+	private final String namespace;
 	private final int fixedArgsCount;
 	private final boolean variadicArgs;
 	
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
 	private volatile boolean fnPrivate;
-	private volatile String ns;
+	private volatile boolean macro = false;
 }
