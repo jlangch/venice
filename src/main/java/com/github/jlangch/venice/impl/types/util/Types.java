@@ -499,12 +499,17 @@ public class Types {
 		}
 	}
 
+	public static boolean isJavaTypeReference(final VncKeyword keyword) {
+		final String name = keyword.getValue();
+		final int pos = name.indexOf(".");
+		return pos > 0 && pos < name.length()-1;
+	}
 	
 	public static VncKeyword qualify(
 			final VncSymbol ns, 
 			final VncKeyword type
 	) {
-		return Namespaces.isQualified(type)
+		return type.hasNamespace()
 					? type
 					: Namespaces.qualifyKeyword(ns, type);	
 	}

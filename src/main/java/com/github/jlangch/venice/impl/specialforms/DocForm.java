@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.ModuleLoader;
-import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
 import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
@@ -115,7 +114,7 @@ public class DocForm {
 		final VncVal tdef = env.getGlobalOrNull(type.toSymbol());
 
 		if (tdef == null) {
-			if (Namespaces.isQualified(type)) {
+			if (type.hasNamespace()) {
 				throw new VncException(String.format(
 						":%s is not a custom type. No documentation available!",
 						type.getValue()));

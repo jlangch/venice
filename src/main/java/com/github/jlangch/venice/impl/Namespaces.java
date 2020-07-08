@@ -60,40 +60,18 @@ public class Namespaces {
 		}
 	}
 
-	public static boolean isQualified(final VncKeyword keyword) {
-		if (isJavaType(keyword)) {
-			return true;
-		}
-		else {
-			return isQualified(keyword.getValue());
-		}
-	}
-
 	public static VncKeyword qualifyKeyword(final VncSymbol ns, final VncKeyword keyword) {
-		if (isJavaType(keyword)) {
+		if (Types.isJavaTypeReference(keyword)) {
 			return keyword;
 		}
 		else {
-			if (Namespaces.isQualified(keyword.getValue())) {
+			if (keyword.hasNamespace()) {
 				throw new VncException(String.format(
 						"The keyword '%s' is already qualified with a namespace",
 						keyword.getValue()));
 			}
 			return new VncKeyword(ns.getName() + "/" + keyword.getValue());
 		}
-	}
-
-	private static boolean isQualified(final String name) {
-		// Venice symbol first, core/first
-		// Venice symbol Foo., foo/Foo.
-		// Venice type   long, core/long
-		return name.indexOf("/") >= 1;
-	}
-
-	private static boolean isJavaType(final VncKeyword keyword) {
-		final String name = keyword.getValue();
-		final int pos = name.indexOf(".");
-		return pos > 0 && pos < name.length()-1;
 	}
 
 	public static boolean isCoreNS(final VncSymbol nsSym) {

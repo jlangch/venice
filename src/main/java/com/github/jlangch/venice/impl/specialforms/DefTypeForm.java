@@ -166,7 +166,7 @@ public class DefTypeForm {
 			if (Types.isVncKeyword(v)) {
 				final VncKeyword k = (VncKeyword)v;		
 				
-				if (Namespaces.isQualified(k)) {
+				if (k.hasNamespace()) {
 					if (isCustomType(k, env)) {
 						choiceTypes.add(k);
 					}
@@ -394,11 +394,11 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final Env env
 	) {
-		if (Namespaces.isQualified(type)) {
+		if (type.hasNamespace()) {
 			return type;
 		}
 		else {
-			final VncKeyword type_ =  Namespaces.qualifyKeyword(
+			final VncKeyword type_ = Namespaces.qualifyKeyword(
 										Namespaces.getCurrentNS(), 
 										type); 
 			
