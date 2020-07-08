@@ -491,6 +491,7 @@ public class VeniceInterpreter implements Serializable  {
 												params,
 												body,
 												preConditions,
+												false,
 												env);
 
 					return multiFn.addFn(dispatchVal, fn);
@@ -1060,9 +1061,9 @@ public class VeniceInterpreter implements Serializable  {
 											params, 
 											VncList.of(body), 
 											null, 
+											true,
 											env);
 	
-			macroFn.setMacro();
 			env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
 
 			return macroFn;
@@ -1081,12 +1082,17 @@ public class VeniceInterpreter implements Serializable  {
 				
 				final VncList fnBody = fnSig.slice(pos);
 				
-				fns.add(buildFunction(macroName_.getName() + "-arity-" + fnParams.size(), fnParams, fnBody, null, env));
+				fns.add(buildFunction(
+							macroName_.getName() + "-arity-" + fnParams.size(),
+							fnParams, 
+							fnBody, 
+							null,
+							false,
+							env));
 			});
 
-			final VncFunction macroFn = new VncMultiArityFunction(macroName_.getName(), fns).withMeta(meta);
+			final VncFunction macroFn = new VncMultiArityFunction(macroName_.getName(), fns, true).withMeta(meta);
 			
-			macroFn.setMacro();
 			env.setGlobal(new Var(macroName_, macroFn, false));
 
 			return macroFn;
@@ -1202,7 +1208,7 @@ public class VeniceInterpreter implements Serializable  {
 			
 			final VncList body = ast.slice(argPos);
 			
-			return buildFunction(fnName.getName(), params, body, preConditions, env);
+			return buildFunction(fnName.getName(), params, body, preConditions, false, env);
 		}
 		else {
 			// multi arity:
@@ -1221,10 +1227,10 @@ public class VeniceInterpreter implements Serializable  {
 				
 				final VncList body = sig.slice(pos);
 				
-				fns.add(buildFunction(fnName.getName(), params, body, preConditions, env));
+				fns.add(buildFunction(fnName.getName(), params, body, preConditions, false, env));
 			});
 			
-			return new VncMultiArityFunction(fnName.getName(), fns);
+			return new VncMultiArityFunction(fnName.getName(), fns, false);
 		}
 	}
 
@@ -1469,11 +1475,12 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVector params, 
 			final VncList body, 
 			final VncVector preConditions, 
+			final boolean macro,
 			final Env env
 	) {
 		final Namespace ns = Namespaces.getCurrentNamespace();
 		
-		return new VncFunction(name, params) {
+		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);

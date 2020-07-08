@@ -40,18 +40,30 @@ public abstract class VncFunction
 	implements IVncFunction, INamespaceAware {
 
 	public VncFunction(final String name) {
-		this(name, null, null);
+		this(name, null, false, Constants.Nil);
+	}
+	
+	public VncFunction(final String name, final boolean macro) {
+		this(name, null, macro, Constants.Nil);
 	}
 	
 	public VncFunction(final String name, final VncVal meta) {
-		this(name, null, meta);
+		this(name, null, false, meta);
 	}
 
 	public VncFunction(final String name, final VncVector params) {
-		this(name, params, Constants.Nil);
+		this(name, params, false, Constants.Nil);
+	}
+
+	public VncFunction(final String name, final VncVector params, final boolean macro) {
+		this(name, params, macro, Constants.Nil);
 	}
 
 	public VncFunction(final String name, final VncVector params, final VncVal meta) {
+		this(name, params, false, Constants.Nil);
+	}
+	
+	public VncFunction(final String name, final VncVector params, final boolean macro, final VncVal meta) {
 		super(Constants.Nil);
 
 		final int pos = name.indexOf("/");
@@ -74,6 +86,8 @@ public abstract class VncFunction
 		}			
 		this.fixedArgsCount = fixedArgs;
 		this.variadicArgs = variadic;
+		
+		this.macro = macro;
 
 		this.fnMeta.set(MetaUtil.setNamespace(meta, namespace));
 		this.fnPrivate = MetaUtil.isPrivate(meta);
@@ -118,10 +132,6 @@ public abstract class VncFunction
 	
 	public boolean isMacro() { 
 		return macro; 
-	}
-	
-	public void setMacro() { 
-		macro = true; 
 	}
 	
 	@Override
@@ -262,15 +272,17 @@ public abstract class VncFunction
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final VncVector params;
+	private final String namespace;
 	private final String simpleName;
 	private final String qualifiedName;
-	private final String namespace;
+	
+	private final VncVector params;
 	private final int fixedArgsCount;
 	private final boolean variadicArgs;
-	
+
+	private final boolean macro;
+
 	// Functions handle its meta data locally (functions cannot be copied)
 	private final AtomicReference<VncVal> fnMeta = new AtomicReference<>(Constants.Nil);
 	private volatile boolean fnPrivate;
-	private volatile boolean macro = false;
 }
