@@ -374,12 +374,6 @@ public class Types {
 		}		
 	}
 
-	public static boolean isCoreType(final VncVal val) {
-		return Namespaces.isCoreNS(
-					Namespaces.getNamespace(
-							val.getType().getValue()));
-	}
-
 	public static boolean isCorePrimitiveType(final VncVal val) {
 		final String type = Types.isVncKeyword(val)
 								? ((VncKeyword)val).getValue()

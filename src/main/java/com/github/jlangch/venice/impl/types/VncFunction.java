@@ -195,12 +195,12 @@ public abstract class VncFunction
 				isMacro() ? "macro" : "function", 
 				getQualifiedName(),
 				new StringBuilder()
-					.append("{")
-					.append("visibility ")
-					.append(isPrivate() ? ":private" : ":public")
-					.append(", ns ")
-					.append(StringUtil.quote(namespace == null ? "" : namespace, '\"'))
-					.append("}"));
+						.append("{")
+						.append("visibility ")
+						.append(isPrivate() ? ":private" : ":public")
+						.append(", ns ")
+						.append(StringUtil.quote(namespace == null ? "" : namespace, '\"'))
+						.append("}"));
 	}
 
 	

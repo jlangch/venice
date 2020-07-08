@@ -415,22 +415,22 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final String fnName
 	) {
-		if (Namespaces.isQualified(type)) {
+		if (type.hasNamespace()) {
 			// do not allow to hijack another namespace
-			final String ns = Namespaces.getNamespace(type.getValue());
+			final String ns = type.getNamespace();
 			if (!ns.equals(Namespaces.getCurrentNS().getName())) {
 				throw new VncException(String.format(
 						"function %s: Invalid use of namespace. "
 							+ "The type '%s' can only be defined for the current namespace '%s'.",
 						fnName,
-						Namespaces.getName(type.getValue()),
+						type.getSimpleName(),
 						Namespaces.getCurrentNS().toString())); 
 			}	
 			
 			return type;
 		}
 		else {
-			return Namespaces.qualifyKeyword(Namespaces.getCurrentNS(), type);
+			return type.withNamespace(Namespaces.getCurrentNS());
 		}
 	}
 

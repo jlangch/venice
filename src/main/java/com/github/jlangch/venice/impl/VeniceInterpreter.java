@@ -542,7 +542,7 @@ public class VeniceInterpreter implements Serializable  {
 						}
 					}
 					else {
-						final VncSymbol sym = Namespaces.qualifySymbol(ns, Coerce.toVncSymbol(ast.third()));
+						final VncSymbol sym = Coerce.toVncSymbol(ast.third()).withNamespace(ns);
 						env.removeGlobalSymbol(sym);
 						return Nil;
 					}
@@ -1030,7 +1030,7 @@ public class VeniceInterpreter implements Serializable  {
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 					
 		String name = macroName.getName();
-		String ns = Namespaces.getNamespace(macroName.getName());
+		String ns = macroName.getNamespace();
 
 		if (ns == null) {
 			ns = Namespaces.getCurrentNS().getName();
@@ -1610,7 +1610,7 @@ public class VeniceInterpreter implements Serializable  {
 						sym.getName(),
 						MetaUtil.setNamespace(
 							sym.getMeta(),
-							Namespaces.getNamespace(sym.getName())));
+							sym.getNamespace()));
 		}
 		else {
 			final VncSymbol ns = Namespaces.getCurrentNS();
@@ -1629,14 +1629,14 @@ public class VeniceInterpreter implements Serializable  {
 	) {
 		if (sym != null) {
 			// do not allow to hijack another namespace
-			final String ns = Namespaces.getNamespace(sym.getName());
+			final String ns = sym.getNamespace();
 			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
 				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(specialFormName, sym))) {
 					throw new VncException(String.format(
 							"Special form '%s': Invalid use of namespace. "
 								+ "The symbol '%s' can only be defined for the current namespace '%s'.",
 								specialFormName,
-							Namespaces.getName(sym.getName()),
+							sym.getSimpleName(),
 							Namespaces.getCurrentNS().toString()));
 				}
 			}

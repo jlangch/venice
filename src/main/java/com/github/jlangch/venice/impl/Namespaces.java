@@ -60,27 +60,6 @@ public class Namespaces {
 		}
 	}
 
-	public static String getNamespace(final String name) {
-		final int pos = name.indexOf("/");
-		return pos < 1 ? null : name.substring(0, pos);
-	}
-
-	public static String getName(final String name) {
-		final int pos = name.indexOf("/");
-		return pos < 0 ? name : name.substring(pos+1);
-	}
-
-	public static boolean isQualified(final String name) {
-		// Venice symbol first, core/first
-		// Venice symbol Foo., foo/Foo.
-		// Venice type   core/long, long
-		return name.indexOf("/") >= 1;
-	}
-
-	public static boolean isQualified(final VncSymbol sym) {
-		return isQualified(sym.getName());
-	}
-
 	public static boolean isQualified(final VncKeyword keyword) {
 		if (isJavaType(keyword)) {
 			return true;
@@ -88,15 +67,6 @@ public class Namespaces {
 		else {
 			return isQualified(keyword.getValue());
 		}
-	}
-
-	public static VncSymbol qualifySymbol(final VncSymbol ns, final VncSymbol sym) {
-		if (sym.hasNamespace()) {
-			throw new VncException(String.format(
-					"The symbol '%s' is already qualified with a namespace",
-					sym.getName()));
-		}
-		return new VncSymbol(ns.getName() + "/" + sym.getName());
 	}
 
 	public static VncKeyword qualifyKeyword(final VncSymbol ns, final VncKeyword keyword) {
@@ -113,7 +83,14 @@ public class Namespaces {
 		}
 	}
 
-	public static boolean isJavaType(final VncKeyword keyword) {
+	private static boolean isQualified(final String name) {
+		// Venice symbol first, core/first
+		// Venice symbol Foo., foo/Foo.
+		// Venice type   long, core/long
+		return name.indexOf("/") >= 1;
+	}
+
+	private static boolean isJavaType(final VncKeyword keyword) {
 		final String name = keyword.getValue();
 		final int pos = name.indexOf(".");
 		return pos > 0 && pos < name.length()-1;
