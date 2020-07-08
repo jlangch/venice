@@ -74,6 +74,19 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_namespace_anonymous_function() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                               \n" +
+				"   (ns xxx)                       \n" +
+				"   (defn f1 [f] (namespace f))    \n" +
+				"   (f1 #(+ 1)))                     ";
+
+		assertEquals("xxx", venice.eval(script));
+	}
+
+	@Test
 	public void test_def() {
 		final Venice venice = new Venice();
 

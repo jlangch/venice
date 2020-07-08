@@ -32,7 +32,6 @@ import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -54,19 +53,30 @@ public abstract class VncFunction
 
 	public VncFunction(final String name, final VncVector params, final VncVal meta) {
 		super(Constants.Nil);
-		
-		final String ns = getNamespace(name);
 
-		this.simpleName = getSimpleName(name);
+		final int pos = name.indexOf("/");
+		this.namespace = pos < 0 ? "core" : name.substring(0, pos);
+		this.simpleName = pos < 0 ? name : name.substring(pos+1);
+		this.qualifiedName = "core".equals(namespace) ? simpleName : namespace + "/" + simpleName;
+
 		this.params = params;
-		this.qualifiedName = "core".equals(ns) ? simpleName : ns + "/" + simpleName;
 		
-		this.fnMeta.set(MetaUtil.setNamespace(meta, ns));
+		int fixedArgs = 0;
+		boolean variadic = false;
+		if (params != null) {
+			for(VncVal p : params.getList()) {
+				if (isElisionSymbol(p)) {
+					variadic = true;
+					break;
+				}
+				fixedArgs++;
+			}
+		}			
+		this.fixedArgsCount = fixedArgs;
+		this.variadicArgs = variadic;
+
+		this.fnMeta.set(MetaUtil.setNamespace(meta, namespace));
 		this.fnPrivate = MetaUtil.isPrivate(meta);
-		this.namespace = ns;
-		
-		this.fixedArgsCount = params == null ? 0 : countFixedArgs(params);
-		this.variadicArgs = params == null ? false : hasRemaingsArgs(params);
 	}
 	
 	@Override
@@ -204,36 +214,8 @@ public abstract class VncFunction
 				: "anonymous-" + name + "-" + UUID.randomUUID().toString();
 	}
 
-	private static String getNamespace(final String qualifiedName) {
-		final int pos = qualifiedName.indexOf("/");
-		return pos < 1 ? "core" : qualifiedName.substring(0, pos);
-	}
-
-	private static String getSimpleName(final String qualifiedName) {
-		final int pos = qualifiedName.indexOf("/");
-		return pos < 1 ? qualifiedName : qualifiedName.substring(pos+1);
-	}
-
-	private static int countFixedArgs(final VncVector params) {
-		int fixedArgs = 0;
-		
-		for(VncVal p : params.getList()) {
-			if (isElisionSymbol(p)) break;
-			fixedArgs++;
-		}
-		
-		return fixedArgs;
-	}
-
-	private static boolean hasRemaingsArgs(final VncVector params) {
-		for(VncVal p : params.getList()) {
-			if (isElisionSymbol(p)) return true;
-		}
-		return false;
-	}
-
 	private static boolean isElisionSymbol(final VncVal val) {
-		return Types.isVncSymbol(val) && ((VncSymbol)val).getName().equals("&");
+		return (val instanceof VncSymbol) && ((VncSymbol)val).getName().equals("&");
 	}
 	
 	
