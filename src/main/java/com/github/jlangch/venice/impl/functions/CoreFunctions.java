@@ -4983,13 +4983,14 @@ public class CoreFunctions {
 				public VncVal apply(final VncList args) {
 					assertArity("instance?", args, 2);
 
-					final VncKeyword type = Types.qualify(
-												Namespaces.NS_CORE, 
-												Coerce.toVncKeyword(args.first()));
+					final VncKeyword type = Coerce.toVncKeyword(args.first());					
+					final VncKeyword qualifiedType = type.hasNamespace() 
+														? type 
+														: type.withNamespace(Namespaces.NS_CORE);
 
 					final VncVal x = args.second();
 
-					return VncBoolean.of(Types.isInstanceOf(type, x));
+					return VncBoolean.of(Types.isInstanceOf(qualifiedType, x));
 				}
 
 				private static final long serialVersionUID = -1848883965231344442L;

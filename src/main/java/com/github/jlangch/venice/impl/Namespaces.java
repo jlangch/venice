@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -57,20 +56,6 @@ public class Namespaces {
 			throw new VncException(String.format(
 					"Cannot map type '%s' to VncSymbol to lookup namespace",
 					Types.getType(ns)));
-		}
-	}
-
-	public static VncKeyword qualifyKeyword(final VncSymbol ns, final VncKeyword keyword) {
-		if (Types.isJavaTypeReference(keyword)) {
-			return keyword;
-		}
-		else {
-			if (keyword.hasNamespace()) {
-				throw new VncException(String.format(
-						"The keyword '%s' is already qualified with a namespace",
-						keyword.getValue()));
-			}
-			return new VncKeyword(ns.getName() + "/" + keyword.getValue());
 		}
 	}
 

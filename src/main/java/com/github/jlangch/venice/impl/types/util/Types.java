@@ -26,7 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.List;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.functions.MathOp;
 import com.github.jlangch.venice.impl.functions.Numeric;
 import com.github.jlangch.venice.impl.types.IDeref;
@@ -501,19 +500,16 @@ public class Types {
 
 	public static boolean isJavaTypeReference(final VncKeyword keyword) {
 		final String name = keyword.getValue();
-		final int pos = name.indexOf(".");
-		return pos > 0 && pos < name.length()-1;
+		if (name.indexOf('/') < 0) {
+			return name.charAt(name.length()-1) == '.'
+					? false  //custom type builder:  person.
+					: name.indexOf('.') >= 0;
+		}
+		else {
+			return false;  // a.b.c/list-accounts
+		}
 	}
-	
-	public static VncKeyword qualify(
-			final VncSymbol ns, 
-			final VncKeyword type
-	) {
-		return type.hasNamespace()
-					? type
-					: Namespaces.qualifyKeyword(ns, type);	
-	}
-	
+		
 	
 	public static final VncKeyword ANY = new VncKeyword("core/any");
 	

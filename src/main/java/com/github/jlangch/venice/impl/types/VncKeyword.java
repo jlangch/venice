@@ -112,13 +112,17 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 	}
 	
 	public VncKeyword withNamespace(final VncSymbol namespace) {
-		if (namespace.hasNamespace()) {
+		if (Types.isJavaTypeReference(this)) {
+			return this;
+		}
+		else if (namespace.hasNamespace()) {
 			throw new VncException(String.format(
 					"A namespace '%s' must not be qualified with an other namespace",
 					namespace));
 		}
-
-		return withNamespace(namespace.getName());
+		else {
+			return withNamespace(namespace.getName());
+		}
 	}
 	
 	public VncKeyword withNamespace(final String namespace) {

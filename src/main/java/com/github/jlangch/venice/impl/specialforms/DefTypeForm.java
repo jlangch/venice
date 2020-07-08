@@ -217,11 +217,12 @@ public class DefTypeForm {
 
 	public static boolean isCustomType(final VncVal val, final Env env) {	
 		if (Types.isVncKeyword(val)) {
-			final VncKeyword type = Types.qualify(
-											Namespaces.getCurrentNS(), 
-											(VncKeyword)val);
-			
-			return env.getGlobalOrNull(type.toSymbol()) != null;
+			final VncKeyword type = (VncKeyword)val;
+			final VncKeyword qualifiedType = type.hasNamespace() 
+												? type 
+												: type.withNamespace(Namespaces.getCurrentNS());
+					
+			return env.getGlobalOrNull(qualifiedType.toSymbol()) != null;
 		}
 		else if (Types.isVncCustomType(val)) {
 			return true;
@@ -238,8 +239,9 @@ public class DefTypeForm {
 
 	public static VncVal createType(final List<VncVal> args, final Env env) {
 		final VncKeyword type = Coerce.toVncKeyword(args.get(0));
-
-		final VncKeyword qualifiedType = Types.qualify(Namespaces.getCurrentNS(), type);
+		final VncKeyword qualifiedType = type.hasNamespace() 
+											? type 
+											: type.withNamespace(Namespaces.getCurrentNS());
 
 		final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
 		if (typeDef == null) {
@@ -398,15 +400,13 @@ public class DefTypeForm {
 			return type;
 		}
 		else {
-			final VncKeyword type_ = Namespaces.qualifyKeyword(
-										Namespaces.getCurrentNS(), 
-										type); 
+			final VncKeyword type_ = type.withNamespace(Namespaces.getCurrentNS()); 
 			
 			if (isCustomType(type_, env)) {
 				return type_;
 			}
 			else {
-				return Namespaces.qualifyKeyword(Namespaces.NS_CORE, type);
+				return type.withNamespace(Namespaces.NS_CORE);
 			}
 		}
 	}
