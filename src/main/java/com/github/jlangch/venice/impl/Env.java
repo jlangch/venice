@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -505,7 +506,7 @@ public class Env implements Serializable {
 			if (!qualified) {
 				final VncSymbol ns = Namespaces.getCurrentNS();
 				if (!Namespaces.isCoreNS(ns)) {
-					final VncSymbol qualifiedKey = new VncSymbol(ns.getName() + "/" + name);
+					final VncSymbol qualifiedKey = new VncSymbol(ns.getName(), name, Constants.Nil);
 					final Var v = getGlobalVarRaw(qualifiedKey);
 					if (v != null) return v;
 				}

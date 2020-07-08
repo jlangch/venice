@@ -38,25 +38,27 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		
 		final int pos = v.indexOf("/");
 
-		qualifiedName = v;
+		namespace = pos <= 0 ? null : v.substring(0, pos);
 		simpleName = pos < 0 ? v : v.substring(pos+1); 	
-		namespace = pos < 0 ? null : v.substring(0, pos);
+		qualifiedName = v;
 	}
 
-	private VncSymbol(final String ns, final String name, final VncVal meta) { 
+	public VncSymbol(final String ns, final String name, final VncVal meta) { 
 		super(meta);
 		
-		qualifiedName = ns + "/" + name;
+		final boolean emptyNS = (ns == null || ns.isEmpty());
+		
+		namespace = emptyNS ? null : ns;
 		simpleName = name;
-		namespace = ns;
+		qualifiedName = emptyNS ? simpleName : ns + "/" + simpleName;
 	}
 
 	private VncSymbol(final VncSymbol other, final VncVal meta) { 
 		super(meta);
 		
-		qualifiedName = other.qualifiedName;
-		simpleName = other.simpleName;
 		namespace = other.namespace;
+		simpleName = other.simpleName;
+		qualifiedName = other.qualifiedName;
 	}
 	
 	@Override

@@ -35,26 +35,27 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class VncKeyword extends VncString implements IVncFunction, INamespaceAware {
 	
 	public VncKeyword(final String v) { 
-		this(v, Constants.Nil); 
+		this(parse(v), Constants.Nil); 
 	}
 
 	public VncKeyword(final String v, final VncVal meta) {
-		super(v.startsWith(":") ? v.substring(1): v, meta); 
-		
-		final String name = v.startsWith(":") ? v.substring(1): v;
-		final int pos = name.indexOf("/");
-
-		qualifiedName = name;
-		simpleName = pos < 0 ? name : name.substring(pos+1); 	
-		namespace = pos < 0 ? null : name.substring(0, pos);
+		this(parse(v), meta); 
 	}
 
 	private VncKeyword(final String namespace, final String simpleName, final String qualifiedName, final VncVal meta) { 
 		super(qualifiedName, meta);
-		
-		this.qualifiedName = qualifiedName;
-		this.simpleName = simpleName;
+
 		this.namespace = namespace;
+		this.simpleName = simpleName;
+		this.qualifiedName = qualifiedName;
+	}
+
+	private VncKeyword(final String[] elements, final VncVal meta) { 
+		super(elements[2], meta);
+
+		this.namespace = elements[0];
+		this.simpleName = elements[1];
+		this.qualifiedName = elements[2];
 	}
 
 	private VncKeyword(final VncKeyword other, final VncVal meta) { 
@@ -63,6 +64,18 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		qualifiedName = other.qualifiedName;
 		simpleName = other.simpleName;
 		namespace = other.namespace;
+	}
+
+	private static String[] parse(final String name) { 
+		final String qn = name.charAt(0) == ':' ? name.substring(1) : name;
+		
+		final int pos = qn.indexOf("/");
+
+		final String namespace = pos <= 0 ? null : qn.substring(0, pos);
+		final String simpleName = pos < 0 ? qn : qn.substring(pos+1);
+		final String qualifiedName = namespace == null ? simpleName : namespace + "/" + simpleName;
+		
+		return new String[] {namespace, simpleName, qualifiedName};
 	}
 
 	
@@ -108,7 +121,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 	
 	@Override
 	public VncKeyword withMeta(final VncVal meta) {
-		return new VncKeyword(getValue(), meta);
+		return new VncKeyword(this, meta);
 	}
 	
 	public VncKeyword withNamespace(final VncSymbol namespace) {
@@ -132,7 +145,13 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 					qualifiedName));
 		}
 		
-		return new VncKeyword(namespace, simpleName, namespace + "/" + simpleName, getMeta());
+		final boolean emptyNS = (namespace == null || namespace.isEmpty());
+
+		return new VncKeyword(
+					emptyNS ? null : namespace, 
+					simpleName,
+					emptyNS ? simpleName : namespace + "/" + simpleName,
+					getMeta());
 	}
 	
 	@Override
