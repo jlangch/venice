@@ -506,6 +506,7 @@ public class Env implements Serializable {
 
 		final boolean qualified = sym.hasNamespace();
 		if (qualified && name.startsWith("core/")) {
+			// core/test
 			v = getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
 		else {
@@ -513,12 +514,13 @@ public class Env implements Serializable {
 				final VncSymbol ns = Namespaces.getCurrentNS();
 				if (!Namespaces.isCoreNS(ns)) {
 					final VncSymbol qualifiedKey = new VncSymbol(ns.getName(), name, Constants.Nil);
+					// curr-ns/test
 					v = getGlobalVarRaw(qualifiedKey);
 				}
 			}
 	
 			if (v == null) {
-				// symbol with namespace
+				// test
 				v = getGlobalVarRaw(sym);
 			}
 		}
@@ -573,13 +575,13 @@ public class Env implements Serializable {
 				.stream()
 				.filter(e -> e.getValue().getVal() instanceof VncFunction)
 				.map(e -> {
-					final VncFunction fn = (VncFunction)e.getValue().getVal();
-					return e.getKey()
-							.withMeta(VncHashMap.of(
-								new VncKeyword("group"), new VncString(fn.getNamespace()),
-								new VncKeyword("arglists"), fn.getArgLists(),
-								new VncKeyword("doc"), fn.getDoc()));
-				 })
+						final VncFunction fn = (VncFunction)e.getValue().getVal();
+						return e.getKey()
+								.withMeta(VncHashMap.of(
+									new VncKeyword("group"), new VncString(fn.getNamespace()),
+									new VncKeyword("arglists"), fn.getArgLists(),
+									new VncKeyword("doc"), fn.getDoc()));
+					 })
 				.collect(Collectors.toList());
 	}
 
