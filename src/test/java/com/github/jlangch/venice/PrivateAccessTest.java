@@ -21,16 +21,14 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
 public class PrivateAccessTest {
 
 	@Test
-	@Disabled
 	public void test_access_var() {
 		final Venice venice = new Venice();
 
@@ -40,10 +38,25 @@ public class PrivateAccessTest {
 				"   (def ^:private y 100)  \n" +
 				"                          \n" +
 				"   (ns beta)              \n" +
-				"   *ns*                   \n" +
 				"   alpha/y                \n" +
 				")                           ";
 	
-		assertEquals(8L, venice.eval(s));
+		assertThrows(VncException.class, () -> venice.eval(s));
+	}
+	
+	@Test
+	public void test_access_function() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                  \n" +
+				"   (ns alpha)                        \n" +
+				"   (defn ^:private add [x] (+ x 10)) \n" +
+				"                                     \n" +
+				"   (ns beta)                         \n" +
+				"   (alpha/add 5)                     \n" +
+				")                                      ";
+	
+		assertThrows(VncException.class, () -> venice.eval(s));
 	}
 }

@@ -460,8 +460,6 @@
 
 
 (defmacro
-  ^:private
-
   ;; serves the macro -<>. Inserts x in place of '<>' in form
 
   -<>* [form x]

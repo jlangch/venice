@@ -440,7 +440,9 @@ public class Env implements Serializable {
 	
 	private DynamicVar findGlobalDynamicVar(final VncSymbol sym) {
 		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
-			throw new VncException(String.format("%s can not be used as a dynamic var", sym.getName()));
+			throw new VncException(String.format(
+						"%s can not be used as a dynamic var", 
+						sym.getName()));
 		}
 
 		final Var dv = getGlobalVar(sym);
@@ -450,7 +452,9 @@ public class Env implements Serializable {
 			}
 			else {
 				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-					throw new VncException(String.format("The var '%s' is not defined as dynamic", sym.getName()));
+					throw new VncException(String.format(
+								"The var '%s' is not defined as dynamic", 
+								sym.getName()));
 				}
 			}
 		}
@@ -599,7 +603,8 @@ public class Env implements Serializable {
 				
 				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("symbol", sym))) {
 					throw new VncException(String.format(
-							"Illegal access of private symbol '%s/%s' accessed from namespace '%s'.\n%s", 
+							"Illegal access of private symbol '%s/%s' "
+								+ "accessed from namespace '%s'.\n%s", 
 							symNS,
 							envSym.getSimpleName(),
 							currNS,
@@ -615,7 +620,7 @@ public class Env implements Serializable {
 	// Note: Clojure allows shadowing global vars by local vars
 	private final boolean failOnShadowingGlobalVars = false; 
 
-	private final boolean failOnPrivateSymbolAccess = false; 
+	private final boolean failOnPrivateSymbolAccess = true; 
 
 	private final Env outer;
 	private final int level;
