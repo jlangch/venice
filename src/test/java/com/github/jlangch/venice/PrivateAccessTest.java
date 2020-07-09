@@ -45,7 +45,7 @@ public class PrivateAccessTest {
 	}
 	
 	@Test
-	public void test_access_function() {
+	public void test_access_function_1() {
 		final Venice venice = new Venice();
 
 		final String s = 
@@ -56,6 +56,22 @@ public class PrivateAccessTest {
 				"   (ns beta)                         \n" +
 				"   (alpha/add 5)                     \n" +
 				")                                      ";
+	
+		assertThrows(VncException.class, () -> venice.eval(s));
+	}
+	
+	@Test
+	public void test_access_function_2() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                         \n" +
+				"   (ns alpha)               \n" +
+				"   (defn- add [x] (+ x 10)) \n" +
+				"                            \n" +
+				"   (ns beta)                \n" +
+				"   (alpha/add 5)            \n" +
+				")                             ";
 	
 		assertThrows(VncException.class, () -> venice.eval(s));
 	}

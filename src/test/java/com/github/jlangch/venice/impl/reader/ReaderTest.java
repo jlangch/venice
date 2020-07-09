@@ -125,6 +125,37 @@ public class ReaderTest {
 	}
 
 	@Test
+	public void testAtomString_TripleQuotes_line_join() {
+		final String s1 = 
+				"(do\n" +
+				"   \"\"\"\n" +
+				"   123\n" +
+				"   456\n" +
+				"   \"\"\"\n" +
+				")";
+
+		final String s2 = 
+				"(do\n" +
+				"   \"\"\"\n" +
+				"   123  \\\n" +
+				"   456\n" +
+				"   \"\"\"\n" +
+				")";
+
+		final String s3 = 
+				"(do\n" +
+				"   \"\"\"\n" +
+				"   123  \\\n" +
+				"   456  \\\n" +
+				"   \"\"\"\n" +
+				")";
+
+		assertEquals("123\n456", new Venice().eval(s1));
+		assertEquals("123  456", new Venice().eval(s2));
+		assertEquals("123  456  ", new Venice().eval(s3));
+	}
+
+	@Test
 	public void testAtomKeyword() {
 		assertEquals(":abc", new Venice().eval("(do (str :abc))"));
 	}

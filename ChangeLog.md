@@ -10,7 +10,7 @@ and this project adheres to
 
 
 
-## [1.9.0] - 2020-07-xx
+## [1.9.0] - 2020-08-xx
 
 ### Scope
 
