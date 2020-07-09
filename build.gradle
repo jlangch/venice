@@ -64,7 +64,7 @@
 //                       clean shadowJar publish
 //           o Log in to Sonatype OSSRH (https://oss.sonatype.org/)
 //           o Click Staging Repositories
-//           o Find the release com.github.jlangch.*
+//           o Find the release 'comgithubjlangch-*'
 //           o Verify the contents are ok
 //           o Click Close (wait for validation steps under the Activity tab to complete)
 //           o Click Release
