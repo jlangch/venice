@@ -318,7 +318,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol name = validateSymbolWithCurrNS(
 												qualifySymbolWithCurrNS(
 														evaluateSymbolMetaData(ast.second(), env)),
-											"def");
+												"def");
 					
 					final VncVal val = ast.third();
 					
@@ -442,7 +442,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol name =  validateSymbolWithCurrNS(
 												qualifySymbolWithCurrNS(
 														evaluateSymbolMetaData(ast.second(), env)),
-											"defmulti");
+												"defmulti");
 					
 					IVncFunction dispatchFn;
 					
@@ -456,7 +456,8 @@ public class VeniceInterpreter implements Serializable  {
 						dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
 					}
 
-					final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn);
+					final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
+																.withMeta(name.getMeta());
 					env.setGlobal(new Var(name, multiFn, false));
 					return multiFn;
 				}
@@ -494,7 +495,7 @@ public class VeniceInterpreter implements Serializable  {
 												false,
 												env);
 
-					return multiFn.addFn(dispatchVal, fn);
+					return multiFn.addFn(dispatchVal, fn.withMeta(ast.getMeta()));
 				}
 				
 				case "ns": { // (ns alpha)
