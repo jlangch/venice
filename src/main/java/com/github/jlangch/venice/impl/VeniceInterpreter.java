@@ -1029,6 +1029,13 @@ public class VeniceInterpreter implements Serializable  {
 										evaluateSymbolMetaData(ast.nth(argPos++), env));
 		VncVal meta = macroName.getMeta();
 		
+		if (MetaUtil.isPrivate(meta)) {
+			throw new VncException(String.format(
+					"The macro '%s' must not be defined as private! "
+						+ "Venice does not support private macros.",
+					macroName.getName()));
+		}
+		
 		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
 					
 		String name = macroName.getName();

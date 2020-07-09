@@ -28,6 +28,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - line joining for text blocks (backslash at the end of a line)
+- support for private vars and functions. Private vars and functions may 
+  only be accessed from callers within the same namespace as the private 
+  var or function.
+- a check to private macros. Private macros open all sort of complex access 
+  verification problems when macros get nested.
 
 
 
