@@ -496,28 +496,37 @@ public class Env implements Serializable {
 		if (ReservedSymbols.isSpecialForm(name)) {
 			return null;
 		}
-		
-		if (failOnPrivateSymbolAccess) {
-			rejectPrivateSymbolAccess(sym);
-		}
-		
+				
+
+		Var v = null;
+
 		final boolean qualified = sym.hasNamespace();
-		
 		if (qualified && name.startsWith("core/")) {
-			return getGlobalVarRaw(new VncSymbol(name.substring(5)));
+			v = getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
 		else {
 			if (!qualified) {
 				final VncSymbol ns = Namespaces.getCurrentNS();
 				if (!Namespaces.isCoreNS(ns)) {
 					final VncSymbol qualifiedKey = new VncSymbol(ns.getName(), name, Constants.Nil);
-					final Var v = getGlobalVarRaw(qualifiedKey);
-					if (v != null) return v;
+					v = getGlobalVarRaw(qualifiedKey);
 				}
 			}
 	
-			// symbol with namespace
-			return getGlobalVarRaw(sym);
+			if (v == null) {
+				// symbol with namespace
+				v = getGlobalVarRaw(sym);
+			}
+		}
+		
+		if (v == null) {
+			return null;
+		}
+		else {
+			if (failOnPrivateSymbolAccess) {
+				rejectPrivateSymbolAccess(sym, v);
+			}
+			return v;
 		}
 	}
 
@@ -579,22 +588,23 @@ public class Env implements Serializable {
 		return new BufferedReader(new InputStreamReader(new NullInputStream()));
 	}
 
-	private void rejectPrivateSymbolAccess(final VncSymbol sym) {
-		if (sym.isPrivate()) {
+	private void rejectPrivateSymbolAccess(final VncSymbol sym, final Var envVar) {
+		final VncSymbol envSym = envVar.getName();
+		if (envSym.isPrivate()) {
 			// note: global symbols without namespace belong to the "core" namespace
-			final VncSymbol currNS = Namespaces.getCurrentNS();
-			final String symNS = sym.hasNamespace() ? sym.getNamespace() : "core";
-			if (!currNS.getSimpleName().equals(symNS)) {
+			final String currNS = Namespaces.getCurrentNS().getName();
+			final String symNS = envSym.hasNamespace() ? envSym.getNamespace() : "core";
+			if (!currNS.equals(symNS)) {
 				final CallStack callStack = ThreadLocalMap.getCallStack();
-				final CallFrame callFrame = callStack.peek();
 				
-				try (WithCallStack cs = new WithCallStack(callFrame)) {
+				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("symbol", sym))) {
 					throw new VncException(String.format(
-							"Illegal access of private symbol %s. Called by %s.\n%s", 
-							sym.getName(),
-							callFrame.getFnName(),
+							"Illegal access of private symbol '%s/%s' accessed from namespace '%s'.\n%s", 
+							symNS,
+							envSym.getSimpleName(),
+							currNS,
 							callStack.toString()));
-				}	
+				}
 			}
 		}	
 	}
