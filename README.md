@@ -35,7 +35,7 @@ Want to try Venice in a REPL? [Test it on GitPod](https://github.com/jlangch/ven
  
 ## Cheat Sheet
 
-Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/af25c6c/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/af25c6c/cheatsheet.pdf)
+Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/b1fbc8b/cheatsheet.html) [PDF](https://cdn.rawgit.com/jlangch/venice/b1fbc8b/cheatsheet.pdf)
 
 
 
