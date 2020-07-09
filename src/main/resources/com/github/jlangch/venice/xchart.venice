@@ -112,7 +112,7 @@
 ;;             expr                        (when cond1 (my e call))
 ;;             cond1 (my call)             (when cond2 (my2 e call2))
 ;;             cond2 (my2 call2))          e)
-(defmacro ^:private xchart/doto-cond
+(defmacro xchart/doto-cond
    [expr & clauses]
    (let [pairs (partition 2 clauses)
          expr-sym (gensym "expr")]
