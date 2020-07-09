@@ -159,7 +159,7 @@
 
 
 (defn xchart/available? []
-     (some? (. :org.knowm.xchart.XChartPanel :class)))
+      (some? (. :org.knowm.xchart.XChartPanel :class)))
 
 
 
