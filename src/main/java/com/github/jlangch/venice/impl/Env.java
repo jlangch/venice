@@ -581,8 +581,9 @@ public class Env implements Serializable {
 
 	private void rejectPrivateSymbolAccess(final VncSymbol sym) {
 		if (sym.isPrivate()) {
+			// note: global symbols without namespace belong to the "core" namespace
 			final VncSymbol currNS = Namespaces.getCurrentNS();
-			final String symNS = sym.getNamespace();
+			final String symNS = sym.hasNamespace() ? sym.getNamespace() : "core";
 			if (!currNS.getSimpleName().equals(symNS)) {
 				final CallStack callStack = ThreadLocalMap.getCallStack();
 				final CallFrame callFrame = callStack.peek();
