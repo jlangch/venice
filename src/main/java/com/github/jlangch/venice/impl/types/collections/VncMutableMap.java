@@ -65,7 +65,8 @@ public class VncMutableMap extends VncMap {
 	public static VncMutableMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() % 2 != 0)) {
 			throw new VncException(String.format(
-					"mutable-map: create requires an even number of list items. %s", 
+					"mutable-map: create requires an even number of list items. Got %d items. %s", 
+					lst.size(),
 					ErrorMessage.buildErrLocation(lst)));
 		}
 		
@@ -75,7 +76,8 @@ public class VncMutableMap extends VncMap {
 	public static VncMutableMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length % 2 != 0)) {
 			throw new VncException(String.format(
-					"mutable-map: create requires an even number of items. %s", 
+					"mutable-map: create requires an even number of items. Got %d items. %s", 
+					mvs.length,
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		

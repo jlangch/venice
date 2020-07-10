@@ -39,7 +39,34 @@
     (throw (venice-exception "Can only run on Mac OSX or Linux!"))))
 
 
-(defn
+(defmulti
+  ^{ :arglists '("(kill pid & options)")
+     :doc """
+          Kills a process by the process' pid.
+
+          Options are
+            :force     If true forces the process to be killed (-SIGKILL on Unix
+                       like OSs)
+            :throw-ex  If true throw an exception if the exit code is not equal
+                       to zero, if false returns the exit code. Defaults to
+                       false. It's recommended to use (with-sh-throw (sh "foo"))
+                       instead.
+
+          Returns a map of
+               :exit => exit code
+               :out  => captured stdout
+               :err  => captured stderr
+          """
+     :examples '(
+          "(shell/kill 123)"
+          "(shell/kill \"123\")"
+          "(shell/kill 123 :force true"
+          "(shell/kill 123 :force true :throw-ex false") }
+
+  kill (fn [pid & options] (os-type)))
+
+
+(defmulti
   ^{ :arglists '("(process-running? pid)")
      :doc """
           Returns true if the pid represents a running process, false otherwise.
@@ -48,17 +75,7 @@
           "(shell/process-running? 123)"
           "(shell/process-running? \"123\")") }
 
-  process-running? [pid]
-
-  (require-mac-or-linux)
-  (if (some? pid)
-    (->> (sh "ps" "-ef" :throw-ex true)
-         (:out)
-         (str/split-lines)
-         (map #(second (str/split (str/trim %) " +")))
-         (filter #(== % (str pid)))
-         (not-empty?))
-    false))
+  process-running? (fn [pid] (os-type)))
 
 
 (defn
@@ -74,9 +91,69 @@
 
   wait-for-process-exit [pid timeout]
 
-  (require-mac-or-linux)
   (loop [secs timeout]
     (when (and (pos? secs) (process-running? pid))
       (sleep 1 :seconds)
       (recur (dec secs))))
   (if (process-running? pid) pid nil))
+
+
+
+;; -----------------------------------------------------------------------------
+;; process-running? defmethod implementations
+;; -----------------------------------------------------------------------------
+
+(defmethod process-running? :mac-osx [pid]
+  (if (some? pid)
+    (->> (sh "ps" "-ef" :throw-ex true)
+         (:out)
+         (str/split-lines)
+         (map #(second (str/split (str/trim %) " +")))
+         (filter #(== % (str pid)))
+         (not-empty?))
+  false))
+
+(defmethod process-running? :linux [pid]
+  (if (some? pid)
+    (->> (sh "ps" "-ef" :throw-ex true)
+         (:out)
+         (str/split-lines)
+         (map #(second (str/split (str/trim %) " +")))
+         (filter #(== % (str pid)))
+         (not-empty?))
+  false))
+
+(defmethod process-running? :windows [pid]
+  (if (some? pid)
+    (->> (sh "tasklist")
+         (:out)
+         (str/split-lines)
+         (map #(second (str/split (str/trim %) " +")))
+         (filter #(== % (str pid)))
+         (not-empty?))
+  false))
+
+
+;; -----------------------------------------------------------------------------
+;; kill defmethod implementations
+;; -----------------------------------------------------------------------------
+
+(defmethod kill :mac-osx [pid & options]
+  (let [opts     (apply hash-map options)
+        signal   (if (get opts :force false) "-SIGINT" "-SIGKILL")
+        throw-ex (get opts :throw-ex true)]
+    (sh "kill" signal pid :throw-ex throw-ex)))
+
+
+(defmethod kill :linux [pid & options]
+  (let [opts     (apply hash-map options)
+        signal   (if (get opts :force false) "-SIGINT" "-SIGKILL")
+        throw-ex (get opts :throw-ex true)]
+    (sh "kill" signal pid :throw-ex throw-ex)))
+
+
+(defmethod kill :windows [pid & options]
+  (let [opts     (apply hash-map options)
+        force    (if (get opts :force false) "/F" "")
+        throw-ex (get opts :throw-ex true)]
+    (sh "cmd" "/C" "taskkill ${force} /PID ${pid}" :throw-ex throw-ex)))
