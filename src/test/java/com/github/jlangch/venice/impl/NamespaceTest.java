@@ -87,6 +87,147 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_namespace_in_function_evaluation() {
+		// Functions are evaluated in the namespace they are defined!
+		
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (with-out-str                         \n" +
+				"     (ns alpha)                          \n" +
+				"     (defn x-alpha [] (println *ns*))    \n" +
+				"                                         \n" +
+				"     (ns beta)                           \n" +
+				"     (defn x-beta [] (println *ns*))     \n" +
+				"                                         \n" +
+				"     (alpha/x-alpha)                     \n" +
+				"     (x-beta)                            \n" +
+				"     (beta/x-beta)                       \n" +
+				"                                         \n" +
+				"     (ns gamma)                          \n" +
+				"     (alpha/x-alpha)                     \n" +
+				"     (beta/x-beta)))                       ";
+
+		assertEquals("alpha\nbeta\nbeta\nalpha\nbeta\n", venice.eval(script));
+	}
+
+	@Test
+	public void test_namespace_in_macro_evaluation_runtime() {
+		// Macros are evaluated in the namespace they are called from!
+		
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                        \n" +
+				"   (with-out-str                           \n" +
+				"     (ns alpha)                            \n" +
+				"                                           \n" +
+				"     (defmacro whenn [test form]           \n" +
+				"       (do                                 \n" +
+				"         (println *ns*)                    \n" +
+				"         `(if ~test ~form nil)))           \n" +
+				"                                           \n" +
+				"     (ns beta)                             \n" +
+				"                                           \n" +
+				"     (do                                   \n" +
+				"       (ns gamma)                          \n" +
+				"       (alpha/whenn true (println 100))    \n" +
+				"       (ns delta)                          \n" +  
+				"       (alpha/whenn true (println 100)))))   ";
+
+		assertEquals("gamma\n100\ndelta\n100\n", venice.eval(script));
+	}
+
+	@Test
+	public void test_namespace_in_macro_evaluation_upfront_1() {
+		// Macros are evaluated in the namespace they are called from!
+		
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                             \n" +
+				"   (with-out-str                                \n" +
+				"     (ns alpha)                                 \n" +
+				"                                                \n" +
+				"     (defmacro whenn [test form]                \n" +
+				"       (do                                      \n" +
+				"         (println *ns*)                         \n" +
+				"         `(if ~test ~form nil)))                \n" +
+				"                                                \n" +
+				"     (ns beta)                                  \n" +
+				"                                                \n" +
+				"     (macroexpand-all                           \n" +
+				"       '(do                                     \n" +
+				"          (ns gamma)                            \n" +
+				"          (alpha/whenn true (println 100))      \n" +
+				"          (ns delta)                            \n" +  
+				"          (alpha/whenn true (println 100))))))   ";
+
+		// FIXME: wrong namespaces  --> macroexpand-all should parse namespaces!!
+		assertEquals("beta\nbeta\n", venice.eval(script));
+	}
+
+	@Test
+	public void test_namespace_in_macro_evaluation_upfront_2() {
+		// Macros are evaluated in the namespace they are called from!
+		
+		final Venice venice = new Venice();
+
+		final String inline =
+				"(do                                             \n" +
+				"   (with-out-str                                \n" +
+				"     (ns alpha)                                 \n" +
+				"                                                \n" +
+				"     (defmacro whenn [test form]                \n" +
+				"       (do                                      \n" +
+				"         (println *ns*)                         \n" +
+				"         `(if ~test ~form nil)))                \n" +
+				"                                                \n" +
+				"     (ns beta)                                  \n" +
+				"                                                \n" +
+				"     (do                                        \n" +
+				"       (ns gamma)                               \n" +
+				"       (alpha/whenn true (println 100))         \n" +
+				"       (ns delta)                               \n" +  
+				"       (alpha/whenn true (println 100)))))        ";
+
+		final String script = String.format("(do (load-string \"\"\"%s\"\"\"))", inline);
+
+		// FIXME: runtime macro expansion instead of upfront macro expansion
+		assertEquals("gamma\n100\ndelta\n100\n", venice.eval("test", script, true, null));  
+	}
+
+	@Test
+	public void test_namespace_in_macro_evaluation_upfront_3() {
+		// Macros are evaluated in the namespace they are called from!
+		
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                             \n" +
+				"   (with-out-str                                \n" +
+				"     (ns alpha)                                 \n" +
+				"                                                \n" +
+				"     (defmacro whenn [test form]                \n" +
+				"       (do                                      \n" +
+				"         (println *ns*)                         \n" +
+				"         `(if ~test ~form nil)))                \n" +
+				"                                                \n" +
+				"     (ns beta)                                  \n" +
+				"                                                \n" +
+				"     (do                                        \n" +
+				"       (ns gamma)                               \n" +
+				"       (alpha/whenn true (println 100))         \n" +
+				"       (ns delta)                               \n" +  
+				"       (alpha/whenn true (println 100)))))        ";
+
+		// FIXME: runtime macro expansion instead of upfront macro expansion
+		//        VeniceInterpreter @ line 173: MACROEXPAND(ast, env, macroexpand) seems not to work
+		assertEquals("gamma\n100\ndelta\n100\n", venice.eval("test", script, true, null));
+	}
+
+	@Test
 	public void test_def() {
 		final Venice venice = new Venice();
 
