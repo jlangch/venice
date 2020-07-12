@@ -44,8 +44,8 @@ Regarding these two aspects macros and functions can be compared as:
 ### Namespace
 
 Macros evaluate in the namespace they are called from, not in the namespace
-they are defined. This is different from functions that evaluate their body 
-in the namespace which they are defined.
+they are defined. This is different from functions that evaluate in the 
+namespace which they are defined.
 
 
 ## When to use macros
