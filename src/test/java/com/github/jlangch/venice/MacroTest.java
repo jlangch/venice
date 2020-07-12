@@ -32,6 +32,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+
 
 public class MacroTest {
 
@@ -721,6 +724,57 @@ public class MacroTest {
 
 		assertEquals("(if true nil (+ 1 1))", venice.eval("(str " + s1 + ")"));
 		assertEquals("(if false nil (+ 1 1))", venice.eval("(str " + s2 + ")"));
+	}
+
+	@Test
+	public void test_macroexpand_all_via_function() {
+		final Venice venice = new Venice();
+
+		final String s1 = "(macroexpand-all '(when true 1))";
+		
+		final String s2 = "(macroexpand-all '[(when true 1) (when true 2) (when true 3)])";
+		
+		final String s3 = "(macroexpand-all '(do (when true 1) (when true 2) (when true 3)))";
+
+		final String s4 = "(macroexpand-all '(when true (when true (when true 3))))";
+
+		assertEquals("(if true (do 1))", venice.eval("(str " + s1 + ")"));
+		assertEquals("[(if true (do 1)) (if true (do 2)) (if true (do 3))]", venice.eval("(str " + s2 + ")"));
+		assertEquals("(do (if true (do 1)) (if true (do 2)) (if true (do 3)))", venice.eval("(str " + s3 + ")"));
+		assertEquals("(if true (do (if true (do (if true (do 3))))))", venice.eval("(str " + s4 + ")"));
+	}
+
+	@Test
+	public void test_macroexpand_all_via_interpreter_flag() {
+		VeniceInterpreter venice = new VeniceInterpreter();		
+		assertEquals("(if true (do 1))", 
+					 venice.MACROEXPAND(
+						venice.READ("(when true 1)", "test"), 
+						venice.createEnv(true, false, new VncKeyword("script")), 
+						true).toString(true));
+
+		venice = new VeniceInterpreter();		
+		assertEquals("[(if true (do 1)) (if true (do 2)) (if true (do 3))]", 
+					 venice.MACROEXPAND(
+						venice.READ("[(when true 1) (when true 2) (when true 3)]", "test"), 
+						venice.createEnv(true, false, new VncKeyword("script")), 
+						true).toString(true));
+
+
+		venice = new VeniceInterpreter();		
+		assertEquals("(do (if true (do 1)) (if true (do 2)) (if true (do 3)))", 
+					 venice.MACROEXPAND(
+						venice.READ("(do (when true 1) (when true 2) (when true 3))", "test"), 
+						venice.createEnv(true, false, new VncKeyword("script")), 
+						true).toString(true));
+		
+
+		venice = new VeniceInterpreter();		
+		assertEquals("(if true (do (if true (do (if true (do 3))))))", 
+					 venice.MACROEXPAND(
+						venice.READ("(when true (when true (when true 3)))", "test"), 
+						venice.createEnv(true, false, new VncKeyword("script")), 
+						true).toString(true));
 	}
 
 	@Test
