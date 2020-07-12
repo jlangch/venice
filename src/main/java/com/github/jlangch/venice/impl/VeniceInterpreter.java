@@ -233,7 +233,7 @@ public class VeniceInterpreter implements Serializable  {
 		initNS();
 
 		// load core module (take care that macro expansion is not active!)
-		loadModule("core", env, loadedModules);
+		loadModule("core", env, loadedModules, false);
 		
 		// set macroexpand on load
 		if (macroexpandOnLoad) {
@@ -242,8 +242,8 @@ public class VeniceInterpreter implements Serializable  {
 
 		sealedSystemNS.set(true);
 
-		// load other modules requested for preload
-		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
+		// load other modules requested for preload (use macroexpandOnLoad flag)
+		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules, macroexpandOnLoad));
 
 		return env;
 	}
@@ -255,10 +255,15 @@ public class VeniceInterpreter implements Serializable  {
 		return modules;
 	}
 	
-	private void loadModule(final String module, final Env env, final VncMutableSet loadedModules) {
+	private void loadModule(
+			final String module, 
+			final Env env, 
+			final VncMutableSet loadedModules,
+			final boolean macroexpandOnLoad
+	) {
 		final long nanos = System.nanoTime();
 		
-		RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
+		RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env, macroexpandOnLoad);
 
 		if (meterRegistry.enabled) {
 			meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
@@ -1486,7 +1491,7 @@ public class VeniceInterpreter implements Serializable  {
 			final boolean macro,
 			final Env env
 	) {
-		// the namespace the function is defined for
+		// the namespace the function/macro is defined for
 		final Namespace ns = Namespaces.getCurrentNamespace();
 		
 		// Note: Do not switch to the functions own namespace for the function 
@@ -1497,7 +1502,7 @@ public class VeniceInterpreter implements Serializable  {
 		//          > (macroexpand-all '(bench (+ 1 2))
 		//       instead of:
 		//          > (macroexpand-all '(user/bench (+ 1 2))
-		final boolean switchToFunctionNamespaceAtRuntime = !name.equals("macroexpand-all");
+		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
 		
 		return new VncFunction(name, params, macro) {
 			@Override
