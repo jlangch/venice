@@ -1095,7 +1095,7 @@ public class VeniceInterpreter implements Serializable  {
 							fnParams, 
 							fnBody, 
 							null,
-							false,
+							true,
 							env));
 			});
 
@@ -1486,38 +1486,43 @@ public class VeniceInterpreter implements Serializable  {
 			final boolean macro,
 			final Env env
 	) {
+		// the namespace the function is defined for
 		final Namespace ns = Namespaces.getCurrentNamespace();
+		
+		// Note: Do not switch to the functions own namespace for the function 
+		//       "core/macroexpand-all". Handle "macroexpand-all" like a special 
+		//       form.This allows expanding locally defined macros from the REPL 
+		//       without the need of qualifying them:
+		//          > (defmacro bench [expr] ...)
+		//          > (macroexpand-all '(bench (+ 1 2))
+		//       instead of:
+		//          > (macroexpand-all '(user/bench (+ 1 2))
+		final boolean switchToFunctionNamespaceAtRuntime = !name.equals("macroexpand-all");
 		
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
-				final Namespace curr_ns = Namespaces.getCurrentNamespace();
-				try {
-					if (!name.equals("macroexpand-all")) {
-						// Note:
-						// do not switch to the functions own namespace for the function 
-						// "core/macroexpand-all". Handle "macroexpand-all" like a special form. 
-						// This allows expanding locally defined macros from the REPL without 
-						// the need of qualifying them:
-						//    > (defmacro bench [expr] ...)
-						//    > (macroexpand-all '(bench (+ 1 2))
-						// instead of:
-						//    > (macroexpand-all '(user/bench (+ 1 2))
-						
+				if (switchToFunctionNamespaceAtRuntime) {
+					final Namespace curr_ns = Namespaces.getCurrentNamespace();
+					try {
 						Namespaces.setCurrentNamespace(ns);
-					}
 
-					// destructuring fn params -> args
-					localEnv.addLocalBindings(Destructuring.destructure(params, args));
-	
-					validateFnPreconditions(name, preConditions, localEnv);
-	
-					return evaluateBody(body, localEnv);
+						// destructuring fn params -> args
+						localEnv.addLocalBindings(Destructuring.destructure(params, args));	
+						validateFnPreconditions(name, preConditions, localEnv);		
+						return evaluateBody(body, localEnv);
+					}
+					finally {
+						Namespaces.setCurrentNamespace(curr_ns);
+					}
 				}
-				finally {
-					Namespaces.setCurrentNamespace(curr_ns);
+				else {
+					// destructuring fn params -> args
+					localEnv.addLocalBindings(Destructuring.destructure(params, args));	
+					validateFnPreconditions(name, preConditions, localEnv);
+					return evaluateBody(body, localEnv);
 				}
 			}
 			

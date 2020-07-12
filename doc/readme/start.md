@@ -59,8 +59,8 @@ venice>
 On Windows the 'jansi' library is required. Download the library from
 Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/1.18/jar)
 
-Open a terminal, move to the directory the Venice JAR is located, and start 
-a REPL:
+Open a terminal, move to the directory the Venice and the 'jansi' JAR is located, 
+and start a REPL:
 
 ```text
 foo> java -cp venice-1.8.9.jar;jansi-1.18.jar com.github.jlangch.venice.Launcher -colors-darkmode
@@ -88,7 +88,7 @@ venice>
 This is by far the easiest way to setup a local Venice REPL environment 
 regardless of the operating system (Windows, MacOSX, or Linux).
 
-You just need the Venice JAR (venice-1.8.0.jar or newer) as prerequisite.
+You just need the Venice JAR as prerequisite.
 
 The automated setup will create a launcher script with the Java classpath correctly
 setup, will download the Jansi library from Maven, and add some example Venice 
