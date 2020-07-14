@@ -85,6 +85,12 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	public VeniceInterpreter(
+			final IInterceptor interceptor
+	) {
+		this(new MeterRegistry(false), interceptor, null);
+	}
+
+	public VeniceInterpreter(
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
@@ -504,7 +510,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns": { // (ns alpha)
-					final VncSymbol ns = Coerce.toVncSymbol(ast.second());
+					final VncSymbol ns = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluate(ast.second(), env)));
+					
 					if (ns.hasNamespace()) {
 						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns", ast))) {
 							throw new VncException(String.format(

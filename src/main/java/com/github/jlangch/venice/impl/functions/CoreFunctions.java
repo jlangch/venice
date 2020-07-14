@@ -66,6 +66,7 @@ import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
@@ -661,6 +662,63 @@ public class CoreFunctions {
 					return False;
 				}
 				return VncBoolean.of(((VncFunction)args.first()).isMacro());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction fn_body =
+		new VncFunction(
+				"fn-body",
+				VncFunction
+					.meta()
+					.arglists(
+						"(fn-body fn)", 
+						"(fn-body fn arity)")
+					.doc("Returns the body of a function")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("fn-body", args, 1, 2);
+
+				if (!Types.isVncFunction(args.first())) {
+					return Nil;
+				}
+				
+				final VncFunction fn = (VncFunction)args.first();					
+				if (fn instanceof VncMultiArityFunction) {
+					if (args.size() == 1) {
+						return ((VncMultiArityFunction)fn)
+									.getFunctions()
+									.getList()
+									.stream()
+									.map(f -> ((VncFunction)f).getBody())
+									.findFirst()
+									.orElse(Nil);
+					}
+					else if (args.size() == 2) {
+						final int arity = Coerce.toVncLong(args.second()).getIntValue();
+						return ((VncMultiArityFunction)fn)
+									.getFunctions()
+									.getList()
+									.stream()
+									.map(f -> (VncFunction)f)
+									.filter(f -> f.getFixedArgsCount() == arity)
+									.map(f -> f.getBody())
+									.findFirst()
+									.orElse(Nil);
+					}
+					else {
+						return Nil;
+					}
+				}
+				else if (fn instanceof VncMultiFunction) {
+					return Nil;
+				}
+				else {
+					return fn.getBody();
+				}
+				
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -6478,6 +6536,7 @@ public class CoreFunctions {
 				.add(keyword_Q)
 				.add(fn_Q)
 				.add(macro_Q)
+				.add(fn_body)
 
 				.add(just)
 				.add(just_Q)

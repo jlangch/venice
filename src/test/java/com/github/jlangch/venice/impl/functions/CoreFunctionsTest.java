@@ -1246,6 +1246,13 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_fn_body() {
+		final Venice venice = new Venice();
+		
+		assertEquals("((if x false true))", venice.eval("(pr-str (fn-body not))"));
+	}
+	
+	@Test
 	public void test_frequencies() {
 		final Venice venice = new Venice();
 		
