@@ -68,6 +68,24 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_ns_5() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (with-out-str                         \n" +
+				"     (ns alpha)                          \n" +
+				"     (println *ns*)                      \n" +
+				"     (let [temp-ns (name *ns*)]          \n" +
+				"       (ns beta)                         \n" +
+				"       (println *ns*)                    \n" +
+				"       (ns (symbol temp-ns))             \n" +
+				"       (println *ns*))))                   ";
+
+		assertEquals("alpha\nbeta\nalpha\n", venice.eval(script));
+	}
+
+	@Test
 	public void test_namespace_symbol() {
 		final Venice venice = new Venice();
 

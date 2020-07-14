@@ -510,9 +510,10 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns": { // (ns alpha)
-					final VncSymbol ns = Types.isVncSymbol(ast.second())
-											? (VncSymbol)ast.second()
-											: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluate(ast.second(), env)));
+					final VncVal name = ast.second();
+					final VncSymbol ns = Types.isVncSymbol(name)
+											? (VncSymbol)name
+											: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluate(name, env)));
 					
 					if (ns.hasNamespace()) {
 						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns", ast))) {

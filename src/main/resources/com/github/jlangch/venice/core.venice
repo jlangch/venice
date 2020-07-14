@@ -1280,25 +1280,12 @@
 
   macroexpand-all [form]
 
-  (core/prewalk (fn [x] (if (list? x)
-                          (macroexpand x)
-                          x))
-                form))
-
-(defn
-  ^{ :arglists '("(macroexpand-all form)")
-      :doc "Recursively expands all macros in the form."
-      :examples (list
-          "(macroexpand-all '(and true true))",
-          "(macroexpand-all '(and true (or true false) true))"
-          "(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
-
-  macroexpand-all-1 [form]
-
   (let [temp-ns (name *ns*)]
     (try
       (core/prewalk (fn [x] (if (list? x)
                                 (macroexpand x)
                                 x))
                     form)
-      (finally (ns temp-ns)))))
+      (finally
+        ; preserve the namespace
+        (ns (symbol temp-ns))))))

@@ -152,8 +152,12 @@ public class ModuleFunctions {
 											         .filter(d -> d != Nil)
 											         .findFirst()
 											         .orElse(Nil);
-						
-						return data == Nil || binary ? data : convertToString(data, encoding);
+						if (data == Nil) {
+							throw new VncException("Failed to load Venice file: " + file);
+						}
+						else {
+							return binary ? data : convertToString(data, encoding);
+						}
 					}
 				} 
 				catch (VncException ex) {
