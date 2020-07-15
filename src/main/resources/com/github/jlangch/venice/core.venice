@@ -1280,12 +1280,7 @@
 
   macroexpand-all [form]
 
-  (let [temp-ns (name *ns*)]
-    (try
-      (core/prewalk (fn [x] (if (list? x)
-                                (macroexpand x)
-                                x))
-                    form)
-      (finally
-        ; preserve the namespace
-        (ns (symbol temp-ns))))))
+  (core/prewalk (fn [x] (if (list? x)
+                            (macroexpand x)
+                            x))
+                    form))

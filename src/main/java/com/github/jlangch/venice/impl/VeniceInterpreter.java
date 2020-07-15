@@ -42,6 +42,7 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
+import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.DocForm;
@@ -50,6 +51,7 @@ import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -60,6 +62,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
@@ -626,6 +629,11 @@ public class VeniceInterpreter implements Serializable  {
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
 						return macroexpand(evaluate(ast.second(), env), env);
 					}
+
+				case "macroexpand-all-1": 
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand-all", ast))) {
+						return macroexpand_all(evaluate(ast.second(), env), env);
+					}
 					
 				case "quote":
 					return ast.second();
@@ -1008,6 +1016,93 @@ public class VeniceInterpreter implements Serializable  {
 		return ast_;
 	}
 
+	private VncVal macroexpand_all(final VncVal form, final Env env) {
+
+		final VncFunction handler = new VncFunction(createAnonymousFuncName("macroexpand-all-handler")) {
+			public VncVal apply(final VncList args) {
+				final VncVal form = args.first();
+				if (Types.isVncList(form)) {
+					if (is_ns_symbolic_expr(form)) {
+						final VncSymbol ns = (VncSymbol)((VncList)form).second();
+						Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns)); 
+					}
+					return macroexpand((VncList)form, env);
+				}
+				else {
+					return form;
+				}
+			}
+			private static final long serialVersionUID = -1L;
+		};
+
+		final VncFunction walk = new VncFunction(createAnonymousFuncName("macroexpand-all-walk")) {
+			public VncVal apply(final VncList args) {
+				final VncFunction inner = (VncFunction)args.first();
+				final VncVal form = args.second();
+				
+				if (Types.isVncList(form)) {
+					// (outer (apply list (map inner form)))
+					return CoreFunctions.apply.applyOf(
+								CoreFunctions.new_list, 
+								TransducerFunctions.map.applyOf(inner, form));
+				}
+				else if (Types.isVncMapEntry(form)) {
+					// (outer (map-entry (inner (key form)) (inner (val form))))
+					return CoreFunctions.new_map_entry.applyOf(
+											inner.applyOf(((VncMapEntry)form).getKey()), 
+											inner.applyOf(((VncMapEntry)form).getValue()));
+				}
+				else if (Types.isVncCollection(form)) {
+					// (outer (into (empty form) (map inner form)))
+					return CoreFunctions.into.applyOf(
+											CoreFunctions.empty.applyOf(form), 
+											TransducerFunctions.map.applyOf(inner, form));
+				}
+				else {
+					// (outer form)
+					return form;
+				}
+			}
+			private static final long serialVersionUID = -1L;
+		};
+
+		final VncFunction prewalk = new VncFunction(createAnonymousFuncName("macroexpand-all-prewalk")) {
+			public VncVal apply(final VncList args) {
+				final VncFunction f = (VncFunction)args.first();
+				final VncVal form = args.second();
+
+				return walk.applyOf(
+							CoreFunctions.partial.applyOf(this, f),
+							f.applyOf(form));
+			}
+			private static final long serialVersionUID = -1L;
+		};
+
+		
+		final Namespace ns = Namespaces.getCurrentNamespace();
+		try {
+			return prewalk.applyOf(handler, form);
+		}
+		finally {
+			Namespaces.setCurrentNamespace(ns);
+		}
+	}
+
+	private boolean is_ns_symbolic_expr(final VncVal form) {
+		// check if the expression is of the form (ns x)
+		if (Types.isVncList(form)) {
+			final VncList list = (VncList)form;
+			if (list.size() == 2) {
+				final VncVal first = list.first();
+				return (first instanceof VncSymbol)
+						 && ("ns".equals(((VncSymbol)first).getName())) 
+						 && (list.second() instanceof VncSymbol);
+			}
+		}
+		
+		return false;
+	}
+	
 	private static boolean is_pair(final VncVal x) {
 		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
 	}

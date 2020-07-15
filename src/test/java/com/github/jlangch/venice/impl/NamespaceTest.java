@@ -192,7 +192,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = false;
 
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(macroexpandOnLoad, false, new VncKeyword("script"))
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		final String macros =
@@ -239,7 +239,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = false;
 
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(macroexpandOnLoad, false, new VncKeyword("script"))
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]
@@ -292,7 +292,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = true;
 
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(macroexpandOnLoad, false, new VncKeyword("script"))
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]
@@ -346,7 +346,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = true;
 
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(false, false, new VncKeyword("script"))
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]
@@ -356,16 +356,15 @@ public class NamespaceTest {
 				"                                              \n" +
 				"  (defmacro whenn [test form]                 \n" +
 				"    (do                                       \n" +
-				"      (println *ns*)                          \n" +
+				"      (println \"MACRO whenn\" *ns*)          \n" +
 				"      `(if ~test ~form nil))))                  ";
 
-		venice.RE(macros, "test", env, macroexpandOnLoad);
+		venice.RE(macros, "test", env, false);
 
 		
 		// [2]
 		final String ns = "(ns beta)";
-		venice.RE(ns, "test", env, macroexpandOnLoad);
-
+		venice.RE(ns, "test", env, false);
 		
 		// [3]
 		final String script =
