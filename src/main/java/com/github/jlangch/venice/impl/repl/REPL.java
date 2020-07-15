@@ -89,6 +89,8 @@ public class REPL {
 				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
 			}
 
+			macroexpand = cli.switchPresent("-macroexpand");
+
 			final String jansiVersion = config.getJansiVersion();
 
 			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
@@ -114,6 +116,9 @@ public class REPL {
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
 			System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+			if (macroexpand) {
+				System.out.println("Macro expansion enabled");
+			}
 			if (!setupMode) {
 				System.out.println("Type '!' for help.");
 			}
@@ -129,7 +134,7 @@ public class REPL {
 		final String prompt = config.getPrompt();
 		final String secondaryPrompt = ansiTerminal ? config.getSecondaryPrompt() : "";
 		final String resultPrefix = config.getResultPrefix();
-
+		
 		final Thread mainThread = Thread.currentThread();
 		
 		final TerminalBuilder builder = TerminalBuilder
@@ -672,7 +677,7 @@ public class REPL {
 		try {
 			if (loadFile != null) {
 				printer.println("stdout", "loading file \"" + loadFile + "\"");
-				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
+				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env, macroexpand);
 				printer.println("stdout", resultPrefix + venice.PRINT(result));
 			}
 			return true;

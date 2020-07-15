@@ -80,6 +80,8 @@ public class CustomREPL {
 				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
 			}
 
+			macroexpand = cli.switchPresent("-macroexpand");
+
 			final String jansiVersion = config.getJansiVersion();
 
 			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
@@ -105,6 +107,9 @@ public class CustomREPL {
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
 			System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+			if (macroexpand) {
+				System.out.println("Macro expansion enabled");
+			}
 			if (!setupMode) {
 				System.out.println("Type '!' for help.");
 			}
@@ -173,11 +178,11 @@ public class CustomREPL {
 			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
 			return; // we stop here
 		}
-
+		
 		if (!runApp(venice, env, printer)) {
 			return; // stop REPL
 		}
-
+		
 		
 		final History history = new DefaultHistory();
 		
@@ -294,8 +299,8 @@ public class CustomREPL {
 	) {
 		try {
 			if (app != null) {
-				printer.println("stdout", "loading file \"" + app.getPath() + "\"");
-				venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
+				printer.println("stdout", "Loading file: '" + app.getPath() + "'");
+				venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env, macroexpand);
 			}
 			return true;
 		}
@@ -311,7 +316,7 @@ public class CustomREPL {
 			    || cli.switchPresent("-setup-ext") 
 			    || cli.switchPresent("-setup-extended");
 	}
-	
+
 	
 	
 	private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";

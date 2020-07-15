@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
@@ -61,6 +62,7 @@ import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -639,6 +641,15 @@ public class VeniceInterpreter implements Serializable  {
 						return macroexpand_all(evaluate(ast.second(), env), env);
 					}
 					
+				case "macroexpand-info": 
+					return VncHashMap.of(
+								new VncKeyword("macroexpand-count"),
+								new VncLong(macroExpandCount.get()),
+								new VncKeyword("macroexpand-all-count"),
+								new VncLong(macroExpandAllCount.get()),
+								new VncKeyword("macroexpand-all-count-effective"),
+								new VncLong(macroExpandAllCountEffective.get()));
+					
 				case "quote":
 					return ast.second();
 					
@@ -1017,8 +1028,11 @@ public class VeniceInterpreter implements Serializable  {
 			ast_ = macro.apply(((VncList)ast_).rest());
 		}
 	
-		if ((expandedMacros > 0) && meterRegistry.enabled) {
-			meterRegistry.record("macroexpand", System.nanoTime() - nanos);
+		if (expandedMacros > 0) {
+			macroExpandCount.addAndGet(expandedMacros);
+			if (meterRegistry.enabled) {
+				meterRegistry.record("macroexpand", System.nanoTime() - nanos);
+			}
 		}
 		
 		if (expandedMacrosCounter != null) {
@@ -1034,7 +1048,7 @@ public class VeniceInterpreter implements Serializable  {
 	 * <p>An approach with <code>core/prewalk</code> does not work, because
 	 * this function does not apply namespaces (remember macros are always 
 	 * executed in the namespace of the caller as opposed to functions that
-	 * are executed in the namespace they are defined in.
+	 * are executed in the namespace they are defined in).
 	 * 
 	 * <p>With <code>core/prewalk</code> we cannot execute <code>(ns x)</code>
 	 * because the functions involved like <code>core/walk</code> and 
@@ -1080,6 +1094,8 @@ public class VeniceInterpreter implements Serializable  {
 		};
 
 		final VncFunction walk = new VncFunction(createAnonymousFuncName("macroexpand-all-walk")) {
+			// Java implementation of 'core/walk' from 'core' module with
+			// the optimization for 'outer' function as 'identity' for 'core/prewalk'
 			public VncVal apply(final VncList args) {
 				final VncFunction inner = (VncFunction)args.first();
 				final VncVal form = args.second();
@@ -1111,6 +1127,7 @@ public class VeniceInterpreter implements Serializable  {
 		};
 
 		final VncFunction prewalk = new VncFunction(createAnonymousFuncName("macroexpand-all-prewalk")) {
+			// Java implementation of 'core/prewalk' from 'core' module
 			public VncVal apply(final VncList args) {
 				final VncFunction f = (VncFunction)args.first();
 				final VncVal form = args.second();
@@ -1126,12 +1143,16 @@ public class VeniceInterpreter implements Serializable  {
 		final Namespace original_ns = Namespaces.getCurrentNamespace();
 		try {
 			final VncVal expanded = prewalk.applyOf(handler, form);
-			
-			final int count = expandedMacroCounter.get();
+		
+			// the number of expanded macros in this 'macroexpand-all' run
+			final int count = expandedMacroCounter.get(); 
 			if (count == 0) {
+				macroExpandAllCount.incrementAndGet();
 				return expanded;
 			}
 			else {
+				macroExpandAllCount.incrementAndGet();
+				macroExpandAllCountEffective.incrementAndGet();
 				return expanded;
 			}
 		}
@@ -1853,4 +1874,7 @@ public class VeniceInterpreter implements Serializable  {
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
 	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
+	private final AtomicLong macroExpandAllCountEffective = new AtomicLong(0L);
+	private final AtomicLong macroExpandAllCount = new AtomicLong(0L);
+	private final AtomicLong macroExpandCount = new AtomicLong(0L);
 }

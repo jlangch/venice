@@ -34,6 +34,11 @@ import com.github.jlangch.venice.impl.util.Watchable;
 
 public class VncAtom extends VncVal implements IDeref {
 
+	public VncAtom(final VncVal value) {
+		super(Constants.Nil);
+		state.set(value); 
+	}
+
 	public VncAtom(final VncVal value, final VncVal meta) {
 		super(meta);
 		state.set(value); 
