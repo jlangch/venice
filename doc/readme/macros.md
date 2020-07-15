@@ -347,7 +347,7 @@ The `(gensym)` function lets you  manually create safe symbol names:
 (defmacro time-2 [expr]
   (let [start (gensym "start__")
         ret (gensym "ret__")
-        end (gensym "en__")]
+        end (gensym "end__")]
     `(let [~start (nano-time)
            ~ret ~expr
            ~end (nano-time)]
