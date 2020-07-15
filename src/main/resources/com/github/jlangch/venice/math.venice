@@ -34,18 +34,17 @@
       :doc "Creates a new big integer from a string, a long, or a double"
       :examples '("(math/bigint \"686686783535435353535353\")") }
 
-   math/bigint
-
-   [x]
-      (cond
-         (math/bigint? x) x
-         (long? x)        (. :java.math.BigInteger :valueOf x)
-         (int? x)         (. :java.math.BigInteger :valueOf (long x))
-         (string? x)      (. :java.math.BigInteger :new x)
-         (double? x)      (. :java.math.BigInteger :valueOf (long x))
-         :else (throw (str/format
-                          "Invalid parameter (%s) to create a new big integer"
-                          (type x)))))
+   math/bigint [x]
+   
+   (cond
+     (math/bigint? x) x
+     (long? x)        (. :java.math.BigInteger :valueOf x)
+     (int? x)         (. :java.math.BigInteger :valueOf (long x))
+     (string? x)      (. :java.math.BigInteger :new x)
+     (double? x)      (. :java.math.BigInteger :valueOf (long x))
+     :else (throw (str/format
+                      "Invalid parameter (%s) to create a new big integer"
+                      (type x)))))
 
 
 (defn
