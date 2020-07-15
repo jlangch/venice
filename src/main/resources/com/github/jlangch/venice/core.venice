@@ -1280,7 +1280,4 @@
 
   macroexpand-all [form]
 
-  (core/prewalk (fn [x] (if (list? x)
-                            (macroexpand x)
-                            x))
-                    form))
+  (*macroexpand-all form))

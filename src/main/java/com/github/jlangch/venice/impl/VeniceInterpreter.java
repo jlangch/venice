@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
+import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 
 import java.io.Closeable;
 import java.io.Serializable;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
@@ -51,7 +53,6 @@ import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
-import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -306,7 +307,7 @@ public class VeniceInterpreter implements Serializable  {
 			}
 	
 			// expand macros
-			final VncVal expanded = macroexpand(orig_ast, env);
+			final VncVal expanded = macroexpand(orig_ast, env, null);
 			if (!(expanded instanceof VncList)) {
 				// not an s-expr
 				return evaluate_values(expanded, env);
@@ -627,11 +628,14 @@ public class VeniceInterpreter implements Serializable  {
 
 				case "macroexpand": 
 					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
-						return macroexpand(evaluate(ast.second(), env), env);
+						return macroexpand(evaluate(ast.second(), env), env, null);
 					}
 
-				case "macroexpand-all-1": 
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand-all", ast))) {
+				case "*macroexpand-all": 
+					// Note: This special form is exposed through the public Venice function 
+					//       'core/macroexpand-all' in the 'core' module.
+					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
+					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("*macroexpand-all", ast))) {
 						return macroexpand_all(evaluate(ast.second(), env), env);
 					}
 					
@@ -984,11 +988,15 @@ public class VeniceInterpreter implements Serializable  {
 	 * @param env env
 	 * @return the expanded macro
 	 */
-	private VncVal macroexpand(final VncVal ast, final Env env) {
+	private VncVal macroexpand(
+			final VncVal ast, 
+			final Env env,
+			final AtomicInteger expandedMacrosCounter
+	) {
 		final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
 		
 		VncVal ast_ = ast;
-		boolean expanded = false;
+		int expandedMacros = 0;
 		
 		while (ast_ instanceof VncList) {
 			final VncVal a0 = ((VncList)ast_).first();
@@ -1004,33 +1012,69 @@ public class VeniceInterpreter implements Serializable  {
 				interceptor.validateVeniceFunction(macro.getQualifiedName());					
 			}
 			
-			expanded = true; 
+			expandedMacros++; 
 
 			ast_ = macro.apply(((VncList)ast_).rest());
 		}
 	
-		if (expanded && meterRegistry.enabled) {
+		if ((expandedMacros > 0) && meterRegistry.enabled) {
 			meterRegistry.record("macroexpand", System.nanoTime() - nanos);
+		}
+		
+		if (expandedMacrosCounter != null) {
+			expandedMacrosCounter.addAndGet(expandedMacros);
 		}
 
 		return ast_;
 	}
 
+	/**
+	 * Expands recursively all macros in the form.
+	 * 
+	 * <p>An approach with <code>core/prewalk</code> does not work, because
+	 * this function does not apply namespaces (remember macros are always 
+	 * executed in the namespace of the caller as opposed to functions that
+	 * are executed in the namespace they are defined in.
+	 * 
+	 * <p>With <code>core/prewalk</code> we cannot execute <code>(ns x)</code>
+	 * because the functions involved like <code>core/walk</code> and 
+	 * <code>core/partial</code> will reset the changed namespace upon leaving 
+	 * its body.
+	 * 
+	 * <pre>
+	 *     (core/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form)
+	 * </pre>
+	 * 
+	 * <p>Note: only macros that have already been parsed in another parse unit 
+	 *          can be expanded! 
+	 *          'macroexpand-all' is not an interpreter thus it cannot not 
+	 *          run macro definitions and put them to the symbol table for later
+	 *          reference!
+	 * 
+	 * @param form the form to expand
+	 * @param env the env
+	 * @return the expanded form
+	 */
 	private VncVal macroexpand_all(final VncVal form, final Env env) {
+
+		final AtomicInteger expandedMacroCounter = new AtomicInteger(0);
 
 		final VncFunction handler = new VncFunction(createAnonymousFuncName("macroexpand-all-handler")) {
 			public VncVal apply(final VncList args) {
 				final VncVal form = args.first();
 				if (Types.isVncList(form)) {
-					if (is_ns_symbolic_expr(form)) {
+					if (is_ns_symbolic_expr((VncList)form)) {
+						// we've encountered a '(ns x)' s-expression -> apply it
 						final VncSymbol ns = (VncSymbol)((VncList)form).second();
 						Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns)); 
 					}
-					return macroexpand((VncList)form, env);
+					else if (Types.isVncSymbol(((VncList)form).first())) {
+						// try to expand
+						return macroexpand((VncList)form, env, expandedMacroCounter);
+					}
 				}
-				else {
-					return form;
-				}
+
+				return form;
 			}
 			private static final long serialVersionUID = -1L;
 		};
@@ -1049,14 +1093,14 @@ public class VeniceInterpreter implements Serializable  {
 				else if (Types.isVncMapEntry(form)) {
 					// (outer (map-entry (inner (key form)) (inner (val form))))
 					return CoreFunctions.new_map_entry.applyOf(
-											inner.applyOf(((VncMapEntry)form).getKey()), 
-											inner.applyOf(((VncMapEntry)form).getValue()));
+								inner.applyOf(((VncMapEntry)form).getKey()), 
+								inner.applyOf(((VncMapEntry)form).getValue()));
 				}
 				else if (Types.isVncCollection(form)) {
 					// (outer (into (empty form) (map inner form)))
 					return CoreFunctions.into.applyOf(
-											CoreFunctions.empty.applyOf(form), 
-											TransducerFunctions.map.applyOf(inner, form));
+								CoreFunctions.empty.applyOf(form), 
+								TransducerFunctions.map.applyOf(inner, form));
 				}
 				else {
 					// (outer form)
@@ -1079,25 +1123,31 @@ public class VeniceInterpreter implements Serializable  {
 		};
 
 		
-		final Namespace ns = Namespaces.getCurrentNamespace();
+		final Namespace original_ns = Namespaces.getCurrentNamespace();
 		try {
-			return prewalk.applyOf(handler, form);
+			final VncVal expanded = prewalk.applyOf(handler, form);
+			
+			final int count = expandedMacroCounter.get();
+			if (count == 0) {
+				return expanded;
+			}
+			else {
+				return expanded;
+			}
 		}
 		finally {
-			Namespaces.setCurrentNamespace(ns);
+			// set the original namespace back
+			Namespaces.setCurrentNamespace(original_ns);
 		}
 	}
 
-	private boolean is_ns_symbolic_expr(final VncVal form) {
+	private boolean is_ns_symbolic_expr(final VncList form) {
 		// check if the expression is of the form (ns x)
-		if (Types.isVncList(form)) {
-			final VncList list = (VncList)form;
-			if (list.size() == 2) {
-				final VncVal first = list.first();
-				return (first instanceof VncSymbol)
-						 && ("ns".equals(((VncSymbol)first).getName())) 
-						 && (list.second() instanceof VncSymbol);
-			}
+		if (form.size() == 2) {
+			final VncVal first = form.first();
+			return (first instanceof VncSymbol)
+					 && ("ns".equals(((VncSymbol)first).getName())) 
+					 && (form.second() instanceof VncSymbol);
 		}
 		
 		return false;

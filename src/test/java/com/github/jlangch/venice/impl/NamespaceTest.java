@@ -273,11 +273,10 @@ public class NamespaceTest {
 
 		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
 
-		// FIXME: wrong namespaces  --> macroexpand-all should parse namespaces!!
-		//
-		//        Expected result: "gamma\ndelta\n"
-		//        But got result:  "beta\nbeta"
-		assertEquals("beta\nbeta\n", result2.toString());
+		// Note: the output from script [3] "100\n100\n" is not captured 
+		//       because 'macroexpand-all' just expands the macros but
+		//       does not execute the expanded code!
+		assertEquals("gamma\ndelta\n", result2.toString());
 	}
 
 	@Test
@@ -296,24 +295,26 @@ public class NamespaceTest {
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]
+		final String ns1 = "(ns alpha)";
+		venice.RE(ns1, "test", env, macroexpandOnLoad);
+
+		
+		// [2]
 		final String macros =
-				"(do                                             \n" +
-				"  (ns alpha)                                    \n" +
-				"                                                \n" +
-				"  (defmacro whenn [test form]                   \n" +
-				"    (do                                         \n" +
-				"      (println *ns*)                            \n" +
-				"      `(if ~test ~form nil))))                    ";
+				"(defmacro whenn [test form]                   \n" +
+				"  (do                                         \n" +
+				"    (println *ns*)                            \n" +
+				"    `(if ~test ~form nil)))                    ";
 
 		venice.RE(macros, "test", env, macroexpandOnLoad);
 
 		
-		// [2]
-		final String ns = "(ns beta)";
-		venice.RE(ns, "test", env, macroexpandOnLoad);
+		// [3]
+		final String ns2 = "(ns beta)";
+		venice.RE(ns2, "test", env, macroexpandOnLoad);
 
 		
-		// [3]
+		// [4]
 		final String script =
 				"(do                                             \n" +
 				"   (with-out-str                                \n" +
@@ -326,11 +327,11 @@ public class NamespaceTest {
 
 		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
 
-		// FIXME: wrong namespaces  --> macroexpand-all should parse namespaces!!
-		//
-		//        Expected result: "gamma\ndelta\n"
-		//        But got stdout:  "beta\nbeta"     <- strange
-		//        But got result:  ""               <- OK, due do macroexpand-all
+		// stdout:  "gamma\ndelta"   -> macro expansion takes place before (with-out-str ...) 
+		//                              has been applied, so stdout redirectin is not yet in
+		//                              place the when the macro 'alpha/whenn' is run.
+		// result:  ""               -> 'macroexpand-all' only expands but does not execute
+		//                              the code
 		assertEquals("", result2.toString());
 	}
 
@@ -356,7 +357,7 @@ public class NamespaceTest {
 				"                                              \n" +
 				"  (defmacro whenn [test form]                 \n" +
 				"    (do                                       \n" +
-				"      (println \"MACRO whenn\" *ns*)          \n" +
+				"      (println *ns*)                          \n" +
 				"      `(if ~test ~form nil))))                  ";
 
 		venice.RE(macros, "test", env, false);
@@ -377,11 +378,10 @@ public class NamespaceTest {
 
 		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
 
-		// FIXME: runtime macro expansion instead of upfront macro expansion
-		//
-		//        Expected result: "gamma\n100\ndelta\n100\n"
-		//        But got stdout:  "beta\nbeta"   <- strange
-		//        But got result:  "100\n100\n"   <- OK
+		// stdout:  "gamma\ndelta"   -> macro expansion takes place before (with-out-str ...) 
+		//                              has been applied, so stdout redirection is not yet in
+		//                              place the the time the macro 'alpha/whenn' is run.
+		// result:  "100\n100\n"     -> OK
 		assertEquals("100\n100\n", result2.toString());  
 	}
 

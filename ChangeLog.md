@@ -29,6 +29,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - pre-loaded modules to honor the 'macroexpandOnLoad' flag (Java integration API)
 
+### Fixed
+
+- macros to use the current namespace when expanding as opposed to functions
+  that use the namespace they have defined in when executing the body.
+
 
 
 ## [1.8.11] - 2020-07-09
