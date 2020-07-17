@@ -421,7 +421,7 @@ public class Types {
 			if (a instanceof VncConstant) {
 				return ((VncConstant)a) == ((VncConstant)b);
 			} 
-			if (a instanceof VncBoolean) {
+			else if (a instanceof VncBoolean) {
 				return ((VncBoolean)a).getValue() == ((VncBoolean)b).getValue();
 			} 
 			else if (a instanceof VncLong) {

@@ -188,11 +188,11 @@ total and average time for the function's calls:
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
-user/_test  [       1]:    13,49 s             
-user/sum    [     100]:    13,49 s    134,85 ms
-+           [10000000]:   613,17 ms       61 ns
-inc         [10000000]:   594,45 ms       59 ns
-<           [10000100]:   538,93 ms       53 ns
+user/_test  [       1]:    12,97 s             
+user/sum    [     100]:    12,97 s    129,70 ms
++           [10000000]:   638,12 ms       63 ns
+inc         [10000000]:   612,97 ms       61 ns
+<           [10000100]:   535,07 ms       53 ns
 -----------------------------------------------
 ```
 
@@ -232,33 +232,33 @@ Metrics:
 --------------------------------------------------
 Metrics: fibonacci
 --------------------------------------------------
-macroexpand      [ 54400]:   476,71 ms     8,76 us
-user/_test       [     1]:   433,38 ms            
-user/fib         [   100]:   433,08 ms     4,33 ms
-cond[m]          [ 24700]:   241,03 ms     9,76 us
-math/bigint-add  [  4900]:   143,87 ms    29,36 us
-math/bigint      [  9800]:   132,66 ms    13,54 us
-case[m]          [  5000]:   121,67 ms    24,33 us
-when[m]          [ 24700]:    99,04 ms     4,01 us
-mapcat           [  5000]:    43,19 ms     8,64 us
-cons             [213500]:    24,32 ms      113 ns
-math/bigint?     [  9800]:    24,00 ms     2,45 us
-instance?        [  9800]:    15,21 ms     1,55 us
-rest             [ 74100]:     9,10 ms      122 ns
-concat           [ 29700]:     8,03 ms      270 ns
-list             [ 24700]:     3,24 ms      131 ns
-first            [ 24700]:     2,85 ms      115 ns
-second           [ 24700]:     2,82 ms      114 ns
-.                [  4900]:     2,76 ms      562 ns
-not-empty?       [ 24700]:     2,46 ms       99 ns
-partition        [  5000]:     2,20 ms      439 ns
-count            [ 10000]:     1,29 ms      129 ns
-gensym           [  5000]:     1,15 ms      229 ns
-odd?             [ 10000]:   992,80 us       99 ns
-==               [ 10000]:   942,89 us       94 ns
-butlast          [  5000]:   868,87 us      173 ns
-dec              [  4900]:   694,29 us      141 ns
-last             [  5000]:   618,16 us      123 ns
+macroexpand      [ 54400]:   445,10 ms     8,18 us
+user/_test       [     1]:   403,48 ms            
+user/fib         [   100]:   403,36 ms     4,03 ms
+cond[m]          [ 24700]:   223,11 ms     9,03 us
+math/bigint-add  [  4900]:   132,95 ms    27,13 us
+math/bigint      [  9800]:   122,04 ms    12,45 us
+case[m]          [  5000]:   116,03 ms    23,21 us
+when[m]          [ 24700]:    91,61 ms     3,71 us
+mapcat           [  5000]:    41,98 ms     8,40 us
+cons             [213500]:    25,33 ms      118 ns
+math/bigint?     [  9800]:    21,52 ms     2,20 us
+instance?        [  9800]:    13,94 ms     1,42 us
+rest             [ 74100]:     8,01 ms      108 ns
+concat           [ 29700]:     7,63 ms      256 ns
+list             [ 24700]:     3,31 ms      134 ns
+second           [ 24700]:     2,79 ms      113 ns
+first            [ 24700]:     2,67 ms      108 ns
+partition        [  5000]:     2,65 ms      530 ns
+.                [  4900]:     2,45 ms      499 ns
+not-empty?       [ 24700]:     2,37 ms       95 ns
+count            [ 10000]:     1,20 ms      119 ns
+odd?             [ 10000]:   973,08 us       97 ns
+==               [ 10000]:   939,74 us       93 ns
+gensym           [  5000]:   919,17 us      183 ns
+butlast          [  5000]:   751,97 us      150 ns
+dec              [  4900]:   641,48 us      130 ns
+last             [  5000]:   599,37 us      119 ns
 --------------------------------------------------
 ```
 
@@ -268,15 +268,15 @@ Metrics with upfront macro expansion:
 -------------------------------------------------
 Metrics: fibonacci
 -------------------------------------------------
-user/_test       [    1]:    44,25 ms            
-user/fib         [  100]:    44,13 ms   441,28 us
-math/bigint-add  [ 4900]:    30,53 ms     6,23 us
-math/bigint      [ 9800]:    22,89 ms     2,34 us
-math/bigint?     [ 9800]:    16,61 ms     1,69 us
-instance?        [ 9800]:     9,76 ms      995 ns
-.                [ 4900]:     1,32 ms      270 ns
-==               [10000]:   848,07 us       84 ns
-dec              [ 4900]:   568,72 us      116 ns
+user/_test       [    1]:    41,66 ms            
+user/fib         [  100]:    41,55 ms   415,51 us
+math/bigint-add  [ 4900]:    29,15 ms     5,95 us
+math/bigint      [ 9800]:    22,06 ms     2,25 us
+math/bigint?     [ 9800]:    16,41 ms     1,67 us
+instance?        [ 9800]:     9,95 ms     1,02 us
+.                [ 4900]:     1,34 ms      273 ns
+==               [10000]:   711,50 us       71 ns
+dec              [ 4900]:   440,75 us       89 ns
 -------------------------------------------------
 ```
 
@@ -290,8 +290,8 @@ The profiler runs the sum function 5000 times as warm-up followed by 100 times t
    (load-module :math)
      
    (defn fib [x]
-      (loop [n x, a (math/bigint 0), b (math/bigint 1)]
-        (if (= n 0)
+      (loop [n x, a math/bigint-zero, b math/bigint-one]
+        (if (zero? n)
           a
           (if (= n 1)
             b 
@@ -307,46 +307,50 @@ Metrics:
 -------------------------------------------------
 Metrics: fib
 -------------------------------------------------
-user/_test       [    1]:   157,33 ms            
-user/fib         [  100]:   157,17 ms     1,57 ms
-macroexpand      [20400]:   142,73 ms     7,00 us
-math/bigint-add  [ 4900]:   136,19 ms    27,79 us
-math/bigint      [10000]:   131,69 ms    13,17 us
-math/bigint?     [10000]:    23,15 ms     2,31 us
-instance?        [10000]:    13,75 ms     1,38 us
-cons             [51000]:    11,06 ms      216 ns
-concat           [10200]:     4,56 ms      446 ns
-rest             [30600]:     3,63 ms      118 ns
-list             [10200]:     2,14 ms      210 ns
-.                [ 5100]:     2,08 ms      407 ns
-first            [10200]:     1,34 ms      131 ns
-second           [10200]:     1,15 ms      113 ns
-not-empty?       [10200]:     1,05 ms      102 ns
-=                [10000]:   837,96 us       83 ns
-dec              [ 4900]:   474,63 us       96 ns
-long?            [  200]:    23,18 us      115 ns
+user/_test       [    1]:   137,16 ms            
+user/fib         [  100]:   137,07 ms     1,37 ms
+macroexpand      [19600]:   129,14 ms     6,59 us
+math/bigint-add  [ 4900]:   126,07 ms    25,73 us
+math/bigint      [ 9800]:   117,70 ms    12,01 us
+cond[m]          [ 9800]:    89,31 ms     9,11 us
+when[m]          [ 9800]:    34,98 ms     3,57 us
+math/bigint?     [ 9800]:    19,25 ms     1,96 us
+instance?        [ 9800]:    11,94 ms     1,22 us
+cons             [49000]:     6,61 ms      134 ns
+rest             [29400]:     3,24 ms      110 ns
+concat           [ 9800]:     2,85 ms      290 ns
+.                [ 4900]:     1,99 ms      405 ns
+list             [ 9800]:     1,38 ms      141 ns
+second           [ 9800]:     1,15 ms      117 ns
+not-empty?       [ 9800]:     1,07 ms      109 ns
+first            [ 9800]:     1,00 ms      102 ns
+zero?            [ 5000]:   540,21 us      108 ns
+dec              [ 4900]:   513,58 us      104 ns
+=                [ 5000]:   424,63 us       84 ns
 -------------------------------------------------
+
 ```
 
 
 Metrics with upfront macro expansion:
 
 ```text
--------------------------------------------------
+------------------------------------------------
 Metrics: fib
--------------------------------------------------
-user/_test       [    1]:    44,72 ms            
-user/fib         [  100]:    44,62 ms   446,22 us
-math/bigint-add  [ 4900]:    31,93 ms     6,52 us
-math/bigint      [10000]:    24,02 ms     2,40 us
-math/bigint?     [10000]:    16,28 ms     1,63 us
-instance?        [10000]:     9,44 ms      944 ns
-.                [ 5100]:     1,78 ms      349 ns
-=                [10000]:   765,12 us       76 ns
-dec              [ 4900]:   522,94 us      106 ns
-long?            [  200]:    20,49 us      102 ns
--------------------------------------------------
+------------------------------------------------
+user/_test       [   1]:    43,21 ms            
+user/fib         [ 100]:    43,12 ms   431,18 us
+math/bigint-add  [4900]:    31,48 ms     6,42 us
+math/bigint      [9800]:    23,64 ms     2,41 us
+math/bigint?     [9800]:    16,79 ms     1,71 us
+instance?        [9800]:    10,08 ms     1,03 us
+.                [4900]:     1,48 ms      302 ns
+dec              [4900]:   558,89 us      114 ns
+zero?            [5000]:   551,17 us      110 ns
+=                [5000]:   496,48 us       99 ns
+------------------------------------------------
 ```
+
 
 ## Benchmarks with JMH
 

@@ -889,11 +889,11 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("=", args, 1);
 
-				if (args.size() == 1) {
-					return True;
-				}
-				else if (args.size() == 2) {
+				if (args.size() == 2) {
 					return VncBoolean.of(Types._equal_strict_Q(args.first(), args.second()));
+				}
+				else if (args.size() == 1) {
+					return True;
 				}
 				else {
 					final VncVal first = args.first();
@@ -920,11 +920,11 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("==", args, 1);
 
-				if (args.size() == 1) {
-					return True;
-				}
-				else if (args.size() == 2) {
+				if (args.size() == 2) {
 					return VncBoolean.of(Types._equal_Q(args.first(), args.second()));
+				}
+				else if (args.size() == 1) {
+					return True;
 				}
 				else {
 					final VncVal first = args.first();
