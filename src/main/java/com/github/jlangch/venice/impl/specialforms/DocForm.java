@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Env;
-import com.github.jlangch.venice.impl.GlobalSymbols;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
@@ -183,11 +182,11 @@ public class DocForm {
 	private static String getColorTheme(final Env env) {
 		// Note: there is a color theme only if we're running in a REPL!
 		
-		final VncVal runMode = env.get(GlobalSymbols.RUN_MODE);
+		final VncVal runMode = env.get(new VncSymbol("*run-mode*"));
 		if (Types.isVncKeyword(runMode)) {
 			final String sRunMode = ((VncKeyword)runMode).getValue();
 			if ("repl".equals(sRunMode)) {
-				final VncVal theme = env.get(GlobalSymbols.REPL_COLOR_THEME);
+				final VncVal theme = env.get(new VncSymbol("*repl-color-theme*"));
 				if (Types.isVncKeyword(theme)) {
 					final String sTheme = ((VncKeyword)theme).getValue();
 					return "none".equals(sTheme) ? null : sTheme;

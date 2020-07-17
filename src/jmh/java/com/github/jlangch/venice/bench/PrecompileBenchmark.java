@@ -50,7 +50,7 @@ import com.github.jlangch.venice.Venice;
 public class PrecompileBenchmark {
 	@Benchmark
     public Object no_precompilation(State_ state) {
-		return state.venice.eval("test", state.expr, false, state.parameters);
+		return state.venice.eval("test", state.expr, state.parameters);
     }
 
 	@Benchmark

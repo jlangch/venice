@@ -1674,7 +1674,6 @@ public class DocGenerator {
 				final String result = (String)runner.eval(
 											"example",
 											"(pr-str " + example + ")",
-											false,
 											Parameters.of(
 												"*out*", ps_out,
 												"*err*", ps_err));

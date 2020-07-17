@@ -115,6 +115,5 @@ public class ReservedSymbols {
 					"*ansi-term*",
 					"*app-name*",
 					"*app-archive*",
-					"*ARGV*",
-					"*REPL*"));
+					"*ARGV*"));
 }
