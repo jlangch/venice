@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.GlobalSymbols;
 import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -39,7 +40,6 @@ import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -176,7 +176,7 @@ public class Launcher {
 	private static Env createEnv(
 			final VeniceInterpreter venice,
 			final boolean macroexpand, 
-			final VncKeyword runMode,
+			final VncKeyword runMode, // one of {:repl, :script, :app}
 			final List<Var> vars
 	) {
 		return venice.createEnv(macroexpand, false, runMode)
@@ -187,15 +187,15 @@ public class Launcher {
 	}
 
 	private static Var convertAppNameToVar(final String appName) {
-		return new Var(new VncSymbol("*app-name*"), new VncString(appName), false);
+		return new Var(GlobalSymbols.APP_NAME, new VncString(appName), false);
 	}
 
 	private static Var convertAppArchiveToVar(final File appArchive) {
-		return new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false);
+		return new Var(GlobalSymbols.APP_ARCHIVE, new VncJavaObject(appArchive), false);
 	}
 
 	private static Var convertCliArgsToVar(final CommandLineArgs cli) {
-		return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
+		return new Var(GlobalSymbols.ARGV, cli.argsAsList(), false);
 	}
 
 	private static String stripVeniceFileExt(final String s) {

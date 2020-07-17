@@ -48,11 +48,11 @@ import org.jline.utils.OSUtils;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.Env;
+import com.github.jlangch.venice.impl.GlobalSymbols;
 import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -178,7 +178,7 @@ public class REPL {
 		Env env = loadEnv(cli, out, err, in);
 
 		env.setGlobal(new Var(
-						new VncSymbol("*repl-color-theme*"), 
+						GlobalSymbols.REPL_COLOR_THEME, 
 						new VncKeyword(config.getColorMode().name().toLowerCase()),
 						false));
 		
@@ -286,7 +286,7 @@ public class REPL {
 		try {
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
 				macroexpand = true;
-				setMacroexpandOnLoad(env, true);
+				env.setMacroexpandOnLoad(true);
 				printer.println("system", "Macro expansion enabled");					
 			}
 			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
@@ -597,18 +597,12 @@ public class REPL {
 			final BufferedReader in
 	) {
 		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
-					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
+					 .setGlobal(new Var(GlobalSymbols.ARGV, cli.argsAsList(), false))
 					 .setStdoutPrintStream(out)
 					 .setStderrPrintStream(err)
 					 .setStdinReader(in);
 	}
-	
-	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), 
-							  VncBoolean.of(macroexpandOnLoad), 
-				              true));
-	}
-	
+		
 	private void activate(final IInterceptor interceptor) {
 		this.interceptor = interceptor; 
 		this.venice = new VeniceInterpreter(interceptor, loadPaths);

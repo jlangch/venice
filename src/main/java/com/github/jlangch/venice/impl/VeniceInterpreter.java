@@ -195,7 +195,7 @@ public class VeniceInterpreter implements Serializable  {
 	public Env createEnv(
 			final boolean macroexpandOnLoad, 
 			final boolean ansiTerminal, 
-			final VncKeyword runMode
+			final VncKeyword runMode // one of {:repl, :script, :app}
 	) {  
 		return createEnv(null, macroexpandOnLoad, ansiTerminal, runMode);
 	}
@@ -220,26 +220,26 @@ public class VeniceInterpreter implements Serializable  {
 		}
 
 		// set Venice version
-		env.setGlobal(VERSION_VAR);
+		env.setGlobal(new Var(GlobalSymbols.VERSION, new VncString(Version.VERSION), false));
 
 		// set system newline
-		env.setGlobal(NEWLINE_VAR);
+		env.setGlobal(new Var(GlobalSymbols.NEWLINE, new VncString(System.lineSeparator()), false));
 
 		// ansi terminal
-		env.setGlobal(new Var(ANSI_TERM_SYMBOL, VncBoolean.of(ansiTerminal), false));
+		env.setGlobal(new Var(GlobalSymbols.ANSI_TERM, VncBoolean.of(ansiTerminal), false));
 
 		// set the load path
-		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));
+		env.setGlobal(new Var(GlobalSymbols.LOAD_PATH, LoadPath.toVncList(loadPaths), false));
 		
 		// set the run mode
-		env.setGlobal(new Var(RUN_MODE_SYMBOL, runMode == null ? Constants.Nil : runMode, false));
+		env.setGlobal(new Var(GlobalSymbols.RUN_MODE, runMode == null ? Constants.Nil : runMode, false));
 
 		// start off with disabled macroexpand-on-load
-		env.setGlobal(DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR);
+		env.setGlobal( new Var(GlobalSymbols.MACRO_EXPAND_ON_LOAD, False, true));
 		
 		// loaded modules & files
-		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, loadedModules, true));
-		env.setGlobal(new Var(LOADED_FILES_SYMBOL, new VncMutableSet(), true));
+		env.setGlobal(new Var(GlobalSymbols.LOADED_MODULES, loadedModules, true));
+		env.setGlobal(new Var(GlobalSymbols.LOADED_FILES, new VncMutableSet(), true));
 
 		// init namespaces
 		initNS();
@@ -249,7 +249,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		// set macroexpand on load
 		if (macroexpandOnLoad) {
-			env.setGlobal(new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, True, true));
+			env.setGlobal(new Var(GlobalSymbols.MACRO_EXPAND_ON_LOAD, True, true));
 		}
 
 		sealedSystemNS.set(true);
@@ -1025,12 +1025,15 @@ public class VeniceInterpreter implements Serializable  {
 			
 			expandedMacros++; 
 
-			final long nanosRun = meterRegistry.enabled ? System.nanoTime() : 0L;
-			
-			ast_ = macro.apply(((VncList)ast_).rest());
-			
 			if (meterRegistry.enabled) {
+				final long nanosRun = System.nanoTime();
+				
+				ast_ = macro.apply(((VncList)ast_).rest());
+				
 				meterRegistry.record(macro.getQualifiedName() + "[m]", System.nanoTime() - nanosRun);
+			}
+			else {
+				ast_ = macro.apply(((VncList)ast_).rest());
 			}
 		}
 	 
@@ -1856,21 +1859,6 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
-	private static final VncSymbol LOADED_MODULES_SYMBOL = new VncSymbol("*loaded-modules*");
-	private static final VncSymbol LOADED_FILES_SYMBOL = new VncSymbol("*loaded-files*");
-	private static final VncSymbol VERSION_SYMBOL = new VncSymbol("*version*");
-	private static final VncSymbol NEWLINE_SYMBOL = new VncSymbol("*newline*");
-	private static final VncSymbol LOAD_PATH_SYMBOL = new VncSymbol("*load-path*");
-	private static final VncSymbol RUN_MODE_SYMBOL = new VncSymbol("*run-mode*");
-	private static final VncSymbol ANSI_TERM_SYMBOL = new VncSymbol("*ansi-term*");
-	private static final VncSymbol MACRO_EXPAND_ON_LOAD_SYMBOL = new VncSymbol("*macroexpand-on-load*");
-
-	private static final VncString VERSION = new VncString(Version.VERSION);
-	private static final VncString NEWLINE = new VncString(System.lineSeparator());
-
-	private static final Var VERSION_VAR = new Var(VERSION_SYMBOL, VERSION, false);
-	private static final Var NEWLINE_VAR = new Var(NEWLINE_SYMBOL, NEWLINE, false);
-	private static final Var DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR = new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, False, true);
 	
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;

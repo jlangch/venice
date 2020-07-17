@@ -449,11 +449,13 @@ public class DefTypeForm {
 	}
 
 	private static String createBuildTypeFn(final String qualifiedTypeName, final int builderNumArgs) {
-		final StringBuilder args = new StringBuilder();
+		// Function args: [x0, x1, x2, ...]
+		final StringBuilder args = new StringBuilder(); 
 		args.append("x0");
 		for(int ii=1; ii<builderNumArgs; ii++) {
 			args.append(" ").append("x").append(ii);
 		}
+		
 		return String.format(
 				"(defn %s. [%s] (.: :%s %s))", 
 				qualifiedTypeName, 

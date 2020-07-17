@@ -1281,3 +1281,5 @@
   macroexpand-all [form]
 
   (*macroexpand-all form))
+
+  ;;(core/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))

@@ -364,15 +364,15 @@ public class Venice {
 		}
 		
 		if (!stdoutAdded) {
-			env.setStdoutPrintStream(stdout);
+			env.setStdoutPrintStream(new PrintStream(System.out, true));
 		}
 
 		if (!stderrAdded) {
-			env.setStderrPrintStream(stderr);
+			env.setStderrPrintStream(new PrintStream(System.err, true));
 		}
 
 		if (!stdinAdded) {
-			env.setStdinReader(stdin);
+			env.setStdinReader(new InputStreamReader(System.in));
 		}
 
 		return env;
@@ -487,7 +487,4 @@ public class Venice {
 	private final List<String> loadPaths;
 	private final MeterRegistry meterRegistry = new MeterRegistry(false);
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
-	private final PrintStream stdout = new PrintStream(System.out, true);
-	private final PrintStream stderr = new PrintStream(System.err, true);
-	private final java.io.Reader stdin = new InputStreamReader(System.in);
 }

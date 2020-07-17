@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -383,7 +384,7 @@ public class Env implements Serializable {
 		
 	public Env setStdoutPrintStream(final PrintStream ps) {
 		replaceGlobalDynamic(
-				new VncSymbol("*out*"), 
+				GlobalSymbols.STDOUT, 
 				VncJavaObject.from(
 						ps != null ? ps : nullPrintStream(),
 						PrintStream.class));
@@ -393,7 +394,7 @@ public class Env implements Serializable {
 	
 	public Env setStderrPrintStream(final PrintStream ps) {
 		replaceGlobalDynamic(
-				new VncSymbol("*err*"), 
+				GlobalSymbols.STDERR, 
 				VncJavaObject.from(
 						ps != null ? ps : nullPrintStream(),
 						PrintStream.class));
@@ -402,23 +403,29 @@ public class Env implements Serializable {
 	}
 
 	public Env setStdinReader(final Reader rd) {
-		final VncSymbol sym = new VncSymbol("*in*");
-		
 		if (rd == null) {
 			replaceGlobalDynamic(
-					sym, 
+					GlobalSymbols.STDIN, 
 					VncJavaObject.from(nullBufferedReader(), Reader.class));
 		}
 		else if (rd instanceof BufferedReader) {
 			replaceGlobalDynamic(
-					sym, 
+					GlobalSymbols.STDIN, 
 					VncJavaObject.from(rd, Reader.class));
 		}
 		else {
 			replaceGlobalDynamic(
-					sym,
+					GlobalSymbols.STDIN,
 					VncJavaObject.from(new BufferedReader(rd), Reader.class));
 		}
+		
+		return this;
+	}
+
+	public Env setMacroexpandOnLoad(final boolean macroexpandOnLoad) {
+		setGlobal(new Var(GlobalSymbols.MACRO_EXPAND_ON_LOAD, 
+						  VncBoolean.of(macroexpandOnLoad), 
+				          true));
 		
 		return this;
 	}
