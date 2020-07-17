@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -400,23 +401,28 @@ public class Env implements Serializable {
 		
 		return this;
 	}
+	
+	public Env setMacroexpandOnLoad(final VncBoolean macroexpandOnLoad) {
+		setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), 
+						  macroexpandOnLoad, 
+						  true));
+		return this;
+	}
 
 	public Env setStdinReader(final Reader rd) {
-		final VncSymbol sym = new VncSymbol("*in*");
-		
 		if (rd == null) {
 			replaceGlobalDynamic(
-					sym, 
+					new VncSymbol("*in*"), 
 					VncJavaObject.from(nullBufferedReader(), Reader.class));
 		}
 		else if (rd instanceof BufferedReader) {
 			replaceGlobalDynamic(
-					sym, 
+					new VncSymbol("*in*"), 
 					VncJavaObject.from(rd, Reader.class));
 		}
 		else {
 			replaceGlobalDynamic(
-					sym,
+					new VncSymbol("*in*"),
 					VncJavaObject.from(new BufferedReader(rd), Reader.class));
 		}
 		

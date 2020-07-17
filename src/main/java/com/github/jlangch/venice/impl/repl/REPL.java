@@ -286,7 +286,7 @@ public class REPL {
 		try {
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
 				macroexpand = true;
-				setMacroexpandOnLoad(env, true);
+				env.setMacroexpandOnLoad(VncBoolean.True);
 				printer.println("system", "Macro expansion enabled");					
 			}
 			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
@@ -601,12 +601,6 @@ public class REPL {
 					 .setStdoutPrintStream(out)
 					 .setStderrPrintStream(err)
 					 .setStdinReader(in);
-	}
-	
-	private void setMacroexpandOnLoad(final Env env, final boolean macroexpandOnLoad) {
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), 
-							  VncBoolean.of(macroexpandOnLoad), 
-				              true));
 	}
 	
 	private void activate(final IInterceptor interceptor) {

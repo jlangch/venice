@@ -176,7 +176,7 @@ public class Launcher {
 	private static Env createEnv(
 			final VeniceInterpreter venice,
 			final boolean macroexpand, 
-			final VncKeyword runMode,
+			final VncKeyword runMode,  // one of {:repl, :script, :app}
 			final List<Var> vars
 	) {
 		return venice.createEnv(macroexpand, false, runMode)

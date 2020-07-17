@@ -1025,12 +1025,15 @@ public class VeniceInterpreter implements Serializable  {
 			
 			expandedMacros++; 
 
-			final long nanosRun = meterRegistry.enabled ? System.nanoTime() : 0L;
-			
-			ast_ = macro.apply(((VncList)ast_).rest());
-			
 			if (meterRegistry.enabled) {
+				final long nanosRun = System.nanoTime();
+				
+				ast_ = macro.apply(((VncList)ast_).rest());
+				
 				meterRegistry.record(macro.getQualifiedName() + "[m]", System.nanoTime() - nanosRun);
+			}
+			else {
+				ast_ = macro.apply(((VncList)ast_).rest());
 			}
 		}
 	 
