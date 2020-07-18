@@ -153,27 +153,12 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	public VncVal MACROEXPAND(
-			final VncVal ast, 
-			final Env env, 
-			final boolean macroexpand
-	) {
-		if (macroexpand) {
-			final VncFunction macroexpandFn = (VncFunction)env.getGlobalOrNull(
-													new VncSymbol("core/macroexpand-all"));
-			if (macroexpandFn != null) {
-				return macroexpandFn.apply(VncList.of(ast));
-			}
-		}
-		
-		return ast;		
+	public VncVal MACROEXPAND(final VncVal ast, final Env env, final boolean macroexpand) {
+		return macroexpand && macroexpandAllFn != null 
+				? macroexpandAllFn.apply(VncList.of(ast)) : ast;
 	}
 	
-	public VncVal RE(
-			final String script, 
-			final String name, 
-			final Env env
-	) {
+	public VncVal RE(final String script, final String name, final Env env) {
 		return EVAL(READ(script, name), env);		
 	}
 	
@@ -207,7 +192,7 @@ public class VeniceInterpreter implements Serializable  {
 			final List<String> preloadExtensionModules,
 			final boolean macroexpandOnLoad, 
 			final boolean ansiTerminal,
-			final VncKeyword runMode
+			final VncKeyword runMode  // one of {:repl, :script, :app}
 	) {
 		sealedSystemNS.set(false);
 
@@ -228,7 +213,7 @@ public class VeniceInterpreter implements Serializable  {
 		// set system newline
 		env.setGlobal( new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 
-		// ansi terminal
+		// ansi terminal (set when run from a REPL in an ASNI terminal)
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 
 		// set the load path
@@ -250,11 +235,21 @@ public class VeniceInterpreter implements Serializable  {
 		// load core module (take care that macro expansion is not active!)
 		loadModule("core", env, loadedModules, false);
 		
-		// set macroexpand on load
+		// after loading the 'core' module we can refer to "core/macroexpand-all"
+		macroexpandAllFn = (VncFunction)env.getGlobalOrNull(new VncSymbol("core/macroexpand-all"));
+		
+		// Activates macroexpand on load
+		//
+		// expands macros on behalf of the 'core' functions:   
+		//     core/load-string
+		//     core/load-file
+		//     core/load-classpath-file
+		//     core/load-module
 		if (macroexpandOnLoad) {
 			env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), True, true));
 		}
 
+		// security: seal system namespaces (Namespaces::SYSTEM_NAMESPACES) - no further changes allowed!
 		sealedSystemNS.set(true);
 
 		// load other modules requested for preload (use macroexpandOnLoad flag)
@@ -1870,4 +1865,6 @@ public class VeniceInterpreter implements Serializable  {
 	private final AtomicLong macroExpandAllCountEffective = new AtomicLong(0L);
 	private final AtomicLong macroExpandAllCount = new AtomicLong(0L);
 	private final AtomicLong macroExpandCount = new AtomicLong(0L);
+	
+	private volatile VncFunction macroexpandAllFn = null;
 }
