@@ -87,20 +87,20 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		this(new MeterRegistry(false), new AcceptAllInterceptor(), null);
+		this(null, null, null);
 	}
 
 	public VeniceInterpreter(
 			final IInterceptor interceptor
 	) {
-		this(new MeterRegistry(false), interceptor, null);
+		this(null, interceptor, null);
 	}
 
 	public VeniceInterpreter(
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this(new MeterRegistry(false), interceptor, loadPaths);
+		this(null, interceptor, loadPaths);
 	}
 
 	public VeniceInterpreter(
@@ -108,9 +108,12 @@ public class VeniceInterpreter implements Serializable  {
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this.meterRegistry = perfmeter;
-		this.interceptor = interceptor;
-		this.loadPaths = loadPaths;
+		this.meterRegistry = perfmeter == null ? new MeterRegistry(false) : perfmeter;
+		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
+		
+		if (loadPaths != null) {
+			this.loadPaths.addAll(loadPaths);
+		}
 		
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
@@ -127,27 +130,27 @@ public class VeniceInterpreter implements Serializable  {
 	
 	// read
 	public VncVal READ(final String script, final String filename) {
-		final long nanos = System.nanoTime();
-
-		final VncVal val = Reader.read_str(script, filename);
-
 		if (meterRegistry.enabled) {
+			final long nanos = System.nanoTime();
+			final VncVal val = Reader.read_str(script, filename);
 			meterRegistry.record("venice.read", System.nanoTime() - nanos);
+			return val;
 		}
-
-		return val;
+		else {
+			return Reader.read_str(script, filename);
+		}
 	}
 
 	public VncVal EVAL(final VncVal ast, final Env env) {
-		final long nanos = System.nanoTime();
-
-		final VncVal val = evaluate(ast, env);
-		
 		if (meterRegistry.enabled) {
-			meterRegistry.record("venice.eval", System.nanoTime() - nanos);
+			final long nanos = System.nanoTime();
+			final VncVal val = evaluate(ast, env);
+			meterRegistry.record("venice.eval", System.nanoTime() - nanos);			
+			return val;
 		}
-
-		return val;
+		else {
+			return evaluate(ast, env);
+		}
 	}
 
 	public VncVal MACROEXPAND(
@@ -220,26 +223,26 @@ public class VeniceInterpreter implements Serializable  {
 		}
 
 		// set Venice version
-		env.setGlobal(VERSION_VAR);
+		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
 
 		// set system newline
-		env.setGlobal(NEWLINE_VAR);
+		env.setGlobal( new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 
 		// ansi terminal
-		env.setGlobal(new Var(ANSI_TERM_SYMBOL, VncBoolean.of(ansiTerminal), false));
+		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 
 		// set the load path
-		env.setGlobal(new Var(LOAD_PATH_SYMBOL, LoadPath.toVncList(loadPaths), false));
+		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
 		
 		// set the run mode
-		env.setGlobal(new Var(RUN_MODE_SYMBOL, runMode == null ? Constants.Nil : runMode, false));
+		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
 
 		// start off with disabled macroexpand-on-load
-		env.setGlobal(DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR);
+		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), False, true));
 		
 		// loaded modules & files
-		env.setGlobal(new Var(LOADED_MODULES_SYMBOL, loadedModules, true));
-		env.setGlobal(new Var(LOADED_FILES_SYMBOL, new VncMutableSet(), true));
+		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
+		env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
 
 		// init namespaces
 		initNS();
@@ -249,7 +252,7 @@ public class VeniceInterpreter implements Serializable  {
 		
 		// set macroexpand on load
 		if (macroexpandOnLoad) {
-			env.setGlobal(new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, True, true));
+			env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), True, true));
 		}
 
 		sealedSystemNS.set(true);
@@ -1858,25 +1861,10 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
-	private static final VncSymbol LOADED_MODULES_SYMBOL = new VncSymbol("*loaded-modules*");
-	private static final VncSymbol LOADED_FILES_SYMBOL = new VncSymbol("*loaded-files*");
-	private static final VncSymbol VERSION_SYMBOL = new VncSymbol("*version*");
-	private static final VncSymbol NEWLINE_SYMBOL = new VncSymbol("*newline*");
-	private static final VncSymbol LOAD_PATH_SYMBOL = new VncSymbol("*load-path*");
-	private static final VncSymbol RUN_MODE_SYMBOL = new VncSymbol("*run-mode*");
-	private static final VncSymbol ANSI_TERM_SYMBOL = new VncSymbol("*ansi-term*");
-	private static final VncSymbol MACRO_EXPAND_ON_LOAD_SYMBOL = new VncSymbol("*macroexpand-on-load*");
-
-	private static final VncString VERSION = new VncString(Version.VERSION);
-	private static final VncString NEWLINE = new VncString(System.lineSeparator());
-
-	private static final Var VERSION_VAR = new Var(VERSION_SYMBOL, VERSION, false);
-	private static final Var NEWLINE_VAR = new Var(NEWLINE_SYMBOL, NEWLINE, false);
-	private static final Var DISABLED_MACRO_EXPAND_ON_LOAD_SYMBOL_VAR = new Var(MACRO_EXPAND_ON_LOAD_SYMBOL, False, true);
 	
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
-	private final List<String> loadPaths;
+	private final List<String> loadPaths = new ArrayList<>();
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
