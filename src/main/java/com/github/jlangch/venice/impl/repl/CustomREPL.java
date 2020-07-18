@@ -270,7 +270,7 @@ public class CustomREPL {
 					      "  (load-module :repl-setup)     \n" +
 					      "  (repl-setup/setup :extended)) \n";
 				
-				venice.RE(script, "user", env);
+				venice.RE(script, "user", env, false);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);

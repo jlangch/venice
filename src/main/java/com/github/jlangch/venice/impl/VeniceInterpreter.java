@@ -157,11 +157,7 @@ public class VeniceInterpreter implements Serializable  {
 		return macroexpand && macroexpandAllFn != null 
 				? macroexpandAllFn.apply(VncList.of(ast)) : ast;
 	}
-	
-	public VncVal RE(final String script, final String name, final Env env) {
-		return EVAL(READ(script, name), env);		
-	}
-	
+
 	public VncVal RE(
 			final String script, 
 			final String name, 

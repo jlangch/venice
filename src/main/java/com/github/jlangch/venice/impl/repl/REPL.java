@@ -416,7 +416,7 @@ public class REPL {
 		            sColorMode,
 		            ansiTerminal ? "true" : "false");
 			
-			venice.RE(script, "user", env);
+			venice.RE(script, "user", env, false);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);

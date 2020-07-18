@@ -27,6 +27,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 @FunctionalInterface
 public interface ReadEvalFunction {
 
-	   VncVal eval(String script,  String name, Env env);
+	   VncVal eval(String script, String name, Env env, boolean macroexpand);
 
 }

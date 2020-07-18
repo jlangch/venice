@@ -150,7 +150,7 @@ public class Launcher {
 								convertAppNameToVar(name),
 								convertAppArchiveToVar(appArchive)));
 
-		return venice.PRINT(venice.RE(script, name, env));
+		return venice.PRINT(venice.RE(script, name, env, macroexpand));
 	}
 	
 	private static String runScript(
