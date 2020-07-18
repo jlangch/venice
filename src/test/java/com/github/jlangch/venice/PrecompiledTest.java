@@ -150,6 +150,45 @@ public class PrecompiledTest {
 		System.out.println("PreCompiled (defn) size: " + data.length);
 		assertEquals(4L, venice.eval(PreCompiled.deserialize(data)));
 	}
+	
+	@Test
+	public void test_with_java_import() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"   (ns test)                            \n" +
+				"   (import :java.awt.Point)             \n" +
+				"   (. (. :Point :new 10 20) :toString))   ";
+	
+		final PreCompiled precomp = venice.precompile("test", script);
+
+
+		// Note: Venice::eval will rebuild the namespace 'test' with the imports 
+		//       for the namespace registry while evaluating the s-expression 
+		//       from the precompiled AST.
+		assertEquals("java.awt.Point[x=10,y=20]", venice.eval(precomp));
+	}
+	
+	@Test
+	public void test_with_java_import_serialize() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"   (ns test)                            \n" +
+				"   (import :java.awt.Point)             \n" +
+				"   (. (. :Point :new 10 20) :toString))   ";
+	
+		final PreCompiled precomp = venice.precompile("test", script);
+
+		final byte[] data = precomp.serialize();
+
+		// Note: Venice::eval will rebuild the namespace 'test' with the imports 
+		//       for the namespace registry while evaluating the s-expression 
+		//       from the precompiled AST.
+		assertEquals("java.awt.Point[x=10,y=20]", venice.eval(PreCompiled.deserialize(data)));
+	}
 
 	@Test
 	public void test_elapsed() {

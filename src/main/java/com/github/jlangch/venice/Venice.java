@@ -135,7 +135,7 @@ public class Venice {
 		VncVal ast = venice.READ(script, scriptName);
 		ast = venice.MACROEXPAND(ast, env, macroexpand);
 		
-		final PreCompiled pc = new PreCompiled(scriptName, ast);
+		final PreCompiled pc = new PreCompiled(scriptName, ast, macroexpand);
 
 		meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 		

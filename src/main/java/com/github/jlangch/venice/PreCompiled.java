@@ -32,16 +32,25 @@ import java.util.zip.GZIPOutputStream;
 
 public class PreCompiled implements Serializable {
 	
-	public PreCompiled(final String name, final Object precompiled) {
+	public PreCompiled(final String name, final Object precompiled, final boolean macroexpand) {
 		this.name = name;
 		this.precompiled = precompiled;
+		this.macroexpand = macroexpand;
 		this.version = Version.VERSION;
 	}
 	
 	public String getName() {
 		return name;
 	}
-	
+
+	public String getVersion() {
+		return version;
+	}
+
+	public boolean isMacroexpand() {
+		return macroexpand;
+	}
+
 	public Object getPrecompiled() {
 		return precompiled;
 	}
@@ -88,4 +97,5 @@ public class PreCompiled implements Serializable {
 	private final String name;
 	private final Object precompiled;
 	private final String version;
+	private final boolean macroexpand;
 }
