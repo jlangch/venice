@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
 import com.github.jlangch.venice.util.Timer;
@@ -122,9 +123,13 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
+		// Note: For security reasons use the RejectAllInterceptor because
+		//       macros can execute code while being expanded. Thus we need
+		//       to have a safe sandbox in-place if macros are misused to
+		//       execute code at expansion time.
 		final VeniceInterpreter venice = new VeniceInterpreter(
 												new MeterRegistry(false), 
-												new AcceptAllInterceptor(), 
+												new RejectAllInterceptor(), 
 												loadPaths);
 		
 		final Env env = venice.createEnv(macroexpand, false, new VncKeyword("macroexpand"))
@@ -133,7 +138,9 @@ public class Venice {
 							  .setStdinReader(null);
 
 		VncVal ast = venice.READ(script, scriptName);
-		ast = venice.MACROEXPAND(ast, env, macroexpand);
+		if (macroexpand) {
+			ast = venice.MACROEXPAND(ast, env);
+		}
 		
 		final PreCompiled pc = new PreCompiled(scriptName, ast, macroexpand);
 

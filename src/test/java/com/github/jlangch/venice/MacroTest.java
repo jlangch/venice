@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 
@@ -745,36 +746,32 @@ public class MacroTest {
 	}
 
 	@Test
-	public void test_macroexpand_all_via_interpreter_flag() {
-		VeniceInterpreter venice = new VeniceInterpreter();		
+	public void test_macroexpand_all_via_interpreter() {
+		final VeniceInterpreter venice = new VeniceInterpreter();	
+		
+		final Env env = venice.createEnv(true, false, new VncKeyword("script"));
+		
 		assertEquals("(if true (do 1))", 
 					 venice.MACROEXPAND(
 						venice.READ("(when true 1)", "test"), 
-						venice.createEnv(true, false, new VncKeyword("script")), 
-						true).toString(true));
+						env).toString(true));
 
-		venice = new VeniceInterpreter();		
 		assertEquals("[(if true (do 1)) (if true (do 2)) (if true (do 3))]", 
 					 venice.MACROEXPAND(
 						venice.READ("[(when true 1) (when true 2) (when true 3)]", "test"), 
-						venice.createEnv(true, false, new VncKeyword("script")), 
-						true).toString(true));
+						env).toString(true));
 
 
-		venice = new VeniceInterpreter();		
 		assertEquals("(do (if true (do 1)) (if true (do 2)) (if true (do 3)))", 
 					 venice.MACROEXPAND(
 						venice.READ("(do (when true 1) (when true 2) (when true 3))", "test"), 
-						venice.createEnv(true, false, new VncKeyword("script")), 
-						true).toString(true));
+						env).toString(true));
 		
 
-		venice = new VeniceInterpreter();		
 		assertEquals("(if true (do (if true (do (if true (do 3))))))", 
 					 venice.MACROEXPAND(
 						venice.READ("(when true (when true (when true 3)))", "test"), 
-						venice.createEnv(true, false, new VncKeyword("script")), 
-						true).toString(true));
+						env).toString(true));
 	}
 
 	@Test

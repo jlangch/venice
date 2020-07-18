@@ -153,9 +153,8 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	public VncVal MACROEXPAND(final VncVal ast, final Env env, final boolean macroexpand) {
-		return macroexpand && macroexpandAllFn != null 
-				? macroexpandAllFn.apply(VncList.of(ast)) : ast;
+	public VncVal MACROEXPAND(final VncVal ast, final Env env) {
+		return macroexpandAllFn != null ? macroexpandAllFn.apply(VncList.of(ast)) : ast;
 	}
 
 	public VncVal RE(
@@ -166,7 +165,7 @@ public class VeniceInterpreter implements Serializable  {
 	) {
 		VncVal ast = READ(script, name);			
 		if (macroexpand) {
-			ast = MACROEXPAND(ast, env, macroexpand);			
+			ast = MACROEXPAND(ast, env);			
 		}
 		return EVAL(ast, env);
 	}
