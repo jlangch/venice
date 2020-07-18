@@ -1093,7 +1093,7 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					else if (Types.isVncSymbol(((VncList)form).first())) {
 						// try to expand
-						return macroexpand((VncList)form, env, expandedMacroCounter);
+						return macroexpand(form, env, expandedMacroCounter);
 					}
 				}
 
@@ -1157,13 +1157,12 @@ public class VeniceInterpreter implements Serializable  {
 			final int count = expandedMacroCounter.get(); 
 			if (count == 0) {
 				macroExpandAllCount.incrementAndGet();
-				return expanded;
 			}
 			else {
 				macroExpandAllCount.incrementAndGet();
 				macroExpandAllCountEffective.incrementAndGet();
-				return expanded;
 			}
+			return expanded;
 		}
 		finally {
 			// set the original namespace back
