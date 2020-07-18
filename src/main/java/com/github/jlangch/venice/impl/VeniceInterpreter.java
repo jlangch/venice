@@ -1820,18 +1820,15 @@ public class VeniceInterpreter implements Serializable  {
 		else if (sym.hasNamespace()) {
 			return new VncSymbol(
 						sym.getName(),
-						MetaUtil.setNamespace(
-							sym.getMeta(),
-							sym.getNamespace()));
+						MetaUtil.setNamespace(sym.getMeta(), sym.getNamespace()));
 		}
 		else {
-			final VncSymbol ns = Namespaces.getCurrentNS();
+			final VncSymbol ns = Namespaces.getCurrentNS();			
+			final VncVal newMeta = MetaUtil.setNamespace(sym.getMeta(), ns.getName());
 			
-			return new VncSymbol(
-					Namespaces.isCoreNS(ns)
-						? sym.getName()
-						: ns.getName() + "/" + sym.getName(), 
-					MetaUtil.setNamespace(sym.getMeta(), ns.getName()));
+			return Namespaces.isCoreNS(ns)
+					? new VncSymbol(sym.getName(), newMeta)
+					: new VncSymbol(ns.getName(), sym.getName(), newMeta);
 		}
 	}
 	
