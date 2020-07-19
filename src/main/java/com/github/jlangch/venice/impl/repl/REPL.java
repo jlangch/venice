@@ -88,8 +88,6 @@ public class REPL {
 				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
 			}
 
-			macroexpand = cli.switchPresent("-macroexpand");
-
 			final String jansiVersion = config.getJansiVersion();
 
 			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
@@ -115,7 +113,7 @@ public class REPL {
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
 			System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
-			if (macroexpand) {
+			if (cli.switchPresent("-macroexpand")) {
 				System.out.println("Macro expansion enabled");
 			}
 			if (!setupMode) {
@@ -174,7 +172,7 @@ public class REPL {
 						? new ReplHighlighter(config)
 						: null;
 		
-		Env env = loadEnv(cli, out, err, in);
+		Env env = loadEnv(cli, out, err, in, cli.switchPresent("-macroexpand"));
 
 		env.setGlobal(new Var(
 						new VncSymbol("*repl-color-theme*"), 
@@ -242,7 +240,7 @@ public class REPL {
 					if (ReplParser.isCommand(line)) {
 						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));				
 						if (cmd.equals("reload")) {
-							env = loadEnv(cli, out, err, in);
+							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
 							printer.println("system", "reloaded");					
 						}
 						else if (isExitCommand(cmd)) {
@@ -284,8 +282,7 @@ public class REPL {
 	) {
 		try {
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
-				macroexpand = true; // remember in case of reloading environment
-				venice.setMacroexpandOnLoad(macroexpand, env);
+				venice.setMacroexpandOnLoad(true, env);
 				printer.println("system", "Macro expansion enabled");					
 			}
 			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
@@ -593,7 +590,8 @@ public class REPL {
 			final CommandLineArgs cli,
 			final PrintStream out,
 			final PrintStream err,
-			final BufferedReader in
+			final BufferedReader in,
+			final boolean macroexpand
 	) {
 		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
@@ -731,7 +729,7 @@ public class REPL {
 		printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
 		printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
 		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
-		printer.println("stdout", "Macro Expansion: " + (macroexpand ? "on" : "off"));
+		printer.println("stdout", "Macro Expansion: " + (venice.isMacroexpandOnLoad() ? "on" : "off"));
 		printer.println("stdout", "");
 		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
 		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
@@ -862,7 +860,6 @@ public class REPL {
 	private VeniceInterpreter venice;
 	private TerminalPrinter printer;
 	private ReplHighlighter highlighter;
-	private boolean macroexpand = false;
 	private boolean ansiTerminal = false;
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
