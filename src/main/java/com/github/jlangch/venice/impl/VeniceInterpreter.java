@@ -1076,14 +1076,22 @@ public class VeniceInterpreter implements Serializable  {
 			public VncVal apply(final VncList args) {
 				final VncVal form = args.first();
 				if (Types.isVncList(form)) {
-					if (is_ns_symbolic_expr((VncList)form)) {
-						// we've encountered a '(ns x)' s-expression -> apply it
-						final VncSymbol ns = (VncSymbol)((VncList)form).second();
-						Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns)); 
-					}
-					else if (Types.isVncSymbol(((VncList)form).first())) {
-						// try to expand
-						return macroexpand(form, env, expandedMacroCounter);
+					final VncList list = (VncList)form;
+					final VncVal first = list.first();
+					if (Types.isVncSymbol(first)) {
+						final VncVal second = list.second();
+						// check if the expression is of the form (ns x)
+						if (list.size() == 2 
+								&& "ns".equals(((VncSymbol)first).getName()) 
+								&& second instanceof VncSymbol
+						) {
+							// we've encountered a '(ns x)' symbolic expression -> apply it
+							Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent((VncSymbol)second)); 
+						}
+						else {
+							// try to expand
+							return macroexpand(list, env, expandedMacroCounter);
+						}
 					}
 				}
 
@@ -1158,18 +1166,6 @@ public class VeniceInterpreter implements Serializable  {
 			// set the original namespace back
 			Namespaces.setCurrentNamespace(original_ns);
 		}
-	}
-
-	private boolean is_ns_symbolic_expr(final VncList form) {
-		// check if the expression is of the form (ns x)
-		if (form.size() == 2) {
-			final VncVal first = form.first();
-			return (first instanceof VncSymbol)
-					 && ("ns".equals(((VncSymbol)first).getName())) 
-					 && (form.second() instanceof VncSymbol);
-		}
-		
-		return false;
 	}
 	
 	private static boolean is_pair(final VncVal x) {
