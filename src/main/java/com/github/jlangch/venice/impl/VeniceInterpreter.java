@@ -131,7 +131,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	public void setMacroexpandOnLoad(final boolean macroexpandOnLoad, final Env env) {
-		// Dynamically turn on/off macroexpand-on-load. The REPL makes use of thid.
+		// Dynamically turn on/off macroexpand-on-load. The REPL makes use of this.
 		env.setMacroexpandOnLoad(VncBoolean.of(macroexpandOnLoad));		
 		this.macroexpand = macroexpandOnLoad;
 	}
