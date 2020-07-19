@@ -154,7 +154,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	public VncVal MACROEXPAND(final VncVal ast, final Env env) {
-		return macroexpandAllFn != null ? macroexpandAllFn.apply(VncList.of(ast)) : ast;
+		return macroexpand_all(ast, env);
 	}
 
 	public VncVal RE(
@@ -229,9 +229,6 @@ public class VeniceInterpreter implements Serializable  {
 
 		// load core module (take care that macro expansion is not active!)
 		loadModule("core", env, loadedModules, false);
-		
-		// after loading the 'core' module we can refer to "core/macroexpand-all"
-		macroexpandAllFn = (VncFunction)env.getGlobalOrNull(new VncSymbol("core/macroexpand-all"));
 		
 		// Activates macroexpand on load
 		//
@@ -1860,6 +1857,4 @@ public class VeniceInterpreter implements Serializable  {
 	private final AtomicLong macroExpandAllCountEffective = new AtomicLong(0L);
 	private final AtomicLong macroExpandAllCount = new AtomicLong(0L);
 	private final AtomicLong macroExpandCount = new AtomicLong(0L);
-	
-	private volatile VncFunction macroexpandAllFn = null;
 }
