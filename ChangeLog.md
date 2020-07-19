@@ -29,6 +29,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - pre-loaded modules to honor the 'macroexpandOnLoad' flag (Java integration API)
 - profiling to show now details on each macro type expansion
+- the macro expansion of the core module at startup if upfront macro expansion
+  is activated
 
 ### Fixed
 
