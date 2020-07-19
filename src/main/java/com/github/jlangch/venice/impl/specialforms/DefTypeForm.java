@@ -444,8 +444,8 @@ public class DefTypeForm {
 		final String typeBuildFn = createBuildTypeFn(qualifiedTypeName, builderNumArgs);
 		final String typeCheckFn = createCheckTypeFn(qualifiedTypeName);
 		
-		interpreter.eval(typeBuildFn, "custom-types", env, false);
-		interpreter.eval(typeCheckFn, "custom-types", env, false);
+		interpreter.eval(typeBuildFn, "custom-types", env);
+		interpreter.eval(typeCheckFn, "custom-types", env);
 	}
 
 	private static String createBuildTypeFn(final String qualifiedTypeName, final int builderNumArgs) {

@@ -52,7 +52,6 @@ import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -260,7 +259,7 @@ public class REPL {
 					}
 					else {
 						ThreadLocalMap.clearCallStack();			
-						final VncVal result = venice.RE(line, "user", env, macroexpand);
+						final VncVal result = venice.RE(line, "user", env);
 						if (result != null) {
 							printer.println("result", resultPrefix + venice.PRINT(result));
 							resultHistory.add(result);
@@ -285,8 +284,8 @@ public class REPL {
 	) {
 		try {
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
-				macroexpand = true;
-				env.setMacroexpandOnLoad(VncBoolean.True);
+				macroexpand = true; // remember in case of reloading environment
+				venice.setMacroexpandOnLoad(macroexpand, env);
 				printer.println("system", "Macro expansion enabled");					
 			}
 			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
@@ -416,7 +415,7 @@ public class REPL {
 		            sColorMode,
 		            ansiTerminal ? "true" : "false");
 			
-			venice.RE(script, "user", env, false);
+			venice.RE(script, "user", env);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);
@@ -671,7 +670,7 @@ public class REPL {
 		try {
 			if (loadFile != null) {
 				printer.println("stdout", "loading file \"" + loadFile + "\"");
-				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env, macroexpand);
+				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
 				printer.println("stdout", resultPrefix + venice.PRINT(result));
 			}
 			return true;

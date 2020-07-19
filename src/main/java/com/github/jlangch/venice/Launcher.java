@@ -150,7 +150,7 @@ public class Launcher {
 								convertAppNameToVar(name),
 								convertAppArchiveToVar(appArchive)));
 
-		return venice.PRINT(venice.RE(script, name, env, macroexpand));
+		return venice.PRINT(venice.RE(script, name, env));
 	}
 	
 	private static String runScript(
@@ -170,7 +170,7 @@ public class Launcher {
 							Arrays.asList(
 								convertCliArgsToVar(cli)));
 
-		return venice.PRINT(venice.RE(script, name, env, macroexpand));
+		return venice.PRINT(venice.RE(script, name, env));
 	}
 	
 	private static Env createEnv(

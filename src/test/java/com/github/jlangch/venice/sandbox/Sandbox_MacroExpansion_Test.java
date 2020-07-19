@@ -50,7 +50,7 @@ public class Sandbox_MacroExpansion_Test {
 				"      `(if ~test ~form nil))))                    ";
 		
 		// READ/EVAL macro definition is OK
-		venice.RE(macro, "test", env, true);
+		venice.RE(macro, "test", env);
 
 
 		final String script = "(alpha/whenn true 100)";
@@ -63,7 +63,7 @@ public class Sandbox_MacroExpansion_Test {
 
 		
 		// READ/EVAL with macro expansion is OK
-		final VncVal result = venice.RE(script, "test", env, true);
+		final VncVal result = venice.RE(script, "test", env);
 		assertEquals("100", result.toString());
 	}
 
@@ -84,7 +84,7 @@ public class Sandbox_MacroExpansion_Test {
 				"      `(if ~test ~form nil))))                    ";
 
 		// READ/EVAL macro definition is OK
-		venice.RE(macro, "test", env, true);
+		venice.RE(macro, "test", env);
 
 
 		final String script = "(alpha/whenn true 100)";

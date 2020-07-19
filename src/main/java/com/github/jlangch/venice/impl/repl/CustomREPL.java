@@ -270,7 +270,7 @@ public class CustomREPL {
 					      "  (load-module :repl-setup)     \n" +
 					      "  (repl-setup/setup :extended)) \n";
 				
-				venice.RE(script, "user", env, false);
+				venice.RE(script, "user", env);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);
@@ -300,7 +300,7 @@ public class CustomREPL {
 		try {
 			if (app != null) {
 				printer.println("stdout", "Loading file: '" + app.getPath() + "'");
-				venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env, macroexpand);
+				venice.RE("(load-file \"" + app.getPath() + "\")" , "user", env);
 			}
 			return true;
 		}

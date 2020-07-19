@@ -204,12 +204,12 @@ public class NamespaceTest {
 				"      (println *ns*)                            \n" +
 				"      `(if ~test ~form nil))))                    ";
 
-		venice.RE(macros, "test", env, macroexpandOnLoad);
+		venice.RE(macros, "test", env);
 
 		
 		// [2]
 		final String ns = "(ns beta)";
-		venice.RE(ns, "test", env, macroexpandOnLoad);
+		venice.RE(ns, "test", env);
 
 		
 		// [3]
@@ -222,7 +222,7 @@ public class NamespaceTest {
 				"       (ns delta)                               \n" +  
 				"       (alpha/whenn true (println 100))))))       ";
 
-		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
+		final VncVal result2 = venice.RE(script, "test", env);
 
 		assertEquals("gamma\n100\ndelta\n100\n", result2.toString());
 	}
@@ -252,12 +252,12 @@ public class NamespaceTest {
 				"      (println *ns*)                            \n" +
 				"      `(if ~test ~form nil))))                    ";
 
-		venice.RE(macros, "test", env, macroexpandOnLoad);
+		venice.RE(macros, "test", env);
 
 		
 		// [2]
 		final String ns = "(ns beta)";
-		venice.RE(ns, "test", env, macroexpandOnLoad);
+		venice.RE(ns, "test", env);
 
 		
 		// [3]
@@ -271,7 +271,7 @@ public class NamespaceTest {
 				"          (ns delta)                            \n" +  
 				"          (alpha/whenn true (println 100))))))   ";
 
-		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
+		final VncVal result2 = venice.RE(script, "test", env);
 
 		// Note: the output from script [3] "100\n100\n" is not captured 
 		//       because 'macroexpand-all' just expands the macros but
@@ -296,7 +296,7 @@ public class NamespaceTest {
 
 		// [1]
 		final String ns1 = "(ns alpha)";
-		venice.RE(ns1, "test", env, macroexpandOnLoad);
+		venice.RE(ns1, "test", env);
 
 		
 		// [2]
@@ -306,12 +306,12 @@ public class NamespaceTest {
 				"    (println *ns*)                            \n" +
 				"    `(if ~test ~form nil)))                    ";
 
-		venice.RE(macros, "test", env, macroexpandOnLoad);
+		venice.RE(macros, "test", env);
 
 		
 		// [3]
 		final String ns2 = "(ns beta)";
-		venice.RE(ns2, "test", env, macroexpandOnLoad);
+		venice.RE(ns2, "test", env);
 
 		
 		// [4]
@@ -325,7 +325,7 @@ public class NamespaceTest {
 				"          (ns delta)                            \n" +  
 				"          (alpha/whenn true (println 100))))))   ";
 
-		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
+		final VncVal result2 = venice.RE(script, "test", env);
 
 		// stdout:  "gamma\ndelta"   -> macro expansion takes place before (with-out-str ...) 
 		//                              has been applied, so stdout redirectin is not yet in
@@ -345,8 +345,7 @@ public class NamespaceTest {
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
-		final boolean macroexpandOnLoad = true;
-
+		// Start off with macroexpand = false
 		final Env env = venice.createEnv(false, false, new VncKeyword("script"))
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
@@ -360,12 +359,12 @@ public class NamespaceTest {
 				"      (println *ns*)                          \n" +
 				"      `(if ~test ~form nil))))                  ";
 
-		venice.RE(macros, "test", env, false);
+		venice.RE(macros, "test", env);
 
 		
 		// [2]
 		final String ns = "(ns beta)";
-		venice.RE(ns, "test", env, false);
+		venice.RE(ns, "test", env);
 		
 		// [3]
 		final String script =
@@ -376,7 +375,10 @@ public class NamespaceTest {
 				"    (ns delta)                                \n" +  
 				"    (alpha/whenn true (println 100)))))        ";
 
-		final VncVal result2 = venice.RE(script, "test", env, macroexpandOnLoad);
+		// Switch to macroexpand = true
+		venice.setMacroexpandOnLoad(true, env);
+		
+		final VncVal result2 = venice.RE(script, "test", env);
 
 		// stdout:  "gamma\ndelta"   -> macro expansion takes place before (with-out-str ...) 
 		//                              has been applied, so stdout redirection is not yet in

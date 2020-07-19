@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 
@@ -108,8 +107,11 @@ public class VeniceInterpreter implements Serializable  {
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this.meterRegistry = perfmeter == null ? new MeterRegistry(false) : perfmeter;
-		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
+		this.meterRegistry = perfmeter == null 
+								? new MeterRegistry(false) : perfmeter;
+								
+		this.interceptor = interceptor == null 
+								? new AcceptAllInterceptor() : interceptor;
 		
 		if (loadPaths != null) {
 			this.loadPaths.addAll(loadPaths);
@@ -126,6 +128,16 @@ public class VeniceInterpreter implements Serializable  {
 	
 	public void sealSystemNS() {
 		sealedSystemNS.set(true);
+	}
+	
+	public void setMacroexpandOnLoad(final boolean macroexpandOnLoad, final Env env) {
+		// Dynamically turn on/off macroexpand-on-load. The REPL makes use of thid.
+		env.setMacroexpandOnLoad(VncBoolean.of(macroexpandOnLoad));		
+		this.macroexpand = macroexpandOnLoad;
+	}
+	
+	public boolean isMacroexpandOnLoad() {
+		return macroexpand;
 	}
 	
 	// read
@@ -160,8 +172,7 @@ public class VeniceInterpreter implements Serializable  {
 	public VncVal RE(
 			final String script, 
 			final String name, 
-			final Env env,
-			final boolean macroexpand
+			final Env env
 	) {
 		VncVal ast = READ(script, name);			
 		if (macroexpand) {
@@ -218,7 +229,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
 
 		// start off with disabled macroexpand-on-load
-		env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), False, true));
+		setMacroexpandOnLoad(false, env);
 		
 		// loaded modules & files
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
@@ -228,7 +239,7 @@ public class VeniceInterpreter implements Serializable  {
 		initNS();
 
 		// load core module (take care that macro expansion is not active!)
-		loadModule("core", env, loadedModules, false);
+		loadModule("core", env, loadedModules);
 		
 		// Activates macroexpand on load
 		//
@@ -238,14 +249,14 @@ public class VeniceInterpreter implements Serializable  {
 		//     core/load-classpath-file
 		//     core/load-module
 		if (macroexpandOnLoad) {
-			env.setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), True, true));
+			setMacroexpandOnLoad(true, env);
 		}
 
 		// security: seal system namespaces (Namespaces::SYSTEM_NAMESPACES) - no further changes allowed!
 		sealedSystemNS.set(true);
 
 		// load other modules requested for preload (use macroexpandOnLoad flag)
-		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules, macroexpandOnLoad));
+		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
 
 		return env;
 	}
@@ -260,12 +271,11 @@ public class VeniceInterpreter implements Serializable  {
 	private void loadModule(
 			final String module, 
 			final Env env, 
-			final VncMutableSet loadedModules,
-			final boolean macroexpandOnLoad
+			final VncMutableSet loadedModules
 	) {
 		final long nanos = System.nanoTime();
 		
-		RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env, macroexpandOnLoad);
+		RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
 
 		if (meterRegistry.enabled) {
 			meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
@@ -1853,4 +1863,6 @@ public class VeniceInterpreter implements Serializable  {
 	private final AtomicLong macroExpandAllCountEffective = new AtomicLong(0L);
 	private final AtomicLong macroExpandAllCount = new AtomicLong(0L);
 	private final AtomicLong macroExpandCount = new AtomicLong(0L);
+	
+	private volatile boolean macroexpand = false;
 }

@@ -290,7 +290,7 @@ public class Venice {
 
 			meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 			
-			final VncVal result = venice.RE(script, scriptName, env, macroexpand);
+			final VncVal result = venice.RE(script, scriptName, env);
 						
 			final Object jResult = result.convertToJavaObject();
 	
