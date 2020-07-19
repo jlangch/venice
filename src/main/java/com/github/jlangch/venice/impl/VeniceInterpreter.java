@@ -228,9 +228,6 @@ public class VeniceInterpreter implements Serializable  {
 		// set the run mode
 		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
 
-		// start off with disabled macroexpand-on-load
-		setMacroexpandOnLoad(false, env);
-		
 		// loaded modules & files
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
 		env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
@@ -238,9 +235,6 @@ public class VeniceInterpreter implements Serializable  {
 		// init namespaces
 		initNS();
 
-		// load core module (take care that macro expansion is not active!)
-		loadModule("core", env, loadedModules);
-		
 		// Activates macroexpand on load
 		//
 		// expands macros on behalf of the 'core' functions:   
@@ -248,14 +242,16 @@ public class VeniceInterpreter implements Serializable  {
 		//     core/load-file
 		//     core/load-classpath-file
 		//     core/load-module
-		if (macroexpandOnLoad) {
-			setMacroexpandOnLoad(true, env);
-		}
+		//     VeniceInterpreter::loadModule(..)
+		setMacroexpandOnLoad(macroexpandOnLoad, env);
 
+		// load core module
+		loadModule("core", env, loadedModules);
+		
 		// security: seal system namespaces (Namespaces::SYSTEM_NAMESPACES) - no further changes allowed!
 		sealedSystemNS.set(true);
 
-		// load other modules requested for preload (use macroexpandOnLoad flag)
+		// load other modules requested for preload
 		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
 
 		return env;
