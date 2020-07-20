@@ -107,15 +107,16 @@ public class Reader {
 	
 
 	public static List<Token> tokenize(final String str, final String filename) {
-		return tokenize(str, filename, true); 
+		return tokenize(str, filename, true, true); 
 	}
 
 	public static List<Token> tokenize(
 			final String str, 
 			final String filename, 
-			final boolean errorOnUnbalancedStringQuotes
+			final boolean errorOnUnbalancedStringQuotes,
+			final boolean errorOnIncompleteEscapeChars
 	) {
-		return Tokenizer.tokenize(str, filename, true, errorOnUnbalancedStringQuotes);
+		return Tokenizer.tokenize(str, filename, true, errorOnUnbalancedStringQuotes, errorOnIncompleteEscapeChars);
 	}
 
 	private static VncVal read_atom(final Reader rdr) {
@@ -408,7 +409,7 @@ public class Reader {
 				final String rest = str.substring(pos);
 				if (rest.startsWith("~(")) {
 					final String s_ = rest.substring(1);
-					final Reader rdr = new Reader(filename, s_, tokenize(s_, filename, false));
+					final Reader rdr = new Reader(filename, s_, tokenize(s_, filename, false, false));
 					list.add(read_list(rdr, VncList.empty(), '(' , ')'));
 					
 					tail = rdr.unprocessedRest().substring(1);

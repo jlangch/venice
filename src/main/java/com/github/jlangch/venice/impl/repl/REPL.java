@@ -180,6 +180,7 @@ public class REPL {
 						false));
 		
 		final ReplParser parser = new ReplParser(venice);
+		parser.setEscapeChars(new char[0]);
 		
 		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
 		
@@ -199,9 +200,9 @@ public class REPL {
 				                    .variable(LineReader.LIST_MAX, 100)
 									.variable(LineReader.HISTORY_SIZE, 20)
 									.variable(LineReader.HISTORY_FILE, HISTORY_FILE)
-									.variable(LineReader.HISTORY_FILE_SIZE, 25)								
+									.variable(LineReader.HISTORY_FILE_SIZE, 25)
 									.build();
-
+		
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 		
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {

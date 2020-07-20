@@ -44,33 +44,42 @@ public class Tokenizer {
 			final String text, 
 			final String fileName
 	) {
-		this(text, fileName, true, true);
+		this(text, fileName, true, true, true);
 	}
 
 	private Tokenizer(
 			final String text, 
 			final String fileName,
 			final boolean skipWhitespaces,
-			final boolean errorOnUnbalancedStringQuotes
+			final boolean errorOnUnbalancedStringQuotes,
+			final boolean errorOnIncompleteEscapeChars
 	) {
 		this.reader = new CharacterReader(text);
 		this.fileName = fileName;
 		this.skipWhitespaces = skipWhitespaces;
 		this.errorOnUnbalancedStringQuotes = errorOnUnbalancedStringQuotes;
+		this.errorOnIncompleteEscapeChars = errorOnIncompleteEscapeChars;
 	}
 
 	
 	public static List<Token> tokenize(final String text, final String fileName) {
-		return new Tokenizer(text, fileName, true, true).tokenize();
+		return new Tokenizer(text, fileName, true, true, true).tokenize();
 	}
 
 	public static List<Token> tokenize(
 			final String text, 
 			final String fileName,
 			final boolean skipWhitespaces,
-			final boolean errorOnUnbalancedStringQuotes
+			final boolean errorOnUnbalancedStringQuotes,
+			final boolean errorOnIncompleteEscapeChars
 	) {
-		return new Tokenizer(text, fileName, skipWhitespaces, errorOnUnbalancedStringQuotes).tokenize();
+		return new Tokenizer(
+					text, 
+					fileName, 
+					skipWhitespaces,
+					errorOnUnbalancedStringQuotes, 
+					errorOnIncompleteEscapeChars
+				).tokenize();
 	}
 	
 	
@@ -231,7 +240,7 @@ public class Tokenizer {
 				final int col = reader.getColumnNumber();
 				reader.consume();
 				sb.append((char)ch);
-				sb.append(readStringEscapeChar(STRING, filePos, line, col));
+				readStringEscapeChar(STRING, filePos, line, col, sb);
 			}
 			else {
 				reader.consume();
@@ -292,7 +301,7 @@ public class Tokenizer {
 				}
 				else {
 					sb.append((char)ch);
-					sb.append(readStringEscapeChar(STRING, filePos, line, col));
+					readStringEscapeChar(STRING, filePos, line, col, sb);
 				}
 			}
 			else {
@@ -350,27 +359,33 @@ public class Tokenizer {
 		}
 	}
 	
-	private char readStringEscapeChar(
+	private void readStringEscapeChar(
 			final TokenType type,
 			final int filePos, 
 			final int line, 
-			final int col
+			final int col,
+			final StringBuilder sb
 	) throws IOException {
 		final int ch = reader.peek();
-		
+	
+		reader.consume();			
+
 		if (ch == LF || ch == CR) {
-			throw new ParseError(formatParseError(
-					new Token(type, "\\", fileName, filePos, line, col), 
-					"Expected escaped char in a string but got EOL"));
+			if (errorOnIncompleteEscapeChars) {
+				throw new ParseError(formatParseError(
+						new Token(type, "\\", fileName, filePos, line, col), 
+						"Expected escaped char in a string but got EOL"));
+			}
 		}
 		else if (ch == EOF) {
-			throw new EofException(formatParseError(
-					new Token(type, "\\", fileName, filePos, line, col), 
-					"Expected escaped char in a string but got EOF"));
+			if (errorOnIncompleteEscapeChars) {
+				throw new EofException(formatParseError(
+						new Token(type, "\\", fileName, filePos, line, col), 
+						"Expected escaped char in a string but got EOF"));
+			}
 		}
 		else {
-			reader.consume();			
-			return (char)ch;
+			sb.append((char)ch);
 		}
 	}
 
@@ -393,5 +408,6 @@ public class Tokenizer {
 	private final String fileName;
 	private final boolean skipWhitespaces;
 	private final boolean errorOnUnbalancedStringQuotes;
+	private final boolean errorOnIncompleteEscapeChars;
 	private final List<Token> tokens = new ArrayList<>();
 }

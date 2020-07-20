@@ -68,7 +68,7 @@ public class HighlightParser {
 	
 	public static List<HighlightItem> parse(final String str) {
 		final List<Token> tokens = Tokenizer.tokenize(
-										str, "highlighter", false, false);
+										str, "highlighter", false, false, false);
 		
 		final HighlightParser hl = new HighlightParser(str, tokens);
 

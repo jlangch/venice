@@ -635,11 +635,11 @@ public class TokenizerTest {
 	}
 
 	private static List<Token> tokenize_whitespaces(final String text, final String fileName) {
-		return Tokenizer.tokenize(text, fileName, false, true);
+		return Tokenizer.tokenize(text, fileName, false, true, true);
 	}
 
 	private static List<Token> tokenize_unbalanced(final String text, final String fileName) {
-		return Tokenizer.tokenize(text, fileName, true, false);
+		return Tokenizer.tokenize(text, fileName, true, false, true);
 	}
 
 }

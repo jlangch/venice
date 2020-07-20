@@ -95,7 +95,17 @@ public class ReaderTest {
 
 	@Test
 	public void testAtomString_escape() {
-		assertEquals("a\nb\tc", new Venice().eval("(do \"a\\nb\\tc\")"));
+		final String script = "(do \"a\\nb\\tc\\\\d\")";
+		final String result = (String)new Venice().eval(script);
+		
+		assertEquals("a\nb\tc\\d", result);
+		assertEquals('a',  result.charAt(0));
+		assertEquals('\n', result.charAt(1));
+		assertEquals('b',  result.charAt(2));
+		assertEquals('\t', result.charAt(3));
+		assertEquals('c',  result.charAt(4));
+		assertEquals('\\', result.charAt(5));
+		assertEquals('d',  result.charAt(6));
 	}
 
 	@Test
