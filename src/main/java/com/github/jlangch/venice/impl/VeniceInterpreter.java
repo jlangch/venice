@@ -498,7 +498,7 @@ public class VeniceInterpreter implements Serializable  {
 									multiFn.getParams().size()));
 						}
 					}
-					final VncVector preConditions = getFnPreconditions(ast.nth(4));
+					final VncVector preConditions = getFnPreconditions(ast.nth(4), env);
 					final VncList body = ast.slice(preConditions == null ? 4 : 5);
 					final VncFunction fn = buildFunction(
 												multiFnName.getName(),
@@ -1081,6 +1081,7 @@ public class VeniceInterpreter implements Serializable  {
 		final VncFunction handler = new VncFunction(createAnonymousFuncName("macroexpand-all-handler")) {
 			public VncVal apply(final VncList args) {
 				final VncVal form = args.first();
+				
 				if (Types.isVncList(form)) {
 					final VncList list = (VncList)form;
 					final VncVal first = list.first();
@@ -1115,9 +1116,10 @@ public class VeniceInterpreter implements Serializable  {
 				
 				if (Types.isVncList(form)) {
 					// (outer (apply list (map inner form)))
-					return CoreFunctions.apply.applyOf(
-								CoreFunctions.new_list, 
-								TransducerFunctions.map.applyOf(inner, form));
+					return TransducerFunctions.map.applyOf(inner, form);
+//					return CoreFunctions.apply.applyOf(
+//								CoreFunctions.new_list, 
+//								TransducerFunctions.map.applyOf(inner, form));
 				}
 				else if (Types.isVncMapEntry(form)) {
 					// (outer (map-entry (inner (key form)) (inner (val form))))
@@ -1392,12 +1394,23 @@ public class VeniceInterpreter implements Serializable  {
 			argPos++;
 			final VncVector params = (VncVector)paramsOrSig;
 			
-			final VncVector preConditions = getFnPreconditions(ast.nth(argPos));
+			final VncVector preConditions = getFnPreconditions(ast.nth(argPos), env);
 			if (preConditions != null) argPos++;
 			
 			final VncList body = ast.slice(argPos);
 			
-			return buildFunction(fnName.getName(), params, body, preConditions, false, env);
+//			if (macroexpand) {
+//				return buildFunction(
+//						fnName.getName(), 
+//						params, 
+//						(VncList)macroexpand_all(body, env), 
+//						(VncVector)macroexpand_all(preConditions, env), 
+//						false, 
+//						env);
+//			}
+//			else {
+				return buildFunction(fnName.getName(), params, body, preConditions, false, env);
+//			}		
 		}
 		else {
 			// multi arity:
@@ -1411,12 +1424,23 @@ public class VeniceInterpreter implements Serializable  {
 				
 				final VncVector params = Coerce.toVncVector(sig.nth(pos++));
 				
-				final VncVector preConditions = getFnPreconditions(sig.nth(pos));
+				final VncVector preConditions = getFnPreconditions(sig.nth(pos), env);
 				if (preConditions != null) pos++;
 				
 				final VncList body = sig.slice(pos);
 				
-				fns.add(buildFunction(fnName.getName(), params, body, preConditions, false, env));
+//				if (macroexpand) {
+//					fns.add(buildFunction(
+//							fnName.getName(), 
+//							params, 
+//							(VncList)macroexpand_all(body, env), 
+//							(VncVector)macroexpand_all(preConditions, env), 
+//							false, 
+//							env));
+//				}
+//				else {
+					fns.add(buildFunction(fnName.getName(), params, body, preConditions, false, env));
+//				}
 			});
 			
 			return new VncMultiArityFunction(fnName.getName(), fns, false);
@@ -1716,7 +1740,7 @@ public class VeniceInterpreter implements Serializable  {
 		};
 	}
 
-	private VncVector getFnPreconditions(final VncVal prePostConditions) {
+	private VncVector getFnPreconditions(final VncVal prePostConditions, final Env env) {
 		if (Types.isVncMap(prePostConditions)) {
 			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
 			if (Types.isVncVector(val)) {
