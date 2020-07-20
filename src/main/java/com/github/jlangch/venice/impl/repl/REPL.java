@@ -180,7 +180,7 @@ public class REPL {
 						false));
 		
 		final ReplParser parser = new ReplParser(venice);
-		parser.setEscapeChars(new char[0]);
+		parser.setEscapeChars(new char[0]);  // leave the char escape handling to Venice
 		
 		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
 		
