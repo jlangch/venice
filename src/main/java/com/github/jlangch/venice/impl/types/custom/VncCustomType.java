@@ -146,7 +146,7 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncMap putAll(final VncMap map) {
-		throw new VncException("not supported");
+		throw new VncException("not supported for custom types!");
 	}
 
 	@Override
@@ -183,12 +183,12 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncCustomType dissoc(final VncVal... keys) {
-		throw new VncException("not supported");
+		throw new VncException("not supported for custom types!");
 	}
 
 	@Override
 	public VncMap dissoc(final VncSequence keys) {
-		throw new VncException("not supported");
+		throw new VncException("not supported for custom types!");
 	}
 
 	@Override
