@@ -42,6 +42,34 @@ public class SpecialFormsTest_deftype {
 
 		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
 	}
+	
+	@Test
+	public void test_deftype_assoc_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (def y (assoc x :real 110))                       \n" +
+				"  (pr-str y))                                         ";
+
+		assertEquals("#:user/complex{:real 110 :imaginary 200}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_assoc_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (def y (assoc x :real 110 :imaginary 220))        \n" +
+				"  (pr-str y))                                         ";
+
+		assertEquals("#:user/complex{:real 110 :imaginary 220}", venice.eval(script));					
+	}
 
 	@Test
 	public void test_deftype_invalid_name() {
@@ -50,6 +78,32 @@ public class SpecialFormsTest_deftype {
 				"  (deftype :complex. [real :long, imaginary :long])    ";
 
 		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
+	public void test_deftype_assoc_invalid_field_name() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (def y (assoc x :real__ 110))                       ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_assoc_invalid_field_type() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (def y (assoc x :real true))                        ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));					
 	}
 	
 	@Test

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -38,6 +39,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncCustomType extends VncMap {
@@ -149,16 +151,38 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncMap assoc(final VncVal... mvs) {
-		throw new VncException("not supported");
+		if (mvs.length %2 != 0) {
+			throw new VncException(String.format(
+					":core/custom-type: assoc requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(mvs[0])));
+		}
+		
+		VncMap tmp = values;
+		for (int i=0; i<mvs.length; i+=2) {
+			tmp = tmp.assoc(mvs[i], mvs[i+1]);
+		}
+		
+		return DefTypeForm.createCustomType(typeDef, tmp);
 	}
 
 	@Override
-	public VncMap assoc(final VncSequence mvs) {
-		throw new VncException("not supported");
+	public VncCustomType assoc(final VncSequence mvs) {
+		if (mvs.size() %2 != 0) {
+			throw new VncException(String.format(
+					":core/custom-type: assoc requires an even number of items. %s", 
+					ErrorMessage.buildErrLocation(mvs)));
+		}	
+
+		VncMap tmp = values;
+		for (int i=0; i<mvs.getList().size(); i+=2) {
+			tmp = tmp.assoc(mvs.nth(i), mvs.nth(i+1));
+		}
+		
+		return DefTypeForm.createCustomType(typeDef, tmp);
 	}
 
 	@Override
-	public VncMap dissoc(final VncVal... keys) {
+	public VncCustomType dissoc(final VncVal... keys) {
 		throw new VncException("not supported");
 	}
 

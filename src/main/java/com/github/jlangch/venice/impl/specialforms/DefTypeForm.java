@@ -266,7 +266,7 @@ public class DefTypeForm {
 		}
 	}
 
-	public static VncVal createCustomType(
+	public static VncCustomType createCustomType(
 			final VncCustomTypeDef typeDef, 
 			final List<VncVal> typeArgs
 	) {
@@ -280,7 +280,7 @@ public class DefTypeForm {
 		
 		final Map<VncVal,VncVal> fields = new LinkedHashMap<>();
 		
-		for(int ii=0; ii<typeArgs.size(); ii++) {
+		for(int ii=0; ii<typeDef.count(); ii++) {
 			final VncCustomTypeFieldDef fieldDef = typeDef.getFieldDef(ii);
 			final VncVal arg = typeArgs.get(ii);
 			
@@ -290,6 +290,40 @@ public class DefTypeForm {
 		}
 		
 		final VncMap data = new VncOrderedMap(fields, Constants.Nil);
+		
+		typeDef.validate(data);
+		
+		return new VncCustomType(
+						typeDef, 
+						data, 
+						Constants.Nil);
+	}
+
+	public static VncCustomType createCustomType(
+			final VncCustomTypeDef typeDef, 
+			final VncMap fields
+	) {
+		if (typeDef.count() != fields.size()) {
+			throw new VncException(String.format(
+					"The custom type %s requires %d args. %d have been passed", 
+					typeDef.getType().toString(), 
+					typeDef.count(),
+					fields.size())); 
+		}
+		
+		final Map<VncVal,VncVal> fieldsNew = new LinkedHashMap<>();
+		
+		for(int ii=0; ii<typeDef.count(); ii++) {
+			final VncCustomTypeFieldDef fieldDef = typeDef.getFieldDef(ii);
+			
+			final VncVal arg = fields.get(fieldDef.getName());
+			
+			validateTypeCompatibility(typeDef.getType(), fieldDef, arg);
+			
+			fieldsNew.put(fieldDef.getName(), arg);
+		}
+		
+		final VncMap data = new VncOrderedMap(fieldsNew, Constants.Nil);
 		
 		typeDef.validate(data);
 		

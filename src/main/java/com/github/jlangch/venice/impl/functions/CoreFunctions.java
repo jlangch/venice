@@ -90,6 +90,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -2588,16 +2589,24 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(assoc coll key val)", "(assoc coll key val & kvs)")
 					.doc(
-						"When applied to a map, returns a new map of the " +
-						"same type, that contains the mapping of key(s) to " +
-						"val(s). When applied to a vector, returns a new vector that " +
-						"contains val at index. Note - index must be <= (count vector).")
+						"When applied to a map, returns a new map of the same type, that " +
+						"contains the mapping of key(s) to val(s). " +
+						"When applied to a vector, returns a new vector that contains val " +
+						"at index. Note - index must be <= (count vector)." +
+						"When applied to a custom type, returns a new custom type with " +
+						"passed fields changed.")
 					.examples(
 						"(assoc {} :a 1 :b 2)",
 						"(assoc nil :a 1 :b 2)",
 						"(assoc [1 2 3] 0 10)",
 						"(assoc [1 2 3] 3 10)",
-						"(assoc [1 2 3] 6 10)")
+						"(assoc [1 2 3] 6 10)",
+						"(do                                                 \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (def x (complex. 100 200))                        \n" +
+						"  (def y (assoc x :real 110))                       \n" +
+						"  (pr-str y))                                         "
+						)
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2609,6 +2618,10 @@ public class CoreFunctions {
 					throw new VncException(String.format(
 							"Function 'assoc' can not be used with mutable maps use assoc!",
 							Types.getType(coll)));
+				}
+				
+				else if (Types.isVncCustomType(coll)) {
+					return ((VncCustomType)coll).assoc((VncList)args.rest());
 				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).assoc((VncList)args.rest());

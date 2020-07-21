@@ -62,6 +62,17 @@ can be applied:
 
 (println (str/format "(re: %d, im: %d)" (:real x) (:imaginary x)))
 ```
+
+
+Modify fields with `assoc`
+
+```clojure
+(do
+  (deftype :complex [real :long, imaginary :long])
+  (def x (complex. 100 200))
+  (def y (assoc x :real 110))
+  y)
+```
  
 
 The field type :any is representing any type
