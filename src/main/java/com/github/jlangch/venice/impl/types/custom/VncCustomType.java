@@ -67,11 +67,11 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncCustomType emptyWithMeta() {
-		throw new VncException("not supported");
+		throw new VncException("not supported for custom types!");
 	}
 	@Override
 	public VncCustomType withValues(final Map<VncVal,VncVal> replaceVals) {
-		throw new VncException("not supported");
+		throw new VncException("not supported for custom types!");
 	}
 	
 	@Override
@@ -79,7 +79,7 @@ public class VncCustomType extends VncMap {
 			final Map<VncVal,VncVal> replaceVals, 
 			final VncVal meta
 	) {
-		throw new VncException("not supported");
+		throw new VncException("not supported for custom types!");
 	}
 	
 	@Override
