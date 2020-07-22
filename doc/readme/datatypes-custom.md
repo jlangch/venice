@@ -85,7 +85,7 @@ Remove fields with `dissoc`:
   y)
 ```
 
-`dissoc` on custom types will turn the custom type back into a standard map because the 
+_Note:_ `dissoc` on custom types will turn the custom type back into a standard map because the 
 resulting value will not comply with the custom types' rules anymore.
  
 
