@@ -7,22 +7,22 @@ we are used to with languages that allow you to define your own types.
 Even though Venice will never progress into a statically typed language, the ability
 to define custom types will make a domain model more expressive and type safe. 
 
-Venice is validating the instantiation of custom types by checking the values 
-for type compliance. With value immutability the instantiated values are guaranteed
-to be valid for their lifetime.
-
-Due to the dynamic nature of Venice, types cannot not be checked at Reader time and
-function arguments are not type checked implicitly, if required so function
-preconditions can be added for runtime checking. 
-
 Venice custom types are composed from 'smaller' types:
 
 - Composing types with "AND" (records)
 - Composing types with "OR" (choices)
 - Wrapping types (constraints)
 
+**Validation**
+
 Custom types can be defined with an optional validation function that validates
-the instantiation of a type.
+the instantiation of a type. With value immutability the instantiated values are 
+guaranteed to be valid for their lifetime.
+
+Due to the dynamic nature of Venice, types cannot not be checked at Reader time and
+function arguments are not type checked implicitly, if required so function
+preconditions can be added for runtime checking. 
+
 
 
 
