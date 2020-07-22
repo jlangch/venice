@@ -62,6 +62,17 @@ can be applied:
 
 (println (str/format "(re: %d, im: %d)" (:real x) (:imaginary x)))
 ```
+ 
+
+The field type :any is representing any type:
+
+```clojure
+(do
+  (deftype :named [name :string, value :any]) 
+  
+  (def x (named. "count" 200))
+  (def y (named. "seq" [1 2])))
+```
 
 
 Modify fields with `assoc`:
@@ -87,17 +98,6 @@ Remove fields with `dissoc`:
 
 _Note:_ `dissoc` on custom types will turn the custom type back into a standard map because the 
 resulting value will not comply with the custom types' rules anymore.
- 
-
-The field type :any is representing any type:
-
-```clojure
-(do
-  (deftype :named [name :string, value :any]) 
-  
-  (def x (named. "count" 200))
-  (def y (named. "seq" [1 2])))
-```
 
 
 ## Composing types with "OR"
