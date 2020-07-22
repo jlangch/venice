@@ -62,20 +62,9 @@ can be applied:
 
 (println (str/format "(re: %d, im: %d)" (:real x) (:imaginary x)))
 ```
-
-
-Modify fields with `assoc`
-
-```clojure
-(do
-  (deftype :complex [real :long, imaginary :long])
-  (def x (complex. 100 200))
-  (def y (assoc x :real 110))
-  y)
-```
  
 
-The field type :any is representing any type
+The field type :any is representing any type:
 
 ```clojure
 (do
@@ -84,6 +73,31 @@ The field type :any is representing any type
   (def x (named. "count" 200))
   (def y (named. "seq" [1 2])))
 ```
+
+
+Modify fields with `assoc`:
+
+```clojure
+(do
+  (deftype :complex [real :long, imaginary :long])
+  (def x (complex. 100 200))
+  (def y (assoc x :real 110))
+  y)
+```
+
+
+Remove fields with `dissoc`:
+
+```clojure
+(do
+  (deftype :complex [real :long, imaginary :long])
+  (def x (complex. 100 200))
+  (def y (dissoc x :real 110))
+  y)
+```
+
+_Note:_ `dissoc` on custom types will turn the custom type back into a standard map because the 
+resulting value will not comply with the custom types' rules anymore.
 
 
 ## Composing types with "OR"
