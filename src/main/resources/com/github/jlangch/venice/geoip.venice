@@ -155,7 +155,7 @@
 
   geoip/ip-to-city-loc-resolver [geoip-zip location-csv]
 
-  (let [cities (geoip/parse-maxmind-city-db geoip-zip)
+  (let [cities   (geoip/parse-maxmind-city-db geoip-zip)
         ip4-data (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip nil)
         ip6-data (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip nil)]
     (memoize (fn resolve-ip-to-city [ip]
@@ -216,8 +216,8 @@
   geoip/ip-to-country-resolver [geoip-zip]
 
   (let [countries (geoip/parse-maxmind-country-db geoip-zip)
-        ip4-data (geoip/parse-maxmind-country-ip-db :IPv4 geoip-zip countries)
-        ip6-data (geoip/parse-maxmind-country-ip-db :IPv6 geoip-zip countries)]
+        ip4-data  (geoip/parse-maxmind-country-ip-db :IPv4 geoip-zip countries)
+        ip6-data  (geoip/parse-maxmind-country-ip-db :IPv6 geoip-zip countries)]
     (memoize (fn resolve-ip-to-country [ip]
                 (cond
                   (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
@@ -240,8 +240,8 @@
                "51537" {:country-iso "SO" :country-name "Somalia"} }
 
           Return:
-            [["223.255.254.0/24" {:country-iso "SG" :country-name"Singapore"}]
-             ["223.255.255.0/24" {:country-iso "AU" :country-name"Australia"}]]
+            [[(cidr-parse "223.255.254.0/24") {:country-iso "SG" :country-name"Singapore"}]
+             [(cidr-parse "223.255.255.0/24") {:country-iso "AU" :country-name"Australia"}]]
           """
      :examples '(
            """
@@ -274,10 +274,10 @@
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
     (if (some? maxmind-countries)
-      (map (juxt #(nth % 0)
+      (map (juxt #(cidr/parse (nth % 0))
                  #(get maxmind-countries (nth % 1)))
            ip-blocks)
-      (map (juxt #(nth % 0)
+      (map (juxt #(cidr/parse (nth % 0))
                  #(hash-map ))
            ip-blocks))))
 
@@ -299,17 +299,21 @@
                        :region "Aargau"  :city "Aarau"} }
 
           Return:
-            [["223.255.254.0/24" {:loc ["10.0000" "8.0000"]
-                                  :country-iso "GB" :country-name "England"
-                                  :region "England"  :city "London"}]
-             ["223.255.255.0/24" {:loc ["-15.0000" "30.0000"]
-                                  :country-iso "CH" :country-name "Switzerland"
-                                  :region "Aargau"  :city "Aarau"}]]
+            [[(cidr/parse "223.255.254.0/24") {:loc ["10.0000" "8.0000"]
+                                               :country-iso "GB"
+                                               :country-name "England"
+                                               :region "England"
+                                               :city "London"}]
+             [(cidr/parse "223.255.255.0/24") {:loc ["-15.0000" "30.0000"]
+                                               :country-iso "CH"
+                                               :country-name "Switzerland"
+                                               :region "Aargau"
+                                               :city "Aarau"}]]
 
-            [["2c0f:fff0::/32" {:loc ["10.0000" "8.0000"]
-                                :city-id "2643743"}]
-             ["2c0f:feb8::/32" {:loc ["-15.0000" "30.0000"]
-                                :city-id "2661881"}]]
+            [[(cidr/parse "2c0f:fff0::/32") {:loc ["10.0000" "8.0000"]
+                                             :city-id "2643743"}]
+             [(cidr/parse "2c0f:feb8::/32") {:loc ["-15.0000" "30.0000"]
+                                             :city-id "2661881"}]]
           """
      :examples '(
            """
@@ -342,11 +346,11 @@
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
     (if (some? maxmind-cities)
-      (map (juxt #(nth % 0)
+      (map (juxt #(cidr/parse (nth % 0))
                  #(assoc (get maxmind-cities (nth % 1))
                          :loc [(nth % 7) (nth % 8)]))
            ip-blocks)
-      (map (juxt #(nth % 0)
+      (map (juxt #(cidr/parse (nth % 0))
                  #(hash-map :loc [(nth % 7) (nth % 8)] :city-id (nth % 1)))
            ip-blocks))))
 
@@ -538,7 +542,7 @@
 
 (defn- geoip/find-ip-country [ip ip-data]
   (let [inet (cidr/inet-addr ip)]
-    (some (fn [x] (if (cidr/in-range? inet (first x)) (second x) nil)) 
+    (some (fn [x] (if (cidr/in-range? inet (first x)) (second x) nil))
           ip-data)))
 
 
