@@ -431,8 +431,8 @@ public class SystemFunctions {
 							.stream()
 							.map(f -> VncOrderedMap.of(
 											CALLSTACK_KEY_FN_NAME, f.getFnName() == null
-															? Constants.Nil
-															: new VncString(f.getFnName()),
+																		? Constants.Nil
+																		: new VncString(f.getFnName()),
 											CALLSTACK_KEY_FILE, new VncString(f.getFile()),
 											CALLSTACK_KEY_LINE, new VncLong(f.getLine()),
 											CALLSTACK_KEY_COL, new VncLong(f.getCol())))
