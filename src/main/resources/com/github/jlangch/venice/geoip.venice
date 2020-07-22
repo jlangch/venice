@@ -235,13 +235,19 @@
           The maxmind-countries are optional and map the geoname-id to country \
           data.
 
+          Returns a vector of tuples. Each tuple is a vector with two items, \
+          the first being a parsed CIDR Java object and the second a map with \
+          the country location information for the CIDR.
+
           maxmind-countries:
              { "49518" {:country-iso "RW" :country-name "Rwanda"}
                "51537" {:country-iso "SO" :country-name "Somalia"} }
 
           Return:
-            [[(cidr-parse "223.255.254.0/24") {:country-iso "SG" :country-name"Singapore"}]
-             [(cidr-parse "223.255.255.0/24") {:country-iso "AU" :country-name"Australia"}]]
+            [[(cidr-parse "223.255.254.0/24") {:country-iso "SG"
+                                               :country-name"Singapore"}]
+             [(cidr-parse "223.255.255.0/24") {:country-iso "AU"
+                                               :country-name"Australia"}]]
           """
      :examples '(
            """
@@ -291,6 +297,10 @@
 
           The maxmind-countries are optional and map the geoname-id to country \
           data.
+
+          Returns a vector of tuples. Each tuple is a vector with two items, \
+          the first being a parsed CIDR Java object and the second a map with \
+          the location information for the CIDR.
 
           maxmind-cities:
           { "2643743" {:country-iso "GB" :country-name "England"
