@@ -146,7 +146,9 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncMap putAll(final VncMap map) {
-		throw new VncException("not supported for custom types!");
+		// return a normal map because after putting fields the value
+		// will not comply anymore to the custom type contract
+		return values.putAll(map);
 	}
 
 	@Override
@@ -182,13 +184,17 @@ public class VncCustomType extends VncMap {
 	}
 
 	@Override
-	public VncCustomType dissoc(final VncVal... keys) {
-		throw new VncException("not supported for custom types!");
+	public VncMap dissoc(final VncVal... keys) {
+		// return a normal map because after removing a field the value
+		// will not comply anymore to the custom type contract
+		return values.dissoc(keys);
 	}
 
 	@Override
 	public VncMap dissoc(final VncSequence keys) {
-		throw new VncException("not supported for custom types!");
+		// return a normal map because after removing a field the value
+		// will not comply anymore to the custom type contract
+		return values.dissoc(keys); 
 	}
 
 	@Override
