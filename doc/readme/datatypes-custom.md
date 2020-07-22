@@ -64,7 +64,7 @@ can be applied:
 ```
 
 
-Modify fields with `assoc`
+Modify fields with `assoc`:
 
 ```clojure
 (do
@@ -75,7 +75,7 @@ Modify fields with `assoc`
 ```
 
 
-Remove fields with `dissoc`
+Remove fields with `dissoc`:
 
 ```clojure
 (do
@@ -87,20 +87,9 @@ Remove fields with `dissoc`
 
 `dissoc` on custom types will turn the custom type back into a standard map because the 
 resulting value will not comply with the custom types' rules anymore.
-
-
-Modify fields with `assoc`
-
-```clojure
-(do
-  (deftype :complex [real :long, imaginary :long])
-  (def x (complex. 100 200))
-  (def y (assoc x :real 110))
-  y)
-```
  
 
-The field type :any is representing any type
+The field type :any is representing any type:
 
 ```clojure
 (do
