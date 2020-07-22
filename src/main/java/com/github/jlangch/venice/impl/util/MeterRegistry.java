@@ -97,8 +97,16 @@ public class MeterRegistry implements Serializable {
 						.collect(Collectors.toList()));
 	}
 
-	public String getTimerDataFormatted(final String title) {
-		final Collection<Timer> data = getTimerData();
+	public String getTimerDataFormatted(
+			final String title, 
+			final boolean withAnonymousFunctions
+	) {
+		final Collection<Timer> data = withAnonymousFunctions 
+										? getTimerData()
+										: getTimerData()
+											.stream()
+											.filter(t -> !t.name.contains("anonymous-"))
+											.collect(Collectors.toList());
 		
 		final int maxNameLen = data
 								.stream()

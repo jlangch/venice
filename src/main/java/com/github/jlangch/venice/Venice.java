@@ -324,7 +324,7 @@ public class Venice {
 	}
 
 	public String getTimerDataFormatted(final String title) {
-		return meterRegistry.getTimerDataFormatted(title);
+		return meterRegistry.getTimerDataFormatted(title, false);
 	}
 	
 	

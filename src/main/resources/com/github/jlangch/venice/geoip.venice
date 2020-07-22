@@ -242,9 +242,6 @@
           Return:
             [["223.255.254.0/24" {:country-iso "SG" :country-name"Singapore"}]
              ["223.255.255.0/24" {:country-iso "AU" :country-name"Australia"}]]
-
-            [ ["223.255.254.0/24" { }]
-              ["223.252.128.0/19" { }] ]
           """
      :examples '(
            """
@@ -309,10 +306,10 @@
                                   :country-iso "CH" :country-name "Switzerland"
                                   :region "Aargau"  :city "Aarau"}]]
 
-            [ ["2c0f:fff0::/32" {:loc ["10.0000" "8.0000"]
-                                 :city-id "2643743"}]
-              ["2c0f:feb8::/32" {:loc ["-15.0000" "30.0000"]
-                                 :city-id "2661881"}] ]
+            [["2c0f:fff0::/32" {:loc ["10.0000" "8.0000"]
+                                :city-id "2643743"}]
+             ["2c0f:feb8::/32" {:loc ["-15.0000" "30.0000"]
+                                :city-id "2661881"}]]
           """
      :examples '(
            """
@@ -540,7 +537,9 @@
 ;; - private -------------------------------------------------------------------
 
 (defn- geoip/find-ip-country [ip ip-data]
-  (some (fn [x] (if (cidr/in-range? ip (first x)) (second x) nil)) ip-data))
+  (let [inet (cidr/inet-addr ip)]
+    (some (fn [x] (if (cidr/in-range? inet (first x)) (second x) nil)) 
+          ip-data)))
 
 
 (defn- geoip/parse-google-countries-csv [csv]

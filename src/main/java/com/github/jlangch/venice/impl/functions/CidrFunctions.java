@@ -143,7 +143,7 @@ public class CidrFunctions {
 				VncFunction
 					.meta()
 					.arglists("(cidr/inet-addr addr)")		
-					.doc("Converts an stringified IPv4 or IPv6 to a Java InetAddress.")
+					.doc("Converts a stringified IPv4 or IPv6 to a Java InetAddress.")
 					.examples(
 						"(cidr/inet-addr \"222.192.0.0\")",
 						"(cidr/inet-addr \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347\")")

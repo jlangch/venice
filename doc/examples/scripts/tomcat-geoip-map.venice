@@ -99,7 +99,7 @@
     ;;    { "196.52.43.56" 3 "178.197.226.244" 8 }
     (merge-freq-maps (flatten (map parse-log-file log-files))))
 
-  (defn map-to-location [ip-freq ip-loc-resolver]
+  (defn map-ip-to-location [ip-freq ip-loc-resolver]
     (let [ip (key ip-freq)
           data (ip-loc-resolver ip)]
       { :loc         (geoip/map-location-to-numerics (:loc data))
@@ -111,7 +111,7 @@
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
     (printf "Mapping %d IP addresses ...%n" (count ip-freq-map))
     (->> (entries ip-freq-map)
-         (map #(map-to-location % ip-loc-resolver))
+         (map #(map-ip-to-location % ip-loc-resolver)) ;; this is very slow
          (merge-ip-locations-by-country)
          (map #(let [[lat lon] (:loc %)
                      country   (:country-iso %)
