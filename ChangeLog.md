@@ -45,7 +45,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - macros to use the current namespace when expanding as opposed to functions
   that use the namespace they have defined in when executing the body.
 - the REPL to leave char escaping to the Venice Reader. Now (print "abc\ndef")  
-  works fine in the REPL too. No double escape (print "abc\\ndef") needed anymore.
+  works fine in the REPL too. No double escape (print "abc\\\ndef") needed anymore.
 - JLine3 from throwing an IllegalStateException in the REPL while an escaped 
   char is typed manually.
 
