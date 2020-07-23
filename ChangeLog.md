@@ -29,6 +29,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - custom types support to `assoc` to change one or multiple fields
 
+### Changed
+
+- GEOIP module internal data structures to optimize the number of processing
+  steps on the large MindMax databases. Location lookup for an IP address is
+  now 50x faster.
 
 
 ## [1.8.12] - 2020-07-20

@@ -279,9 +279,15 @@
                        (filter #(and (not (nil? (nth % 1)))
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
-    (map (juxt #(cidr/parse (first %))
-               #(get maxmind-countries (second %) {}))
-         ip-blocks)))
+    (apply merge-with into
+      (map (fn [x]
+             (let [cidr    (cidr/parse (first x))
+                   high    (->> (cidr/start-inet-addr cidr)
+                                (cidr/inet-addr-to-bytes)
+                                (first))
+                   country (get maxmind-countries (second x) {})]
+               { high [ [cidr country] ] }))
+           ip-blocks))))
 
 
 (defn
@@ -351,14 +357,28 @@
                        (filter #(and (not (nil? (nth % 1)))
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
+
     (if (some? maxmind-cities)
-      (map (juxt #(cidr/parse (first %))
-                 #(assoc (get maxmind-cities (nth % 1))
-                         :loc [(nth % 7) (nth % 8)]))
-           ip-blocks)
-      (map (juxt #(cidr/parse (first %))
-                 #(hash-map :loc [(nth % 7) (nth % 8)] :city-id (nth % 1)))
-           ip-blocks))))
+      (apply merge-with into
+        (map (fn [x]
+               (let [cidr (cidr/parse (first x))
+                     high (->> (cidr/start-inet-addr cidr)
+                               (cidr/inet-addr-to-bytes)
+                               (first))
+                     city (assoc (get maxmind-cities (second x))
+                                 :loc [(nth x 7) (nth x 8)])]
+                 { high [ [cidr city] ] }))
+             ip-blocks))
+       (apply merge-with into
+         (map (fn [x]
+                (let [cidr (cidr/parse (first x))
+                      high (->> (cidr/start-inet-addr cidr)
+                                (cidr/inet-addr-to-bytes)
+                                (first))
+                      city { :loc [(nth x 7) (nth x 8)]
+                             :city-id (second x) }]
+                  { high [ [cidr city] ] }))
+              ip-blocks)))))
 
 
 (defn
@@ -547,9 +567,11 @@
 ;; - private -------------------------------------------------------------------
 
 (defn- geoip/find-ip-country [ip ip-data]
-  (let [inet (cidr/inet-addr ip)]
+  (let [inet (cidr/inet-addr ip)
+        high (first (cidr/inet-addr-to-bytes inet))
+        block (get ip-data high [])]
     (some (fn [x] (if (cidr/in-range? inet (first x)) (second x) nil))
-          ip-data)))
+          block)))
 
 
 (defn- geoip/parse-google-countries-csv [csv]
