@@ -279,13 +279,9 @@
                        (filter #(and (not (nil? (nth % 1)))
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
-    (if (some? maxmind-countries)
-      (map (juxt #(cidr/parse (nth % 0))
-                 #(get maxmind-countries (nth % 1)))
-           ip-blocks)
-      (map (juxt #(cidr/parse (nth % 0))
-                 #(hash-map ))
-           ip-blocks))))
+    (map (juxt #(cidr/parse (first %))
+               #(get maxmind-countries (second %) {}))
+         ip-blocks)))
 
 
 (defn
@@ -356,11 +352,11 @@
                                      (= "0" (nth % 4))
                                      (= "0" (nth % 5)))))]
     (if (some? maxmind-cities)
-      (map (juxt #(cidr/parse (nth % 0))
+      (map (juxt #(cidr/parse (first %))
                  #(assoc (get maxmind-cities (nth % 1))
                          :loc [(nth % 7) (nth % 8)]))
            ip-blocks)
-      (map (juxt #(cidr/parse (nth % 0))
+      (map (juxt #(cidr/parse (first %))
                  #(hash-map :loc [(nth % 7) (nth % 8)] :city-id (nth % 1)))
            ip-blocks))))
 
