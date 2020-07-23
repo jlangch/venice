@@ -32,8 +32,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Changed
 
 - GEOIP module internal data structures to optimize the number of processing
-  steps on the large MindMax databases. Location lookup for an IP address is
-  now 50x faster.
+  steps on the large MindMax databases. Location lookup for an IP4 address is
+  now 50x faster. 
+  An IP4 lookup takes now ~21us on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
+  with a Java 8 server VM.
 
 
 ## [1.8.12] - 2020-07-20
