@@ -97,7 +97,7 @@ Remove fields with `dissoc`:
 ```
 
 _Note:_ `dissoc` on custom types will turn the custom type back into a standard map because the 
-resulting value will not comply with the custom types' rules anymore.
+resulting value will not comply with the custom type's rules anymore.
 
 
 ## Composing types with "OR"
