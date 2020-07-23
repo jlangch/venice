@@ -3807,12 +3807,24 @@ public class CoreFunctions {
 						return Nil;
 					}
 
-					for(VncVal v : coll.toVncList().getList()) {
+					List<VncVal> items;
+					if (coll instanceof VncSequence) {
+						items = ((VncSequence)coll).getList();
+					}
+					else if (coll instanceof VncSet) {
+						items = ((VncSet)coll).getList();
+					}
+					else {
+						items = coll.toVncList().getList();
+					}
+
+					for(VncVal v : items) {
 						final VncVal r = pred.apply(VncList.of(v));
 						if (!VncBoolean.isFalse(r) && r != Nil) {
 							return r;
 						}
 					}
+
 					return Nil;
 				}
 			}

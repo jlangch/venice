@@ -118,7 +118,7 @@
                                                      :memoize memoize-on)
         country-to-loc (geoip/country-to-location-resolver location-csv
                                                            :memoize memoize-on)
-        resolver       (fn resolve-ip-to-country-loc [ip]
+        resolver       (fn [ip]
                          (let [country (ip-to-country ip)]
                            (when (some? country)
                              (assoc country
@@ -171,7 +171,7 @@
         cities      (geoip/parse-maxmind-city-db geoip-zip)
         ip4-data    (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip nil)
         ip6-data    (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip nil)
-        resolver    (fn resolve-ip-to-city [ip]
+        resolver    (fn [ip]
                       (cond
                         (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
                         (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
@@ -206,7 +206,7 @@
   (let [options     (apply hash-map options)
         memoize-on  (:memoize options true)
         locations   (geoip/parse-google-countries-csv location-csv)
-        resolver    (fn resolve-country-to-location [country-iso]
+        resolver    (fn [country-iso]
                       (get locations country-iso))]
     (if memoize-on (memoize resolver) resolver)))
 
@@ -243,7 +243,7 @@
         countries   (geoip/parse-maxmind-country-db geoip-zip)
         ip4-data    (geoip/parse-maxmind-country-ip-db :IPv4 geoip-zip countries)
         ip6-data    (geoip/parse-maxmind-country-ip-db :IPv6 geoip-zip countries)
-        resolver    (fn resolve-ip-to-country [ip]
+        resolver    (fn [ip]
                       (cond
                         (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
                         (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)

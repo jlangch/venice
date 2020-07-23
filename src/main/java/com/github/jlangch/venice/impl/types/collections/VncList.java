@@ -154,7 +154,7 @@ public class VncList extends VncSequence {
 
 	@Override
 	public List<VncVal> getList() { 
-		return value.toJavaList(); 
+		return value.asJava(); // return an immutable view on top of Vector<VncVal>
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class VncList extends VncSequence {
 	@Override
 	public VncList rest() {
 		if (value.isEmpty()) {
-			return new VncTinyList(getMeta());
+			return this;
 		}
 		else {
 			final io.vavr.collection.Vector<VncVal> rest = value.tail();
@@ -211,7 +211,7 @@ public class VncList extends VncSequence {
 	@Override
 	public VncList butlast() {
 		if (value.isEmpty()) {
-			return new VncTinyList(getMeta());
+			return this;
 		}
 		else {
 			final io.vavr.collection.Vector<VncVal> butlast = value.dropRight(1);

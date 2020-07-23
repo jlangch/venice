@@ -34,40 +34,29 @@
     ;       caching
     ; this may take some time
     (println "Parsing MaxMind DB ...")
-    (geoip/ip-to-country-resolver maxmind-country-zip :memoize false)))
+    (geoip/ip-to-country-resolver maxmind-country-zip :memoize false))
+
+  (defn load-ip-addresses []
+    (->> (io/slurp ip-addresses-file :binary false)
+                          (str/split-lines)))
 
   (def resolver (create-resolver))
 
-  (def ip-addresses (->> (io/slurp ip-addresses-file :binary false)
-                        (str/split-lines)))
+  (def ip-addresses (load-ip-addresses))
 
   (defn lookup-ip [ip]
     (resolver ip))
 
-  (defn lookup-ip-list [ip-list]
-    (map resolver ip-list)
-    nil)
-
   (defn run []
-    (lookup-ip-list ip-addresses))
+    (map resolver ip-addresses)
+    nil)
 
   (when-not (io/exists-file? maxmind-country-zip)
     (throw (. :VncException :new
               (str "The MaxMind country file" maxmind-country-zip "does not exist!"))))
 
-  (when-not *macroexpand-on-load*
-    (println """
-
-             -------------------------------------------------------------------
-             Warning: macroexpand-on-load is not activated. To get a much better
-                      performance activate macroexpand-on-load before loading
-                      this script.
-
-                      From the REPL run: !macroexpand
-             -------------------------------------------------------------------
-             """))
-
   ; (test/lookup-ip "41.216.186.131")
+
   ; (perf (test/run) 20 1)
   ; (println (prof :data-formatted))
 )
