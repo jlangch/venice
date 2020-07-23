@@ -38,6 +38,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   with a Java 8 server VM.
 
 
+
 ## [1.8.12] - 2020-07-20
 
 ### Added

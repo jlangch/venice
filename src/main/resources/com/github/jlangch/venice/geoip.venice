@@ -244,10 +244,11 @@
                "51537" {:country-iso "SO" :country-name "Somalia"} }
 
           Return:
-            [[(cidr-parse "223.255.254.0/24") {:country-iso "SG"
-                                               :country-name"Singapore"}]
-             [(cidr-parse "223.255.255.0/24") {:country-iso "AU"
-                                               :country-name"Australia"}]]
+            { 223 [ [(cidr-parse "223.255.254.0/24") {:country-iso "SG"
+                                                      :country-name"Singapore"}]
+                    [(cidr-parse "223.255.255.0/24") {:country-iso "AU"
+                                                      :country-name"Australia"}]
+                  ] }
           """
      :examples '(
            """
@@ -311,21 +312,23 @@
                        :region "Aargau"  :city "Aarau"} }
 
           Return:
-            [[(cidr/parse "223.255.254.0/24") {:loc ["10.0000" "8.0000"]
-                                               :country-iso "GB"
-                                               :country-name "England"
-                                               :region "England"
-                                               :city "London"}]
-             [(cidr/parse "223.255.255.0/24") {:loc ["-15.0000" "30.0000"]
-                                               :country-iso "CH"
-                                               :country-name "Switzerland"
-                                               :region "Aargau"
-                                               :city "Aarau"}]]
+            { 223 [ [(cidr/parse "223.255.254.0/24") {:loc ["10.0000" "8.0000"]
+                                                      :country-iso "GB"
+                                                      :country-name "England"
+                                                      :region "England"
+                                                      :city "London"}]
+                    [(cidr/parse "223.255.255.0/24") {:loc ["-15.0000" "30.0000"]
+                                                      :country-iso "CH"
+                                                      :country-name "Switzerland"
+                                                      :region "Aargau"
+                                                      :city "Aarau"}]
+                  ] }
 
-            [[(cidr/parse "2c0f:fff0::/32") {:loc ["10.0000" "8.0000"]
-                                             :city-id "2643743"}]
-             [(cidr/parse "2c0f:feb8::/32") {:loc ["-15.0000" "30.0000"]
-                                             :city-id "2661881"}]]
+            {  45 [ [(cidr/parse "2c0f:fff0::/32") {:loc ["10.0000" "8.0000"]
+                                                    :city-id "2643743"}]
+                    [(cidr/parse "2c0f:feb8::/32") {:loc ["-15.0000" "30.0000"]
+                                                    :city-id "2661881"}] 
+                  ] }
           """
      :examples '(
            """
