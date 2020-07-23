@@ -1570,9 +1570,12 @@ public class DocGenerator {
 		all.addSection(cidr);
 		cidr.addItem(getDocItem("cidr/parse"));
 		cidr.addItem(getDocItem("cidr/in-range?"));
+		cidr.addItem(getDocItem("cidr/start-inet-addr"));
+		cidr.addItem(getDocItem("cidr/end-inet-addr"));
 		cidr.addItem(getDocItem("cidr/inet-addr"));
 		cidr.addItem(getDocItem("cidr/inet-addr-to-bytes"));
 		cidr.addItem(getDocItem("cidr/inet-addr-from-bytes"));
+		
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);

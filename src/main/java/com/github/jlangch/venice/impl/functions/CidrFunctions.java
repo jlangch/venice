@@ -139,6 +139,75 @@ public class CidrFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction start_inet_addr = 
+		new VncFunction(
+				"cidr/start-inet-addr", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/start-inet-addr cidr)")		
+					.doc("Returns the start inet address of a CIDR IP block.")
+					.examples(
+						"(cidr/start-inet-addr \"222.192.0.0/11\")",
+						"(cidr/start-inet-addr \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64\")",
+						"(cidr/start-inet-addr (cidr/parse \"222.192.0.0/11\"))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/start-inet-addr", args, 1);
+	
+				final VncVal arg = args.first();
+				if (Types.isVncJavaObject(arg, CIDR.class)) {
+					final CIDR cidr = (CIDR)((VncJavaObject)arg).getDelegate();
+					return new VncJavaObject(cidr.getStartInetAddress());
+				}
+				else if (Types.isVncString(arg)) {
+					final CIDR cidr = CIDR.parse(((VncString)arg).getValue());
+					return new VncJavaObject(cidr.getStartInetAddress());
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'cidr/start-inet-addr'",
+							Types.getType(arg)));
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction end_inet_addr = 
+			new VncFunction(
+					"cidr/end-inet-addr", 
+					VncFunction
+						.meta()
+						.arglists("(cidr/end-inet-addr cidr)")		
+						.doc("Returns the end inet address of a CIDR IP block.")
+						.examples(
+							"(cidr/end-inet-addr \"222.192.0.0/11\")",
+							"(cidr/end-inet-addr \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64\")",
+							"(cidr/end-inet-addr (cidr/parse \"222.192.0.0/11\"))")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertArity("cidr/end-inet-addr", args, 1);
+		
+					final VncVal arg = args.first();
+					if (Types.isVncJavaObject(arg, CIDR.class)) {
+						final CIDR cidr = (CIDR)((VncJavaObject)arg).getDelegate();
+						return new VncJavaObject(cidr.getEndInetAddress());
+					}
+					else if (Types.isVncString(arg)) {
+						final CIDR cidr = CIDR.parse(((VncString)arg).getValue());
+						return new VncJavaObject(cidr.getEndInetAddress());
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid argument type %s while calling function 'cidr/end-inet-addr'",
+								Types.getType(arg)));
+					}
+				}
+		
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
 		
 
 	///////////////////////////////////////////////////////////////////////////
@@ -179,27 +248,47 @@ public class CidrFunctions {
 				VncFunction
 					.meta()
 					.arglists("(cidr/inet-addr-to-bytes addr)")		
-					.doc("Converts a stringified IPv4 or IPv6 to an InetAddress byte vector.")
+					.doc(
+						"Converts a stringified IPv4/IPv6 address or a Java InetAddress " +
+						"to an InetAddress byte vector.")
 					.examples(
 						"(cidr/inet-addr-to-bytes \"222.192.12.0\")",
-						"(cidr/inet-addr-to-bytes \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347\")")
+						"(cidr/inet-addr-to-bytes \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347\")",
+						"(cidr/inet-addr-to-bytes (cidr/inet-addr \"222.192.0.0\"))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("cidr/inet-addr-to-bytes", args, 1);
-	
-				final String ip = Coerce.toVncString(args.first()).getValue();
-				
-				try {
-					final byte[] bytes = InetAddress.getByName(ip).getAddress();
+
+				final VncVal ip = args.first();
+
+				if (Types.isVncString(ip)) {
+					final String ip_ = ((VncString)ip).getValue();
+					try {
+						final byte[] bytes = InetAddress.getByName(ip_).getAddress();
+						final VncInteger[] ints = new VncInteger[bytes.length];
+						for(int ii=0; ii<bytes.length; ii++) {
+							ints[ii] = new VncInteger(Byte.toUnsignedInt(bytes[ii]));
+						}
+						return VncVector.of(ints);
+					}
+					catch(Exception ex) {
+						throw new VncException("Not an IP address: '" + ip_ + "'");
+					}
+				}
+				else if (Types.isVncJavaObject(ip, InetAddress.class)) {				
+					final InetAddress ip_ = (InetAddress)((VncJavaObject)ip).getDelegate();
+					final byte[] bytes = ip_.getAddress();
 					final VncInteger[] ints = new VncInteger[bytes.length];
 					for(int ii=0; ii<bytes.length; ii++) {
 						ints[ii] = new VncInteger(Byte.toUnsignedInt(bytes[ii]));
 					}
 					return VncVector.of(ints);
 				}
-				catch(Exception ex) {
-					throw new VncException("Not an IP address: '" + ip + "'");
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'cidr/in-range?'",
+							Types.getType(ip)));
 				}
 			}
 	
@@ -254,5 +343,8 @@ public class CidrFunctions {
 					.add(inet_addr)
 					.add(inet_addr_to_bytes)
 					.add(inet_addr_from_bytes)
+					.add(start_inet_addr)
+					.add(end_inet_addr)
+					
 					.toMap();	
 }

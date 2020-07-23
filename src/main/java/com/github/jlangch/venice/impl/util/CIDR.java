@@ -127,11 +127,19 @@ public class CIDR {
 		return cidr;
 	}
 	
-	public String getStartAddress() {
+	public InetAddress getStartInetAddress() {
+		return startAddress;
+	}
+
+	public InetAddress getEndInetAddress() {
+		return endAddress;
+	}
+	
+	public String getStartHostAddress() {
 		return startAddress.getHostAddress();
 	}
 
-	public String getEndAddress() {
+	public String getEndHostAddress() {
 		return endAddress.getHostAddress();
 	}
 
