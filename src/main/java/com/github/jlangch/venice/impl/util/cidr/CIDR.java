@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util;
+package com.github.jlangch.venice.impl.util.cidr;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -46,7 +46,7 @@ import com.github.jlangch.venice.VncException;
  *    System.out.println(cidr.toString());
  * </pre>
  */
-public class CIDR {
+public class CIDR implements Comparable<CIDR> {
 	
 	private CIDR(
 			final String cidr,
@@ -183,6 +183,50 @@ public class CIDR {
 		}
 	}
 		
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((highBigInt == null) ? 0 : highBigInt.hashCode());
+		result = prime * result + ((lowBigInt == null) ? 0 : lowBigInt.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CIDR other = (CIDR) obj;
+		if (highBigInt == null) {
+			if (other.highBigInt != null)
+				return false;
+		} else if (!highBigInt.equals(other.highBigInt))
+			return false;
+		if (lowBigInt == null) {
+			if (other.lowBigInt != null)
+				return false;
+		} else if (!lowBigInt.equals(other.lowBigInt))
+			return false;
+		return true;
+	}
+
+	@Override
+	public final int compareTo(final CIDR other) {
+		final int lowDiff = this.lowBigInt.compareTo(other.lowBigInt);
+		if (lowDiff != 0) {
+			return lowDiff;
+		}
+		final int highDiff = this.highBigInt.compareTo(other.highBigInt);
+		if (highDiff != 0) {
+			return -highDiff; // negative = widest first
+		}
+		return 0;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("%s: [%s .. %s]", cidr, lowInet, highInet);

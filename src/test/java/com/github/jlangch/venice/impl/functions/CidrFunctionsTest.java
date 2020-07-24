@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.util.CIDR;
+import com.github.jlangch.venice.impl.util.cidr.CIDR;
 
 
 public class CidrFunctionsTest {

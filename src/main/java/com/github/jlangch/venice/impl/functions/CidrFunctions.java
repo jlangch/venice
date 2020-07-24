@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.CIDR;
+import com.github.jlangch.venice.impl.util.cidr.CIDR;
 
 
 public class CidrFunctions {
