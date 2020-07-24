@@ -87,6 +87,7 @@ public abstract class VncFunction
 		this.fixedArgsCount = fixedArgs;
 		this.variadicArgs = variadic;
 		
+		this.anonymous = isAnonymousFuncName(simpleName);
 		this.macro = macro;
 
 		this.fnMeta.set(MetaUtil.setNamespace(meta, namespace));
@@ -132,6 +133,10 @@ public abstract class VncFunction
 	
 	public boolean isMacro() { 
 		return macro; 
+	}
+	
+	public boolean isAnonymous() { 
+		return anonymous; 
 	}
 	
 	@Override
@@ -224,6 +229,10 @@ public abstract class VncFunction
 				: "anonymous-" + name + "-" + UUID.randomUUID().toString();
 	}
 
+	public static boolean isAnonymousFuncName(final String name) {
+		return name == null || name.startsWith("anonymous-");
+	}
+
 	private static boolean isElisionSymbol(final VncVal val) {
 		return (val instanceof VncSymbol) && ((VncSymbol)val).getName().equals("&");
 	}
@@ -280,6 +289,7 @@ public abstract class VncFunction
 	private final int fixedArgsCount;
 	private final boolean variadicArgs;
 
+	private final boolean anonymous;
 	private final boolean macro;
 
 	// Functions handle its meta data locally (functions cannot be copied)

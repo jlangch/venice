@@ -358,6 +358,26 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction cpus =
+		new VncFunction(
+				"cpus",
+				VncFunction
+					.meta()
+					.arglists("(cpus)")
+					.doc(
+						"Returns the number of processors or number of hyperthrerads available.")
+					.examples("(cpus)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("cpus", args, 0);
+
+				return new VncLong(Runtime.getRuntime().availableProcessors());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction shutdown_hook =
 		new VncFunction(
 				"shutdown-hook",
@@ -825,6 +845,7 @@ public class SystemFunctions {
 					.add(host_name)
 					.add(host_address)
 					.add(gc)
+					.add(cpus)
 					.add(shutdown_hook)
 					.add(sandboxed_Q)
 					.add(sleep)

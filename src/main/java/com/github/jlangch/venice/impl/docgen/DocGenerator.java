@@ -897,6 +897,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("host-name"));
 		util.addItem(getDocItem("host-address"));
 		util.addItem(getDocItem("gc"));
+		util.addItem(getDocItem("cpus"));
 		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));
 

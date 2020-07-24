@@ -147,9 +147,13 @@ public class CIDR {
 		final BigInteger target = new BigInteger(1, ipAddress.getAddress());
 
 		final int st = startAddressBigInt.compareTo(target);
-		final int te = target.compareTo(endAddressBigInt);
-
-		return (st == -1 || st == 0) && (te == -1 || te == 0);
+		if (st <= 0) {
+			final int te = target.compareTo(endAddressBigInt);
+			return te <= 0;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	public boolean isInRange(final String ipAddress) {
