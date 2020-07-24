@@ -43,9 +43,9 @@ public class CidrFunctionsTest {
 		
 		assertEquals("222.192.0.0/11", cidr.getCidr());
 		
-		assertEquals("222.192.0.0", cidr.getStartHostAddress());
+		assertEquals("222.192.0.0", cidr.getLowHostAddress());
 		
-		assertEquals("222.223.255.255", cidr.getEndHostAddress());
+		assertEquals("222.223.255.255", cidr.getHighHostAddress());
 	}
 
 	@Test
@@ -59,9 +59,9 @@ public class CidrFunctionsTest {
 		
 		assertEquals("2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64", cidr.getCidr());
 		
-		assertEquals("2001:db8:85a3:8d3:0:0:0:0", cidr.getStartHostAddress());
+		assertEquals("2001:db8:85a3:8d3:0:0:0:0", cidr.getLowHostAddress());
 		
-		assertEquals("2001:db8:85a3:8d3:ffff:ffff:ffff:ffff", cidr.getEndHostAddress());
+		assertEquals("2001:db8:85a3:8d3:ffff:ffff:ffff:ffff", cidr.getHighHostAddress());
 	}
 
 	@Test

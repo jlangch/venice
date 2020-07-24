@@ -158,11 +158,11 @@ public class CidrFunctions {
 				final VncVal arg = args.first();
 				if (Types.isVncJavaObject(arg, CIDR.class)) {
 					final CIDR cidr = (CIDR)((VncJavaObject)arg).getDelegate();
-					return new VncJavaObject(cidr.getStartInetAddress());
+					return new VncJavaObject(cidr.getLowInetAddress());
 				}
 				else if (Types.isVncString(arg)) {
 					final CIDR cidr = CIDR.parse(((VncString)arg).getValue());
-					return new VncJavaObject(cidr.getStartInetAddress());
+					return new VncJavaObject(cidr.getLowInetAddress());
 				}
 				else {
 					throw new VncException(String.format(
@@ -193,11 +193,11 @@ public class CidrFunctions {
 					final VncVal arg = args.first();
 					if (Types.isVncJavaObject(arg, CIDR.class)) {
 						final CIDR cidr = (CIDR)((VncJavaObject)arg).getDelegate();
-						return new VncJavaObject(cidr.getEndInetAddress());
+						return new VncJavaObject(cidr.getHighInetAddress());
 					}
 					else if (Types.isVncString(arg)) {
 						final CIDR cidr = CIDR.parse(((VncString)arg).getValue());
-						return new VncJavaObject(cidr.getEndInetAddress());
+						return new VncJavaObject(cidr.getHighInetAddress());
 					}
 					else {
 						throw new VncException(String.format(

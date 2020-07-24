@@ -365,7 +365,8 @@ public class SystemFunctions {
 					.meta()
 					.arglists("(cpus)")
 					.doc(
-						"Returns the number of processors or number of hyperthrerads available.")
+						"Returns the number of available processors or number of " +
+						"hyperthreads if the CPU supportd hyperthreads.")
 					.examples("(cpus)")
 					.build()
 		) {
