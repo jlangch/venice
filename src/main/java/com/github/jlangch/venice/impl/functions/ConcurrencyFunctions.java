@@ -1176,7 +1176,7 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(future fn)")		
 					.doc(
-						"Takes a function and yields a future object that will " + 
+						"Takes a function without arguments and yields a future object that will " + 
 						"invoke the function in another thread, and will cache the result and " + 
 						"return it on all subsequent calls to deref. If the computation has " + 
 						"not yet finished, calls to deref will block, unless the variant of " + 
@@ -1185,10 +1185,16 @@ public class ConcurrencyFunctions {
 						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
 						"(do                                          \n" + 
-						"   (def wait (fn [] (do (sleep 500) 100)))   \n" + 
+						"   (def wait (fn [] (do (sleep 300) 100)))   \n" + 
 						"   (let [f (future wait)]                    \n" + 
 						"        (deref f)))                            ",
+
+						"(do                                                 \n" + 
+						"   (def wait (fn [x] (do (sleep 300) (+ x 100))))   \n" + 
+						"   (let [f (future (partial wait 10))]              \n" + 
+						"        (deref f)))                                   ",
 					
+
 						";; demonstrates the use of thread locals with futures              \n" +
 						"(do                                                                \n" +
 						"   ;; parent thread locals                                         \n" +
