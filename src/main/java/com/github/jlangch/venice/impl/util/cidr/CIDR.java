@@ -78,10 +78,7 @@ public class CIDR implements Comparable<CIDR> {
 		try {
 			final int index = cidr.indexOf("/");
 			final String addressPart = index < 0 ? cidr : cidr.substring(0, index);
-			final String cidrRangePart = index < 0 ? "32" : cidr.substring(index + 1);
-
 			final InetAddress inetAddress = InetAddress.getByName(addressPart);
-			final int cidrRange = Integer.parseInt(cidrRangePart); // number of leading 1-bits in the mask
 
 			ByteBuffer maskBuffer;
 			int targetSize;
@@ -97,6 +94,9 @@ public class CIDR implements Comparable<CIDR> {
 									   .putLong(-1L);
 				targetSize = 16;
 			}
+
+			final String cidrRangePart = index < 0 ? (targetSize == 4 ? "32" : "128") : cidr.substring(index + 1);
+			final int cidrRange = Integer.parseInt(cidrRangePart); // number of leading 1-bits in the mask
 
 			final BigInteger mask = new BigInteger(1, maskBuffer.array()).not().shiftRight(cidrRange);
 

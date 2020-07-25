@@ -27,8 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.util.cidr.CIDR;
-
 
 public class CIDRTest {
 
@@ -41,9 +39,13 @@ public class CIDRTest {
 		assertEquals("192.16.10.255", cidr.getHighHostAddress());
 		
 		assertFalse(cidr.isInRange("100.16.10.0"));
+		assertFalse(cidr.isInRange("192.16.9.254"));
+		assertFalse(cidr.isInRange("192.16.9.255"));
 		assertTrue(cidr.isInRange("192.16.10.0"));
 		assertTrue(cidr.isInRange("192.16.10.10"));
 		assertTrue(cidr.isInRange("192.16.10.255"));
+		assertFalse(cidr.isInRange("192.16.11.0"));
+		assertFalse(cidr.isInRange("192.16.11.1"));
 		assertFalse(cidr.isInRange("200.16.10.0"));
 	}
 
