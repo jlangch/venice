@@ -46,7 +46,7 @@ public class CidrTrie<V> {
 		acquireWriteLock();
 		
 		try {
-			final int ipBits = key.ipBits(); // IP4: 32, IP6: 128
+			final int ipBits = key.isIP4() ? 32 : 128;
 			final int highestBit = ipBits-1;
 			final int lowestBit = ipBits-key.getCidrRange();
 			
@@ -84,7 +84,7 @@ public class CidrTrie<V> {
 	}
 
 	public V get(final CIDR key) {
-		final int ipBits = key.ipBits(); // IP4: 32, IP6: 128
+		final int ipBits = key.isIP4() ? 32 : 128;
 		final int highestBit = ipBits-1;
 		final int lowestBit = ipBits-key.getCidrRange();
 

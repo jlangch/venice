@@ -25,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.InetAddress;
+
 import org.junit.jupiter.api.Test;
 
 
@@ -50,15 +52,61 @@ public class CIDRTest {
 	}
 
 	@Test
-	public void test() {
+	public void testToBinaryString() throws Exception{
+		assertEquals(
+				"00000000 00000000 00000000 00000000", 
+				CIDR.toBinaryString(InetAddress.getByName("0.0.0.0"), true));
+
+		assertEquals(
+				"00000000 00000000 00000000 00000001", 
+				CIDR.toBinaryString(InetAddress.getByName("0.0.0.1"), true));
+
+		assertEquals(
+				"11000000 00010000 00001010 00000000", 
+				CIDR.toBinaryString(InetAddress.getByName("192.16.10.0"), true));
+		
+		assertEquals(
+				"11111111 11111111 11111111 11111110", 
+				CIDR.toBinaryString(InetAddress.getByName("255.255.255.254"), true));
+		
+		assertEquals(
+				"11111111 11111111 11111111 11111111", 
+				CIDR.toBinaryString(InetAddress.getByName("255.255.255.255"), true));
+
+	
+		assertEquals(
+				"00000000000000000000000000000000", 
+				CIDR.toBinaryString(InetAddress.getByName("0.0.0.0"), false));
+
+		assertEquals(
+				"00000000000000000000000000000001", 
+				CIDR.toBinaryString(InetAddress.getByName("0.0.0.1"), false));
+
+		assertEquals(
+				"11000000000100000000101000000000", 
+				CIDR.toBinaryString(InetAddress.getByName("192.16.10.0"), false));
+		
+		assertEquals(
+				"11111111111111111111111111111110", 
+				CIDR.toBinaryString(InetAddress.getByName("255.255.255.254"), false));
+		
+		assertEquals(
+				"11111111111111111111111111111111", 
+				CIDR.toBinaryString(InetAddress.getByName("255.255.255.255"), false));
+	}
+
+	@Test
+	public void testGetLowAddressBit() {
 		final CIDR cidr = CIDR.parse("192.16.10.0/24");
 			
 		assertEquals(24, cidr.getCidrRange());
-		
+
+		final int ipBits = cidr.isIP4() ? 32 : 128;
+
 		final StringBuilder sb = new StringBuilder();
-		for(int ii=cidr.ipBits()-1; ii>=0; ii--) {
-			sb.append(cidr.getLowAddressBit(ii) ? "1" : "0");
-			if (ii>0 && ii % 8 == 0) sb.append(" ");
+		for(int bit=ipBits-1; bit>=0; bit--) {
+			sb.append(cidr.getLowAddressBit(bit) ? "1" : "0");
+			if (bit>0 && bit % 8 == 0) sb.append(" ");
 		}
 		
 		assertEquals("11000000 00010000 00001010 00000000", sb.toString());

@@ -148,10 +148,6 @@ public class CIDR implements Comparable<CIDR> {
 	public boolean isIP4() {
 		return ip4;
 	}
-	
-	public int ipBits() {
-		return ip4 ? 32 : 128;
-	}
 
     public boolean getLowAddressBit(final int n) {
         return lowBigInt.testBit(n);
@@ -232,11 +228,18 @@ public class CIDR implements Comparable<CIDR> {
 		return String.format("%s: [%s .. %s]", cidr, lowInet, highInet);
 	}
 	
-	public static String toBinaryString(final BigInteger bigint, final int nBits) {
+	public static String toBinaryString(final InetAddress inet, final boolean octetSpacing) {
+		final byte[] bytes = inet.getAddress();
+		
 		final StringBuilder sb = new StringBuilder();
-		for(int ii=nBits-1; ii>=0; ii--) {
-			sb.append(bigint.testBit(ii) ? "1" : "0");
-			if (ii>0 && ii % 8 == 0) sb.append(" ");
+		for(int ii=0; ii<bytes.length; ii++) {
+			int b = bytes[ii] & 0xff;
+			
+			if (octetSpacing && ii>0) sb.append(" ");
+		
+			final String s = Integer.toString(b, 2);
+			for(int jj=s.length(); jj<8; jj++) sb.append('0');
+			sb.append(s);
 		}
 		return sb.toString();
 	}
