@@ -41,8 +41,10 @@ public class CidrFunctionsTest {
 
 		final CIDR cidr = (CIDR)venice.eval(script);
 		
-		assertEquals("222.192.0.0/11", cidr.getCidr());
-		
+		assertEquals("222.192.0.0/11", cidr.getNotation());
+
+		assertEquals(11, cidr.getRange());
+
 		assertEquals("222.192.0.0", cidr.getLowHostAddress());
 		
 		assertEquals("222.223.255.255", cidr.getHighHostAddress());
@@ -57,7 +59,9 @@ public class CidrFunctionsTest {
 
 		final CIDR cidr = (CIDR)venice.eval(script);
 		
-		assertEquals("2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64", cidr.getCidr());
+		assertEquals("2001:0db8:85a3:08d3:1319:8a2e:0370:7347/64", cidr.getNotation());
+
+		assertEquals(64, cidr.getRange());
 		
 		assertEquals("2001:db8:85a3:8d3:0:0:0:0", cidr.getLowHostAddress());
 		

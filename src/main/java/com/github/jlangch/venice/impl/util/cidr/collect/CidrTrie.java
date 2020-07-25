@@ -50,7 +50,7 @@ public class CidrTrie<V> {
 		try {
 			final int ipBits = key.isIP4() ? 32 : 128;
 			final int highestBit = ipBits-1;
-			final int lowestBit = ipBits-key.getCidrRange();
+			final int lowestBit = ipBits-key.getRange();
 			
 			CidrTrieNode<V> current = root;
 			String prefix = "";
@@ -127,7 +127,7 @@ public class CidrTrie<V> {
 	private CidrTrieNode<V> getNode(final CIDR key) {
 		final int ipBits = key.isIP4() ? 32 : 128;
 		final int highestBit = ipBits-1;
-		final int lowestBit = ipBits-key.getCidrRange();
+		final int lowestBit = ipBits-key.getRange();
 
 		CidrTrieNode<V> current = root;
 		CidrTrieNode<V> lastValueNode = null;

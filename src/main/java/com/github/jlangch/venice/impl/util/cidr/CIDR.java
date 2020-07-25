@@ -49,13 +49,13 @@ import com.github.jlangch.venice.VncException;
 public class CIDR implements Comparable<CIDR> {
 	
 	private CIDR(
-			final String cidr,
+			final String cidrNotation,
 			final int cidrRange,
 			final InetAddress startAddress,
 			final InetAddress endAddress,
 			final boolean ip4
 	) {
-		this.cidr = cidr;
+		this.cidrNotation = cidrNotation;
 		this.cidrRange = cidrRange;
 		this.ip4 = ip4;
 
@@ -121,11 +121,11 @@ public class CIDR implements Comparable<CIDR> {
 	}
 
 
-	public String getCidr() {
-		return cidr;
+	public String getNotation() {
+		return cidrNotation;
 	}
 
-	public int getCidrRange() {
+	public int getRange() {
 		return cidrRange;
 	}
 	
@@ -225,7 +225,7 @@ public class CIDR implements Comparable<CIDR> {
 
 	@Override
 	public String toString() {
-		return String.format("%s: [%s .. %s]", cidr, lowInet, highInet);
+		return String.format("%s: [%s .. %s]", cidrNotation, lowInet, highInet);
 	}
 	
 	public static String toBinaryString(final InetAddress inet, final boolean octetSpacing) {
@@ -256,7 +256,7 @@ public class CIDR implements Comparable<CIDR> {
 	
 	
 	
-	private final String cidr;
+	private final String cidrNotation;
 	private final int cidrRange;
 	private final boolean ip4;
 	

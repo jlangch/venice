@@ -39,7 +39,7 @@ public class Ip4CidrTrieTest {
 
 		final CIDR cidr = CIDR.parse("192.16.10.0/24");
 		
-		trie.insert(cidr, cidr.getCidr());
+		trie.insert(cidr, cidr.getNotation());
 
 		assertEquals(1, trie.size());
 
@@ -47,7 +47,7 @@ public class Ip4CidrTrieTest {
 		assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.100")));
 		assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.255")));
 
-		assertEquals("192.16.10.0/24", trie.getCIDR("192.16.10.100").getCidr());
+		assertEquals("192.16.10.0/24", trie.getCIDR("192.16.10.100").getNotation());
 		
 		assertNull(trie.getValue(CIDR.parse("0.0.0.0")));
 		assertNull(trie.getValue(CIDR.parse("20.10.0.0")));

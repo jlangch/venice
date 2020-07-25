@@ -99,7 +99,7 @@ public class CIDRTest {
 	public void testGetLowAddressBit() {
 		final CIDR cidr = CIDR.parse("192.16.10.0/24");
 			
-		assertEquals(24, cidr.getCidrRange());
+		assertEquals(24, cidr.getRange());
 
 		final int ipBits = cidr.isIP4() ? 32 : 128;
 

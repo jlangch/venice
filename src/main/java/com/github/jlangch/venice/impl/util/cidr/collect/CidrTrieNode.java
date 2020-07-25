@@ -96,7 +96,7 @@ public class CidrTrieNode<V> {
 		  .append(prefix)
 		  .append('"')
 		  .append(", ")
-		  .append(key == null ? "<null>" : key.getCidr())
+		  .append(key == null ? "<null>" : key.getNotation())
 		  .append(", [")
 		  .append(children.get(0) != null ? "+" : "-")
 		  .append(",")
