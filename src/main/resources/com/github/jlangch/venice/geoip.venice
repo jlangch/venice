@@ -92,9 +92,6 @@
 
           The resolver loads the MindMax IPv4 and IPv6 country and the Google \
           country database and caches the data for IP address resolves.
-
-          Options:
-            :memoize true/false  Memoize the lookup. Defaults to true.
           """
      :examples '(
            """
@@ -110,21 +107,17 @@
            """
            ) }
 
-  geoip/ip-to-country-loc-resolver [geoip-zip location-csv & options]
+  geoip/ip-to-country-loc-resolver [geoip-zip location-csv]
 
-  (let [options        (apply hash-map options)
-        memoize-on     (:memoize options true)
-        ip-to-country  (geoip/ip-to-country-resolver geoip-zip
-                                                     :memoize memoize-on)
-        country-to-loc (geoip/country-to-location-resolver location-csv
-                                                           :memoize memoize-on)
+  (let [ip-to-country  (geoip/ip-to-country-resolver geoip-zip)
+        country-to-loc (geoip/country-to-location-resolver location-csv)
         resolver       (fn [ip]
                          (let [country (ip-to-country ip)]
                            (when (some? country)
                              (assoc country
                                     :ip ip
                                     :loc (country-to-loc (:country-iso country))))))]
-    (if memoize-on (memoize resolver) resolver)))
+    resolver))
 
 
 (defn
@@ -140,9 +133,6 @@
 
           The resolver loads the MindMax IPv4 and IPv6 city database and \
           caches the data for IP address resolves.
-
-          Options:
-            :memoize true/false  Memoize the lookup. Defaults to true.
 
           Note:
           The MaxMind city IPv4 and IPv6 databases have 200MB of size. It \
@@ -166,17 +156,15 @@
 
   geoip/ip-to-city-loc-resolver [geoip-zip location-csv & options]
 
-  (let [options     (apply hash-map options)
-        memoize-on  (:memoize options true)
-        cities      (geoip/parse-maxmind-city-db geoip-zip)
-        ip4-data    (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip nil)
-        ip6-data    (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip nil)
+  (let [cities      (geoip/parse-maxmind-city-db geoip-zip)
+        ip4-trie    (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip nil)
+        ip6-trie    (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip nil)
         resolver    (fn [ip]
                       (cond
-                        (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
-                        (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
+                        (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
+                        (geoip/ip6? ip) (cidr/lookup ip6-trie ip)
                         :else nil))]
-    (if memoize-on (memoize resolver) resolver)))
+    resolver))
 
 
 (defn
@@ -189,9 +177,6 @@
 
           The resolver loads Google country database and caches the data \
           for location resolves.
-
-          Options:
-            :memoize true/false  Memoize the lookup. Defaults to true.
           """
      :examples '(
            """
@@ -201,14 +186,11 @@
            """
            ) }
 
-  geoip/country-to-location-resolver [location-csv & options]
+  geoip/country-to-location-resolver [location-csv]
 
-  (let [options     (apply hash-map options)
-        memoize-on  (:memoize options true)
-        locations   (geoip/parse-google-countries-csv location-csv)
-        resolver    (fn [country-iso]
-                      (get locations country-iso))]
-    (if memoize-on (memoize resolver) resolver)))
+  (let [locations   (geoip/parse-google-countries-csv location-csv)
+        resolver    (fn [country-iso] (get locations country-iso))]
+    resolver))
 
 
 (defn
@@ -223,9 +205,6 @@
 
           The resolver loads the MindMax IPv4 and IPv6 country databases and \
           caches the data for subsequent IP resolves.
-
-          Options:
-            :memoize true/false  Memoize the lookup. Defaults to true.
           """
      :examples '(
            """
@@ -236,19 +215,17 @@
            """
            ) }
 
-  geoip/ip-to-country-resolver [geoip-zip & options]
+  geoip/ip-to-country-resolver [geoip-zip]
 
-  (let [options     (apply hash-map options)
-        memoize-on  (:memoize options true)
-        countries   (geoip/parse-maxmind-country-db geoip-zip)
-        ip4-data    (geoip/parse-maxmind-country-ip-db :IPv4 geoip-zip countries)
-        ip6-data    (geoip/parse-maxmind-country-ip-db :IPv6 geoip-zip countries)
+  (let [countries   (geoip/parse-maxmind-country-db geoip-zip)
+        ip4-trie    (geoip/parse-maxmind-country-ip-db :IPv4 geoip-zip countries)
+        ip6-trie    (geoip/parse-maxmind-country-ip-db :IPv6 geoip-zip countries)
         resolver    (fn [ip]
                       (cond
-                        (geoip/ip4? ip) (geoip/find-ip-country ip ip4-data)
-                        (geoip/ip6? ip) (geoip/find-ip-country ip ip6-data)
+                        (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
+                        (geoip/ip6? ip) (cidr/lookup ip6-trie ip)
                         :else nil))]
-    (if memoize-on (memoize resolver) resolver)))
+    resolver))
 
 
 (defn
@@ -301,20 +278,18 @@
   (let [zip-entry-name (if (= ip-type :IPv6)
                            "GeoLite2-Country-Blocks-IPv6.csv"
                            "GeoLite2-Country-Blocks-IPv4.csv")
-        ip-blocks (->> (geoip/unzip-entry zip zip-entry-name)
-                       (csv/read)
-                       (filter #(and (not (nil? (nth % 1)))
-                                     (= "0" (nth % 4))
-                                     (= "0" (nth % 5)))))]
-    (apply merge-with into
-      (map (fn [x]
-             (let [cidr    (cidr/parse (first x))
-                   high    (->> (cidr/start-inet-addr cidr)
-                                (cidr/inet-addr-to-bytes)
-                                (first))
-                   country (get maxmind-countries (second x) {})]
-               { high [ [cidr country] ] }))
-           ip-blocks))))
+        ip-blocks      (->> (geoip/unzip-entry zip zip-entry-name)
+                            (csv/read)
+                            (filter #(and (not (nil? (nth % 1)))
+                                          (= "0" (nth % 4))
+                                          (= "0" (nth % 5)))))
+        trie           (cidr/trie)]
+    (docoll (fn [x] (cidr/insert
+                        trie
+                        (cidr/parse (first x))
+                        (get maxmind-countries (second x) {})))
+            ip-blocks)
+    trie))
 
 
 (defn
@@ -381,33 +356,25 @@
   (let [zip-entry-name (if (= ip-type :IPv6)
                            "GeoLite2-City-Blocks-IPv6.csv"
                            "GeoLite2-City-Blocks-IPv4.csv")
-        ip-blocks (->> (geoip/unzip-entry zip zip-entry-name)
-                       (csv/read)
-                       (filter #(and (not (nil? (nth % 1)))
-                                     (= "0" (nth % 4))
-                                     (= "0" (nth % 5)))))]
+        ip-blocks      (->> (geoip/unzip-entry zip zip-entry-name)
+                            (csv/read)
+                            (filter #(and (not (nil? (nth % 1)))
+                                          (= "0" (nth % 4))
+                                          (= "0" (nth % 5)))))
+        trie           (cidr/trie)]
 
     (if (some? maxmind-cities)
-      (apply merge-with into
-        (map (fn [x]
-               (let [cidr (cidr/parse (first x))
-                     high (->> (cidr/start-inet-addr cidr)
-                               (cidr/inet-addr-to-bytes)
-                               (first))
-                     city (assoc (get maxmind-cities (second x))
-                                 :loc [(nth x 7) (nth x 8)])]
-                 { high [ [cidr city] ] }))
-             ip-blocks))
-       (apply merge-with into
-         (map (fn [x]
-                (let [cidr (cidr/parse (first x))
-                      high (->> (cidr/start-inet-addr cidr)
-                                (cidr/inet-addr-to-bytes)
-                                (first))
-                      city { :loc [(nth x 7) (nth x 8)]
-                             :city-id (second x) }]
-                  { high [ [cidr city] ] }))
-              ip-blocks)))))
+      (docoll (fn [x] (cidr/insert trie
+                                   (cidr/parse (first x))
+                                   (assoc (get maxmind-cities (second x))
+                                          :loc [(nth x 7) (nth x 8)])))
+              ip-blocks)
+      (docoll (fn [x] (cidr/insert trie
+                                   (cidr/parse (first x))
+                                   { :loc [(nth x 7) (nth x 8)]
+                                     :city-id (second x) }))
+              ip-blocks))
+    trie))
 
 
 (defn

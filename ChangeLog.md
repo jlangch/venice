@@ -29,11 +29,14 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - custom types support to `assoc` to change one or multiple fields
 
-### Changed
+### Performance
 
-- GEOIP module internal data structures to optimize the number of processing
-  steps on the large MindMax databases. Location lookup for an IP4 address is
-  now 30x faster.
+- The GEOIP module country lookup is now lightning fast. A country lookup for an IP4 
+  address on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) takes 700ns - 800ns
+  based on actual MaxMind data. It is that fast, it even outperforms memoization!
+  Venice uses now an ultra-fast trie concurrent data structure to store
+  CIDR / country relations and do IP lookups. This impressively demonstrates the 
+  power of trie data structures used for this kind of problems.
 
 
 

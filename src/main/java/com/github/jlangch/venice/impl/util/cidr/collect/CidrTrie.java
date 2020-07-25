@@ -65,7 +65,7 @@ public class CidrTrie<V> {
 				current = child;
 			}
 			
-			// create/update data node
+			// create or update the data node
 			final boolean isLeft = !key.getLowAddressBit(lowestBit);
 			prefix = prefix + (isLeft ? "0" : "1");
 			CidrTrieNode<V> child = current.getChild(isLeft);
@@ -75,6 +75,7 @@ public class CidrTrie<V> {
 				current.setChild(isLeft, child);
 			}
 			else {
+				// update date node
 				current.setChild(isLeft, child.withData(key, value));
 			}
 		}

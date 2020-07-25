@@ -34,26 +34,40 @@
     ;       caching
     ; this may take some time
     (println "Parsing MaxMind DB ...")
-    (geoip/ip-to-country-resolver maxmind-country-zip :memoize false))
+    (geoip/ip-to-country-resolver maxmind-country-zip))
 
   (defn load-ip-addresses []
     (->> (io/slurp ip-addresses-file :binary false)
-                          (str/split-lines)))
+         (str/split-lines)))
 
   (def resolver (create-resolver))
 
   (def ip-addresses (load-ip-addresses))
 
+  (defn process [ip-addresses]
+    (map resolver ip-addresses))
+
   (defn lookup-ip [ip]
     (resolver ip))
 
   (defn run []
-    (map resolver ip-addresses)
+    (process ip-addresses)
     nil)
 
-  (when-not (io/exists-file? maxmind-country-zip)
-    (throw (. :VncException :new
-              (str "The MaxMind country file" maxmind-country-zip "does not exist!"))))
+  (defn run-parallel []
+    (let [threads (max 1 (/ (cpus) 2))
+          work    (partition threads ip-addresses)
+          futures (map #(future (partial process %)) work)]
+      (map deref futures)
+      nil))
+
+  ; Performance:  calling function 'test/process' with 974 IP addresses
+  ;               Activate macroexpansion in the REPL to run the tests!
+  ;
+  ;               Venice  threads  time per IP  perf test
+  ;               ------  -------  -----------  --------------------------
+  ;               1.8.13     1         14us     (perf (test/run) 0 1)
+  ;               1.8.13     1        2.6us     (perf (test/run) 2000 1000)
 
   ; (test/lookup-ip "41.216.186.131")
 

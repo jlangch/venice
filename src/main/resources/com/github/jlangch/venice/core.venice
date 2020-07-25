@@ -1129,7 +1129,12 @@
 
 (defn
   ^{ :arglists '("(memoize f)")
-     :doc "Returns a memoized version of a referentially transparent function."
+     :doc """
+          Returns a memoized version of a referentially transparent function.
+
+          Note: Use memoization for expensive calculations. It does not speed
+                up fast function calculations, it can slow them down actually!
+          """
      :examples (list
           """
           (do
