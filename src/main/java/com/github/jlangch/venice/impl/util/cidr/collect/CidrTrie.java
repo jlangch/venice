@@ -91,60 +91,20 @@ public class CidrTrie<V> {
 	}
 
 	public V getValue(final String ipAddr) {
-		return getValue(CIDR.parse(ipAddr));
+		final CidrTrieNode<V> node = getNode(CIDR.parse(ipAddr));	
+		return node == null ? null : node.getValue();
 	}
 	
 	public V getValue(final CIDR key) {
-		final int ipBits = key.isIP4() ? 32 : 128;
-		final int highestBit = ipBits-1;
-		final int lowestBit = ipBits-key.getCidrRange();
-
-		CidrTrieNode<V> current = root;
-		CidrTrieNode<V> lastDataNode = null;
-		
-		// traverse nodes and capture the last data node
-		for(int bit=highestBit; bit>=lowestBit; bit--) {
-			final boolean isLeft = !key.getLowAddressBit(bit);
-			CidrTrieNode<V> child = current.getChild(isLeft);
-			if (child != null) {
-				if (child.hasValue()) {
-					lastDataNode = child;
-				}
-				current = child;
-			}
-			else {
-				break;
-			}
-		}
-
-		return lastDataNode == null ? null : lastDataNode.getValue();
+		final CidrTrieNode<V> node = getNode(key);	
+		return node == null ? null : node.getValue();
 	}
 
 	public CIDR getCIDR(final String ipAddr) {
 		final CIDR key = CIDR.parse(ipAddr);
-		final int ipBits = key.isIP4() ? 32 : 128;
-		final int highestBit = ipBits-1;
-		final int lowestBit = ipBits-key.getCidrRange();
-
-		CidrTrieNode<V> current = root;
-		CidrTrieNode<V> lastDataNode = null;
 		
-		// traverse nodes and capture the last data node
-		for(int bit=highestBit; bit>=lowestBit; bit--) {
-			final boolean isLeft = !key.getLowAddressBit(bit);
-			CidrTrieNode<V> child = current.getChild(isLeft);
-			if (child != null) {
-				if (child.hasValue()) {
-					lastDataNode = child;
-				}
-				current = child;
-			}
-			else {
-				break;
-			}
-		}
-
-		return lastDataNode == null ? null : lastDataNode.getKey();
+		final CidrTrieNode<V> node = getNode(key);	
+		return node == null ? null : node.getKey();
 	}
 
 	public void clear() {
@@ -163,6 +123,32 @@ public class CidrTrie<V> {
 		return size.get();
 	}
 	
+	
+	private CidrTrieNode<V> getNode(final CIDR key) {
+		final int ipBits = key.isIP4() ? 32 : 128;
+		final int highestBit = ipBits-1;
+		final int lowestBit = ipBits-key.getCidrRange();
+
+		CidrTrieNode<V> current = root;
+		CidrTrieNode<V> lastValueNode = null;
+		
+		// traverse nodes and capture the last data node
+		for(int bit=highestBit; bit>=lowestBit; bit--) {
+			final boolean isLeft = !key.getLowAddressBit(bit);
+			final CidrTrieNode<V> child = current.getChild(isLeft);
+			if (child != null) {
+				if (child.hasValue()) {
+					lastValueNode = child;
+				}
+				current = child;
+			}
+			else {
+				break;
+			}
+		}
+
+		return lastValueNode;
+	}
 	
 	private void acquireWriteLock() {
 		writeLock.lock();
