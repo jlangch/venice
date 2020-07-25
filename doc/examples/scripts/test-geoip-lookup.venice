@@ -30,8 +30,6 @@
   (def ip-addresses-file "resources/ip-addresses.txt")
 
   (defn create-resolver []
-    ; note: turn memoization off otherwise we just test the ip lookup
-    ;       caching
     ; this may take some time
     (println "Parsing MaxMind DB ...")
     (geoip/ip-to-country-resolver maxmind-country-zip))

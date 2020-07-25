@@ -1577,6 +1577,14 @@ public class DocGenerator {
 		cidr.addItem(getDocItem("cidr/inet-addr-to-bytes"));
 		cidr.addItem(getDocItem("cidr/inet-addr-from-bytes"));
 		
+		final DocSection cidr_trie = new DocSection("CIDR Trie");
+		all.addSection(cidr_trie);
+		cidr_trie.addItem(getDocItem("cidr/trie"));
+		cidr_trie.addItem(getDocItem("cidr/size"));
+		cidr_trie.addItem(getDocItem("cidr/insert"));
+		cidr_trie.addItem(getDocItem("cidr/lookup"));
+		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
+		
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);

@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.cidr.collect;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -74,6 +75,10 @@ public class CidrTrie<V> {
 				// a new date node
 				child = new CidrTrieNode<>(prefix, key, value);
 				current.setChild(isLeft, child);
+				
+				if (value != null) {
+					size.incrementAndGet();
+				}
 			}
 			else {
 				// update date node
@@ -85,7 +90,11 @@ public class CidrTrie<V> {
 		}
 	}
 
-	public V get(final CIDR key) {
+	public V getValue(final String ipAddr) {
+		return getValue(CIDR.parse(ipAddr));
+	}
+	
+	public V getValue(final CIDR key) {
 		final int ipBits = key.isIP4() ? 32 : 128;
 		final int highestBit = ipBits-1;
 		final int lowestBit = ipBits-key.getCidrRange();
@@ -111,7 +120,50 @@ public class CidrTrie<V> {
 		return lastDataNode == null ? null : lastDataNode.getValue();
 	}
 
+	public CIDR getCIDR(final String ipAddr) {
+		final CIDR key = CIDR.parse(ipAddr);
+		final int ipBits = key.isIP4() ? 32 : 128;
+		final int highestBit = ipBits-1;
+		final int lowestBit = ipBits-key.getCidrRange();
 
+		CidrTrieNode<V> current = root;
+		CidrTrieNode<V> lastDataNode = null;
+		
+		// traverse nodes and capture the last data node
+		for(int bit=highestBit; bit>=lowestBit; bit--) {
+			final boolean isLeft = !key.getLowAddressBit(bit);
+			CidrTrieNode<V> child = current.getChild(isLeft);
+			if (child != null) {
+				if (child.hasValue()) {
+					lastDataNode = child;
+				}
+				current = child;
+			}
+			else {
+				break;
+			}
+		}
+
+		return lastDataNode == null ? null : lastDataNode.getKey();
+	}
+
+	public void clear() {
+		acquireWriteLock();
+		
+		try {
+			root = new CidrTrieNode<>();
+			size.set(0);
+		}
+		finally {
+			releaseWriteLock();
+		}
+	}
+
+	public int size() {
+		return size.get();
+	}
+	
+	
 	private void acquireWriteLock() {
 		writeLock.lock();
     }
@@ -122,6 +174,8 @@ public class CidrTrie<V> {
 	
 	
 	private volatile CidrTrieNode<V> root = new CidrTrieNode<>();
+	
+	private final AtomicInteger size = new AtomicInteger(0);
 	
 	// Write operations acquire write lock, read operations are lock-free.
 	private final Lock writeLock = new ReentrantLock();
