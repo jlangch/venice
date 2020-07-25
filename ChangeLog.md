@@ -33,7 +33,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - The GEOIP module country lookup is now lightning fast. A country lookup for an IP4 
   address on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) takes 700ns - 800ns
-  based on actual MaxMind data. It is that fast, it even outperforms memoization!
+  based on actual MaxMind data.
   Venice uses now an ultra-fast trie concurrent data structure to store
   CIDR / country relations and do IP lookups. This impressively demonstrates the 
   power of trie data structures used for this kind of problems.
