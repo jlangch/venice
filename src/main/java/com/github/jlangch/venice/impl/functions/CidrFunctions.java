@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -39,6 +40,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.cidr.CIDR;
+import com.github.jlangch.venice.impl.util.cidr.collect.CidrTrie;
 
 
 public class CidrFunctions {
@@ -208,8 +210,114 @@ public class CidrFunctions {
 		
 				private static final long serialVersionUID = -1848883965231344442L;
 			};
-		
 
+			
+
+	///////////////////////////////////////////////////////////////////////////
+	// Trie
+	///////////////////////////////////////////////////////////////////////////
+			
+	public static VncFunction trie = 
+		new VncFunction(
+				"cidr/trie", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/trie)")		
+					.doc("Create a new mutable concurrent CIDR trie.")
+					.examples(
+						"(do                                                \n" +
+					    "  (let [trie (cidr/trie)]                          \n" +
+						"    (cidr/insert trie                              \n" +
+						"                 (cidr/parse \"192.16.10.0/24\")   \n" +
+						"                 \"Germany\")                      \n" +
+						"    (cidr/lookup trie \"192.16.10.15\")))            ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/trie", args, 0);
+	
+				return new VncJavaObject(new CidrTrie<VncVal>());
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction insert = 
+		new VncFunction(
+				"cidr/insert", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/insert)")		
+					.doc("Insert a new CIDR into trie")
+					.examples(
+						"(do                                                \n" +
+					    "  (let [trie (cidr/trie)]                          \n" +
+						"    (cidr/insert trie                              \n" +
+						"                 (cidr/parse \"192.16.10.0/24\")   \n" +
+						"                 \"Germany\")                      \n" +
+						"    (cidr/lookup trie \"192.16.10.15\")))            ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/insert", args, 3);
+	
+				@SuppressWarnings("unchecked")
+				final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(args.first(), CidrTrie.class);
+
+				final CIDR cidr = Coerce.toVncJavaObject(args.second(), CIDR.class);
+
+				trie.insert(cidr, args.third());
+				
+				return Constants.Nil;
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+			
+	public static VncFunction lookup = 
+		new VncFunction(
+				"cidr/lookup", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/lookup)")		
+					.doc("lookup a CIDR in the trie")
+					.examples(
+						"(do                                                \n" +
+					    "  (let [trie (cidr/trie)]                          \n" +
+						"    (cidr/insert trie                              \n" +
+						"                 (cidr/parse \"192.16.10.0/24\")   \n" +
+						"                 \"Germany\")                      \n" +
+						"    (cidr/lookup trie \"192.16.10.15\")))            ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/lookup", args, 2);
+	
+				@SuppressWarnings("unchecked")
+				final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(args.first(), CidrTrie.class);
+
+				if (Types.isVncString(args.second())) {
+					final String cidr = ((VncString)args.second()).getValue();
+					final VncVal val = trie.get(CIDR.parse(cidr));
+					return val == null ? Constants.Nil : val;
+				}
+				else if (Types.isVncJavaObject(args.second())) {
+					final CIDR cidr = Coerce.toVncJavaObject(args.second(), CIDR.class);
+					final VncVal val = trie.get(cidr);
+					return val == null ? Constants.Nil : val;
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid second argument type %s while calling function 'cidr/lookup'",
+							Types.getType(args.second())));
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// InetAddress
 	///////////////////////////////////////////////////////////////////////////
@@ -343,8 +451,10 @@ public class CidrFunctions {
 					.add(inet_addr)
 					.add(inet_addr_to_bytes)
 					.add(inet_addr_from_bytes)
+					.add(trie)
+					.add(insert)
+					.add(lookup)
 					.add(start_inet_addr)
-					.add(end_inet_addr)
-					
+					.add(end_inet_addr)					
 					.toMap();	
 }
