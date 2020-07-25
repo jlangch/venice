@@ -132,7 +132,7 @@ public class CidrTrie<V> {
 		CidrTrieNode<V> current = root;
 		CidrTrieNode<V> lastValueNode = null;
 		
-		// traverse nodes and capture the last data node
+		// traverse nodes and capture the last value node
 		for(int bit=highestBit; bit>=lowestBit; bit--) {
 			final boolean isLeft = !key.getLowAddressBit(bit);
 			final CidrTrieNode<V> child = current.getChild(isLeft);
