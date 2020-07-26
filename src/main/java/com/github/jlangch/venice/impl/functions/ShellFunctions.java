@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -150,6 +151,8 @@ public class ShellFunctions {
 		) {	
 			public VncVal apply(final VncList args) {
 				assertMinArity("sh", args, 1);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("sh");
 
 				final VncVector v = parseArgs(args);
 	

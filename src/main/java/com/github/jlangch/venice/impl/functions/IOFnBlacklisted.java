@@ -90,6 +90,7 @@ public class IOFnBlacklisted {
 					"io/file-size",
 					"io/list-file-tree",
 					"io/list-files",
+					"io/list-files-glob",
 					"io/load-classpath-resource",
 					"io/move-file",
 					"io/mkdir",

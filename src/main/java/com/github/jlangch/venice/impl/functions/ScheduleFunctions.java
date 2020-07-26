@@ -71,7 +71,9 @@ public class ScheduleFunctions {
 			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {	
 				assertArity("schedule-delay", args, 3);
-				
+	
+				JavaInterop.getInterceptor().validateVeniceFunction("schedule-delay");
+
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncKeyword unit = Coerce.toVncKeyword(args.third());
@@ -150,7 +152,9 @@ public class ScheduleFunctions {
 		) {		
 			public VncVal apply(final VncList args) {	
 				assertArity("schedule-at-fixed-rate", args, 4);
-				
+
+				JavaInterop.getInterceptor().validateVeniceFunction("schedule-at-fixed-rate");
+
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncLong period = Coerce.toVncLong(args.third());

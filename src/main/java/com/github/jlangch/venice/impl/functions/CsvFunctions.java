@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -76,7 +77,9 @@ public class CsvFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("cvs/read", args, 1);
-	
+
+				JavaInterop.getInterceptor().validateVeniceFunction("cvs/read");
+
 				try {
 					final VncVal source = args.first();
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
@@ -155,7 +158,9 @@ public class CsvFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("cvs/write", args, 2);
-	
+
+				JavaInterop.getInterceptor().validateVeniceFunction("cvs/write");
+
 				try {
 					final VncVal vWriter = args.first();
 					

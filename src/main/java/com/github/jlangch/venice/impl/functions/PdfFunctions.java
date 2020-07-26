@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -100,6 +101,8 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("pdf/render", args, 1);
 
+				JavaInterop.getInterceptor().validateVeniceFunction("pdf/render");
+
 				final VncString xhtml = Coerce.toVncString(args.first()); 
 
 				final VncMap options = VncHashMap.ofAll(args.slice(1));
@@ -157,7 +160,9 @@ public class PdfFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("pdf/watermark", args, 2);
-				
+
+				JavaInterop.getInterceptor().validateVeniceFunction("pdf/watermark");
+
 				final VncVal pdf = args.first();
 				
 				final VncMap options = Types.isVncMap(args.second())
@@ -218,7 +223,6 @@ public class PdfFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertArity("pdf/check-required-libs", args, 0);
-				
 				
 				// com.github.librepdf:openpdf:xxx
 				if (ReflectionAccessor.classExists("com.lowagie.text.Anchor")
@@ -287,6 +291,8 @@ public class PdfFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("pdf/merge", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("pdf/merge");
 
 				final List<VncVal> pdfs = args.getList();
 
@@ -353,6 +359,8 @@ public class PdfFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("pdf/copy", args, 1);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("pdf/copy");
 
 				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 
@@ -433,6 +441,8 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("pdf/pages", args, 1);
 
+				JavaInterop.getInterceptor().validateVeniceFunction("pdf/pages");
+
 				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 				
 				try {
@@ -472,6 +482,8 @@ public class PdfFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity("pdf/text-to-pdf", args, 1);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("pdf/text-to-pdf");
 
 				try {
 					final String text = Coerce.toVncString(args.first()).getValue();

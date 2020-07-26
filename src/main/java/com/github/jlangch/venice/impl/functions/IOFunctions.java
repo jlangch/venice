@@ -139,6 +139,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/file-size", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/file-size");
 
 				final File f = convertToFile(
 									args.first(),
@@ -333,6 +335,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/exists-file?", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/exists-file?");
 
 				final File f = convertToFile(
 									args.first(),
@@ -358,6 +362,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/exists-dir?", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/exists-dir?");
 
 				final File f = convertToFile(
 									args.first(),
@@ -484,6 +490,8 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/delete-file", args, 0);
 
+				JavaInterop.getInterceptor().validateVeniceFunction("io/delete-file");
+
 				args.forEach(f -> {
 					try {
 						final File file = convertToFile(
@@ -518,6 +526,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/delete-file-tree", args, 1);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("io/delete-file-tree");
 
 				args.forEach(f -> {
 					final File file = convertToFile(
@@ -563,6 +573,8 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("io/delete-file-on-exit", args, 1);
 
+				JavaInterop.getInterceptor().validateVeniceFunction("io/delete-file-on-exit");
+
 				final File file = convertToFile(
 									args.first(),
 									"Function 'io/delete-file-on-exit' does not allow %s as f");
@@ -602,6 +614,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/list-files", args, 1, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/list-files");
 
 				final File dir = convertToFile(
 									args.first(),
@@ -647,6 +661,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/list-file-tree", args, 1, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/list-file-tree");
 
 				final File dir = convertToFile(
 									args.first(),
@@ -692,6 +708,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/list-files-glob", args, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/list-files-glob");
 
 				final File dir = convertToFile(
 									args.first(),
@@ -737,6 +755,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/copy-file", args, 2);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("io/copy-file");
 
 				final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
 				final VncVal replaceOpt = options.get(new VncKeyword("replace"));
@@ -820,6 +840,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/move-file", args, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/move-file");
 
 				final File from = convertToFile(
 									args.first(),
@@ -858,6 +880,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/mkdir", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/mkdir");
 
 				final File dir = convertToFile(
 									args.first(),
@@ -891,6 +915,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/mkdirs", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/mkdirs");
 
 				final File dir = convertToFile(
 									args.first(),
@@ -923,6 +949,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/tmp-dir", args, 0);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/tmp-dir");
 
 				return new VncJavaObject(new File(System.getProperty("java.io.tmpdir")));
 			}
@@ -941,6 +969,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/user-dir", args, 0);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/user-dir");
 
 				return new VncJavaObject(new File(System.getProperty("user.dir")));
 			}
@@ -959,6 +989,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/user-home-dir", args, 0);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("io/user-home-dir");
 
 				return new VncJavaObject(new File(System.getProperty("user.home")));
 			}
@@ -981,6 +1013,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/slurp-lines", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/slurp-lines");
 
 				try {
 					final VncVal arg = args.first();
@@ -1053,6 +1087,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/slurp", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/slurp");
 
 				try {
 					final VncVal arg = args.first();
@@ -1142,9 +1178,10 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/spit", args, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/spit");
 
 				try {
-
 					final File file = convertToFile(
 										args.first(),
 										"Function 'io/spit' does not allow %s as f");
@@ -1221,6 +1258,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/download", args, 1);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("io/download");
 
 				final String uri = Coerce.toVncString(args.first()).getValue();
 
@@ -1370,6 +1409,8 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("io/copy-stream", args, 2);
 
+				JavaInterop.getInterceptor().validateVeniceFunction("io/copy-stream");
+
 				final Object is = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
 
@@ -1423,6 +1464,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/slurp-stream", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/slurp-stream");
 
 				try {
 					final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
@@ -1479,6 +1522,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("io/spit-stream", args, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/spit-stream");
 
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
@@ -1720,6 +1765,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/temp-file", args, 2);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/temp-file");
 
 				final String prefix = Coerce.toVncString(args.first()).getValue();
 				final String suffix = Coerce.toVncString(args.second()).getValue();
@@ -1746,6 +1793,8 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("io/temp-dir", args, 1);
+				
+				JavaInterop.getInterceptor().validateVeniceFunction("io/temp-dir");
 
 				final String prefix = Coerce.toVncString(args.first()).getValue();
 				try {
@@ -1775,6 +1824,8 @@ public class IOFunctions {
 			public VncVal apply(final VncList args) {
 				try {
 					assertArity("io/load-classpath-resource", args, 1);
+					
+					JavaInterop.getInterceptor().validateVeniceFunction("io/load-classpath-resource");
 
 					final VncVal name = args.first();
 

@@ -52,9 +52,23 @@ public class Sandbox_JavaCall_Test {
 	}
 
 	@Test
-	public void test_system_exit() {
+	public void test_system_exit_1() {
 		assertThrows(SecurityException.class, () -> {
 			new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
+		});
+	}
+
+	@Test
+	public void test_system_exit_2() {
+		assertThrows(SecurityException.class, () -> {
+			new Venice(new RejectAllInterceptor()).eval("(docoll #(. :java.lang.System :exit 0) [1])");
+		});
+	}
+
+	@Test
+	public void test_system_exit_3() {
+		assertThrows(SecurityException.class, () -> {
+			new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (do (. :java.lang.System :exit 0) x)) [1])");
 		});
 	}
 
