@@ -177,8 +177,8 @@
         ip6-trie    (deref (second tasks))
         resolver    (fn [ip]
                       (cond
-                        (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
-                        (geoip/ip6? ip) (cidr/lookup ip6-trie ip)
+                        (cidr/ip4? ip) (cidr/lookup ip4-trie ip)
+                        (cidr/ip6? ip) (cidr/lookup ip6-trie ip)
                         :else nil))]
     (geoip/update-stats :cities-maxmind (count cities))
     (geoip/update-stats :ip4-to-city (cidr/size ip4-trie))
@@ -240,11 +240,11 @@
           ip6-trie    (deref (second tasks))
           resolver    (fn [ip]
                         (cond
-                          (geoip/ip4? ip) (do
+                          (cidr/ip4? ip) (do
                                             (let [data (cidr/lookup ip4-trie ip)
                                                   city (get cities (:city-id data))]
                                               (merge data city)))
-                          (geoip/ip6? ip) (do
+                          (cidr/ip6? ip) (do
                                             (let [data (cidr/lookup ip6-trie ip)
                                                   city (get cities (:city-id data))]
                                               (merge data city)))
@@ -323,8 +323,8 @@
         ip6-trie    (deref (second tasks))
         resolver    (fn [ip]
                       (cond
-                        (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
-                        (geoip/ip6? ip) (cidr/lookup ip6-trie ip)
+                        (cidr/ip4? ip) (cidr/lookup ip4-trie ip)
+                        (cidr/ip6? ip) (cidr/lookup ip6-trie ip)
                         :else nil))]
     (geoip/update-stats :countries-maxmind (count countries))
     (geoip/update-stats :ip4-to-country (cidr/size ip4-trie))
@@ -514,38 +514,6 @@
                              :region (nth % 7)
                              :city (nth % 10))))
        (into {})))
-
-
-(defn
-  ^{ :arglists '("(geoip/ip4? ip)")
-     :doc """
-          Returns true if the ip (a string or a java.net.InetAddress) is an \
-          IP-4 internet address.
-          """ }
-
-  geoip/ip4? [ip]
-
-  (cond
-    (string? ip)               (str/contains? ip ".")
-    (instance? :Inet4Address)  true
-    (instance? :Inet6Address)  false
-    false))
-
-
-(defn
-  ^{ :arglists '("(geoip/ip6? ip)")
-     :doc """
-          Returns true if the ip (a string or a java.net.InetAddress) is an \
-          IP-6 internet address.
-          """ }
-
-  geoip/ip6? [ip]
-
-  (cond
-    (string? ip)               (str/contains? ip ":")
-    (instance? :Inet4Address)  false
-    (instance? :Inet6Address)  true
-    false))
 
 
 (defn
