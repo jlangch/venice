@@ -77,6 +77,10 @@
 (def geoip/google-country-url
        "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv")
 
+(def geoip/stats (atom {}))
+
+
+(defn geoip/statistics [] @geoip/stats)
 
 
 (defn
@@ -134,27 +138,35 @@
           The resolver loads the MindMax IPv4 and IPv6 city database and \
           caches the data for IP address resolves.
 
+          As of July 2020 the MaxMind city database has:
+            2'917'097  IPv4 blocks
+              459'294  IPv6 blocks
+              118'189  cities
+
           Note:
-          The MaxMind city IPv4 and IPv6 databases have 200MB of size. It \
-          takes considerable time to load and lookup the data. If you can \
-          live with the lower accuracy of the country database use the \
-          country locations!
+          The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk. \
+          It takes considerable time to load the data. Preprocessed and ready \
+          to work in the GEO IP modules ~5GB of memory is required because the \
+          many-to-1 relationship from IP blocks to cities is flattened. \
+          To serve memory on the cost of some performance this relationship \
+          could be kept.
+          Once the resolver has loaded the data the lookups are very fast.
           """
      :examples '(
            """
            (do
              (def rv (geoip/ip-to-city-loc-resolver "resources/geoip-city.zip"))
 
-             (rv "91.223.55.1")) ;; => {:ip "91.223.55.6"
-                                 ;;     :loc ["51.919438" "19.145136"]
-                                 ;;     :country-name "Poland"
-                                 ;;     :country-iso "PL"
-                                 ;;     :region "xxxx"
-                                 ;;     :city "xxx"}
+             (rv "192.241.235.46")) ;; => {:ip "192.241.235.46"
+                                    ;;     :loc ["37.7353" "-122.3732"]
+                                    ;;     :country-name "United States"
+                                    ;;     :country-iso "US"
+                                    ;;     :region "California"
+                                    ;;     :city "San Francisco"}
            """
            ) }
 
-  geoip/ip-to-city-loc-resolver [geoip-zip location-csv & options]
+  geoip/ip-to-city-loc-resolver [geoip-zip]
 
   (let [zip-bytes   (if (bytebuf? geoip-zip)
                       geoip-zip
@@ -171,6 +183,9 @@
                         (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
                         (geoip/ip6? ip) (cidr/lookup ip6-trie ip)
                         :else nil))]
+    (geoip/update-stats :cities-maxmind (count cities))
+    (geoip/update-stats :ip4-to-city (cidr/size ip4-trie))
+    (geoip/update-stats :ip6-to-city (cidr/size ip6-trie))
     resolver))
 
 
@@ -197,6 +212,7 @@
 
   (let [locations   (geoip/parse-google-countries-csv location-csv)
         resolver    (fn [country-iso] (get locations country-iso))]
+    (geoip/update-stats :countries-google (count locations))
     resolver))
 
 
@@ -212,6 +228,11 @@
 
           The resolver loads the MindMax IPv4 and IPv6 country databases and \
           caches the data for subsequent IP resolves.
+
+          As of July 2020 the MaxMind country database has:
+            303'448  IPv4 blocks
+            107'641  IPv6 blocks
+                253  countries
           """
      :examples '(
            """
@@ -239,6 +260,9 @@
                         (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
                         (geoip/ip6? ip) (cidr/lookup ip6-trie ip)
                         :else nil))]
+    (geoip/update-stats :countries-maxmind (count countries))
+    (geoip/update-stats :ip4-to-country (cidr/size ip4-trie))
+    (geoip/update-stats :ip6-to-country (cidr/size ip6-trie))
     resolver))
 
 
@@ -252,9 +276,8 @@
           The maxmind-countries are optional and map the geoname-id to country \
           data.
 
-          Returns a vector of tuples. Each tuple is a vector with two items, \
-          the first being a parsed CIDR Java object and the second a map with \
-          the country location information for the CIDR.
+          Returns a trie datastructure with the CIDR address as the key and a
+          map with country data as the value.
 
           maxmind-countries:
              { "49518" {:country-iso "RW" :country-name "Rwanda"}
@@ -316,34 +339,14 @@
           The maxmind-countries are optional and map the geoname-id to country \
           data.
 
-          Returns a vector of tuples. Each tuple is a vector with two items, \
-          the first being a parsed CIDR Java object and the second a map with \
-          the location information for the CIDR.
+          Returns a trie datastructure with the CIDR address as the key and a
+          map with city/country data as the value.
 
           maxmind-cities:
           { "2643743" {:country-iso "GB" :country-name "England"
                        :region "England"  :city "London"}
             "2661881" {:country-iso "CH" :country-name "Switzerland"
                        :region "Aargau"  :city "Aarau"} }
-
-          Return:
-            { 223 [ [(cidr/parse "223.255.254.0/24") {:loc ["10.0000" "8.0000"]
-                                                      :country-iso "GB"
-                                                      :country-name "England"
-                                                      :region "England"
-                                                      :city "London"}]
-                    [(cidr/parse "223.255.255.0/24") {:loc ["-15.0000" "30.0000"]
-                                                      :country-iso "CH"
-                                                      :country-name "Switzerland"
-                                                      :region "Aargau"
-                                                      :city "Aarau"}]
-                  ] }
-
-            {  45 [ [(cidr/parse "2c0f:fff0::/32") {:loc ["10.0000" "8.0000"]
-                                                    :city-id "2643743"}]
-                    [(cidr/parse "2c0f:feb8::/32") {:loc ["-15.0000" "30.0000"]
-                                                    :city-id "2661881"}]
-                  ] }
           """
      :examples '(
            """
@@ -395,7 +398,7 @@
   ^{ :arglists '("(geoip/parse-maxmind-country-db zip)")
      :doc """
           Parses the MaxMind country-location CSV file. Returns a map with \
-          geoname-id as key and the country data as value.
+          country geoname-id as key and the country data as value.
 
           Return:
              { "49518" {:country-iso "RW" :country-name "Rwanda"}
@@ -420,8 +423,8 @@
 (defn
   ^{ :arglists '("(geoip/parse-maxmind-city-db zip)")
      :doc """
-          Parses the MaxMind city-location CSV file. Returns a map with \
-          key = geoname-id and the country/city data as value.
+          Parses the MaxMind city-location CSV file. Returns a map with the \
+          city geoname-id as key and the city/country data as value.
 
           Return:
             { "2643743" {:country-iso "GB" :country-name "England"
@@ -575,6 +578,10 @@
 
 
 ;; - private -------------------------------------------------------------------
+
+(defn- geoip/update-stats [key val]
+  (swap! geoip/stats (fn [s] (assoc s key val))))
+
 
 (defn- geoip/find-ip-country [ip ip-data]
   (let [inet     (cidr/inet-addr ip)
