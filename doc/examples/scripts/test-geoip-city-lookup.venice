@@ -59,16 +59,5 @@
       (map deref futures)
       nil))
 
-  ; Performance:  calling function 'test/process' with 974 IP addresses
-  ;               Activate macroexpansion in the REPL to run the tests!
-  ;
-  ;               Venice  threads  time per IP  perf test
-  ;               ------  -------  -----------  --------------------------
-  ;               1.8.13     1         14us     (perf (test/run) 0 1)
-  ;               1.8.13     1        2.6us     (perf (test/run) 2000 1000)
-
-  ; (test/lookup-ip "41.216.186.131")
-
-  ; (perf (test/run) 20 1)
-  ; (println (prof :data-formatted))
+  ; (test/lookup-ip "192.241.235.46")
 )
