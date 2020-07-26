@@ -9,18 +9,18 @@ explicitly `(load-module :name)`. Venice tracks the modules loaded
 and loads a module only once and skips subsequent load attempts.
 
 * [Kira Template](ext-kira.md)
-* [XML](ext-xml.md)
 * [Charts](ext-charts.md)
+* [GEO IP](ext-geoip.md)
+* [Mercator Maps](ext-mercator.md)
+* [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
+* [Semantic Versioning](ext-semver.md)
+* [XML](ext-xml.md)
+* [Cryptographic Functions](ext-crypt.md)
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)
 * [Maven](ext-maven.md)
 * [Jackson JSON](ext-jackson.md)
-* [Cryptographic Functions](ext-crypt.md)
-* [Semantic Versioning](ext-semver.md)
-* [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
-* [Mercator Maps](ext-mercator.md)
-* [GEO IP](ext-geoip.md)
 
 ### Explicitly forcing a module reload
 
