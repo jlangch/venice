@@ -53,15 +53,13 @@ public class CidrTrie<V> {
 			final int lowestBit = ipBits-key.getRange();
 			
 			CidrTrieNode<V> current = root;
-			String prefix = "";
 
 			// create missing edge nodes
 			for(int bit=highestBit; bit>lowestBit; bit--) {
 				final boolean isLeft = !key.getLowAddressBit(bit);
-				prefix = prefix + (isLeft ? "0" : "1");
 				CidrTrieNode<V> child = current.getChild(isLeft);
 				if (child == null) {
-					child = new CidrTrieNode<>(prefix);
+					child = new CidrTrieNode<>();
 					current.setChild(isLeft, child);
 				}
 				current = child;
@@ -69,11 +67,10 @@ public class CidrTrie<V> {
 			
 			// create or update the value node
 			final boolean isLeft = !key.getLowAddressBit(lowestBit);
-			prefix = prefix + (isLeft ? "0" : "1");
 			CidrTrieNode<V> child = current.getChild(isLeft);
 			if (child == null) {
 				// a new value node
-				child = new CidrTrieNode<>(prefix, key, value);
+				child = new CidrTrieNode<>(key, value);
 				current.setChild(isLeft, child);
 				
 				if (value != null) {

@@ -4,8 +4,8 @@ The 'geoip' module maps IP adresses to country and location (latitude, longitude
 that can be visualized on a world map. The 'geoip' module uses the free 
 [MaxMind](https://www.maxmind.com/) location databases.
 
-GEOIP lookups are lightning-fast. A country lookup for an IP-4 address
-on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) takes 700ns - 800ns 
+GEOIP lookups are lightning-fast. A country lookup for an IPv4 address
+on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) takes ~2.5us 
 based on actual MaxMind data. Venice uses an ultra-fast trie concurrent 
 data structure to store CIDR / country / city relations and do IP lookups.
 

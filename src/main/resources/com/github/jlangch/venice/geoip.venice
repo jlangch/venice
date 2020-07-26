@@ -146,10 +146,7 @@
           Note:
           The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk. \
           It takes considerable time to load the data. Preprocessed and ready \
-          to work in the GEO IP modules ~5GB of memory is required because the \
-          many-to-1 relationship from IP blocks to cities is flattened. \
-          To serve memory on the cost of some performance this relationship \
-          could be kept.
+          to work in the GEO IP modules ~3GB of memory is required. \
           Once the resolver has loaded the data the lookups are very fast.
           """
      :examples '(
@@ -187,6 +184,75 @@
     (geoip/update-stats :ip4-to-city (cidr/size ip4-trie))
     (geoip/update-stats :ip6-to-city (cidr/size ip6-trie))
     resolver))
+
+
+  (defn
+    ^{ :arglists '("(geoip/ip-to-city-loc-resolver-mem-optimized geoip-zip)")
+       :doc """
+            Returns a resolve function that resolves IP an address to its \
+            associated city and latitude/longitude location. The resolve \
+            function returns the city and the latitude/longitude or nil \
+            if no data is found.
+
+            The MindMax city geoip-zip may be a bytebuf, a file, \
+            a string (file path) or an InputStream.
+
+            The resolver loads the MindMax IPv4 and IPv6 city database and \
+            caches the data for IP address resolves.
+
+            As of July 2020 the MaxMind city database has:
+              2'917'097  IPv4 blocks
+                459'294  IPv6 blocks
+                118'189  cities
+
+            Note:
+            The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk. \
+            It takes considerable time to load the data. This is a memory \
+            optimized resolver version on the cost of performance.
+            For best performance on the cost of memory use the resolver \
+            'geoip/ip-to-city-loc-resolver' instead!
+            """
+       :examples '(
+             """
+             (do
+               (def rv (geoip/ip-to-city-loc-resolver-mem-optimized "resources/geoip-city.zip"))
+
+               (rv "192.241.235.46")) ;; => {:ip "192.241.235.46"
+                                      ;;     :loc ["37.7353" "-122.3732"]
+                                      ;;     :country-name "United States"
+                                      ;;     :country-iso "US"
+                                      ;;     :region "California"
+                                      ;;     :city "San Francisco"}
+             """
+             ) }
+
+    geoip/ip-to-city-loc-resolver-mem-optimized [geoip-zip]
+
+    (let [zip-bytes   (if (bytebuf? geoip-zip)
+                        geoip-zip
+                        (io/slurp geoip-zip :binary true))
+          cities      (geoip/parse-maxmind-city-db zip-bytes)
+          tasks       [(future (partial geoip/parse-maxmind-city-ip-db
+                                        :IPv4 zip-bytes nil))
+                       (future (partial geoip/parse-maxmind-city-ip-db
+                                        :IPv6 zip-bytes nil))]
+          ip4-trie    (deref (first tasks))
+          ip6-trie    (deref (second tasks))
+          resolver    (fn [ip]
+                        (cond
+                          (geoip/ip4? ip) (do
+                                            (let [data (cidr/lookup ip4-trie ip)
+                                                  city (get cities (:city-id data))]
+                                              (merge data city)))
+                          (geoip/ip6? ip) (do
+                                            (let [data (cidr/lookup ip6-trie ip)
+                                                  city (get cities (:city-id data))]
+                                              (merge data city)))
+                          :else nil))]
+      (geoip/update-stats :cities-maxmind (count cities))
+      (geoip/update-stats :ip4-to-city (cidr/size ip4-trie))
+      (geoip/update-stats :ip6-to-city (cidr/size ip6-trie))
+      resolver))
 
 
 (defn

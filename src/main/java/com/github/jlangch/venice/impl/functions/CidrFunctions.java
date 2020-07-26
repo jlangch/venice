@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.util.Map;
 
@@ -387,6 +389,70 @@ public class CidrFunctions {
 	// InetAddress
 	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction inet_addr_v4_Q = 
+		new VncFunction(
+				"cidr/inet-addr-v4?", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/inet-addr-v4? addr)")		
+					.doc("Returns true if addr is an IPv4 address.")
+					.examples(
+						"(cidr/inet-addr-v4? \"222.192.0.0\")",
+						"(cidr/inet-addr-v4? (cidr/inet-addr \"222.192.0.0\"))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/inet-addr-v4?", args, 1);
+	
+				final VncVal addr = args.first();
+				
+				if (Types.isVncString(addr)) {
+					return VncBoolean.of(((VncString)addr).getValue().contains("."));
+				}
+				else if (Types.isVncJavaObject(addr)) {
+					final Object inet = ((VncJavaObject)addr).getDelegate();
+					return VncBoolean.of(inet instanceof Inet4Address);
+				}
+				else {
+					return VncBoolean.False;
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction inet_addr_v6_Q = 
+		new VncFunction(
+				"cidr/inet-addr-v6?", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/inet-addr-v6? addr)")		
+					.doc("Returns true if addr is an IPv6 address.")
+					.examples(
+						"(cidr/inet-addr-v6? \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347\")",
+						"(cidr/inet-addr-v6? (cidr/inet-addr \"2001:0db8:85a3:08d3:1319:8a2e:0370:7347\"))")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/inet-addr-v6?", args, 1);
+	
+				final VncVal addr = args.first();
+				
+				if (Types.isVncString(addr)) {
+					return VncBoolean.of(((VncString)addr).getValue().contains(":"));
+				}
+				else if (Types.isVncJavaObject(addr)) {
+					final Object inet = ((VncJavaObject)addr).getDelegate();
+					return VncBoolean.of(inet instanceof Inet6Address);
+				}
+				else {
+					return VncBoolean.False;
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction inet_addr = 
 		new VncFunction(
 				"cidr/inet-addr", 
@@ -514,6 +580,8 @@ public class CidrFunctions {
 					.add(parse)
 					.add(in_range_Q)
 					.add(inet_addr)
+					.add(inet_addr_v4_Q)
+					.add(inet_addr_v6_Q)
 					.add(inet_addr_to_bytes)
 					.add(inet_addr_from_bytes)
 					.add(trie)

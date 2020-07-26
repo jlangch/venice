@@ -29,25 +29,19 @@ import com.github.jlangch.venice.impl.util.cidr.CIDR;
 public class CidrTrieNode<V> {
 
 	public CidrTrieNode() {
-		this("", null, null, null, null);
+		this(null, null, null, null);
 	}
 
-	public CidrTrieNode(final String prefix) {
-		this(prefix, null, null, null, null);
-	}
-
-	public CidrTrieNode(final String prefix, final CIDR key, final V value) {
-		this(prefix, key, value, null, null);
+	public CidrTrieNode(final CIDR key, final V value) {
+		this(key, value, null, null);
 	}
 
 	public CidrTrieNode(
-			final String prefix,
 			final CIDR key, 
 			final V value, 
 			final CidrTrieNode<V> left, 
 			final CidrTrieNode<V> right
 	) {
-		this.prefix = prefix;
 		this.key = key;
 		this.value = value;
 		this.children.set(0, left);
@@ -55,10 +49,6 @@ public class CidrTrieNode<V> {
 	}
 
 	
-	public String getPrefix() {
-		return prefix;
-	}
-
 	public CIDR getKey() {
 		return key;
 	}
@@ -81,7 +71,6 @@ public class CidrTrieNode<V> {
 
 	public CidrTrieNode<V> withData(final CIDR key, final V value) {
 		return new CidrTrieNode<>(
-						prefix,
 						key, 
 						value, 
 						children.get(0), 
@@ -92,11 +81,7 @@ public class CidrTrieNode<V> {
 	public String toString() {
 		final StringBuffer sb = new StringBuffer();
 		
-		sb.append('"')
-		  .append(prefix)
-		  .append('"')
-		  .append(", ")
-		  .append(key == null ? "<null>" : key.getNotation())
+		sb.append(key == null ? "<null>" : key.getNotation())
 		  .append(", [")
 		  .append(children.get(0) != null ? "+" : "-")
 		  .append(",")
@@ -107,7 +92,6 @@ public class CidrTrieNode<V> {
 	}
 	
 	
-	private final String prefix;
 	private final CIDR key;
 	private final V value;
 	private final AtomicReferenceArray<CidrTrieNode<V>> children = new AtomicReferenceArray<>(2);
