@@ -83,10 +83,9 @@
          (filter #(not (private-ip? %)))
          (frequencies)))
 
-  (defn parse-zip-logs [log-file]
-    (->> (io/zip-list-entry-names log-file)
-         (filter #(io/file-ext? % "log"))
-         (map #(parse-ip (io/unzip log-file %)))))
+  (defn parse-zip-logs [zip-log-file]
+    (->> (vals (io/unzip-all zip-log-file))
+         (map #(parse-ip %))))
 
   (defn parse-log-file [log-file]
     (println "Parsing" log-file "...")

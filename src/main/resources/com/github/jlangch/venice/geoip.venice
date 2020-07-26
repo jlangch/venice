@@ -156,9 +156,16 @@
 
   geoip/ip-to-city-loc-resolver [geoip-zip location-csv & options]
 
-  (let [cities      (geoip/parse-maxmind-city-db geoip-zip)
-        ip4-trie    (geoip/parse-maxmind-city-ip-db :IPv4 geoip-zip nil)
-        ip6-trie    (geoip/parse-maxmind-city-ip-db :IPv6 geoip-zip nil)
+  (let [zip-bytes   (if (bytebuf? geoip-zip)
+                      geoip-zip
+                      (io/slurp geoip-zip :binary true))
+        cities      (geoip/parse-maxmind-city-db zip-bytes)
+        tasks       [(future (partial geoip/parse-maxmind-city-ip-db
+                                      :IPv4 zip-bytes cities))
+                     (future (partial geoip/parse-maxmind-city-ip-db
+                                      :IPv6 zip-bytes cities))]
+        ip4-trie    (deref (first tasks))
+        ip6-trie    (deref (second tasks))
         resolver    (fn [ip]
                       (cond
                         (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
@@ -217,9 +224,16 @@
 
   geoip/ip-to-country-resolver [geoip-zip]
 
-  (let [countries   (geoip/parse-maxmind-country-db geoip-zip)
-        ip4-trie    (geoip/parse-maxmind-country-ip-db :IPv4 geoip-zip countries)
-        ip6-trie    (geoip/parse-maxmind-country-ip-db :IPv6 geoip-zip countries)
+  (let [zip-bytes   (if (bytebuf? geoip-zip)
+                      geoip-zip
+                      (io/slurp geoip-zip :binary true))
+        countries   (geoip/parse-maxmind-country-db zip-bytes)
+        tasks       [(future (partial geoip/parse-maxmind-country-ip-db
+                                      :IPv4 zip-bytes countries))
+                     (future (partial geoip/parse-maxmind-country-ip-db
+                                      :IPv6 zip-bytes countries))]
+        ip4-trie    (deref (first tasks))
+        ip6-trie    (deref (second tasks))
         resolver    (fn [ip]
                       (cond
                         (geoip/ip4? ip) (cidr/lookup ip4-trie ip)
@@ -588,4 +602,4 @@
  (let [entry (->> (io/zip-list-entry-names zip)
                   (filter #(str/ends-with? % entry-name))
                   (first))]
-   (bytebuf-to-string (io/unzip (io/file zip) entry) :utf-8)))
+   (bytebuf-to-string (io/unzip zip entry) :utf-8)))
