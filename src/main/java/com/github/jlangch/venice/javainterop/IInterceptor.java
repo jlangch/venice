@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.impl.util.MeterRegistry;
+
 /**
  * Defines a Venice interceptor
  */
@@ -202,5 +204,8 @@ public interface IInterceptor {
 	 * <code>Sandbox</code> is allowed to use.
 	 */
 	Integer getMaxFutureThreadPoolSize();
+	
+	
+	MeterRegistry getMeterRegistry();
 
 }

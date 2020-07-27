@@ -88,6 +88,7 @@ public class Venice {
 	public Venice(final IInterceptor interceptor, final List<String> loadPaths) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
 		this.loadPaths = LoadPath.sanitize(loadPaths);
+		this.meterRegistry = this.interceptor.getMeterRegistry();
 	}
 	
 	/**
@@ -128,7 +129,6 @@ public class Venice {
 		//       to have a safe sandbox in-place if macros are misused to
 		//       execute code at expansion time.
 		final VeniceInterpreter venice = new VeniceInterpreter(
-												new MeterRegistry(false), 
 												new RejectAllInterceptor(), 
 												loadPaths);
 		
@@ -178,14 +178,12 @@ public class Venice {
 			throw new IllegalArgumentException("A 'precompiled' script must not be null");
 		}
 
-		meterRegistry.disable(); // enable when really needed
-
 		final long nanos = System.nanoTime();
 
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor, loadPaths);
+			final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
@@ -282,7 +280,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(meterRegistry, interceptor, loadPaths);
+			final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
 
 			final Env env = createEnv(venice, macroexpand, params);
 			
@@ -492,7 +490,7 @@ public class Venice {
 	
 	private final IInterceptor interceptor;
 	private final List<String> loadPaths;
-	private final MeterRegistry meterRegistry = new MeterRegistry(false);
+	private final MeterRegistry meterRegistry;
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 	private final PrintStream stdout = new PrintStream(System.out, true);
 	private final PrintStream stderr = new PrintStream(System.err, true);

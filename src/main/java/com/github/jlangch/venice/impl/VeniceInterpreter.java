@@ -86,33 +86,25 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter() {
-		this(null, null, null);
+		this(null, null);
 	}
 
 	public VeniceInterpreter(
 			final IInterceptor interceptor
 	) {
-		this(null, interceptor, null);
+		this(interceptor, null);
 	}
 
 	public VeniceInterpreter(
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this(null, interceptor, loadPaths);
-	}
-
-	public VeniceInterpreter(
-			final MeterRegistry perfmeter, 
-			final IInterceptor interceptor, 
-			final List<String> loadPaths
-	) {
-		this.meterRegistry = perfmeter == null 
-								? new MeterRegistry(false) : perfmeter;
-								
 		this.interceptor = interceptor == null 
 								? new AcceptAllInterceptor() : interceptor;
-		
+
+		this.meterRegistry = this.interceptor.getMeterRegistry();
+										
+
 		if (loadPaths != null) {
 			this.loadPaths.addAll(loadPaths);
 		}

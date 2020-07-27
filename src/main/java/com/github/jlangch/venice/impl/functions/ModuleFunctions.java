@@ -96,6 +96,8 @@ public class ModuleFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("*load-classpath-file", args, 1);
 
+				JavaInterop.getInterceptor().validateVeniceFunction("*load-classpath-file");
+
 				try {		
 					final String file = suffixWithVeniceFileExt(name(args.first()));
 					

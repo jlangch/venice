@@ -161,17 +161,13 @@ public class MeterRegistry implements Serializable {
 	
 	private VncMap convertToVncMap(final Timer timer) {
 		return VncHashMap.of(
-				name,  new VncString(timer.name),
-				count, new VncLong(timer.count),
-				nanos, new VncLong(timer.elapsedNanos));
+				new VncKeyword("name"),  new VncString(timer.name),
+				new VncKeyword("count"), new VncLong(timer.count),
+				new VncKeyword("nanos"), new VncLong(timer.elapsedNanos));
 	}
 
 	
 	private static final long serialVersionUID = 5426843508785133806L;
-
-	private static final VncKeyword name = new VncKeyword("name");
-	private static final VncKeyword count = new VncKeyword("count");
-	private static final VncKeyword nanos = new VncKeyword("nanos");
 	
 	private final Map<String,Timer> data = new ConcurrentHashMap<>();
 	

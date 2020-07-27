@@ -22,11 +22,16 @@
 package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public abstract class Interceptor implements IInterceptor {
  
+	public Interceptor() {
+		this.meterRegistry = new MeterRegistry(false);
+	}
+	
 	@Override
 	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 
@@ -150,4 +155,12 @@ public abstract class Interceptor implements IInterceptor {
 	public Integer getMaxFutureThreadPoolSize() {
 		return null;
 	}
+
+	@Override
+	public MeterRegistry getMeterRegistry() {
+		return meterRegistry;
+	}
+
+	
+	private final MeterRegistry meterRegistry;
 }
