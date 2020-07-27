@@ -28,4 +28,8 @@ public interface IVncFunction {
 	 
 	VncVal apply(VncList args);
 	
+	default boolean isAnonymous() { 
+		return true; 
+	}
+
 }

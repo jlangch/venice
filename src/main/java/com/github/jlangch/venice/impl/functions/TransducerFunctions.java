@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -54,6 +55,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
@@ -180,6 +182,8 @@ public class TransducerFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				if (args.size() == 0) {
 					return Nil;
 				}
@@ -246,7 +250,7 @@ public class TransducerFunctions {
 						}
 
 						if (hasMore) {
-							final VncVal val = fn.apply(VncList.ofList(fnArgs));
+							final VncVal val = VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry);
 							result.add(val);
 							index += 1;
 						}
@@ -278,6 +282,8 @@ public class TransducerFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				if (args.size() == 0) {
 					return Nil;
 				}
@@ -351,7 +357,7 @@ public class TransducerFunctions {
 					int index = 0;
 					
 					for(VncVal v : items) {
-						list.add(fn.apply(VncList.of(new VncLong(index++), v)));
+						list.add(VncFunction.applyWithMeter(fn, VncList.of(new VncLong(index++), v), meterRegistry));
 					}
 
 					return VncList.ofList(list);
@@ -377,6 +383,8 @@ public class TransducerFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("filter", args, 1, 2);
+
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
 
@@ -424,7 +432,7 @@ public class TransducerFunctions {
 
 					for(int i=0; i<coll.size(); i++) {
 						final VncVal val = coll.nth(i);
-						final VncVal keep = predicate.apply(VncList.of(val));
+						final VncVal keep = VncFunction.applyWithMeter(predicate, VncList.of(val), meterRegistry);
 						if (!VncBoolean.isFalse(keep) && keep != Nil) {
 							items.add(val);
 						}
@@ -521,6 +529,8 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("drop-while", args, 1, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
 
 				if (args.size() == 1) {
@@ -574,7 +584,7 @@ public class TransducerFunctions {
 					final VncSequence coll = coerceToSequence(args.second());
 
 					for(int i=0; i<coll.size(); i++) {
-						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
+						final VncVal take = VncFunction.applyWithMeter(predicate, VncList.of(coll.nth(i)), meterRegistry);
 						if (VncBoolean.isFalse(take)) {
 							return coll.slice(i);
 						}
@@ -674,6 +684,8 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("take-while", args, 1, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final VncFunction predicate = Coerce.toVncFunction(args.first());
 
 				if (args.size() == 1) {
@@ -721,7 +733,7 @@ public class TransducerFunctions {
 					final VncSequence coll = coerceToSequence(args.second());
 
 					for(int i=0; i<coll.size(); i++) {
-						final VncVal take = predicate.apply(VncList.of(coll.nth(i)));
+						final VncVal take = VncFunction.applyWithMeter(predicate, VncList.of(coll.nth(i)), meterRegistry);
 						if (VncBoolean.isFalse(take)) {
 							return coll.slice(0, i);
 						}
@@ -901,6 +913,8 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("remove", args, 1, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
 				if (args.size() == 1) {
@@ -919,7 +933,7 @@ public class TransducerFunctions {
 					final List<VncVal> items = new ArrayList<>();
 					
 					for(VncVal val : coll.getList()) {
-						final VncVal keep = predicate.apply(VncList.of(val));
+						final VncVal keep = VncFunction.applyWithMeter(predicate, VncList.of(val), meterRegistry);
 						if (keep == Nil || VncBoolean.isFalse(keep)) {
 							items.add(val);
 						}
@@ -1380,7 +1394,8 @@ public class TransducerFunctions {
 			return Coerce.toVncSequence(val);
 		}
 	}
-
+	
+	
 	
 	public static final VncKeyword HALT = new VncKeyword("@halt");
 	private static final VncKeyword NONE = new VncKeyword("@none");

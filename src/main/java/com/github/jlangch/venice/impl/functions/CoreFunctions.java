@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.GenSym;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
@@ -93,6 +94,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
@@ -2089,6 +2091,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("fnil", args, 2, 3, 4);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final  List<VncFunction> functions = new ArrayList<>();
 				
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
@@ -2107,7 +2111,10 @@ public class CoreFunctions {
 								}
 								else {
 									final VncVal a = args.first();
-									return fn.apply(args.rest().addAtStart(a == Nil ? x : a));
+									return VncFunction.applyWithMeter(
+												fn, 
+												args.rest().addAtStart(a == Nil ? x : a),
+												meterRegistry);
 								}
 							}
 	
@@ -2130,10 +2137,13 @@ public class CoreFunctions {
 								else {
 									final VncVal a = args.first();
 									final VncVal b = args.second();
-									return fn.apply(args.rest()
-														.rest()
-														.addAtStart(b == Nil ? y : b)
-														.addAtStart(a == Nil ? x : a));
+									return VncFunction.applyWithMeter(
+												fn,
+												args.rest()
+													.rest()
+													.addAtStart(b == Nil ? y : b)
+													.addAtStart(a == Nil ? x : a),
+												meterRegistry);
 								}
 							}
 	
@@ -2158,12 +2168,15 @@ public class CoreFunctions {
 									final VncVal a = args.first();
 									final VncVal b = args.second();
 									final VncVal c = args.third();
-									return fn.apply(args.rest()
-														.rest()
-														.rest()
-														.addAtStart(c == Nil ? z : c)
-														.addAtStart(b == Nil ? y : b)
-														.addAtStart(a == Nil ? x : a));
+									return VncFunction.applyWithMeter(
+												fn,
+												args.rest()
+													.rest()
+													.rest()
+													.addAtStart(c == Nil ? z : c)
+													.addAtStart(b == Nil ? y : b)
+													.addAtStart(a == Nil ? x : a),
+												meterRegistry);
 								}
 							}
 	
@@ -3266,6 +3279,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("update", args, 3);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				if (Types.isVncSequence(args.first())) {
 					final VncSequence list = ((VncSequence)args.first());
 					final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
@@ -3277,17 +3292,20 @@ public class CoreFunctions {
 								idx));
 					}
 					else if (idx < list.size()) {
-						return list.setAt(idx, fn.apply(VncList.of(list.nth(idx))));
+						return list.setAt(idx, VncFunction.applyWithMeter(
+													fn, 
+													VncList.of(list.nth(idx)), 
+													meterRegistry));
 					}
 					else {
-						return list.addAtEnd(fn.apply(VncList.of(Nil)));
+						return list.addAtEnd(VncFunction.applyWithMeter(fn, VncList.of(Nil), meterRegistry));
 					}
 				}
 				else if (Types.isVncMap(args.first())) {
 					final VncMap map = ((VncMap)args.first());
 					final VncVal key = args.second();
 					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
-					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
+					return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
 				}
 				else {
 					throw new VncException(String.format(
@@ -3318,11 +3336,13 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("update!", args, 3);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				if (Types.isVncMutableMap(args.first())) {
 					final VncMutableMap map = (VncMutableMap)args.first();
 					final VncVal key = args.second();
 					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
-					return map.assoc(key, fn.apply(VncList.of(map.get(key))));
+					return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
 				}
 				else {
 					throw new VncException(String.format(
@@ -5420,13 +5440,15 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("group-by", args, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
 
 				VncMap map = new VncOrderedMap();
 
 				for(VncVal v : coll.getList()) {
-					final VncVal key = fn.apply(VncList.of(v));
+					final VncVal key = VncFunction.applyWithMeter(fn, VncList.of(v), meterRegistry);
 					final VncSequence val = Coerce.toVncSequence(map.getMap().get(key));
 					if (val == null) {
 						map = map.assoc(key, VncVector.of(v));
@@ -5646,6 +5668,8 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList lists = removeNilValues((VncList)args.rest());
 				final List<VncVal> result = new ArrayList<>();
@@ -5671,7 +5695,7 @@ public class CoreFunctions {
 					}
 
 					if (hasMore) {
-						result.add(fn.apply(VncList.ofList(fnArgs)));
+						result.add(VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry));
 						index += 1;
 					}
 				}
@@ -5701,6 +5725,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("docoll", args, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncVal coll = args.second();
 
@@ -5708,10 +5734,16 @@ public class CoreFunctions {
 					// ok do nothing
 				}
 				else if (Types.isVncSequence(coll)) {
-					((VncSequence)coll).forEach(v -> fn.apply(VncList.of(v)));
+					((VncSequence)coll).forEach(v -> VncFunction.applyWithMeter(
+															fn, 
+															VncList.of(v), 
+															meterRegistry));
 				}
 				else if (Types.isVncMap(coll)) {
-					((VncMap)coll).entries().forEach(v -> fn.apply(VncList.of(VncVector.of(v.getKey(), v.getValue()))));
+					((VncMap)coll).entries().forEach(v -> VncFunction.applyWithMeter(
+																fn, 
+																VncList.of(VncVector.of(v.getKey(), v.getValue())), 
+																meterRegistry));
 				}
 				else {
 					throw new VncException(String.format(
@@ -6191,6 +6223,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("repeatedly", args, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final long repeat = Coerce.toVncLong(args.first()).getValue();
 				final IVncFunction fn = Coerce.toIVncFunction(args.second());
 
@@ -6200,7 +6234,7 @@ public class CoreFunctions {
 
 				final List<VncVal> values = new ArrayList<>();
 				for(int ii=0; ii<repeat; ii++) {
-					values.add(fn.apply(VncList.empty()));
+					values.add(VncFunction.applyWithMeter(fn, VncList.empty(), meterRegistry));
 				}
 				return VncList.ofList(values);
 			}

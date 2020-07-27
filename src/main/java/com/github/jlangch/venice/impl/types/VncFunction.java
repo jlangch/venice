@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -135,6 +136,7 @@ public abstract class VncFunction
 		return macro; 
 	}
 	
+	@Override
 	public boolean isAnonymous() { 
 		return anonymous; 
 	}
@@ -243,6 +245,26 @@ public abstract class VncFunction
 		return new MetaBuilder();
 	}
 	
+
+	public static VncVal applyWithMeter(
+			final IVncFunction fn, 
+			final VncList args, 
+			final MeterRegistry meterRegistry
+	) {
+		if (meterRegistry.enabled && !fn.isAnonymous() && (fn instanceof VncFunction)) {
+			final long nanos = System.nanoTime();
+			
+			final VncVal result = fn.apply(args);
+			
+			meterRegistry.record(((VncFunction)fn).getQualifiedName(), System.nanoTime() - nanos);
+			
+			return result;
+		}
+		else {
+			return fn.apply(args);
+		}
+	}
+
 	
 	public static class MetaBuilder  {
 
