@@ -875,6 +875,8 @@ public class VeniceInterpreter implements Serializable  {
 						final CallFrame callFrame = CallFrame.fromFunction(fn, a0);
 						try {
 							callStack.push(callFrame);
+							
+							// Note: the overhead with callstack and interrupt check is ~150ns
 							return fn.apply(elArgs);
 						}
 						finally {

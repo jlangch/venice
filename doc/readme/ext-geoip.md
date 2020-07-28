@@ -60,13 +60,6 @@ country database to map the countries' ISO codes to latitude, longitude coordina
 [Google Country Database](https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv)
 
 
-## IP Risk Level
-
-See: [Auth0 IP Risk Level](https://auth0.com/signals/ip)
-
-Blog: [Auth0 Blog](https://auth0.com/blog/introducing-auth0-signals-threat-intelligence-to-protect-customers-from-widespread-identity-cyberattacks/)
-
-
 
 ## Example 1: Lookup IP location
 
@@ -383,3 +376,12 @@ venice> (run "./ip-map.png" "localhost_access_log.2019-12.zip")
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/geoip/geoip-tomcat.png">
+
+
+
+
+## See also: IP Risk Level
+
+See: [Auth0 IP Risk Level](https://auth0.com/signals/ip)
+
+Blog: [Auth0 Blog](https://auth0.com/blog/introducing-auth0-signals-threat-intelligence-to-protect-customers-from-widespread-identity-cyberattacks/)

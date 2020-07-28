@@ -94,7 +94,6 @@ public class Destructuring {
 			else if (Types.isVncMapEntry(bindVal)) {
 				sequential_list_destructure((VncSequence)symVal, ((VncMapEntry)bindVal).toVector(), bindings);
 			}
-
 			else if (bindVal == Nil) {
 				sequential_list_destructure((VncSequence)symVal, VncList.empty(), bindings);
 			}

@@ -250,7 +250,7 @@ public class CidrFunctions {
 					"cidr/size", 
 					VncFunction
 						.meta()
-						.arglists("(cidr/size)")		
+						.arglists("(cidr/size trie)")		
 						.doc("Returns the size of the trie.")
 						.examples(
 							"(do                                                \n" +
@@ -278,8 +278,8 @@ public class CidrFunctions {
 				"cidr/insert", 
 				VncFunction
 					.meta()
-					.arglists("(cidr/insert)")		
-					.doc("Insert a new CIDR into trie")
+					.arglists("(cidr/insert trie cidr value)")		
+					.doc("Insert a new CIDR / value relation into trie")
 					.examples(
 						"(do                                                \n" +
 					    "  (let [trie (cidr/trie)]                          \n" +
@@ -310,8 +310,9 @@ public class CidrFunctions {
 				"cidr/lookup", 
 				VncFunction
 					.meta()
-					.arglists("(cidr/lookup)")		
-					.doc("lookup the associated value of a CIDR in the trie")
+					.arglists("(cidr/lookup trie ip)")		
+					.doc(
+						"Lookup the associated value of a CIDR in the trie.")
 					.examples(
 						"(do                                                \n" +
 					    "  (let [trie (cidr/trie)]                          \n" +
@@ -346,13 +347,64 @@ public class CidrFunctions {
 	
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+	public static VncFunction lookup_mixed = 
+		new VncFunction(
+				"cidr/lookup-mixed", 
+				VncFunction
+					.meta()
+					.arglists("(cidr/lookup-mixed trie-ip4 trie-ip6 ip)")		
+					.doc(
+						"Lookup the associated value of a CIDR in the IPv4 or IPv6 trie.")
+					.examples(
+						"(do                                                    \n" +
+					    "  (let [trie-ip4 (cidr/trie)]                          \n" +
+					    "  (let [trie-ip6 (cidr/trie)]                          \n" +
+						"    (cidr/insert trie-ip4                              \n" +
+						"                 (cidr/parse \"192.16.10.0/24\")       \n" +
+						"                 \"Germany\")                          \n" +
+						"    (cidr/lookup trie-ip4 trie-ip6 \"192.16.10.15\")))   ")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				assertArity("cidr/lookup-mixed", args, 3);
+		
+				if (Types.isVncString(args.third())) {
+					final String ip = ((VncString)args.third()).getValue();
+					
+					@SuppressWarnings("unchecked")
+					final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(
+														ip.contains(".") ? args.first() : args.second(), 
+														CidrTrie.class);
+					final VncVal val = trie.getValue(ip);
+					return val == null ? Constants.Nil : val;
+				}
+				else if (Types.isVncJavaObject(args.third())) {
+					final CIDR cidr = Coerce.toVncJavaObject(args.third(), CIDR.class);
+					
+					@SuppressWarnings("unchecked")
+					final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(
+														cidr.isIP4() ? args.first() : args.second(), 
+														CidrTrie.class);
+					final VncVal val = trie.getValue(cidr);
+					return val == null ? Constants.Nil : val;
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid second argument type %s while calling function 'cidr/lookup-mixed'",
+							Types.getType(args.third())));
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction lookup_reverse = 
 			new VncFunction(
 					"cidr/lookup-reverse", 
 					VncFunction
 						.meta()
-						.arglists("(cidr/lookup-reverse)")		
+						.arglists("(cidr/lookup-reverse trie ip)")		
 						.doc("Reverse lookup a CIDR in the trie given an IP address")
 						.examples(
 							"(do                                                \n" +
@@ -588,6 +640,7 @@ public class CidrFunctions {
 					.add(size)
 					.add(insert)
 					.add(lookup)
+					.add(lookup_mixed)
 					.add(lookup_reverse)
 					.add(start_inet_addr)
 					.add(end_inet_addr)					
