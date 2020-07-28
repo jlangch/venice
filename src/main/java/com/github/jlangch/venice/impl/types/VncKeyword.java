@@ -225,6 +225,10 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		return toString();
 	}
 	
+	public boolean hasValue(final String value) {
+		return value != null && value.contentEquals(getValue());
+	}
+	
 	
     public static final VncKeyword TYPE = new VncKeyword(":core/keyword");
 	

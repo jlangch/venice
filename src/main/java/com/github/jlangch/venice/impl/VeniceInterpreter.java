@@ -828,19 +828,15 @@ public class VeniceInterpreter implements Serializable  {
 					return dobench_(ast, env);
 					
 				case "if": 
+					// (if cond expr-true expr-false*)
 					final VncVal cond = evaluate(ast.second(), env);
 					if (VncBoolean.isFalse(cond) || cond == Nil) {
-						// eval false slot form
-						if (ast.size() > 3) {
-							orig_ast = ast.nth(3);
-						} 
-						else {
-							return Nil;
-						}
+						// eval false slot form (nil if not available)
+						orig_ast = ast.fourth();
 					} 
 					else {
 						// eval true slot form
-						orig_ast = ast.nth(2);
+						orig_ast = ast.third();
 					}
 					break;
 					
@@ -1447,23 +1443,39 @@ public class VeniceInterpreter implements Serializable  {
 				case "enable":
 					meterRegistry.enable(); 
 					return new VncKeyword("on");
+					
 				case "off":
 				case "disable":
 					meterRegistry.disable(); 
 					return new VncKeyword("off");
+					
 				case "status":
 					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+					
 				case "clear":
 					meterRegistry.reset(); 
 					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+					
 				case "clear-all-but":
 					meterRegistry.resetAllBut(Coerce.toVncSequence(ast.third())); 
 					return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+					
 				case "data":
 					return meterRegistry.getVncTimerData();
+					
 				case "data-formatted":
-					final String title = ast.size() == 3 ? Coerce.toVncString(ast.third()).getValue() : "Metrics";
-					return new VncString(meterRegistry.getTimerDataFormatted(title, false));
+					final VncVal opt1 = ast.third();
+					final VncVal opt2 = ast.fourth();
+					
+					String title = "Metrics";
+					if (Types.isVncString(opt1) && !Types.isVncKeyword(opt1)) title = ((VncString)opt1).getValue();
+					if (Types.isVncString(opt2) && !Types.isVncKeyword(opt2)) title = ((VncString)opt2).getValue();
+
+					boolean anonFn = false;
+					if (Types.isVncKeyword(opt1)) anonFn = anonFn || ((VncKeyword)opt1).hasValue("anon-fn");
+					if (Types.isVncKeyword(opt2)) anonFn = anonFn || ((VncKeyword)opt2).hasValue("anon-fn");
+
+					return new VncString(meterRegistry.getTimerDataFormatted(title, anonFn));
 			}
 		}
 

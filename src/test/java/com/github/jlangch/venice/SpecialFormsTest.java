@@ -251,6 +251,9 @@ public class SpecialFormsTest {
 
 		assertEquals(null,  venice.eval("(if true nil \"no\")"));
 		assertEquals("no",  venice.eval("(if false nil \"no\")"));
+
+		assertEquals("yes",  venice.eval("(if true \"yes\")"));
+		assertEquals(null,  venice.eval("(if false \"yes\")"));
 		
 		assertEquals("empty",  venice.eval("(if (== 0 (count '())) :empty :not-empty)"));
 		assertEquals("not-empty",  venice.eval("(if (== 0 (count '(1))) :empty :not-empty)"));

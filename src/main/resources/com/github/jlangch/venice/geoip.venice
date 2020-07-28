@@ -176,13 +176,10 @@
         ip4-trie    (deref (first tasks))
         ip6-trie    (deref (second tasks))
         resolver    (fn [ip]
-                      (cond
-                        (cidr/ip4? ip) (cidr/lookup ip4-trie ip)
-                        (cidr/ip6? ip) (cidr/lookup ip6-trie ip)
-                        :else nil))]
-    (geoip/update-stats :cities-maxmind (count cities))
-    (geoip/update-stats :ip4-to-city (cidr/size ip4-trie))
-    (geoip/update-stats :ip6-to-city (cidr/size ip6-trie))
+                      (cidr/lookup (if (cidr/ip4? ip) ip4-trie ip6-trie) ip))]
+    (geoip/update-stats! :cities-maxmind (count cities))
+    (geoip/update-stats! :ip4-to-city (cidr/size ip4-trie))
+    (geoip/update-stats! :ip6-to-city (cidr/size ip6-trie))
     resolver))
 
 
@@ -239,19 +236,15 @@
           ip4-trie    (deref (first tasks))
           ip6-trie    (deref (second tasks))
           resolver    (fn [ip]
-                        (cond
-                          (cidr/ip4? ip) (do
-                                            (let [data (cidr/lookup ip4-trie ip)
-                                                  city (get cities (:city-id data))]
-                                              (merge data city)))
-                          (cidr/ip6? ip) (do
-                                            (let [data (cidr/lookup ip6-trie ip)
-                                                  city (get cities (:city-id data))]
-                                              (merge data city)))
-                          :else nil))]
-      (geoip/update-stats :cities-maxmind (count cities))
-      (geoip/update-stats :ip4-to-city (cidr/size ip4-trie))
-      (geoip/update-stats :ip6-to-city (cidr/size ip6-trie))
+                        (let [data (cidr/lookup (if (cidr/ip4? ip)
+                                                    ip4-trie
+                                                    ip6-trie)
+                                                ip)
+                              city (get cities (:city-id data))]
+                          (merge data city)))]
+      (geoip/update-stats! :cities-maxmind (count cities))
+      (geoip/update-stats! :ip4-to-city (cidr/size ip4-trie))
+      (geoip/update-stats! :ip6-to-city (cidr/size ip6-trie))
       resolver))
 
 
@@ -278,7 +271,7 @@
 
   (let [locations   (geoip/parse-google-countries-csv location-csv)
         resolver    (fn [country-iso] (get locations country-iso))]
-    (geoip/update-stats :countries-google (count locations))
+    (geoip/update-stats! :countries-google (count locations))
     resolver))
 
 
@@ -321,14 +314,11 @@
                                       :IPv6 zip-bytes countries))]
         ip4-trie    (deref (first tasks))
         ip6-trie    (deref (second tasks))
-        resolver    (fn [ip]
-                      (cond
-                        (cidr/ip4? ip) (cidr/lookup ip4-trie ip)
-                        (cidr/ip6? ip) (cidr/lookup ip6-trie ip)
-                        :else nil))]
-    (geoip/update-stats :countries-maxmind (count countries))
-    (geoip/update-stats :ip4-to-country (cidr/size ip4-trie))
-    (geoip/update-stats :ip6-to-country (cidr/size ip6-trie))
+        resolver    (fn ip-to-country-resolver_ [ip]
+                      (cidr/lookup (if (cidr/ip4? ip) ip4-trie ip6-trie) ip))]
+    (geoip/update-stats! :countries-maxmind (count countries))
+    (geoip/update-stats! :ip4-to-country (cidr/size ip4-trie))
+    (geoip/update-stats! :ip6-to-country (cidr/size ip6-trie))
     resolver))
 
 
@@ -613,8 +603,8 @@
 
 ;; - private -------------------------------------------------------------------
 
-(defn- geoip/update-stats [key val]
-  (swap! geoip/stats (fn [s] (assoc s key val))))
+(defn- geoip/update-stats! [key val]
+  (swap! geoip/stats #(assoc % key val)))
 
 
 (defn- geoip/find-ip-country [ip ip-data]

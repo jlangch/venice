@@ -229,7 +229,7 @@ Script  _tomcat-geoip.venice_ :
 
   (def resolver (delay (create-resolver)))
 
-  (defn create-resolver[] 
+  (defn create-resolver[]
     ; this may take some time
     (println "Loading Google country DB ...")
     (let [country-db (geoip/download-google-country-db)]
@@ -252,7 +252,7 @@ Script  _tomcat-geoip.venice_ :
     ;; ip-locations: list of map with keys :loc :ip :freq :country :country-iso
     ;; group by :country-iso and sum up :freq
     (->> (vals (group-by :country-iso ip-locations))
-         (map #(let [sum      (apply + (map :freq %))
+         (map #(let [sum (apply + (map :freq %))
                      location (dissoc (first %) :ip)]
                  (assoc location :freq sum)))))
 
@@ -277,10 +277,9 @@ Script  _tomcat-geoip.venice_ :
          (filter #(not (private-ip? %)))
          (frequencies)))
 
-  (defn parse-zip-logs [log-file]
-    (->> (io/zip-list-entry-names log-file)
-         (filter #(io/file-ext? % "log"))
-         (map #(parse-ip (io/unzip log-file %)))))
+  (defn parse-zip-logs [zip-log-file]
+    (->> (vals (io/unzip-all zip-log-file))
+         (map #(parse-ip %))))
 
   (defn parse-log-file [log-file]
     (println "Parsing" log-file "...")
@@ -292,9 +291,9 @@ Script  _tomcat-geoip.venice_ :
     ;; returns an aggregated map with IP frequencies:
     ;;    { "196.52.43.56" 3 "178.197.226.244" 8 }
     (merge-freq-maps (flatten (map parse-log-file log-files))))
- 
-  (defn map-to-location [ip-freq ip-loc-resolver]
-    (let [ip   (key ip-freq)
+
+  (defn map-ip-to-location [ip-freq ip-loc-resolver]
+    (let [ip (key ip-freq)
           data (ip-loc-resolver ip)]
       { :loc         (geoip/map-location-to-numerics (:loc data))
         :ip          ip
@@ -305,7 +304,7 @@ Script  _tomcat-geoip.venice_ :
   (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
     (printf "Mapping %d IP addresses ...%n" (count ip-freq-map))
     (->> (entries ip-freq-map)
-         (map #(map-to-location % ip-loc-resolver))
+         (map #(map-ip-to-location % ip-loc-resolver)) ;; this is very slow
          (merge-ip-locations-by-country)
          (map #(let [[lat lon] (:loc %)
                      country   (:country-iso %)
@@ -324,6 +323,10 @@ Script  _tomcat-geoip.venice_ :
     (println "Loading Mercator image...")
     (mercator/load-image file))
 
+  (defn download-maxmind-db [lic-key]
+    (->> (geoip/download-maxmind-db :country lic-key)
+         (io/spit (io/file maxmind-country-zip))))
+
   (defn lookup-ip [ip] (@resolver ip))
 
   (defn run-custom [styles mercator-img out-file & log-files]
@@ -332,34 +335,40 @@ Script  _tomcat-geoip.venice_ :
   (defn run [out-file & log-files]
     (process nil nil out-file log-files))
 
-  
-  (when-not (io/exists-file? maxmind-country-zip)
-    (throw (. :VncException :new 
-              (str "The MaxMind country file"
-                   maxmind-country-zip 
-                   "does not exist!"))))
-
   (println """
            Actions:
               [1] (lookup-ip "41.216.186.131")
-              [2] (run "./ip-map.png"
-                       "resources/localhost_access_log.2019-12.zip")
+              [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
               [3] (run "./ip-map.png"
+                       "resources/localhost_access_log.2019-12.zip")
+              [4] (run "./ip-map.png"
                        "resources/localhost_access_log.2019-12-01.log")
-              [4] (apply run "./ip-map.png"
+              [5] (apply run "./ip-map.png"
                              (io/list-files-glob "resources"
                                                  "localhost_access_log.2020-*"))
            """)
 
   (when-not *macroexpand-on-load*
-    (println """
-
+    (println)
+    (println *err*
+             """
              -------------------------------------------------------------------
              Warning: macroexpand-on-load is not activated. To get a much better
                       performance activate macroexpand-on-load before loading
                       this script.
 
                       From the REPL run: !macroexpand
+             -------------------------------------------------------------------
+             """))
+
+  (when-not (io/exists-file? maxmind-country-zip)
+    (println)
+    (println *err*
+             """
+             -------------------------------------------------------------------
+             Error: The MaxMind country file does not exist!
+
+                    ~{maxmind-country-zip}
              -------------------------------------------------------------------
              """)))
 ```
