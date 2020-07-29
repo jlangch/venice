@@ -216,6 +216,24 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		return super.compareTo(o);
 	}
 
+	@Override
+	public int hashCode() {
+		return qualifiedName.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		else if (getClass() != obj.getClass()) {
+			return false;
+		}
+		else {
+			return qualifiedName.equals(((VncKeyword)obj).qualifiedName);
+		}
+	}
+
 	@Override 
 	public String toString() {
 		return ":" + getValue();

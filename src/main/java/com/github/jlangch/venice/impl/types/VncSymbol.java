@@ -163,27 +163,20 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
-		return result;
+		return qualifiedName.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (!super.equals(obj))
+		}
+		else if (getClass() != obj.getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VncSymbol other = (VncSymbol) obj;
-		if (qualifiedName == null) {
-			if (other.qualifiedName != null)
-				return false;
-		} else if (!qualifiedName.equals(other.qualifiedName))
-			return false;
-		return true;
+		}
+		else {
+			return qualifiedName.equals(((VncSymbol)obj).qualifiedName);
+		}
 	}
 
 	@Override 
