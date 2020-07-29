@@ -279,7 +279,10 @@ public class CidrFunctions {
 				VncFunction
 					.meta()
 					.arglists("(cidr/insert trie cidr value)")		
-					.doc("Insert a new CIDR / value relation into trie")
+					.doc(
+						"Insert a new CIDR / value relation into trie. Works with " +
+						"IPv4 and IPv6. Please keep IPv4 and IPv6 CIDRs in " +
+						"different tries.")
 					.examples(
 						"(do                                                \n" +
 					    "  (let [trie (cidr/trie)]                          \n" +
@@ -312,7 +315,9 @@ public class CidrFunctions {
 					.meta()
 					.arglists("(cidr/lookup trie ip)")		
 					.doc(
-						"Lookup the associated value of a CIDR in the trie.")
+						"Lookup the associated value of a CIDR in the trie. " +
+						"A cidr \"192.16.10.0/24\" or an inet address " +
+						"\"192.16.10.15\" can be passed as ip.")
 					.examples(
 						"(do                                                \n" +
 					    "  (let [trie (cidr/trie)]                          \n" +
@@ -355,15 +360,20 @@ public class CidrFunctions {
 					.meta()
 					.arglists("(cidr/lookup-mixed trie-ip4 trie-ip6 ip)")		
 					.doc(
-						"Lookup the associated value of a CIDR in the IPv4 or IPv6 trie.")
+						"Lookup the associated value of a CIDR in the IPv4 or IPv6 trie. " +
+						"A cidr \"192.16.10.0/24\" or an inet address \"192.16.10.15\" " +
+						"(IPv4 or IPv6) can be passed as ip. The ip will then be routed " +
+						"to the corresponding IPv4 or IPv6 trie.")
 					.examples(
-						"(do                                                    \n" +
-					    "  (let [trie-ip4 (cidr/trie)]                          \n" +
-					    "  (let [trie-ip6 (cidr/trie)]                          \n" +
-						"    (cidr/insert trie-ip4                              \n" +
-						"                 (cidr/parse \"192.16.10.0/24\")       \n" +
-						"                 \"Germany\")                          \n" +
-						"    (cidr/lookup trie-ip4 trie-ip6 \"192.16.10.15\")))   ")
+						"(do                                               \n" +
+					    "  (let [trie-ip4 (cidr/trie)                      \n" +
+					    "        trie-ip6 (cidr/trie)]                     \n" +
+						"    (cidr/insert trie-ip4                         \n" +
+						"                 (cidr/parse \"192.16.10.0/24\")  \n" +
+						"                 \"Germany\")                     \n" +
+						"    (cidr/lookup-mixed trie-ip4                   \n" +
+						"                       trie-ip6                   \n" +
+						"                       \"192.16.10.15\")))          ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
