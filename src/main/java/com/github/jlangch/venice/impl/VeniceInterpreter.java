@@ -284,6 +284,11 @@ public class VeniceInterpreter implements Serializable  {
 	 * @return the result
 	 */
 	private VncVal evaluate(final VncVal ast_, final Env env_) {
+		if (!(ast_ instanceof VncList)) {
+			// not an s-expr
+			return evaluate_values(ast_, env_);
+		}
+
 		RecursionPoint recursionPoint = null;
 		
 		VncVal orig_ast = ast_;
@@ -1709,19 +1714,32 @@ public class VeniceInterpreter implements Serializable  {
 		//       instead of:
 		//          > (macroexpand-all '(user/bench (+ 1 2))
 		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
+
+		final boolean oneAritySymbol = params.size() == 1 && Types.isVncSymbol(params.first());
+		final boolean twoAritySymbol = oneAritySymbol && params.size() == 2 && Types.isVncSymbol(params.second());
 		
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
+				// destructuring fn params -> args
+				if (oneAritySymbol) {
+					localEnv.setLocal((VncSymbol)params.first(), args.first());
+				}
+				else if (twoAritySymbol) {
+					localEnv.setLocal((VncSymbol)params.first(), args.first());
+					localEnv.setLocal((VncSymbol)params.second(), args.second());
+				}
+				else {
+					localEnv.addLocalBindings(Destructuring.destructure(params, args));	
+				}
+
 				if (switchToFunctionNamespaceAtRuntime) {
 					final Namespace curr_ns = Namespaces.getCurrentNamespace();
 					try {
 						Namespaces.setCurrentNamespace(ns);
 
-						// destructuring fn params -> args
-						localEnv.addLocalBindings(Destructuring.destructure(params, args));	
 						validateFnPreconditions(name, preConditions, localEnv);		
 						return evaluateBody(body, localEnv);
 					}
@@ -1730,8 +1748,6 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				}
 				else {
-					// destructuring fn params -> args
-					localEnv.addLocalBindings(Destructuring.destructure(params, args));	
 					validateFnPreconditions(name, preConditions, localEnv);
 					return evaluateBody(body, localEnv);
 				}
