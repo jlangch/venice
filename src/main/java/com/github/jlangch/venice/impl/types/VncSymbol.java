@@ -188,8 +188,8 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	public String toString() {
 		return qualifiedName;
 	}
-	
 
+	
     public static final VncKeyword TYPE = new VncKeyword(":core/symbol");
 
     private static final long serialVersionUID = -1848883965231344442L;
