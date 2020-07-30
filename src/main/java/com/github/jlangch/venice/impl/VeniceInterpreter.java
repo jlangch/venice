@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -314,7 +315,7 @@ public class VeniceInterpreter implements Serializable  {
 			}
 			
 			final VncVal a0 = ast.first();		
-			final String a0sym = Types.isVncSymbol(a0) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
+			final String a0sym = (a0 instanceof VncSymbol) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
 			switch (a0sym) {		
 				case "do": {
@@ -364,12 +365,12 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "defmacro":
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("defmacro", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("defmacro", ast))) {
 						return defmacro_(ast, env);
 					}
 				
 				case "deftype": { // (deftype type fields validationFn*)
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("deftype", ast))) {
 						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncVector fields = Coerce.toVncVector(ast.third());
 						final VncFunction validationFn = ast.size() == 4
@@ -381,7 +382,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "deftype?": { // (deftype? type)
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype?", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("deftype?", ast))) {
 						final VncVal type = evaluate(ast.second(), env);
 
 						return VncBoolean.of(DefTypeForm.isCustomType(type, env));
@@ -389,7 +390,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "deftype-of": { // (deftype-of type base-type validationFn*)
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype-of", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("deftype-of", ast))) {
 						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncKeyword baseType = Coerce.toVncKeyword(evaluate(ast.third(), env));
 						final VncFunction validationFn = ast.size() == 4
@@ -406,7 +407,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "deftype-or": { // (deftype-of type base-type*)
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("deftype-or", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("deftype-or", ast))) {
 						final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
 						final VncList choiceVals = ast.slice(2);
 
@@ -416,7 +417,9 @@ public class VeniceInterpreter implements Serializable  {
 
 				case ".:": { // (.: type args*)
 					final List<VncVal> args = new ArrayList<>();
-					for(VncVal v : ast.rest().getList()) {
+			 		final Iterator<VncVal> iter = ast.rest().iterator();
+			 		while (iter.hasNext()) {
+			 			final VncVal v = iter.next();
 						args.add(evaluate(v, env));
 					}
 					return DefTypeForm.createType(args, env);
@@ -440,7 +443,7 @@ public class VeniceInterpreter implements Serializable  {
 						return val;
 					}
 					else {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(name))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("set!", name))) {
 							throw new VncException(String.format(
 										"The global var or thread-local '%s' does not exist!", 
 										name.getName()));
@@ -477,7 +480,7 @@ public class VeniceInterpreter implements Serializable  {
 													Coerce.toVncSymbol(ast.second()));
 					final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 					if (multiFnVal == null) {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("defmethod", ast))) {
 							throw new VncException(String.format(
 										"No multifunction '%s' defined for the method definition", 
 										multiFnName.getName())); 
@@ -488,7 +491,7 @@ public class VeniceInterpreter implements Serializable  {
 					
 					final VncVector params = Coerce.toVncVector(ast.fourth());
 					if (params.size() != multiFn.getParams().size()) {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("defmethod", ast))) {
 							throw new VncException(String.format(
 									"A method definition for the multifunction '%s' must have %d parameters", 
 									multiFnName.getName(),
@@ -515,7 +518,7 @@ public class VeniceInterpreter implements Serializable  {
 											: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluate(name, env)));
 					
 					if (ns.hasNamespace()) {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns", ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("ns", ast))) {
 							throw new VncException(String.format(
 									"A namespace '%s' must not have itself a namespace! However you can use '%s'.",
 									ns.getQualifiedName(),
@@ -525,7 +528,7 @@ public class VeniceInterpreter implements Serializable  {
 					else {
 						if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 							// prevent Venice's system namespaces from being altered
-							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns", ast))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("ns", ast))) {
 								throw new VncException("Namespace '" + ns.getName() + "' cannot be reopened!");
 							}
 						}
@@ -538,7 +541,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 						// prevent Venice's system namespaces from being altered
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns-remove", ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("ns-remove", ast))) {
 							throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
 						}
 					}
@@ -553,7 +556,7 @@ public class VeniceInterpreter implements Serializable  {
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 						// prevent Venice's system namespaces from being altered
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("ns-unmap", ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("ns-unmap", ast))) {
 							throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
 						}
 					}
@@ -570,7 +573,7 @@ public class VeniceInterpreter implements Serializable  {
 						return new VncString(((INamespaceAware)val).getNamespace());
 					}
 					else {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("namespace", ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("namespace", ast))) {
 							throw new VncException(String.format(
 									"The type '%s' does not support namespaces!",
 									Types.getType(val)));
@@ -579,7 +582,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "import":
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("import", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("import", ast))) {
 						ast.rest().forEach(i -> Namespaces
 													.getCurrentNamespace()
 													.getJavaImports()
@@ -598,7 +601,7 @@ public class VeniceInterpreter implements Serializable  {
 							return namespace.getJavaImportsAsVncList();
 						}
 						else {
-							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("imports", ast))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("imports", ast))) {
 								throw new VncException(String.format(
 									"The namespace '%s' does not exist", ns.toString()));
 							}
@@ -622,7 +625,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "macroexpand": 
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("macroexpand", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("macroexpand", ast))) {
 						return macroexpand(evaluate(ast.second(), env), env, null);
 					}
 
@@ -630,7 +633,7 @@ public class VeniceInterpreter implements Serializable  {
 					// Note: This special form is exposed through the public Venice function 
 					//       'core/macroexpand-all' in the 'core' module.
 					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("*macroexpand-all", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("*macroexpand-all", ast))) {
 						return macroexpand_all(evaluate(ast.second(), env), env);
 					}
 					
@@ -651,14 +654,14 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "doc": // (doc conj)
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("doc", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("doc", ast))) {
 						final VncString doc = DocForm.doc(ast.second(), env);
 						orig_ast = VncList.of(new VncSymbol("println"), doc);
 					}
 					break;
 					
 				case "modules": // (modules )
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("modules", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("modules", ast))) {
 						return VncList.ofList(
 									ModuleLoader
 										.VALID_MODULES
@@ -757,7 +760,7 @@ public class VeniceInterpreter implements Serializable  {
 					// +----------------+-------------------------------------------+---------------+
 
 					if (recursionPoint == null) {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("recur", ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("recur", ast))) {
 							throw new VncException("The recur expression is not in tail position!");
 						}
 					}
@@ -817,12 +820,12 @@ public class VeniceInterpreter implements Serializable  {
 				break;
 					
 				case "try":  // (try expr (catch :Exception e expr) (finally expr))
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("try", ast))) {
 						return try_(ast, new Env(env));
 					}
 					
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("try-with", ast))) {
 						return try_with_(ast, new Env(env));
 					}
 					
@@ -855,8 +858,8 @@ public class VeniceInterpreter implements Serializable  {
 				case "locking":
 					return locking_(ast, env);
 	
-				default:					
-					final VncList el = (VncList)evaluate_values((VncList)ast, env);
+				default:				
+					final VncList el = (VncList)evaluate_values(ast, env);
 					final VncVal elFirst = el.first();
 					final VncList elArgs = el.rest();
 					if (elFirst instanceof VncFunction) {
@@ -877,9 +880,8 @@ public class VeniceInterpreter implements Serializable  {
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
 						// invoke function with call frame
-						final CallFrame callFrame = CallFrame.fromFunction(fn, a0);
 						try {
-							callStack.push(callFrame);
+							callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
 							
 							// Note: the overhead with callstack and interrupt check is ~150ns
 							return fn.apply(elArgs);
@@ -901,12 +903,15 @@ public class VeniceInterpreter implements Serializable  {
 						return ((IVncFunction)elFirst).apply(elArgs);
 					}
 					else {
-						try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(ast))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, ast))) {
 							throw new VncException(String.format(
-									"Not a function or keyword/map used as function: '%s'", 
-									PRINT(elFirst)));
+									"Expected a function or keyword/set/map/vector as "
+										+ "s-expression  symbol value but got a value "
+										+ "of type '%s'!", 
+									Types.getType(elFirst)));
 						}
 					}
+				
 			}
 		}
 	}
@@ -939,11 +944,13 @@ public class VeniceInterpreter implements Serializable  {
 								evaluate(seq.second(), env),
 								evaluate(seq.third(), env),
 								evaluate(seq.fourth(), env));
-				default: 
+				default:
 					final List<VncVal> vals = new ArrayList<>();
-					for(VncVal v : seq.getList()) {
+			 		final Iterator<VncVal> iter = seq.iterator();
+			 		while (iter.hasNext()) {
+			 			final VncVal v = iter.next();
 						vals.add(evaluate(v, env));
-					}
+			 		}
 					return seq.withValues(vals);
 			}
 		}
@@ -1112,9 +1119,6 @@ public class VeniceInterpreter implements Serializable  {
 				if (Types.isVncList(form)) {
 					// (outer (apply list (map inner form)))
 					return TransducerFunctions.map.applyOf(inner, form);
-//					return CoreFunctions.apply.applyOf(
-//								CoreFunctions.new_list, 
-//								TransducerFunctions.map.applyOf(inner, form));
 				}
 				else if (Types.isVncMapEntry(form)) {
 					// (outer (map-entry (inner (key form)) (inner (val form))))
@@ -1287,7 +1291,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal dorun_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("dorun", ast))) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame("dorun", ast))) {
 				throw new VncException("dorun requires two arguments a count and an expression to run");
 			}
 		}
@@ -1318,7 +1322,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal dobench_(final VncList ast, final Env env) {
 		if (ast.size() != 3) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("dobench", ast))) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame("dobench", ast))) {
 				throw new VncException("dobench requires two arguments a count and an expression to run");
 			}
 		}
@@ -1351,7 +1355,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal locking_(final VncList ast, final Env env) {
 		if (ast.size() < 3) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("locking", ast))) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame("locking", ast))) {
 				throw new VncException("locking requires a lockee and one or more expressions to run");
 			}
 		}
@@ -1486,7 +1490,7 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 
-		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("prof", ast))) {
+		try (WithCallStack cs = new WithCallStack(new CallFrame("prof", ast))) {
 			throw new VncException(
 					"Function 'prof' expects a single keyword argument: " +
 					":on, :off, :status, :clear, :clear-all-but, :data, " +
@@ -1558,7 +1562,7 @@ public class VeniceInterpreter implements Serializable  {
 				boundResources.add(new Binding((VncSymbol)sym, val));
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame("try-with", ast))) {
 					throw new VncException(
 							String.format(
 									"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
@@ -1604,7 +1608,7 @@ public class VeniceInterpreter implements Serializable  {
 							((AutoCloseable)r).close();
 						}
 						catch(Exception ex) {
-							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("try-with", ast))) {
 								throw new VncException(
 										String.format(
 												"'try-with' failed to close resource %s.",
@@ -1617,7 +1621,7 @@ public class VeniceInterpreter implements Serializable  {
 							((Closeable)r).close();
 						}
 						catch(Exception ex) {
-							try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("try-with", ast))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("try-with", ast))) {
 								throw new VncException(
 										String.format(
 												"'try-with' failed to close resource %s.",
@@ -1634,7 +1638,9 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncList getTryBody(final VncList ast) {
 		final List<VncVal> body = new ArrayList<>();
-		for(VncVal e : ast.rest().getList()) {
+ 		final Iterator<VncVal> iter = ast.rest().iterator();
+ 		while (iter.hasNext()) {
+ 			final VncVal e = iter.next();
 			if (Types.isVncList(e)) {
 				final VncVal first = ((VncList)e).first();
 				if (Types.isVncSymbol(first)) {
@@ -1654,7 +1660,9 @@ public class VeniceInterpreter implements Serializable  {
 			final VncList blocks, 
 			final Throwable th
 	) {
-		for(VncVal b : blocks.getList()) {
+ 		final Iterator<VncVal> iter = blocks.iterator();
+ 		while (iter.hasNext()) {
+ 			final VncVal b = iter.next();
 			if (Types.isVncList(b)) {
 				final VncList block = ((VncList)b);
 				final VncVal first = block.first();
@@ -1682,7 +1690,9 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncList findFirstFinallyBlock(final VncList blocks) {
-		for(VncVal b : blocks.getList()) {
+ 		final Iterator<VncVal> iter = blocks.iterator();
+ 		while (iter.hasNext()) {
+ 			final VncVal b = iter.next();
 			if (Types.isVncList(b)) {
 				final VncList block = ((VncList)b);
 				final VncVal first = block.first();
@@ -1715,25 +1725,35 @@ public class VeniceInterpreter implements Serializable  {
 		//          > (macroexpand-all '(user/bench (+ 1 2))
 		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
 
-		final boolean oneAritySymbol = params.size() == 1 && Types.isVncSymbol(params.first());
-		final boolean twoAritySymbol = oneAritySymbol && params.size() == 2 && Types.isVncSymbol(params.second());
-		
+//		// Destructuring optimisation for functions with destructuring args and with one or two params
+//		final VncSymbol paramSym1 = Types.isVncSymbol(params.first()) ? (VncSymbol)params.first() : null;
+//		final VncSymbol paramSym2 = Types.isVncSymbol(params.second()) ? (VncSymbol)params.second() : null;	
+//		final boolean oneAritySymbol = params.size() == 1 
+//											&& paramSym1 != null 
+//											&& !paramSym1.getName().equals("&")  // param elision
+//											&& !paramSym1.getName().equals("_"); // param ignore
+//		final boolean twoAritySymbol = oneAritySymbol 
+//											&& params.size() == 2 
+//											&& paramSym2 != null 
+//											&& !paramSym2.getName().equals("&")  // param elision
+//											&& !paramSym2.getName().equals("_"); // param ignore
+
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
-				// destructuring fn params -> args
-				if (oneAritySymbol) {
-					localEnv.setLocal((VncSymbol)params.first(), args.first());
-				}
-				else if (twoAritySymbol) {
-					localEnv.setLocal((VncSymbol)params.first(), args.first());
-					localEnv.setLocal((VncSymbol)params.second(), args.second());
-				}
-				else {
+//				// destructuring fn params -> args
+//				if (oneAritySymbol) {
+//					localEnv.setLocal(paramSym1, args.first());
+//				}
+//				else if (twoAritySymbol) {
+//					localEnv.setLocal(paramSym1, args.first());
+//					localEnv.setLocal(paramSym2, args.second());
+//				}
+//				else {
 					localEnv.addLocalBindings(Destructuring.destructure(params, args));	
-				}
+//				}
 
 				if (switchToFunctionNamespaceAtRuntime) {
 					final Namespace curr_ns = Namespaces.getCurrentNamespace();
@@ -1786,9 +1806,11 @@ public class VeniceInterpreter implements Serializable  {
 	) {
 		if (preConditions != null && !preConditions.isEmpty()) {
 	 		final Env local = new Env(env);	
-	 		for(VncVal v : preConditions.getList()) {
+	 		final Iterator<VncVal> iter = preConditions.iterator();
+	 		while (iter.hasNext()) {
+	 			final VncVal v = iter.next();
 				if (!isFnConditionTrue(evaluate(v, local))) {
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(fnName, v))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame(fnName, v))) {
 						throw new AssertionException(String.format(
 								"pre-condition assert failed: %s",
 								((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
@@ -1875,7 +1897,7 @@ public class VeniceInterpreter implements Serializable  {
 			// do not allow to hijack another namespace
 			final String ns = sym.getNamespace();
 			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(specialFormName, sym))) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(specialFormName, sym))) {
 					throw new VncException(String.format(
 							"Special form '%s': Invalid use of namespace. "
 								+ "The symbol '%s' can only be defined for the current namespace '%s'.",
