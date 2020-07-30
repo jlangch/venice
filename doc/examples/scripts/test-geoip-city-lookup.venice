@@ -46,7 +46,7 @@
     (resolver ip))
 
   (defn process [ip-addresses]
-    (map lookup-ip ip-addresses)
+    (map resolver ip-addresses)
     nil)
 
   (defn run []

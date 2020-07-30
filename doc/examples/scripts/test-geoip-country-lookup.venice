@@ -46,15 +46,16 @@
     (resolver ip))
 
   (defn process [ip-addresses]
-    (map lookup-ip ip-addresses)
+    (map resolver ip-addresses)
     nil)
 
   (defn run []
     (process ip-addresses))
 
   (defn run-parallel []
-    (let [threads (max 1 (/ (cpus) 2))
-          work    (partition threads ip-addresses)
+    (let [data    (flatten (repeat 10 ip-addresses))
+          threads (max 1 (/ (cpus) 2))
+          work    (partition threads data)
           futures (map #(future (partial process %)) work)]
       (map deref futures)
       nil))
@@ -64,11 +65,10 @@
   ;
   ;               Venice  threads  time per IP  perf test
   ;               ------  -------  -----------  --------------------------
-  ;               1.8.13     1          7us     (perf (test/run) 0 1)
-  ;               1.8.13     1        1.5us     (perf (test/run) 2000 1000)
+  ;               1.8.13     1        1.1us     (perf (test/run) 4000 1000)
 
   ; (test/lookup-ip "41.216.186.131")
 
-  ; (perf (test/run) 200 10)
-  ; (println (prof :data-formatted))
+  ; (perf (test/run) 4000 100)
+  ; (println (prof :data-formatted :anon-fn))
 )
