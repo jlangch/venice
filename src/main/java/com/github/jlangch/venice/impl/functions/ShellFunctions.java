@@ -273,7 +273,7 @@ public class ShellFunctions {
 				}
 
 				if (exitCode != 0 && VncBoolean.isTrue(opts.get(new VncKeyword(":throw-ex")))) {
-					try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", cmd))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd))) {
 						throw new ShellException(
 								String.format(
 									"Shell execution failed: (sh %s). Exit code: %d", 
@@ -294,7 +294,7 @@ public class ShellFunctions {
 			throw ex;
 		}
 		catch(Exception ex) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("sh", cmd))) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd))) {
 				throw new VncException(
 						String.format(
 								"Shell execution processing failed: (sh %s)", 

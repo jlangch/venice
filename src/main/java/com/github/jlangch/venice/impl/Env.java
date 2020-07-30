@@ -106,8 +106,8 @@ public class Env implements Serializable {
 		final VncVal val = getOrElse(sym, null);
 		if (val != null) return val;
 
-		try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
-			throw new VncException(String.format("Symbol '%s' not found.", sym.getName())); 
+		try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym))) {
+			throw new VncException(String.format("Symbol '%s' not found.", sym.getQualifiedName())); 
 		}
 	}
 
@@ -232,10 +232,10 @@ public class Env implements Serializable {
 			// e.g.:   (do (defonce x 1) (let [x 10 y 20] (+ x y)))
 			//         (let [+ 10] (core/+ + 20))
 			if (v != null && !v.isOverwritable() && Types.isVncFunction(v.getVal())) {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym))) {
 					throw new VncException(String.format(
 								"The global var '%s' must not be shadowed by a local var!", 
-								sym));
+								sym.getQualifiedName()));
 				}
 			}
 		}
@@ -252,10 +252,11 @@ public class Env implements Serializable {
 
 		final Var v = getGlobalVar(val.getName());
 		if (v != null && !v.isOverwritable()) {
-			try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(val.getName()))) {
+			final VncSymbol sym = val.getName();
+			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
 				throw new VncException(String.format(
 							"The existing global var '%s' must not be overwritten!", 
-							val.getName()));
+							sym.getQualifiedName()));
 			}
 		}
 		
@@ -448,7 +449,7 @@ public class Env implements Serializable {
 		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
 			throw new VncException(String.format(
 						"%s can not be used as a dynamic var", 
-						sym.getName()));
+						sym.getQualifiedName()));
 		}
 
 		final Var dv = getGlobalVar(sym);
@@ -457,10 +458,10 @@ public class Env implements Serializable {
 				return (DynamicVar)dv;
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal(sym))) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym))) {
 					throw new VncException(String.format(
 								"The var '%s' is not defined as dynamic", 
-								sym.getName()));
+								sym.getQualifiedName()));
 				}
 			}
 		}
@@ -613,7 +614,7 @@ public class Env implements Serializable {
 			if (!currNS.equals(symNS)) {
 				final CallStack callStack = ThreadLocalMap.getCallStack();
 				
-				try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("symbol", sym))) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame("symbol", sym))) {
 					throw new VncException(String.format(
 							"Illegal access of private symbol '%s/%s' "
 								+ "accessed from namespace '%s'.\n%s", 

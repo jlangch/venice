@@ -152,7 +152,7 @@ public class JavaInteropFunctions {
 
 			return new VncJavaObject(
 						DynamicInvocationHandler.proxify(
-								CallFrame.fromVal("proxify(:" + clazz.getName() +")", args),
+								new CallFrame("proxify(:" + clazz.getName() +")", args),
 								clazz, 
 								Coerce.toVncMap(args.second())));
 		}

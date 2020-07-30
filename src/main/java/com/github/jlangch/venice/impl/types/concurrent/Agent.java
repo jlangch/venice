@@ -253,7 +253,7 @@ public class Agent implements IDeref {
 		public void run() {
 			final CallStack callStack = ThreadLocalMap.getCallStack();
 
-			final CallFrame callFrame = CallFrame.fromVal(
+			final CallFrame callFrame = new CallFrame(
 											String.format(
 													"agent->%s->%s", 
 													sendType.toString().toLowerCase(), 
@@ -261,7 +261,7 @@ public class Agent implements IDeref {
 											fnArgs);
 
 			try {				
-				ThreadLocalMap.clearCallStack();
+				callStack.clear();
 				callStack.push(callFrame);
 
 				// inherit thread local values to the child thread

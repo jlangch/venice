@@ -80,7 +80,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final VncList fnArgs = toVncArgs(args);
 				
 			final CallStack callStack = ThreadLocalMap.getCallStack();
-			final CallFrame callFrameMethod = CallFrame.fromVal(
+			final CallFrame callFrameMethod = new CallFrame(
 													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
 			
