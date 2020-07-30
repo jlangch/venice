@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -36,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 //	Benchmark                       Mode  Cnt  Score   Error  Units
@@ -202,6 +204,11 @@ public class VncTinyVector extends VncVector {
 		}
 		return list;
 	}
+
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : new MappingIterator(this);
+    }
 
 	@Override
 	public int size() {
@@ -520,7 +527,34 @@ public class VncTinyVector extends VncVector {
 		return "[" + Printer.join(getList(), " ", print_readably) + "]";
 	}
 
+	
+	private static class MappingIterator implements Iterator<VncVal> {
 
+		public MappingIterator(final VncTinyVector value) {
+			this.value = value;
+		}
+		
+	    @Override
+	    public boolean hasNext() { 
+	    	return index < value.len; 
+	    }
+
+	    @Override
+	    public VncVal next() { 
+	    	return value.nth(index++);
+	    }
+
+	    @Override
+	    public String toString() {
+	        return "MappingIterator()";
+	    }
+	    
+	    private int index;
+	    
+	    private final VncTinyVector value;
+	}
+
+	
 	public static final VncKeyword TYPE = new VncKeyword(":core/vector");
 	public static final VncTinyVector EMPTY = new VncTinyVector();
 	public static final int MAX_ELEMENTS = 4;

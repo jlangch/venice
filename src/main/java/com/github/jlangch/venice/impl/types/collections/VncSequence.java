@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -29,6 +30,7 @@ import java.util.stream.Stream;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+
 
 
 public abstract class VncSequence extends VncCollection {
@@ -63,6 +65,8 @@ public abstract class VncSequence extends VncCollection {
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
+
+    public abstract Iterator<VncVal> iterator();
 
 	public abstract List<VncVal> getList();
 	
