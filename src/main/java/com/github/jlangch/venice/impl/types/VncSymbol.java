@@ -41,6 +41,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		namespace = pos <= 0 ? null : v.substring(0, pos);
 		simpleName = pos < 0 ? v : v.substring(pos+1); 	
 		qualifiedName = v;
+		hash = v.hashCode();
 	}
 
 	public VncSymbol(final String ns, final String name, final VncVal meta) { 
@@ -51,6 +52,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		namespace = emptyNS ? null : ns;
 		simpleName = name;
 		qualifiedName = emptyNS ? simpleName : ns + "/" + simpleName;
+		hash = qualifiedName.hashCode();
 	}
 
 	private VncSymbol(final VncSymbol other, final VncVal meta) { 
@@ -59,6 +61,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		namespace = other.namespace;
 		simpleName = other.simpleName;
 		qualifiedName = other.qualifiedName;
+		hash = other.hash;
 	}
 	
 	@Override
@@ -163,7 +166,9 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	
 	@Override
 	public int hashCode() {
-		return qualifiedName.hashCode();
+		// performance:
+		// pre-calculated hash for symbols (symbol table put/get)
+		return hash;  
 	}
 
 	@Override
@@ -192,4 +197,6 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	private final String qualifiedName;
 	private final String simpleName;
 	private final String namespace;
+	private final int hash;
+
 }

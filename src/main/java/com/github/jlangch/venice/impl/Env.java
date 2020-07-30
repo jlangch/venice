@@ -486,14 +486,18 @@ public class Env implements Serializable {
 	}
 	
 	private VncVal findLocalVar(final VncSymbol sym) {
-		Env env = this;	
-		
-		while(true) {
-			final Var v = env.localSymbols.get(sym);
+		Var v = this.localSymbols.get(sym);
+		if (v != null) return v.getVal();
+
+		// descend through the env levels
+		Env env = this.outer;		
+		while(env != null) {
+			v = env.localSymbols.get(sym);
 			if (v != null) return v.getVal();
 			env = env.outer;
-			if (env == null) return null;
 		}
+		
+		return null;
 	}
 	
 	private Var getGlobalVar(final VncSymbol sym) {
