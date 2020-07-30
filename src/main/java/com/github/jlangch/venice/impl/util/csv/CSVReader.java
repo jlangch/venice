@@ -109,7 +109,7 @@ public class CSVReader {
 	private String unquote(final String item) {
 		if (item.startsWith(quote) && item.endsWith(quote)) {
 			return item.substring(1, item.length()-1)
-					  .replace(doubleQuotes, quote);
+					   .replace(doubleQuotes, quote);
 		}
 		else {
 			return item;
