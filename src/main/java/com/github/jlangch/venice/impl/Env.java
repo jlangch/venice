@@ -218,10 +218,6 @@ public class Env implements Serializable {
 	public int level() {
 		return level;
 	}
-
-	public Env setLocal(final VncSymbol sym, final VncVal val) {
-		return setLocal(new Var(sym, val));
-	}
 	
 	public Env setLocal(final Var localVar) {
 		final VncSymbol sym = localVar.getName();
@@ -272,17 +268,12 @@ public class Env implements Serializable {
 	}
 
 	public Env addGlobalVars(final List<Var> vars) {
-		if (vars != null) {
-			vars.forEach(v -> setGlobal(v));
-		}
-
+		vars.forEach(v -> setGlobal(v));
 		return this;
 	}
 
 	public void addLocalVars(final List<Var> vars) {
-		for(Var b : vars) {
-			setLocal(b);
-		}
+		for(Var b : vars) setLocal(b);
 	}
 
 	public void pushGlobalDynamic(final VncSymbol sym, final VncVal val) {

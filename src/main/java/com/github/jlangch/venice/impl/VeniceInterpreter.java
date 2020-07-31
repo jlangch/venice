@@ -729,7 +729,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncSymbol sym = Coerce.toVncSymbol(bindings.nth(i));
 						final VncVal val = evaluate(bindings.nth(i+1), env);
 	
-						env.setLocal(sym, val);
+						env.setLocal(new Var(sym, val));
 						bindingNames.add(sym);
 					}
 					
@@ -773,15 +773,15 @@ public class VeniceInterpreter implements Serializable  {
 							break;
 						case 2:
 							// [1][2] calculate and bind the single new value
-							recur_env.setLocal(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env));
+							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env)));
 							break;
 						case 3:
 							// [1] calculate the new values
 							final VncVal v1 = evaluate(ast.second(), env);
 							final VncVal v2 = evaluate(ast.third(), env);
 							// [2] bind the new values
-							recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1);
-							recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2);
+							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
+							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
 							break;
 						case 4:
 							// [1] calculate the new values
@@ -789,9 +789,9 @@ public class VeniceInterpreter implements Serializable  {
 							final VncVal v2_ = evaluate(ast.third(), env);
 							final VncVal v3_ = evaluate(ast.fourth(), env);
 							// [2] bind the new values
-							recur_env.setLocal(recursionPoint.getLoopBindingName(0), v1_);
-							recur_env.setLocal(recursionPoint.getLoopBindingName(1), v2_);
-							recur_env.setLocal(recursionPoint.getLoopBindingName(2), v3_);
+							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1_));
+							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2_));
+							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(2), v3_));
 							break;
 						default:
 							// [1] calculate new values
@@ -803,7 +803,7 @@ public class VeniceInterpreter implements Serializable  {
 							
 							// [2] bind the new values
 							for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
-								recur_env.setLocal(recursionPoint.getLoopBindingName(ii), newValues[ii]);
+								recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(ii), newValues[ii]));
 							}
 							break;
 					}
@@ -1531,7 +1531,7 @@ public class VeniceInterpreter implements Serializable  {
 				throw th;
 			}
 			else {
-				env.setLocal(catchBlock.getExSym(), new VncJavaObject(th));			
+				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));			
 				return evaluateBody(catchBlock.getBody(), env);
 			}
 		}
@@ -1580,7 +1580,7 @@ public class VeniceInterpreter implements Serializable  {
 					throw th;
 				}
 				else {
-					env.setLocal(catchBlock.getExSym(), new VncJavaObject(th));
+					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));
 				
 					return evaluateBody(catchBlock.getBody(), env);
 				}
@@ -1732,7 +1732,7 @@ public class VeniceInterpreter implements Serializable  {
 
 				// destructuring fn params -> args
 				if (oneAritySymbol) {
-					localEnv.setLocal((VncSymbol)params.first(), args.first());
+					localEnv.setLocal(new Var((VncSymbol)params.first(), args.first()));
 				}
 				else {
 					localEnv.addLocalVars(Destructuring.destructure(params, args));	
