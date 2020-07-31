@@ -5559,7 +5559,7 @@ public class CoreFunctions {
 							.collect(Collectors.toList());
 
 				// the functions are applied right to left
-				return new VncFunction(VncFunction.createAnonymousFuncName()) {
+				return new VncFunction(createAnonymousFuncName("comp")) {
 					public VncVal apply(final VncList args) {
 						VncVal result = args.first();
 
@@ -5639,7 +5639,7 @@ public class CoreFunctions {
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fnArgs = args.rest();
 
-				return new VncFunction(VncFunction.createAnonymousFuncName()) {
+				return new VncFunction(createAnonymousFuncName("partial")) {
 					public VncVal apply(final VncList args) {
 						return fn.apply(fnArgs.addAllAtEnd(args));
 					}
