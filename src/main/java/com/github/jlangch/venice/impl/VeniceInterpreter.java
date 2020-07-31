@@ -1730,6 +1730,7 @@ public class VeniceInterpreter implements Serializable  {
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
+
 				// destructuring fn params -> args
 				if (oneAritySymbol) {
 					localEnv.setLocal(new Var((VncSymbol)params.first(), args.first()));
@@ -1737,7 +1738,7 @@ public class VeniceInterpreter implements Serializable  {
 				else {
 					localEnv.addLocalVars(Destructuring.destructure(params, args));	
 				}
-				
+
 				if (switchToFunctionNamespaceAtRuntime) {
 					final Namespace curr_ns = Namespaces.getCurrentNamespace();
 					try {

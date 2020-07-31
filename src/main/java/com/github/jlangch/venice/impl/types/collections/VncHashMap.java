@@ -356,6 +356,8 @@ public class VncHashMap extends VncMap {
 
 	public static final VncKeyword TYPE = new VncKeyword(":core/hash-map");
 
+	public static final VncHashMap EMPTY = new VncHashMap();
+
     private static final long serialVersionUID = -1848883965231344442L;
 
 	private final io.vavr.collection.HashMap<VncVal,VncVal> value;	
