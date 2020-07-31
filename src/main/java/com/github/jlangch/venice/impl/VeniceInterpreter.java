@@ -692,7 +692,7 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVal sym = bindings.nth(i);
 						final VncVal val = evaluate(bindings.nth(i+1), env);
 
-						env.addLocalBindings(Destructuring.destructure(sym, val));
+						env.addLocalVars(Destructuring.destructure(sym, val));
 					}
 						
 					if (expressions.isEmpty()) {
@@ -945,11 +945,9 @@ public class VeniceInterpreter implements Serializable  {
 								evaluate(seq.third(), env),
 								evaluate(seq.fourth(), env));
 				default:
-					final List<VncVal> vals = new ArrayList<>();
-			 		final Iterator<VncVal> iter = seq.iterator();
-			 		while (iter.hasNext()) {
-			 			final VncVal v = iter.next();
-						vals.add(evaluate(v, env));
+					final List<VncVal> vals = new ArrayList<>(seq.size());
+					for(int ii=0; ii<seq.size(); ii++) {
+						vals.add(evaluate(seq.nth(ii), env));
 			 		}
 					return seq.withValues(vals);
 			}
@@ -957,7 +955,7 @@ public class VeniceInterpreter implements Serializable  {
 		else if (ast instanceof VncMap) {
 			final VncMap map = (VncMap)ast;
 			
-			final Map<VncVal,VncVal> vals = new HashMap<>();
+			final Map<VncVal,VncVal> vals = new HashMap<>(map.size());
 			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
 				vals.put(
 					evaluate(e.getKey(), env), 
@@ -968,7 +966,7 @@ public class VeniceInterpreter implements Serializable  {
 		else if (ast instanceof VncSet) {
 			final VncSet set = (VncSet)ast;
 			
-			final List<VncVal> vals = new ArrayList<>();
+			final List<VncVal> vals = new ArrayList<>(set.size());
 			for(VncVal v: set.getList()) {
 				vals.add(evaluate(v, env));
 			}
@@ -1507,9 +1505,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal sym = bindings.nth(i);
 			final VncVal val = evaluate(bindings.nth(i+1), env);
 	
-			for(Binding b : Destructuring.destructure(sym, val)) {
-				vars.add(new Var(b.sym, b.val));
-			}
+			vars.addAll(Destructuring.destructure(sym, val));
 		}
 			
 		try {
@@ -1551,15 +1547,16 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal try_with_(final VncList ast, final Env env) {
 		final VncSequence bindings = Coerce.toVncSequence(ast.second());
-		final List<Binding> boundResources = new ArrayList<>();
+		final List<Var> boundResources = new ArrayList<>();
 		
 		for(int i=0; i<bindings.size(); i+=2) {
 			final VncVal sym = bindings.nth(i);
 			final VncVal val = evaluate(bindings.nth(i+1), env);
 
 			if (Types.isVncSymbol(sym)) {
-				env.setLocal((VncSymbol)sym, val);
-				boundResources.add(new Binding((VncSymbol)sym, val));
+				final Var binding = new Var((VncSymbol)sym, val);
+				env.setLocal(binding);
+				boundResources.add(binding);
 			}
 			else {
 				try (WithCallStack cs = new WithCallStack(new CallFrame("try-with", ast))) {
@@ -1600,7 +1597,7 @@ public class VeniceInterpreter implements Serializable  {
 			// close resources in reverse order
 			Collections.reverse(boundResources);
 			boundResources.stream().forEach(b -> {
-				final VncVal resource = b.val;
+				final VncVal resource = b.getVal();
 				if (Types.isVncJavaObject(resource)) {
 					final Object r = ((VncJavaObject)resource).getDelegate();
 					if (r instanceof AutoCloseable) {
@@ -1612,7 +1609,7 @@ public class VeniceInterpreter implements Serializable  {
 								throw new VncException(
 										String.format(
 												"'try-with' failed to close resource %s.",
-												b.sym.getName()));
+												b.getName()));
 							}
 						}
 					}
@@ -1625,7 +1622,7 @@ public class VeniceInterpreter implements Serializable  {
 								throw new VncException(
 										String.format(
 												"'try-with' failed to close resource %s.",
-												b.sym.getName()));
+												b.getName()));
 							}
 						}
 					}
@@ -1725,36 +1722,22 @@ public class VeniceInterpreter implements Serializable  {
 		//          > (macroexpand-all '(user/bench (+ 1 2))
 		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
 
-//		// Destructuring optimisation for functions with destructuring args and with one or two params
-//		final VncSymbol paramSym1 = Types.isVncSymbol(params.first()) ? (VncSymbol)params.first() : null;
-//		final VncSymbol paramSym2 = Types.isVncSymbol(params.second()) ? (VncSymbol)params.second() : null;	
-//		final boolean oneAritySymbol = params.size() == 1 
-//											&& paramSym1 != null 
-//											&& !paramSym1.getName().equals("&")  // param elision
-//											&& !paramSym1.getName().equals("_"); // param ignore
-//		final boolean twoAritySymbol = oneAritySymbol 
-//											&& params.size() == 2 
-//											&& paramSym2 != null 
-//											&& !paramSym2.getName().equals("&")  // param elision
-//											&& !paramSym2.getName().equals("_"); // param ignore
+		// Destructuring optimisation for functions with single symbol arg
+		final boolean oneAritySymbol = params.size() == 1 && Types.isVncSymbol(params.first());
 
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
-//				// destructuring fn params -> args
-//				if (oneAritySymbol) {
-//					localEnv.setLocal(paramSym1, args.first());
-//				}
-//				else if (twoAritySymbol) {
-//					localEnv.setLocal(paramSym1, args.first());
-//					localEnv.setLocal(paramSym2, args.second());
-//				}
-//				else {
-					localEnv.addLocalBindings(Destructuring.destructure(params, args));	
-//				}
-
+				// destructuring fn params -> args
+				if (oneAritySymbol) {
+					localEnv.setLocal((VncSymbol)params.first(), args.first());
+				}
+				else {
+					localEnv.addLocalVars(Destructuring.destructure(params, args));	
+				}
+				
 				if (switchToFunctionNamespaceAtRuntime) {
 					final Namespace curr_ns = Namespaces.getCurrentNamespace();
 					try {

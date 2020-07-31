@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -73,6 +74,22 @@ public class Var implements Serializable {
 	}
 	
 
+	
+	public static Var findVar(final VncSymbol sym, final List<Var> bindings) {
+		final int idx = getVarIndex(sym, bindings);
+		return idx < 0 ? null : bindings.get(idx);
+	}
+	
+	public static int getVarIndex(final VncSymbol sym, final List<Var> bindings) {
+		for(int ii=0; ii<bindings.size(); ii++) {
+			final Var b = bindings.get(ii);
+			if (b.getName().equals(sym)) {
+				return ii;
+			}
+		}
+		return -1;
+	}
+	
 	
 	private static final long serialVersionUID = 1598432086227773369L;
 

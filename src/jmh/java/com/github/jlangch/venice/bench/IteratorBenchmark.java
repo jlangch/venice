@@ -60,6 +60,15 @@ public class IteratorBenchmark {
 		}
 		return sum;
 	}
+
+	@Benchmark
+	public Object sum_vavr_nth() {
+		long sum = 0;
+		for(int ii=0; ii<vector.size(); ii++) {
+			sum += vector.get(ii);
+		}
+		return sum;
+	}
 	
 	@Benchmark
 	public Object sum_vavr_iterator() {
@@ -73,7 +82,7 @@ public class IteratorBenchmark {
 	}
 
 	@Benchmark
-	public Object sum_iterator_java_for_loop() {
+	public Object sum_iterator_asjava_loop() {
 		
 		long sum = 0;
 		for(Long v : vector.asJava()) {
@@ -83,5 +92,5 @@ public class IteratorBenchmark {
 	}
 	
 
-	private final Vector<Long> vector = Vector.range(1L, 100L);
+	private final Vector<Long> vector = Vector.range(1L, 5L);
 }

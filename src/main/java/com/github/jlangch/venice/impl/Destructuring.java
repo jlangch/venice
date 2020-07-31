@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 public class Destructuring {
 	
+	// scalar binding
 	// x 10                                     -> x: 10
 	
 	// sequential destructuring on vector
@@ -72,15 +73,15 @@ public class Destructuring {
 	// associative destructuring on vector
 	// [x {:keys [a b]}] [10 {:a 1 :b 2 :c 3}]  -> a: 1, :b 2
 
-	public static List<Binding> destructure(
+	public static List<Var> destructure(
 			final VncVal symVal, 
 			final VncVal bindVal
 	) {
-		final List<Binding> bindings = new ArrayList<>();
+		final List<Var> bindings = new ArrayList<>();
 		
 		if (Types.isVncSymbol(symVal)) {
 			// scalar value binding [n 10]			
-			bindings.add(new Binding((VncSymbol)symVal, bindVal));
+			bindings.add(new Var((VncSymbol)symVal, bindVal));
 		}
 		else if (Types.isVncSequence(symVal)) {
 			// sequential destructuring	
@@ -143,7 +144,7 @@ public class Destructuring {
 	private static void sequential_list_destructure(
 			final VncSequence symVal, 
 			final VncSequence bindVal,
-			final List<Binding> bindings
+			final List<Var> bindings
 	) {
 		// [[x y] [10 20]]
 		// [[x _ y _ z] [10 20 30 40 50]]
@@ -153,13 +154,11 @@ public class Destructuring {
 		// [[x y :as all] [10 20 30 40 50]]
 		// [[x y & z :as all] [10 20 30 40 50]]
 		
-		final List<VncVal> symbols = symVal.getList();
-		final List<VncVal> values = bindVal.getList();
 		int symIdx = 0;
 		int valIdx = 0;
 		
-		while(symIdx<symbols.size()) {
-			final VncVal sVal = symbols.get(symIdx);
+		while(symIdx<symVal.size()) {
+			final VncVal sVal = symVal.nth(symIdx);
 			
 			if (Types.isVncSymbol(sVal)) {
 				final String symName = ((VncSymbol)sVal).getName();
@@ -169,37 +168,37 @@ public class Destructuring {
 					valIdx++;
 				}
 				else if (symName.equals("&")) {
-					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
-					final VncVal val = valIdx < values.size() 
+					final VncSymbol sym = (VncSymbol)symVal.nth(symIdx+1);
+					final VncVal val = valIdx < bindVal.size() 
 											? ((VncSequence)bindVal).slice(valIdx) 
 											: Nil;
-					bindings.add(new Binding(sym, val));
+					bindings.add(new Var(sym, val));
 					symIdx += 2; 
-					valIdx = values.size(); // all values read
+					valIdx = bindVal.size(); // all values read
 				}
 				else {
 					final VncSymbol sym = (VncSymbol)sVal;
-					final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;
-					bindings.add(new Binding(sym, val));
+					final VncVal val = valIdx < bindVal.size() ? bindVal.nth(valIdx) : Nil;
+					bindings.add(new Var(sym, val));
 					symIdx++; 
 					valIdx++;
 				}
 			}
 			else if (isAsKeyword(sVal)) {
-				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
-				bindings.add(new Binding(sym, bindVal));
+				final VncSymbol sym = (VncSymbol)symVal.nth(symIdx+1);
+				bindings.add(new Var(sym, bindVal));
 				symIdx += 2; 
 			}
 			else if (Types.isVncSequence(sVal)) {
 				final VncVal syms = sVal;
-				final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;						
+				final VncVal val = valIdx < bindVal.size() ? bindVal.nth(valIdx) : Nil;						
 				bindings.addAll(destructure(syms, val));
 				symIdx++; 
 				valIdx++;
 			}
 			else if (Types.isVncMap(sVal)) {
 				final VncMap syms = (VncMap)sVal;
-				final VncVal val = valIdx < values.size() ? values.get(valIdx) : new VncHashMap();						
+				final VncVal val = valIdx < bindVal.size() ? bindVal.nth(valIdx) : new VncHashMap();						
 				associative_map_destructure(syms, (VncMap)val, bindings);
 				symIdx++; 
 				valIdx++;
@@ -210,20 +209,19 @@ public class Destructuring {
 	private static void sequential_string_destructure(
 			final VncSequence symVal, 
 			final VncString bindVal,
-			final List<Binding> bindings
+			final List<Var> bindings
 	) {
 		// [[x y] "abcde"]
 		// [[x _ y _ z] "abcde"]
 		// [[x y & z] "abcde"]
 		// [[x y :as all] "abcde"]
 		// [[x y & z :as all] "abcde"]
-		final List<VncVal> symbols = symVal.getList();
-		final List<VncVal> values = bindVal.toVncList().getList();
+		final VncList values = bindVal.toVncList();
 		int symIdx = 0;
 		int valIdx = 0;
 
-		while(symIdx<symbols.size()) {
-			final VncVal sVal = symbols.get(symIdx);
+		while(symIdx<symVal.size()) {
+			final VncVal sVal = symVal.nth(symIdx);
 			
 			if (Types.isVncSymbol(sVal)) {
 				final String symName = ((VncSymbol)sVal).getName();
@@ -233,25 +231,25 @@ public class Destructuring {
 					valIdx++;
 				}
 				else if (symName.equals("&")) {
-					final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
+					final VncSymbol sym = (VncSymbol)symVal.nth(symIdx+1);
 					final VncVal val = valIdx < values.size() 
-									? (((VncString)bindVal).toVncList()).slice(valIdx) 
+									? values.slice(valIdx) 
 									: VncList.empty();
-					bindings.add(new Binding(sym, val));
+					bindings.add(new Var(sym, val));
 					symIdx += 2; 
 					valIdx = values.size(); // all values read
 				}
 				else {
 					final VncSymbol sym = (VncSymbol)sVal;
-					final VncVal val = valIdx < values.size() ? values.get(valIdx) : Nil;
-					bindings.add(new Binding(sym, val));
+					final VncVal val = valIdx < values.size() ? values.nth(valIdx) : Nil;
+					bindings.add(new Var(sym, val));
 					symIdx++; 
 					valIdx++;
 				}
 			}
 			else if (isAsKeyword(sVal)) {
-				final VncSymbol sym = (VncSymbol)symbols.get(symIdx+1);
-				bindings.add(new Binding(sym, bindVal));
+				final VncSymbol sym = (VncSymbol)symVal.nth(symIdx+1);
+				bindings.add(new Var(sym, bindVal));
 				symIdx += 2; 
 			}
 			else {
@@ -267,7 +265,7 @@ public class Destructuring {
 	private static void associative_map_destructure(
 			final VncMap symVal, 
 			final VncMap bindVal,
-			final List<Binding> bindings
+			final List<Var> bindings
 	) {
 		// {:keys [a b]} {:a 1 :b 2 :c 3}           -> a: 1, :b 2
 		// {:syms [a b]} {'a 1 'b 2 'c 3}           -> a: 1, :b 2
@@ -275,7 +273,7 @@ public class Destructuring {
 
 		// {a :a b :b} {:a 1 :b 2 :c 3}             -> a: 1, :b 2
 
-		final List<Binding> local_bindings = new ArrayList<>();
+		final List<Var> local_bindings = new ArrayList<>();
 
 
 		final List<VncVal> symbols = sortAssociativeNames(symVal.keys().getList());
@@ -289,7 +287,7 @@ public class Destructuring {
 					for(VncVal sym : ((VncVector)symbol).getList()) {
 						final VncSymbol s = (VncSymbol)sym;
 						final VncVal v = bindVal.get(new VncKeyword(s.getName()));
-						local_bindings.add(new Binding(s, v));								
+						local_bindings.add(new Var(s, v));								
 					}
 				}
 				else {
@@ -306,7 +304,7 @@ public class Destructuring {
 					for(VncVal sym : ((VncVector)symbol).getList()) {
 						final VncSymbol s = (VncSymbol)sym;
 						final VncVal v = bindVal.get(s);
-						local_bindings.add(new Binding(s, v));								
+						local_bindings.add(new Var(s, v));								
 					}
 				}
 				else {
@@ -323,7 +321,7 @@ public class Destructuring {
 					for(VncVal sym : ((VncVector)symbol).getList()) {
 						final VncSymbol s = (VncSymbol)sym;
 						final VncVal v = bindVal.get(new VncString(s.getName()));
-						local_bindings.add(new Binding(s, v));								
+						local_bindings.add(new Var(s, v));								
 					}
 				}
 				else {
@@ -338,15 +336,15 @@ public class Destructuring {
 				final VncVal symbol = symVal.get(KEYWORD_OR);
 				if (symbol != Nil && Types.isVncMap(symbol)) {
 					for(Map.Entry<VncVal,VncVal> e : ((VncMap)symbol).getMap().entrySet()) {
-						final int bIdx = Binding.getBindingIndex((VncSymbol)e.getKey(), local_bindings);
+						final int bIdx = Var.getVarIndex((VncSymbol)e.getKey(), local_bindings);
 						if (bIdx == -1) {
-							local_bindings.add(new Binding((VncSymbol)e.getKey(), e.getValue()));
+							local_bindings.add(new Var((VncSymbol)e.getKey(), e.getValue()));
 							
 						}
 						else {
-							final Binding b = local_bindings.get(bIdx);
-							if (b.val == Nil) {
-								local_bindings.set(bIdx, new Binding((VncSymbol)e.getKey(), e.getValue()));
+							final Var b = local_bindings.get(bIdx);
+							if (b.getVal() == Nil) {
+								local_bindings.set(bIdx, new Var((VncSymbol)e.getKey(), e.getValue()));
 							}
 						}						
 					}
@@ -355,7 +353,7 @@ public class Destructuring {
 			else if (symValName.equals(KEYWORD_AS)) {
 				final VncVal symbol = symVal.get(KEYWORD_AS);
 				if (symbol != Nil && Types.isVncSymbol(symbol)) {
-					local_bindings.add(new Binding((VncSymbol)symbol, bindVal));
+					local_bindings.add(new Var((VncSymbol)symbol, bindVal));
 				}
 			}
 			else if (Types.isVncMap(symValName)) {
@@ -383,7 +381,7 @@ public class Destructuring {
 			else if (Types.isVncSymbol(symValName)) {
 				final VncVal s = symVal.get(symValName);
 				final VncVal v = bindVal.get(s);
-				local_bindings.add(new Binding((VncSymbol)symValName, v));								
+				local_bindings.add(new Var((VncSymbol)symValName, v));								
 			}
 			else {
 				throw new VncException(

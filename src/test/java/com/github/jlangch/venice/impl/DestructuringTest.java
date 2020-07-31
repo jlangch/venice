@@ -47,12 +47,12 @@ public class DestructuringTest {
 		final VncVal symVal = new VncSymbol("n");
 		final VncVal bindVal = new VncLong(10);
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(1, bindings.size());
 		
-		assertEquals("n", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("n", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 	}
 
 	@Test
@@ -62,15 +62,15 @@ public class DestructuringTest {
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
 		final VncVal bindVal = VncList.of(new VncLong(10), new VncLong(20));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(2, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).getVal()).getValue());
 	}
 
 	@Test
@@ -80,15 +80,15 @@ public class DestructuringTest {
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
 		final VncVal bindVal = new VncMapEntry(new VncLong(10), new VncLong(20));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(2, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).getVal()).getValue());
 	}
 
 	@Test
@@ -98,15 +98,15 @@ public class DestructuringTest {
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("y"));
 		final VncVal bindVal = VncList.empty();
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(2, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(0).val);
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Constants.Nil, bindings.get(0).getVal());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(1).val);
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Constants.Nil, bindings.get(1).getVal());
 	}
 
 	@Test
@@ -116,15 +116,15 @@ public class DestructuringTest {
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
 		final VncVal bindVal =VncList.empty();
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(2, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(0).val);
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Constants.Nil, bindings.get(0).getVal());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(1).val);
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Constants.Nil, bindings.get(1).getVal());
 	}
 
 	@Test
@@ -134,15 +134,15 @@ public class DestructuringTest {
 		final VncVal symVal = VncList.of(new VncSymbol("x"), new VncSymbol("&"), new VncSymbol("y"));
 		final VncVal bindVal = VncList.of(new VncLong(10));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(2, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(1).val);
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Constants.Nil, bindings.get(1).getVal());
 	}
 	
 	@Test
@@ -152,7 +152,7 @@ public class DestructuringTest {
 		final VncVal symVal = VncList.empty();
 		final VncVal bindVal = VncList.empty();
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(0, bindings.size());
 	}
@@ -174,18 +174,18 @@ public class DestructuringTest {
 									new VncLong(40), 
 									new VncLong(50));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(3, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(30L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(30L), ((VncLong)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(2).val).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(2).getVal()).getValue());
 	}
 
 	@Test
@@ -204,21 +204,21 @@ public class DestructuringTest {
 									new VncLong(40), 
 									new VncLong(50));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(3, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals(3, ((VncList)bindings.get(2).val).size());
-		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).val).nth(0)).getValue());
-		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).val).nth(1)).getValue());
-		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(2).val).nth(2)).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals(3, ((VncList)bindings.get(2).getVal()).size());
+		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(0)).getValue());
+		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(1)).getValue());
+		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(2)).getValue());
 	}
 
 	@Test
@@ -239,29 +239,29 @@ public class DestructuringTest {
 									new VncLong(40), 
 									new VncLong(50));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(4, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals(3, ((VncList)bindings.get(2).val).size());
-		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).val).nth(0)).getValue());
-		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).val).nth(1)).getValue());
-		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(2).val).nth(2)).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals(3, ((VncList)bindings.get(2).getVal()).size());
+		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(0)).getValue());
+		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(1)).getValue());
+		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(2)).getValue());
 		
-		assertEquals("all", bindings.get(3).sym.getName());
-		assertEquals(5, ((VncList)bindings.get(3).val).size());
-		assertEquals(Long.valueOf(10L), ((VncLong)((VncList)bindings.get(3).val).nth(0)).getValue());
-		assertEquals(Long.valueOf(20L), ((VncLong)((VncList)bindings.get(3).val).nth(1)).getValue());
-		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(3).val).nth(2)).getValue());
-		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(3).val).nth(3)).getValue());
-		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(3).val).nth(4)).getValue());
+		assertEquals("all", bindings.get(3).getName().getName());
+		assertEquals(5, ((VncList)bindings.get(3).getVal()).size());
+		assertEquals(Long.valueOf(10L), ((VncLong)((VncList)bindings.get(3).getVal()).nth(0)).getValue());
+		assertEquals(Long.valueOf(20L), ((VncLong)((VncList)bindings.get(3).getVal()).nth(1)).getValue());
+		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(3).getVal()).nth(2)).getValue());
+		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(3).getVal()).nth(3)).getValue());
+		assertEquals(Long.valueOf(50L), ((VncLong)((VncList)bindings.get(3).getVal()).nth(4)).getValue());
 	}
 
 	@Test
@@ -277,18 +277,18 @@ public class DestructuringTest {
 									new VncLong(10), 
 									new VncLong(20));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(3, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals(Constants.Nil, bindings.get(2).val);
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals(Constants.Nil, bindings.get(2).getVal());
 	}
 	
 	@Test
@@ -311,23 +311,23 @@ public class DestructuringTest {
 											new VncLong(40));
 		final VncVal bindVal = VncList.of(bindNestedVal, new VncLong(50));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(4, bindings.size());
 		
-		assertEquals("v", bindings.get(0).sym.getName());
-		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).val).getValue());
+		assertEquals("v", bindings.get(0).getName().getName());
+		assertEquals(Long.valueOf(10L), ((VncLong)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("x", bindings.get(1).sym.getName());
-		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).val).getValue());
+		assertEquals("x", bindings.get(1).getName().getName());
+		assertEquals(Long.valueOf(20L), ((VncLong)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(2).sym.getName());
-		assertEquals(2, ((VncList)bindings.get(2).val).size());
-		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).val).nth(0)).getValue());
-		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).val).nth(1)).getValue());
+		assertEquals("y", bindings.get(2).getName().getName());
+		assertEquals(2, ((VncList)bindings.get(2).getVal()).size());
+		assertEquals(Long.valueOf(30L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(0)).getValue());
+		assertEquals(Long.valueOf(40L), ((VncLong)((VncList)bindings.get(2).getVal()).nth(1)).getValue());
 		
-		assertEquals("z", bindings.get(3).sym.getName());
-		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(3).val).getValue());
+		assertEquals("z", bindings.get(3).getName().getName());
+		assertEquals(Long.valueOf(50L), ((VncLong)bindings.get(3).getVal()).getValue());
 	}
 
 	@Test
@@ -340,18 +340,18 @@ public class DestructuringTest {
 									new VncSymbol("z"));
 		final VncVal bindVal = new VncString("abcdef");
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(3, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals("b", ((VncString)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals("b", ((VncString)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals("c", ((VncString)bindings.get(2).val).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals("c", ((VncString)bindings.get(2).getVal()).getValue());
 	}
 
 	@Test
@@ -366,18 +366,18 @@ public class DestructuringTest {
 									new VncSymbol("z"));
 		final VncVal bindVal = new VncString("abcdef");
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(3, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals("c", ((VncString)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals("c", ((VncString)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals("e", ((VncString)bindings.get(2).val).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals("e", ((VncString)bindings.get(2).getVal()).getValue());
 	}
 
 	@Test
@@ -392,22 +392,22 @@ public class DestructuringTest {
 		
 		final VncVal bindVal = new VncString("abcdef");
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(3, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals("b", ((VncString)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals("b", ((VncString)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals(4, ((VncList)bindings.get(2).val).size());
-		assertEquals("c", ((VncString)((VncList)bindings.get(2).val).nth(0)).getValue());
-		assertEquals("d", ((VncString)((VncList)bindings.get(2).val).nth(1)).getValue());
-		assertEquals("e", ((VncString)((VncList)bindings.get(2).val).nth(2)).getValue());
-		assertEquals("f", ((VncString)((VncList)bindings.get(2).val).nth(3)).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals(4, ((VncList)bindings.get(2).getVal()).size());
+		assertEquals("c", ((VncString)((VncList)bindings.get(2).getVal()).nth(0)).getValue());
+		assertEquals("d", ((VncString)((VncList)bindings.get(2).getVal()).nth(1)).getValue());
+		assertEquals("e", ((VncString)((VncList)bindings.get(2).getVal()).nth(2)).getValue());
+		assertEquals("f", ((VncString)((VncList)bindings.get(2).getVal()).nth(3)).getValue());
 	}
 
 	@Test
@@ -423,21 +423,21 @@ public class DestructuringTest {
 		
 		final VncVal bindVal = new VncString("abcdef");
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 
 		assertEquals(4, bindings.size());
 		
-		assertEquals("x", bindings.get(0).sym.getName());
-		assertEquals("a", ((VncString)bindings.get(0).val).getValue());
+		assertEquals("x", bindings.get(0).getName().getName());
+		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
 		
-		assertEquals("y", bindings.get(1).sym.getName());
-		assertEquals("b", ((VncString)bindings.get(1).val).getValue());
+		assertEquals("y", bindings.get(1).getName().getName());
+		assertEquals("b", ((VncString)bindings.get(1).getVal()).getValue());
 		
-		assertEquals("z", bindings.get(2).sym.getName());
-		assertEquals("c", ((VncString)bindings.get(2).val).getValue());
+		assertEquals("z", bindings.get(2).getName().getName());
+		assertEquals("c", ((VncString)bindings.get(2).getVal()).getValue());
 		
-		assertEquals("all", bindings.get(3).sym.getName());
-		assertEquals("abcdef", ((VncString)bindings.get(3).val).getValue());
+		assertEquals("all", bindings.get(3).getName().getName());
+		assertEquals("abcdef", ((VncString)bindings.get(3).getVal()).getValue());
 	}
 
 	@Test
@@ -454,12 +454,12 @@ public class DestructuringTest {
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Constants.Nil,    Var.findVar(new VncSymbol("c"), bindings).getVal());
 	}
 
 	@Test
@@ -475,12 +475,12 @@ public class DestructuringTest {
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Constants.Nil,    Var.findVar(new VncSymbol("c"), bindings).getVal());
 	}
 
 	@Test
@@ -498,12 +498,12 @@ public class DestructuringTest {
 										new VncKeyword(":b"), new VncLong(2),
 										new VncKeyword(":d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 		
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Var.findVar(new VncSymbol("c"), bindings).getVal()).getValue());
 	}
 
 	@Test
@@ -519,12 +519,12 @@ public class DestructuringTest {
 										new VncSymbol("b"), new VncLong(2),
 										new VncSymbol("d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Constants.Nil,    Var.findVar(new VncSymbol("c"), bindings).getVal());
 	}
 
 	@Test
@@ -542,12 +542,12 @@ public class DestructuringTest {
 										new VncSymbol("b"), new VncLong(2),
 										new VncSymbol("d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 		
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Var.findVar(new VncSymbol("c"), bindings).getVal()).getValue());
 	}
 	
 	@Test
@@ -563,12 +563,12 @@ public class DestructuringTest {
 										new VncString("b"), new VncLong(2),
 										new VncString("d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("c"), bindings).val);
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Constants.Nil,    Var.findVar(new VncSymbol("c"), bindings).getVal());
 	}
 	
 	@Test
@@ -586,12 +586,12 @@ public class DestructuringTest {
 										new VncString("b"), new VncLong(2),
 										new VncString("d"), new VncLong(4));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 		
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Var.findVar(new VncSymbol("c"), bindings).getVal()).getValue());
 	}
 
 	@Test
@@ -618,16 +618,16 @@ public class DestructuringTest {
 										new VncKeyword(":e"), new VncLong(5),
 										new VncKeyword(":g"), new VncLong(7));
 
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(7, bindings.size());
 		
-		assertEquals(Long.valueOf(1L), ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(2L), ((VncLong)Binding.findBinding(new VncSymbol("b"), bindings).val).getValue());
-		assertEquals(Long.valueOf(3L), ((VncLong)Binding.findBinding(new VncSymbol("c"), bindings).val).getValue());
-		assertEquals(Long.valueOf(5L), ((VncLong)Binding.findBinding(new VncSymbol("e"), bindings).val).getValue());
-		assertEquals(Long.valueOf(6L), ((VncLong)Binding.findBinding(new VncSymbol("f"), bindings).val).getValue());
-		assertEquals(Long.valueOf(7L), ((VncLong)Binding.findBinding(new VncSymbol("g"), bindings).val).getValue());
-		assertEquals(Constants.Nil,    Binding.findBinding(new VncSymbol("h"), bindings).val);
+		assertEquals(Long.valueOf(1L), ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(2L), ((VncLong)Var.findVar(new VncSymbol("b"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(3L), ((VncLong)Var.findVar(new VncSymbol("c"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(5L), ((VncLong)Var.findVar(new VncSymbol("e"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(6L), ((VncLong)Var.findVar(new VncSymbol("f"), bindings).getVal()).getValue());
+		assertEquals(Long.valueOf(7L), ((VncLong)Var.findVar(new VncSymbol("g"), bindings).getVal()).getValue());
+		assertEquals(Constants.Nil,    Var.findVar(new VncSymbol("h"), bindings).getVal());
 	}
 
 	@Test
@@ -650,12 +650,12 @@ public class DestructuringTest {
 												new VncKeyword(":x"), new VncLong(10),
 												new VncKeyword(":y"), new VncLong(11)));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 
-		assertEquals(Long.valueOf(1L),  ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(10L), ((VncLong)Binding.findBinding(new VncSymbol("x"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(11L), ((VncLong)Binding.findBinding(new VncSymbol("y"), bindings).val).getValue());
+		assertEquals(Long.valueOf(1L),  ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(10L), ((VncLong)Var.findVar(new VncSymbol("x"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(11L), ((VncLong)Var.findVar(new VncSymbol("y"), bindings).getVal()).getValue());
 	}
 
 	@Test
@@ -674,12 +674,12 @@ public class DestructuringTest {
 										new VncKeyword(":c"), 
 										VncList.of(new VncLong(10), new VncLong(11)));
 		
-		final List<Binding> bindings = Destructuring.destructure(symVal, bindVal);
+		final List<Var> bindings = Destructuring.destructure(symVal, bindVal);
 		assertEquals(3, bindings.size());
 
-		assertEquals(Long.valueOf(1L),  ((VncLong)Binding.findBinding(new VncSymbol("a"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(10L), ((VncLong)Binding.findBinding(new VncSymbol("x"), bindings).val).getValue());		
-		assertEquals(Long.valueOf(11L), ((VncLong)Binding.findBinding(new VncSymbol("y"), bindings).val).getValue());
+		assertEquals(Long.valueOf(1L),  ((VncLong)Var.findVar(new VncSymbol("a"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(10L), ((VncLong)Var.findVar(new VncSymbol("x"), bindings).getVal()).getValue());		
+		assertEquals(Long.valueOf(11L), ((VncLong)Var.findVar(new VncSymbol("y"), bindings).getVal()).getValue());
 	}
 
 	@Test

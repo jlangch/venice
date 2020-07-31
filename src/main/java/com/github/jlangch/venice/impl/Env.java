@@ -220,18 +220,24 @@ public class Env implements Serializable {
 	}
 
 	public Env setLocal(final VncSymbol sym, final VncVal val) {
+		return setLocal(new Var(sym, val));
+	}
+	
+	public Env setLocal(final Var localVar) {
+		final VncSymbol sym = localVar.getName();
+		
 		if (sym.getName().equals(Namespaces.NS_CURRENT_NAME)) {
 			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
 		if (failOnShadowingGlobalVars) {
-			final Var v = getGlobalVar(sym);
+			final Var globVar = getGlobalVar(sym);
 	
 			// check shadowing of a global non function var by a local var
 			//
 			// e.g.:   (do (defonce x 1) (let [x 10 y 20] (+ x y)))
 			//         (let [+ 10] (core/+ + 20))
-			if (v != null && !v.isOverwritable() && Types.isVncFunction(v.getVal())) {
+			if (globVar != null && !globVar.isOverwritable() && Types.isVncFunction(globVar.getVal())) {
 				try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym))) {
 					throw new VncException(String.format(
 								"The global var '%s' must not be shadowed by a local var!", 
@@ -240,7 +246,7 @@ public class Env implements Serializable {
 			}
 		}
 		
-		setLocalVar(sym, new Var(sym, val));
+		setLocalVar(sym, localVar);
 		
 		return this;
 	}
@@ -273,9 +279,9 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public void addLocalBindings(final List<Binding> bindings) {
-		for(Binding b : bindings) {
-			setLocal(b.sym, b.val);
+	public void addLocalVars(final List<Var> vars) {
+		for(Var b : vars) {
+			setLocal(b);
 		}
 	}
 
