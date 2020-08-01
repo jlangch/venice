@@ -141,6 +141,22 @@ public class Destructuring {
 				
 		return bindings;
 	}
+
+	public static boolean isFnParamsWithoutDestructuring(final VncVector params) {
+		for(int ii=0; ii<params.size(); ii++) {
+			final VncVal param = params.nth(ii);
+			if (param instanceof VncSymbol) {
+				final String sym = ((VncSymbol)param).getName();
+				if (sym.equals("_") || sym.equals("&")) return false;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	
 	private static void sequential_list_destructure(
 			final VncSequence symVals, 

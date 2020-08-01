@@ -1243,7 +1243,6 @@ public class VeniceInterpreter implements Serializable  {
 
 			final VncVal body = ast.nth(argPos++);
 	
-	
 			final VncFunction macroFn = buildFunction(
 											macroName_.getName(), 
 											params, 
@@ -1722,33 +1721,39 @@ public class VeniceInterpreter implements Serializable  {
 		//          > (macroexpand-all '(user/bench (+ 1 2))
 		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
 
-		// Destructuring optimisation for functions with single symbol arg
-		final boolean oneAritySymbol = params.size() == 1 && Types.isVncSymbol(params.first());
+		// Destructuring optimization for function parameters
+		final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(params);
 
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
-
 				// destructuring fn params -> args
-				if (oneAritySymbol) {
-					localEnv.setLocal(new Var((VncSymbol)params.first(), args.first()));
+				if (plainSymbolParams) {
+					for(int ii=0; ii<params.size(); ii++) {
+						localEnv.setLocal(
+							new Var((VncSymbol)params.nth(ii), args.nthOrDefault(ii, Nil)));
+					}
 				}
 				else {
 					localEnv.addLocalVars(Destructuring.destructure(params, args));	
 				}
 
 				if (switchToFunctionNamespaceAtRuntime) {
-					final Namespace curr_ns = Namespaces.getCurrentNamespace();
+					final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+					
+					final Namespace curr_ns = threadLocalMap.getCurrentNS();
 					try {
-						Namespaces.setCurrentNamespace(ns);
-
+						threadLocalMap.setCurrentNS(ns);
+						
 						validateFnPreconditions(name, preConditions, localEnv);		
 						return evaluateBody(body, localEnv);
 					}
 					finally {
-						Namespaces.setCurrentNamespace(curr_ns);
+						// switch always back to curr namespace, just in case (ns xyz)
+						// was executed within the function body!
+						threadLocalMap.setCurrentNS(curr_ns);
 					}
 				}
 				else {

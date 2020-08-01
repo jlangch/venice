@@ -40,6 +40,16 @@ public class ThreadLocalMap {
 	public ThreadLocalMap() {
 		initNS();
 	}
+
+
+	public Namespace getCurrentNS() {
+		return nsCurr;
+	}
+
+	public void setCurrentNS(final Namespace ns) {
+		nsCurr = ns;
+	}
+
 	
 	public static VncVal get(final VncKeyword key) {
 		return get(key, Nil);
@@ -214,7 +224,7 @@ public class ThreadLocalMap {
 		}
 	}
 	
-	private static ThreadLocalMap get() {
+	public static ThreadLocalMap get() {
 		return ThreadLocalMap.context.get();
 	}
 	
