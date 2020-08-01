@@ -60,11 +60,20 @@ public class Env implements Serializable {
 	}
 
 	public Env(final Env outer) {
-		this.outer = outer;
-		this.level = outer == null ? 0 : outer.level() + 1;
-		this.precompiledGlobalSymbols = outer == null ? null : outer.precompiledGlobalSymbols; 
-		this.globalSymbols = outer == null ? new ConcurrentHashMap<>(1024) : outer.globalSymbols;
-		this.localSymbols = new ConcurrentHashMap<>(32);
+		if (outer == null) {
+			this.outer = null;
+			this.level = 0;
+			this.precompiledGlobalSymbols = null; 
+			this.globalSymbols = new ConcurrentHashMap<>(1024);
+			this.localSymbols = new ConcurrentHashMap<>();
+		}
+		else {
+			this.outer = outer;
+			this.level = outer.level() + 1;
+			this.precompiledGlobalSymbols = outer.precompiledGlobalSymbols; 
+			this.globalSymbols = outer.globalSymbols;
+			this.localSymbols = new ConcurrentHashMap<>();
+		}
 	}
 	
 	private Env(final Map<VncSymbol,Var> precompiledGlobalSymbols) {
@@ -72,7 +81,7 @@ public class Env implements Serializable {
 		this.level = 0;
 		this.precompiledGlobalSymbols = precompiledGlobalSymbols; 
 		this.globalSymbols = new ConcurrentHashMap<>(256);
-		this.localSymbols = new ConcurrentHashMap<>(32);
+		this.localSymbols = new ConcurrentHashMap<>();
 	}
 
 	public Env copyGlobalToPrecompiledSymbols() {

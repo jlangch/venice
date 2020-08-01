@@ -100,8 +100,8 @@ public class VeniceInterpreter implements Serializable  {
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this.interceptor = interceptor == null 
-								? new AcceptAllInterceptor() : interceptor;
+		this.interceptor = interceptor == null ? new AcceptAllInterceptor() 
+											   : interceptor;
 
 		this.meterRegistry = this.interceptor.getMeterRegistry();
 										
@@ -1818,7 +1818,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		else if (body.size() == 2) {
 			evaluate(body.first(), env);
-			return evaluate(body.last(), env);
+			return evaluate(body.second(), env);
 		}
 		else {
 			evaluate_values(body.butlast(), env);
