@@ -1260,7 +1260,7 @@ public class VeniceInterpreter implements Serializable  {
 			// multi arity:
 
 			final List<VncFunction> fns = new ArrayList<>();
-			
+
 			ast.slice(argPos).forEach(s -> {
 				int pos = 0;
 				
@@ -1725,6 +1725,9 @@ public class VeniceInterpreter implements Serializable  {
 		// Destructuring optimization for function parameters
 		final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(params);
 
+		// PreCondition optimization
+		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
+
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
@@ -1748,7 +1751,9 @@ public class VeniceInterpreter implements Serializable  {
 					try {
 						threadLocalMap.setCurrentNS(ns);
 						
-						validateFnPreconditions(name, preConditions, localEnv);		
+						if (hasPreConditions) {
+							validateFnPreconditions(name, preConditions, localEnv);
+						}
 						return evaluateBody(body, localEnv);
 					}
 					finally {
@@ -1758,7 +1763,9 @@ public class VeniceInterpreter implements Serializable  {
 					}
 				}
 				else {
-					validateFnPreconditions(name, preConditions, localEnv);
+					if (hasPreConditions) {
+						validateFnPreconditions(name, preConditions, localEnv);
+					}
 					return evaluateBody(body, localEnv);
 				}
 			}

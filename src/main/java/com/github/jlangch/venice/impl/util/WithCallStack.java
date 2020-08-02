@@ -58,7 +58,7 @@ public class WithCallStack implements AutoCloseable {
 	}
 	
 	
-	public static <T> T run(final CallFrame callFrame, final Supplier<T> func) {
+	public static <T> T call(final CallFrame callFrame, final Supplier<T> func) {
 		try (WithCallStack cs = new WithCallStack(callFrame)) {
 			return func.get();
 		}
