@@ -1,11 +1,11 @@
 # GEO IP
 
-The 'geoip' module maps IP adresses to country and location (latitude, longitude)
+The 'geoip' module maps IPv4 and IPv6 adresses to country and location (latitude, longitude)
 that can be visualized on a world map. The 'geoip' module uses the free 
 [MaxMind](https://www.maxmind.com/) location databases.
 
 GEOIP lookups are lightning-fast. A country lookup for an IPv4 address
-on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) takes ~1.5us 
+on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) takes ~1.1us 
 based on actual MaxMind data. Venice uses an ultra-fast trie concurrent 
 data structure to store CIDR / country / city relations and do IP lookups.
 
@@ -63,7 +63,7 @@ country database to map the countries' ISO codes to latitude, longitude coordina
 
 ## Example 1: Lookup IP location
 
-The **geoip** module returns location information for IP4 or IP6 addresses.
+The **geoip** module returns location information for IPv4 or IPv6 addresses.
 
 E.g.:
 
@@ -122,8 +122,8 @@ IP lookup:
 
 ## Example 2: Visualize IP addresses on a map
 
-To visualize IP addresses on a world map Venice' **mercator** and **geoip**
-modules can be combined to draw the locations. 
+To visualize IPv4 and IPv6 addresses on a world map Venice' **mercator** 
+and **geoip** modules can be combined to draw the locations. 
 
 The **geoip** module returns the IP locations (country, latitude, and 
 longitude) that are passed to the **mercator** module to draw corresponding
