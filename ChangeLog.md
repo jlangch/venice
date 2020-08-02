@@ -45,6 +45,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   Venice uses now an ultra-fast trie concurrent data structure to store
   CIDR / country relations and do IP lookups. This impressively demonstrates the 
   power of trie data structures used for this kind of problems.
+- Improved function invocation efficiency
 
 
 
