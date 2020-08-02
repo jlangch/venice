@@ -73,4 +73,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/613647a/cheatsheet.htm
 * [Development Tools](doc/readme/dev-tools.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
 * [3rd Party Libs](doc/readme/3rdparty-lic.md)
-* [Change Log](ChangeLog.md)
+
+## Change Log
+
+[Change Log](ChangeLog.md)
