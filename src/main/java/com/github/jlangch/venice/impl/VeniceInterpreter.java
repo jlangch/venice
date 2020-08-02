@@ -893,7 +893,8 @@ public class VeniceInterpreter implements Serializable  {
 								interceptor.validateMaxExecutionTime();
 							}
 							if (meterRegistry.enabled) {
-								meterRegistry.record(fn.getQualifiedName(), System.nanoTime() - nanos);
+								final long elapsed = System.nanoTime() - nanos;
+								meterRegistry.record(fn.getQualifiedName(), elapsed);
 							}
 						}
 					}
