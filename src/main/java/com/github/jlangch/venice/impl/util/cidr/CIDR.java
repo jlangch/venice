@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.util.cidr;
 
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -149,21 +151,29 @@ public class CIDR implements Comparable<CIDR> {
 		return ip4;
 	}
 
-    public boolean getLowAddressBit(final int n) {
-        return lowBigInt.testBit(n);
-    }
+	public boolean getLowAddressBit(final int n) {
+		return lowBigInt.testBit(n);
+	}
 
-    public boolean getHighAddressBit(final int n) {
-        return highBigInt.testBit(n);
-    }
+	public boolean getHighAddressBit(final int n) {
+		return highBigInt.testBit(n);
+	}
 
 	public boolean isInRange(final InetAddress ipAddress) {
-		final BigInteger target = new BigInteger(1, ipAddress.getAddress());
-
-		final int st = lowBigInt.compareTo(target);
-		if (st <= 0) {
-			final int te = target.compareTo(highBigInt);
-			return te <= 0;
+		final boolean matchedIpType = (ip4 && ipAddress instanceof Inet4Address) 
+										|| (!ip4 && ipAddress instanceof Inet6Address);
+		
+		if (matchedIpType) {
+			final BigInteger target = new BigInteger(1, ipAddress.getAddress());
+	
+			final int st = lowBigInt.compareTo(target);
+			if (st <= 0) {
+				final int te = target.compareTo(highBigInt);
+				return te <= 0;
+			}
+			else {
+				return false;
+			}
 		}
 		else {
 			return false;
