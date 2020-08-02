@@ -86,11 +86,13 @@ public class CIDR implements Comparable<CIDR> {
 			int targetSize;
 			
 			if (inetAddress.getAddress().length == 4) {
+				// 4 bytes
 				maskBuffer = ByteBuffer.allocate(4)
 									   .putInt(-1);
 				targetSize = 4;
 			} 
 			else {
+				// 16 bytes
 				maskBuffer = ByteBuffer.allocate(16)
 									   .putLong(-1L)
 									   .putLong(-1L);
@@ -247,13 +249,8 @@ public class CIDR implements Comparable<CIDR> {
 		
 		final StringBuilder sb = new StringBuilder();
 		for(int ii=0; ii<bytes.length; ii++) {
-			int b = bytes[ii] & 0xff;
-			
 			if (octetSpacing && ii>0) sb.append(" ");
-		
-			final String s = Integer.toString(b, 2);
-			for(int jj=s.length(); jj<8; jj++) sb.append('0');
-			sb.append(s);
+			sb.append(toBinary(bytes[ii]));
 		}
 		return sb.toString();
 	}
@@ -268,6 +265,15 @@ public class CIDR implements Comparable<CIDR> {
 		return buf.array();
 	}
 	
+	private static String toBinary(final byte b) {
+		final StringBuilder sb = new StringBuilder();
+
+		final String s = Integer.toString(b & 0xff, 2);
+		for(int jj=s.length(); jj<8; jj++) sb.append('0'); // prefix with '0's
+		sb.append(s);
+		
+		return sb.toString();
+	}
 	
 	
 	private final String cidrNotation;
