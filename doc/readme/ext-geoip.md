@@ -120,10 +120,10 @@ IP lookup:
 
 
 
-## Example 2: Visualize IPv4 and IPv6 addresses on a map
+## Example 2: Visualize IP addresses on a map
 
-To visualize IP addresses on a world map Venice' **mercator** and **geoip**
-modules can be combined to draw the locations. 
+To visualize IPv4 and IPv6 addresses on a world map Venice' **mercator** 
+and **geoip** modules can be combined to draw the locations. 
 
 The **geoip** module returns the IP locations (country, latitude, and 
 longitude) that are passed to the **mercator** module to draw corresponding
