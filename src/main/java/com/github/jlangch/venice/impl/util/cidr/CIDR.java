@@ -150,6 +150,10 @@ public class CIDR implements Comparable<CIDR> {
 	public boolean isIP4() {
 		return ip4;
 	}
+	
+	public boolean isIP6() {
+		return !ip4;
+	}
 
 	public boolean getLowAddressBit(final int n) {
 		return lowBigInt.testBit(n);
