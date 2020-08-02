@@ -119,7 +119,7 @@ public class CallStack {
      * order that elements would be dequeued (via successive calls to {@link #pop}).
      * The head element will be stored at index 0 in the list.
      *
-     * @return a list ofcall frames in this call stack
+     * @return a list of call frames in this call stack
      */
 	public List<CallFrame> callstack() {
 		return Arrays.asList(queue.toArray(new CallFrame[queue.size()]));
