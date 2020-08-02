@@ -35,7 +35,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- custom types support to `assoc` for change one or multiple fields
+- custom types support for `assoc` to change one or multiple fields
 
 ### Performance
 
