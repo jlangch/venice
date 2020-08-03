@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -4485,10 +4486,11 @@ public class CoreFunctions {
 
 				if (!coll.isEmpty()) {
 					result.add(coll.first());
-					coll.rest().forEach(v -> {
+					final Iterator<VncVal> iter = coll.rest().iterator();
+					while(iter.hasNext()) {
 						result.add(sep);
-						result.add(v);
-					});
+						result.add(iter.next());
+					}
 				}
 
 				return VncList.ofList(result);
@@ -5734,10 +5736,13 @@ public class CoreFunctions {
 					// ok do nothing
 				}
 				else if (Types.isVncSequence(coll)) {
-					((VncSequence)coll).forEach(v -> VncFunction.applyWithMeter(
-															fn, 
-															VncList.of(v), 
-															meterRegistry));
+					final Iterator<VncVal> iter = ((VncSequence)coll).iterator();
+					while(iter.hasNext()) {
+						VncFunction.applyWithMeter(
+								fn, 
+								VncList.of(iter.next()), 
+								meterRegistry);
+					}
 				}
 				else if (Types.isVncMap(coll)) {
 					((VncMap)coll).entries().forEach(v -> VncFunction.applyWithMeter(

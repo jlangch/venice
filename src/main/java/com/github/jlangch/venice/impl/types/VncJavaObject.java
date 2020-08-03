@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -293,27 +294,26 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 
 	private VncHashMap convertBean() {
-		final VncHashMap.Builder builder = new VncHashMap.Builder();
-		
 		final IInterceptor interceptor = JavaInterop.getInterceptor();
 		final IInvoker invoker = new Invoker();
+		
+		final HashMap<VncVal,VncVal> map = new HashMap<>();
 		
 		ReflectionAccessor
 			.getBeanGetterProperties(delegate)
 			.forEach(property -> {
 				try {
-					builder.put(
-							new VncKeyword(property), 
-							JavaInteropUtil.convertToVncVal(
-									interceptor
-										.onGetBeanProperty(invoker, delegate, property)));
+					map.put(
+						new VncKeyword(property), 
+						JavaInteropUtil.convertToVncVal(
+								interceptor.onGetBeanProperty(invoker, delegate, property)));
 				}
 				catch(Exception ex) {
 					throw new RuntimeException(ex);
 				}
 			});
 		
-		return builder.build();
+		return new VncHashMap(map);
 	}
 	
 		

@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -281,14 +282,18 @@ public class VncJsonWriter {
 	}
 
 	private void write_VncList(final String key, final VncList val) {
+		final Iterator<VncVal> iter = val.iterator();
+
 		array(key);
-		val.forEach(v -> write(null, v));
+		while(iter.hasNext()) write(null, iter.next());
 		end();
 	}
 
 	private void write_VncVector(final String key, final VncVector val) {
+		final Iterator<VncVal> iter = val.iterator();
+
 		array(key);
-		val.forEach(v -> write(null, v));
+		while(iter.hasNext()) write(null, iter.next());
 		end();
 	}
 

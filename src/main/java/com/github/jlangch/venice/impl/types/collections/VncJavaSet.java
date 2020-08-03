@@ -223,27 +223,17 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+		return value.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		VncJavaSet other = (VncJavaSet) obj;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
+		return value.equals(other.value);
 	}
 
 	@Override 

@@ -26,16 +26,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -280,27 +278,17 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+		return value.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		VncSortedMap other = (VncSortedMap) obj;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
+		return value.equals(other.value);
 	}
 
 	@Override 
@@ -318,31 +306,6 @@ public class VncSortedMap extends VncMap {
 									.collect(Collectors.toList());
 
 		return "{" + Printer.join(list, " ", print_readably) + "}";
-	}
-	
-	public static class Builder {
-		public Builder() {
-		}
-		
-		public Builder put(final String key, final VncVal val) {
-			map.put(new VncSymbol(key), val);
-			return this;
-		}
-
-		public Builder put(final VncVal key, final VncVal val) {
-			map.put(key, val);
-			return this;
-		}
-
-		public VncSortedMap build() {
-			return new VncSortedMap(map);
-		}
-		
-		public Map<VncVal,VncVal> toMap() {
-			return map;
-		}
-		
-		private TreeMap<VncVal,VncVal> map = new TreeMap<>();
 	}
 	
 

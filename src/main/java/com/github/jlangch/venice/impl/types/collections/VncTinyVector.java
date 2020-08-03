@@ -417,29 +417,15 @@ public class VncTinyVector extends VncVector {
 	@Override
 	public Object convertToJavaObject() {
 		final ArrayList<Object> list = new ArrayList<>(len);
-		switch (len) {
-			case 0:	
-				break;
-			case 1:	
-				list.add(first.convertToJavaObject()); 
-				break;
-			case 2:	
-				list.add(first.convertToJavaObject()); 
+		if (len > 0) {
+			list.add(first.convertToJavaObject());
+			if (len > 1) {
 				list.add(second.convertToJavaObject());
-				break;
-			case 3:	
-				list.add(first.convertToJavaObject()); 
-				list.add(second.convertToJavaObject()); 
-				list.add(third.convertToJavaObject()); 
-				break;
-			case 4:	
-				list.add(first.convertToJavaObject()); 
-				list.add(second.convertToJavaObject()); 
-				list.add(third.convertToJavaObject()); 
-				list.add(fourth.convertToJavaObject()); 
-				break;
-			default: 
-				throw new IllegalStateException("Vector length out of range");
+				if (len > 2) {
+					list.add(third.convertToJavaObject());
+					if (len > 3) list.add(fourth.convertToJavaObject());
+				}
+			}
 		}
 		return list;
 	}
@@ -475,7 +461,7 @@ public class VncTinyVector extends VncVector {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
+		int result = 1;
 		result = prime * result + len;
 		result = prime * result + ((first == null)  ? 0 : first.hashCode());
 		result = prime * result + ((second == null) ? 0 : second.hashCode());
@@ -488,8 +474,6 @@ public class VncTinyVector extends VncVector {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		VncTinyVector other = (VncTinyVector) obj;
