@@ -128,7 +128,7 @@ type.
 
  ```
 
-Venice implicitly creates a builder function suffixed with a '.'
+Venice implicitly creates a builder function suffixed with a dot
   
 ```clojure
 (color. :blue)
