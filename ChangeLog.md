@@ -31,9 +31,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- `map` in its transducing version to accept a map, keyword, or set as mapping 
+- `map` in its transducing version to accept a map, a keyword, or a set as mapping 
   function. E.g.:  `(transduce (map :ip) conj [{:ip 6}])`
-- `filter` in its transducing version to accept a map, keyword, or set as mapping 
+- `filter` in its transducing version to accept a map, a keyword, or a set as mapping 
   function. E.g.:  `(transduce (filter #{1 3 5 7 9}) conj [1 2 3 4 5 6])`
 
 
