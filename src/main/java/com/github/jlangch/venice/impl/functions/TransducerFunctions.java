@@ -189,7 +189,7 @@ public class TransducerFunctions {
 					return Nil;
 				}
 				else if (args.size() == 1) {
-					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final IVncFunction fn = Coerce.toIVncFunction(args.first());
 
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("map:transducer:wrapped")) {
@@ -289,7 +289,7 @@ public class TransducerFunctions {
 					return Nil;
 				}
 				else if (args.size() == 1) {
-					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final IVncFunction fn = Coerce.toIVncFunction(args.first());
 
 					// return a transducer
 					return new VncFunction(createAnonymousFuncName("map-indexed:transducer:wrapped")) {
@@ -387,7 +387,7 @@ public class TransducerFunctions {
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
 				if (args.size() == 1) {
 					// return a transducer
@@ -532,7 +532,7 @@ public class TransducerFunctions {
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
 				if (args.size() == 1) {
 					// return a transducer
@@ -687,7 +687,7 @@ public class TransducerFunctions {
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
-				final VncFunction predicate = Coerce.toVncFunction(args.first());
+				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
 				if (args.size() == 1) {
 					// return a transducer

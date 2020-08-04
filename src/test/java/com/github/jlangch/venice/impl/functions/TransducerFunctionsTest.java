@@ -149,9 +149,18 @@ public class TransducerFunctionsTest {
 				"  (def xf (map #(+ % 1)))              \n" +
 				"  (def coll [1 2 3 4 5 6])             \n" +
 				"  (pr-str (transduce xf conj coll)))     ";
+		
+		final String script3 =
+				"(pr-str (transduce (comp (map :ip)) conj [{:ip 6}]))";
+		
+		final String script4 =
+				"(pr-str (transduce (map :ip) conj [{:ip 6}]))";
+		
 
 		assertEquals("27", venice.eval(script1));	
 		assertEquals("[2 3 4 5 6 7]", venice.eval(script2));	
+		assertEquals("[6]", venice.eval(script3));	
+		assertEquals("[6]", venice.eval(script4));	
 	}
 
 	@Test
