@@ -5476,7 +5476,9 @@ public class CoreFunctions {
 						"Returns a map from distinct items in coll to the number of times " + 
 						"they appear.")
 					.examples(
-						"(frequencies [:a :b :a :a])")
+						"(frequencies [:a :b :a :a])",
+						";; Turn a frequency map back into a coll.\n" + 
+						"(mapcat (fn [[x n]] (repeat n x)) {:a 2 :b 1 :c 3})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5776,7 +5778,9 @@ public class CoreFunctions {
 						"(mapcat list [:a :b :c] [1 2 3])",
 						"(mapcat #(remove even? %) [[1 2] [2 2] [2 3]])",
 						"(mapcat #(repeat 2 %) [1 2])",
-						"(mapcat (juxt inc dec)  [1 2 3 4])")
+						"(mapcat (juxt inc dec)  [1 2 3 4])",
+						";; Turn a frequency map back into a coll.\n" + 
+						"(mapcat (fn [[x n]] (repeat n x)) {:a 2 :b 1 :c 3})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

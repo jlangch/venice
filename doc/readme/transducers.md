@@ -68,7 +68,7 @@ Beside the standard reducing functions like `conj`, `+`, `-`, `max`, and `min` V
 (do
   (def xform (comp (drop 2) (take 3)))
   
-  (transduce xform conj [1 2 3 4 5 6]))  ; => 345
+  (transduce xform conj [1 2 3 4 5 6]))  ; => [3 4 5]
 ```
 
 ```clojure
