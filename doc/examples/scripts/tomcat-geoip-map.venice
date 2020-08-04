@@ -42,8 +42,8 @@
       (println "Parsing MaxMind DB ...")
       (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
 
-  (defn private-ip? [ip]
-    (any? #(cidr/in-range? ip %) private-ip-addresses))
+  (defn public-ip? [ip]
+    (not-any? #(cidr/in-range? ip %) private-ip-addresses))
 
   (defn format-label [country-iso freq]
     (cond
@@ -76,22 +76,22 @@
         (mercator/crop-image 400 600)
         (mercator/save-image format file)))
 
-  (defn parse-ip [log]
-    (->> (tc-util/simple-ipaddr-access-log-entry-parser)
-         (tc-util/parse-access-log log)
-         (map :ip)
-         (filter #(not (private-ip? %)))
-         (frequencies)))
-
-  (defn parse-zip-logs [zip-log-file]
-    (->> (vals (io/unzip-all zip-log-file))
-         (map #(parse-ip %))))
+  (defn parse-ip-logs [log]
+    (let [parser (tc-util/simple-ipaddr-access-log-entry-parser)
+          data   (bytebuf-to-string log :utf-8)]
+      (->> (str/split-lines data)
+           (map (comp :ip parser))
+           (filter public-ip?)
+           (frequencies))))
 
   (defn parse-log-file [log-file]
     (println "Parsing" log-file "...")
     (if (io/file-ext? log-file "zip")
-      (parse-zip-logs log-file)
-      (parse-ip log-file)))
+      (->> (io/unzip-all log-file)
+           (vals)
+           (map #(parse-ip-logs %)))
+      (->> (io/slurp log-file :binary true)
+           (parse-ip-logs ))))
 
   (defn parse-log-files [log-files]
     ;; returns an aggregated map with IP frequencies:
