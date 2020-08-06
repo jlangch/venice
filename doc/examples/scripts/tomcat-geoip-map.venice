@@ -28,10 +28,14 @@
   ;; The MaxMind country database.
   (def maxmind-country-zip "resources/geoip-country.zip")
 
-  (def private-ip-addresses
-        [ (cidr/parse "10.0.0.0/8")
-          (cidr/parse "172.16.0.0/12")
-          (cidr/parse "192.168.0.0/16") ])
+  (def private-ip4-addresses [ "10.0.0.0/8"
+                               "172.16.0.0/12"
+                               "192.168.0.0/16" ])
+
+  (def private-ip4-trie (let [trie (cidr/trie)]
+                          (docoll #(cidr/insert trie (cidr/parse %) "")
+                                  private-ip4-addresses)
+                          trie))
 
   (def resolver (delay (create-resolver)))
 
@@ -43,7 +47,7 @@
       (geoip/ip-to-country-loc-resolver maxmind-country-zip country-db)))
 
   (defn public-ip? [ip]
-    (not-any? #(cidr/in-range? ip %) private-ip-addresses))
+    (nil? (cidr/lookup-reverse private-ip4-trie ip)))
 
   (defn format-label [country-iso freq]
     (cond
@@ -80,8 +84,10 @@
     (let [parser (tc-util/simple-ipaddr-access-log-entry-parser)
           data   (bytebuf-to-string log :utf-8)]
       (->> (str/split-lines data)
-           (map (comp :ip parser))
-           (filter public-ip?)
+           (transduce (comp (map parser)
+                            (map :ip)
+                            (filter public-ip?))
+                      conj)
            (frequencies))))
 
   (defn parse-log-file [log-file]
@@ -99,7 +105,7 @@
     (merge-freq-maps (flatten (map parse-log-file log-files))))
 
   (defn map-ip-to-location [ip-freq ip-loc-resolver]
-    (let [ip (key ip-freq)
+    (let [ip   (key ip-freq)
           data (ip-loc-resolver ip)]
       { :loc         (geoip/map-location-to-numerics (:loc data))
         :ip          ip
