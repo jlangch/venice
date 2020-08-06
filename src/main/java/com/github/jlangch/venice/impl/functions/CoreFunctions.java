@@ -5148,7 +5148,12 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(pop! stack)")
 					.doc("Pops an item from a stack.")
-					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
+					.examples(
+							"(let [s (stack)]  \n" +
+							"  (push! s 4)     \n" +
+							"  (push! s 3)     \n" +
+							"  (pop! s)        \n" +
+							"  s)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5179,7 +5184,12 @@ public class CoreFunctions {
 						.meta()
 						.arglists("(push! stack v)")
 						.doc("Pushes an item to a stack.")
-						.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
+						.examples(
+							"(let [s (stack)]  \n" +
+							"  (push! s 4)     \n" +
+							"  (push! s 3)     \n" +
+							"  (pop! s)        \n" +
+							"  s)")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -5208,9 +5218,21 @@ public class CoreFunctions {
 					"offer!",
 					VncFunction
 						.meta()
-						.arglists("(offer! queue v)", "(offer! queue timeout v)")
-						.doc("Offers an item to a queue with an optional timeout in milliseconds.")
-						.examples("(let [s (queue)]\n   (offer! s 4)\n   (offer! s 3)\n   (poll! s)\n   s)")
+						.arglists(
+							"(offer! queue v)", 
+							"(offer! queue timeout v)")
+						.doc(
+							"Offers an item to a queue with an optional timeout in milliseconds. " +
+							"If a timeout is given waits up to the specified wait time if necessary " +
+							"for space to become available. If no timeout is given returns immediately " +	
+							"false if the queue does not have any more capacity." +
+							"Returns true if the element was added to this queue, else false")
+						.examples(
+							"(let [s (queue)]  \n" +
+							"  (offer! s 4)    \n" +
+							"  (offer! s 3)    \n" +
+							"  (poll! s)       \n" +
+							"  s)")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -5253,10 +5275,10 @@ public class CoreFunctions {
 							"returns nil. With a timeout returns the item if one is available within" +
 							"the given timeout else returns nil.")
 						.examples(
-							"(let [s (queue)]     \n" +
-							"  (offer! s 4)       \n" +
-							"  (offer! s 3)       \n" +
-							"  (poll! s)          \n" +
+							"(let [s (queue)]  \n" +
+							"  (offer! s 4)    \n" +
+							"  (offer! s 3)    \n" +
+							"  (poll! s)       \n" +
 							"  s)")
 						.build()
 			) {
@@ -5296,7 +5318,9 @@ public class CoreFunctions {
 					.examples(
 						"(peek '(1 2 3 4))",
 						"(peek [1 2 3 4])",
-						"(let [s (stack)]\n   (push! s 4)\n  (peek s))")
+						"(let [s (stack)]  \n" +
+						"  (push! s 4)     \n" +
+						"  (peek s))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

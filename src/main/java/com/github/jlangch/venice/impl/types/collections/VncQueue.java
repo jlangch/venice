@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -98,15 +99,13 @@ public class VncQueue extends VncCollection {
 		return queue.isEmpty();
 	}
 
-	public VncQueue offer(final VncVal val) {
-		queue.offer(val);
-		return this;
+	public VncBoolean offer(final VncVal val) {
+		return VncBoolean.of(queue.offer(val));
 	}
 
-	public VncQueue offer(final VncVal val, final long timeoutMillis) {
+	public VncBoolean offer(final VncVal val, final long timeoutMillis) {
 		try {
-			queue.offer(val, timeoutMillis, TimeUnit.MILLISECONDS);
-			return this;
+			return VncBoolean.of(queue.offer(val, timeoutMillis, TimeUnit.MILLISECONDS));
 		}
 		catch(InterruptedException ex) {
 			throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (offer queue timeout val)", ex);
