@@ -35,6 +35,7 @@ public enum TypeRank {
 	LIST (100),	
 	JAVALIST (101),
 	MUTABLELIST (102),
+	LAZYSEQ(103),
 	
 	VECTOR (110),	
 	

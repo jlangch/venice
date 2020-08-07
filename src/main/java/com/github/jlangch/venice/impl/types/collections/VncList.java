@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -153,6 +155,16 @@ public class VncList extends VncSequence {
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
 	}
+	
+	@Override
+	public VncList filter(final Predicate<? super VncVal> predicate) {
+		return new VncList(value.filter(predicate), getMeta());
+	}
+
+	@Override
+	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
+		return new VncList(value.map(mapper), getMeta());
+	}
 
 	@Override
 	public List<VncVal> getList() { 
@@ -230,7 +242,7 @@ public class VncList extends VncSequence {
 
 	@Override
 	public VncList slice(final int start, final int end) {
-		return new VncList(value.subSequence(start, end), getMeta());
+		return new VncList(value.subSequence(start, Math.min(end, value.size())), getMeta());
 	}
 	
 	@Override

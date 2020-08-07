@@ -22,10 +22,9 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -35,70 +34,58 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 
+import io.vavr.collection.Stream;
 
-public class VncMutableList extends VncSequence {
 
-	public VncMutableList() {
-		this(null, null);
-	}
+public class VncLazySeq extends VncSequence {
 
-	public VncMutableList(final VncVal meta) {
-		this(null, meta);
-	}
-
-	public VncMutableList(final Collection<? extends VncVal> vals) {
-		this(vals, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	public VncMutableList(final Collection<? extends VncVal> vals, final VncVal meta) {
+	public VncLazySeq(final VncFunction fn, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		if (vals == null) {
-			value = new CopyOnWriteArrayList<>();
-		}
-		else if (vals instanceof CopyOnWriteArrayList){
-			value = (CopyOnWriteArrayList<VncVal>)vals;
-		}
-		else {
-			value = new CopyOnWriteArrayList<>(vals);
-		}
+
+		this.value = Stream.continually(() -> fn.apply(VncList.of()));
 	}
-	
-	
-	public static VncMutableList of(final VncVal... mvs) {
-		return new VncMutableList(Arrays.asList(mvs), Constants.Nil);
+
+	public VncLazySeq(final VncVal seed, final VncFunction fn, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+
+		this.value = Stream.iterate(seed, (v) -> fn.apply(VncList.of(v)));
 	}
-	
-	
-	@Override
-	public VncMutableList emptyWithMeta() {
-		return new VncMutableList(getMeta());
+
+	public VncLazySeq(final io.vavr.collection.Stream<VncVal> stream, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+		this.value =stream;
 	}
 	
 	@Override
-	public VncMutableList withVariadicValues(final VncVal... replaceVals) {
-		return VncMutableList.of(replaceVals).withMeta(getMeta());
+	public VncSequence emptyWithMeta() {
+		return new VncTinyList(getMeta());
 	}
 	
 	@Override
-	public VncMutableList withValues(final List<? extends VncVal> replaceVals) {
-		return new VncMutableList(replaceVals, getMeta());
+	public VncLazySeq withVariadicValues(final VncVal... replaceVals) {
+		throw new VncException("Not supported");
+	}
+	
+	@Override
+	public VncLazySeq withValues(final List<? extends VncVal> replaceVals) {
+		throw new VncException("Not supported");
 	}
 
 	@Override
-	public VncMutableList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncMutableList(replaceVals, meta);
+	public VncLazySeq withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
+		throw new VncException("Not supported");
 	}
 
 	@Override
-	public VncMutableList withMeta(final VncVal meta) {
-		return new VncMutableList(value, meta);
+	public VncLazySeq withMeta(final VncVal meta) {
+		return new VncLazySeq(value, meta);
 	}
 	
 	@Override
@@ -123,25 +110,17 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncList filter(final Predicate<? super VncVal> predicate) {
-		return new VncList(
-					value.stream()
-						 .filter(predicate)
-						 .collect(Collectors.toList()), 
-					getMeta());
+		return new VncList(value.filter(predicate), getMeta());
 	}
 
 	@Override
 	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		return new VncList(
-				value.stream()
-					 .map(mapper)
-					 .collect(Collectors.toList()), 
-				getMeta());
+		return new VncList(value.map(mapper), getMeta());
 	}
 
 	@Override
 	public List<VncVal> getList() { 
-		return value; 
+		return value.asJava(); // return an immutable view on top of Vector<VncVal>
 	}
 
     @Override
@@ -163,7 +142,7 @@ public class VncMutableList extends VncSequence {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a mutable list of size %d. %s", 
+						"nth: index %d out of range for a list of size %d. %s", 
 						idx, 
 						size(),
 						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
@@ -179,36 +158,32 @@ public class VncMutableList extends VncSequence {
 
 	@Override
 	public VncVal first() {
-		return isEmpty() ? Constants.Nil : value.get(0);
+		return isEmpty() ? Constants.Nil : value.head();
 	}
 
 	@Override
 	public VncVal last() {
-		return isEmpty() ? Constants.Nil : value.get(value.size()-1);
+		return isEmpty() ? Constants.Nil : value.last();
 	}
 	
 	@Override
-	public VncMutableList rest() {
-		return isEmpty() 
-				? new VncMutableList(getMeta()) 
-				: new VncMutableList(value.subList(1, value.size()), getMeta());
+	public VncLazySeq rest() {
+		return new VncLazySeq(value.drop(1), getMeta()) ;
 	}
 	
 	@Override
-	public VncMutableList butlast() {
-		return isEmpty() 
-				? new VncMutableList(getMeta()) 
-				: new VncMutableList(value.subList(0, value.size()-1), getMeta());
+	public VncLazySeq butlast() {
+		throw new VncException("Not supported");
 	}
 
 	@Override
-	public VncMutableList slice(final int start, final int end) {
-		return new VncMutableList(value.subList(start, Math.min(end, value.size())), getMeta());
+	public VncLazySeq slice(final int start, final int end) {
+		return new VncLazySeq(value.subSequence(start, end), getMeta());
 	}
 	
 	@Override
-	public VncMutableList slice(final int start) {
-		return new VncMutableList(value.subList(start, value.size()), getMeta());
+	public VncLazySeq slice(final int start) {
+		return new VncLazySeq(value.subSequence(start), getMeta());
 	}
 	
 	@Override
@@ -223,44 +198,40 @@ public class VncMutableList extends VncSequence {
 
 	
 	@Override
-	public VncMutableList addAtStart(final VncVal val) {
-		value.add(0, val);
-		return this;
+	public VncLazySeq addAtStart(final VncVal val) {
+		return new VncLazySeq(value.prepend(val), getMeta());
 	}
 	
 	@Override
-	public VncMutableList addAllAtStart(final VncSequence list) {
-		value.addAll(0, list.getList());
-		return this;
+	public VncLazySeq addAllAtStart(final VncSequence list) {
+		final List<VncVal> items = list.getList();
+		Collections.reverse(items);
+		return new VncLazySeq(value.prependAll(items), getMeta());
 	}
 	
 	@Override
-	public VncMutableList addAtEnd(final VncVal val) {
-		value.add(val);
-		return this;
+	public VncLazySeq addAtEnd(final VncVal val) {
+		return new VncLazySeq(value.append(val), getMeta());
 	}
 	
 	@Override
-	public VncMutableList addAllAtEnd(final VncSequence list) {
-		value.addAll(list.getList());
-		return this;
+	public VncLazySeq addAllAtEnd(final VncSequence list) {
+		return new VncLazySeq(value.appendAll(list.getList()), getMeta());
 	}
 	
 	@Override
-	public VncMutableList setAt(final int idx, final VncVal val) {
-		value.set(idx, val);
-		return this;
+	public VncLazySeq setAt(final int idx, final VncVal val) {
+		return new VncLazySeq(value.update(idx, val), getMeta());
 	}
 	
 	@Override
-	public VncMutableList removeAt(final int idx) {
-		value.remove(idx);
-		return this;
+	public VncLazySeq removeAt(final int idx) {
+		return new VncLazySeq(value.removeAt(idx), getMeta());
 	}
 	
 	@Override 
 	public TypeRank typeRank() {
-		return TypeRank.MUTABLELIST;
+		return TypeRank.LAZYSEQ;
 	}
 
 	@Override 
@@ -283,14 +254,14 @@ public class VncMutableList extends VncSequence {
 		}
 		else if (Types.isVncList(o)) {
 			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncMutableList)o).size();
+			final Integer sizeOther = ((VncLazySeq)o).size();
 			int c = sizeThis.compareTo(sizeOther);
 			if (c != 0) {
 				return c;
 			}
 			else {
 				for(int ii=0; ii<sizeThis; ii++) {
-					c = nth(ii).compareTo(((VncMutableList)o).nth(ii));
+					c = nth(ii).compareTo(((VncLazySeq)o).nth(ii));
 					if (c != 0) {
 						return c;
 					}
@@ -313,23 +284,36 @@ public class VncMutableList extends VncSequence {
 			return true;
 		if (getClass() != obj.getClass())
 			return false;
-		VncMutableList other = (VncMutableList) obj;
+		VncLazySeq other = (VncLazySeq) obj;
 		return value.equals(other.value);
 	}
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(value, " ", true) + ")";
+		return value.hasDefiniteSize()
+				? "(" + Printer.join(value.toJavaList(), " ", true) + ")"
+				: "(...)";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(value, " ", print_readably) + ")";
+		return value.hasDefiniteSize()
+				? "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")"
+				: "(...)";
 	}
 
-   
-	public static final VncKeyword TYPE = new VncKeyword(":core/mutable-list");
+	
+	public VncList realize() {
+		return new VncList(value.toList(), getMeta());
+	}
+	
+	public VncList realize(final int n) {
+		return new VncList(value.slice(0, n).toList(), getMeta());
+	}
 
-	private static final long serialVersionUID = -1848883965231344442L;
+
+	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq");
+
+    private static final long serialVersionUID = -1848883965231344442L;
  
-	private final CopyOnWriteArrayList<VncVal> value;
+	private final io.vavr.collection.Stream<VncVal> value;
 }

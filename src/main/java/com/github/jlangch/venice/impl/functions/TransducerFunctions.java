@@ -232,32 +232,43 @@ public class TransducerFunctions {
 					if (lists.isEmpty()) {
 						return Nil;
 					}
-
-					int index = 0;
-					boolean hasMore = true;
-					while(hasMore) {
-						final List<VncVal> fnArgs = new ArrayList<>();
-
-						for(int ii=0; ii<lists.size(); ii++) {
-							VncVal seq = lists.nth(ii);							
-							final VncSequence nthList = coerceToSequence(seq);
-							if (nthList.size() > index) {
-								fnArgs.add(nthList.nth(index));
-							}
-							else {
-								hasMore = false;
-								break;
-							}
-						}
-
-						if (hasMore) {
-							final VncVal val = VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry);
-							result.add(val);
-							index += 1;
-						}
+					else if (lists.size() == 1) {
+						// optimized mapper for a single collection
+						return coerceToSequence(lists.first())
+								.map(v -> VncFunction.applyWithMeter(
+															fn, 
+															VncList.of(v),
+															meterRegistry))
+								.toVncList();
 					}
-
-					return VncList.ofList(result);
+					else {
+						// mapper with multiple collections
+						int index = 0;
+						boolean hasMore = true;
+						while(hasMore) {
+							final List<VncVal> fnArgs = new ArrayList<>();
+	
+							for(int ii=0; ii<lists.size(); ii++) {
+								VncVal seq = lists.nth(ii);							
+								final VncSequence nthList = coerceToSequence(seq);
+								if (nthList.size() > index) {
+									fnArgs.add(nthList.nth(index));
+								}
+								else {
+									hasMore = false;
+									break;
+								}
+							}
+	
+							if (hasMore) {
+								final VncVal val = VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry);
+								result.add(val);
+								index += 1;
+							}
+						}
+	
+						return VncList.ofList(result);
+					}
 				}
 			}
 
@@ -427,19 +438,14 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					final VncSequence coll = coerceToSequence(args.second());
-
-					final List<VncVal> items = new ArrayList<>();
-
-					for(int i=0; i<coll.size(); i++) {
-						final VncVal val = coll.nth(i);
-						final VncVal keep = VncFunction.applyWithMeter(predicate, VncList.of(val), meterRegistry);
-						if (!VncBoolean.isFalse(keep) && keep != Nil) {
-							items.add(val);
-						}
-					}
-
-					return coll.withValues(items);
+					return coerceToSequence(args.second())
+							.filter(v -> {
+									final VncVal keep = VncFunction.applyWithMeter(
+															predicate, 
+															VncList.of(v),
+															meterRegistry);
+									return !VncBoolean.isFalse(keep) && keep != Nil;
+								});
 				}
 			}
 
@@ -662,7 +668,7 @@ public class TransducerFunctions {
 					final VncLong n = Coerce.toVncLong(args.first());
 					final VncSequence coll = coerceToSequence(args.second());
 
-					return coll.slice(0, (int)Math.min(n.getValue(), coll.size()));
+					return coll.slice(0, n.getValue().intValue());
 				}
 			}
 

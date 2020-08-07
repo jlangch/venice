@@ -78,6 +78,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
+import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
@@ -1792,6 +1793,57 @@ public class CoreFunctions {
 		};
 
 
+
+	///////////////////////////////////////////////////////////////////////////
+	// LazySeq functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction new_lazyseq =
+		new VncFunction(
+				"lazy-seq",
+				VncFunction
+					.meta()
+					.arglists(
+						"(lazy-seq f)",
+						"(lazy-seq seed f)")
+					.doc("Creates a new lazy sequence.")
+					.examples(
+						"(->> (lazy-seq rand-long)  \n" +
+						"     (take 4)              \n" +
+						"     (doall))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("lazyseq", args, 1, 2);
+				
+				return args.size() == 1
+						? new VncLazySeq(Coerce.toVncFunction(args.first()), Nil)
+						: new VncLazySeq(args.first(), Coerce.toVncFunction(args.second()), Nil);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction lazyseq_Q =
+		new VncFunction(
+				"lazy-seq?",
+				VncFunction
+					.meta()
+					.arglists("(lazy-seq? obj)")
+					.doc("Returns true if obj is a lazyseq")
+					.examples("(lazy-seq? (lazy-seq rand-long))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("lazyseq?", args, 1);
+
+				return VncBoolean.of(Types.isVncLazySeq(args.first()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// Set functions
 	///////////////////////////////////////////////////////////////////////////
@@ -5788,6 +5840,65 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction doall =
+		new VncFunction(
+				"doall",
+				VncFunction
+					.meta()
+					.arglists(
+						"(doall coll)",
+						"(doall n coll)")
+					.doc(
+						"When lazy sequences are produced doall can be used to force " + 
+						"any effects and realize the lazy sequence.")
+					.examples(
+						"(->> (lazy-seq rand-long)  \n" +
+						"     (take 4)              \n" +
+						"     (doall))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("doall", args, 1, 2);
+
+				if (args.size() == 1) {
+					if (Types.isVncLazySeq(args.first())) {
+						final VncLazySeq seq = (VncLazySeq)args.first();
+						return seq.realize();
+					}
+					else if (Types.isVncCollection(args.first())) {
+						return args.first();
+					}
+					else {
+						throw new VncException(String.format(
+								"doall: type %s not supported",
+								Types.getType(args.first())));
+					}
+				}
+				else {
+					final int n = Coerce.toVncLong(args.first()).getIntValue();
+					if (Types.isVncLazySeq(args.second())) {
+						final VncLazySeq seq = (VncLazySeq)args.second();
+						return seq.realize(n);
+					}
+					else if (Types.isVncSequence(args.second())) {
+						final VncSequence seq = (VncSequence)args.second();
+						return seq.toVncList().slice(0, n);
+					}
+					else if (Types.isVncCollection(args.second())) {
+						final VncCollection coll = (VncCollection)args.second();
+						return coll.toVncList().slice(0, n);
+					}
+					else {
+						throw new VncException(String.format(
+								"doall: type %s not supported",
+								Types.getType(args.second())));
+					}
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction mapcat =
 		new VncFunction(
 				"mapcat",
@@ -6665,6 +6776,8 @@ public class CoreFunctions {
 				.add(mutable_list_Q)
 				.add(new_vector)
 				.add(vector_Q)
+				.add(new_lazyseq)
+				.add(lazyseq_Q)
 				.add(map_Q)
 				.add(map_entry_Q)
 				.add(hash_map_Q)
@@ -6730,6 +6843,7 @@ public class CoreFunctions {
 				.add(mapcat)
 				.add(map_invert)
 				.add(docoll)
+				.add(doall)
 				.add(nth)
 				.add(first)
 				.add(second)

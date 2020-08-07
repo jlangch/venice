@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -108,6 +110,25 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
 	}
+	
+	@Override
+	public VncJavaList filter(final Predicate<? super VncVal> predicate) {
+		return new VncJavaList(
+					value.stream()
+						 .filter((v) -> predicate.test(JavaInteropUtil.convertToVncVal(v)))
+						 .collect(Collectors.toList()), 
+					getMeta());
+	}
+
+	@Override
+	public VncJavaList map(final Function<? super VncVal, ? extends VncVal> mapper) {
+		return new VncJavaList(
+					value.stream()
+						 .map((v) -> mapper.apply(JavaInteropUtil.convertToVncVal(v))
+								 		   .convertToJavaObject())
+						 .collect(Collectors.toList()), 
+					getMeta());
+	}
 
 	@Override
 	public List<VncVal> getList() { 
@@ -185,7 +206,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	public VncList slice(final int start, final int end) {
 		return VncList.ofList(
 					value
-						.subList(start, end)
+						.subList(start, Math.min(end, value.size()))
 						.stream()
 						.map(v -> JavaInteropUtil.convertToVncVal(v))
 						.collect(Collectors.toList()));

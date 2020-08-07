@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -172,6 +174,44 @@ public class VncTinyList extends VncList {
 			}
 		}
 	}
+	
+	@Override
+	public VncList filter(final Predicate<? super VncVal> predicate) {
+		final ArrayList<VncVal> list = new ArrayList<>(len);		
+		if (len > 0) {
+			if (predicate.test(first)) list.add(first);
+			if (len > 1) {
+				if (predicate.test(second)) list.add(second);
+				if (len > 2) {
+					if (predicate.test(third)) list.add(third);
+					if (len > 3) {
+						if (predicate.test(fourth)) list.add(fourth);
+					}
+				}
+			}
+		}
+		
+		return VncList.ofList(list, getMeta()); 
+	}
+
+	@Override
+	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
+		final ArrayList<VncVal> list = new ArrayList<>(len);		
+		if (len > 0) {
+			list.add(mapper.apply(first));
+			if (len > 1) {
+				list.add(mapper.apply(second));
+				if (len > 2) {
+					list.add(mapper.apply(third));
+					if (len > 3) {
+						list.add(mapper.apply(fourth));
+					}
+				}
+			}
+		}
+		
+		return VncList.ofList(list, getMeta()); 
+	}
 
 	@Override
 	public List<VncVal> getList() { 
@@ -299,7 +339,7 @@ public class VncTinyList extends VncList {
 	public VncList slice(final int start, final int end) {
 		return start == 0 && end >= len
 				? this
-				: VncList.ofList(getList().subList(start, end), getMeta());
+				: VncList.ofList(getList().subList(start, Math.min(end, len)), getMeta());
 	}
 	
 	@Override

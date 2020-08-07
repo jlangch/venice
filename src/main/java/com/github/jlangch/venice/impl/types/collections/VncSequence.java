@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.types.Constants;
@@ -113,6 +115,10 @@ public abstract class VncSequence extends VncCollection {
 	public abstract VncSequence removeAt(int idx);
 
 	public abstract void forEach(Consumer<? super VncVal> action);
+
+	public abstract VncSequence filter(Predicate<? super VncVal> predicate);
+
+	public abstract VncSequence map(Function<? super VncVal, ? extends VncVal> mapper);
 
 	public  Stream<VncVal> stream() {
 		return getList().stream();
