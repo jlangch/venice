@@ -240,7 +240,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
 
 (queue 100) ;; bounded queue
 
-(let [q (queue)]
+(let [q (queue 10)]
   (offer! q 1)
   (offer! q 2)
   (offer! q 3)
