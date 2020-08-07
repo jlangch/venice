@@ -743,7 +743,6 @@ public class DocGenerator {
 		all.addSection(test);
 		test.addItem(getDocItem("lazy-seq?"));
 
-
 		return section;
 	}
 
