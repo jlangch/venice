@@ -1808,8 +1808,13 @@ public class CoreFunctions {
 						"(lazy-seq seed f)")
 					.doc("Creates a new lazy sequence.")
 					.examples(
-						"(->> (lazy-seq rand-long)  \n" +
-						"     (take 4)              \n" +
+						"; lazy sequence of random longs \n" +
+						"(->> (lazy-seq rand-long)       \n" +
+						"     (take 4)                   \n" +
+						"     (doall))",
+						"; lazy sequence of all positive numbers \n" +
+						"(->> (lazy-seq 1 #(+ % 1))             \n" +
+						"     (take 10)                         \n" +
 						"     (doall))")
 					.build()
 		) {

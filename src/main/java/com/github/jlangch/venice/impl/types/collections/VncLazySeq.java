@@ -22,13 +22,11 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -37,9 +35,7 @@ import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 import io.vavr.collection.Stream;
 
@@ -70,17 +66,17 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncLazySeq withVariadicValues(final VncVal... replaceVals) {
-		throw new VncException("Not supported");
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public VncLazySeq withValues(final List<? extends VncVal> replaceVals) {
-		throw new VncException("Not supported");
+		throw new VncException("Not supported for lazy sequences");
 	}
 
 	@Override
 	public VncLazySeq withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		throw new VncException("Not supported");
+		throw new VncException("Not supported for lazy sequences");
 	}
 
 	@Override
@@ -130,7 +126,7 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public int size() {
-		return value.size();
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
@@ -140,20 +136,12 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public VncVal nth(final int idx) {
-		if (idx < 0 || idx >= value.size()) {
-			throw new VncException(String.format(
-						"nth: index %d out of range for a list of size %d. %s", 
-						idx, 
-						size(),
-						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
-		}
-
-		return value.get(idx);
+		throw new VncException("Not supported for lazy sequences");
 	}
 
 	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		return idx >= 0 && idx < value.size() ? value.get(idx) : defaultVal;
+		throw new VncException("Not supported for lazy sequences");
 	}
 
 	@Override
@@ -162,8 +150,23 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	@Override
+	public VncVal second() {
+		return value.drop(1).head();
+	}
+
+	@Override
+	public VncVal third() {
+		return value.drop(2).head();
+	}
+
+	@Override
+	public VncVal fourth() {
+		return value.drop(3).head();
+	}
+
+	@Override
 	public VncVal last() {
-		return isEmpty() ? Constants.Nil : value.last();
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
@@ -173,7 +176,7 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncLazySeq butlast() {
-		throw new VncException("Not supported");
+		throw new VncException("Not supported for lazy sequences");
 	}
 
 	@Override
@@ -199,34 +202,32 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncLazySeq addAtStart(final VncVal val) {
-		return new VncLazySeq(value.prepend(val), getMeta());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public VncLazySeq addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = list.getList();
-		Collections.reverse(items);
-		return new VncLazySeq(value.prependAll(items), getMeta());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public VncLazySeq addAtEnd(final VncVal val) {
-		return new VncLazySeq(value.append(val), getMeta());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public VncLazySeq addAllAtEnd(final VncSequence list) {
-		return new VncLazySeq(value.appendAll(list.getList()), getMeta());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public VncLazySeq setAt(final int idx, final VncVal val) {
-		return new VncLazySeq(value.update(idx, val), getMeta());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public VncLazySeq removeAt(final int idx) {
-		return new VncLazySeq(value.removeAt(idx), getMeta());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override 
@@ -236,41 +237,17 @@ public class VncLazySeq extends VncSequence {
 
 	@Override 
 	public boolean isVncList() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public Object convertToJavaObject() {
-		return getList()
-				.stream()
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toList());
+		throw new VncException("Not supported for lazy sequences");
 	}
 	
 	@Override
 	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncList(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncLazySeq)o).size();
-			int c = sizeThis.compareTo(sizeOther);
-			if (c != 0) {
-				return c;
-			}
-			else {
-				for(int ii=0; ii<sizeThis; ii++) {
-					c = nth(ii).compareTo(((VncLazySeq)o).nth(ii));
-					if (c != 0) {
-						return c;
-					}
-				}
-				return 0;
-			}
-		}
-
-		return super.compareTo(o);
+		throw new VncException("Not supported for lazy sequences");
 	}
 
 	@Override

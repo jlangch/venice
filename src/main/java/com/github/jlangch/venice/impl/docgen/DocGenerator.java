@@ -124,6 +124,7 @@ public class DocGenerator {
 	private List<DocSection> getRightSections() {
 		return Arrays.asList(
 				getCollectionsSection(),
+				getLazySequencesSection(),
 				getArraysSection(),
 				getRegexSection(),
 				getConcurrencySection(),
@@ -723,6 +724,28 @@ public class DocGenerator {
 
 		return section;
 	}		
+
+	private DocSection getLazySequencesSection() {
+		final DocSection section = new DocSection("Lazy Sequences", id());
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+
+		final DocSection create = new DocSection("Create");
+		all.addSection(create);
+		create.addItem(getDocItem("lazy-seq"));
+
+		final DocSection realize = new DocSection("Realize");
+		all.addSection(realize);
+		realize.addItem(getDocItem("doall"));
+
+		final DocSection test = new DocSection("Test");
+		all.addSection(test);
+		test.addItem(getDocItem("lazy-seq?"));
+
+
+		return section;
+	}
 
 	private DocSection getArraysSection() {
 		final DocSection section = new DocSection("Arrays", id());
