@@ -99,30 +99,30 @@ public class VncLazySeq extends VncSequence {
 		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
 	}
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : value.iterator();
+    }
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
 	}
 	
 	@Override
-	public VncList filter(final Predicate<? super VncVal> predicate) {
-		return new VncList(value.filter(predicate), getMeta());
+	public VncLazySeq filter(final Predicate<? super VncVal> predicate) {
+		return new VncLazySeq(value.filter(predicate), getMeta());
 	}
 
 	@Override
-	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		return new VncList(value.map(mapper), getMeta());
+	public VncLazySeq map(final Function<? super VncVal, ? extends VncVal> mapper) {
+		return new VncLazySeq(value.map(mapper), getMeta());
 	}
 
 	@Override
 	public List<VncVal> getList() { 
 		return value.asJava(); // return an immutable view on top of Vector<VncVal>
 	}
-
-    @Override
-    public Iterator<VncVal> iterator() {
-        return isEmpty() ? EmptyIterator.empty() : value.iterator();
-    }
 
 	@Override
 	public int size() {

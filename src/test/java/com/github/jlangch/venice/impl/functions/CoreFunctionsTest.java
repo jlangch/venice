@@ -306,9 +306,9 @@ public class CoreFunctionsTest {
 
 		assertEquals("(1 2 3)", venice.eval("(str (map (comp inc) [0 1 2]))"));
 
-		assertEquals("[false false]", venice.eval("(str (filter (comp not) [false true false]))"));
+		assertEquals("(false false)", venice.eval("(str (filter (comp not) [false true false]))"));
 
-		assertEquals("[1 2 3]", venice.eval("(str (filter (comp not zero?) [0 1 0 2 0 3]))"));
+		assertEquals("(1 2 3)", venice.eval("(str (filter (comp not zero?) [0 1 0 2 0 3]))"));
 		
 		assertEquals("5", venice.eval(
 								"(do " +
@@ -1525,7 +1525,7 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("4", venice.eval("(str (identity 4))"));
-		assertEquals("[1 2 3 4 true 1234]", venice.eval("(str (filter identity [1 2 3 nil 4 false true 1234]))"));		
+		assertEquals("(1 2 3 4 true 1234)", venice.eval("(str (filter identity [1 2 3 nil 4 false true 1234]))"));		
 	}	
 
 	@Test

@@ -45,7 +45,7 @@ public class JavaInterop_filter_Test {
 				"   (str (filter (fn [u] (> (get u :age) 30)) users))                     " + 
 				")";
 		
-		assertEquals("[pete, 48, 1970-01-12]", venice.eval(script));
+		assertEquals("(pete, 48, 1970-01-12)", venice.eval(script));
 	}
 
 

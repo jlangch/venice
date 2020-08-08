@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableList;
@@ -234,12 +235,12 @@ public class TransducerFunctions {
 					}
 					else if (lists.size() == 1) {
 						// optimized mapper for a single collection
-						return coerceToSequence(lists.first())
-								.map(v -> VncFunction.applyWithMeter(
-															fn, 
-															VncList.of(v),
-															meterRegistry))
-								.toVncList();
+						final VncSequence seq = coerceToSequence(lists.first())
+													.map(v -> VncFunction.applyWithMeter(
+																fn, 
+																VncList.of(v),
+																meterRegistry));
+						return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 					}
 					else {
 						// mapper with multiple collections
@@ -438,14 +439,15 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					return coerceToSequence(args.second())
-							.filter(v -> {
-									final VncVal keep = VncFunction.applyWithMeter(
-															predicate, 
-															VncList.of(v),
-															meterRegistry);
-									return !VncBoolean.isFalse(keep) && keep != Nil;
-								});
+					final VncSequence seq = coerceToSequence(args.second())
+												.filter(v -> {
+														final VncVal keep = VncFunction.applyWithMeter(
+																				predicate, 
+																				VncList.of(v),
+																				meterRegistry);
+														return !VncBoolean.isFalse(keep) && keep != Nil;
+													});
+					return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 				}
 			}
 

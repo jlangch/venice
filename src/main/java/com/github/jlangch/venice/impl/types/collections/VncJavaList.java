@@ -106,6 +106,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		return Arrays.asList(getSupertype());
 	}
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : new MappingIterator(value.iterator());
+    }
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
@@ -137,11 +142,6 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 				.map(v -> JavaInteropUtil.convertToVncVal(v))
 				.collect(Collectors.toList());
 	}
-
-    @Override
-    public Iterator<VncVal> iterator() {
-        return isEmpty() ? EmptyIterator.empty() : new MappingIterator(value.iterator());
-    }
 
 	@Override
 	public int size() {

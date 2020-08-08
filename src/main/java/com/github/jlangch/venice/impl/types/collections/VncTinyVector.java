@@ -177,18 +177,14 @@ public class VncTinyVector extends VncVector {
 		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
 	}
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : new MappingIterator(this);
+    }
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
-		if (len > 0) {
-			action.accept(first);
-			if (len > 1) {
-				action.accept(second);
-				if (len > 2) {
-					action.accept(third);
-					if (len > 3) action.accept(fourth);
-				}
-			}
-		}
+		iterator().forEachRemaining(action);
 	}
 	
 	@Override
@@ -244,11 +240,6 @@ public class VncTinyVector extends VncVector {
 		}
 		return list;
 	}
-
-    @Override
-    public Iterator<VncVal> iterator() {
-        return isEmpty() ? EmptyIterator.empty() : new MappingIterator(this);
-    }
 
 	@Override
 	public int size() {

@@ -116,6 +116,11 @@ public class VncMutableList extends VncSequence {
 		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
 	}
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : value.iterator();
+    }
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
@@ -133,21 +138,16 @@ public class VncMutableList extends VncSequence {
 	@Override
 	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
 		return new VncList(
-				value.stream()
-					 .map(mapper)
-					 .collect(Collectors.toList()), 
-				getMeta());
+					value.stream()
+						 .map(mapper)
+						 .collect(Collectors.toList()), 
+					getMeta());
 	}
 
 	@Override
 	public List<VncVal> getList() { 
 		return value; 
 	}
-
-    @Override
-    public Iterator<VncVal> iterator() {
-        return isEmpty() ? EmptyIterator.empty() : value.iterator();
-    }
 
 	@Override
 	public int size() {

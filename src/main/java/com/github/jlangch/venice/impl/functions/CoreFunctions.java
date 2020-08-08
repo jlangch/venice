@@ -1808,13 +1808,20 @@ public class CoreFunctions {
 						"(lazy-seq seed f)")
 					.doc("Creates a new lazy sequence.")
 					.examples(
-						"; lazy sequence of random longs \n" +
-						"(->> (lazy-seq rand-long)       \n" +
-						"     (take 4)                   \n" +
+						"; lazy sequence of random longs  \n" +
+						"(->> (lazy-seq rand-long)        \n" +
+						"     (take 4)                    \n" +
 						"     (doall))",
-						"; lazy sequence of all positive numbers \n" +
-						"(->> (lazy-seq 1 #(+ % 1))             \n" +
-						"     (take 10)                         \n" +
+						"; lazy sequence of all positive numbers  \n" +
+						"(->> (lazy-seq 1 #(+ % 1))               \n" +
+						"     (take 10)                           \n" +
+						"     (doall))",
+						"; lazy sequence with map                               \n" +
+						"(->> (lazy-seq 1 (fn [x] (do (println \"realized\" x)  \n" +
+						"                             (inc x))))                \n" +
+						"     (take 10)                                         \n" +
+						"     (map #(* 10 %))                                   \n" +
+						"     (take 2)                                          \n" +
 						"     (doall))")
 					.build()
 		) {
@@ -6305,6 +6312,9 @@ public class CoreFunctions {
 								.stream()
 								.map(e -> VncVector.of(e.getKey(), e.getValue()))
 								.collect(Collectors.toList()));
+				}
+				else if (Types.isVncLazySeq(val)) {
+					return ((VncLazySeq)val).isEmpty() ? Nil : val;
 				}
 				else if (Types.isVncSequence(val)) {
 					return ((VncSequence)val).isEmpty() ? Nil : ((VncSequence)val).toVncList();

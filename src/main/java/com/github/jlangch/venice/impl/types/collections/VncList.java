@@ -151,6 +151,11 @@ public class VncList extends VncSequence {
 		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
 	}
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : value.iterator();
+    }
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
@@ -170,11 +175,6 @@ public class VncList extends VncSequence {
 	public List<VncVal> getList() { 
 		return value.asJava(); // return an immutable view on top of Vector<VncVal>
 	}
-
-    @Override
-    public Iterator<VncVal> iterator() {
-        return isEmpty() ? EmptyIterator.empty() : value.iterator();
-    }
 
 	@Override
 	public int size() {

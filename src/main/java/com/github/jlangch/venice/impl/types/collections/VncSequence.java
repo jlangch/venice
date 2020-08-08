@@ -68,8 +68,6 @@ public abstract class VncSequence extends VncCollection {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 
-    public abstract Iterator<VncVal> iterator();
-
 	public abstract List<VncVal> getList();
 	
 	public abstract VncVal nth(int idx);
@@ -113,6 +111,8 @@ public abstract class VncSequence extends VncCollection {
 	public abstract VncSequence addAllAtEnd(VncSequence list);
 	
 	public abstract VncSequence removeAt(int idx);
+
+    public abstract Iterator<VncVal> iterator();
 
 	public abstract void forEach(Consumer<? super VncVal> action);
 
