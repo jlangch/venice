@@ -51,7 +51,13 @@ public class VncLazySeq extends VncSequence {
 	public VncLazySeq(final VncVal seed, final VncFunction fn, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 
-		this.value = Stream.iterate(seed, (v) -> fn.apply(VncList.of(v)));
+		this.value = Stream.iterate(seed, v -> fn.apply(VncList.of(v)));
+	}
+
+	public VncLazySeq(final VncVal head, final VncLazySeq tail, final VncVal meta) {
+		super(meta == null ? Constants.Nil : meta);
+
+		this.value = Stream.cons(head, () -> tail.value);
 	}
 
 	public VncLazySeq(final io.vavr.collection.Stream<VncVal> stream, final VncVal meta) {
@@ -60,8 +66,8 @@ public class VncLazySeq extends VncSequence {
 	}
 	
 	@Override
-	public VncSequence emptyWithMeta() {
-		return new VncTinyList(getMeta());
+	public VncLazySeq emptyWithMeta() {
+		return new VncLazySeq(io.vavr.collection.Stream.empty(), getMeta());
 	}
 	
 	@Override
@@ -306,7 +312,12 @@ public class VncLazySeq extends VncSequence {
 	public VncList realize(final int n) {
 		return new VncList(value.slice(0, n).toList(), getMeta());
 	}
+	
+	public static VncLazySeq empty() {
+		return new VncLazySeq(io.vavr.collection.Stream.empty(), Constants.Nil);
+	}
 
+	
 
 	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq");
 

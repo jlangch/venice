@@ -1815,7 +1815,8 @@ public class CoreFunctions {
 					.meta()
 					.arglists(
 						"(lazy-seq f)",
-						"(lazy-seq seed f)")
+						"(lazy-seq seed f)",
+						"(lazy-seq head tail-lazy-seq)")
 					.doc("Creates a new lazy sequence.")
 					.examples(
 						"; lazy sequence of random longs  \n" +
@@ -1826,21 +1827,39 @@ public class CoreFunctions {
 						"(->> (lazy-seq 1 #(+ % 1))               \n" +
 						"     (take 10)                           \n" +
 						"     (doall))",
-						"; lazy sequence with map                               \n" +
+						"; lazy sequence with a mapping                         \n" +
 						"(->> (lazy-seq 1 (fn [x] (do (println \"realized\" x)  \n" +
 						"                             (inc x))))                \n" +
 						"     (take 10)                                         \n" +
 						"     (map #(* 10 %))                                   \n" +
 						"     (take 2)                                          \n" +
+						"     (doall))",
+						"; lazy sequence from head element and tail lazy sequence \n" +
+						"(->> (cons -1 (lazy-seq 0 #(+ % 1)))                     \n" +
+						"     (take 5)                                            \n" +
 						"     (doall))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("lazyseq", args, 1, 2);
+				assertArity("lazy-seq", args, 1, 2);
 				
-				return args.size() == 1
-						? new VncLazySeq(Coerce.toVncFunction(args.first()), Nil)
-						: new VncLazySeq(args.first(), Coerce.toVncFunction(args.second()), Nil);
+				if (args.size() == 1) {
+					return new VncLazySeq(Coerce.toVncFunction(args.first()), Nil);
+				}
+				else if (args.second() == Nil) {
+					return new VncLazySeq(Coerce.toVncFunction(args.first()), Nil);
+				}
+				else if (Types.isVncFunction(args.second())) {
+					return new VncLazySeq(args.first(), (VncFunction)args.second(), Nil);
+				}
+				else if (Types.isVncLazySeq(args.second())) {
+					return new VncLazySeq(args.first(), (VncLazySeq)args.second(), Nil);
+				}
+				else {
+					throw new VncException(
+							"Function 'lazy-seq' requires for the second arg either "
+								+ "nil, a function, or a lazy sequence.");
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -4190,6 +4209,7 @@ public class CoreFunctions {
 						"(cons 1 '(2 3 4 5 6))",
 						"(cons [1 2] [4 5 6])",
 						"(cons 3 (set 1 2))",
+						"(doall (take 5 (cons -1 (lazy-seq 0 #(+ % 1)))))",
 						"(cons {:c 3} {:a 1 :b 2})",
 						"(cons (map-entry :c 3) {:a 1 :b 2})")
 					.build()
@@ -4204,6 +4224,9 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncList(coll)) {
 					return ((VncList)coll).addAtStart(args.first());
+				}
+				else if (Types.isVncLazySeq(coll)) {
+					return new VncLazySeq(args.first(), (VncLazySeq)coll, Nil);
 				}
 				else if (Types.isVncHashSet(coll)) {
 					return ((VncHashSet)coll).add(args.first());
