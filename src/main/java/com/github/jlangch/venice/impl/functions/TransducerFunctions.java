@@ -938,17 +938,15 @@ public class TransducerFunctions {
 					return filter.apply(VncList.of(fn));
 				}
 				else {
-					final VncSequence coll = coerceToSequence(args.second());
-					final List<VncVal> items = new ArrayList<>();
-					
-					for(VncVal val : coll.getList()) {
-						final VncVal keep = VncFunction.applyWithMeter(predicate, VncList.of(val), meterRegistry);
-						if (keep == Nil || VncBoolean.isFalse(keep)) {
-							items.add(val);
-						}
-					}
-
-					return coll.withValues(items);
+					final VncSequence seq = coerceToSequence(args.second())
+												.filter(v -> {
+														final VncVal keep = VncFunction.applyWithMeter(
+																				predicate, 
+																				VncList.of(v),
+																				meterRegistry);
+														return VncBoolean.isFalse(keep) || keep == Nil;
+													});
+					return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 				}
 			}
 

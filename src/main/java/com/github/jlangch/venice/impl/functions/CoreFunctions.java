@@ -1796,6 +1796,16 @@ public class CoreFunctions {
 
 	///////////////////////////////////////////////////////////////////////////
 	// LazySeq functions
+	//
+	// Functions that return lazy sequences when their input is a lazy
+	// sequence:
+	//    - map
+	//    - filter
+	//    - remove
+	//    - take
+	//    - take-while
+	//    - drop
+	//    - drop-while
 	///////////////////////////////////////////////////////////////////////////
 
 	public static VncFunction new_lazyseq =
@@ -1854,6 +1864,7 @@ public class CoreFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
 		
 		
 	///////////////////////////////////////////////////////////////////////////
