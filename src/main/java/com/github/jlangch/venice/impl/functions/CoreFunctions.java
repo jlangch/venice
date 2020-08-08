@@ -1814,11 +1814,15 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists(
+						"(lazy-seq)",
 						"(lazy-seq f)",
 						"(lazy-seq seed f)",
 						"(lazy-seq head tail-lazy-seq)")
 					.doc("Creates a new lazy sequence.")
 					.examples(
+						"; empty lazy sequence  \n" +
+						"(->> (lazy-seq)        \n" +
+						"     (doall))",
 						"; lazy sequence of random longs  \n" +
 						"(->> (lazy-seq rand-long)        \n" +
 						"     (take 4)                    \n" +
@@ -1841,9 +1845,12 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("lazy-seq", args, 1, 2);
+				assertArity("lazy-seq", args, 0, 1, 2);
 				
-				if (args.size() == 1) {
+				if (args.size() == 0) {
+					return new VncLazySeq(Nil);
+				}
+				else if (args.size() == 1) {
 					return new VncLazySeq(Coerce.toVncFunction(args.first()), Nil);
 				}
 				else if (args.second() == Nil) {
