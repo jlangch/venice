@@ -241,6 +241,26 @@ public class VncList extends VncSequence {
 	}
 
 	@Override
+	public VncList drop(final int n) {
+		return value.isEmpty() ? this : new VncList(value.drop(n), getMeta());
+	}
+	
+	@Override
+	public VncList dropWhile(final Predicate<? super VncVal> predicate) {
+		return new VncList(value.dropWhile(predicate), getMeta());
+	}
+
+	@Override
+	public VncList take(final int n) {
+		return value.isEmpty() ? this : new VncList(value.take(n), getMeta());
+	}
+	
+	@Override
+	public VncList takeWhile(final Predicate<? super VncVal> predicate) {
+		return new VncList(value.takeWhile(predicate), getMeta());
+	}
+
+	@Override
 	public VncList slice(final int start, final int end) {
 		return new VncList(value.subSequence(start, Math.min(end, value.size())), getMeta());
 	}

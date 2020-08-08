@@ -189,26 +189,61 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncMutableList rest() {
-		return isEmpty() 
-				? new VncMutableList(getMeta()) 
-				: new VncMutableList(value.subList(1, value.size()), getMeta());
+		return value.size() <= 1 ? new VncMutableList(getMeta()) : slice(1);
 	}
 	
 	@Override
 	public VncMutableList butlast() {
-		return isEmpty() 
-				? new VncMutableList(getMeta()) 
-				: new VncMutableList(value.subList(0, value.size()-1), getMeta());
+		return value.size() <= 1 ? new VncMutableList(getMeta()) : slice(0, value.size()-1);
+	}
+	
+	@Override
+	public VncMutableList drop(final int n) {
+		return slice(n);
+	}
+
+	@Override
+	public VncMutableList dropWhile(final Predicate<? super VncVal> predicate) {
+		for(int i=0; i<value.size(); i++) {
+			final boolean drop = predicate.test(VncList.of(value.get(i)));
+			if (!drop) {
+				return slice(i);
+			}
+		}
+
+		return new VncMutableList(getMeta());
+	}
+
+	@Override
+	public VncMutableList take(final int n) {
+		return slice(0, n);
+	}
+
+	@Override
+	public VncMutableList takeWhile(final Predicate<? super VncVal> predicate) {
+		for(int i=0; i<value.size(); i++) {
+			final boolean take = predicate.test(VncList.of(value.get(i)));
+			if (!take) {
+				return slice(0, i);
+			}
+		}
+
+		return this;
 	}
 
 	@Override
 	public VncMutableList slice(final int start, final int end) {
-		return new VncMutableList(value.subList(start, Math.min(end, value.size())), getMeta());
+		if (start >= value.size()) {
+			return new VncMutableList(getMeta());
+		}
+		else {
+			return new VncMutableList(value.subList(start, Math.min(end, value.size())), getMeta());
+		}
 	}
 	
 	@Override
 	public VncMutableList slice(final int start) {
-		return new VncMutableList(value.subList(start, value.size()), getMeta());
+		return slice(start, value.size());
 	}
 	
 	@Override

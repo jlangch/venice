@@ -756,6 +756,9 @@ public class TransducerFunctionsTest {
 		assertEquals("()", venice.eval("(pr-str (drop 3 '(1 2 3)))"));
 		assertEquals("()", venice.eval("(pr-str (drop 4 '(1 2 3)))"));
 
+		assertEquals("(4 5)", venice.eval("(pr-str (drop 3 '(1 2 3 4 5)))"));
+		assertEquals("()", venice.eval("(pr-str (drop 6 '(1 2 3 4 5)))"));
+
 		
 		assertEquals("[]", venice.eval("(pr-str (drop 0 []))"));
 		assertEquals("[]", venice.eval("(pr-str (drop 1 []))"));
@@ -776,6 +779,7 @@ public class TransducerFunctionsTest {
 		assertEquals("[]", venice.eval("(pr-str (drop 4 [1 2 3]))"));
 
 		assertEquals("[4 5]", venice.eval("(pr-str (drop 3 [1 2 3 4 5]))"));
+		assertEquals("[]", venice.eval("(pr-str (drop 6 [1 2 3 4 5]))"));
 	}
 
 	@Test
@@ -831,6 +835,9 @@ public class TransducerFunctionsTest {
 		assertEquals("(1 2)", venice.eval("(pr-str (take 2 '(1 2 3)))"));
 		assertEquals("(1 2 3)", venice.eval("(pr-str (take 3 '(1 2 3)))"));
 		assertEquals("(1 2 3)", venice.eval("(pr-str (take 4 '(1 2 3)))"));
+		
+		assertEquals("(1 2 3 4)", venice.eval("(pr-str (take 4 '(1 2 3 4 5 6)))"));
+		assertEquals("(1 2 3 4 5 6)", venice.eval("(pr-str (take 10 '(1 2 3 4 5 6)))"));
 
 		
 		assertEquals("[]", venice.eval("(pr-str (take 0 []))"));
@@ -850,6 +857,9 @@ public class TransducerFunctionsTest {
 		assertEquals("[1 2]", venice.eval("(pr-str (take 2 [1 2 3]))"));
 		assertEquals("[1 2 3]", venice.eval("(pr-str (take 3 [1 2 3]))"));
 		assertEquals("[1 2 3]", venice.eval("(pr-str (take 4 [1 2 3]))"));
+		
+		assertEquals("[1 2 3 4]", venice.eval("(pr-str (take 4 [1 2 3 4 5 6]))"));
+		assertEquals("[1 2 3 4 5 6]", venice.eval("(pr-str (take 10 [1 2 3 4 5 6]))"));
 	}
 
 	@Test

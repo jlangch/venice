@@ -245,6 +245,26 @@ public class VncVector extends VncSequence implements IVncFunction {
 	}
 
 	@Override
+	public VncVector drop(final int n) {
+		return value.isEmpty() ? this : new VncVector(value.drop(n), getMeta());
+	}
+	
+	@Override
+	public VncVector dropWhile(final Predicate<? super VncVal> predicate) {
+		return new VncVector(value.dropWhile(predicate), getMeta());
+	}
+	
+	@Override
+	public VncVector take(final int n) {
+		return value.isEmpty() ? this : new VncVector(value.take(n), getMeta());
+	}
+	
+	@Override
+	public VncVector takeWhile(final Predicate<? super VncVal> predicate) {
+		return new VncVector(value.takeWhile(predicate), getMeta());
+	}
+
+	@Override
 	public VncVector slice(final int start, final int end) {
 		return new VncVector(value.subSequence(start, Math.min(end, value.size())), getMeta());
 	}

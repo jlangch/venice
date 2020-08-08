@@ -343,23 +343,57 @@ public class VncTinyVector extends VncVector {
 	}
 
 	@Override
+	public VncVector drop(final int n) {
+		return slice(n);
+	}
+	
+	@Override
+	public VncVector dropWhile(final Predicate<? super VncVal> predicate) {
+		final List<VncVal> list = getList();
+		for(int i=0; i<list.size(); i++) {
+			final boolean drop = predicate.test(list.get(i));
+			if (!drop) {
+				return VncVector.ofList(list.subList(i, list.size()), getMeta());
+			}
+		}
+		
+		return new VncTinyVector(getMeta());
+	}
+	
+	@Override
+	public VncVector take(final int n) {
+		return slice(0, n);
+	}
+	
+	@Override
+	public VncVector takeWhile(final Predicate<? super VncVal> predicate) {
+		final List<VncVal> list = getList();
+		for(int i=0; i<list.size(); i++) {
+			final boolean take = predicate.test(list.get(i));
+			if (!take) {
+				return VncVector.ofList(list.subList(0, i), getMeta());
+			}
+		}
+		
+		return this;
+	}
+
+	@Override
 	public VncVector slice(final int start, final int end) {
-		return start == 0 && end >= len
-				? this
-				: VncVector.ofList(getList().subList(start, Math.min(end, len)), getMeta());
+		if (start == 0 && end >= len) {
+			return this;
+		}
+		else if (start >= len) {
+			return EMPTY;
+		}
+		else {
+			return VncVector.ofList(getList().subList(start, Math.min(end, len)), getMeta());
+		}
 	}
 	
 	@Override
 	public VncVector slice(final int start) {
-		if (start == 0) {
-			return this;
-		}
-		else if (start == 1) {
-			return rest();
-		}
-		else {
-			return VncVector.ofList(getList().subList(start, len), getMeta());
-		}
+		return slice(start, len);
 	}
 	
 	@Override

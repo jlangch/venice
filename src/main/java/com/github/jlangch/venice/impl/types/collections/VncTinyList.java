@@ -327,23 +327,57 @@ public class VncTinyList extends VncList {
 	}
 
 	@Override
+	public VncList drop(final int n) {
+		return slice(n);
+	}
+	
+	@Override
+	public VncList dropWhile(final Predicate<? super VncVal> predicate) {
+		final List<VncVal> list = getList();
+		for(int i=0; i<list.size(); i++) {
+			final boolean drop = predicate.test(list.get(i));
+			if (!drop) {
+				return VncList.ofList(list.subList(i, list.size()), getMeta());
+			}
+		}
+		
+		return new VncTinyList(getMeta());
+	}
+	
+	@Override
+	public VncList take(final int n) {
+		return slice(0, n);
+	}
+	
+	@Override
+	public VncList takeWhile(final Predicate<? super VncVal> predicate) {
+		final List<VncVal> list = getList();
+		for(int i=0; i<list.size(); i++) {
+			final boolean take = predicate.test(list.get(i));
+			if (!take) {
+				return VncList.ofList(list.subList(0, i), getMeta());
+			}
+		}
+		
+		return this;
+	}
+
+	@Override
 	public VncList slice(final int start, final int end) {
-		return start == 0 && end >= len
-				? this
-				: VncList.ofList(getList().subList(start, Math.min(end, len)), getMeta());
+		if (start == 0 && end >= len) {
+			return this;
+		}
+		else if (start >= len) {
+			return EMPTY;
+		}
+		else {
+			return VncList.ofList(getList().subList(start, Math.min(end, len)), getMeta());
+		}
 	}
 	
 	@Override
 	public VncList slice(final int start) {
-		if (start == 0) {
-			return this;
-		}
-		else if (start == 1) {
-			return rest();
-		}
-		else {
-			return VncList.ofList(getList().subList(start, len), getMeta());
-		}
+		return slice(start, len);
 	}
 	
 	@Override

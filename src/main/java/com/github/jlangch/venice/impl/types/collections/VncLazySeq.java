@@ -180,6 +180,26 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	@Override
+	public VncLazySeq drop(final int n) {
+		return value.isEmpty() ? this : new VncLazySeq(value.drop(n), getMeta());
+	}
+	
+	@Override
+	public VncLazySeq dropWhile(final Predicate<? super VncVal> predicate) {
+		return new VncLazySeq(value.dropWhile(predicate), getMeta());
+	}
+	
+	@Override
+	public VncLazySeq take(final int n) {
+		return value.isEmpty() ? this : new VncLazySeq(value.take(n), getMeta());
+	}
+	
+	@Override
+	public VncLazySeq takeWhile(final Predicate<? super VncVal> predicate) {
+		return new VncLazySeq(value.takeWhile(predicate), getMeta());
+	}
+
+	@Override
 	public VncLazySeq slice(final int start, final int end) {
 		return new VncLazySeq(value.subSequence(start, end), getMeta());
 	}

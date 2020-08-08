@@ -174,42 +174,61 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncList rest() {
-		if (isEmpty()) {
-			return VncList.empty();
-		} 
-		else {
-			return VncList.ofList(
-						value
-							.subList(1, value.size())
-							.stream()
-							.map(v -> JavaInteropUtil.convertToVncVal(v))
-							.collect(Collectors.toList()));
-		}
+		return value.size() <= 1 ? VncList.empty() : slice(1);
 	}
 
 	@Override
 	public VncList butlast() {
-		if (value.size() <= 1) {
-			return VncList.empty();
-		} 
-		else {
-			return VncList.ofList(
-						value
-							.subList(0, value.size()-1)
-							.stream()
-							.map(v -> JavaInteropUtil.convertToVncVal(v))
-							.collect(Collectors.toList()));
+		return value.size() <= 1 ? VncList.empty() : slice(0, value.size()-1);
+	}
+
+	@Override
+	public VncList drop(final int n) {
+		return slice(n);
+	}
+
+	@Override
+	public VncList dropWhile(final Predicate<? super VncVal> predicate) {
+		for(int i=0; i<value.size(); i++) {
+			final boolean drop = predicate.test(JavaInteropUtil.convertToVncVal(value.get(i)));
+			if (!drop) {
+				return slice(i);
+			}
 		}
+
+		return VncList.empty();
+	}
+	
+	@Override
+	public VncList take(final int n) {
+		return slice(0, n);
+	}
+
+	@Override
+	public VncList takeWhile(final Predicate<? super VncVal> predicate) {
+		for(int i=0; i<value.size(); i++) {
+			final boolean take = predicate.test(JavaInteropUtil.convertToVncVal(value.get(i)));
+			if (!take) {
+				return slice(0, i);
+			}
+		}
+
+		return toVncList();
 	}
 
 	@Override
 	public VncList slice(final int start, final int end) {
-		return VncList.ofList(
-					value
-						.subList(start, Math.min(end, value.size()))
-						.stream()
-						.map(v -> JavaInteropUtil.convertToVncVal(v))
-						.collect(Collectors.toList()));
+		if (start >= value.size()) {
+			return VncList.empty();
+		}
+		else {
+			return VncList.ofList(
+						value
+							.subList(start, Math.min(end, value.size()))
+							.stream()
+							.map(v -> JavaInteropUtil.convertToVncVal(v))
+							.collect(Collectors.toList()));
+		}
 	}
 	
 	@Override

@@ -95,6 +95,14 @@ public abstract class VncSequence extends VncCollection {
 	public abstract VncSequence rest();
 	
 	public abstract VncSequence butlast();
+	
+	public abstract VncSequence drop(int n);
+	
+	public abstract VncSequence dropWhile(Predicate<? super VncVal> predicate);
+	
+	public abstract VncSequence take(int n);
+	
+	public abstract VncSequence takeWhile(Predicate<? super VncVal> predicate);
 
 	public abstract VncSequence slice(int start, int end);
 	
