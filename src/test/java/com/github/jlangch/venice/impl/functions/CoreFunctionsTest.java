@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -1993,6 +1994,31 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(1), venice.eval("(last [1])"));
 		assertEquals(Long.valueOf(2), venice.eval("(last [1 2])"));
 		assertEquals(Long.valueOf(3), venice.eval("(last [1 2 3])"));
+	}
+	
+	@Test
+	public void test_lazy_seq_1() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall (take 5 (cons -1 (lazy-seq 0 #(+ % 1))))))";
+				
+		assertEquals("(-1 0 1 2 3)",venice.eval(script));					
+	}
+
+	@Test
+	@Disabled
+	public void test_lazy_seq_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                          \n" +
+				"  (defn positives                                            \n" +
+				"    ([]  (positives 1))                                      \n" +
+				"    ([n] (cons n (lazy-seq (fn [x] (positives (inc n)))))))  \n" +
+				"                                                             \n" +
+				"  (pr-str (doall (take 4 (positives)))))                       ";
+				
+		assertEquals("(1 2 3 4)", venice.eval(script));					
 	}
 	
 	@Test

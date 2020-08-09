@@ -4224,35 +4224,36 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("cons", args, 2);
 
+				final VncVal x = args.first();
 				final VncVal coll = args.second();
 
 				if (Types.isVncVector(coll)) {
-					return ((VncVector)coll).addAtStart(args.first());
+					return ((VncVector)coll).addAtStart(x);
 				}
 				else if (Types.isVncList(coll)) {
-					return ((VncList)coll).addAtStart(args.first());
+					return ((VncList)coll).addAtStart(x);
 				}
 				else if (Types.isVncLazySeq(coll)) {
-					return new VncLazySeq(args.first(), (VncLazySeq)coll, Nil);
+					return new VncLazySeq(x, (VncLazySeq)coll, Nil);
 				}
 				else if (Types.isVncHashSet(coll)) {
-					return ((VncHashSet)coll).add(args.first());
+					return ((VncHashSet)coll).add(x);
 				}
 				else if (Types.isVncSortedSet(coll)) {
-					return ((VncSortedSet)coll).add(args.first());
+					return ((VncSortedSet)coll).add(x);
 				}
 				else if (Types.isVncMap(coll)) {
-					if (Types.isVncMapEntry(args.first())) {
-						final VncMapEntry entry = (VncMapEntry)args.first();
+					if (Types.isVncMapEntry(x)) {
+						final VncMapEntry entry = (VncMapEntry)x;
 						return ((VncMap)coll).assoc(entry.getKey(), entry.getValue());
 					}
-					else if (Types.isVncMap(args.first())) {
-						return ((VncMap)coll).putAll((VncMap)args.first());
+					else if (Types.isVncMap(x)) {
+						return ((VncMap)coll).putAll((VncMap)x);
 					}
 					else {
 						throw new VncException(String.format(
 								"Invalid argument type %s for element while calling function 'cons' on map",
-								Types.getType(args.first())));
+								Types.getType(x)));
 					}
 				}
 				else {

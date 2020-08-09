@@ -48,7 +48,6 @@ public class VncLazySeq extends VncSequence {
 		this.value = io.vavr.collection.Stream.empty();
 	}
 
-
 	public VncLazySeq(final VncFunction fn, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 
@@ -71,6 +70,7 @@ public class VncLazySeq extends VncSequence {
 		super(meta == null ? Constants.Nil : meta);
 		this.value =stream;
 	}
+
 	
 	@Override
 	public VncLazySeq emptyWithMeta() {
