@@ -15,7 +15,7 @@ mutual recursion is available for more involved forms of recursion.
   (defn factorial [n] 
     (if (<= n 1) 
         1 
-        (math/bigint-mul n (factorial (dec n))))))
+        (math/bigint-mul n (factorial (dec n)))))
 
   (factorial 2)     ; => 2
   (factorial 5)     ; => 120
