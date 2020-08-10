@@ -87,7 +87,7 @@ with an else part:
     (cond
       (> x 0) "x is positive"
       (< x 0) "x is negative"
-      :else   "x is zero))
+      :else   "x is zero"))
   
   (test 10)   ; => "x is positive"
   (test -10)  ; => "x is negative"
