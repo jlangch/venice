@@ -71,8 +71,8 @@ a variable number of arguments.
    (map (fn [x] (* 2 x)) (range 0 5))   ; => (0 2 4 6 8)
    (map #(* 2 %) (range 0 5))           ; => (0 2 4 6 8)
    (map #(* 2 %1) (range 0 5))          ; => (0 2 4 6 8)
-   (let [f #(+ %1 %2 %3)] (f 1 2 3)))   ; => 6
-   ((fn [x] (* x 10)) 5)                ; => 50
+   (let [f #(+ %1 %2 %3)] (f 1 2 3))    ; => 6
+   ((fn [x] (* x 10)) 5))               ; => 50
 ```
 
 
@@ -269,7 +269,7 @@ of the next form.
   (defn bigint [x] (. :java.math.BigInteger :new x))
   (-> (bigint "1000")
       (. :multiply (bigint "600"))
-      (. :add (bigint "300")))))  ;; => 600300
+      (. :add (bigint "300"))))  ;; => 600300
 ```
 
 ```clojure
