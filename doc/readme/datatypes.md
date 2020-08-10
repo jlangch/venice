@@ -136,8 +136,8 @@ Immutable persistent list.
 
 (cons 1 '(2 3 4))  ;; => (1 2 3 4)
 (conj '(1 2 3) 4)  ;; => (1 2 3 4)
-(first '(2 3 4)    ;; => 2
-(rest '(2 3 4)     ;; => (3 4)
+(first '(2 3 4))   ;; => 2
+(rest '(2 3 4))    ;; => (3 4)
 ```
 
 ### vector
@@ -150,8 +150,8 @@ Immutable persistent vector.
 
 (cons 1 [2 3 4])  ;; => [1 2 3 4]
 (conj [1 2 3] 4)  ;; => [1 2 3 4]
-(first [2 3 4]    ;; => 2
-(rest [2 3 4]     ;; => [3 4]
+(first [2 3 4])   ;; => 2
+(rest [2 3 4])    ;; => [3 4]
 ```
 
 ### hash-set
