@@ -244,11 +244,11 @@ Thread local var bindings can be nested
 
 ```clojure
 (do
-  (binding [x 100]
-     (println x)       ; x level 1 => 100
-     (binding [x 200]
-        (println x))   ; x level 2 => 200
-     (println x)))     ; x level 1 => 100
+  (binding [y 100]
+     (println y)       ; x level 1 => 100
+     (binding [y 200]
+        (println y))   ; x level 2 => 200
+     (println y)))     ; x level 1 => 100
 ```
 
 Thread local vars get inherited by child threads
