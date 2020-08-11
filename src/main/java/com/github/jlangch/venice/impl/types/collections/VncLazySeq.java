@@ -44,25 +44,21 @@ public class VncLazySeq extends VncSequence {
 
 	public VncLazySeq(final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-
 		this.value = io.vavr.collection.Stream.empty();
 	}
 
 	public VncLazySeq(final VncFunction fn, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-
 		this.value = Stream.continually(() -> fn.apply(VncList.of()));
 	}
 
 	public VncLazySeq(final VncVal seed, final VncFunction fn, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-
 		this.value = Stream.iterate(seed, v -> fn.apply(VncList.of(v)));
 	}
 
 	public VncLazySeq(final VncVal head, final VncLazySeq tail, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-
 		this.value = Stream.cons(head, () -> tail.value);
 	}
 
@@ -144,7 +140,7 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public List<VncVal> getList() { 
-		return value.asJava(); // return an immutable view on top of Vector<VncVal>
+		return value.asJava(); // return an immutable view on top of Stream<VncVal>
 	}
 
 	@Override
