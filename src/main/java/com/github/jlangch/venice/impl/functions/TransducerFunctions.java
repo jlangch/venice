@@ -180,7 +180,8 @@ public class TransducerFunctions {
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(map inc [1 2 3 4])",
-						"(map + [1 2 3 4] [10 20 30 40])")
+						"(map + [1 2 3 4] [10 20 30 40])",
+						"(map list '(1 2 3 4) '(10 20 30 40))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

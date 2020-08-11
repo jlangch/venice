@@ -1111,9 +1111,15 @@
 
 (defn
   ^{ :arglists '("(zipmap keys vals)")
-     :doc "Returns a map with the keys mapped to the corresponding vals."
-     :examples '("(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
-                 "(zipmap [:a :b :c] [1 2 3 4 5])") }
+     :doc """
+          Returns a map with the keys mapped to the corresponding vals.
+
+          To create a list of tuples from two or more lists use
+          (map list '(1 2 3) '(4 5 6)).
+          """
+     :examples '(
+          "(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
+          "(zipmap [:a :b :c] [1 2 3 4 5])") }
 
   zipmap [keys vals]
 
