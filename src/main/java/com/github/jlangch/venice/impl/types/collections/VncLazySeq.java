@@ -68,7 +68,17 @@ public class VncLazySeq extends VncSequence {
 
 	public VncLazySeq(final io.vavr.collection.Stream<VncVal> stream, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		this.value =stream;
+		this.value = stream;
+	}
+
+	
+	public static VncLazySeq fill(final int n, final VncFunction fn, final VncVal meta) {
+		return new VncLazySeq(Stream.fill(n, () -> fn.apply(VncList.of())), meta);
+	}
+
+	// val fibs: Stream[Int] = 0 #:: fibs.scanLeft(1)(_ + _)
+	public VncLazySeq scanLeft(final VncVal zero, final VncFunction fn, final VncVal meta) {
+		return new VncLazySeq(value.scanLeft(zero, (u,v) -> fn.apply(VncList.of(u,v))), meta);
 	}
 
 	
