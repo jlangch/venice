@@ -103,8 +103,8 @@ Example 1:
 ```clojure
 (do
   (def ls (lazy-seq 0 (fn [x] (let [n (+ x 1)]
-                               (println "realized" n)
-                               n))))
+                                (println "realized" n)
+                                n))))
 
   (first ls)
   ; => 0, the first value is the passed seed value -> no evaluation
@@ -124,8 +124,8 @@ Example 2:
 ```clojure
 (do
   (def ls (lazy-seq 0 (fn [x] (let [n (+ x 1)]
-                               (println "  realized" n)
-                               n))))
+                                (println "  realized" n)
+                                n))))
 
   (println "[1]:")
   (->> (map #(* 10 %) ls)
