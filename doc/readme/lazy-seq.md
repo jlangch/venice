@@ -66,7 +66,7 @@ Single elements of a lazy sequence can be realized with one of the functions
 (first (lazy-seq 1 #(+ % 1))) ; => 1
  ```
 
-A lazy sequnece can be realized to a list by applying the `doall` function. 
+A lazy sequence can be realized to a list by applying the `doall` function. 
 
 **Be aware that your runtime system will not survive realizing an infinite sequence.**
 
