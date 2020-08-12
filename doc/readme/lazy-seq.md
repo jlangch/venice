@@ -76,11 +76,11 @@ This example will continuing realizing elements until the memory is exhausted:
 (doall (lazy-seq 1 #(+ % 1)))
  ```
 
-Realizing a lazy sequence
+Realizing a finite lazy sequence
 
 ```clojure
 (->> (lazy-seq rand-long)
-     (take 4)
+     (take 4)  ; finite lazy sequence with 4 elements not yet realized
      (doall))
      
 ; => (1818406514169153152 8927930230538774116 713188723202483350 1539851250757480188)
@@ -88,7 +88,6 @@ Realizing a lazy sequence
 
 ```clojure
 (->> (lazy-seq 1 inc)
-     (take 10)
      (map #(* 10 %))
      (drop 2)
      (take 2)
