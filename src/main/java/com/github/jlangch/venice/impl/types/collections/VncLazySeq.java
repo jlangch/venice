@@ -155,12 +155,17 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public VncVal nth(final int idx) {
-		throw new VncException("Not supported for lazy sequences");
+		return value.get(idx);
 	}
 
 	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		throw new VncException("Not supported for lazy sequences");
+		try {
+			return value.get(idx);
+		}
+		catch(IndexOutOfBoundsException ex) {
+			return defaultVal;
+		}
 	}
 
 	@Override

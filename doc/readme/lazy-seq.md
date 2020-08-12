@@ -52,6 +52,7 @@ Functions that return evaluated elements from a lazy sequences:
 	- second
 	- third
 	- fourth
+	- nth
 
 
 ## Realizing Lazy Sequences
@@ -60,7 +61,7 @@ Lazy sequences must be explicitly realized. At this moment the elements are
 computed.
 
 Single elements of a lazy sequence can be realized with one of the functions 
-`first`, `second`, `third`, or `fourth`
+`first`, `second`, `third`, `fourth`, or `nth`
 
 ```clojure
 (first (lazy-seq 1 #(+ % 1))) ; => 1
