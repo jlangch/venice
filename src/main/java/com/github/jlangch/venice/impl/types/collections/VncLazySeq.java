@@ -43,37 +43,40 @@ import io.vavr.collection.Stream;
 public class VncLazySeq extends VncSequence {
 
 	public VncLazySeq(final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		this.value = io.vavr.collection.Stream.empty();
-	}
-
-	public VncLazySeq(final VncFunction fn, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		this.value = Stream.continually(() -> fn.apply(VncList.of()));
-	}
-
-	public VncLazySeq(final VncVal seed, final VncFunction fn, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		this.value = Stream.iterate(seed, v -> fn.apply(VncList.of(v)));
-	}
-
-	public VncLazySeq(final VncVal head, final VncLazySeq tail, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		this.value = Stream.cons(head, () -> tail.value);
+		this(io.vavr.collection.Stream.empty(), meta);
 	}
 
 	public VncLazySeq(final io.vavr.collection.Stream<VncVal> stream, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.value = stream;
 	}
+
 	
+	public static VncLazySeq continually(final VncFunction fn, final VncVal meta) {
+		return new VncLazySeq(Stream.continually(() -> fn.apply(VncList.of())), meta);
+	}
 	
+	public static VncLazySeq iterate(final VncVal seed, final VncFunction fn, final VncVal meta) {
+		return new VncLazySeq(Stream.iterate(seed, v -> fn.apply(VncList.of(v))), meta);
+	}
+	
+	public static VncLazySeq cons(final VncVal head, final VncLazySeq tail, final VncVal meta) {
+		return new VncLazySeq(Stream.cons(head, () -> tail.value), meta);
+	}
+
+	public static VncLazySeq ofAll(final VncList list, final VncVal meta) {
+		return new VncLazySeq(Stream.ofAll(list.stream()), meta);
+	}
+
+	public static VncLazySeq ofAll(final VncVector list, final VncVal meta) {
+		return new VncLazySeq(Stream.ofAll(list.stream()), meta);
+	}
 
 	public static VncLazySeq fill(final int n, final VncFunction fn, final VncVal meta) {
 		return new VncLazySeq(Stream.fill(n, () -> fn.apply(VncList.of())), meta);
 	}
 
-	public io.vavr.collection.Stream<VncVal> streamVavr() {
+	public io.vavr.collection.Stream<VncVal> lazyStream() {
 		return value;
 	}
 	

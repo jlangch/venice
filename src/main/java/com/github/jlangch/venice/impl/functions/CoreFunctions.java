@@ -1852,16 +1852,16 @@ public class CoreFunctions {
 					return new VncLazySeq(Nil);
 				}
 				else if (args.size() == 1) {
-					return new VncLazySeq(Coerce.toVncFunction(args.first()), Nil);
+					return VncLazySeq.continually(Coerce.toVncFunction(args.first()), Nil);
 				}
 				else if (args.second() == Nil) {
-					return new VncLazySeq(Coerce.toVncFunction(args.first()), Nil);
+					return VncLazySeq.continually(Coerce.toVncFunction(args.first()), Nil);
 				}
 				else if (Types.isVncFunction(args.second())) {
-					return new VncLazySeq(args.first(), (VncFunction)args.second(), Nil);
+					return VncLazySeq.iterate(args.first(), (VncFunction)args.second(), Nil);
 				}
 				else if (Types.isVncLazySeq(args.second())) {
-					return new VncLazySeq(args.first(), (VncLazySeq)args.second(), Nil);
+					return VncLazySeq.cons(args.first(), (VncLazySeq)args.second(), Nil);
 				}
 				else {
 					throw new VncException(
@@ -4235,7 +4235,7 @@ public class CoreFunctions {
 					return ((VncList)coll).addAtStart(x);
 				}
 				else if (Types.isVncLazySeq(coll)) {
-					return new VncLazySeq(x, (VncLazySeq)coll, Nil);
+					return VncLazySeq.cons(x, (VncLazySeq)coll, Nil);
 				}
 				else if (Types.isVncHashSet(coll)) {
 					return ((VncHashSet)coll).add(x);

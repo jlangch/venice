@@ -53,6 +53,8 @@ public class LazySeqTest {
 		/* (defn fib 
 			  ([]     (fib 1 1))
 			  ([a b]  (cons a (lazy-seq (fn [x] (fib b (+ a b)))))))
+			  
+		   (doall (take 20 (fib)))
 		 */
 
 		// https://www.sitepoint.com/functional-fizzbuzz-with-vavr/
@@ -73,7 +75,7 @@ public class LazySeqTest {
 		// an infinite stream this is tricked with a Supplier in order to prevent 
 		// a stack overflow.
 	    return new VncLazySeq(
-	    			Stream.cons(ONE, () -> ones().streamVavr()), 
+	    			Stream.cons(ONE, () -> ones().lazyStream()), 
 	    			Nil); 
 	}
 	
@@ -84,7 +86,7 @@ public class LazySeqTest {
 	
 	private VncLazySeq fib(final VncLong a, final VncLong b) {
 	    return new VncLazySeq(
-	    			Stream.cons(a, () -> fib(b, add(a,b)).streamVavr()),
+	    			Stream.cons(a, () -> fib(b, add(a,b)).lazyStream()),
 	    			Nil);
 	}
 	

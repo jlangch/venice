@@ -2020,7 +2020,23 @@ public class CoreFunctionsTest {
 				
 		assertEquals("(1 2 3 4)", venice.eval(script));					
 	}
-	
+
+	@Test
+	@Disabled
+	public void test_lazy_seq_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                        \n" +
+				"  (defn fib                                                \n" +
+				"    ([]    (fib 1 1))                                      \n" +
+				"    ([a b] (cons a (lazy-seq (fn [x] (fib b (+ a b)))))))  \n" +
+				"                                                           \n" +
+				"  (pr-str (doall (take 4 (fib)))))                           ";
+				
+		assertEquals("(1 2 3 4)", venice.eval(script));					
+	}
+		
 	@Test
 	public void test_ordered_map_Q() {
 		final Venice venice = new Venice();
