@@ -71,10 +71,8 @@ A lazy sequence can be realized to a list by applying the `doall` function.
 
 **Be aware that your runtime system will not survive realizing an infinite sequence.**
 
-This example will continuing realizing elements until the memory is exhausted:
-
 ```clojure
-(doall (lazy-seq 1 #(+ % 1)))
+(doall (lazy-seq 1 #(+ % 1))) ; continues realizing elements until the memory is exhausted
  ```
 
 Realizing a finite lazy sequence
