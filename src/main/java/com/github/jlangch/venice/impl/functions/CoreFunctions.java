@@ -4257,6 +4257,10 @@ public class CoreFunctions {
 								Types.getType(x)));
 					}
 				}
+				else if (Types.isVncFunction(coll)) {
+					// recursive lazy sequence 
+					return VncLazySeq.cons(args.first(), (VncFunction)args.second(), Nil);
+				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'cons'",

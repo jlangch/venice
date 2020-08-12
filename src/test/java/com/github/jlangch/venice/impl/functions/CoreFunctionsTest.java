@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -2006,35 +2005,33 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	@Disabled
 	public void test_lazy_seq_2() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                          \n" +
-				"  (defn positives                                            \n" +
-				"    ([]  (positives 1))                                      \n" +
-				"    ([n] (cons n (lazy-seq (fn [x] (positives (inc n)))))))  \n" +
-				"                                                             \n" +
-				"  (pr-str (doall (take 4 (positives)))))                       ";
+				"(do                                               \n" +
+				"  (defn positives                                 \n" +
+				"    ([]  (positives 1))                           \n" +
+				"    ([n] (cons n (fn [x] (positives (inc n))))))  \n" +
+				"                                                  \n" +
+				"  (pr-str (doall (take 4 (positives)))))            ";
 				
 		assertEquals("(1 2 3 4)", venice.eval(script));					
 	}
 
 	@Test
-	@Disabled
 	public void test_lazy_seq_3() {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                        \n" +
-				"  (defn fib                                                \n" +
-				"    ([]    (fib 1 1))                                      \n" +
-				"    ([a b] (cons a (lazy-seq (fn [x] (fib b (+ a b)))))))  \n" +
-				"                                                           \n" +
-				"  (pr-str (doall (take 4 (fib)))))                           ";
+				"(do                                              \n" +
+				"  (defn fib                                      \n" +
+				"    ([]    (fib 1 1))                            \n" +
+				"    ([a b] (cons a (fn [] (fib b (+ a b))))))    \n" +
+				"                                                 \n" +
+				"  (pr-str (doall (take 6 (fib)))))                 ";
 				
-		assertEquals("(1 2 3 4)", venice.eval(script));					
+		assertEquals("(1 1 2 3 5 8)", venice.eval(script));					
 	}
 		
 	@Test

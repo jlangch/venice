@@ -59,14 +59,11 @@ public class LazySeqTest {
 
 		// https://www.sitepoint.com/functional-fizzbuzz-with-vavr/
 		VncLazySeq s = fib();
-		VncLong f = null;
 		
-		for(int ii=0; ii<90; ii++) {
-			f = (VncLong)s.first();
-			s = s.rest();
-		}
+		s = s.take(90);
+		VncList list = s.realize();
 		
-		assertEquals(2880067194370816120L, f.getValue());
+		assertEquals(2880067194370816120L, ((VncLong)list.last()).getValue());
 	}
 	
 	
