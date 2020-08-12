@@ -49,6 +49,11 @@ public class LazySeqTest {
 	
 	@Test
 	public void testRecursiveFib() {
+		/* (defn fib 
+			  ([]     (fib 1 1))
+			  ([a b]  (cons a (lazy-seq (fn [x] (fib b (+ a b)))))))
+		 */
+
 		// https://www.sitepoint.com/functional-fizzbuzz-with-vavr/
 		VncLazySeq s = fib();
 		VncLong f = null;
@@ -73,9 +78,7 @@ public class LazySeqTest {
 	
 	
 	private VncLazySeq fib() {
-	    return new VncLazySeq(
-	    			Stream.cons(ONE, () -> fib(ONE, TWO).streamVavr()), 
-	    			Nil);
+		return fib(ONE, ONE);
 	}
 	
 	private VncLazySeq fib(final VncLong a, final VncLong b) {
@@ -90,5 +93,4 @@ public class LazySeqTest {
 	
 	
 	private final static VncLong ONE = new VncLong(1L);
-	private final static VncLong TWO = new VncLong(2L);
 }

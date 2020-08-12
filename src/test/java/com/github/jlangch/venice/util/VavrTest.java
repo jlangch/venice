@@ -160,7 +160,7 @@ public class VavrTest {
 	}
 	
 	private Stream<Long> fib() {
-	    return Stream.cons(1L, () -> fib(1,2));
+	    return fib(1L, 1L);
 	}
 	
 	private Stream<Long> fib(final long a, final long b) {
