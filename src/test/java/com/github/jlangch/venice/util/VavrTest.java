@@ -164,6 +164,6 @@ public class VavrTest {
 	}
 	
 	private Stream<Long> fib(final long a, final long b) {
-	    return Stream.cons(a, () -> fib(b,a+b));
+	    return Stream.cons(a, () -> fib(b, a + b));
 	}
 }

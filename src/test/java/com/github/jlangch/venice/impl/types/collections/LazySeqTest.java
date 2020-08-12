@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.functions.MathFunctions;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -88,7 +89,7 @@ public class LazySeqTest {
 	}
 	
 	private VncLong add(final VncLong a, final VncLong b) {
-		return new VncLong(a.getValue() + b.getValue());
+		return (VncLong)MathFunctions.add.apply(VncList.of(a,b));
 	}
 	
 	
