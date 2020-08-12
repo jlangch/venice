@@ -1799,6 +1799,7 @@ public class CoreFunctions {
 	//
 	// Functions that return lazy sequences when their input is a lazy
 	// sequence:
+	//    - cons
 	//    - map
 	//    - filter
 	//    - remove

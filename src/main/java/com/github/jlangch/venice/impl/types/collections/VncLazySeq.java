@@ -200,7 +200,7 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public VncLazySeq drop(final int n) {
-		return value.isEmpty() ? this : new VncLazySeq(value.drop(n), getMeta());
+		return new VncLazySeq(value.drop(n), getMeta());
 	}
 	
 	@Override
@@ -210,7 +210,7 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncLazySeq take(final int n) {
-		return value.isEmpty() ? this : new VncLazySeq(value.take(n), getMeta());
+		return new VncLazySeq(value.take(n), getMeta());
 	}
 	
 	@Override

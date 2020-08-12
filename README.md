@@ -19,7 +19,7 @@ points and rules for applications.
 Venice supports macros, tail-recursion, dynamic code loading, dynamic 
 (thread-local) binding. It comes with excellent Java interoperability, and a 
 configurable sandbox that can prevent all sorts of dangerous JVM interactions 
-like reading/writing files, invoking _System.exit(0)_ or any other malicious 
+like reading/writing files, invoking  _System.exit(0)_  or any other malicious 
 action. Venice has been designed from the ground-up with a sandbox making it 
 a first class citizen.
 
@@ -48,6 +48,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/613647a/cheatsheet.htm
 * [Embedding Venice in Java](doc/readme/embedding.md)
 * [Datatypes](doc/readme/datatypes.md)
 * [Custom Datatypes](doc/readme/datatypes-custom.md)
+* [Lazy Sequences](doc/readme/lazy-seq.md)
 * [Functions](doc/readme/functions.md)
 * [Control Flow](doc/readme/control-flow.md)
 * [Filter-Map-Reduce](doc/readme/filter-map-reduce.md)
