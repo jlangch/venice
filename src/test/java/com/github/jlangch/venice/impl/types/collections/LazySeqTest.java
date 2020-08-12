@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncVal;
 
 import io.vavr.collection.Stream;
 
@@ -36,14 +37,14 @@ public class LazySeqTest {
 	@Test 
 	public void testRecursiveStream() {
 		VncLazySeq s = ones();
-		VncLong f = null;
+		VncVal f = null;
 		
 		for(int ii=0; ii<10000; ii++) {
-			f = (VncLong)s.first();
+			f = s.first();
 			s = s.rest();
 		}
 		
-		assertEquals(new VncLong(1L), f);
+		assertEquals(ONE, f);
 	}
 	
 	@Test
@@ -65,19 +66,29 @@ public class LazySeqTest {
 		// Java evaluates method arguments before a method is called. In case of
 		// an infinite stream this is tricked with a Supplier in order to prevent 
 		// a stack overflow.
-	    return new VncLazySeq(Stream.cons(new VncLong(1L), () -> ones().streamVavr()), Nil); 
+	    return new VncLazySeq(
+	    			Stream.cons(ONE, () -> ones().streamVavr()), 
+	    			Nil); 
 	}
 	
 	
 	private VncLazySeq fib() {
-	    return new VncLazySeq(Stream.cons(new VncLong(1L), () -> fib(new VncLong(1L), new VncLong(2L)).streamVavr()), Nil);
+	    return new VncLazySeq(
+	    			Stream.cons(ONE, () -> fib(ONE, TWO).streamVavr()), 
+	    			Nil);
 	}
 	
-	private VncLazySeq fib(VncLong a, VncLong b) {
-	    return new VncLazySeq(Stream.cons(a, () -> fib(b,add(a,b)).streamVavr()), Nil);
+	private VncLazySeq fib(final VncLong a, final VncLong b) {
+	    return new VncLazySeq(
+	    			Stream.cons(a, () -> fib(b, add(a,b)).streamVavr()),
+	    			Nil);
 	}
 	
-	private VncLong add(VncLong a, VncLong b) {
+	private VncLong add(final VncLong a, final VncLong b) {
 		return new VncLong(a.getValue() + b.getValue());
 	}
+	
+	
+	private final static VncLong ONE = new VncLong(1L);
+	private final static VncLong TWO = new VncLong(2L);
 }
