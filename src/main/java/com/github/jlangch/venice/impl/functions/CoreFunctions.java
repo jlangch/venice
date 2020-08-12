@@ -4259,6 +4259,14 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncFunction(coll)) {
 					// recursive lazy sequence 
+					
+					// (do
+					//   (defn fib
+					//     ([]    (fib 1 1))
+					//     ([a b] (cons a (fn [] (fib b (+ a b))))))
+					//
+					//   (pr-str (doall (take 6 (fib)))))   ; -> (1 1 2 3 5 8)
+
 					return VncLazySeq.cons(args.first(), (VncFunction)args.second(), Nil);
 				}
 				else {
