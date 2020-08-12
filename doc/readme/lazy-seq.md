@@ -80,9 +80,9 @@ This example will continuing realizing elements until the memory is exhausted:
 Realizing a finite lazy sequence
 
 ```clojure
-(->> (lazy-seq rand-long)
-     (take 4)  ; finite lazy sequence with 4 elements not yet realized
-     (doall))
+(->> (lazy-seq rand-long)  ; infinite lazy seq
+     (take 4)              ; finite lazy seq with 4 elements not yet realized
+     (doall))              ; realize the 4 elements
      
 ; => (1818406514169153152 8927930230538774116 713188723202483350 1539851250757480188)
 ```
