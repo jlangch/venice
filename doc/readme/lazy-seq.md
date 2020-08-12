@@ -1,8 +1,8 @@
 # Lazy Sequences
 
 Venice supports lazy evaluated sequences. Lazy sequences are sequences which elements
-are produced only when needed and memorized for further access. They are by nature 
-infinite sequences. The evaluation of sequence elements is called realization.
+are produced only when needed and memorized for further access, thus lazy sequences
+can be infinite. The evaluation of sequence elements is called realization.
 
 
 
@@ -66,9 +66,11 @@ Single elements of a lazy sequence can be realized with one of the functions
 (first (lazy-seq 1 #(+ % 1))) ; => 1
  ```
 
-A sequence is realized by applying the `doall` function. 
+A lazy sequnece can be realized to a list by applying the `doall` function. 
 
-**Be aware that your runtime system will not survive realizing an infinite sequence. This example will continuing realizing elements until the memory is exhausted:**
+**Be aware that your runtime system will not survive realizing an infinite sequence.**
+
+This example will continuing realizing elements until the memory is exhausted:
 
 ```clojure
 (doall (lazy-seq 1 #(+ % 1)))
