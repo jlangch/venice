@@ -149,3 +149,33 @@ Example 2:
   ; => (0 10 20 30)
 )
 ```
+
+
+## Recursive Lazy Sequences
+
+Lazy sequences can be recursively defined by cons'ing a recursive 
+function that returns a lazy sequence.
+
+
+```clojure
+(do
+  (defn positives-numbers
+    ([]  (positives-numbers 1))
+    ([n] (cons n (fn [] (positives-numbers (inc n))))))
+
+  (doall (take 4 (positives-numbers))))
+  
+  ; => (1 2 3 4)
+```
+
+
+```clojure
+(do
+  (defn fib
+    ([]    (fib 1 1))
+    ([a b] (cons a (fn [] (fib b (+ a b))))))
+
+  (doall (take 6 (fib))))
+  
+  ; => (1 1 2 3 5 8)
+```

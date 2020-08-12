@@ -2012,7 +2012,7 @@ public class CoreFunctionsTest {
 				"(do                                               \n" +
 				"  (defn positives                                 \n" +
 				"    ([]  (positives 1))                           \n" +
-				"    ([n] (cons n (fn [x] (positives (inc n))))))  \n" +
+				"    ([n] (cons n (fn [] (positives (inc n))))))   \n" +
 				"                                                  \n" +
 				"  (pr-str (doall (take 4 (positives)))))            ";
 				
