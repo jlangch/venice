@@ -4217,9 +4217,19 @@ public class CoreFunctions {
 						"(cons 1 '(2 3 4 5 6))",
 						"(cons [1 2] [4 5 6])",
 						"(cons 3 (set 1 2))",
-						"(doall (take 5 (cons -1 (lazy-seq 0 #(+ % 1)))))",
 						"(cons {:c 3} {:a 1 :b 2})",
-						"(cons (map-entry :c 3) {:a 1 :b 2})")
+						"(cons (map-entry :c 3) {:a 1 :b 2})",
+						"; cons a value to a lazy sequence    \n" +
+						"(->> (cons -1 (lazy-seq 0 #(+ % 1))) \n" +
+						"     (take 5)                        \n" +
+						"     (doall))",
+						"; recursive lazy sequence (fibonacci example)    \n" +
+						"(do                                              \n" +
+						"  (defn fib                                      \n" +
+						"    ([]    (fib 1 1))                            \n" +
+						"    ([a b] (cons a (fn [] (fib b (+ a b))))))    \n" +
+						"                                                 \n" +
+						"    (doall (take 6 (fib))))                        ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
