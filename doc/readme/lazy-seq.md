@@ -79,7 +79,7 @@ A lazy sequence can be realized to a list by applying the `doall` function.
 Realizing a finite lazy sequence
 
 ```clojure
-(->> (lazy-seq rand-long)  ; infinite lazy seq
+(->> (lazy-seq rand-long)  ; infinite lazy seq producing random numbers
      (take 4)              ; finite lazy seq with 4 elements not yet realized
      (doall))              ; realize the 4 elements
      
