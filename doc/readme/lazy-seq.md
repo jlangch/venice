@@ -72,7 +72,7 @@ A lazy sequence can be realized to a list by applying the `doall` function.
 **Be aware that your runtime system will not survive realizing an infinite sequence.**
 
 ```clojure
-;;; DO NOT RUN THIS!!!
+;;; !!! DO NOT RUN THIS !!!
 (doall (lazy-seq 1 #(+ % 1))) ; continues realizing elements until the memory is exhausted
  ```
 
