@@ -159,23 +159,24 @@ function that returns a lazy sequence.
 
 ```clojure
 (do
-  (defn positives-numbers
-    ([]  (positives-numbers 1))
-    ([n] (cons n (fn [] (positives-numbers (inc n))))))
+  (defn positive-numbers
+    ([]  (positive-numbers 1))
+    ([n] (cons n #(positive-numbers (inc n)))))
 
-  (doall (take 4 (positives-numbers))))
+  (doall (take 4 (positive-numbers))))
   
   ; => (1 2 3 4)
 ```
 
+Lazy Fibonacci number sequence computed by a recursive function:
 
 ```clojure
 (do
   (defn fib
-    ([]    (fib 1 1))
-    ([a b] (cons a (fn [] (fib b (+ a b))))))
+    ([]    (fib 0 1))
+    ([a b] (cons a #(fib b (+ a b)))))
 
-  (doall (take 6 (fib))))
+  (doall (take 7 (fib))))
   
-  ; => (1 1 2 3 5 8)
+  ; => (0 1 1 2 3 5 8)
 ```
