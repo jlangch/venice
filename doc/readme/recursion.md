@@ -77,6 +77,10 @@ position is evaluated.
 ```
 
 
+## Recursion with lazy sequences
+
+
+
 ## mutually recursive calls (trampoline)
 
 `trampoline` can be used to convert algorithms requiring mutual
