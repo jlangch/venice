@@ -73,7 +73,8 @@ position is evaluated.
              acc
              (recur (dec n) (math/bigint-mul acc n)))))
     
-   (factorial 10000)) ; => 441134000376444377299...00000000  (35660 digits)
+   (factorial 5)      ; => 120
+   (factorial 10000)) ; => 284625968091...00000  (35661 digits)
 ```
 
 
@@ -90,6 +91,20 @@ Lazy Fibonacci number sequence computed by a recursive function:
   (doall (take 7 (fib))))
   
   ; => (0 1 1 2 3 5 8)
+```
+
+Factorial for large numbers:
+
+```clojure
+(do
+  (load-module :math)
+  
+  (defn factorial 
+     ([] (factorial 1 (math/bigint 1)))
+     ([n acc] (cons acc #(factorial (inc n) (math/bigint-mul acc (inc n))))))
+
+  (first (drop 4 (factorial)))      ; => 5! = 120 
+  (first (drop 9999 (factorial))))  ; => 1000! = 284625968091...00000  (35661 digits)
 ```
 
 
