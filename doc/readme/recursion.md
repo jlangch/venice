@@ -84,27 +84,25 @@ Lazy Fibonacci number sequence computed by a recursive function:
 
 ```clojure
 (do
-  (defn fib
-    ([]    (fib 0 1))
-    ([a b] (cons a #(fib b (+ a b)))))
+   (defn fib
+     ([]    (fib 0 1))
+     ([a b] (cons a #(fib b (+ a b)))))
 
-  (doall (take 7 (fib))))
-  
-  ; => (0 1 1 2 3 5 8)
+   (doall (take 7 (fib))))  ; => (0 1 1 2 3 5 8)
 ```
 
 Factorial for large numbers:
 
 ```clojure
 (do
-  (load-module :math)
+   (load-module :math)
   
-  (defn factorial 
-     ([] (factorial 1 (math/bigint 1)))
-     ([n acc] (cons acc #(factorial (inc n) (math/bigint-mul acc (inc n))))))
+   (defn factorial 
+      ([] (factorial 1 (math/bigint 1)))
+      ([n acc] (cons acc #(factorial (inc n) (math/bigint-mul acc (inc n))))))
 
-  (first (drop 4 (factorial)))      ; => 5! = 120 
-  (first (drop 9999 (factorial))))  ; => 1000! = 284625968091...00000  (35661 digits)
+   (first (drop 4 (factorial)))      ; => 5! = 120 
+   (first (drop 9999 (factorial))))  ; => 1000! = 284625968091...00000  (35661 digits)
 ```
 
 
