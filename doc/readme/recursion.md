@@ -96,14 +96,11 @@ Factorial for large numbers:
 ```clojure
 (do
    (load-module :math)
-  
 
-   (defn factorial [x]
-      (first (drop (dec x) (factorial*)))
-
-   (defn factorial*
-      ([] (factorial* 1 (math/bigint 1)))
-      ([n acc] (cons acc #(factorial* (inc n) (math/bigint-mul acc (inc n))))))
+   (defn factorial
+      ([x]     (first (drop (dec x) (factorial))))
+      ([]      (factorial 1 (math/bigint 1)))
+      ([n acc] (cons acc #(factorial (inc n) (math/bigint-mul acc (inc n))))))
 
    (factorial 5)      ; => 120 
    (factorial 1000))  ; => 284625968091...00000  (35661 digits)
