@@ -88,6 +88,14 @@ Based on the Java type _BigDecimal_.
 (+ 1.0M 2.0M)
 ```
 
+### big integer
+
+Based on the Java type _BigInteger_.
+
+```clojure
+(+ 1.0N 2.0N)
+```
+
 ### type coercion
 
 Number types are implicitly coerced to the most complex type in an expression
