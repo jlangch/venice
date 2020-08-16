@@ -9,6 +9,7 @@ public enum TypeRank {
 	LONG (12),
 	DOUBLE (13),
 	BIGDECIMAL (14),
+	BIGINTEGER (15),
 
 	STRING (20),
 	CHAR (21),

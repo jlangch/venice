@@ -26,6 +26,7 @@ import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
@@ -252,6 +253,18 @@ public class Coerce {
 		else {
 			throw new VncException(String.format(
 					"Cannot coerce value of type %s to big-decimal. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+	
+	public static VncBigInteger toVncBigInteger(final VncVal val) {
+		if (val == null || Types.isVncBigInteger(val)) {
+			return (VncBigInteger)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to big-integer. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}

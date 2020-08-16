@@ -124,6 +124,9 @@ public class VncDouble extends VncNumber {
 		else if (Types.isVncBigDecimal(o)) {
 			return value.compareTo(Numeric.decimalToDouble((VncBigDecimal)o).getValue());
 		}
+		else if (Types.isVncBigInteger(o)) {
+			return value.compareTo(Numeric.bigintToDouble((VncBigInteger)o).getValue());
+		}
 		else if (o == Constants.Nil) {
 			return 1;
 		}

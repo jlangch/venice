@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Map;
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -115,6 +117,9 @@ public class MathFunctions {
 						}
 						else if (Types.isVncBigDecimal(first)) {
 							return ((VncBigDecimal)first).negate();
+						}
+						else if (Types.isVncBigInteger(first)) {
+							return ((VncBigInteger)first).negate();
 						}
 						else {
 							return validateNumber("-", first);
@@ -198,6 +203,9 @@ public class MathFunctions {
 						}
 						else if (Types.isVncBigDecimal(first)) {
 							return Numeric.calc(MathOp.DIV, new VncBigDecimal(BigDecimal.ONE), first);
+						}
+						else if (Types.isVncBigInteger(first)) {
+							return Numeric.calc(MathOp.DIV, new VncBigInteger(BigInteger.ONE), first);
 						}
 						else {
 							return validateNumber("/", first);
@@ -299,6 +307,9 @@ public class MathFunctions {
 				else if (Types.isVncBigDecimal(arg)) {
 					return new VncBigDecimal(((VncBigDecimal)arg).getValue().add(BigDecimal.ONE));
 				}
+				else if (Types.isVncBigInteger(arg)) {
+					return new VncBigInteger(((VncBigInteger)arg).getValue().add(BigInteger.ONE));
+				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'inc'",
@@ -338,6 +349,9 @@ public class MathFunctions {
 				}
 				else if (Types.isVncBigDecimal(arg)) {
 					return new VncBigDecimal(((VncBigDecimal)arg).getValue().subtract(BigDecimal.ONE));
+				}
+				else if (Types.isVncBigInteger(arg)) {
+					return new VncBigInteger(((VncBigInteger)arg).getValue().subtract(BigInteger.ONE));
 				}
 				else {
 					throw new VncException(String.format(
@@ -461,6 +475,9 @@ public class MathFunctions {
 				else if (Types.isVncBigDecimal(arg)) {
 					return new VncBigDecimal(((VncBigDecimal)arg).getValue().abs());
 				}
+				else if (Types.isVncBigInteger(arg)) {
+					return new VncBigInteger(((VncBigInteger)arg).getValue().abs());
+				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'abs'",
@@ -501,6 +518,9 @@ public class MathFunctions {
 				}
 				else if (Types.isVncBigDecimal(arg)) {
 					return new VncBigDecimal(Coerce.toVncBigDecimal(args.first()).getValue().negate());
+				}
+				else if (Types.isVncBigInteger(arg)) {
+					return new VncBigInteger(((VncBigInteger)arg).getValue().negate());
 				}
 				else {
 					throw new VncException(String.format(
@@ -547,6 +567,9 @@ public class MathFunctions {
 					val = val.setScale(scale, RoundingMode.FLOOR);
 					return new VncBigDecimal(val);
 				}
+				else if (Types.isVncBigInteger(arg)) {
+					return arg;
+				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'floor'",
@@ -592,6 +615,9 @@ public class MathFunctions {
 					val = val.setScale(scale, RoundingMode.CEILING);
 					return new VncBigDecimal(val);
 				}
+				else if (Types.isVncBigInteger(arg)) {
+					return arg;
+				}
 				else {
 					throw new VncException(String.format(
 							"Invalid argument type %s while calling function 'ceil'",
@@ -636,7 +662,8 @@ public class MathFunctions {
 						"(sqrt 10)",
 						"(sqrt 10I)",
 						"(sqrt 10.23)",
-						"(sqrt 10.23M)")
+						"(sqrt 10.23M)",
+						"(sqrt 10N)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -846,7 +873,7 @@ public class MathFunctions {
 				else {
 					final VncVal sum = add.apply(args);
 
-					final VncVal divisor = Types.isVncBigDecimal(sum)
+					final VncVal divisor = Types.isVncBigDecimal(sum) || Types.isVncBigInteger(sum)
 												? new VncBigDecimal(args.size())
 												: new VncDouble(args.size());
 
@@ -1180,6 +1207,9 @@ public class MathFunctions {
 				else if (Types.isVncBigDecimal(op1)) {
 					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0);
 				}
+				else if (Types.isVncBigInteger(op1)) {
+					return VncBoolean.of(((VncBigInteger)op1).getValue().compareTo(BigInteger.ZERO) == 0);
+				}
 				else {
 					throw new VncException(String.format(
 											"Function 'zero?' does not allow %s as operand 1",
@@ -1221,6 +1251,9 @@ public class MathFunctions {
 				else if (Types.isVncBigDecimal(op1)) {
 					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0);
 				}
+				else if (Types.isVncBigInteger(op1)) {
+					return VncBoolean.of(((VncBigInteger)op1).getValue().compareTo(BigInteger.ZERO) > 0);
+				}
 				else {
 					throw new VncException(String.format(
 											"Function 'pos?' does not allow %s as operand 1",
@@ -1261,6 +1294,9 @@ public class MathFunctions {
 				}
 				else if (Types.isVncBigDecimal(op1)) {
 					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0);
+				}
+				else if (Types.isVncBigInteger(op1)) {
+					return VncBoolean.of(((VncBigInteger)op1).getValue().compareTo(BigInteger.ZERO) < 0);
 				}
 				else {
 					throw new VncException(String.format(
@@ -1513,7 +1549,8 @@ public class MathFunctions {
 						"(range (int 10) (int 20))",
 						"(range (int 10) (int 20) (int 3))",
 						"(range 10 15 0.5)",
-						"(range 1.1M 2.2M 0.1M)")
+						"(range 1.1M 2.2M 0.1M)",
+						"(range 100N 200N 10N)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1537,7 +1574,7 @@ public class MathFunctions {
 					case 3:
 						start = args.first();
 						end = args.second();
-						step = args.nth(2);
+						step = args.third();
 						break;
 				}
 
@@ -1630,14 +1667,14 @@ public class MathFunctions {
 		else {
 			if (isOdd(sortedData.size())) {
 				final VncVal median = sortedData.nth(sortedData.size() / 2);
-				return Types.isVncBigDecimal(median) ? median : Numeric.toDouble(median);
+				return Types.isVncBigDecimal(median) || Types.isVncBigInteger(median) ? median : Numeric.toDouble(median);
 			}
 			else {
 				final VncVal lowerMedian = sortedData.nth(sortedData.size() / 2 - 1);
 				final VncVal upperMedian = sortedData.nth(sortedData.size() / 2);
 				final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
 
-				final VncVal divisor = Types.isVncBigDecimal(sum)
+				final VncVal divisor = Types.isVncBigDecimal(sum) || Types.isVncBigInteger(sum)
 											? new VncBigDecimal(2L)
 											: new VncDouble(2.0D);
 

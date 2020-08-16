@@ -29,6 +29,7 @@ public enum AtomType {
 	LONG,			// 10, -10
 	DOUBLE,			// 10.2, -10.2
 	DECIMAL,		// 10.2M, -10.2M
+	BIGINT,			// 10N, -10N
 	STRING,			// "abcde"
 	STRING_BLOCK,	// """abcde"""
 	KEYWORD,		// :abc

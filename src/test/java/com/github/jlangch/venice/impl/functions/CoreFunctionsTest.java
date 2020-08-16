@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -147,6 +148,38 @@ public class CoreFunctionsTest {
 		
 		// vector / map
 		assertEquals("[0 1 {:a 1 :b {:c 9}}]", venice.eval("(str (assoc-in [0 1 {:a 1 :b {:c 2}}] [2 :b :c] 9))"));
+	}
+	
+	@Test
+	public void test_bigint() {
+		final Venice venice = new Venice();
+
+		assertEquals(new BigInteger("0"), venice.eval("(bigint false)"));
+		assertEquals(new BigInteger("1"), venice.eval("(bigint true)"));
+		assertEquals(new BigInteger("3"), venice.eval("(bigint 3)"));
+		assertEquals(new BigInteger("3"), venice.eval("(bigint 3I)"));
+		assertEquals(new BigInteger("3"), venice.eval("(bigint 3.067M)"));
+		assertEquals(new BigInteger("3"), venice.eval("(bigint 3N)"));
+		assertEquals(new BigInteger("3"), venice.eval("(bigint \"3\")"));
+		assertEquals(new BigInteger("3"), venice.eval("(bigint 3.3)"));
+	}
+	
+	@Test
+	public void test_bigint_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(bigint? nil)"));	
+		assertFalse((Boolean)venice.eval("(bigint? true)"));	
+		assertFalse((Boolean)venice.eval("(bigint? 1)"));	
+		assertFalse((Boolean)venice.eval("(bigint? -3.0)"));
+		assertFalse((Boolean)venice.eval("(bigint? -3.0M)"));
+		assertTrue((Boolean)venice.eval("(bigint? -3N)"));
+		assertFalse((Boolean)venice.eval("(bigint? \"ABC\")"));
+		assertFalse((Boolean)venice.eval("(bigint? :a)"));
+		assertFalse((Boolean)venice.eval("(bigint? (symbol :a))"));
+		assertFalse((Boolean)venice.eval("(bigint? '())"));
+		assertFalse((Boolean)venice.eval("(bigint? [])"));
+		assertFalse((Boolean)venice.eval("(bigint? {})"));
 	}
 	
 	@Test
@@ -624,6 +657,8 @@ public class CoreFunctionsTest {
 		assertEquals(new BigDecimal("0"), venice.eval("(decimal false)"));
 		assertEquals(new BigDecimal("1"), venice.eval("(decimal true)"));
 		assertEquals(new BigDecimal("3"), venice.eval("(decimal 3)"));
+		assertEquals(new BigDecimal("3.0"), venice.eval("(decimal 3.0M)"));
+		assertEquals(new BigDecimal("3"), venice.eval("(decimal 3N)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("3.0M"));
 		assertEquals(new BigDecimal("3.00"), venice.eval("(decimal 3 2 :HALF_UP)"));
 		assertEquals(new BigDecimal("3.00"), venice.eval("(decimal \"3.0\" 2 :HALF_UP)"));
@@ -640,6 +675,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(decimal? 1)"));	
 		assertFalse((Boolean)venice.eval("(decimal? -3.0)"));
 		assertTrue((Boolean)venice.eval("(decimal? -3.0M)"));
+		assertFalse((Boolean)venice.eval("(decimal? -3N)"));
 		assertFalse((Boolean)venice.eval("(decimal? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(decimal? :a)"));
 		assertFalse((Boolean)venice.eval("(decimal? (symbol :a))"));
@@ -813,6 +849,7 @@ public class CoreFunctionsTest {
 		assertEquals(Double.valueOf(3.0), venice.eval("(double 3)"));
 		assertEquals(Double.valueOf(3.0), venice.eval("(double 3.0)"));
 		assertEquals(Double.valueOf(3.0), venice.eval("(double 3.0M)"));
+		assertEquals(Double.valueOf(3.0), venice.eval("(double 3N)"));
 		assertEquals(Double.valueOf(3.0), venice.eval("(double \"3.0\")"));
 	}
 	
@@ -825,6 +862,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(double? 1)"));	
 		assertTrue((Boolean)venice.eval("(double? -3.0)"));
 		assertFalse((Boolean)venice.eval("(double? -3.0M)"));
+		assertFalse((Boolean)venice.eval("(double? -3N)"));
 		assertFalse((Boolean)venice.eval("(double? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(double? :a)"));
 		assertFalse((Boolean)venice.eval("(double? (symbol :a))"));
@@ -849,10 +887,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(== 2I 2)"));
 		assertTrue((Boolean)venice.eval("(== 2I 2.0)"));
 		assertTrue((Boolean)venice.eval("(== 2I 2.0M)"));
+		assertTrue((Boolean)venice.eval("(== 2I 2N)"));
 		assertFalse((Boolean)venice.eval("(== 2I 3I)"));
 		assertFalse((Boolean)venice.eval("(== 2I 3)"));
 		assertFalse((Boolean)venice.eval("(== 2I 3.0)"));
 		assertFalse((Boolean)venice.eval("(== 2I 3.0M)"));
+		assertFalse((Boolean)venice.eval("(== 2I 3N)"));
 		assertFalse((Boolean)venice.eval("(== 2I 2.1)"));
 
 		// Long
@@ -860,10 +900,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(== 2 2I)"));
 		assertTrue((Boolean)venice.eval("(== 2 2.0)"));
 		assertTrue((Boolean)venice.eval("(== 2 2.0M)"));
+		assertTrue((Boolean)venice.eval("(== 2 2N)"));
 		assertFalse((Boolean)venice.eval("(== 2 3)"));
 		assertFalse((Boolean)venice.eval("(== 2 3I)"));
 		assertFalse((Boolean)venice.eval("(== 2 3.0)"));
 		assertFalse((Boolean)venice.eval("(== 2 3.0M)"));
+		assertFalse((Boolean)venice.eval("(== 2 3N)"));
 		assertFalse((Boolean)venice.eval("(== 2 2.1)"));
 
 		// Double
@@ -871,20 +913,36 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(== 2.0 2)"));
 		assertTrue((Boolean)venice.eval("(== 2.0 2I)"));
 		assertTrue((Boolean)venice.eval("(== 2.0 2.0M)"));
+		assertTrue((Boolean)venice.eval("(== 2.0 2N)"));
 		assertFalse((Boolean)venice.eval("(== 2.0 3.0)"));
 		assertFalse((Boolean)venice.eval("(== 2.0 3)"));
 		assertFalse((Boolean)venice.eval("(== 2.0 3I)"));
 		assertFalse((Boolean)venice.eval("(== 2.0 3.0M)"));
+		assertFalse((Boolean)venice.eval("(== 2.0 3N)"));
 
 		// Decimal
 		assertTrue((Boolean)venice.eval("(== 2.0M 2.0M)"));
 		assertTrue((Boolean)venice.eval("(== 2.0M 2)"));
 		assertTrue((Boolean)venice.eval("(== 2.0M 2I)"));
 		assertTrue((Boolean)venice.eval("(== 2.0M 2.0)"));
+		assertTrue((Boolean)venice.eval("(== 2.0M 2N)"));
 		assertFalse((Boolean)venice.eval("(== 2.0M 3.0M)"));
 		assertFalse((Boolean)venice.eval("(== 2.0M 3)"));
 		assertFalse((Boolean)venice.eval("(== 2.0M 3I)"));
 		assertFalse((Boolean)venice.eval("(== 2.0M 3.0)"));
+		assertFalse((Boolean)venice.eval("(== 2.0M 3N)"));
+
+		// BigInteger
+		assertTrue((Boolean)venice.eval("(== 2N 2N)"));
+		assertTrue((Boolean)venice.eval("(== 2N 2)"));
+		assertTrue((Boolean)venice.eval("(== 2N 2I)"));
+		assertTrue((Boolean)venice.eval("(== 2N 2.0)"));
+		assertTrue((Boolean)venice.eval("(== 2N 2.0M)"));
+		assertFalse((Boolean)venice.eval("(== 2N 3N)"));
+		assertFalse((Boolean)venice.eval("(== 2N 3)"));
+		assertFalse((Boolean)venice.eval("(== 2N 3I)"));
+		assertFalse((Boolean)venice.eval("(== 2N 3.0)"));
+		assertFalse((Boolean)venice.eval("(== 2N 3.0M)"));
 
 		// String
 		assertTrue((Boolean)venice.eval("(== \"aa\" \"aa\")"));
@@ -951,40 +1009,61 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(= 2I 2)"));
 		assertFalse((Boolean)venice.eval("(= 2I 2.0)"));
 		assertFalse((Boolean)venice.eval("(= 2I 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2I 2N)"));
 		assertFalse((Boolean)venice.eval("(= 2I 3I)"));
 		assertFalse((Boolean)venice.eval("(= 2I 3)"));
 		assertFalse((Boolean)venice.eval("(= 2I 3.0)"));
 		assertFalse((Boolean)venice.eval("(= 2I 3.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2I 3N)"));
 
 		// Long
 		assertTrue((Boolean)venice.eval("(= 2 2)"));
 		assertFalse((Boolean)venice.eval("(= 2 2I)"));
 		assertFalse((Boolean)venice.eval("(= 2 2.0)"));
 		assertFalse((Boolean)venice.eval("(= 2 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2 2N)"));
+		assertFalse((Boolean)venice.eval("(= 2 2N)"));
 		assertFalse((Boolean)venice.eval("(= 2 3)"));
 		assertFalse((Boolean)venice.eval("(= 2 3I)"));
 		assertFalse((Boolean)venice.eval("(= 2 3.0)"));
 		assertFalse((Boolean)venice.eval("(= 2 3.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2 3N)"));
 
 		// Double
 		assertTrue((Boolean)venice.eval("(= 2.0 2.0)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 2)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 2I)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 2N)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 3.0)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 3)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 3I)"));
 		assertFalse((Boolean)venice.eval("(= 2.0 3.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2.0 3N)"));
 
 		// Decimal
 		assertTrue((Boolean)venice.eval("(= 2.0M 2.0M)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 2)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 2I)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 2.0)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 2N)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 3.0M)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 3)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 3I)"));
 		assertFalse((Boolean)venice.eval("(= 2.0M 3.0)"));
+		assertFalse((Boolean)venice.eval("(= 2.0M 3N)"));
+
+		// BigInteger
+		assertTrue((Boolean)venice.eval("(= 2N 2N)"));
+		assertFalse((Boolean)venice.eval("(= 2N 2)"));
+		assertFalse((Boolean)venice.eval("(= 2N 2I)"));
+		assertFalse((Boolean)venice.eval("(= 2N 2.0)"));
+		assertFalse((Boolean)venice.eval("(= 2N 2.0M)"));
+		assertFalse((Boolean)venice.eval("(= 2N 3N)"));
+		assertFalse((Boolean)venice.eval("(= 2N 3)"));
+		assertFalse((Boolean)venice.eval("(= 2N 3I)"));
+		assertFalse((Boolean)venice.eval("(= 2N 3.0)"));
+		assertFalse((Boolean)venice.eval("(= 2N 3.0M)"));
 
 		// String
 		assertTrue((Boolean)venice.eval("(= \"aa\" \"aa\")"));
@@ -1397,6 +1476,9 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(> 2 3.0M)"));
 		assertFalse((Boolean)venice.eval("(> 2 2.0M)"));
 		assertTrue((Boolean)venice.eval("(> 2 1.0M)"));
+		assertFalse((Boolean)venice.eval("(> 2 3N)"));
+		assertFalse((Boolean)venice.eval("(> 2 2N)"));
+		assertTrue((Boolean)venice.eval("(> 2 1N)"));
 
 		// Double
 		assertFalse((Boolean)venice.eval("(> 2.0 3.0)"));
@@ -1408,6 +1490,9 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(> 2.0 3.0M)"));
 		assertFalse((Boolean)venice.eval("(> 2.0 2.0M)"));
 		assertTrue((Boolean)venice.eval("(> 2.0 1.0M)"));
+		assertFalse((Boolean)venice.eval("(> 2.0 3N)"));
+		assertFalse((Boolean)venice.eval("(> 2.0 2N)"));
+		assertTrue((Boolean)venice.eval("(> 2.0 1N)"));
 
 		// Decimal
 		assertFalse((Boolean)venice.eval("(> 2.0M 3.0M)"));
@@ -1419,6 +1504,23 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(> 2.0M 3.0))"));
 		assertFalse((Boolean)venice.eval("(> 2.0M 2.0))"));
 		assertTrue((Boolean)venice.eval("(> 2.0M 1.0))"));
+		assertFalse((Boolean)venice.eval("(> 2.0M 3N)"));
+		assertFalse((Boolean)venice.eval("(> 2.0M 2N)"));
+		assertTrue((Boolean)venice.eval("(> 2.0M 1N)"));
+
+		// BigInteger
+		assertFalse((Boolean)venice.eval("(> 2N 3N)"));
+		assertFalse((Boolean)venice.eval("(> 2N 2N)"));
+		assertTrue((Boolean)venice.eval("(> 2N 1N)"));
+		assertFalse((Boolean)venice.eval("(> 2N 3))"));
+		assertFalse((Boolean)venice.eval("(> 2N 2))"));
+		assertTrue((Boolean)venice.eval("(> 2N 1))"));
+		assertFalse((Boolean)venice.eval("(> 2N 3.0))"));
+		assertFalse((Boolean)venice.eval("(> 2N 2.0))"));
+		assertTrue((Boolean)venice.eval("(> 2N 1.0))"));
+		assertFalse((Boolean)venice.eval("(> 2N 3.0M)"));
+		assertFalse((Boolean)venice.eval("(> 2N 2.0M)"));
+		assertTrue((Boolean)venice.eval("(> 2N 1.0M)"));
 
 		// String
 		assertFalse((Boolean)venice.eval("(> \"k\" \"z\")"));
@@ -1440,6 +1542,9 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(>= 2 3.0M)"));
 		assertTrue((Boolean)venice.eval("(>= 2 2.0M)"));
 		assertTrue((Boolean)venice.eval("(>= 2 1.0M)"));
+		assertFalse((Boolean)venice.eval("(>= 2 3N)"));
+		assertTrue((Boolean)venice.eval("(>= 2 2N)"));
+		assertTrue((Boolean)venice.eval("(>= 2 1N)"));
 
 		// Double
 		assertFalse((Boolean)venice.eval("(>= 2.0 3.0)"));
@@ -1451,6 +1556,9 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(>= 2.0 3.0M)"));
 		assertTrue((Boolean)venice.eval("(>= 2.0 2.0M)"));
 		assertTrue((Boolean)venice.eval("(>= 2.0 1.0M)"));
+		assertFalse((Boolean)venice.eval("(>= 2.0 3N)"));
+		assertTrue((Boolean)venice.eval("(>= 2.0 2N)"));
+		assertTrue((Boolean)venice.eval("(>= 2.0 1N)"));
 
 		// Decimal
 		assertFalse((Boolean)venice.eval("(>= 2.0M 3.0M)"));
@@ -1462,6 +1570,23 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(>= 2.0M 3.0))"));
 		assertTrue((Boolean)venice.eval("(>= 2.0M 2.0))"));
 		assertTrue((Boolean)venice.eval("(>= 2.0M 1.0))"));
+		assertFalse((Boolean)venice.eval("(>= 2.0M 3N)"));
+		assertTrue((Boolean)venice.eval("(>= 2.0M 2N)"));
+		assertTrue((Boolean)venice.eval("(>= 2.0M 1N)"));
+
+		// BigInteger
+		assertFalse((Boolean)venice.eval("(>= 2N 3N)"));
+		assertTrue((Boolean)venice.eval("(>= 2N 2N)"));
+		assertTrue((Boolean)venice.eval("(>= 2N 1N)"));
+		assertFalse((Boolean)venice.eval("(>= 2N 3))"));
+		assertTrue((Boolean)venice.eval("(>= 2N 2))"));
+		assertTrue((Boolean)venice.eval("(>= 2N 1))"));
+		assertFalse((Boolean)venice.eval("(>= 2N 3.0))"));
+		assertTrue((Boolean)venice.eval("(>= 2N 2.0))"));
+		assertTrue((Boolean)venice.eval("(>= 2N 1.0))"));
+		assertFalse((Boolean)venice.eval("(>= 2N 3.0M)"));
+		assertTrue((Boolean)venice.eval("(>= 2N 2.0M)"));
+		assertTrue((Boolean)venice.eval("(>= 2N 1.0M)"));
 
 		// String
 		assertFalse((Boolean)venice.eval("(>= \"k\" \"z\")"));
@@ -1621,6 +1746,7 @@ public class CoreFunctionsTest {
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3I)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3.1)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3.0M)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(int 3N)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int \"3\")"));
 	}
 
@@ -1634,6 +1760,7 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(int? 3I)"));
 		assertFalse((Boolean)venice.eval("(int? -3.0)"));
 		assertFalse((Boolean)venice.eval("(int? -3.0M)"));
+		assertFalse((Boolean)venice.eval("(int? -3N)"));
 		assertFalse((Boolean)venice.eval("(int? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(int? :a)"));
 		assertFalse((Boolean)venice.eval("(int? (symbol :a))"));
@@ -2104,6 +2231,7 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(3), venice.eval("(long 3I)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3.1)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3.0M)"));
+		assertEquals(Long.valueOf(3), venice.eval("(long 3N)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long \"3\")"));
 	}
 
@@ -2117,6 +2245,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(long? 3I)"));
 		assertFalse((Boolean)venice.eval("(long? -3.0)"));
 		assertFalse((Boolean)venice.eval("(long? -3.0M)"));
+		assertFalse((Boolean)venice.eval("(long? -3N)"));
 		assertFalse((Boolean)venice.eval("(long? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(long? :a)"));
 		assertFalse((Boolean)venice.eval("(long? (symbol :a))"));
@@ -2139,6 +2268,9 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(< 2 3.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2 2.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2 1.0M)"));
+		assertTrue((Boolean)venice.eval("(< 2 3N)"));
+		assertFalse((Boolean)venice.eval("(< 2 2N)"));
+		assertFalse((Boolean)venice.eval("(< 2 1N)"));
 
 		// Double
 		assertTrue((Boolean)venice.eval("(< 2.0 3.0)"));
@@ -2150,6 +2282,9 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(< 2.0 3.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2.0 2.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2.0 1.0M)"));
+		assertTrue((Boolean)venice.eval("(< 2.0 3N)"));
+		assertFalse((Boolean)venice.eval("(< 2.0 2N)"));
+		assertFalse((Boolean)venice.eval("(< 2.0 1N)"));
 
 		// Decimal
 		assertTrue((Boolean)venice.eval("(< 2.0M 3.0M)"));
@@ -2161,6 +2296,23 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(< 2.0M 3.0))"));
 		assertFalse((Boolean)venice.eval("(< 2.0M 2.0))"));
 		assertFalse((Boolean)venice.eval("(< 2.0M 1.0))"));
+		assertTrue((Boolean)venice.eval("(< 2.0M 3N)"));
+		assertFalse((Boolean)venice.eval("(< 2.0M 2N)"));
+		assertFalse((Boolean)venice.eval("(< 2.0M 1N)"));
+
+		// BigInteger
+		assertTrue((Boolean)venice.eval("(< 2N 3N)"));
+		assertFalse((Boolean)venice.eval("(< 2N 2N)"));
+		assertFalse((Boolean)venice.eval("(< 2N 1N)"));
+		assertTrue((Boolean)venice.eval("(< 2N 3))"));
+		assertFalse((Boolean)venice.eval("(< 2N 2))"));
+		assertFalse((Boolean)venice.eval("(< 2N 1))"));
+		assertTrue((Boolean)venice.eval("(< 2N 3.0))"));
+		assertFalse((Boolean)venice.eval("(< 2N 2.0))"));
+		assertFalse((Boolean)venice.eval("(< 2N 1.0))"));
+		assertTrue((Boolean)venice.eval("(< 2N 3.0M)"));
+		assertFalse((Boolean)venice.eval("(< 2N 2.0M)"));
+		assertFalse((Boolean)venice.eval("(< 2N 1.0M)"));
 
 		// String
 		assertTrue((Boolean)venice.eval("(< \"k\" \"z\")"));
@@ -2182,6 +2334,9 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2 3.0M)"));
 		assertTrue((Boolean)venice.eval("(<= 2 2.0M)"));
 		assertFalse((Boolean)venice.eval("(<= 2 1.0M)"));
+		assertTrue((Boolean)venice.eval("(<= 2 3N)"));
+		assertTrue((Boolean)venice.eval("(<= 2 2N)"));
+		assertFalse((Boolean)venice.eval("(<= 2 1N)"));
 
 		// Double
 		assertTrue((Boolean)venice.eval("(<= 2.0 3.0)"));
@@ -2193,6 +2348,9 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2.0 3.0M)"));
 		assertTrue((Boolean)venice.eval("(<= 2.0 2.0M)"));
 		assertFalse((Boolean)venice.eval("(<= 2.0 1.0M)"));
+		assertTrue((Boolean)venice.eval("(<= 2.0 3N)"));
+		assertTrue((Boolean)venice.eval("(<= 2.0 2N)"));
+		assertFalse((Boolean)venice.eval("(<= 2.0 1N)"));
 
 		// Decimal
 		assertTrue((Boolean)venice.eval("(<= 2.0M 3.0M)"));
@@ -2204,6 +2362,23 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2.0M 3.0))"));
 		assertTrue((Boolean)venice.eval("(<= 2.0M 2.0))"));
 		assertFalse((Boolean)venice.eval("(<= 2.0M 1.0))"));
+		assertTrue((Boolean)venice.eval("(<= 2.0M 3N)"));
+		assertTrue((Boolean)venice.eval("(<= 2.0M 2N)"));
+		assertFalse((Boolean)venice.eval("(<= 2.0M 1N)"));
+		
+		// BigInteger
+		assertTrue((Boolean)venice.eval("(<= 2N 3N)"));
+		assertTrue((Boolean)venice.eval("(<= 2N 2N)"));
+		assertFalse((Boolean)venice.eval("(<= 2N 1N)"));
+		assertTrue((Boolean)venice.eval("(<= 2N 3))"));
+		assertTrue((Boolean)venice.eval("(<= 2N 2))"));
+		assertFalse((Boolean)venice.eval("(<= 2N 1))"));
+		assertTrue((Boolean)venice.eval("(<= 2N 3.0))"));
+		assertTrue((Boolean)venice.eval("(<= 2N 2.0))"));
+		assertFalse((Boolean)venice.eval("(<= 2N 1.0))"));
+		assertTrue((Boolean)venice.eval("(<= 2N 3.0M)"));
+		assertTrue((Boolean)venice.eval("(<= 2N 2.0M)"));
+		assertFalse((Boolean)venice.eval("(<= 2N 1.0M)"));
 
 		// String
 		assertTrue((Boolean)venice.eval("(<= \"k\" \"z\")"));
@@ -3242,6 +3417,7 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(string? 1)"));	
 		assertFalse((Boolean)venice.eval("(string? -3.0)"));
 		assertFalse((Boolean)venice.eval("(string? -3.0M)"));
+		assertFalse((Boolean)venice.eval("(string? -3N)"));
 		assertTrue((Boolean)venice.eval("(string? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(string? :a)"));
 		assertFalse((Boolean)venice.eval("(string? (symbol :a))"));
@@ -3284,6 +3460,7 @@ public class CoreFunctionsTest {
 		assertEquals("1", venice.eval("(str 1)"));	
 		assertEquals("-3.0", venice.eval("(str -3.0)"));
 		assertEquals("-3.0123M", venice.eval("(str -3.0123M)"));
+		assertEquals("-3N", venice.eval("(str -3N)"));
 		assertEquals(":a", venice.eval("(str :a)"));
 		assertEquals("a", venice.eval("(str (symbol :a))"));
 		assertEquals("()", venice.eval("(str '())"));

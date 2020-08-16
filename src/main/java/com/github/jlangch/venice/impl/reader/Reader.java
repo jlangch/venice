@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.reader;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -152,6 +154,11 @@ public class Reader {
 			case DECIMAL:
 				return new VncBigDecimal(
 							new BigDecimal(sToken.substring(0, sToken.length()-1)), 
+							MetaUtil.toMeta(token));
+				
+			case BIGINT:
+				return new VncBigInteger(
+							new BigInteger(sToken.substring(0, sToken.length()-1)), 
 							MetaUtil.toMeta(token));
 				
 			case STRING: {
@@ -365,6 +372,9 @@ public class Reader {
 						}
 						else if (lastCh == 'M') {
 							return AtomType.DECIMAL;
+						}
+						else if (lastCh == 'N') {
+							return AtomType.BIGINT;
 						}
 						else {
 							return sToken.indexOf('.') > 0 

@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,38 +30,42 @@ import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
-public class VncLong extends VncNumber {
+public class VncBigInteger extends VncNumber {
 
-	public VncLong(final Long v) { 
+	public VncBigInteger(final BigInteger v) { 
 		this(v, null, Constants.Nil); 
 	}
-	
-	public VncLong(final Integer v) { 
-		this(v.longValue(), null, Constants.Nil); 
+
+	public VncBigInteger(final double v) { 
+		this(BigInteger.valueOf((long)v), null, Constants.Nil); 
 	}
 
-	public VncLong(final Long v, final VncVal meta) { 
+	public VncBigInteger(final long v) { 
+		this(BigInteger.valueOf(v), null, Constants.Nil); 
+	}
+	
+	public VncBigInteger(final BigInteger v, final VncVal meta) { 
 		this(v, null, meta);
 	}
 
-	public VncLong(
-			final Long v, 
+	public VncBigInteger(
+			final BigInteger v, 
 			final VncWrappingTypeDef wrappingTypeDef, 
 			final VncVal meta
-	) { 
+	) {
 		super(wrappingTypeDef, meta);
 		value = v; 
 	}
-	
+
 	
 	@Override
-	public VncLong withMeta(final VncVal meta) {
-		return new VncLong(value, getWrappingTypeDef(), meta);
+	public VncBigInteger withMeta(final VncVal meta) {
+		return new VncBigInteger(value, getWrappingTypeDef(), meta);
 	}
 	
 	@Override
-	public VncLong wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		return new VncLong(value, wrappingTypeDef, meta); 
+	public VncBigInteger wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+		return new VncBigInteger(value, wrappingTypeDef, meta); 
 	}
 	
 	@Override
@@ -80,21 +85,17 @@ public class VncLong extends VncNumber {
 				: Arrays.asList(VncVal.TYPE);
 	}
 	
-	public VncLong negate() { 
-		return new VncLong(value * -1L); 
+	public VncBigInteger negate() { 
+		return new VncBigInteger(value.negate()); 
 	}
 
-	public Long getValue() { 
+	public BigInteger getValue() { 
 		return value; 
-	}
-	
-	public Integer getIntValue() { 
-		return value.intValue(); 
 	}
 	
 	@Override 
 	public TypeRank typeRank() {
-		return TypeRank.LONG;
+		return TypeRank.BIGDECIMAL;
 	}
 	
 	@Override
@@ -104,20 +105,20 @@ public class VncLong extends VncNumber {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		if (Types.isVncLong(o)) {
-			return value.compareTo(((VncLong)o).getValue());
-		}
-		else if (Types.isVncInteger(o)) {
-			return value.compareTo(((VncInteger)o).getLongValue());
-		}
-		else if (Types.isVncDouble(o)) {
-			return value.compareTo(Numeric.doubleToLong((VncDouble)o).getValue());
+		if (Types.isVncBigInteger(o)) {
+			return value.compareTo(((VncBigInteger)o).getValue());
 		}
 		else if (Types.isVncBigDecimal(o)) {
-			return value.compareTo(Numeric.decimalToLong((VncBigDecimal)o).getValue());
+			return value.compareTo(Numeric.decimalToBigint((VncBigDecimal)o).getValue());
 		}
-		else if (Types.isVncBigInteger(o)) {
-			return value.compareTo(Numeric.bigintToLong((VncBigInteger)o).getValue());
+		else if (Types.isVncInteger(o)) {
+			return value.compareTo(Numeric.intToBigint((VncInteger)o).getValue());
+		}
+		else if (Types.isVncDouble(o)) {
+			return value.compareTo(Numeric.doubleToBigint((VncDouble)o).getValue());
+		}
+		else if (Types.isVncLong(o)) {
+			return value.compareTo(Numeric.longToBigint((VncLong)o).getValue());
 		}
 		else if (o == Constants.Nil) {
 			return 1;
@@ -125,7 +126,7 @@ public class VncLong extends VncNumber {
 
 		return super.compareTo(o);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return value.hashCode();
@@ -140,19 +141,19 @@ public class VncLong extends VncNumber {
 			return false;
 		}
 		else {
-			return value.equals(((VncLong)obj).value);
+			return value.equals(((VncBigInteger)obj).value);
 		}
 	}
 
 	@Override 
 	public String toString() {
-		return value.toString();
+		return value.toString() + "N";
 	}
 
-    
-    public static final VncKeyword TYPE = new VncKeyword(":core/long");
+	
+    public static final VncKeyword TYPE = new VncKeyword(":core/bigint");
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Long value;
+	private final BigInteger value;
 }

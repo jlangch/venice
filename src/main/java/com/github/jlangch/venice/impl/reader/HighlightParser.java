@@ -138,6 +138,7 @@ public class HighlightParser {
 			case LONG:
 			case DOUBLE:
 			case DECIMAL:
+			case BIGINT:
 				addItem(sToken, NUMBER);
 				break;
 				

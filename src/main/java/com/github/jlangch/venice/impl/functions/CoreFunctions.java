@@ -29,6 +29,7 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
@@ -387,6 +389,29 @@ public class CoreFunctions {
 				assertArity("decimal?", args, 1);
 
 				return VncBoolean.of(Types.isVncBigDecimal(args.first()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bigint_Q =
+		new VncFunction(
+				"bigint?",
+				VncFunction
+					.meta()
+					.arglists("(bigint? n)")
+					.doc("Returns true if n is a big integer")
+					.examples(
+						"(bigint? 4.0N)",
+						"(bigint? 4.0)",
+						"(bigint? 3)",
+						"(bigint? 3I)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("bigint?", args, 1);
+
+				return VncBoolean.of(Types.isVncBigInteger(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1253,6 +1278,9 @@ public class CoreFunctions {
 				else if (Types.isVncBigDecimal(op1)) {
 					return Numeric.decimalToLong((VncBigDecimal)op1);
 				}
+				else if (Types.isVncBigInteger(op1)) {
+					return Numeric.bigintToLong((VncBigInteger)op1);
+				}
 				else if (Types.isVncChar(op1)) {
 					return new VncLong((int)((VncChar)op1).getValue().charValue());				
 				}
@@ -1320,6 +1348,9 @@ public class CoreFunctions {
 			else if (Types.isVncBigDecimal(op1)) {
 				return Numeric.decimalToInt((VncBigDecimal)op1);
 			}
+			else if (Types.isVncBigInteger(op1)) {
+				return Numeric.bigintToInt((VncBigInteger)op1);
+			}
 			else if (Types.isVncChar(op1)) {
 				return new VncInteger((int)((VncChar)op1).getValue().charValue());				
 			}
@@ -1385,6 +1416,9 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncBigDecimal(op1)) {
 					return Numeric.decimalToDouble((VncBigDecimal)op1);
+				}
+				else if (Types.isVncBigInteger(op1)) {
+					return Numeric.bigintToDouble((VncBigInteger)op1);
 				}
 				else if (Types.isVncString(op1)) {
 					final String s = ((VncString)op1).getValue();
@@ -1467,6 +1501,56 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+
+	public static VncFunction bigint_cast =
+		new VncFunction(
+				"bigint",
+				VncFunction
+					.meta()
+					.arglists("(bigint x)")
+					.doc(
+						"Converts to big integer.")
+					.examples(
+						"(bigint 2000)",
+						"(bigint 34897.65)",
+						"(bigint \"5676000000000\")",
+						"(bigint nil)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("bigint", args, 1);
+
+				if (args.isEmpty()) {
+					return new VncBigDecimal(BigDecimal.ZERO);
+				}
+				else {
+					final VncVal arg = args.first();
+
+					if (arg == Constants.Nil) {
+						return new VncBigInteger(BigInteger.ZERO);
+					}
+					else if (VncBoolean.isFalse(arg)) {
+						return new VncBigInteger(BigInteger.ZERO);
+					}
+					else if (VncBoolean.isTrue(arg)) {
+						return new VncBigInteger(BigInteger.ONE);
+					}
+					else if (Types.isVncString(arg)) {
+						return new VncBigInteger(new BigInteger(((VncString)arg).getValue()));
+					}
+					else if (Types.isVncNumber(arg)) {
+						return Numeric.toBigint(arg);
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'decimal' does not allow %s as operand 1",
+								Types.getType(arg)));
+					}
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	///////////////////////////////////////////////////////////////////////////
 	// List functions
@@ -6810,6 +6894,7 @@ public class CoreFunctions {
 				.add(long_Q)
 				.add(double_Q)
 				.add(decimal_Q)
+				.add(bigint_Q)
 				.add(number_Q)
 				.add(string_Q)
 				.add(char_Q)
@@ -6847,6 +6932,7 @@ public class CoreFunctions {
 				.add(long_cast)
 				.add(double_cast)
 				.add(decimal_cast)
+				.add(bigint_cast)
 
 				.add(new_char)
 				.add(new_list)

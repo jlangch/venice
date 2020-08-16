@@ -21,10 +21,12 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +72,11 @@ public class ReaderTest {
 	@Test
 	public void testAtomDecimal() {
 		assertEquals(new BigDecimal("100.123"), new Venice().eval("(do 100.123M)"));
+	}
+
+	@Test
+	public void testAtomBigInteger() {
+		assertEquals(new BigInteger("100"), new Venice().eval("(do 100N)"));
 	}
 
 	@Test

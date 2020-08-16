@@ -118,6 +118,9 @@ public class VncBigDecimal extends VncNumber {
 		else if (Types.isVncLong(o)) {
 			return value.compareTo(Numeric.longToDecimal((VncLong)o).getValue());
 		}
+		else if (Types.isVncBigInteger(o)) {
+			return value.compareTo(Numeric.bigintToDecimal((VncBigInteger)o).getValue());
+		}
 		else if (o == Constants.Nil) {
 			return 1;
 		}
