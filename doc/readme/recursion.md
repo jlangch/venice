@@ -97,12 +97,16 @@ Factorial for large numbers:
 (do
    (load-module :math)
   
-   (defn factorial 
-      ([] (factorial 1 (math/bigint 1)))
-      ([n acc] (cons acc #(factorial (inc n) (math/bigint-mul acc (inc n))))))
 
-   (first (drop 4 (factorial)))      ; => 5! = 120 
-   (first (drop 9999 (factorial))))  ; => 1000! = 284625968091...00000  (35661 digits)
+   (defn factorial [x]
+      (first (drop (dec x) (factorial*)))
+
+   (defn factorial*
+      ([] (factorial* 1 (math/bigint 1)))
+      ([n acc] (cons acc #(factorial* (inc n) (math/bigint-mul acc (inc n))))))
+
+   (factorial 5)      ; => 120 
+   (factorial 1000))  ; => 284625968091...00000  (35661 digits)
 ```
 
 
