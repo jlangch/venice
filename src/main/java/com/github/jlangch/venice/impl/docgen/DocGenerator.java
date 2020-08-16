@@ -163,6 +163,7 @@ public class DocGenerator {
 		literals.addItem(new DocItem("Long: 1500", null));
 		literals.addItem(new DocItem("Double: 3.569", null));
 		literals.addItem(new DocItem("BigDecimal: 6.897M", null));
+		literals.addItem(new DocItem("BigInteger: 1000N", null));
 		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", null) );
 		literals.addItem(new DocItem("String: \"\"\"{ \"age\": 42 }\"\"\"", null) );
 
@@ -181,6 +182,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("min"));
 		arithmetic.addItem(getDocItem("max"));
 		arithmetic.addItem(getDocItem("abs"));
+		arithmetic.addItem(getDocItem("sgn"));
 		arithmetic.addItem(getDocItem("negate"));
 		arithmetic.addItem(getDocItem("floor"));
 		arithmetic.addItem(getDocItem("ceil"));
@@ -196,6 +198,7 @@ public class DocGenerator {
 		convert.addItem(getDocItem("long"));
 		convert.addItem(getDocItem("double"));
 		convert.addItem(getDocItem("decimal"));
+		convert.addItem(getDocItem("bigint"));
 
 		final DocSection compare = new DocSection("Compare");
 		numbers.addSection(compare);
