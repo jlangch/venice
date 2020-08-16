@@ -488,6 +488,59 @@ public class MathFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction sgn =
+		new VncFunction(
+				"sgn",
+				VncFunction
+					.meta()
+					.arglists("(sgn x)")
+					.doc(
+						"sgn function for a number. \n" +
+						"   -1 if x < 0             \n" +
+						"    0 if x = 0             \n" +
+						"    1 if x > 0            ")
+					.examples(
+						"(sgn -10)",
+						"(sgn 0)",
+						"(sgn 10)",
+						"(sgn -10I)",
+						"(sgn -10.1)",
+						"(sgn -10.12M)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("sgn", args, 1);
+
+				final VncVal arg = args.first();
+
+				if (Types.isVncLong(arg)) {
+					final long x = ((VncLong)arg).getValue().longValue();
+					return new VncLong(x < 0L ? -1 : (x > 0L ? 1 :0));
+				}
+				else if (Types.isVncInteger(arg)) {
+					final int x = ((VncInteger)arg).getValue().intValue();
+					return new VncLong(x < 0 ? -1 : (x > 0 ? 1 :0));
+				}
+				else if (Types.isVncDouble(arg)) {
+					final double x = ((VncDouble)arg).getValue().doubleValue();
+					return new VncLong(x < 0.0 ? -1 : (x > 0.0 ? 1 :0));
+				}
+				else if (Types.isVncBigDecimal(arg)) {
+					return new VncLong(((VncBigDecimal)arg).getValue().signum());
+				}
+				else if (Types.isVncBigInteger(arg)) {
+					return new VncLong(((VncBigInteger)arg).getValue().signum());
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'signum'",
+							Types.getType(arg)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction negate =
 		new VncFunction(
 				"negate",
@@ -1704,6 +1757,7 @@ public class MathFunctions {
 					.add(inc)
 					.add(dec)
 					.add(abs)
+					.add(sgn)
 					.add(min)
 					.add(max)
 					.add(negate)

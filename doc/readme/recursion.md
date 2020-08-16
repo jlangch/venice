@@ -10,30 +10,26 @@ mutual recursion is available for more involved forms of recursion.
 
 ```clojure
 (do
-  (load-module :math)
-  
   (defn factorial [n] 
     (if (<= n 1) 
-        1 
-        (math/bigint-mul n (factorial (dec n)))))
+        1N 
+        (* (bigint n) (factorial (dec n)))))
 
-  (factorial 2)     ; => 2
-  (factorial 5)     ; => 120
-  (factorial 200)   ; => 78865786736479050355236...00000000 (375 digits)
+  (factorial 2)     ; => 2N
+  (factorial 5)     ; => 120N
+  (factorial 200)   ; => 78865786736479050355236...00000000N (375 digits)
   (factorial 4000)  ; => boooom...
 )
 ```
 
 ```clojure
 (do
-  (load-module :math)
-
   (defmulti factorial identity)
-  (defmethod factorial 0 [_] 1)
-  (defmethod factorial :default [n] (math/bigint-mul n (factorial (dec n))))
+  (defmethod factorial 0 [_] 1N)
+  (defmethod factorial :default [n] (* (bigint n) (factorial (dec n))))
 
-  (factorial 5)     ; => 120
-  (factorial 200)   ; => 78865786736479050355236...00000000 (375 digits)
+  (factorial 5)     ; => 120N
+  (factorial 200)   ; => 78865786736479050355236...00000000N (375 digits)
   (factorial 4000)  ; => boooom...
 )
 ```
@@ -65,16 +61,14 @@ position is evaluated.
 
 ```clojure
 (do
-   (load-module :math)
-  
    (defn factorial [x]
-      (loop [n x, acc (math/bigint 1)]
+      (loop [n x, acc 1N]
          (if (== n 1)
              acc
-             (recur (dec n) (math/bigint-mul acc n)))))
+             (recur (dec n) (* acc n)))))
     
-   (factorial 5)      ; => 120
-   (factorial 10000)) ; => 284625968091...00000  (35661 digits)
+   (factorial 5)      ; => 120N
+   (factorial 10000)) ; => 284625968091...00000N  (35661 digits)
 ```
 
 
@@ -85,7 +79,7 @@ Lazy Fibonacci number sequence computed by a recursive function:
 ```clojure
 (do
    (defn fib
-     ([]    (fib 0 1))
+     ([]    (fib 0N 1N))
      ([a b] (cons a #(fib b (+ a b)))))
 
    (doall (take 7 (fib))))  ; => (0 1 1 2 3 5 8)
@@ -95,15 +89,13 @@ Factorial for large numbers:
 
 ```clojure
 (do
-   (load-module :math)
-
    (defn factorial
+      ([]      (factorial 1 1N))
       ([x]     (first (drop (dec x) (factorial))))
-      ([]      (factorial 1 (math/bigint 1)))
-      ([n acc] (cons acc #(factorial (inc n) (math/bigint-mul acc (inc n))))))
+      ([n acc] (cons acc #(factorial (inc n) (* acc (inc n))))))
 
-   (factorial 5)      ; => 120 
-   (factorial 1000))  ; => 284625968091...00000  (35661 digits)
+   (factorial 5)      ; => 120N 
+   (factorial 1000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
 
@@ -143,13 +135,11 @@ Examples:
 
 ```clojure
 (do
-   (load-module :math)
- 
    (defn factorial
-      ([n] #(factorial n (math/bigint 1)))
+      ([n] #(factorial n 1N))
       ([n acc] (if (< n 2) 
                    acc 
-                   #(factorial (dec n) (math/bigint-mul acc n)))))
+                   #(factorial (dec n) (* acc n)))))
 
    (trampoline (factorial 10000)))
 ```
