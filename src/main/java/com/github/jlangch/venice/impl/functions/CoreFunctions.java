@@ -1256,36 +1256,37 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("long", args, 1);
 
-				final VncVal op1 = args.first();
-				if (op1 == Nil) {
-					return new VncLong(0);
+				final VncVal arg = args.first();
+				
+				if (arg == Nil) {
+					return new VncLong(0L);
 				}
-				else if (VncBoolean.isFalse(op1)) {
-					return new VncLong(0);
+				else if (VncBoolean.isFalse(arg)) {
+					return new VncLong(0L);
 				}
-				else if (VncBoolean.isTrue(op1)) {
-					return new VncLong(1);
+				else if (VncBoolean.isTrue(arg)) {
+					return new VncLong(1L);
 				}
-				else if (Types.isVncLong(op1)) {
-					return op1;
+				else if (Types.isVncLong(arg)) {
+					return arg;
 				}
-				else if (Types.isVncInteger(op1)) {
-					return Numeric.intToLong((VncInteger)op1);
+				else if (Types.isVncInteger(arg)) {
+					return Numeric.intToLong((VncInteger)arg);
 				}
-				else if (Types.isVncDouble(op1)) {
-					return Numeric.doubleToLong((VncDouble)op1);
+				else if (Types.isVncDouble(arg)) {
+					return Numeric.doubleToLong((VncDouble)arg);
 				}
-				else if (Types.isVncBigDecimal(op1)) {
-					return Numeric.decimalToLong((VncBigDecimal)op1);
+				else if (Types.isVncBigDecimal(arg)) {
+					return Numeric.decimalToLong((VncBigDecimal)arg);
 				}
-				else if (Types.isVncBigInteger(op1)) {
-					return Numeric.bigintToLong((VncBigInteger)op1);
+				else if (Types.isVncBigInteger(arg)) {
+					return Numeric.bigintToLong((VncBigInteger)arg);
 				}
-				else if (Types.isVncChar(op1)) {
-					return new VncLong((int)((VncChar)op1).getValue().charValue());				
+				else if (Types.isVncChar(arg)) {
+					return new VncLong((int)((VncChar)arg).getValue().charValue());				
 				}
-				else if (Types.isVncString(op1)) {
-					final String s = ((VncString)op1).getValue();
+				else if (Types.isVncString(arg)) {
+					final String s = ((VncString)arg).getValue();
 					try {
 						return new VncLong(Long.parseLong(s));
 					}
@@ -1295,10 +1296,13 @@ public class CoreFunctions {
 								s));
 					}
 				}
+				else if (Types.isVncJavaObject(arg, Long.class)) {
+					return new VncLong((Long)((VncJavaObject)arg).getDelegate());
+				}
 				else {
 					throw new VncException(String.format(
 											"Function 'long' does not allow %s as operand 1",
-											Types.getType(op1)));
+											Types.getType(arg)));
 				}
 			}
 
@@ -1326,36 +1330,37 @@ public class CoreFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity("int", args, 1);
 
-			final VncVal op1 = args.first();
-			if (op1 == Nil) {
+			final VncVal arg = args.first();
+			
+			if (arg == Nil) {
 				return new VncInteger(0);
 			}
-			else if (VncBoolean.isFalse(op1)) {
+			else if (VncBoolean.isFalse(arg)) {
 				return new VncInteger(0);
 			}
-			else if (VncBoolean.isTrue(op1)) {
+			else if (VncBoolean.isTrue(arg)) {
 				return new VncInteger(1);
 			}
-			else if (Types.isVncInteger(op1)) {
-				return op1;
+			else if (Types.isVncInteger(arg)) {
+				return arg;
 			}
-			else if (Types.isVncLong(op1)) {
-				return Numeric.longToInt((VncLong)op1);
+			else if (Types.isVncLong(arg)) {
+				return Numeric.longToInt((VncLong)arg);
 			}
-			else if (Types.isVncDouble(op1)) {
-				return Numeric.doubleToInt((VncDouble)op1);
+			else if (Types.isVncDouble(arg)) {
+				return Numeric.doubleToInt((VncDouble)arg);
 			}
-			else if (Types.isVncBigDecimal(op1)) {
-				return Numeric.decimalToInt((VncBigDecimal)op1);
+			else if (Types.isVncBigDecimal(arg)) {
+				return Numeric.decimalToInt((VncBigDecimal)arg);
 			}
-			else if (Types.isVncBigInteger(op1)) {
-				return Numeric.bigintToInt((VncBigInteger)op1);
+			else if (Types.isVncBigInteger(arg)) {
+				return Numeric.bigintToInt((VncBigInteger)arg);
 			}
-			else if (Types.isVncChar(op1)) {
-				return new VncInteger((int)((VncChar)op1).getValue().charValue());				
+			else if (Types.isVncChar(arg)) {
+				return new VncInteger((int)((VncChar)arg).getValue().charValue());				
 			}
-			else if (Types.isVncString(op1)) {
-				final String s = ((VncString)op1).getValue();
+			else if (Types.isVncString(arg)) {
+				final String s = ((VncString)arg).getValue();
 				try {
 					return new VncInteger(Integer.parseInt(s));
 				}
@@ -1365,10 +1370,13 @@ public class CoreFunctions {
 							s));
 				}
 			}
+			else if (Types.isVncJavaObject(arg, Integer.class)) {
+				return new VncInteger((Integer)((VncJavaObject)arg).getDelegate());
+			}
 			else {
 				throw new VncException(String.format(
 										"Function 'int' does not allow %s as operand 1",
-										Types.getType(op1)));
+										Types.getType(arg)));
 			}
 		}
 
@@ -1395,33 +1403,34 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity("double", args, 1);
 
-				final VncVal op1 = args.first();
-				if (op1 == Nil) {
-					return new VncDouble(0.0);
+				final VncVal arg = args.first();
+				
+				if (arg == Nil) {
+					return new VncDouble(0.0D);
 				}
-				else if (VncBoolean.isFalse(op1)) {
-					return new VncDouble(0.0);
+				else if (VncBoolean.isFalse(arg)) {
+					return new VncDouble(0.0D);
 				}
-				else if (VncBoolean.isTrue(op1)) {
-					return new VncDouble(1.0);
+				else if (VncBoolean.isTrue(arg)) {
+					return new VncDouble(1.0D);
 				}
-				else if (Types.isVncInteger(op1)) {
-					return Numeric.intToDouble((VncInteger)op1);
+				else if (Types.isVncInteger(arg)) {
+					return Numeric.intToDouble((VncInteger)arg);
 				}
-				else if (Types.isVncLong(op1)) {
-					return Numeric.longToDouble((VncLong)op1);
+				else if (Types.isVncLong(arg)) {
+					return Numeric.longToDouble((VncLong)arg);
 				}
-				else if (Types.isVncDouble(op1)) {
-					return op1;
+				else if (Types.isVncDouble(arg)) {
+					return arg;
 				}
-				else if (Types.isVncBigDecimal(op1)) {
-					return Numeric.decimalToDouble((VncBigDecimal)op1);
+				else if (Types.isVncBigDecimal(arg)) {
+					return Numeric.decimalToDouble((VncBigDecimal)arg);
 				}
-				else if (Types.isVncBigInteger(op1)) {
-					return Numeric.bigintToDouble((VncBigInteger)op1);
+				else if (Types.isVncBigInteger(arg)) {
+					return Numeric.bigintToDouble((VncBigInteger)arg);
 				}
-				else if (Types.isVncString(op1)) {
-					final String s = ((VncString)op1).getValue();
+				else if (Types.isVncString(arg)) {
+					final String s = ((VncString)arg).getValue();
 					try {
 						return new VncDouble(Double.parseDouble(s));
 					}
@@ -1431,10 +1440,16 @@ public class CoreFunctions {
 								s));
 					}
 				}
+				else if (Types.isVncJavaObject(arg, Double.class)) {
+					return new VncDouble((Double)((VncJavaObject)arg).getDelegate());
+				}
+				else if (Types.isVncJavaObject(arg, Float.class)) {
+					return new VncDouble((Float)((VncJavaObject)arg).getDelegate());
+				}
 				else {
 					throw new VncException(String.format(
 								"Function 'double' does not allow %s as operand 1",
-								Types.getType(op1)));
+								Types.getType(arg)));
 				}
 			}
 
@@ -1490,6 +1505,9 @@ public class CoreFunctions {
 						final BigDecimal dec = Numeric.toDecimal(arg).getValue();
 						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 					}
+					else if (Types.isVncJavaObject(arg, BigDecimal.class)) {
+						return new VncBigDecimal((BigDecimal)((VncJavaObject)arg).getDelegate());
+					}
 					else {
 						throw new VncException(String.format(
 								"Function 'decimal' does not allow %s as operand 1",
@@ -1540,6 +1558,9 @@ public class CoreFunctions {
 					}
 					else if (Types.isVncNumber(arg)) {
 						return Numeric.toBigint(arg);
+					}
+					else if (Types.isVncJavaObject(arg, BigInteger.class)) {
+						return new VncBigInteger((BigInteger)((VncJavaObject)arg).getDelegate());
 					}
 					else {
 						throw new VncException(String.format(
