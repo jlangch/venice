@@ -37,6 +37,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - `filter` in its transducing version to accept a map, a keyword, or a set as filter 
   predicate. E.g.:  `(transduce (filter #{1 3 5 7 9}) conj [1 2 3 4 5 6])`
 
+### Deprecated
+
+- 'math' module. The big integer is now a core type
+
+
 
 ## [1.8.13] - 2020-08-01
 
