@@ -303,7 +303,7 @@ public class Numeric {
 					return calcDecimal(op, doubleToDecimal((VncDouble)op1).getValue(), ((VncBigDecimal)op2).getValue());
 				}
 				else if (Types.isVncBigInteger(op2)) {
-					return calcBigInt(op, doubleToBigint((VncDouble)op1).getValue(), ((VncBigInteger)op2).getValue());
+					return calcDecimal(op, doubleToDecimal((VncDouble)op1).getValue(), bigintToDecimal((VncBigInteger)op2).getValue());
 				}
 			}
 			else if (Types.isVncBigDecimal(op1)) {
@@ -334,7 +334,7 @@ public class Numeric {
 					return calcBigInt(op, ((VncBigInteger)op1).getValue(), intToBigint((VncInteger)op2).getValue());
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcBigInt(op, ((VncBigInteger)op1).getValue(), doubleToBigint((VncDouble)op2).getValue());
+					return calcDecimal(op, bigintToDecimal((VncBigInteger)op1).getValue(), doubleToDecimal((VncDouble)op2).getValue());
 				}
 				else if (Types.isVncBigDecimal(op2)) {
 					return calcDecimal(op, bigintToDecimal((VncBigInteger)op1).getValue(), ((VncBigDecimal)op2).getValue());
