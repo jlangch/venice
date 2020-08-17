@@ -39,7 +39,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Deprecated
 
-- 'math' module. The big integer is now a core type
+- 'math' module. Big integer is now a core type
 
 
 
