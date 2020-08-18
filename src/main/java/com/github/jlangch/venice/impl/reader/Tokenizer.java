@@ -29,7 +29,6 @@ import static com.github.jlangch.venice.impl.reader.TokenType.STRING_BLOCK;
 import static com.github.jlangch.venice.impl.reader.TokenType.UNQUOTE_SPLICE;
 import static com.github.jlangch.venice.impl.reader.TokenType.WHITESPACES;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -202,16 +201,14 @@ public class Tokenizer {
 				}
 			}
 		}
-		catch(Exception ex) {
+		catch(RuntimeException ex) {
 			throw new ParseError("Parse error (tokenizer phase) while reading from input", ex);
 		}
 		
 		return tokens;
 	}
 	
-	private String readSingleQuotedString(
-			final ReaderPos posStart
-	) throws IOException {
+	private String readSingleQuotedString(final ReaderPos posStart) {
 		final StringBuilder sb = new StringBuilder("\"");
 
 		while(true) {
@@ -246,9 +243,7 @@ public class Tokenizer {
 	}
 
 	
-	private String readTripleQuotedString(
-			final ReaderPos posStart
-	) throws IOException {
+	private String readTripleQuotedString(final ReaderPos posStart) {
 		final StringBuilder sb = new StringBuilder("\"\"\"");
 
 		while(true) {
@@ -351,7 +346,7 @@ public class Tokenizer {
 			final TokenType type,
 			final ReaderPos pos,
 			final StringBuilder sb
-	) throws IOException {
+	) {
 		final int ch = reader.peek();
 	
 		reader.consume();			
