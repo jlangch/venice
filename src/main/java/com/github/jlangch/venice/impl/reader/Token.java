@@ -28,16 +28,14 @@ public class Token {
 			final TokenType type,
 			final String token, 
 			final String file, 
-			final int filePos, 
-			final int line, 
-			final int col
+			final ReaderPos pos
 	) {
 		this.type = type;
 		this.token = token;
 		this.file = file == null || file.isEmpty() ? "unknown" : file;
-		this.filePos = filePos;
-		this.line = line;
-		this.col = col;
+		this.filePos = pos.getFilePos();
+		this.line = pos.getLineNr();
+		this.col = pos.getColumnNr();
 	}
 	
 	

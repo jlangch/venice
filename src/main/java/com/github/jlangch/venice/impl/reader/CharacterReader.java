@@ -51,16 +51,8 @@ public class CharacterReader {
 		}
 	}
 
-	public int getPos() {
-		return pos;
-	}
-
-	public int getLineNumber() {
-		return lineNr;
-	}
-	
-	public int getColumnNumber() {
-		return columnNr;
+	public ReaderPos getPos() {
+		return new ReaderPos(pos, lineNr, columnNr);
 	}
 
 	private boolean eof() {
