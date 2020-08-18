@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +32,6 @@ import java.util.function.Predicate;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -38,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 
 import io.vavr.collection.Stream;
+import io.vavr.control.Option;
 
 
 public class VncLazySeq extends VncSequence {
@@ -47,21 +49,25 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	public VncLazySeq(final io.vavr.collection.Stream<VncVal> stream, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta == null ? Nil : meta);
 		this.value = stream;
 	}
 
 	
 	public static VncLazySeq continually(final VncFunction fn, final VncVal meta) {
-		return new VncLazySeq(Stream.continually(() -> fn.apply(VncList.of())), meta);
+		return new VncLazySeq(Stream.continually(() -> fn.apply(VncList.empty())), meta);
 	}
-	
+
+	public static VncLazySeq iterate(final VncFunction fn, final VncVal meta) {
+		return new VncLazySeq(Stream.iterate(() -> toOptional(fn.apply(VncList.empty()))), meta);
+	}
+
 	public static VncLazySeq iterate(final VncVal seed, final VncFunction fn, final VncVal meta) {
 		return new VncLazySeq(Stream.iterate(seed, v -> fn.apply(VncList.of(v))), meta);
 	}
 
 	public static VncLazySeq cons(final VncVal head, final VncFunction tailFn, final VncVal meta) {
-		return new VncLazySeq(Stream.cons(head, () -> ((VncLazySeq)tailFn.apply(VncList.of())).lazyStream()), meta);
+		return new VncLazySeq(Stream.cons(head, () -> ((VncLazySeq)tailFn.apply(VncList.empty())).lazyStream()), meta);
 	}
 
 	public static VncLazySeq cons(final VncVal head, final VncLazySeq tail, final VncVal meta) {
@@ -77,7 +83,7 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	public static VncLazySeq fill(final int n, final VncFunction fn, final VncVal meta) {
-		return new VncLazySeq(Stream.fill(n, () -> fn.apply(VncList.of())), meta);
+		return new VncLazySeq(Stream.fill(n, () -> fn.apply(VncList.empty())), meta);
 	}
 
 	public io.vavr.collection.Stream<VncVal> lazyStream() {
@@ -85,7 +91,6 @@ public class VncLazySeq extends VncSequence {
 	}
 	
 	
-	// val fibs: Stream[Int] = 0 #:: fibs.scanLeft(1)(_ + _)
 	public VncLazySeq scanLeft(final VncVal zero, final VncFunction fn, final VncVal meta) {
 		return new VncLazySeq(value.scanLeft(zero, (u,v) -> fn.apply(VncList.of(u,v))), meta);
 	}
@@ -183,7 +188,7 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public VncVal first() {
-		return isEmpty() ? Constants.Nil : value.head();
+		return isEmpty() ? Nil : value.head();
 	}
 
 	@Override
@@ -345,11 +350,16 @@ public class VncLazySeq extends VncSequence {
 	}
 	
 	public static VncLazySeq empty() {
-		return new VncLazySeq(io.vavr.collection.Stream.empty(), Constants.Nil);
+		return new VncLazySeq(io.vavr.collection.Stream.empty(), Nil);
 	}
 
 	
+	private static Option<VncVal> toOptional(final VncVal val) {
+		return val == Nil ? Option.none() : Option.of(val);
+	}
+	
 
+	
 	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq");
 
     private static final long serialVersionUID = -1848883965231344442L;

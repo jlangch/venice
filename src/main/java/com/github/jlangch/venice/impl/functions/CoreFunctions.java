@@ -1924,14 +1924,27 @@ public class CoreFunctions {
 						"(lazy-seq f)",
 						"(lazy-seq seed f)",
 						"(lazy-seq head tail-lazy-seq)")
-					.doc("Creates a new lazy sequence.")
+					.doc(
+						"Creates a new lazy sequence.                                    \n\n" +
+						"  (lazy-seq)                                                      \n" +
+						"     empty lazy sequence                                        \n\n" +
+						"  (lazy-seq f)                                                    \n" +
+						"     (theoretically) infinitely lazy sequence using a repeatedly  \n" +
+						"     invoked supplier for each next value. The sequence ends if   \n" +
+						"     the supplier returns nil.                                  \n\n" +
+						"  (lazy-seq seed f)                                               \n" +
+						"     (theoretically) infinitely lazy sequence using a function    \n" +
+						"     to calculate the next valu based on the previous.          \n\n" +
+						"  (lazy-seq head tail-lazy-seq)                                   \n" +
+						"     Constructs lazy sequence of a head element and a lazy        \n" +
+						"     sequence tail supplier.")
 					.examples(
 						"; empty lazy sequence  \n" +
 						"(->> (lazy-seq)        \n" +
 						"     (doall))",
-						"; lazy sequence of random longs  \n" +
-						"(->> (lazy-seq rand-long)        \n" +
-						"     (take 4)                    \n" +
+						"; lazy sequence with random longs  \n" +
+						"(->> (lazy-seq rand-long)          \n" +
+						"     (take 4)                      \n" +
 						"     (doall))",
 						"; lazy sequence of all positive numbers  \n" +
 						"(->> (lazy-seq 1 #(+ % 1))               \n" +
@@ -1957,10 +1970,10 @@ public class CoreFunctions {
 					return new VncLazySeq(Nil);
 				}
 				else if (args.size() == 1) {
-					return VncLazySeq.continually(Coerce.toVncFunction(args.first()), Nil);
+					return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);
 				}
 				else if (args.second() == Nil) {
-					return VncLazySeq.continually(Coerce.toVncFunction(args.first()), Nil);
+					return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);
 				}
 				else if (Types.isVncFunction(args.second())) {
 					return VncLazySeq.iterate(args.first(), (VncFunction)args.second(), Nil);

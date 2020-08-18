@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.functions.MathFunctions;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -47,7 +48,7 @@ public class LazySeqTest {
 		
 		assertEquals(ONE, f);
 	}
-	
+
 	@Test
 	public void testRecursiveFib() {
 		/* (defn fib 
@@ -65,6 +66,43 @@ public class LazySeqTest {
 		
 		assertEquals(2880067194370816120L, ((VncLong)list.last()).getValue());
 	}
+	
+	@SuppressWarnings("serial")
+	@Test 
+	public void testFinitStream() {
+		VncLazySeq seq = VncLazySeq.iterate(
+			    			new VncFunction("test") {
+								public VncVal apply(VncList args) {
+									return count > 0 ? new VncLong(count--) : Nil;
+								}
+								private long count = 5;
+			    			}, 
+			    			Nil); 
+
+	
+		assertEquals(5L, seq.first().convertToJavaObject());
+		seq = seq.rest();
+		
+		assertEquals(4L, seq.first().convertToJavaObject());
+		seq = seq.rest();
+		
+		assertEquals(3L, seq.first().convertToJavaObject());
+		seq = seq.rest();
+		
+		assertEquals(2L, seq.first().convertToJavaObject());
+		seq = seq.rest();
+		
+		assertEquals(1L, seq.first().convertToJavaObject());
+		seq = seq.rest();
+		
+		assertEquals(null, seq.first().convertToJavaObject());
+		seq = seq.rest();
+		
+		assertEquals(null, seq.first().convertToJavaObject());
+		seq = seq.rest();
+	}
+
+	
 	
 	
 	private VncLazySeq ones() {

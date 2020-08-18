@@ -2121,18 +2121,50 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(2), venice.eval("(last [1 2])"));
 		assertEquals(Long.valueOf(3), venice.eval("(last [1 2 3])"));
 	}
-	
+
 	@Test
-	public void test_lazy_seq_1() {
+	public void test_lazy_seq_empty() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall (take 5 (lazy-seq)))))";
+				
+		assertEquals("()",venice.eval(script));					
+	}
+
+	@Test
+	public void test_lazy_seq_seed() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall (take 5 (lazy-seq 0 #(+ % 1))))))";
+				
+		assertEquals("(0 1 2 3 4)",venice.eval(script));					
+	}
+
+	@Test
+	public void test_lazy_seq_cons() {
 		final Venice venice = new Venice();
 
 		final String script = "(pr-str (doall (take 5 (cons -1 (lazy-seq 0 #(+ % 1))))))";
 				
 		assertEquals("(-1 0 1 2 3)",venice.eval(script));					
 	}
+	
+	@Test
+	public void test_lazy_seq_2_finite() {
+		final Venice venice = new Venice();
+
+		final String script = "(do                                            \n" +
+							  "   (def counter (atom 5))                      \n" +
+							  "   (defn generate []                           \n" +
+							  "           (swap! counter dec)                 \n" +
+							  "           (if (pos? @counter) @counter nil))  \n" +
+							  "   (pr-str (doall (lazy-seq generate))))";
+				
+		assertEquals("(4 3 2 1)",venice.eval(script));					
+	}
 
 	@Test
-	public void test_lazy_seq_2() {
+	public void test_lazy_seq_recursion_1() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -2147,7 +2179,7 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_lazy_seq_3() {
+	public void test_lazy_seq_recursion_2() {
 		final Venice venice = new Venice();
 
 		final String script =
