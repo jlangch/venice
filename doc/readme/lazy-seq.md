@@ -76,8 +76,7 @@ Single elements of a lazy sequence can be realized with one of the functions
 
 Realizing a lazy sequence to a list is done by applying the `doall` function. 
 
-**Be aware that your runtime system will not survive realizing an infinite **
-**lazy sequence.**
+**Be aware that your runtime system will not survive realizing an infinite lazy sequence.**
 
 ```clojure
 ;;; !!! DO NOT RUN THIS !!!
