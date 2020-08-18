@@ -1930,8 +1930,8 @@ public class CoreFunctions {
 						"     empty lazy sequence                                        \n\n" +
 						"  (lazy-seq f)                                                    \n" +
 						"     (theoretically) infinitely lazy sequence using a repeatedly  \n" +
-						"     invoked supplier for each next value. The sequence ends if   \n" +
-						"     the supplier returns nil.                                  \n\n" +
+						"     invoked supplier function for each next value. The sequence  \n" +
+						"     ends if the supplier returns nil.                          \n\n" +
 						"  (lazy-seq seed f)                                               \n" +
 						"     (theoretically) infinitely lazy sequence using a function    \n" +
 						"     to calculate the next valu based on the previous.          \n\n" +
@@ -1942,9 +1942,11 @@ public class CoreFunctions {
 						"; empty lazy sequence  \n" +
 						"(->> (lazy-seq)        \n" +
 						"     (doall))",
-						"; lazy sequence with random longs  \n" +
-						"(->> (lazy-seq rand-long)          \n" +
-						"     (take 4)                      \n" +
+						"; lazy sequence with random longs           \n" +
+						"(->> (lazy-seq rand-long)                   \n" +
+						"     (take 4)                               \n" +
+						"     (doall))",
+						"(->> (lazy-seq [1 2 3 4])  \n" +
 						"     (doall))",
 						"; lazy sequence of all positive numbers  \n" +
 						"(->> (lazy-seq 1 #(+ % 1))               \n" +
@@ -1960,7 +1962,17 @@ public class CoreFunctions {
 						"; lazy sequence from head element and tail lazy sequence \n" +
 						"(->> (cons -1 (lazy-seq 0 #(+ % 1)))                     \n" +
 						"     (take 5)                                            \n" +
-						"     (doall))")
+						"     (doall))",
+						"; finite lazy sequence from vector  \n" +
+						"(->> (lazy-seq [1 2 3 4])           \n" +
+						"     (doall))",
+						"; finite lazy sequence with supplier function  \n" +
+						"(do                                            \n" +
+						"   (def counter (atom 5))                      \n" +
+						"   (defn generate []                           \n" +
+						"           (swap! counter dec)                 \n" +
+						"           (if (pos? @counter) @counter nil))  \n" +
+						"   (doall (lazy-seq generate)))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1970,7 +1982,20 @@ public class CoreFunctions {
 					return new VncLazySeq(Nil);
 				}
 				else if (args.size() == 1) {
-					return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);
+					if (Types.isVncFunction(args.first())) {
+						return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);
+					}
+					else if (Types.isVncList(args.first())) {
+						return VncLazySeq.ofAll(Coerce.toVncList(args.first()), Nil);
+					}
+					else if (Types.isVncVector(args.first())) {
+						return VncLazySeq.ofAll(Coerce.toVncVector(args.first()), Nil);
+					}
+					else {
+						throw new VncException(
+								"Function 'lazy-seq' requires for the first arg either "
+									+ "nil, a function, or a sequence.");
+					}
 				}
 				else if (args.second() == Nil) {
 					return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);

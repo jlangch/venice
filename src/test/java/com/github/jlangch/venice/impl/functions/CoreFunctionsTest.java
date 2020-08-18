@@ -2150,7 +2150,7 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
-	public void test_lazy_seq_2_finite() {
+	public void test_lazy_seq_supplier_finite() {
 		final Venice venice = new Venice();
 
 		final String script = "(do                                            \n" +
@@ -2161,6 +2161,24 @@ public class CoreFunctionsTest {
 							  "   (pr-str (doall (lazy-seq generate))))";
 				
 		assertEquals("(4 3 2 1)",venice.eval(script));					
+	}
+	
+	@Test
+	public void test_lazy_seq_list_finite() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall (lazy-seq '(1 2 3 4 5))))";
+				
+		assertEquals("(1 2 3 4 5)",venice.eval(script));					
+	}
+	
+	@Test
+	public void test_lazy_seq_vector_finite() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall (lazy-seq [1 2 3 4 5])))";
+				
+		assertEquals("(1 2 3 4 5)",venice.eval(script));					
 	}
 
 	@Test
