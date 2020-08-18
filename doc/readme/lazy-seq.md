@@ -194,6 +194,12 @@ Lazy Fibonacci number sequence computed by a recursive function:
 
 ## Functions working with Lazy Sequences
 
+Creating and realizing a lazy sequences:
+ 
+	- lazy-seq
+	- doall
+ 
+
 Functions that return lazy sequences when their input is a lazy sequence:
  
 	- cons
