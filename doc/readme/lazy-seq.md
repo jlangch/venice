@@ -8,51 +8,58 @@ can be infinite. The evaluation of sequence elements is called realization.
 
 ## Producing Lazy Sequences
 
-Lazy sequences are produced by an element generating function.
+### Lazy sequences produced by an element generating function
 
-
-Lazy sequence with random numbers
+(theoretically) infinite lazy sequence with random numbers
 
 ```clojure
 (lazy-seq rand-long) ; => (...)
  ```
  
  
-Lazy sequence with positive numbers
+(theoretically) infinite lazy sequence with positive numbers
 
 ```clojure
 (lazy-seq 1 #(+ % 1)) ; => (...)
  ```
 
 
-Lazy sequence with cons'ing a value
+(theoretically) infinite lazy sequence with cons'ing a value
 
 ```clojure
 (cons -1 (lazy-seq 0 #(+ % 1))) ; => (...)
  ```
 
 
-### Functions working with Lazy Sequences
+### Finite Lazy Sequences
 
-Functions that return lazy sequences when their input is a lazy sequence:
- 
-	- cons
-	- map
-	- filter
-	- remove
-	- take
-	- take-while
-	- drop
-	- drop-while
-	- rest
+Empty lazy sequence
 
-Functions that return evaluated elements from a lazy sequences:
-	
-	- first
-	- second
-	- third
-	- fourth
-	- nth
+```clojure
+(lazy-seq) ; => (...)
+ ```
+
+Finite lazy sequence from lists and vectors
+
+```clojure
+(lazy-seq '(1 2 3 4)) ; => (...)
+ ```
+
+```clojure
+(lazy-seq [1 2 3 4]) ; => (...)
+ ```
+
+Finite lazy sequence from a function returning `nil` to end the sequence
+
+```clojure
+(do
+   (def counter (atom 5))
+   (defn generate []
+           (swap! counter #(if (pos? %) (dec %) nil))
+           @counter)
+   (lazy-seq generate))
+```
+
 
 
 ## Realizing Lazy Sequences
@@ -67,9 +74,10 @@ Single elements of a lazy sequence can be realized with one of the functions
 (first (lazy-seq 1 #(+ % 1))) ; => 1
  ```
 
-A lazy sequence can be realized to a list by applying the `doall` function. 
+Realizing a lazy sequence to a list is done by applying the `doall` function. 
 
-**Be aware that your runtime system will not survive realizing an infinite sequence.**
+**Be aware that your runtime system will not survive realizing an infinite **
+**lazy sequence.**
 
 ```clojure
 ;;; !!! DO NOT RUN THIS !!!
@@ -128,23 +136,23 @@ Example 2:
                                 (println "  realized" n)
                                 n))))
 
-  (println "[1]:")
+  (println "/1/:")
   (->> (map #(* 10 %) ls)
        (take 40)     
        (take 2)
        (doall)))
 
-  ; [1]:
+  ; /1/:
   ;   realized 1
   ; => (0 10)
      
-  (println "[2]:")
+  (println "/2/:")
   (->> (map #(* 10 %) ls)
        (take 40)
        (take 4)
        (doall))
        
-  ; [2]:
+  ; /2/:
   ;   realized 2
   ;   realized 3
   ; => (0 10 20 30)
@@ -152,10 +160,11 @@ Example 2:
 ```
 
 
+
 ## Recursive Lazy Sequences
 
-Lazy sequences can be recursively defined by cons'ing a recursive 
-function that returns a lazy sequence.
+Lazy sequences can be recursively defined by cons'ing a recursive function that 
+returns a lazy sequence.
 
 
 ```clojure
@@ -181,3 +190,27 @@ Lazy Fibonacci number sequence computed by a recursive function:
   
   ; => (0 1 1 2 3 5 8)
 ```
+
+
+
+## Functions working with Lazy Sequences
+
+Functions that return lazy sequences when their input is a lazy sequence:
+ 
+	- cons
+	- map
+	- filter
+	- remove
+	- take
+	- take-while
+	- drop
+	- drop-while
+	- rest
+
+Functions that return evaluated elements from a lazy sequences:
+	
+	- first
+	- second
+	- third
+	- fourth
+	- nth
