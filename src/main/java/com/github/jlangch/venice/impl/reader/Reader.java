@@ -157,16 +157,16 @@ public class Reader {
 			case INTEGER: {
 				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncInteger(
-							Integer.parseInt(
-									sToken.substring(hex ? 2 : 0, sToken.length()-1),
-									hex ? 16 : 10), 
+							hex ? Integer.parseInt(sToken.substring(2, sToken.length()-1), 16)
+								: Integer.parseInt(butlast(sToken)), 
 							MetaUtil.toMeta(token));
 			}
 				
 			case LONG: {
 				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncLong(
-							Long.parseLong(hex ? sToken.substring(2) : sToken, hex ? 16 : 10),
+							hex ? Long.parseLong(sToken.substring(2), 16)
+								: Long.parseLong(sToken),
 							MetaUtil.toMeta(token));
 			}
 				
@@ -177,12 +177,12 @@ public class Reader {
 				
 			case DECIMAL:
 				return new VncBigDecimal(
-							new BigDecimal(sToken.substring(0, sToken.length()-1)), 
+							new BigDecimal(butlast(sToken)), 
 							MetaUtil.toMeta(token));
 				
 			case BIGINT:
 				return new VncBigInteger(
-							new BigInteger(sToken.substring(0, sToken.length()-1)), 
+							new BigInteger(butlast(sToken)), 
 							MetaUtil.toMeta(token));
 				
 			case STRING: {
@@ -541,8 +541,12 @@ public class Reader {
 		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(filename, line, column);
 	}
 	
-	private static boolean isHexNumberLiteral(final String token) {
-		return token.startsWith("0x") || token.startsWith("0X");
+	private static boolean isHexNumberLiteral(final String s) {
+		return s.startsWith("0x") || s.startsWith("0X");
+	}
+	
+	private static String butlast(final String s) {
+		return s.substring(0, s.length()-1);
 	}
 	
 	
