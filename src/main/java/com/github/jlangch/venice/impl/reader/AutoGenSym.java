@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.reader;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.GenSym;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 
 

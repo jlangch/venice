@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import java.util.List;
 
+import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 

@@ -32,8 +32,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 
 

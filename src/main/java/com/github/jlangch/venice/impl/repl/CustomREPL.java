@@ -43,9 +43,9 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.Env;
-import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;

@@ -37,12 +37,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
-import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncKeyword;

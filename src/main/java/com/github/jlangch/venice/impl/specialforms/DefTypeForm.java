@@ -30,10 +30,10 @@ import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.CustomWrappableTypes;
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.ReadEvalFunction;
-import com.github.jlangch.venice.impl.Var;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;

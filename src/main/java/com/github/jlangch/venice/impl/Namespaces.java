@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;

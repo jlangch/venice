@@ -28,8 +28,8 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ReplCompleter implements Completer {

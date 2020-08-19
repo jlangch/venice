@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
-import com.github.jlangch.venice.impl.AnonymousFnArgs;
-import com.github.jlangch.venice.impl.AutoGenSym;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;

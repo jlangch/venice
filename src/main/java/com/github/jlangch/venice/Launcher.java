@@ -27,10 +27,10 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.Env;
 import com.github.jlangch.venice.impl.LoadPath;
-import com.github.jlangch.venice.impl.Var;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;

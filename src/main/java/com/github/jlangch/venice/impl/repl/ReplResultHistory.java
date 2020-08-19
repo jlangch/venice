@@ -24,8 +24,8 @@ package com.github.jlangch.venice.impl.repl;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
-import com.github.jlangch.venice.impl.Env;
-import com.github.jlangch.venice.impl.Var;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
