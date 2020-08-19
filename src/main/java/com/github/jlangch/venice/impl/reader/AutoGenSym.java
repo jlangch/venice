@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.GenSym;
+import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 
 
