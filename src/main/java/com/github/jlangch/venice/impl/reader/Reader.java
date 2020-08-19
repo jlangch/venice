@@ -64,7 +64,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  *           +-------------------------------------------------------+
  *           |                                                       |
  *           |  +-----------+      +-----------+       +----------+  |
- *   string --->| Character |----->| Tokenizer |------>|  Reader  |----> VncVal
+ *   string ---&gt;| Character |-----&gt;| Tokenizer |------&gt;|  Reader  |----&gt; VncVal
  *           |  |  Reader   | char |           | token |          |  |
  *           |  +-----------+      +-----------+       +----------+  |
  *           |                                                       |

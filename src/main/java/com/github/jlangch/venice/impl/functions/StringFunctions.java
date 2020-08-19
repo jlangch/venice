@@ -231,7 +231,7 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/equals-ignore-case? s1 s2)")
-					.doc("Compares two strings ignoring case.  True if both are equal.")
+					.doc("Compares two strings ignoring case. True if both are equal.")
 					.examples("(str/equals-ignore-case? \"abc\"  \"abC\")")
 					.build()
 		) {
@@ -839,6 +839,31 @@ public class StringFunctions {
 								.splitIntoLines(text)
 								.stream()
 								.collect(Collectors.joining(ending)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_butlast =
+		new VncFunction(
+				"str/butlast",
+				VncFunction
+					.meta()
+					.arglists("(str/butlast s)")
+					.doc("Returns a possibly empty string of the characters without the last.")
+					.examples("(str/butlast \"abcdef\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("str/butlast", args, 1);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				else {
+					final String s = Coerce.toVncString(args.first()).getValue();
+					return new VncString(s.length() < 2 ? "" : s.substring(0, s.length()-1));
 				}
 			}
 
@@ -2005,6 +2030,7 @@ public class StringFunctions {
 					.add(str_cr_lf)
 					.add(str_format)
 					.add(str_rest)
+					.add(str_butlast)
 					.add(str_quote)
 					.add(str_double_quote)
 					.add(str_double_unquote)

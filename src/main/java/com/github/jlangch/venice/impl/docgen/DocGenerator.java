@@ -281,6 +281,8 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
 		use.addItem(getDocItem("str/subs"));
+		use.addItem(getDocItem("str/rest"));
+		use.addItem(getDocItem("str/butlast"));
 		use.addItem(getDocItem("str/chars"));
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
