@@ -135,46 +135,19 @@ public class Tokenizer {
 				}
 				
 				// - string:  "xx" or """xx""" --------------------------------
-				else if (ch == (int)'"') {  
-					reader.consume();
-					
-					final int chNext = reader.peek();
-					if (chNext != (int)'"'){
-						final String s = readSingleQuotedString(pos);
-						addToken(STRING, s, pos);
-					}
-					else {
-						reader.consume();
-						
-						final int chNextNext = reader.peek();
-						if (chNextNext != (int)'"') {
-							addToken(STRING, "\"\"", pos);	
-						}
-						else {
-							reader.consume();
-							addToken(STRING_BLOCK, readTripleQuotedString(pos), pos);
-						}
-					}
+				else if (ch == (int)'"') {
+					readString(pos);
 				}
 				
 				// - comment:  ; ....  read to EOL ----------------------------
 				else if (ch == (int)';') {
-					reader.consume();
-					final StringBuilder sb = new StringBuilder();
-					sb.append(';');
-
-					while(LF != reader.peek() && EOF != reader.peek()) {		
-						sb.append((char)reader.peek());
-						reader.consume();
-					}
-
-					addToken(COMMENT, sb.toString(), pos);				
+					readComment(pos);
 				}
 
 				// - comma: , (treated like a whitespace) ---------------------
 				else if (ch == (int)',') {  
-					addToken(WHITESPACES, ",", pos);	
 					reader.consume();
+					addToken(WHITESPACES, ",", pos);	
 				}
 				
 				// - anything else --------------------------------------------
@@ -207,7 +180,42 @@ public class Tokenizer {
 		
 		return tokens;
 	}
-	
+
+	private void readComment(final ReaderPos pos) {
+		reader.consume();
+		final StringBuilder sb = new StringBuilder();
+		sb.append(';');
+
+		while(LF != reader.peek() && EOF != reader.peek()) {		
+			sb.append((char)reader.peek());
+			reader.consume();
+		}
+
+		addToken(COMMENT, sb.toString(), pos);				
+	}
+
+	private void readString(final ReaderPos pos) {
+		reader.consume();
+		
+		final int chNext = reader.peek();
+		if (chNext != (int)'"'){
+			final String s = readSingleQuotedString(pos);
+			addToken(STRING, s, pos);
+		}
+		else {
+			reader.consume();
+			
+			final int chNextNext = reader.peek();
+			if (chNextNext != (int)'"') {
+				addToken(STRING, "\"\"", pos);	
+			}
+			else {
+				reader.consume();
+				addToken(STRING_BLOCK, readTripleQuotedString(pos), pos);
+			}
+		}
+	}
+
 	private String readSingleQuotedString(final ReaderPos posStart) {
 		final StringBuilder sb = new StringBuilder("\"");
 
