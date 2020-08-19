@@ -1744,6 +1744,8 @@ public class CoreFunctionsTest {
 		assertEquals(Integer.valueOf(1), venice.eval("(int true)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3I)"));
+		assertEquals(Integer.valueOf(255), venice.eval("(int 0x0FFI)"));
+		assertEquals(Integer.valueOf(255), venice.eval("(int 0X0FFI)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3.1)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3.0M)"));
 		assertEquals(Integer.valueOf(3), venice.eval("(int 3N)"));
@@ -1758,6 +1760,8 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(int? true)"));	
 		assertFalse((Boolean)venice.eval("(int? 1)"));	
 		assertTrue((Boolean)venice.eval("(int? 3I)"));
+		assertTrue((Boolean)venice.eval("(int? 0x0FFI)"));
+		assertTrue((Boolean)venice.eval("(int? 0X0FFI)"));
 		assertFalse((Boolean)venice.eval("(int? -3.0)"));
 		assertFalse((Boolean)venice.eval("(int? -3.0M)"));
 		assertFalse((Boolean)venice.eval("(int? -3N)"));
@@ -2278,6 +2282,8 @@ public class CoreFunctionsTest {
 		assertEquals(Long.valueOf(0), venice.eval("(long false)"));
 		assertEquals(Long.valueOf(1), venice.eval("(long true)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3)"));
+		assertEquals(Long.valueOf(255), venice.eval("(long 0x0FF)"));
+		assertEquals(Long.valueOf(255), venice.eval("(long 0X0FF)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3I)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3.1)"));
 		assertEquals(Long.valueOf(3), venice.eval("(long 3.0M)"));
@@ -2292,6 +2298,8 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(long? nil)"));	
 		assertFalse((Boolean)venice.eval("(long? true)"));	
 		assertTrue((Boolean)venice.eval("(long? 1)"));	
+		assertTrue((Boolean)venice.eval("(long? 0x0FF)"));	
+		assertTrue((Boolean)venice.eval("(long? 0X0FF)"));	
 		assertFalse((Boolean)venice.eval("(long? 3I)"));
 		assertFalse((Boolean)venice.eval("(long? -3.0)"));
 		assertFalse((Boolean)venice.eval("(long? -3.0M)"));

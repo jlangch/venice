@@ -80,10 +80,20 @@ public class MathFunctionsTest {
 		assertEquals(new BigDecimal("3.0"), venice.eval("(+ (int 1) 2.0M)"));
 		assertEquals(new BigInteger("3"), venice.eval("(+ (int 1) 2N)"));
 
+		assertEquals(Integer.valueOf(3), venice.eval("(+ 3I)"));
+		assertEquals(Integer.valueOf(3), venice.eval("(+ 1I 2I)"));
+		assertEquals(Integer.valueOf(6), venice.eval("(+ 1I 2I 3I)"));
+		assertEquals(Integer.valueOf(256), venice.eval("(+ 1I 0x0FFI)"));
+		assertEquals(Long.valueOf(3), venice.eval("(+ 1I 2)"));
+		assertEquals(Double.valueOf(3.0D), venice.eval("(+ 1I 2.0)"));
+		assertEquals(new BigDecimal("3.0"), venice.eval("(+ 1I 2.0M)"));
+		assertEquals(new BigInteger("3"), venice.eval("(+ 1I 2N)"));
+
 		// Long
 		assertEquals(Long.valueOf(3), venice.eval("(+ 3)"));
 		assertEquals(Long.valueOf(3), venice.eval("(+ 1 2)"));
 		assertEquals(Long.valueOf(6), venice.eval("(+ 1 2 3)"));
+		assertEquals(Long.valueOf(256), venice.eval("(+ 1 0x0FF)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(+ 1 2.0)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(+ 1 2.0M)"));
 		assertEquals(new BigInteger("3"), venice.eval("(+ 1 2N)"));

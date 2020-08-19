@@ -55,6 +55,24 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
+/**
+ * The reader reads Venice forms/expressions from a string and returns a VncVal
+ * that can be evaluated.
+ * 
+ * <pre>
+ *                                   READER
+ *           +-------------------------------------------------------+
+ *           |                                                       |
+ *           |  +-----------+      +-----------+       +----------+  |
+ *   string --->| Character |----->| Tokenizer |------>|  Reader  |----> VncVal
+ *           |  |  Reader   | char |           | token |          |  |
+ *           |  +-----------+      +-----------+       +----------+  |
+ *           |                                                       |
+ *           +-------------------------------------------------------+
+ * </pre>
+ * 
+ * @author juerg
+ */
 public class Reader {
 	
 	private Reader(
@@ -136,15 +154,21 @@ public class Reader {
 			case FALSE:
 				return VncBoolean.False;
 				
-			case INTEGER: 
+			case INTEGER: {
+				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncInteger(
-							Integer.parseInt(sToken.substring(0, sToken.length()-1)), 
+							Integer.parseInt(
+									sToken.substring(hex ? 2 : 0, sToken.length()-1),
+									hex ? 16 : 10), 
 							MetaUtil.toMeta(token));
+			}
 				
-			case LONG:
+			case LONG: {
+				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncLong(
-							Long.parseLong(sToken), 
+							Long.parseLong(hex ? sToken.substring(2) : sToken, hex ? 16 : 10),
 							MetaUtil.toMeta(token));
+			}
 				
 			case DOUBLE:
 				return new VncDouble(
@@ -365,6 +389,11 @@ public class Reader {
 					if (first == ':') {
 						return AtomType.KEYWORD;
 					}
+					else if (first == '0' && (second == 'x' || second == 'X')) {
+						// hex: 0x00EF56AA
+						final char lastCh = sToken.charAt(sToken.length()-1);
+						return lastCh == 'I' ? AtomType.INTEGER : AtomType.LONG; 
+					}
 					else if (Character.isDigit(first) || (first == '-' && Character.isDigit(second))) {
 						final char lastCh = sToken.charAt(sToken.length()-1);
 						if (lastCh == 'I') {
@@ -511,6 +540,12 @@ public class Reader {
 	private static String formatParseError(final String filename, final int line, final int column, final String format, final Object... args) {
 		return String.format(format, args) + ". " + ErrorMessage.buildErrLocation(filename, line, column);
 	}
+	
+	private static boolean isHexNumberLiteral(final String token) {
+		return token.startsWith("0x") || token.startsWith("0X");
+	}
+	
+	
 	
 	private final String filename;
 	private final String form;
