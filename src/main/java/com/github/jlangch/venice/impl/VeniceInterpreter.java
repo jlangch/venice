@@ -1174,20 +1174,17 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private static boolean is_pair(final VncVal x) {
+	private static boolean isNonEmptySequence(final VncVal x) {
 		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
 	}
 
 	private static VncVal quasiquote(final VncVal ast) {
-		if (!is_pair(ast)) {
-			return VncList.of(new VncSymbol("quote"), ast);
-		} 
-		else {
+		if (isNonEmptySequence(ast)) {
 			final VncVal a0 = Coerce.toVncSequence(ast).first();
 			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
 				return ((VncSequence)ast).second();
 			} 
-			else if (is_pair(a0)) {
+			else if (isNonEmptySequence(a0)) {
 				final VncVal a00 = Coerce.toVncSequence(a0).first();
 				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
 					return VncList.of(
@@ -1200,6 +1197,9 @@ public class VeniceInterpreter implements Serializable  {
 						new VncSymbol("cons"),
 						quasiquote(a0),
 						quasiquote(((VncSequence)ast).rest()));
+		}
+		else {
+			return VncList.of(new VncSymbol("quote"), ast);
 		}
 	}
 	
