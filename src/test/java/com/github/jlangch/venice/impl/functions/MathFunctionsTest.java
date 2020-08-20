@@ -53,6 +53,7 @@ public class MathFunctionsTest {
 		// Double
 		assertEquals(Double.valueOf(3.0D), venice.eval("(abs 3.0)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(abs -3.0)"));
+		assertEquals(Double.valueOf(30.0D), venice.eval("(abs -3.0E+1)"));
 
 		// Decimal
 		assertEquals(new BigDecimal("3.333"), venice.eval("(abs 3.333M))"));
@@ -101,6 +102,7 @@ public class MathFunctionsTest {
 		// Double
 		assertEquals(Double.valueOf(3.0D), venice.eval("(+ 3.0)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(+ 1.0 2.0)"));
+		assertEquals(Double.valueOf(120.0D), venice.eval("(+ 1.0E+2 2.0E+1)"));
 		assertEquals(Double.valueOf(3.0D), venice.eval("(+ 1.0 2)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(+ 1.0 2.0M)"));
 		assertEquals(new BigDecimal("3"), venice.eval("(+ 1.0 2N)"));
@@ -192,6 +194,7 @@ public class MathFunctionsTest {
 		assertEquals(1D, venice.eval("(double (int 1))"));
 		assertEquals(1D, venice.eval("(double 1)"));
 		assertEquals(1.23D, venice.eval("(double 1.23)"));
+		assertEquals(1200.0D, venice.eval("(double 1.2E+3)"));
 		assertEquals(1.23D, venice.eval("(double 1.23M)"));
 		assertEquals(1D, venice.eval("(double 1N)"));
 		assertEquals(1.23D, venice.eval("(double \"1.23\")"));
@@ -220,6 +223,7 @@ public class MathFunctionsTest {
 		assertEquals(Double.valueOf(0.16666D), (Double)venice.eval("(/ 6.0)"), 0.001D);
 		assertEquals(Double.valueOf(6.0D), venice.eval("(/ 12.0 2.0)"));
 		assertEquals(Double.valueOf(2.0D), venice.eval("(/ 12.0 2.0 3.0)"));
+		assertEquals(Double.valueOf(6.0D), venice.eval("(/ 1.2E+3 200.0)"));
 		assertEquals(Double.valueOf(6.0D), venice.eval("(/ 12.0 2)"));
 		assertEquals(new BigDecimal("6.0000000000000000"), venice.eval("(/ 12.0 2.0M)"));
 
