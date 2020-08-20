@@ -152,25 +152,7 @@ public class Tokenizer {
 				
 				// - anything else --------------------------------------------
 				else {
-					reader.consume();
-					final StringBuilder sb = new StringBuilder();
-					sb.append((char)ch);
-					
-					ch = reader.peek();
-					while(ch != EOF
-							&& !isWhitespace((char)ch) 
-							&& ch != (int)',' 
-							&& ch != (int)';'  
-							&& ch != (int)'"' 
-							&& !isSpecialChar((char)ch)
-					) { 		
-						sb.append((char)ch);
-						reader.consume();
-						
-						ch = reader.peek();
-					}
-
-					addToken(ANY, sb.toString(), pos);	
+					readAny(ch, pos);
 				}
 			}
 		}
@@ -179,6 +161,29 @@ public class Tokenizer {
 		}
 		
 		return tokens;
+	}
+
+	private void readAny(final int firstChar, final ReaderPos pos) {
+		reader.consume();
+		
+		final StringBuilder sb = new StringBuilder();
+		sb.append((char)firstChar);
+		
+		int ch = reader.peek();
+		while(ch != EOF
+				&& !isWhitespace((char)ch) 
+				&& ch != (int)',' 
+				&& ch != (int)';'  
+				&& ch != (int)'"' 
+				&& !isSpecialChar((char)ch)
+		) { 		
+			sb.append((char)ch);
+			reader.consume();
+			
+			ch = reader.peek();
+		}
+
+		addToken(ANY, sb.toString(), pos);	
 	}
 
 	private void readComment(final ReaderPos pos) {

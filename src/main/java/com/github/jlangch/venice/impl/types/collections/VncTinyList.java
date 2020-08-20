@@ -34,7 +34,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
@@ -118,12 +117,6 @@ public class VncTinyList extends VncList {
 			case 3:	return new VncTinyList(mvs[0], mvs[1], mvs[2], null);
 			default: return VncList.of(mvs);
 		}
-	}
-
-	public static VncList range(final int from, final int toExclusive) {
-		final List<VncVal> list = new ArrayList<>();
-		for(int ii=from; ii<toExclusive; ii++) list.add(new VncLong(ii));
-		return VncList.ofList(list, null);
 	}
 	
 	@Override

@@ -35,7 +35,6 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -126,12 +125,6 @@ public class VncTinyVector extends VncVector {
 		this.second = second;
 		this.third = third;
 		this.fourth = fourth;
-	}
-		
-	public static VncVector range(final int from, final int toExclusive) {
-		final List<VncVal> list = new ArrayList<>();
-		for(int ii=from; ii<toExclusive; ii++) list.add(new VncLong(ii));
-		return VncVector.ofList(list, null);
 	}
 
 	
