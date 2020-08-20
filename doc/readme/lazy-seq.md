@@ -122,7 +122,7 @@ Example 1:
   ;=> 1, the second value is accessed -> it is evaluated
 
   (second ls)
-  ;=> 1, the second has already been evaluated -> the memorized value is returned
+  ;=> 1, the second value has already been evaluated -> the memorized value is returned
 )
 ```
 
