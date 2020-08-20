@@ -212,7 +212,7 @@ Functions that return lazy sequences when their input is a lazy sequence:
 	- drop-while
 	- rest
 
-Functions that return evaluated elements from a lazy sequences:
+Functions that return realized elements from a lazy sequences:
 	
 	- first
 	- second
