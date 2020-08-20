@@ -161,7 +161,7 @@ public class DocGenerator {
 		literals.addItem(new DocItem("Boolean: true, false", null));
 		literals.addItem(new DocItem("Integer: 150I", null));
 		literals.addItem(new DocItem("Long: 1500, 0x00A055FF", null));
-		literals.addItem(new DocItem("Double: 3.569", null));
+		literals.addItem(new DocItem("Double: 3.569, 2.0E+10", null));
 		literals.addItem(new DocItem("BigDecimal: 6.897M", null));
 		literals.addItem(new DocItem("BigInteger: 1000N", null));
 		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", null) );
