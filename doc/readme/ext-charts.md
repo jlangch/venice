@@ -6,16 +6,18 @@ Venice supports rendering charts if the [XChart](https://knowm.org/open-source/x
 
 Examples:
 
-- [Line Chart](#line-chart-example)
-- [Area Chart](#area-chart-example)
-- [Scatter Chart](#scatter-chart-example)
-- [Bubble Chart](#bubble-chart-example)
-- [Bar Chart](#bar-chart-example)
-- [Pie Chart](#pie-chart-example)
+- [Line Chart](#line-chart)
+- [Area Chart](#area-chart)
+- [Scatter Chart](#scatter-chart)
+- [Bubble Chart](#bubble-chart)
+- [Bar Chart](#bar-chart)
+- [Pie Chart](#pie-chart)
 - [Download Libraries](#download-required-3rd-party-libs)
 
 
-#### Line Chart Example
+## Line Chart
+
+#### Example
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart.png" width="300">
 
@@ -38,7 +40,8 @@ Examples:
       (io/file "line-chart.png")))
 ```
 
-Styling a line chart
+
+#### Styling a line chart
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-2.png" width="300">
 
@@ -73,7 +76,7 @@ Styling a line chart
 ```
 
 
-Time series
+#### Time series
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-3.png" width="300">
 
@@ -91,12 +94,12 @@ Time series
          { "Apples" { :x (months 2019)
                       :y [0 2 3 3 4 7 7 8 8 7 7 5] 
                       :style { :marker-type  :circle 
-                               :marker-color (. :Color :new 0 0 255)
+                               :marker-color :blue
                                :line-color   :blue } } 
            "Prunes" { :x (months 2019)
                       :y [3 2 2 0 2 4 3 1 3 4 2 0]
                       :style { :marker-type  :square 
-                               :marker-color (. :Color :new 255 0 0)
+                               :marker-color :red
                                :line-color   :red } }}
          { :title "Fruits"
            :render-style :line
@@ -110,7 +113,54 @@ Time series
       (io/file "line-chart-3.png")))
 ```
 
-#### Area Chart Example
+
+#### Error Bars
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-4.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+     
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "Error bars" { :x (range 0 100 10)
+                          :y [20 30 45 40 60 65 80 75 95 90]
+                          :error-bars [5 8 2 9 3 3 8 3 9 3] }} 
+         { :title "Errors"
+           :render-style :line
+           :error-bars-color :match-series
+           :theme :xchart } )
+      :png ; write as PNG
+      120  ; render with 120 dpi
+      (io/file "line-chart-4.png")))
+```
+
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-5.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+     
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "Error rates" { :x [1 2 3 4 5]
+                           :y [50.0 25.0 16.66 12.5 10.0]
+                           :error-bars [5.0 2.5 1.66 1.25 1.0] 
+                           :style { :marker-type  :square
+                                    :marker-color :red }}} 
+         { :title "Error Bars"
+           :render-style :scatter
+           :legend {:position :inside-ne}
+           :theme :xchart } )
+      :png ; write as PNG
+      120  ; render with 120 dpi
+      (io/file "line-chart-5.png")))
+```
+
+
+## Area Chart
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/area-chart.png" width="300">
 
@@ -138,7 +188,7 @@ Time series
       (io/file "area-chart.png")))
 ```
 
-#### Scatter Chart Example
+## Scatter Chart
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/scatter-chart.png" width="300">
 
@@ -165,7 +215,7 @@ Time series
       (io/file "scatter-chart.png")))
 ```
 
-#### Bubble Chart Example
+## Bubble Chart
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/bubble-chart.png" width="300">
 
@@ -202,7 +252,7 @@ Time series
       (io/file "bubble-chart.png")))
 ```
 
-#### Bar Chart Example
+## Bar Chart
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/bar-chart.png" width="300">
 
@@ -223,7 +273,7 @@ Time series
       (io/file "bar-chart.png")))
 ```
 
-#### Pie Chart Example
+## Pie Chart
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/pie-chart.png" width="300">
 
@@ -246,12 +296,12 @@ Time series
 
 
 
-#### Download required 3rd party libs
+## Download required 3rd party libs
 
 ```clojure
 (do
   (load-module :maven)
   
-  (maven/download "org.knowm.xchart:xchart:3.6.1"))
+  (maven/download "org.knowm.xchart:xchart:3.6.5"))
 ```
 
