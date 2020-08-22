@@ -87,6 +87,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
+import com.github.jlangch.venice.impl.types.collections.VncMutableVector;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
@@ -1898,6 +1899,50 @@ public class CoreFunctions {
 		};
 
 
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Mutable Vector functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncFunction new_mutable_vector =
+		new VncFunction(
+				"mutable-vector",
+				VncFunction
+					.meta()
+					.arglists("(mutable-vector & items)")
+					.doc("Creates a new mutable threadsafe vector containing the items.")
+					.examples(
+						"(mutable-vector )", 
+						"(mutable-vector 1 2 3)", 
+						"(mutable-vector 1 2 3 [:a :b])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				return new VncMutableVector(args.getList());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction mutable_vector_Q =
+			new VncFunction(
+					"mutable-vector?",
+					VncFunction
+						.meta()
+						.arglists("(mutable-vector? obj)")
+						.doc("Returns true if obj is a mutable vector")
+						.examples("(mutable-vector? (mutable-vector 1 2))")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					assertArity("mutable-vector?", args, 1);
+
+					return VncBoolean.of(Types.isVncMutableVector(args.first()));
+				}
+
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// LazySeq functions
@@ -2878,28 +2923,32 @@ public class CoreFunctions {
 							"Function 'assoc' can not be used with mutable maps use assoc!",
 							Types.getType(coll)));
 				}
-				
+				else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll)) {
+					throw new VncException(String.format(
+							"Function 'assoc' can not be used with mutable vectors use assoc!",
+							Types.getType(coll)));
+				}
 				else if (Types.isVncCustomType(coll)) {
 					return ((VncCustomType)coll).assoc((VncList)args.rest());
 				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)coll).assoc((VncList)args.rest());
 				}
-				else if (Types.isVncVector(coll)) {
-					VncVector vec = ((VncVector)coll);
+				else if (Types.isVncVector(coll) || Types.isVncList(coll)) {
+					VncSequence seq = ((VncSequence)coll);
 
 					final VncList keyvals = args.rest();
 					for(int ii=0; ii<keyvals.size(); ii+=2) {
 						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
 						final VncVal val = keyvals.nth(ii+1);
-						if (vec.size() > key.getValue().intValue()) {
-							vec = (VncVector)vec.setAt(key.getValue().intValue(), val);
+						if (seq.size() > key.getValue().intValue()) {
+							seq = (VncSequence)seq.setAt(key.getValue().intValue(), val);
 						}
 						else {
-							vec = (VncVector)vec.addAtEnd(val);
+							seq = (VncSequence)seq.addAtEnd(val);
 						}
 					}
-					return vec;
+					return seq;
 				}
 				else if (Types.isVncString(coll)) {
 					String s = ((VncString)coll).getValue();
@@ -2948,8 +2997,11 @@ public class CoreFunctions {
 					.arglists("(assoc! coll key val)", "(assoc! coll key val & kvs)")
 					.doc("Associates key/vals with a mutable map, returns the map")
 					.examples(
-						"(assoc! (mutable-map ) :a 1 :b 2)",
-						"(assoc! nil :a 1 :b 2)")
+						"(assoc! nil :a 1 :b 2)",
+						"(assoc! (mutable-map) :a 1 :b 2)",
+						"(assoc! (mutable-vector 1 2 3) 0 10)",
+						"(assoc! (mutable-vector 1 2 3) 3 10)",
+						"(assoc! (mutable-vector 1 2 3) 6 10)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2957,8 +3009,24 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					return new VncMutableMap().assoc((VncList)args.rest());
 				}
-				else if (Types.isVncMutableMap(coll)) {
-					return ((VncMutableMap)coll).assoc((VncList)args.rest());
+				else if (Types.isVncMutableMap(coll) || Types.isVncJavaMap(coll)) {
+					return ((VncMap)coll).assoc((VncList)args.rest());
+				}
+				else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll) || Types.isVncJavaList(coll)) {
+					VncSequence seq = ((VncSequence)coll);
+
+					final VncList keyvals = args.rest();
+					for(int ii=0; ii<keyvals.size(); ii+=2) {
+						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
+						final VncVal val = keyvals.nth(ii+1);
+						if (seq.size() > key.getValue().intValue()) {
+							seq = (VncSequence)seq.setAt(key.getValue().intValue(), val);
+						}
+						else {
+							seq = (VncSequence)seq.addAtEnd(val);
+						}
+					}
+					return seq;
 				}
 				else {
 					throw new VncException(String.format(
@@ -3202,7 +3270,8 @@ public class CoreFunctions {
 						"that does not contain a mapping for key(s)")
 					.examples(
 						"(dissoc {:a 1 :b 2 :c 3} :b)",
-						"(dissoc {:a 1 :b 2 :c 3} :c :b)")
+						"(dissoc {:a 1 :b 2 :c 3} :c :b)",
+						"(dissoc [1 2 3] 0)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3273,7 +3342,8 @@ public class CoreFunctions {
 					.doc("Dissociates keys from a mutable map, returns the map")
 					.examples(
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :b)",
-						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :c :b)")
+						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :c :b)",
+						"(dissoc! (mutable-vector 1 2 3) 0)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3281,12 +3351,25 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					return Nil;
 				}
-				else if (Types.isVncMap(coll)) {
+				else if (Types.isVncMutableMap(coll)) {
 					return ((VncMap)coll).dissoc(args.rest());
+				}
+				else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll) || Types.isVncJavaList(coll)) {
+					VncSequence seq = ((VncSequence)coll);
+
+					final VncList keyvals = args.rest();
+					for(int ii=0; ii<keyvals.size(); ii++) {
+						final VncLong key = Coerce.toVncLong(keyvals.nth(ii));
+						if (seq.size() > key.getValue().intValue()) {
+							seq = (VncSequence)seq.removeAt(key.getValue().intValue());
+						}
+					}
+					return seq;
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'dissoc!' does not allow %s as coll. It works with mutable maps only.",
+							"Function 'dissoc!' does not allow %s as coll. It works with "
+								+ "mutable maps and vectors only.",
 							Types.getType(coll)));
 				}
 			}
@@ -3576,7 +3659,8 @@ public class CoreFunctions {
 					.examples(
 						"(update! (mutable-map) :a (fn [x] 5))",
 						"(update! (mutable-map :a 0) :b (fn [x] 5))",
-						"(update! (mutable-map :a 0 :b 1) :a (fn [x] 5))")
+						"(update! (mutable-map :a 0 :b 1) :a (fn [x] 5))",
+						"(update! (mutable-vector 1 2 3) 0 (fn [x] 10))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3584,11 +3668,22 @@ public class CoreFunctions {
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
-				if (Types.isVncMutableMap(args.first())) {
-					final VncMutableMap map = (VncMutableMap)args.first();
+				final VncVal coll = args.first();
+
+				if (Types.isVncMutableMap(coll)) {
+					final VncMutableMap map = (VncMutableMap)coll;
 					final VncVal key = args.second();
-					final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
+					final IVncFunction fn = Coerce.toIVncFunction(args.third());
 					return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
+				}
+				else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll) || Types.isVncJavaList(coll)) {
+					final VncSequence seq = ((VncSequence)coll);
+					final int idx =  Coerce.toVncLong(args.second()).getValue().intValue();
+					final IVncFunction fn = Coerce.toIVncFunction(args.third());
+					if (seq.size() > idx) {
+						seq.setAt(idx, VncFunction.applyWithMeter(fn, VncList.of(seq.nth(idx)), meterRegistry));
+					}
+					return seq;
 				}
 				else {
 					throw new VncException(String.format(
@@ -7001,6 +7096,8 @@ public class CoreFunctions {
 				.add(mutable_list_Q)
 				.add(new_vector)
 				.add(vector_Q)
+				.add(new_mutable_vector)
+				.add(mutable_vector_Q)
 				.add(new_lazyseq)
 				.add(lazyseq_Q)
 				.add(map_Q)
