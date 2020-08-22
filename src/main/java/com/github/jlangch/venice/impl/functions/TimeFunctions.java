@@ -154,7 +154,10 @@ public class TimeFunctions {
 				"time/local-date",
 				VncFunction
 					.meta()
-					.arglists("(time/local-date)", "(time/local-date year month day)", "(time/local-date date)")
+					.arglists(
+						"(time/local-date)", 
+						"(time/local-date year month day)", 
+						"(time/local-date date)")
 					.doc("Creates a new local-date. A local-date is represented by 'java.time.LocalDate'")
 					.examples(
 						"(time/local-date)",
@@ -250,9 +253,14 @@ public class TimeFunctions {
 				"time/local-date-parse",
 				VncFunction
 					.meta()
-					.arglists("(time/local-date-parse str format locale?")
-					.doc("Parses a local-date.")
-					.examples("(time/local-date-parse \"2018-08-01\" \"yyyy-MM-dd\")")
+					.arglists(
+						"(time/local-date-parse str format locale?")
+					.doc(
+						"Parses a local-date.")
+					.examples(
+						"(time/local-date-parse \"2018-12-01\" \"yyyy-MM-dd\")",
+						"(time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH)",
+						"(time/local-date-parse \"2018-Dez-01\" \"yyyy-MMM-dd\" :GERMAN)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
