@@ -38,6 +38,36 @@ Examples:
       (io/file "line-chart.png")))
 ```
 
+Styling a line chart
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-2.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "Peter" { :x (range 10)
+                     :y (mapv #(+ % (* 3 (rand-double))) (range 10)) 
+                     :style { :marker-type  :circle 
+                              :marker-color :blue
+                              :line-color   :blue } } 
+           "Max"   { :x (range 10)
+                     :y (mapv #(+ 2  % (* 4 (rand-double))) (range 0 5 0.5)) 
+                     :style { :marker-type  :square 
+                              :marker-color :red
+                              :line-color   :red } }}
+         { :title "Longest running distance"
+           :render-style :line   ; :step
+           :x-axis { :title "Months (since start)" :decimal-pattern "#"}
+           :y-axis { :title "Distance" :decimal-pattern "##.## km"}
+           :theme :xchart } )
+      :png ; write as PNG
+      120  ; render with 120 dpi
+      (io/file "line-chart.png")))
+```
+
 #### Area Chart Example
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/area-chart.png" width="300">
