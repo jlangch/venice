@@ -39,6 +39,7 @@ public enum TypeRank {
 	LAZYSEQ(103),
 	
 	VECTOR (110),	
+	MUTABLEVECTOR (111),
 	
 	HASHMAP (120),
 	ORDEREDMAP (121),

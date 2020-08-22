@@ -50,6 +50,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
+import com.github.jlangch.venice.impl.types.collections.VncMutableVector;
 import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
@@ -345,12 +346,27 @@ public class Coerce {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot coerce value of type %s to mutable-set. %s", 
+					"Cannot coerce value of type %s to mutable-list. %s", 
 					Types.getType(val),
 					ErrorMessage.buildErrLocation(val)));
 		}
 	}
 	
+	public static VncMutableVector toVncMutableVector(final VncVal val) {
+		if (val == null || val instanceof VncMutableVector) {
+			return (VncMutableVector)val;
+		}
+		else if (Types.isVncSequence(val)) {
+			return new VncMutableVector(((VncSequence)val).getList());
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to mutable-vector. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
 	public static VncMap toVncMap(final VncVal val) {
 		if (val == null || Types.isVncMap(val)) {
 			return (VncMap)val;
