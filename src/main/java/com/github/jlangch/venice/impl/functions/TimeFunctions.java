@@ -259,8 +259,7 @@ public class TimeFunctions {
 						"Parses a local-date.")
 					.examples(
 						"(time/local-date-parse \"2018-12-01\" \"yyyy-MM-dd\")",
-						"(time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH)",
-						"(time/local-date-parse \"2018-Dez-01\" \"yyyy-MMM-dd\" :GERMAN)")
+						"(time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
