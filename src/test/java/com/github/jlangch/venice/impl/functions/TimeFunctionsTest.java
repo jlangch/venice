@@ -81,7 +81,11 @@ public class TimeFunctionsTest {
 	public void test_local_date_parse() {
 		final Venice venice = new Venice();
 		
-		assertEquals("2018-08-01", venice.eval("(str (time/local-date-parse \"2018-08-01\" \"yyyy-MM-dd\"))"));		
+		assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-12-01\" \"yyyy-MM-dd\"))"));		
+		assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH))"));		
+		
+		// TODO: why does this fail??
+		//assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-Dez-01\" \"yyyy-MMM-dd\" :GERMAN))"));
 	}
 
 	@Test

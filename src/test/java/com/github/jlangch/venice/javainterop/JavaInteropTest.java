@@ -204,8 +204,20 @@ public class JavaInteropTest {
 		final Venice venice = new Venice();
 
 		assertEquals(null, venice.eval("(. jobj :getStringArray)", symbols()));
+		
 		assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray)))", symbols()));
+		assertEquals(":core/vector", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (type (. jobj :getStringArray))))", symbols()));
+		
+		assertEquals("[a B c]", venice.eval("(do                                                        " +
+											"  (. jobj :setStringArray '(\"a\" \"b\" \"c\"))            " +
+											"  (let [v (apply mutable-vector (. jobj :getStringArray))] " +
+											"     (assoc! v 1 \"B\")                                    " +
+											"     (. jobj :setStringArray v)                            " +
+											"     (str (. jobj :getStringArray))))                      ", 
+											symbols()));
+		
 		assertEquals("[]", venice.eval("(str (do (. jobj :setStringArray '()) (. jobj :getStringArray)))", symbols()));
+		
 		assertEquals("[a]", venice.eval("(str (do (. jobj :setStringArray \"a\") (. jobj :getStringArray)))", symbols()));
 		
 		assertEquals("[a b c]", venice.eval("(str (do (. jobj :setStringArray '(\"a\" \"b\" \"c\")) (. jobj :getStringArray)))", symbols()));
