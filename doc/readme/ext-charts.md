@@ -46,26 +46,68 @@ Styling a line chart
 (do
    (load-module :xchart)
 
+   (import :java.awt.Color)
+
    (xchart/write-to-file
       (xchart/xy-chart
          { "Peter" { :x (range 10)
                      :y (mapv #(+ % (* 3 (rand-double))) (range 10)) 
                      :style { :marker-type  :circle 
-                              :marker-color :blue
+                              :marker-color (. :Color :new 0 0 255 128)
                               :line-color   :blue } } 
            "Max"   { :x (range 10)
                      :y (mapv #(+ 2  % (* 4 (rand-double))) (range 0 5 0.5)) 
                      :style { :marker-type  :square 
-                              :marker-color :red
+                              :marker-color (. :Color :new 255 0 0 128)
                               :line-color   :red } }}
          { :title "Longest running distance"
-           :render-style :line   ; :step
+           :render-style :line
+           :width 640
+           :height 500         
            :x-axis { :title "Months (since start)" :decimal-pattern "#"}
            :y-axis { :title "Distance" :decimal-pattern "##.## km"}
            :theme :xchart } )
       :png ; write as PNG
       120  ; render with 120 dpi
-      (io/file "line-chart.png")))
+      (io/file "line-chart-2.png")))
+```
+
+
+Time series
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/charts/line-chart-3.png" width="300">
+
+```clojure
+(do
+   (load-module :xchart)
+
+   (import :java.awt.Color)
+
+   (defn months [year] 
+      (map #(time/date (time/local-date year % 1)) (range 1 13)))
+     
+   (xchart/write-to-file
+      (xchart/xy-chart
+         { "Apples" { :x (months 2019)
+                      :y [0 2 3 3 4 7 7 8 8 7 7 5] 
+                      :style { :marker-type  :circle 
+                               :marker-color (. :Color :new 0 0 255)
+                               :line-color   :blue } } 
+           "Prunes" { :x (months 2019)
+                      :y [3 2 2 0 2 4 3 1 3 4 2 0]
+                      :style { :marker-type  :square 
+                               :marker-color (. :Color :new 255 0 0)
+                               :line-color   :red } }}
+         { :title "Fruits"
+           :render-style :line
+           :width 640
+           :height 500         
+           :x-axis { :title "Months" :date-pattern "MMM"}
+           :y-axis { :title "Weight" :decimal-pattern "# tons"}
+           :theme :xchart } )
+      :png ; write as PNG
+      120  ; render with 120 dpi
+      (io/file "line-chart-3.png")))
 ```
 
 #### Area Chart Example
