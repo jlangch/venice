@@ -24,6 +24,7 @@
 ;;;; Thanks to Jean Niklas L'orange and his clojure xchart project
 ;;;; (https://github.com/hypirion/clj-xchart). Venice's xchart
 ;;;; builds heavily on Jean Niklas' smart work.
+;;;; See: https://hypirion.github.io/clj-xchart/examples
 
 
 (ns xchart)
@@ -216,7 +217,20 @@
      :pink       (. :Color :PINK)
      :red        (. :Color :RED)
      :white      (. :Color :WHITE)
-     :yellow     (. :Color :YELLOW) })
+     :yellow     (. :Color :YELLOW)
+
+     :base-1     (. :Color :new 141 211 199)
+     :base-2     (. :Color :new 255 255 179)
+     :base-3     (. :Color :new 190 186 218)
+     :base-4     (. :Color :new 251 128 114)
+     :base-5     (. :Color :new 128 177 211)
+     :base-6     (. :Color :new 253 180  98)
+     :base-7     (. :Color :new 179 222 105)
+     :base-8     (. :Color :new 252 205 229)
+     :base-9     (. :Color :new 217 217 217)
+     :base-10    (. :Color :new 188 128 189)
+     :base-11    (. :Color :new 204 235 197)
+     :base-12    (. :Color :new 255 237 111) } )
 
 
 (def xchart/strokes
@@ -381,10 +395,10 @@
 
 
 (defn xchart/set-series-style!
-      [styler series]
-       (let [series-colors  (. styler :getSeriesColors)
-             series-lines   (. styler :getSeriesLines)
-             series-markers (. styler :getSeriesMarkers)
+       [styler series]
+       (let [series-colors  (apply mutable-vector (. styler :getSeriesColors))
+             series-lines   (apply mutable-vector (. styler :getSeriesLines))
+             series-markers (apply mutable-vector (. styler :getSeriesMarkers))
              series         (into [] series)]
           (dotimes [i (count series)]
               (let [{:keys [color stroke marker]} (nth series i)]
