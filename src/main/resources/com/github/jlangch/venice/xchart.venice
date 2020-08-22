@@ -389,11 +389,11 @@
           (dotimes [i (count series)]
               (let [{:keys [color stroke marker]} (nth series i)]
                    (when color
-                         (update! series-colors i (fn [x] (get xchart/colors color color))))
+                         (assoc! series-colors i (get xchart/colors color color)))
                    (when stroke
-                         (update! series-lines i (fn [x] (get xchart/strokes stroke stroke))))
+                         (assoc! series-lines i (get xchart/strokes stroke stroke)))
                    (when marker
-                         (update! series-markers i (fn [x] (get xchart/markers marker marker))))))
+                         (assoc! series-markers i (get xchart/markers marker marker)))))
           (. styler :setSeriesColors series-colors)
           (. styler :setSeriesLines series-lines)
           (. styler :setSeriesMarkers series-markers)))
@@ -461,7 +461,7 @@
 
 (defn xchart/set-x-axis-style!
        [styler
-        {:keys [label logarithmic? max min decimal-pattern
+        {:keys [label logarithmic? max min decimal-pattern date-pattern
                 tick-mark-spacing-hint ticks-visible? title-visible?]}]
        (do
           (let [{:keys [alignment rotation max-count]} label]
@@ -472,6 +472,7 @@
                 max-count (. :setXAxisMaxLabelCount max-count)))
           (xchart/doto-cond
              styler
+             date-pattern                (. :setDatePattern date-pattern)
              decimal-pattern             (. :setXAxisDecimalPattern decimal-pattern)
              (not (nil? logarithmic?))   (. :setXAxisLogarithmic logarithmic?)
              max                         (. :setXAxisMax max)
