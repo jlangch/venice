@@ -38,6 +38,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   function. E.g.:  `(transduce (map :ip) conj [{:ip 6}])`
 - `filter` in its transducing version to accept a map, a keyword, or a set as filter 
   predicate. E.g.:  `(transduce (filter #{1 3 5 7 9}) conj [1 2 3 4 5 6])`
+- a problem with legend styling in the 'xchart' extension module
 
 ### Deprecated
 

@@ -418,11 +418,11 @@
        (xchart/doto-cond
           styler
           annotations-font          (. :setAnnotationsFont annotations-font)
-          (not (nil? annotations?)) (. :setHasAnnotations (annotations?)
+          (not (nil? annotations?)) (. :setHasAnnotations annotations?)
           chart                     (xchart/set-chart-style! chart)
           legend                    (xchart/set-legend! legend)
           plot                      (xchart/set-plot-style! plot)
-          series                    (xchart/set-series-style! series))))
+          series                    (xchart/set-series-style! series)))
 
 
 (defn xchart/set-axis-ticks!
@@ -601,7 +601,7 @@
          :as styling}]
        (let [chart (. :XYChart :new width height)
              styler (cast :XYStyler (. chart :getStyler))
-             styling (xchart/set-legend! styling)]
+             styling (xchart/attach-default-font styling)]
 
           (xchart/doto-cond
              styler
