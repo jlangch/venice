@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.JavaValueException;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
@@ -93,13 +94,13 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
-	public void test_atom_compareAndSet() {
+	public void test_atom_compareAndSet_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
 				"(do                               \n" +
 				"   (def x (atom 2))               \n" +
-				"   (compare-and-set! x 3 4)       \n" +
+				"   (compare-and-set! x 3 5)       \n" +
 				"   (compare-and-set! x 2 4)       \n" +
 				"   @x)                              ";
 
@@ -108,6 +109,154 @@ public class ConcurrencyFunctionsTest {
 		assertEquals(4L, result);
 	}
 
+	@Test
+	public void test_atom_compareAndSet_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                               \n" +
+				"   (def x (atom 2))               \n" +
+				"   (compare-and-set! x 2 4))        ";
+
+		assertTrue((Boolean)venice.eval(script));
+	}
+	
+	@Test
+	public void test_atom_compareAndSet_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                               \n" +
+				"   (def x (atom 2))               \n" +
+				"   (compare-and-set! x 3 4))        ";
+
+		assertFalse((Boolean)venice.eval(script));
+	}
+
+	@Test
+	public void test_atom_with_meta() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 100 :meta {:a 1000}))  \n" +
+				"   (swap! x inc)                       \n" +
+				"   (:a (meta x)))                        ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(1000L, result);
+	}
+
+	@Test
+	public void test_atom_reset_with_validator_OK() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 100 :validator pos?))  \n" +
+				"   (reset! x 200)                      \n" +
+				"   @x)                                   ";
+
+		assertEquals(200L, venice.eval(script));
+	}
+
+	@Test
+	public void test_atom_reset_with_validator_FAIL() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 100 :validator pos?))  \n" +
+				"   (reset! x -200)                     \n" +
+				"   @x)                                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_atom_swap_with_validator_OK() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 1 :validator pos?))    \n" +
+				"   (swap! x inc)                       \n" +
+				"   @x)                                   ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(2L, result);
+	}
+
+	@Test
+	public void test_atom_swap_with_validator_FAIL() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 1 :validator pos?))    \n" +
+				"   (swap! x dec)                       \n" +
+				"   @x)                                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_atom_compareAndSet_with_validator_OK_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 1 :validator pos?))    \n" +
+				"   (compare-and-set! x 1 4)            \n" +
+				"   @x)                                   ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(4L, result);
+	}
+
+	@Test
+	public void test_atom_compareAndSet_with_validator_OK_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 1 :validator pos?))    \n" +
+				"   (compare-and-set! x 2 4)            \n" +
+				"   @x)                                   ";
+
+		final Object result = venice.eval(script);
+		
+		assertEquals(1L, result);
+	}
+
+	@Test
+	public void test_atom_compareAndSet_with_validator_FAIL_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 1 :validator pos?))    \n" +
+				"   (compare-and-set! x 1 -4)           \n" +
+				"   @x)                                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_atom_compareAndSet_with_validator_FAIL_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                    \n" +
+				"   (def x (atom 1 :validator pos?))    \n" +
+				"   (compare-and-set! x 2 -4)           \n" +
+				"   @x)                                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
 
 	@Test
 	public void test_volatile() {

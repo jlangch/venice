@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.IDeref;
@@ -391,8 +392,19 @@ public class ConcurrencyFunctions {
 				"atom", 
 				VncFunction
 					.meta()
-					.arglists("(atom x)")		
-					.doc("Creates an atom with the initial value x")
+					.arglists(
+						"(atom x)",
+						"(atom x & options)")		
+					.doc(
+						"Creates an atom with the initial value x. \n\n" +
+						"Options: \n" +
+						"  :meta metadata-map \n" +
+						"  :validator validate-fn \n" +
+						"If metadata-map is supplied, it will become the metadata on the\n" + 
+						"atom. validate-fn must be nil or a side-effect-free fn of one\n" + 
+						"argument, which will be passed the intended new state on any state\n" + 
+						"change. If the new state is unacceptable, the validate-fn should\n" + 
+						"return false or throw an exception.")
 					.examples(
 						"(do                       \n" +
 						"  (def counter (atom 0))  \n" +
@@ -405,9 +417,16 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("atom", args, 1);
+				assertMinArity("atom", args, 1);
 				
-				return new VncAtom(args.first(), args.getMeta());
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final VncVal meta = options.get(new VncKeyword("meta"));
+				final VncVal validator = options.get(new VncKeyword("validator"));
+				
+				return new VncAtom(
+						args.first(), 
+						validator == Nil ? null : Coerce.toVncFunction(validator),
+						MetaUtil.mergeMeta(args.getMeta(), meta));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -552,7 +571,7 @@ public class ConcurrencyFunctions {
 				
 				final VncAtom atm = Coerce.toVncAtom(args.first());		
 				
-				return atm.compare_and_set(args.second(), args.nth(2));
+				return atm.compareAndSet(args.second(), args.nth(2));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
