@@ -5363,7 +5363,7 @@ public class CoreFunctions {
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
 				final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)).getList() : new ArrayList<>();
-				final List<VncVal> coll = Coerce.toVncSequence(args.nth(args.size()-1)).getList();
+				final List<VncVal> coll = args.last() == Nil ? new ArrayList<>() : Coerce.toVncSequence(args.last()).getList();
 
 				if (n <= 0) {
 					throw new VncException(String.format(
@@ -6642,25 +6642,45 @@ public class CoreFunctions {
 				"repeat",
 				VncFunction
 					.meta()
-					.arglists("(repeat n x)")
-					.doc("Returns a collection with the value x repeated n times")
-					.examples("(repeat 5 [1 2])")
+					.arglists(
+						"(repeat x)",
+						"(repeat n x)")
+					.doc(
+						"Returns a lazy sequence of x values or a collection with " +
+						"the value x repeated n times.")
+					.examples(
+						"(repeat 3 \"hello\")",
+						"(repeat 5 [1 2])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("repeat", args, 2);
-
-				final long repeat = Coerce.toVncLong(args.first()).getValue();
-				if (repeat < 0) {
-					throw new VncException("repeat: a count n must be grater or equal to 0");
+				assertArity("repeat", args, 1, 2);
+				
+				if (args.size() == 1) {
+					final VncVal val = args.first();
+					return VncLazySeq.continually(
+							new VncFunction(createAnonymousFuncName("repeat")) {
+								@Override
+								public VncVal apply(final VncList args) {
+									return val;
+								}
+								private static final long serialVersionUID = 1L;
+							}, 
+							Nil);
 				}
-
-				final VncVal val = args.second();
-				final List<VncVal> values = new ArrayList<>();
-				for(int ii=0; ii<repeat; ii++) {
-					values.add(val);
+				else {
+					final long repeat = Coerce.toVncLong(args.first()).getValue();
+					if (repeat < 0) {
+						throw new VncException("repeat: a count n must be grater or equal to 0");
+					}
+	
+					final VncVal val = args.second();
+					final List<VncVal> values = new ArrayList<>();
+					for(int ii=0; ii<repeat; ii++) {
+						values.add(val);
+					}
+					return VncList.ofList(values);
 				}
-				return VncList.ofList(values);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

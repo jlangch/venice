@@ -2915,6 +2915,7 @@ public class CoreFunctionsTest {
 	public void test_partition() {
 		final Venice venice = new Venice();
 
+		assertEquals("()", venice.eval("(str (partition 3 nil))"));
 		assertEquals("()", venice.eval("(str (partition 3 '()))"));
 		assertEquals("((1))", venice.eval("(str (partition 3 '(1)))"));
 		assertEquals("((1 2))", venice.eval("(str (partition 3 '(1 2)))"));
@@ -2924,6 +2925,7 @@ public class CoreFunctionsTest {
 		assertEquals("((1 2 3) (4 5 6))", venice.eval("(str (partition 3 '(1 2 3 4 5 6)))"));
 		assertEquals("((1 2 3) (4 5 6) (7))", venice.eval("(str (partition 3 '(1 2 3 4 5 6 7)))"));
 
+		assertEquals("()", venice.eval("(str (partition 2 3 nil))"));
 		assertEquals("()", venice.eval("(str (partition 2 3 '()))"));
 		assertEquals("((1))", venice.eval("(str (partition 2 3 '(1)))"));
 		assertEquals("((1 2))", venice.eval("(str (partition 2 3 '(1 2)))"));
@@ -2933,6 +2935,7 @@ public class CoreFunctionsTest {
 		assertEquals("((1 2) (4 5))", venice.eval("(str (partition 2 3 '(1 2 3 4 5 6)))"));
 		assertEquals("((1 2) (4 5) (7))", venice.eval("(str (partition 2 3 '(1 2 3 4 5 6 7)))"));
 
+		assertEquals("()", venice.eval("(str (partition 4 3 nil))"));
 		assertEquals("()", venice.eval("(str (partition 4 3 '()))"));
 		assertEquals("((1))", venice.eval("(str (partition 4 3 '(1)))"));
 		assertEquals("((1 2))", venice.eval("(str (partition 4 3 '(1 2)))"));
@@ -2942,6 +2945,7 @@ public class CoreFunctionsTest {
 		assertEquals("((1 2 3) (4 5 6))", venice.eval("(str (partition 4 3 '(1 2 3 4 5 6)))"));
 		assertEquals("((1 2 3) (4 5 6) (7))", venice.eval("(str (partition 4 3 '(1 2 3 4 5 6 7)))"));
 
+		assertEquals("()", venice.eval("(str (partition 4 3 [:a :b :c] nil))"));
 		assertEquals("()", venice.eval("(str (partition 4 3 [:a :b :c] '()))"));
 		assertEquals("((1 :a :b :c))", venice.eval("(str (partition 4 3 [:a :b :c] '(1)))"));
 		assertEquals("((1 2 :a :b))", venice.eval("(str (partition 4 3 [:a :b :c] '(1 2)))"));
@@ -2951,6 +2955,7 @@ public class CoreFunctionsTest {
 		assertEquals("((1 2 3 :a) (4 5 6 :a))", venice.eval("(str (partition 4 3 [:a :b :c] '(1 2 3 4 5 6)))"));
 		assertEquals("((1 2 3 :a) (4 5 6 :a) (7 :a :b :c))", venice.eval("(str (partition 4 3 [:a :b :c] '(1 2 3 4 5 6 7)))"));
 
+		assertEquals("()", venice.eval("(str (partition 5 3 [:a :b :c] nil))"));
 		assertEquals("()", venice.eval("(str (partition 5 3 [:a :b :c] '()))"));
 		assertEquals("((1 :a :b :c))", venice.eval("(str (partition 5 3 [:a :b :c] '(1)))"));
 		assertEquals("((1 2 :a :b :c))", venice.eval("(str (partition 5 3 [:a :b :c] '(1 2)))"));
