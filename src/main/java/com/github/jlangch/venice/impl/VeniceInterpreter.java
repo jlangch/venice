@@ -1246,12 +1246,12 @@ public class VeniceInterpreter implements Serializable  {
 			argPos++;
 			final VncVector params = (VncVector)paramsOrSig;
 
-			final VncVal body = ast.nth(argPos++);
+			final VncList body = ast.slice(argPos);
 	
 			final VncFunction macroFn = buildFunction(
 											macroName_.getName(), 
 											params, 
-											VncList.of(body), 
+											body, 
 											null, 
 											true,
 											env);
