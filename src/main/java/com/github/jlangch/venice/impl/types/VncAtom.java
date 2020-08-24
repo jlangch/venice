@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
 import java.util.Arrays;
@@ -147,7 +146,7 @@ public class VncAtom extends VncVal implements IDeref {
 		if (validatorFn != null) {
 			try {
 				final VncVal ok = validatorFn.apply(VncList.of(newVal));
-				if (ok == Nil || VncBoolean.isFalse(ok)) {
+				if (VncBoolean.isFalseOrNil(ok)) {
 					throw new VncException("Invalid atom state");
 				}
 			}
