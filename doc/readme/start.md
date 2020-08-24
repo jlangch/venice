@@ -90,9 +90,9 @@ regardless of the operating system (Windows, MacOSX, or Linux).
 
 You just need the Venice JAR as prerequisite.
 
-The automated setup will create a launcher script with the Java classpath correctly
-setup, will download the Jansi library from Maven, and add some example Venice 
-scripts.
+The automated setup will create a REPL launcher script with the Java classpath 
+correctly setup, will download the Jansi library from Maven, and add some example 
+Venice scripts.
 
 Open a terminal, move to the directory the Venice JAR is located, and start 
 the REPL in setup mode:
