@@ -153,10 +153,9 @@
 
 
 (defn xchart/assoc-in-nonexisting [m ks v]
-      (cond->
-         m
-         (== (get-in m ks ::not-found) ::not-found)
-         (assoc-in ks v)))
+  (if (== (get-in m ks :not-found) :not-found)
+    (assoc-in m ks v)
+    m))
 
 
 (defn xchart/available? []
