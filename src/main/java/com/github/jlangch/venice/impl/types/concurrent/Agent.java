@@ -35,11 +35,11 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -54,12 +54,11 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 
 public class Agent implements IDeref {
 
-	public Agent(final VncVal state, final VncList options) {
+	public Agent(final VncVal state, final VncMap opts) {
 		value.set(new Value(state == null ? Constants.Nil : state, null));
 		
-		final VncMap opts = VncHashMap.ofAll(options);
-
 		errorHandler.set(getErrorHandler(opts));
+		validatorFn = getValidator(opts);
 		
 		final VncKeyword errMode = getErrorMode(opts);
 		continueOnError =  errMode == null ? true : errMode.equals(ERROR_MODE_CONTINUE);
@@ -101,6 +100,7 @@ public class Agent implements IDeref {
 	}
 
 	public void restart(final VncVal state) {
+		validate(state);
 		value.set(new Value(state, null));
 	}
 	
@@ -206,7 +206,18 @@ public class Agent implements IDeref {
 				
 		return null;
 	}
-	
+
+	private static VncFunction getValidator(final VncMap options) {
+		if (options != null) {
+			final VncVal validator = options.get(VALIDATOR);
+			if (validator != Constants.Nil) {
+				return Coerce.toVncFunction(validator);
+			}
+		}
+				
+		return null;
+	}
+
 	private static VncKeyword getErrorMode(final VncMap options) {
 		final VncVal mode = options == null ? Constants.Nil : options.get(ERROR_MODE);		
 		if (mode == Constants.Nil) {
@@ -225,6 +236,22 @@ public class Agent implements IDeref {
 		}
 	}
 	
+	private void validate(final VncVal newVal) {
+		if (validatorFn != null) {
+			try {
+				final VncVal ok = validatorFn.apply(VncList.of(newVal));
+				if (VncBoolean.isFalseOrNil(ok)) {
+					throw new VncException("Invalid agent state");
+				}
+			}
+			catch (VncException ex) {
+				throw ex;
+			}
+			catch (RuntimeException ex) {
+				throw new VncException("Invalid agent state");
+			}
+		}
+	}
 			
 	private static class Action implements StripedRunnable {
 
@@ -275,6 +302,8 @@ public class Agent implements IDeref {
 						final VncList fnArgs_ = fnArgs.addAtStart(oldVal);
 						final VncVal newVal = fn.apply(fnArgs_);
 						
+						agent.validate(newVal);
+
 						agent.value.set(new Value(newVal, null));
 						agent.watchable.notifyWatches(new VncJavaObject(agent), oldVal, newVal);
 					}
@@ -338,6 +367,9 @@ public class Agent implements IDeref {
 		SEND_OFF;
 	};
 	
+	
+	//private final static VncKeyword META = new VncKeyword("meta");
+	private final static VncKeyword VALIDATOR = new VncKeyword("validator");
 	private final static VncKeyword ERROR_HANDLER = new VncKeyword("error-handler");
 	private final static VncKeyword ERROR_MODE = new VncKeyword("error-mode");
 	private final static VncKeyword ERROR_MODE_CONTINUE = new VncKeyword("continue");
@@ -345,6 +377,7 @@ public class Agent implements IDeref {
 	
 	private final AtomicReference<VncFunction> errorHandler = new AtomicReference<>();
 	private final AtomicReference<Value> value = new AtomicReference<>(new Value(Constants.Nil, null)); 
+	private final VncFunction validatorFn;
 	private final Watchable watchable = new Watchable();
 	private final long id = agentCounter.getAndIncrement();
 	

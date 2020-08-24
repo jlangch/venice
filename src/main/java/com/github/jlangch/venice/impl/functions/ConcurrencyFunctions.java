@@ -400,10 +400,10 @@ public class ConcurrencyFunctions {
 						"Options: \n" +
 						"  :meta metadata-map \n" +
 						"  :validator validate-fn \n" +
-						"If metadata-map is supplied, it will become the metadata on the\n" + 
-						"atom. validate-fn must be nil or a side-effect-free fn of one\n" + 
-						"argument, which will be passed the intended new state on any state\n" + 
-						"change. If the new state is unacceptable, the validate-fn should\n" + 
+						"If metadata-map is supplied, it will become the metadata on the " + 
+						"atom. validate-fn must be nil or a side-effect-free fn of one " + 
+						"argument, which will be passed the intended new state on any state " + 
+						"change. If the new state is unacceptable, the validate-fn should " + 
 						"return false or throw an exception.")
 					.examples(
 						"(do                       \n" +
@@ -650,9 +650,15 @@ public class ConcurrencyFunctions {
 						"Options: \n" +
 						"  :error-handler handler-fn \n" +
 						"  :error-mode mode-keyword \n" +
+						"  :validator validate-fn \n" +
 						"The handler-fn is called if an action throws an exception. It's a" +
 						"function taking two args the agent and the exception. The " +
-						"mode-keyword may be either :continue (the default) or :fail")
+						"mode-keyword may be either :continue (the default) or :fail " +
+						"The validate-fn must be nil or a side-effect-free fn of one " + 
+						"argument, which will be passed the intended new state on any state " + 
+						"change. If the new state is unacceptable, the validate-fn should " + 
+						"return false or throw an exception.")
+
 					.examples(
 						"(do                         \n" +
 						"   (def x (agent 100))      \n" +
@@ -666,7 +672,9 @@ public class ConcurrencyFunctions {
 
 				JavaInterop.getInterceptor().validateVeniceFunction("agent");
 
-				return new VncJavaObject(new Agent(args.first(), args.rest()));
+				final VncMap opts = VncHashMap.ofAll(args.rest());
+
+				return new VncJavaObject(new Agent(args.first(), opts));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
