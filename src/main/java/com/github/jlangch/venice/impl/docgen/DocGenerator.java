@@ -975,6 +975,8 @@ public class DocGenerator {
 		call.addItem(getDocItem("->>"));
 		call.addItem(getDocItem("-<>"));
 		call.addItem(getDocItem("as->"));
+		call.addItem(getDocItem("cond->"));
+		call.addItem(getDocItem("cond->>"));
 
 		final DocSection loading = new DocSection("Loading");
 		all.addSection(loading);
@@ -1714,7 +1716,7 @@ public class DocGenerator {
 			try {
 				final String result = (String)runner.eval(
 											"example",
-											"(pr-str " + example + ")",
+											"(pr-str " + example + "\n)",
 											Parameters.of(
 												"*out*", ps_out,
 												"*err*", ps_err));
