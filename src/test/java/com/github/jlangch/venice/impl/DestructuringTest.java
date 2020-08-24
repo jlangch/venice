@@ -712,4 +712,13 @@ public class DestructuringTest {
 		assertEquals("[1 2 nil]", venice.eval("(str (let [[a b & c] '(1 2)] [a b c]))"));
 		assertEquals("(1 2 3 4 5)", venice.eval("(str (let [[& a] '(1 2 3 4 5)] a))"));
 	}
+	
+	@Test
+	public void test_function_args() {
+		final Venice venice = new Venice();
+		
+		assertEquals("(1 2)", venice.eval("(str (map (fn [[k v]] v) [[:a 1] [:b 2]]))"));
+		assertEquals("(:a :b)", venice.eval("(str (map (fn [[k v]] k) [[:a 1] [:b 2]]))"));
+		assertEquals("([1 :a] [2 :b])", venice.eval("(str (map (fn [[k v]] [v k]) [[:a 1] [:b 2]]))"));
+	}
 }
