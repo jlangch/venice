@@ -584,8 +584,8 @@
 
   cond->> [expr & clauses]
 
-  (let [_ (assert (even? (count clauses)))
-        g (gensym)
+  (assert (even? (count clauses)))
+  (let [g (gensym)
         steps (map (fn [[test step]] `(if ~test (->> ~g ~step) ~g))
                    (partition 2 clauses))]
     `(let [~g ~expr
