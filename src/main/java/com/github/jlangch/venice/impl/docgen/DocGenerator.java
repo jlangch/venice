@@ -1670,7 +1670,7 @@ public class DocGenerator {
 		return null;
 	}
 
-	private List<Output> runExamples(
+	private List<ExampleOutput> runExamples(
 			final String name, 
 			final List<String> examples, 
 			final boolean run,
@@ -1701,7 +1701,7 @@ public class DocGenerator {
 	}
 	
 
-	private Output runExample(
+	private ExampleOutput runExample(
 			final Venice runner,
 			final long id,
 			final String name, 
@@ -1721,12 +1721,12 @@ public class DocGenerator {
 												"*out*", ps_out,
 												"*err*", ps_err));
 									
-				return new Output(
+				return new ExampleOutput(
 						id, name, example, ps_out.getOutput(), ps_err.getOutput(), result);
 			}
 			catch(RuntimeException ex) {
 				if (catchEx) {							
-					return new Output(
+					return new ExampleOutput(
 							id, name, example, ps_out.getOutput(), ps_err.getOutput(), ex);
 				}
 				else {
@@ -1735,7 +1735,7 @@ public class DocGenerator {
 			}
 		}
 		else {
-			return new Output(id, name, example);
+			return new ExampleOutput(id, name, example);
 		}
 	}
 

@@ -62,6 +62,7 @@ public class RegexFunctions {
 				public VncVal apply(final VncList args) {
 					assertArity("regex/pattern", args, 1);
 		
+					// "[Regex Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)"
 					return new VncJavaObject(
 							Pattern.compile(
 									Coerce.toVncString(args.first()).getValue()));

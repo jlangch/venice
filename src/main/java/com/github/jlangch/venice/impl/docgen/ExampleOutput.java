@@ -22,9 +22,9 @@
 package com.github.jlangch.venice.impl.docgen;
 
 
-public class Output {
+public class ExampleOutput {
 
-	public Output(
+	public ExampleOutput(
 			final long idx,
 			final String name,
 			final String example
@@ -38,7 +38,7 @@ public class Output {
 		this.ex = null;
 	}
 
-	public Output(
+	public ExampleOutput(
 			final long idx,
 			final String name,
 			final String example,
@@ -55,7 +55,7 @@ public class Output {
 		this.ex = null;
 	}
 	
-	public Output(
+	public ExampleOutput(
 			final long idx,
 			final String name,
 			final String example,

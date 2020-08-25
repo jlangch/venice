@@ -33,7 +33,7 @@ public class DocItem {
 			final String name, 
 			final List<String> signatures,
 			final String description,
-			final List<Output> examples,
+			final List<ExampleOutput> examples,
 			final String id
 	) {
 		this.name = name;
@@ -110,7 +110,7 @@ public class DocItem {
 	
 	private String convertSlash(final String s) {
 		// prevent hyphenation within name symbols
-		return s; //s.replace('/', '\u2044');
+		return s; // s.replace('/', '\u2044');
 	}
 
 	private String convertDash(final String s) {
@@ -120,7 +120,7 @@ public class DocItem {
 
 	// https://www.key-shortcut.com/zeichentabellen/unicode-2000-2fff
 	// https://css-tricks.com/almanac/properties/w/whitespace/
-	//https://www.cjcid.com/articles/wrapping-long-words-css-html/
+	// https://www.cjcid.com/articles/wrapping-long-words-css-html/
 	
 	private final String name;
 	private final String altName;
@@ -128,5 +128,5 @@ public class DocItem {
 	
 	private final List<String> signatures;
 	private final String description;
-	private final List<Output> examples;
+	private final List<ExampleOutput> examples;
 }
