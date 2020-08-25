@@ -211,6 +211,7 @@ Functions that return lazy sequences when their input is a lazy sequence:
 	- drop
 	- drop-while
 	- rest
+        - repeat
 
 Functions that return realized elements from a lazy sequences:
 	
