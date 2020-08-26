@@ -136,7 +136,7 @@ and verifying macros.
 There are two equivalent ways to quote a form either with `quote` or with `'`. 
 They prevent the quoted form from being evaluated.
 
-Reqular quotes work recursively with any kind of forms and types: strings, maps, lists, vectors…
+Regular quotes work recursively with any kind of forms and types: strings, maps, lists, vectors…
 
 ```clojure
 '(a :a 1)  ; => (a :a 1)
@@ -158,8 +158,8 @@ Reqular quotes work recursively with any kind of forms and types: strings, maps,
 '{:a (1 2 3) b (c d "x")}   ; => {:a (1 2 3) b (c d "x")}
 ```
 
-With it we can write our first macro. The `when` macro evaluates a _test_ predicate. 
-If logical _true_, it evaluates the body in an implicit _do_.
+With quotes in our toolbox we can write our first macro. The `when` macro evaluates 
+a _test_ predicate. If logical _true_, it evaluates the _body_ in an implicit _do_.
 
 ```clojure
 (defmacro when [test form]
@@ -184,28 +184,75 @@ At macro expansion time `(when true (println 100))` is transformed to
 
 ### Syntax Quote / Unquote
 
-_Syntax quotes_ allow writing macros in a more elegant way regarding evaluation 
-rules at macro expansion time.
+_Syntax quotes_  (a backquote ` ``) supress evaluation of the form that 
+follows it and all the nested forms. It is possible to  _unquote_  part of 
+the form that is quoted with `~`. Unquoting allows you to evaluate parts of 
+the  _syntax quoted_  expression.
+
+Without evaluation:
+
+```clojure
+`(16 17 (inc 17))  ; => (16 17 (inc 17))
+```
+
+With evaluation:
+
+```clojure
+`(16 17 ~(inc 17))  ; => (16 17 18)
+```
+
+```clojure
+`(16 17 ~(map inc [16 17]))  ; => (16 17 (17 18))
+```
+
+_Syntax quotes_  allow writing macros in a more elegant way regarding evaluation 
+rules at macro expansion time:
 
 ```clojure
 (defmacro when [test form]
    `(if ~test ~form nil))
 ```
 
-E.g.: at macro expansion time `(when true (println 100))` is transformed to 
-`(if true (println 100) nil)`
+At macro expansion time `(when true (println 100))` is transformed to 
+`(if true (println 100) nil)`.
 
-The syntax quote which is a backquote (`) supresses evaluation of the form that 
-follows it and all the nested forms. It is similar to templating languages where 
-parts of the template are _fixed_ and parts are _inserted_ (evaluated). 
-The syntax quote makes the form that follows it a _template_.
+The syntax quote is similar to templating languages where parts of the template 
+are  _fixed_  and parts are  _inserted_  (evaluated). 
+The syntax quote makes the form that follows it a  _template_ .
 
 The unquote which is a tilde (~) then is how parts of the template are forced to 
-be evaluated. It acts similarly to variable replacement in templates in templating 
-languages.
+be evaluated. It acts similarly to variable replacement in templates.
 
 
 ### Unquote-splicing
+
+Unquote evaluates to a collection of values and inserts the collection into the
+quoted form. But sometimes you want to unquote a list and insert its elements 
+(not the list) inside the quoted form. This is where `~@` (unquote-splicing) 
+comes to rescue:
+
+Without splicing:
+
+```clojure
+`(16 17 ~(map inc [16 17]))  ; => (16 17 (17 18))
+```
+
+With splicing:
+
+```clojure
+`(16 17 ~@(map inc [16 17]))  ; => (16 17 17 18)
+```
+
+Other examples:
+
+```clojure
+`(1 2 ~@#{1 2 3})  ; => (1 2 1 2 3)
+```
+
+```clojure
+`(1 2 ~@{:a 1 :b 2 :c 3})  ; => (1 2 [:a 1] [:b 2] [:c 3])
+```
+
 
 So far our macro accepts a single form. What happens if we're going to extend the macro
 to use a body with multiple forms?
