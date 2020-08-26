@@ -60,26 +60,10 @@ Macros are very powerful. But their power comes at a price: they are only availa
 read/compile time. The use of macros should be reserved for those special occasions 
 when their power is needed. Functions should always be preferred to macros.
 
-There are two circumstances where they are required.
+There are two circumstances where they are required:
 
 
-### 1. The code has to run at read/compile time
-
-Macros are very flexible in controlling which parts are evaluated at read/compile time
-or at runtime.
-
-This is a macro that is completely evaluated at read/compile time. 
-
-```clojure
-(defmacro build-time []
-  (str (time/local-date-time)))
-```
-
-Another example for this kind of macros is performing expensive calculations at 
-read/compile time as an optimization.
-
-
-### 2. Access to unevaluated arguments is required
+### 1. Access to unevaluated arguments is required
 
 Macros are useful to create new control flow constructs. 
 
@@ -103,7 +87,6 @@ The _form_ is evaluated eagerly in both cases whether the test predicate is _tru
 or _false_, because Venice evaluates expressions before passing them as arguments 
 to a function. Nevertheless the returned valued is in both cases correct.
 
-
 **when implemented as a macro:**
 
 ```clojure
@@ -116,6 +99,26 @@ to a function. Nevertheless the returned valued is in both cases correct.
 | expr   | `(when true (do (print 99) 3))` | `(when false (do (print 99) 3))` |
 | stdout | `99`                          |                               |
 | return | `3`                           | `nil`                          |
+
+Now everything is fine. Macros can postpone the evaluation of the macro arguments
+to the time the expanded macro body is evaluated whereas functions evaluate its
+arguments eagerly.
+
+
+### 2. The code has to run at read/compile time
+
+Macros are very flexible in controlling which parts are evaluated at read/compile time
+or at runtime.
+
+This is a macro that is completely evaluated at read/compile time. 
+
+```clojure
+(defmacro build-time []
+  (str (time/local-date-time)))
+```
+
+Another example for this kind of macros is performing expensive calculations at 
+read/compile time as an optimization.
 
 
 ## Toolbox
@@ -184,7 +187,7 @@ At macro expansion time `(when true (println 100))` is transformed to
 
 ### Syntax Quote / Unquote
 
-_Syntax quotes_  (a backquote ` ``) supress evaluation of the form that 
+_Syntax quotes_  (a backquote (`)) supress evaluation of the form that 
 follows it and all the nested forms. It is possible to  _unquote_  part of 
 the form that is quoted with `~`. Unquoting allows you to evaluate parts of 
 the  _syntax quoted_  expression.
