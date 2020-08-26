@@ -139,7 +139,7 @@ Example 2:
   (->> (map #(* 10 %) ls)
        (take 40)     
        (take 2)
-       (doall)))
+       (doall))
 
   ; /1/:
   ;   realized 1

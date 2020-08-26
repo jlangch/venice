@@ -93,7 +93,7 @@ Based on the Java type _BigDecimal_.
 Based on the Java type _BigInteger_.
 
 ```clojure
-(+ 1.0N 2.0N)
+(+ 1N 2N)
 ```
 
 ### type coercion
