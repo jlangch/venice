@@ -70,7 +70,7 @@ The destructured collection must not be of same size as the number of binding na
 (do
    (def line [[5 10] [10 20]])
    (let [[[x1 y1][x2 y2]] line]
-      (printf "Line from (%d,%d) to (%d,%d)" x1 y1 x2 y2))
+      (printf "Line from (%d,%d) to (%d,%d)%n" x1 y1 x2 y2))
       ;=> "Line from (5,10) to (10,20)"
 )
 ```

@@ -55,9 +55,10 @@ The value of the last expression is returned. If the condition is
 false, nil is returned.
 
 ```clojure
-(when (pos? x)
-  (println x "is positive")
-  x)
+(let [x 6]
+  (when (pos? x)
+    (println x "is positive")
+   x))
 ```
 
 ## cond

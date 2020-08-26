@@ -364,13 +364,13 @@ Keyword as dispatch function:
   (defn rect [w h] {:shape :rect, :width w, :height h})
   (defn circle [radius] {:shape :circle, :radius radius})
 
-  (defmulti area :shape)
-  (defmethod area :rect [r] (* (:width r) (:height r)))
-  (defmethod area :circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
+  (defmulti area2 :shape)
+  (defmethod area2 :rect [r] (* (:width r) (:height r)))
+  (defmethod area2 :circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
     
-  (area (rect 4 13))  ; -> 52
+  (area2 (rect 4 13))  ; -> 52
   
-  (area (circle 12))  ; -> 452.3893421169302
+  (area2 (circle 12))  ; -> 452.3893421169302
 )
 ```
 

@@ -22,6 +22,6 @@ See [Semantic Versioning](http://semver.org) on the WEB
    (semver/equal? "1.1.0" "1.1.0")
    (semver/equal? (semver/parse "1.1.0") "1.1.0")
    (semver/older? "1.1.0" "1.2.3")
-   (semver/older? "1.1.0" (semver/parse "1.2.3"))
+   (semver/older? "1.1.0" (semver/parse "1.2.3")))
 ```
 

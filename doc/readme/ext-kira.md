@@ -65,7 +65,7 @@ Example of use:
 (kira/eval "Hello <%= name %>" {:name "Bob"})
 
 (kira/eval "Hello <%= name1 %> and <%= name2 %>" 
-           {:name1 "Bob" name2 "Alice"})
+           {:name1 "Bob" :name2 "Alice"})
 
 (kira/eval "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>" 
            {:names ["Bob" "Alice"]})
