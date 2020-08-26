@@ -464,15 +464,15 @@ Applied to our macro ...
      ret#))
 ```
 
-... and expanding it with `macroexpand-all`, it shows how the problem is solved 
-now:
+... and expanding it with `macroexpand-all`
+
 
 ```clojure
 (macroexpand-all '(let [start 1 end 2] 
                     (time-3 (+ start end))))
 ```
 
-results to
+... it results to
 
 ```clojure
 (let [start 1 end 2] 
@@ -482,6 +482,9 @@ results to
      (printf "Elapsed time: %s%n" (- end__91__auto start__89__auto)) 
      ret__90__auto))
 ```
+
+... showing how the problem is solved 
+
 
 
 ### Limitations of auto generated symbols
@@ -496,7 +499,9 @@ Auto generated symbols are not working with nested _syntax quotes_:
 ```
 
 Because x# is going to expand to a different _gensym_ in the two different 
-contexts. To work around this explicitly create a symbol name with `gensym`:
+contexts. 
+
+To work around this explicitly create a symbol name with `gensym`:
 
 ```clojure
 (let [x-sym (gensym "x")]
