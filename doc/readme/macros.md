@@ -4,7 +4,7 @@
 * [Overview](#overview)
 * [Macros vs Functions](#macros-vs-functions)
 * [When to use Macros](#when-to-use-macros)
-* [Toolbox](#toolbox)
+* [The Macro toolbox](#the-macro-toolbox)
 * [Macro Hygiene](#macro-hygiene)
 
 
@@ -121,7 +121,7 @@ Another example for this kind of macros is performing expensive calculations at
 read/compile time as an optimization.
 
 
-## Toolbox
+## The Macro toolbox
 
 The Venice _Reader_ provides a few special forms to deal with macros:
 
@@ -161,8 +161,8 @@ Regular quotes work recursively with any kind of forms and types: strings, maps,
 '{:a (1 2 3) b (c d "x")}   ; => {:a (1 2 3) b (c d "x")}
 ```
 
-With quotes in our toolbox we can write our first macro. The `when` macro evaluates 
-a _test_ predicate. If logical _true_, it evaluates the _body_ in an implicit _do_.
+With _quotes_ in our toolbox we can write our first macro. The `when` macro evaluates 
+a _test_ predicate. If logical _true_, it evaluates the _body_ .
 
 ```clojure
 (defmacro when [test form]
@@ -187,7 +187,7 @@ At macro expansion time `(when true (println 100))` is transformed to
 
 ### Syntax Quote / Unquote
 
-_Syntax quotes_  (a backquote (`)) supress evaluation of the form that 
+_Syntax quotes_  (a backquote) supress evaluation of the form that 
 follows it and all the nested forms. It is possible to  _unquote_  part of 
 the form that is quoted with `~`. Unquoting allows you to evaluate parts of 
 the  _syntax quoted_  expression.
@@ -331,7 +331,11 @@ expands all macros in a form.
 ```
 
 ```clojure
-(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))
+(macroexpand-all '(let [n 5] 
+                    (cond 
+                      (< n 0) -1 
+                      (> n 0)  1 
+                      :else    0)))
      
 ; expanded   
 (let [n 5] 
@@ -357,8 +361,8 @@ Let's rebuild the macro:
 ```clojure
 (defmacro time-1 [expr]
   `(let [start (nano-time)
-         ret ~expr
-         end (nano-time)]
+         ret   ~expr
+         end   (nano-time)]
      (printf "Elapsed time: %s%n" (- end start))
      ret))
 ```
@@ -405,8 +409,8 @@ results to
 ```clojure
 (let [start 1 end 2] 
   (let [start (nano-time) ; 'start' is shadowing the outer 'start'
-        ret (+ start end)  
-        end (nano-time)] 
+        ret   (+ start end)  
+        end   (nano-time)] 
      (printf "Elapsed time: %s%n" (- end start)) 
      ret))
 ```
@@ -426,11 +430,11 @@ The `(gensym)` function lets you  manually create safe symbol names:
 ```clojure
 (defmacro time-2 [expr]
   (let [start (gensym "start__")
-        ret (gensym "ret__")
-        end (gensym "end__")]
+        ret   (gensym "ret__")
+        end   (gensym "end__")]
     `(let [~start (nano-time)
-           ~ret ~expr
-           ~end (nano-time)]
+           ~ret   ~expr
+           ~end   (nano-time)]
        (printf "Elapsed time: %s%n" (- ~end ~start))
        ~ret)))
 ```
@@ -442,15 +446,25 @@ By suffixing a symbol with a `#` within a _syntax quote_, Venice will
 create safe var names automatically while expanding the macro:
 
 ```clojure
+`(aa#)  ; => (aa__28__auto)
+```
+
+```clojure
+`{:a a# :b b# :c b#}  ; => {:a a__31__auto :b b__32__auto :c b__32__auto}
+```
+
+Applied to our macro ...
+
+```clojure
 (defmacro time-3 [expr]
   `(let [start# (nano-time)
-         ret# ~expr
-         end# (nano-time)]
+         ret#   ~expr
+         end#   (nano-time)]
      (printf "Elapsed time: %s%n" (- end# start#))
      ret#))
 ```
 
-Expanding the call with `macroexpand-all` shows how the problem is solved 
+... and expanding it with `macroexpand-all`, it shows how the problem is solved 
 now:
 
 ```clojure
@@ -463,8 +477,8 @@ results to
 ```clojure
 (let [start 1 end 2] 
    (let [start__89__auto (nano-time) 
-         ret__90__auto (+ start end) 
-         end__91__auto (nano-time)] 
+         ret__90__auto   (+ start end) 
+         end__91__auto   (nano-time)] 
      (printf "Elapsed time: %s%n" (- end__91__auto start__89__auto)) 
      ret__90__auto))
 ```
