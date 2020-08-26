@@ -475,7 +475,7 @@ public class VeniceInterpreter implements Serializable  {
 
 					final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
 																.withMeta(name.getMeta());
-					env.setGlobal(new Var(name, multiFn, false));
+					env.setGlobal(new Var(name, multiFn, true));
 					return multiFn;
 				}
 				
