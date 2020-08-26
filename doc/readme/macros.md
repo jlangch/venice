@@ -133,12 +133,40 @@ and verifying macros.
 
 ### Quote
 
+There are two equivalent ways to quote a form either with `quote` or with `'`. 
+They prevent the quoted form from being evaluated.
+
+Reqular quotes work recursively with any kind of forms and types: strings, maps, lists, vectors…
+
+```clojure
+'(a :a 1)  ; => (a :a 1)
+```
+
+```clojure
+(quote (a :a 1))  ; => (a :a 1)
+```
+
+```clojure
+'(+ 1 2)  ; => (+ 1 2)
+```
+
+```clojure
+'(a (b (c d (+ 1 2))))  ; => (a (b (c d (+ 1 2))))
+```
+
+```clojure
+'{:a (1 2 3) b (c d "x")}   ; => {:a (1 2 3) b (c d "x")}
+```
+
+With it we can write our first macro. The `when` macro evaluates a _test_ predicate. 
+If logical _true_, it evaluates the body in an implicit _do_.
+
 ```clojure
 (defmacro when [test form]
    (list 'if test form nil))
 ```
 
-E.g.: at macro expansion time `(when true (println 100))` is transformed to 
+At macro expansion time `(when true (println 100))` is transformed to 
 `(if true (println 100) nil)`
 
 
@@ -150,6 +178,8 @@ E.g.: at macro expansion time `(when true (println 100))` is transformed to
 
 * `nil` does not need to be quoted either it evaluates to itself. You can quote
   it though, but it makes the macro less readable.
+
+* The macro expansion can be tested with `(macroexpand-all '(when true (println 100)))`
 
 
 ### Syntax Quote / Unquote

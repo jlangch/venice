@@ -544,6 +544,11 @@
           expression is true. Note that, unlike cond branching, cond-> \
           threading does not short circuit after the first true test \
           expression.
+
+          It is useful in situations where you want selectively assoc, \
+          update, or dissoc something from a map.
+             (cond-> m
+                (some-pred? q)   (assoc :key :value))
           """
      :examples (list
           """
