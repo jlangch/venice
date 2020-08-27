@@ -27,6 +27,7 @@
 ## Class Loading
 
 [Dynamic Class Reloading](http://tutorials.jenkov.com/java-reflection/dynamic-class-loading-reloading.html)
+[Class Loader](https://medium.com/@isuru89/java-a-child-first-class-loader-cbd9c3d0305)
 
 
 ## Java Tools
