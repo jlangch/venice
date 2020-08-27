@@ -46,6 +46,7 @@ import org.jline.utils.InfoCmp.Capability;
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
+import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
@@ -230,6 +231,11 @@ public class REPL {
 				
 				try {
 					line = reader.readLine(prompt, null, (MaskingCallback)null, null);
+				}
+				catch (ParseError ex) {
+					printer.printex("error", ex);
+					history.add(reader.getBuffer().toString());
+					line = null;
 				}
 				catch (UserInterruptException ex) {
 					// gracefully handle ctrl-c when reading a line

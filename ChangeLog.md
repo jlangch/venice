@@ -41,6 +41,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   predicate. E.g.:  `(transduce (filter #{1 3 5 7 9}) conj [1 2 3 4 5 6])`
 - an edge case with complex macro bodies
 - a problem with legend/series styling in the 'xchart' extension module
+- REPL to add input that caused a ParseError to the command history to be available
+  for repeated correction.
 
 ### Deprecated
 
