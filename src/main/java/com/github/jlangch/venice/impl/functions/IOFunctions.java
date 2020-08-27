@@ -89,14 +89,19 @@ public class IOFunctions {
 				"io/file",
 				VncFunction
 					.meta()
-					.arglists("(io/file path) (io/file parent child)")
+					.arglists(
+						"(io/file path)",
+						"(io/file parent child)",
+						"(io/file parent child & children)")
 					.doc(
-						"Returns a java.io.File. path, parent, may be a file or a string (file path) " +
-						"child must be a string")
+						"Returns a java.io.File from file path, or from a parent path " +
+						"and one or multiple children. The path and parent may be a file or a string " +
+						"(file path), child and children must be strings.")
 					.examples(
 						"(io/file \"/temp/test.txt\")",
 						"(io/file \"/temp\" \"test.txt\")",
 						"(io/file \"/temp\" \"test\" \"test.txt\")",
+						"(io/file (io/file \"/temp\") \"test\" \"test.txt\")",
 						"(io/file (. :java.io.File :new \"/temp/test.txt\"))")
 					.build()
 		) {
@@ -567,7 +572,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/delete-file-on-exit f)")
-					.doc("Deletes a file on JVM exit. f must be a file or a string (file path).")
+					.doc("Deletes a file f on JVM exit. f must be a file or a string (file path).")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -603,13 +608,15 @@ public class IOFunctions {
 				"io/list-files",
 				VncFunction
 					.meta()
-					.arglists("(io/list-files dir filterFn?)")
+					.arglists(
+						"(io/list-files dir)",
+						"(io/list-files dir filter-fn)")
 					.doc(
 						"Lists files in a directory. dir must be a file or a string (file path). " +
-						"filterFn is an optional filter that filters the files found. The filter " +
-						"gets a java.io.File as argument. \n\n" +
-						"(io/list-files /tmp) \n" +
-						"(io/list-files /tmp #(io/file-ext? % \".log\"))")
+						"filter-fn is an optional filter that filters the files found. The filter " +
+						"gets a java.io.File as argument. Returns files as java.io.File.\n\n" +
+						"(io/list-files \"/tmp\") \n" +
+						"(io/list-files \"/tmp\" #(io/file-ext? % \".log\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -650,13 +657,16 @@ public class IOFunctions {
 				"io/list-file-tree",
 				VncFunction
 					.meta()
-					.arglists("(io/list-file-tree dir filterFn?)")
+					.arglists(
+						"(io/list-file-tree dir)",
+						"(io/list-file-tree dir filter-fn)")
 					.doc(
 						"Lists all files in a directory tree. dir must be a file or a " +
-						"string (file path). filterFn is an optional filter that filters " + 
-						"the files found. The filter gets a java.io.File as argument.\n\n" +
-						"(io/list-file-tree /tmp) \n" +
-						"(io/list-file-tree /tmp #(io/file-ext? % \".log\"))")
+						"string (file path). filter-fn is an optional filter that filters " + 
+						"the files found. The filter gets a java.io.File as argument. " +
+						"Returns files as java.io.File.\n\n" +
+						"(io/list-file-tree \"/tmp\") \n" +
+						"(io/list-file-tree \"/tmp\" #(io/file-ext? % \".log\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -702,7 +712,8 @@ public class IOFunctions {
 					.arglists("(io/list-files-glob dir glob)")
 					.doc(
 						"Lists all files in a directory that match the glob pattern. " +
-					    "dir must be a file or a string (file path). \n\n" +
+					    "dir must be a file or a string (file path). " +
+					    "Returns files as java.io.File.\n\n" +
 						"(io/list-files-glob \".\" \"sample*.txt\".")
 					.build()
 		) {
@@ -1003,7 +1014,7 @@ public class IOFunctions {
 				"io/slurp-lines",
 				VncFunction
 					.meta()
-					.arglists("(io/slurp-lines file & options)")
+					.arglists("(io/slurp-lines f & options)")
 					.doc(
 						"Read all lines from f. f may be a file, a string file path, " +
 						"a Java InputStream, or a Java Reader. \n\n" +
@@ -1168,7 +1179,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/spit f content & options)")
 					.doc(
-						"Opens f, writes content, and then closes f. " +
+						"Opens file f, writes content, and then closes f. " +
 						"f may be a file or a string (file path). " +
 						"The content may be a string or a bytebuf.\n\n" +
 						"Options: \n" +
@@ -1445,7 +1456,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/slurp-stream is & options)")
 					.doc(
-						"Slurps binary or string data from a Java InputStream. " +
+						"Slurps binary or string data from a Java InputStream is. " +
 						"Supports the option :binary to either slurp binary or string data. " +
 						"For string data an optional encoding can be specified.\n\n" +
 						"Options: \n" +
@@ -1601,7 +1612,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")
 					.doc(
-						"Wraps an OutputStream with a BufferedWriter using an optional " +
+						"Wraps an OutputStream os with a BufferedWriter using an optional " +
 						"encoding (defaults to :utf-8).")
 					.examples(
 						"(do                                                         \n" +
@@ -1639,7 +1650,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/wrap-os-with-print-writer os encoding?)")
 					.doc(
-						"Wraps an OutputStream with a PrintWriter using an optional " +
+						"Wraps an OutputStream os with a PrintWriter using an optional " +
 						"encoding (defaults to :utf-8).")
 					.examples(
 						"(do                                                      \n" +
@@ -1676,7 +1687,7 @@ public class IOFunctions {
 						.meta()
 						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")
 						.doc(
-							"Wraps an InputStream with a BufferedReader using an optional " +
+							"Wraps an InputStream is with a BufferedReader using an optional " +
 							"encoding (defaults to :utf-8).")
 						.examples(
 							"(do                                                                          \n" +
