@@ -32,6 +32,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - hex long literals: `0x00A020FF`
 - macros `cond->` and `cond->>`
 - documentation for double/decimal literals in scientific notation
+- the possibility to redefine a `defmethod` definition like `defn` does
 
 ### Fixed
 
