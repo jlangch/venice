@@ -178,10 +178,13 @@ public class Reader {
 							new BigDecimal(butlast(sToken)), 
 							MetaUtil.toMeta(token));
 				
-			case BIGINT:
+			case BIGINT: {
+				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncBigInteger(
-							new BigInteger(butlast(sToken).replaceAll("_", "")), 
+							hex ? new BigInteger(butlast(sToken.substring(2)).replaceAll("_", ""), 16)
+								: new BigInteger(butlast(sToken).replaceAll("_", "")), 
 							MetaUtil.toMeta(token));
+			}
 				
 			case STRING: {
 					final String s = unescapeAndDecodeUnicode(
@@ -389,25 +392,10 @@ public class Reader {
 					}
 					else if (first == '0' && (second == 'x' || second == 'X')) {
 						// hex: 0x00EF56AA
-						final char lastCh = sToken.charAt(sToken.length()-1);
-						return lastCh == 'I' ? AtomType.INTEGER : AtomType.LONG; 
+						return classifyNumericToken(sToken); 
 					}
 					else if (Character.isDigit(first) || (first == '-' && Character.isDigit(second))) {
-						final char lastCh = sToken.charAt(sToken.length()-1);
-						if (lastCh == 'I') {
-							return AtomType.INTEGER;
-						}
-						else if (lastCh == 'M') {
-							return AtomType.DECIMAL;
-						}
-						else if (lastCh == 'N') {
-							return AtomType.BIGINT;
-						}
-						else {
-							return sToken.indexOf('.') > 0 
-										? AtomType.DOUBLE 
-										: AtomType.LONG;
-						}
+						return classifyNumericToken(sToken); 
 					}
 					else {
 						switch(sToken) {
@@ -547,6 +535,23 @@ public class Reader {
 		return s.substring(0, s.length()-1);
 	}
 	
+	private static AtomType classifyNumericToken(final String sToken) {
+		final char lastCh = sToken.charAt(sToken.length()-1);
+		if (lastCh == 'I') {
+			return AtomType.INTEGER;
+		}
+		else if (lastCh == 'M') {
+			return AtomType.DECIMAL;
+		}
+		else if (lastCh == 'N') {
+			return AtomType.BIGINT;
+		}
+		else {
+			return sToken.indexOf('.') > 0 
+						? AtomType.DOUBLE 
+						: AtomType.LONG;
+		}
+	}
 	
 	
 	private final String filename;
