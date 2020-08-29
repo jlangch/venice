@@ -5237,7 +5237,8 @@ public class CoreFunctions {
 						"(nfirst '() 2)",
 						"(nfirst '(1) 2)",
 						"(nfirst '(1 2 3) 2)",
-						"(nfirst \"abcdef\" 2)")
+						"(nfirst \"abcdef\" 2)",
+						"(nfirst (lazy-seq 1 #(+ % 1)) 4)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5262,6 +5263,10 @@ public class CoreFunctions {
 					return list.isEmpty()
 							? VncList.empty()
 							: VncList.ofList(list.getList().subList(0, n));
+				}
+				else if (Types.isVncLazySeq(coll)) {
+					final VncLazySeq list = (VncLazySeq)args.first();
+					return VncList.ofList(list.getList().subList(0, n));
 				}
 				else if (Types.isVncMutableList(coll)) {
 					final VncMutableList list = (VncMutableList)args.first();
