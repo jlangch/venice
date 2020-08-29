@@ -180,7 +180,7 @@ public class Reader {
 				
 			case BIGINT:
 				return new VncBigInteger(
-							new BigInteger(butlast(sToken)), 
+							new BigInteger(butlast(sToken).replaceAll("_", "")), 
 							MetaUtil.toMeta(token));
 				
 			case STRING: {
