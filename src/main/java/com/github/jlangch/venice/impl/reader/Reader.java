@@ -156,7 +156,7 @@ public class Reader {
 				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncInteger(
 							hex ? Integer.parseInt(sToken.substring(2, sToken.length()-1), 16)
-								: Integer.parseInt(butlast(sToken)), 
+								: Integer.parseInt(butlast(sToken).replaceAll("_", "")), 
 							MetaUtil.toMeta(token));
 			}
 				
@@ -164,7 +164,7 @@ public class Reader {
 				final boolean hex = isHexNumberLiteral(sToken);
 				return new VncLong(
 							hex ? Long.parseLong(sToken.substring(2), 16)
-								: Long.parseLong(sToken),
+								: Long.parseLong(sToken.replaceAll("_", "")),
 							MetaUtil.toMeta(token));
 			}
 				
