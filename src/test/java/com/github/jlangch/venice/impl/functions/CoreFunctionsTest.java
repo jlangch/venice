@@ -1777,8 +1777,25 @@ public class CoreFunctionsTest {
 	public void test_interleave() {
 		final Venice venice = new Venice();
 		
+		assertEquals("(:a 1 :b 2)", venice.eval("(str (interleave [:a :b] [1 2]))"));
 		assertEquals("(:a 1 :b 2)", venice.eval("(str (interleave [:a :b :c] [1 2]))"));
 		assertEquals("(:a 1 :b 2)", venice.eval("(str (interleave [:a :b] [1 2 3]))"));
+
+		assertEquals("(:a 1 10 :b 2 20)", venice.eval("(str (interleave [:a :b] [1 2] [10 20]))"));
+		assertEquals("(:a 1 10 :b 2 20)", venice.eval("(str (interleave [:a :b :c] [1 2] [10 20]))"));
+		assertEquals("(:a 1 10 :b 2 20)", venice.eval("(str (interleave [:a :b] [1 2 3] [10 20 30]))"));
+		
+		// with lazy sequences 
+		assertEquals("(:a 10 :b 10)", venice.eval("(str (interleave [:a :b] (repeat 10)))"));
+		assertEquals("(10 :a 10 :b)", venice.eval("(str (interleave (repeat 10) [:a :b]))"));
+
+		assertEquals("(:a 1 10 :b 2 10)", venice.eval("(str (interleave [:a :b] [1 2] (repeat 10)))"));
+		assertEquals("(10 :a 1 10 :b 2)", venice.eval("(str (interleave (repeat 10) [:a :b] [1 2]))"));
+
+		assertEquals("(:a 1 10 :b 2 10)", venice.eval("(str (interleave [:a :b] [1 2 3] (repeat 10)))"));
+		assertEquals("(10 :a 1 10 :b 2)", venice.eval("(str (interleave (repeat 10) [:a :b] [1 2 3]))"));
+		
+		assertEquals("(:a 1 :b 2)", venice.eval("(str (interleave [:a :b] (lazy-seq 1 #(+ % 1))))"));
 	}
 	
 	@Test
@@ -3146,7 +3163,10 @@ public class CoreFunctionsTest {
 		// Long
 		assertEquals("()", venice.eval("(str (repeat 0 1))"));
 		assertEquals("(1 1 1 1)", venice.eval("(str (repeat 4 1))"));
-	
+
+		// Long (lazy seq)
+		assertEquals("(1 1 1 1)", venice.eval("(str (doall (take 4 (repeat 1))))"));
+
 		// Double
 		assertEquals("()", venice.eval("(str (repeat 0 1.0))"));
 		assertEquals("(1.0 1.0 1.0 1.0)", venice.eval("(str (repeat 4 1.0))"));

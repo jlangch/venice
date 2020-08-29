@@ -4803,31 +4803,45 @@ public class CoreFunctions {
 				"interleave",
 				VncFunction
 					.meta()
-					.arglists("(interleave c1 c2)", "(interleave c1 c2 & colls)")
-					.doc("Returns a collection of the first item in each coll, then the second etc.")
-					.examples("(interleave [:a :b :c] [1 2])")
+					.arglists(
+						"(interleave c1 c2)", 
+						"(interleave c1 c2 & colls)")
+					.doc(
+						"Returns a collection of the first item in each coll, then the " +
+						"second etc. \n" +
+						"Supports lazy sequences as long at least one collection " +
+						"is not a lazy sequence.")
+					.examples(
+						"(interleave [:a :b :c] [1 2])",
+						"(interleave [:a :b :c] (lazy-seq 1 #(+ % 1)))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity("interleave", args, 2);
 
-				int len = Coerce.toVncSequence(args.first()).size();
-				final List<VncSequence> lists = new ArrayList<>();
-				for(int ii=0; ii<args.size(); ii++) {
-					final VncSequence l = Coerce.toVncSequence(args.nth(ii));
-					lists.add(l);
-					len = Math.min(len, l.size());
+				final int numColl = args.size();
+				
+				final VncSequence[] seqs = new VncSequence[numColl];
+				for(int ii=0; ii<numColl; ii++) {
+					seqs[ii] = Coerce.toVncSequence(args.nth(ii));
 				}
 
 				final List<VncVal> result = new ArrayList<>();
 
-				for(int nn=0; nn<len; nn++) {
-					for(int ii=0; ii<lists.size(); ii++) {
-						result.add(lists.get(ii).nth(nn));
+				final VncVal[] tuple = new VncVal[numColl];
+				while(true) {
+					for(int ii=0; ii<numColl; ii++) {
+						if (seqs[ii].isEmpty()) {
+							return VncList.ofList(result);
+						}
+						else {
+							tuple[ii] = seqs[ii].first();
+							seqs[ii] = seqs[ii].rest();
+						}
 					}
+					
+					for(int ii=0; ii<numColl; ii++) result.add(tuple[ii]);
 				}
-
-				return VncList.ofList(result);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
