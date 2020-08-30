@@ -159,8 +159,9 @@ Example 2:
 ```
 
 
+## Recursive Lazy Sequences
 
-## Infinite Recursive Lazy Sequences
+### Infinite Recursive Lazy Sequences
 
 Lazy sequences can be recursively defined by cons'ing a recursive function that 
 returns a lazy sequence.
@@ -191,7 +192,7 @@ Lazy Fibonacci number sequence computed by a recursive function:
 ```
 
 
-## Finite Recursive Lazy Sequences
+### Finite Recursive Lazy Sequences
 
 Finite recursive lazy sequence (reading text lines from a Reader)
 
