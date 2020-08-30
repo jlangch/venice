@@ -190,8 +190,8 @@ Lazy Fibonacci number sequence computed by a recursive function:
   ; => (0 1 1 2 3 5 8)
 ```
 
-Finite recursive lazy sequence (reading text lines from a Reader)
 
+Finite recursive lazy sequence (reading text lines from a Reader)
 
 ```clojure
 (do
