@@ -60,6 +60,8 @@ Finite lazy sequence from a function returning `nil` to end the sequence
    (lazy-seq generate))
 ```
 
+_Note: recursive finite lazy sequences provide more elegant solutions_
+
 
 
 ## Realizing Lazy Sequences
@@ -232,7 +234,7 @@ Alternative finite recursive lazy sequence (reading text lines from a Reader)
 )
 ```
 
-Another example
+Another example:
 
 ```clojure
 (do
