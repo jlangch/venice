@@ -232,9 +232,9 @@ public class RegexFunctions {
 					.doc("Returns all regex matches")
 					.examples(
 						"(->> (regex/matcher \"\\\\d+\" \"672-345-456-3212\") \n" +
-						"     (regex/find-all)))                                 ",
+						"     (regex/find-all))                                 ",
 						"(->> (regex/matcher \"([^\\\"]\\\\S*|\\\".+?\\\")\\\\s*\" \"1 2 \\\"3 4\\\" 5\") \n" +
-						"     (regex/find-all)))                                 "
+						"     (regex/find-all))                                 "
 						)
 					.build()
 		) {		
