@@ -161,11 +161,13 @@ Example 2:
 
 ## Recursive Lazy Sequences
 
-### Infinite Recursive Lazy Sequences
-
 Lazy sequences can be recursively defined by cons'ing a recursive function that 
 returns a lazy sequence.
 
+
+### Infinite Recursive Lazy Sequences
+
+Lazy sequence with all positive numbers:
 
 ```clojure
 (do
