@@ -160,7 +160,7 @@ Example 2:
 
 
 
-## Recursive Lazy Sequences
+## Infinite Recursive Lazy Sequences
 
 Lazy sequences can be recursively defined by cons'ing a recursive function that 
 returns a lazy sequence.
@@ -190,6 +190,8 @@ Lazy Fibonacci number sequence computed by a recursive function:
   ; => (0 1 1 2 3 5 8)
 ```
 
+
+## Finite Recursive Lazy Sequences
 
 Finite recursive lazy sequence (reading text lines from a Reader)
 
@@ -224,6 +226,25 @@ Alternative finite recursive lazy sequence (reading text lines from a Reader)
 
   (doall (line-seq (io/buffered-reader "1\n2\n3\n4")))
   ; => ("1" "2" "3" "4")
+)
+```
+
+Another example
+
+```clojure
+(do
+  (defn finite-seq [x]
+    (when (> x 0)
+      (cons x #(finite-seq (dec x)))))
+      
+  (doall (take 3 (finite-seq 5)))
+  ; => (5 4 3)
+      
+  (doall (take 10 (finite-seq 5)))
+  ; => (5 4 3 2 1)
+      
+  (doall (finite-seq 5))
+  ; => (5 4 3 2 1)
 )
 ```
 
