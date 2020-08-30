@@ -190,6 +190,43 @@ Lazy Fibonacci number sequence computed by a recursive function:
   ; => (0 1 1 2 3 5 8)
 ```
 
+Finite recursive lazy sequence (reading text lines from a Reader)
+
+
+```clojure
+(do
+  (defn line-seq [rdr]
+    (when-let [line (. rdr :readLine)]
+      (cons line #(line-seq rdr))))
+
+  (doall (take 3 (line-seq (io/buffered-reader "1\n2\n3\n4"))))
+  ; => ("1" "2" "3")
+ 
+  (doall (take 10 (line-seq (io/buffered-reader "1\n2\n3\n4"))))
+  ; => ("1" "2" "3" "4")
+
+  (doall (line-seq (io/buffered-reader "1\n2\n3\n4")))
+  ; => ("1" "2" "3" "4")
+)
+```
+
+Alternative finite recursive lazy sequence (reading text lines from a Reader)
+
+```clojure
+(do
+  (defn line-seq [rdr]
+    (if-let [line (. rdr :readLine)]
+      (cons line #(line-seq rdr))
+      (lazy-seq)))
+
+  (doall (take 3 (line-seq (io/buffered-reader "1\n2\n3\n4"))))
+  ; => ("1" "2" "3")
+
+  (doall (line-seq (io/buffered-reader "1\n2\n3\n4")))
+  ; => ("1" "2" "3" "4")
+)
+```
+
 
 
 ## Functions working with Lazy Sequences

@@ -45,10 +45,10 @@ import io.vavr.control.Option;
 public class VncLazySeq extends VncSequence {
 
 	public VncLazySeq(final VncVal meta) {
-		this(io.vavr.collection.Stream.empty(), meta);
+		this(Stream.empty(), meta);
 	}
 
-	public VncLazySeq(final io.vavr.collection.Stream<VncVal> stream, final VncVal meta) {
+	public VncLazySeq(final Stream<VncVal> stream, final VncVal meta) {
 		super(meta == null ? Nil : meta);
 		this.value = stream;
 	}
@@ -67,7 +67,14 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	public static VncLazySeq cons(final VncVal head, final VncFunction tailFn, final VncVal meta) {
-		return new VncLazySeq(Stream.cons(head, () -> ((VncLazySeq)tailFn.apply(VncList.empty())).lazyStream()), meta);
+		return new VncLazySeq(Stream.cons(
+								head, 
+								() -> {
+									final VncVal v = tailFn.apply(VncList.empty());
+									return v == Nil ? Stream.empty()
+												    : ((VncLazySeq)v).lazyStream();
+								}), 
+							  meta);
 	}
 
 	public static VncLazySeq cons(final VncVal head, final VncLazySeq tail, final VncVal meta) {
@@ -86,7 +93,7 @@ public class VncLazySeq extends VncSequence {
 		return new VncLazySeq(Stream.fill(n, () -> fn.apply(VncList.empty())), meta);
 	}
 
-	public io.vavr.collection.Stream<VncVal> lazyStream() {
+	public Stream<VncVal> lazyStream() {
 		return value;
 	}
 	
@@ -98,7 +105,7 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncLazySeq emptyWithMeta() {
-		return new VncLazySeq(io.vavr.collection.Stream.empty(), getMeta());
+		return new VncLazySeq(Stream.empty(), getMeta());
 	}
 	
 	@Override
@@ -350,7 +357,7 @@ public class VncLazySeq extends VncSequence {
 	}
 	
 	public static VncLazySeq empty() {
-		return new VncLazySeq(io.vavr.collection.Stream.empty(), Nil);
+		return new VncLazySeq(Stream.empty(), Nil);
 	}
 
 	
@@ -364,5 +371,5 @@ public class VncLazySeq extends VncSequence {
 
     private static final long serialVersionUID = -1848883965231344442L;
  
-	private final io.vavr.collection.Stream<VncVal> value;
+	private final Stream<VncVal> value;
 }
