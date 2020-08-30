@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -1685,7 +1686,8 @@ public class IOFunctions {
 					"io/wrap-is-with-buffered-reader",
 					VncFunction
 						.meta()
-						.arglists("(io/wrap-is-with-buffered-reader is encoding?)")
+						.arglists(
+							"(io/wrap-is-with-buffered-reader is encoding?)")
 						.doc(
 							"Wraps an InputStream is with a BufferedReader using an optional " +
 							"encoding (defaults to :utf-8).")
@@ -1702,15 +1704,88 @@ public class IOFunctions {
 				public VncVal apply(final VncList args) {
 					assertArity("io/wrap-is-with-buffered-reader", args, 1, 2);
 
-					try {
-						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-						final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+					 if (Types.isVncJavaObject(args.first())) {
+						final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+						if (delegate instanceof InputStream) {
+							try {
+								final InputStream is = (InputStream)delegate;
+								final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+	
+								return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
+							}
+							catch (Exception ex) {
+								throw new VncException(ex.getMessage(), ex);
+							}
+						}
+					}
+					
+					throw new VncException(String.format(
+							"Function 'io/wrap-is-with-buffered-reader' requires an InputStream " +
+							"or a Reader. %s as is not allowed!",
+							Types.getType(args.first())));
+				}
 
-						return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
+
+	public static VncFunction io_buffered_reader =
+			new VncFunction(
+					"io/buffered-reader",
+					VncFunction
+						.meta()
+						.arglists(
+							"(io/buffered-reader is encoding?)",
+							"(io/buffered-reader rdr)")
+						.doc(
+							"Creates a BufferedReader from InputStream is with optional " +
+							"encoding (defaults to :utf-8), from a Reader or from a string.")
+						.examples(
+							"(do                                                                          \n" +
+							"   (import :java.io.ByteArrayInputStream)                                    \n" +
+							"   (let [data (byte-array [108 105 110 101 32 49 10 108 105 110 101 32 50])  \n" +
+							"         is (. :ByteArrayInputStream :new data)                              \n" +
+							"         rd (io/buffered-reader is :utf-8)]                                  \n" +
+							"      (println (. rd :readLine))                                             \n" +
+							"      (println (. rd :readLine))))                                             ",
+							"(do                                                                          \n" +
+							"   (let [rd (io/buffered-reader \"1\\n2\\n3\\n4\")]                          \n" +
+							"      (println (. rd :readLine))                                             \n" +
+							"      (println (. rd :readLine))))                                             ")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					assertArity("io/buffered-reader", args, 1, 2);
+
+					if (Types.isVncString(args.first())) {
+						return new VncJavaObject(
+								new BufferedReader(
+										new StringReader(((VncString)args.first()).getValue())));
 					}
-					catch (Exception ex) {
-						throw new VncException(ex.getMessage(), ex);
+					else if (Types.isVncJavaObject(args.first())) {
+						final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+						if (delegate instanceof InputStream) {
+							try {
+								final InputStream is = (InputStream)delegate;
+								final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+	
+								return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
+							}
+							catch (Exception ex) {
+								throw new VncException(ex.getMessage(), ex);
+							}
+						}
+						else if (delegate instanceof BufferedReader) {
+							return args.first();
+						}
+						else if (delegate instanceof Reader) {
+							return new VncJavaObject(new BufferedReader((Reader)delegate));
+						}
 					}
+					
+					throw new VncException(String.format(
+							"Function 'io/wrap-is-with-buffered-reader' requires an InputStream " +
+							"or a Reader. %s as is not allowed!",
+							Types.getType(args.first())));
 				}
 
 				private static final long serialVersionUID = -1848883965231344442L;
@@ -2037,6 +2112,7 @@ public class IOFunctions {
 					.add(io_wrap_os_with_buffered_writer)
 					.add(io_wrap_os_with_print_writer)
 					.add(io_wrap_is_with_buffered_reader)
+					.add(io_buffered_reader)
 					.add(io_mime_type)
 					.add(io_default_charset)
 					.add(io_load_classpath_resource)

@@ -1272,6 +1272,10 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
 		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
 
+		final DocSection reader = new DocSection("reader");
+		all.addSection(reader);
+		reader.addItem(getDocItem("io/buffered-reader"));
+
 		final DocSection http = new DocSection("http");
 		all.addSection(http);
 		http.addItem(getDocItem("io/download", false));
