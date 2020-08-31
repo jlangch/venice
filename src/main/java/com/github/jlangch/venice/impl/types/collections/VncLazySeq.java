@@ -171,7 +171,7 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public int size() {
-		throw new VncException("Not supported for lazy sequences");
+		throw new VncException("Getting the size of lazy sequences is not supported");
 	}
 	
 	@Override
@@ -216,7 +216,7 @@ public class VncLazySeq extends VncSequence {
 
 	@Override
 	public VncVal last() {
-		throw new VncException("Not supported for lazy sequences");
+		throw new VncException("Getting the last element of a lazy sequence is not supported");
 	}
 	
 	@Override
@@ -226,7 +226,7 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncLazySeq butlast() {
-		throw new VncException("Not supported for lazy sequences");
+		throw new VncException("Getting all but the last element of a lazy sequence is not supported");
 	}
 
 	@Override
