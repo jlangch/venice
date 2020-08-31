@@ -52,15 +52,8 @@ Finite lazy sequence from lists and vectors
 Finite lazy sequence from a function returning `nil` to end the sequence
 
 ```clojure
-(do
-   (def counter (atom 5))
-   (defn generate []
-           (swap! counter #(if (pos? %) (dec %) nil))
-           @counter)
-   (lazy-seq generate))
+(lazy-seq 1 #(if (< % 5) (inc %) nil)) ; => (...)
 ```
-
-_Note: recursive finite lazy sequences provide more elegant solutions_
 
 
 
@@ -85,7 +78,7 @@ Realizing a lazy sequence to a list is done by applying the `doall` function.
 (doall (lazy-seq 1 #(+ % 1))) ; continues realizing elements until the memory is exhausted
  ```
 
-Realizing a finite lazy sequence
+Realizing finite lazy sequences
 
 ```clojure
 (->> (lazy-seq rand-long)  ; infinite lazy seq producing random numbers
@@ -103,6 +96,21 @@ Realizing a finite lazy sequence
      (doall))
      
 ; => (30 40)
+```
+
+Realizing finite lazy sequences built from a functions returning `nil` to end the sequence
+
+```clojure
+(->> (lazy-seq 1 #(if (< % 5) (inc %) nil))
+     (drop 2)
+     (take 6)
+     (doall))
+; => (3 4 5)
+```
+
+```clojure
+(doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
+; => (1 2 3 4 5)
 ```
 
 

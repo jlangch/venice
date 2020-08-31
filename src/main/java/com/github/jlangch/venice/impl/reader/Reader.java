@@ -170,12 +170,12 @@ public class Reader {
 				
 			case DOUBLE:
 				return new VncDouble(
-							Double.parseDouble(sToken), 
+							Double.parseDouble(sToken.replaceAll("_", "")), 
 							MetaUtil.toMeta(token));
 				
 			case DECIMAL:
 				return new VncBigDecimal(
-							new BigDecimal(butlast(sToken)), 
+							new BigDecimal(butlast(sToken).replaceAll("_", "")), 
 							MetaUtil.toMeta(token));
 				
 			case BIGINT: {

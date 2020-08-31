@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
+import com.github.jlangch.venice.impl.util.vavr.Streams;
 
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
@@ -59,11 +60,11 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	public static VncLazySeq iterate(final VncFunction fn, final VncVal meta) {
-		return new VncLazySeq(Stream.iterate(() -> toOptional(fn.apply(VncList.empty()))), meta);
+		return new VncLazySeq(Streams.iterate(() -> toOptional(fn.apply(VncList.empty()))), meta);
 	}
 
 	public static VncLazySeq iterate(final VncVal seed, final VncFunction fn, final VncVal meta) {
-		return new VncLazySeq(Stream.iterate(seed, v -> fn.apply(VncList.of(v))), meta);
+		return new VncLazySeq(Streams.iterate(seed, v -> toOptional(fn.apply(VncList.of(v)))), meta);
 	}
 
 	public static VncLazySeq cons(final VncVal head, final VncFunction tailFn, final VncVal meta) {
@@ -366,10 +367,11 @@ public class VncLazySeq extends VncSequence {
 	}
 	
 
-	
+
+
 	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq");
 
-    private static final long serialVersionUID = -1848883965231344442L;
+	private static final long serialVersionUID = -1848883965231344442L;
  
 	private final Stream<VncVal> value;
 }
