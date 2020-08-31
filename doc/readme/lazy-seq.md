@@ -20,14 +20,14 @@ can be infinite. The evaluation of sequence elements is called realization.
 (theoretically) infinite lazy sequence with positive numbers
 
 ```clojure
-(lazy-seq 1 #(+ % 1)) ; => (...)
+(lazy-seq 1 inc) ; => (...)
  ```
 
 
 (theoretically) infinite lazy sequence with cons'ing a value
 
 ```clojure
-(cons -1 (lazy-seq 0 #(+ % 1))) ; => (...)
+(cons -1 (lazy-seq 0 inc)) ; => (...)
  ```
 
 
@@ -37,6 +37,8 @@ Empty lazy sequence
 
 ```clojure
 (lazy-seq) ; => (...)
+
+(empty? (lazy-seq)) ; => true
  ```
 
 Finite lazy sequence from lists and vectors
@@ -66,7 +68,9 @@ Single elements of a lazy sequence can be realized with one of the functions
 `first`, `second`, `third`, `fourth`, or `nth`
 
 ```clojure
-(first (lazy-seq 1 #(+ % 1))) ; => 1
+(first (lazy-seq 1 inc)) ; => 1
+
+(second (lazy-seq 1 inc)) ; => 2
  ```
 
 Realizing a lazy sequence to a list is done by applying the `doall` function. 
@@ -75,7 +79,7 @@ Realizing a lazy sequence to a list is done by applying the `doall` function.
 
 ```clojure
 ;;; !!! DO NOT RUN THIS !!!
-(doall (lazy-seq 1 #(+ % 1))) ; continues realizing elements until the memory is exhausted
+(doall (lazy-seq 1 inc)) ; continues realizing elements until the memory is exhausted
  ```
 
 Realizing finite lazy sequences
@@ -89,11 +93,11 @@ Realizing finite lazy sequences
 ```
 
 ```clojure
-(->> (lazy-seq 1 inc)
-     (map #(* 10 %))
-     (drop 2)
-     (take 2)
-     (doall))
+(->> (lazy-seq 1 inc)      ; infinite lazy seq of positive numbers
+     (map #(* 10 %))       ; map elements, no elements realized yet
+     (drop 2)              ; drop the first 2 elements producing a new infinite lazy seq
+     (take 2)              ; finite lazy seq with 2 elements not yet realized
+     (doall))              ; realize the 2 elements
      
 ; => (30 40)
 ```
@@ -206,6 +210,26 @@ Lazy Fibonacci number sequence computed by a recursive function:
 
 ### Finite Recursive Lazy Sequences
 
+
+Finite recursive lazy sequence producing a sequence of decremented numbers:
+
+```clojure
+(do
+  (defn number-seq [x]
+    (when (> x 0)
+      (cons x #(number-seq (dec x)))))
+      
+  (doall (take 3 (number-seq 5)))
+  ; => (5 4 3)
+      
+  (doall (take 10 (number-seq 5)))
+  ; => (5 4 3 2 1)
+      
+  (doall (number-seq 5))
+  ; => (5 4 3 2 1)
+)
+```
+
 Finite recursive lazy sequence (reading text lines from a Reader)
 
 ```clojure
@@ -239,25 +263,6 @@ Alternative finite recursive lazy sequence (reading text lines from a Reader)
 
   (doall (line-seq (io/buffered-reader "1\n2\n3\n4")))
   ; => ("1" "2" "3" "4")
-)
-```
-
-Another example:
-
-```clojure
-(do
-  (defn finite-seq [x]
-    (when (> x 0)
-      (cons x #(finite-seq (dec x)))))
-      
-  (doall (take 3 (finite-seq 5)))
-  ; => (5 4 3)
-      
-  (doall (take 10 (finite-seq 5)))
-  ; => (5 4 3 2 1)
-      
-  (doall (finite-seq 5))
-  ; => (5 4 3 2 1)
 )
 ```
 
