@@ -53,7 +53,7 @@ public class Streams {
      * based on the previous.
      *
      * @param seed The first value in the Stream
-     * @param f    A function to calculate the next value based on the previous
+     * @param fn   A function to calculate the next value based on the previous
      * @param <T>  value type
      * @return A new Stream
      */
