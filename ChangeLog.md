@@ -10,7 +10,7 @@ and this project adheres to
 
 
 
-## [1.9.0] - 2020-09-xx
+## [1.10.0] - 2020-10-xx
 
 ### Scope
 
@@ -23,7 +23,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.8.14] - 2020-08-xx
+## [1.9.0] - 2020-09-01
 
 ### Added
 
