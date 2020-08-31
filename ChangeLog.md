@@ -33,7 +33,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - macros `cond->` and `cond->>`
 - documentation for double/decimal literals in scientific notation
 - the possibility to redefine a `defmethod` definition like `defn` does
-- support for underscores in integer, long, and bigint literals. E.g.: `1_000_000`
+- support for underscores in number literals. E.g.: `1_000_000`
 
 ### Fixed
 
