@@ -20,6 +20,7 @@ can be infinite. The evaluation of sequence elements is called realization.
 (theoretically) infinite lazy sequence with positive numbers
 
 ```clojure
+; 1, 2, 3, 4, ...
 (lazy-seq 1 inc) ; => (...)
  ```
 
@@ -27,6 +28,7 @@ can be infinite. The evaluation of sequence elements is called realization.
 (theoretically) infinite lazy sequence with cons'ing a value
 
 ```clojure
+; -1, 0, 1, 2, 3, 4, ...
 (cons -1 (lazy-seq 0 inc)) ; => (...)
  ```
 
@@ -44,16 +46,19 @@ Empty lazy sequence
 Finite lazy sequence from lists and vectors
 
 ```clojure
+; 1, 2, 3, 4
 (lazy-seq '(1 2 3 4)) ; => (...)
  ```
 
 ```clojure
+; 1, 2, 3, 4
 (lazy-seq [1 2 3 4]) ; => (...)
  ```
 
 Finite lazy sequence from a function returning `nil` to end the sequence
 
 ```clojure
+; 1, 2, 3, 4, 5
 (lazy-seq 1 #(if (< % 5) (inc %) nil)) ; => (...)
 ```
 
@@ -71,6 +76,10 @@ Single elements of a lazy sequence can be realized with one of the functions
 (first (lazy-seq 1 inc)) ; => 1
 
 (second (lazy-seq 1 inc)) ; => 2
+
+(first (cons -1 (lazy-seq 0 #(+ % 1)))) ; => -1 
+
+(second (cons -1 (lazy-seq 0 #(+ % 1)))) ; => 0 
  ```
 
 Realizing a lazy sequence to a list is done by applying the `doall` function. 
