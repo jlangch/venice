@@ -1,0 +1,193 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2020 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Creates a Covid-19 chart representing Switzerlands rules for a 14 days
+;;;; quarantine.
+;;;;
+;;;; Switzerland requires people entering from a country having more than
+;;;; 60 Covid-19 cases per 100'000 people for the last 14 days to stay in
+;;;; a 10 days quarantine.
+
+
+(do
+  (load-module :xchart)
+
+  ;; https://www.worldometers.info/population/europe/
+  (def country-config
+    (ordered-map "Switzerland" { :population  8725700  :color :x-green      }
+                 "Romania"     { :population 19372000  :color :x-blue       }
+                 "Austria"     { :population  8955100  :color :x-purple     }
+                 "Hungary"     { :population  9684600  :color :x-orange     }
+                 "Germany"     { :population 83517000  :color :x-red        }
+                 "Italy"       { :population 60550000  :color :x-pink       }
+                 "France"      { :population 65129800  :color :x-light-blue }
+                 "Sweden"      { :population 10036300  :color :x-dark-gray  }
+                 "Quarantine"  { :population        0  :color :x-light-gray } ))
+
+  (def sample-days 14)
+  (def quarantine-case-limit 60)
+
+
+  ;; impure functions ------------------------------------------------ [start] -
+
+  (defn view [file]
+    (if (os-type? :mac-osx)
+      (do (sh "open" (str file)) nil)
+      (println "Viewing the chart" file "is not support on" (os-name))))
+
+  (defn save-chart [chart file]
+    (xchart/write-to-file chart :png 240 file))
+
+  (defn load-country-html-data [country]
+    (println "Loading cases for" country)
+    (io/download (str "https://www.worldometers.info/coronavirus/country/"
+                      (str/lower-case country)
+                      "/")))
+
+  (defn load-countries-html-data [countries]
+    ; returns a list of tuples [country html]
+    (map #(vector % (load-country-html-data %)) countries))
+
+  ;; impure functions -------------------------------------------------- [end] -
+
+
+  (defn color
+    ([r g b]   (. :java.awt.Color :new r g b))
+    ([r g b a] (. :java.awt.Color :new r g b a)))
+
+  (defn extract-html-cases-section [html]
+    ; extract the daily cases section from HTML page (javascript)
+    (->> (str/split-lines html)
+         (drop-while #(not (str/contains? % "'graph-cases-daily'" )))
+         (take-while #(not (str/contains? % "});" )))
+         (rest)
+         (butlast)))
+
+  (defn parse-date [date]
+    ; convert "Feb 02 to "2020 Feb 02" and parse it
+    (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
+
+  (defn extract-months [data]
+    ;;  categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]        },
+    (as-> data <>
+          (filter #(str/contains? % "categories: [") <>)
+          (first <>)
+          (regex/find-all (regex/matcher """["][A-Za-z0-9 ]+["]""" <>))
+          (map str/double-unquote <>)
+          (map parse-date <>)))
+
+  (defn extract-cases [data]
+    ;; data: [null,0,0,0,0,0,1,3,4,...,215,186,143,121],
+    (as-> data <>
+          (filter #(str/contains? % "data: [") <>)
+          (first <>)
+          (str/replace-all <> "null" "0")
+          (regex/find-all (regex/matcher "\\d+" <>))
+          (map long <>)))
+
+  (defn parse-cases [country html-cases-section]
+    (map vector (extract-months html-cases-section)
+                (extract-cases html-cases-section)))
+
+  (defn process-sample [country population data]
+    (let [line       (first data)
+          date       (first line)
+          cases      (second line)
+          tot        (reduce + (map second data))
+          avg-day    (/ tot (count data))
+          avg-norm   (/ tot (/ population 100000.0))]
+      [ date cases tot avg-day avg-norm ]))
+
+  (defn process [country population data]
+    (loop [d data tuples []]
+      (if (>= (count d) sample-days)
+        (recur (rest d) (conj tuples (process-sample country
+                                                     population
+                                                     (take sample-days d))))
+        tuples)))
+
+  (defn compute-country [country population html]
+    (->> (extract-html-cases-section html)
+         (parse-cases country)
+         (reverse)
+         (process country population)
+         (reverse)
+         (map #(vector (time/date (first %)) (nth % 4)))))
+
+  (defn compute-countries [country-html-data populations country-names]
+    (->> (map (fn [[country html]]
+                (let [population (get populations country)]
+                  (compute-country country population html)))
+              country-html-data)
+         (interleave country-names)
+         (apply ordered-map)))
+
+  (defn add-quarantine [country-data]
+    (let [sample     (get country-data "Switzerland")
+          first-day  (first (first sample))
+          last-day   (first (last sample))]
+      (assoc country-data
+             "Quarantine"
+             [ [ first-day quarantine-case-limit ]
+               [ last-day  quarantine-case-limit ] ])))
+
+  (defn series [country-data country-colors country]
+    (let [data (get country-data country)
+          col  (get country-colors country)]
+      { :x     (map first data)
+        :y     (map second data)
+        :style { :marker-type :none
+                 :line-color  col }}))
+
+  (defn render-chart [country-data country-colors]
+    (let [country-series (partial series country-data country-colors)]
+      (xchart/xy-chart
+         (ordered-map "Switzerland" (country-series "Switzerland")
+                      "Romania"     (country-series "Romania")
+                      "Austria"     (country-series "Austria")
+                      "Hungary"     (country-series "Hungary")
+                      "Germany"     (country-series "Germany")
+                      "Italy"       (country-series "Italy")
+                      "France"      (country-series "France")
+                      "Sweden"      (country-series "Sweden")
+                      "Quarantine"  (country-series "Quarantine"))
+         { :title "Covid-19 (~(str (time/local-date)))"
+           :width 2000
+           :height 500
+           :render-style :line
+           :x-axis { :title "Date" :date-pattern "MMM-dd" }
+           :y-axis { :title "Cases 14 days per 100'000" }
+           :theme :xchart } )))
+
+  (defn create-chart [country-html-data country-names]
+    (let [country-populations (map-vals :population country-config)
+          country-colors      (map-vals :color country-config)]
+      (-> (compute-countries country-html-data country-populations country-names)
+          (add-quarantine)
+          (render-chart country-colors))))
+
+  ;; scrape up the Covid-19 data from HTMl, create a chart, and view the chart
+  (let [chart-file    "covid-19.png"
+        country-names (remove #{"Quarantine"} (keys country-config))]
+    (-> (load-countries-html-data country-names)
+        (create-chart country-names)
+        (save-chart chart-file))
+    (view chart-file)))
