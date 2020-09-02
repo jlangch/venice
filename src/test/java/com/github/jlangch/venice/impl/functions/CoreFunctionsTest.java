@@ -2500,7 +2500,29 @@ public class CoreFunctionsTest {
 				"{1 :a 2 :b 3 :d}", 
 				venice.eval("(str (map-invert (sorted-map :a 1 :b 2 :c 3 :d 3)))"));
 	}
-	
+
+	@Test
+	public void test_map_keys() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{\"a\" 1 \"b\" 2 \"c\" 3}", 
+				venice.eval("(pr-str (map-keys name {:a 1 :b 2 :c 3}))"));
+
+		assertEquals(
+				"{\"a\" 1 \"b\" 2 \"c\" 3 \"d\" 4}", 
+				venice.eval("(pr-str (map-keys name (sorted-map :a 1 :b 2 :c 3 :d 4)))"));
+	}
+
+	@Test
+	public void test_map_vals() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{:a 2 :b 3 :c 4}", 
+				venice.eval("(pr-str (map-vals inc {:a 1 :b 2 :c 3}))"));
+	}
+
 	@Test
 	public void test_mapv() {
 		final Venice venice = new Venice();

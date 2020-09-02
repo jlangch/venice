@@ -663,6 +663,8 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("merge"));
 		map_modify.addItem(getDocItem("merge-with"));
 		map_modify.addItem(getDocItem("map-invert"));
+		map_modify.addItem(getDocItem("map-keys"));
+		map_modify.addItem(getDocItem("map-vals"));
 		
 		final DocSection map_nested = new DocSection("Nested");
 		maps.addSection(map_nested);

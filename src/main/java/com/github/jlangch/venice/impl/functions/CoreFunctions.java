@@ -4159,6 +4159,7 @@ public class CoreFunctions {
 					.examples(
 						"(some even? '(1 2 3 4))",
 						"(some even? '(1 3 5 7))",
+						"(some #{5} [1 2 3 4 5])",
 						"(some #(== 5 %) [1 2 3 4 5])",
 						"(some #(if (even? %) %) [1 2 3 4])")
 					.build()
@@ -6122,12 +6123,92 @@ public class CoreFunctions {
 					}
 
 					if (hasMore) {
-						result.add(VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry));
+						result.add(VncFunction.applyWithMeter(
+										fn, 
+										VncList.ofList(fnArgs), 
+										meterRegistry));
 						index += 1;
 					}
 				}
 
 				return VncVector.ofList(result);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction map_keys =
+		new VncFunction(
+				"map-keys",
+				VncFunction
+					.meta()
+					.arglists("(map-keys f m)")
+					.doc(
+						"Applys function f to the keys of the map m.")
+					.examples(
+						"(map-keys name {:a 1 :b 2 :c 3})")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("map-keys", args, 2);
+
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
+				final VncMap map = Coerce.toVncMap(args.second());
+
+				VncMap newMap = map.emptyWithMeta();
+				
+				for(VncMapEntry e : map.entries()) {
+					newMap = newMap.assoc(
+								VncList.of(
+									VncFunction.applyWithMeter(
+											fn, 
+											VncList.of(e.getKey()), 
+											meterRegistry),
+									e.getValue()));
+				}
+
+				return newMap;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction map_vals =
+		new VncFunction(
+				"map-vals",
+				VncFunction
+					.meta()
+					.arglists("(map-vals f m)")
+					.doc(
+						"Applys function f to the values of the map m.")
+					.examples(
+						"(map-vals inc {:a 1 :b 2 :c 3})",
+						"(map-vals :len {:a {:col 1 :len 10} :b {:col 2 :len 20} :c {:col 3 :len 30}})")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("map-vals", args, 2);
+
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
+				final VncMap map = Coerce.toVncMap(args.second());
+
+				VncMap newMap = map.emptyWithMeta();
+				
+				for(VncMapEntry e : map.entries()) {
+					newMap = newMap.assoc(
+								VncList.of(
+									e.getKey(),
+									VncFunction.applyWithMeter(
+											fn, 
+											VncList.of(e.getValue()), 
+											meterRegistry)));
+				}
+
+				return newMap;
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7267,6 +7348,8 @@ public class CoreFunctions {
 				.add(sort)
 				.add(sort_by)
 				.add(some)
+				.add(map_keys)
+				.add(map_vals)
 
 				.add(merge)
 				.add(merge_with)

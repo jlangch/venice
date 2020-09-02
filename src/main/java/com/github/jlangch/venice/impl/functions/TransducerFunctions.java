@@ -917,7 +917,8 @@ public class TransducerFunctions {
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(remove even? [1 2 3 4 5 6 7])",
-						"(remove #{3 5} '(1 3 5 7 9))")
+						"(remove #{3 5} '(1 3 5 7 9))",
+						"(remove #(= 3 %) '(1 2 3 4 5 6))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
