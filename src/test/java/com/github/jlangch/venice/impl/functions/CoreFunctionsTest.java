@@ -3123,11 +3123,46 @@ public class CoreFunctionsTest {
 	public void test_reduce_kv() {
 		final Venice venice = new Venice();
 
-		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (reduce-kv (fn [m k v] (assoc m k v)) (sorted-map ) {:a 1 :b 2 :c 3}))"));
+		assertEquals(
+				"{:a 1 :b 2 :c 3}", 
+				venice.eval(
+						"(str (reduce-kv (fn [m k v] (assoc m k v)) \n" +
+						"                (sorted-map)               \n" +
+						"                {:a 1 :b 2 :c 3}))"));
 		
-		assertEquals("{:a 2 :b 3 :c 4}", venice.eval("(str (reduce-kv (fn [m k v] (assoc m k (inc v))) (sorted-map ) {:a 1 :b 2 :c 3}))"));
+		assertEquals(
+				"{:a 2 :b 3 :c 4}",
+				venice.eval(
+						"(str (reduce-kv (fn [m k v] (assoc m k (inc v))) \n" +
+						"                (sorted-map)                     \n" +
+						"                {:a 1 :b 2 :c 3}))"));
 		 
-		assertEquals(6L, venice.eval("(reduce-kv (fn [x y z] (+ x z)) 0 {:a 1 :b 2 :c 3})"));
+		assertEquals(
+				6L, 
+				venice.eval(
+						"(reduce-kv (fn [x k v] (+ x v)) 0 {:a 1 :b 2 :c 3})"));
+		
+		assertEquals(
+				"{:c 10 :e 20 :b 30 :d 40 :a 50}", 
+				venice.eval(
+						"(str (reduce-kv (fn [m k v] (assoc m k (:len v)))   \n" + 
+						"           (ordered-map)                            \n" + 
+						"           (ordered-map :c {:col :red   :len 10}    \n" + 
+						"                        :e {:col :white :len 20}    \n" + 
+						"                        :b {:col :green :len 30}    \n" + 
+						"                        :d {:col :pink  :len 40}    \n" + 
+						"                        :a {:col :blue  :len 50} )))  "));
+		
+		assertEquals(
+				"{:a 50 :b 30 :c 10 :d 40 :e 20}", 
+				venice.eval(
+						"(str (reduce-kv (fn [m k v] (assoc m k (:len v)))   \n" + 
+						"           (sorted-map)                             \n" + 
+						"           (ordered-map :c {:col :red   :len 10}    \n" + 
+						"                        :e {:col :white :len 20}    \n" + 
+						"                        :b {:col :green :len 30}    \n" + 
+						"                        :d {:col :pink  :len 40}    \n" + 
+						"                        :a {:col :blue  :len 50} )))  "));
 	}
 
 	@Test

@@ -50,15 +50,11 @@ public class VncOrderedMap extends VncMap {
 		this((io.vavr.collection.LinkedHashMap<VncVal,VncVal>)null, meta);
 	}
 
-	public VncOrderedMap(final io.vavr.collection.Map<VncVal,VncVal> val) {
-		this(val, null);
-	}
-
-	public VncOrderedMap(final Map<VncVal,VncVal> vals) {
+	public VncOrderedMap(final java.util. Map<? extends VncVal,? extends VncVal> vals) {
 		this(vals, null);
 	}
 
-	public VncOrderedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+	public VncOrderedMap(final java.util.Map<? extends VncVal,? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.LinkedHashMap.ofAll(vals), meta);
 	}
 
@@ -67,7 +63,7 @@ public class VncOrderedMap extends VncMap {
 		if (val == null) {
 			value = io.vavr.collection.LinkedHashMap.empty();
 		}
-		else if (val instanceof io.vavr.collection.TreeMap) {
+		else if (val instanceof io.vavr.collection.LinkedHashMap) {
 			value = (io.vavr.collection.LinkedHashMap<VncVal,VncVal>)val;
 		}
 		else {

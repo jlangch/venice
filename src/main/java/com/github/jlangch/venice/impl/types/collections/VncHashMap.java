@@ -57,7 +57,7 @@ public class VncHashMap extends VncMap {
 		this(val, null);
 	}
 
-	public VncHashMap(final Map<? extends VncVal, ? extends VncVal> vals) {
+	public VncHashMap(final java.util.Map<? extends VncVal, ? extends VncVal> vals) {
 		this(vals, null);
 	}
 
@@ -70,7 +70,7 @@ public class VncHashMap extends VncMap {
 		if (val == null) {
 			value = io.vavr.collection.HashMap.empty();
 		}
-		else if (val instanceof io.vavr.collection.TreeMap) {
+		else if (val instanceof io.vavr.collection.HashMap) {
 			value = (io.vavr.collection.HashMap<VncVal,VncVal>)val;
 		}
 		else {

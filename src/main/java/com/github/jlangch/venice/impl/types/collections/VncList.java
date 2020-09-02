@@ -48,7 +48,7 @@ public class VncList extends VncSequence {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
 
-	protected VncList(final Collection<? extends VncVal> vals, final VncVal meta) {
+	protected VncList(final java.util.Collection<? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
 	}
 

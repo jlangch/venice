@@ -63,7 +63,7 @@ public class VncSortedSet extends VncSet {
 	}
 
 	
-	public static VncSortedSet ofAll(final Collection<? extends VncVal> val) {
+	public static VncSortedSet ofAll(final java.util.Collection<? extends VncVal> val) {
 		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
 	}
 	

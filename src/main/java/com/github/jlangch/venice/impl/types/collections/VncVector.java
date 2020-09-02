@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -50,7 +49,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 		this((io.vavr.collection.Seq<VncVal>)null, meta);
 	}
 
-	protected VncVector(final Collection<? extends VncVal> vals, final VncVal meta) {
+	protected VncVector(final java.util.Collection<? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
 	}
 

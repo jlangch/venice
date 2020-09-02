@@ -49,15 +49,11 @@ public class VncSortedMap extends VncMap {
 		this((io.vavr.collection.TreeMap<VncVal,VncVal>)null, meta);
 	}
 
-	public VncSortedMap(final io.vavr.collection.Map<VncVal,VncVal> val) {
-		this(val, null);
-	}
-
-	public VncSortedMap(final Map<VncVal,VncVal> vals) {
+	public VncSortedMap(final java.util.Map<? extends VncVal,? extends VncVal> vals) {
 		this(vals, null);
 	}
 
-	public VncSortedMap(final Map<VncVal,VncVal> vals, final VncVal meta) {
+	public VncSortedMap(final java.util.Map<? extends VncVal,? extends VncVal> vals, final VncVal meta) {
 		this(vals == null ? null : io.vavr.collection.TreeMap.ofAll(vals), meta);
 	}
 

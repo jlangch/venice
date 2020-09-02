@@ -6462,14 +6462,21 @@ public class CoreFunctions {
 						"and f is not called. Note that reduce-kv is supported on vectors, " +
 						"where the keys will be the ordinals.")
 					.examples(
-						"(reduce-kv (fn [x y z] (assoc x z y)) {} {:a 1 :b 2 :c 3})")
+						"(reduce-kv (fn [m k v] (assoc m v k)) \n" +
+						"           {}                         \n" +
+						"           {:a 1 :b 2 :c 3})",
+						"(reduce-kv (fn [m k v] (assoc m k (:col v))) \n" +
+						"           {}                                \n" +
+						"           {:a {:col :red   :len 10}         \n" +
+						"            :b {:col :green :len 20}         \n" +
+						"            :c {:col :blue  :len 30} } )")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity("reduce-kv", args, 3);
 
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
-				final List<VncMapEntry> values = Coerce.toVncHashMap(args.third()).entries();
+				final List<VncMapEntry> values = Coerce.toVncMap(args.third()).entries();
 
 				VncVal value = args.second();
 
