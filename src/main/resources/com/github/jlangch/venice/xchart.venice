@@ -219,6 +219,7 @@
      :yellow       (. :Color :YELLOW)
 
      :x-blue       (. :Color :new   0  55 255 180)
+     :x-light-blue (. :Color :new 200 230 255 180)
      :x-orange     (. :Color :new 255 172   0 180)
      :x-purple     (. :Color :new 128   0 255 180)
      :x-green      (. :Color :new   0 205   0 180)
