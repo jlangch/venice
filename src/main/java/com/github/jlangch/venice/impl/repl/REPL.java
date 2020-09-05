@@ -782,10 +782,12 @@ public class REPL {
 			final History history
 	) {
 		try {
-			history.purge();
 			printer.println("stdout", "Cleared REPL command history");
+			history.purge();
 		}
-		catch(IOException ex) {}	
+		catch(IOException ex) {
+			printer.println("stderr", "Failed to clear REPL command history!");
+		}	
 	}
 	
 	
