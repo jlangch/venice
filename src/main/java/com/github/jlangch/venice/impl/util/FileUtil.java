@@ -26,11 +26,19 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.FileException;
 
@@ -488,7 +496,71 @@ public class FileUtil {
 		return ext == null ? null : ext.toLowerCase();
 	}
 
+	public static boolean awaitFile(
+			final Path target, 
+			final long timeoutMillis,
+			final Set<WatchEvent.Kind<?>> events
+	) throws IOException, InterruptedException {
+		final Path name = target.getFileName();
+		final Path targetDir = target.getParent();
+		final long endWaitTime = System.currentTimeMillis() + timeoutMillis;
 
+		if (awaitFileEarlyReturnCheck(target, events)) {
+			return true;
+		}
+		
+		try (WatchService ws = FileSystems.getDefault().newWatchService()) {
+			targetDir.register(ws, events.toArray(new WatchEvent.Kind<?>[0]));
+			
+			// The file could have been created/deleted in the window between 
+			// the first awaitFileEarlyReturnCheck and Path.register
+			if (awaitFileEarlyReturnCheck(target, events)) {
+				return true;
+			}
+			
+			// Watch events in parent directory 
+			
+			WatchKey key;
+			while (true) {
+				long timeout = Math.max(1L, endWaitTime - System.currentTimeMillis());
+				key = ws.poll(timeout, TimeUnit.MILLISECONDS);
+
+				for (WatchEvent<?> event: key.pollEvents()) {
+					final Path p = (Path)event.context();
+					if (p.getFileName().equals(name)) {
+						return true;
+					}
+				}
+				
+				if (!key.reset()) {
+					break;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean awaitFileEarlyReturnCheck(
+			final Path target, 
+			final Set<WatchEvent.Kind<?>> watchEvents
+	) throws IOException, InterruptedException {
+		if (watchEvents.contains(StandardWatchEventKinds.ENTRY_CREATE)) {
+			// If path already exists, return early
+			if (Files.exists(target)) {
+				return true;
+			}
+		}
+		else if (watchEvents.contains(StandardWatchEventKinds.ENTRY_DELETE)) {
+			// If path does not exists, return early
+			if (!Files.exists(target)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private static void doRmDir(final File dir, final int level) {
 		if (level > MAX_DIR_LEVELS) {
 			throw new FileException("Reached max dir level (" + MAX_DIR_LEVELS + ")");

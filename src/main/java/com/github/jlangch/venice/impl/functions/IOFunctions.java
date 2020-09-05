@@ -53,10 +53,15 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -75,6 +80,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 
@@ -481,6 +487,78 @@ public class IOFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction io_await_for = 
+			new VncFunction(
+					"io/await-for", 
+					VncFunction
+						.meta()
+						.arglists("(io/await-for timeout time-unit file & modes)")		
+						.doc(
+							"Blocks the current thread until the file has been created, deleted, or " + 
+							"modified according to the passed modes {:created, :deleted, :modified}, " +
+							"or the timeout has elapsed. Returns logical false if returning due to " +
+							"timeout, logical true otherwise. \n" +
+							"Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
+						.build()
+			) {		
+				public VncVal apply(final VncList args) {
+					assertMinArity("io/await-for", args, 3);
+
+					JavaInterop.getInterceptor().validateVeniceFunction("io/await-for");
+
+					final long timeout = Coerce.toVncLong(args.first()).getValue();
+
+					final TimeUnit unit = toTimeUnit(Coerce.toVncKeyword(args.second()));
+
+					final long timeoutMillis =  unit.toMillis(Math.max(0,timeout));
+
+					final File file = convertToFile(
+											args.second(),
+											"Function 'io/await-for' does not allow %s as x").getAbsoluteFile();
+
+					
+					
+					final Set<WatchEvent.Kind<?>> events = new HashSet<>();
+					for(VncVal v : args.drop(3).getList()) {
+						final VncKeyword mode = Coerce.toVncKeyword(v);
+						switch(mode.getSimpleName()) {
+							case "created":	
+								events.add(StandardWatchEventKinds.ENTRY_CREATE);
+								break;
+							case "deleted":	
+								events.add(StandardWatchEventKinds.ENTRY_DELETE);
+								break;
+							case "modified":	
+								events.add(StandardWatchEventKinds.ENTRY_MODIFY);
+								break;
+							default:
+								throw new VncException(
+										String.format(
+												"Function 'io/await-for' invalid mode '%s'. Use one or "
+												 + "multiple of {:created, :deleted, :modified}",
+												mode.toString()));		
+						}
+					}
+					
+					try {
+						return VncBoolean.of(FileUtil.awaitFile(file.toPath(), timeoutMillis, events));
+					}
+					catch(InterruptedException ex) {
+						throw new com.github.jlangch.venice.InterruptedException(
+								"interrupted while calling (io/await-for timeout-ms file mode)", ex);
+					}
+					catch(IOException ex) {
+						throw new VncException(
+								String.format(
+										"Function 'io/await-for' failed to await for file '%s'",
+										file.getPath()),
+								ex);
+					}
+				}
+		
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
 
 	public static VncFunction io_delete_file =
 		new VncFunction(
@@ -2109,6 +2187,19 @@ public class IOFunctions {
 			// do nothing
 		}
 	}
+	
+	private static TimeUnit toTimeUnit(final VncKeyword unit) {
+		switch(unit.getValue()) {
+			case "milliseconds": return TimeUnit.MILLISECONDS;
+			case "seconds": return TimeUnit.SECONDS;
+			case "minutes":  return TimeUnit.MINUTES;
+			case "hours": return TimeUnit.HOURS;
+			case "days": return TimeUnit.DAYS;
+			default: throw new VncException(
+							"Invalid time-unit " + unit.getValue() + ". " 
+								+ "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
+		}
+	}
 
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -2133,6 +2224,7 @@ public class IOFunctions {
 					.add(io_file_can_write_Q)
 					.add(io_file_can_execute_Q)
 					.add(io_file_hidden_Q)
+					.add(io_await_for)
 					.add(io_list_files)
 					.add(io_list_file_tree)
 					.add(io_list_files_glob_pattern)

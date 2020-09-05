@@ -1252,6 +1252,10 @@ public class DocGenerator {
 		file_test.addItem(getDocItem("io/file-can-execute?", false));
 		file_test.addItem(getDocItem("io/file-hidden?", false));
 
+		final DocSection file_watch = new DocSection("file watch");
+		all.addSection(file_watch);
+		file_watch.addItem(getDocItem("io/await-for"));
+		
 		final DocSection file_other = new DocSection("file other");
 		all.addSection(file_other);
 		file_other.addItem(getDocItem("io/temp-file"));

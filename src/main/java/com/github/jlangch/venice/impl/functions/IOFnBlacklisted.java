@@ -104,6 +104,7 @@ public class IOFnBlacklisted {
 					"io/temp-file",
 					"io/tmp-dir",
 					"io/user-dir",
+					"io/wait-for",
 					
 					// I/O zip
 					"io/zip",

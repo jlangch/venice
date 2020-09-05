@@ -28,6 +28,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - function `map-keys` and `map-vals`
+- function `io/await-for` to wait for a file getting created, modified, or deleted
 
 
 
