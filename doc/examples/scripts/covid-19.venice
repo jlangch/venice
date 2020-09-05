@@ -46,12 +46,12 @@
   (def quarantine-case-limit 60)
 
 
-  ;; impure functions ------------------------------------------------ [start] -
+  ;;; impure functions ----------------------------------------------- [start] -
 
   (defn view [file]
     (if (os-type? :mac-osx)
       (do (sh "open" (str file)) nil)
-      (println "Viewing the chart" file "is not support on" (os-name))))
+      (println "Viewing the chart" file "is not supported on" (os-name))))
 
   (defn save-chart [chart file]
     (xchart/write-to-file chart :png 240 file))
@@ -63,10 +63,10 @@
                       "/")))
 
   (defn load-countries-html-data [countries]
-    ; returns a list of tuples [country html]
+    ;; returns a list of tuples [country html]
     (map #(vector % (load-country-html-data %)) countries))
 
-  ;; impure functions -------------------------------------------------- [end] -
+  ;;; impure functions ------------------------------------------------- [end] -
 
 
   (defn color
@@ -74,7 +74,7 @@
     ([r g b a] (. :java.awt.Color :new r g b a)))
 
   (defn extract-html-cases-section [html]
-    ; extract the daily cases section from HTML page (javascript)
+    ;; extract the daily cases section from HTML page (javascript)
     (->> (str/split-lines html)
          (drop-while #(not (str/contains? % "'graph-cases-daily'" )))
          (take-while #(not (str/contains? % "});" )))
@@ -82,7 +82,7 @@
          (butlast)))
 
   (defn parse-date [date]
-    ; convert "Feb 02 to "2020 Feb 02" and parse it
+    ;; convert "Feb 02 to "2020 Feb 02" and parse it
     (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
 
   (defn extract-months [data]
