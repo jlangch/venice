@@ -252,7 +252,7 @@ public class SystemFunctions {
 											? TimeUnit.MILLISECONDS
 											: toTimeUnit(Coerce.toVncKeyword(args.second()));
 
-					Thread.sleep(Math.max(0, unit.toMillis(sleep)));
+					Thread.sleep(unit.toMillis(Math.max(0,sleep)));
 				}
 				catch(InterruptedException ex) {
 					throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (sleep n)", ex);
@@ -829,7 +829,9 @@ public class SystemFunctions {
 			case "minutes":  return TimeUnit.MINUTES;
 			case "hours": return TimeUnit.HOURS;
 			case "days": return TimeUnit.DAYS;
-			default: throw new VncException("Invalid scheduler time-unit " + unit.getValue());
+			default: throw new VncException(
+						"Invalid scheduler time-unit " + unit.getValue() + ". " 
+							+ "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
 		}
 	}
 
