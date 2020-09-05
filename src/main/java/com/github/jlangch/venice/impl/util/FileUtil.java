@@ -531,7 +531,6 @@ public class FileUtil {
 
 				for (WatchEvent<?> event: key.pollEvents()) {
 					final Path p = (Path)event.context();
-					//System.out.println(p.toString() + "  " + event.kind());
 					if (p.getFileName().equals(name)) {
 						return true;
 					}

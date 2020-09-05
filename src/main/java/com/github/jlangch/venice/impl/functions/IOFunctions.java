@@ -514,7 +514,7 @@ public class IOFunctions {
 					final long timeoutMillis = unit.toMillis(Math.max(0,timeout));
 
 					final File file = convertToFile(
-											args.second(),
+											args.third(),
 											"Function 'io/await-for' does not allow %s as file").getAbsoluteFile();
 
 				
