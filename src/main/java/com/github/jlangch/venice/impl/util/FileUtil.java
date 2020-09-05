@@ -518,15 +518,20 @@ public class FileUtil {
 				return true;
 			}
 			
-			// Watch events in parent directory 
+			// Watch events in parent directory and filter the target file events
 			
 			WatchKey key;
-			while (true) {
-				long timeout = Math.max(1L, endWaitTime - System.currentTimeMillis());
+			while (System.currentTimeMillis() < endWaitTime) {
+				long timeout = Math.max(1L, endWaitTime - System.currentTimeMillis());				
 				key = ws.poll(timeout, TimeUnit.MILLISECONDS);
+				
+				if (key == null) {
+					break;  // timeout
+				}	
 
 				for (WatchEvent<?> event: key.pollEvents()) {
 					final Path p = (Path)event.context();
+					//System.out.println(p.toString() + "  " + event.kind());
 					if (p.getFileName().equals(name)) {
 						return true;
 					}

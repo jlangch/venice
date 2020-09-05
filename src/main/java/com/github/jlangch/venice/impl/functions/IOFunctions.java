@@ -119,8 +119,8 @@ public class IOFunctions {
 				if (args.size() == 1) {
 					return new VncJavaObject(
 									convertToFile(
-											args.first(),
-											"Function 'io/file' does not allow %s as path"));
+										args.first(),
+										"Function 'io/file' does not allow %s as path"));
 				}
 				else {
 					final File parent = convertToFile(
@@ -488,9 +488,9 @@ public class IOFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_await_for = 
+	public static VncFunction io_await_for =
 			new VncFunction(
-					"io/await-for", 
+					"io/await-for",
 					VncFunction
 						.meta()
 						.arglists("(io/await-for timeout time-unit file & modes)")		
@@ -501,7 +501,7 @@ public class IOFunctions {
 							"timeout, logical true otherwise. \n" +
 							"Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
 						.build()
-			) {		
+			) {
 				public VncVal apply(final VncList args) {
 					assertMinArity("io/await-for", args, 3);
 
@@ -511,42 +511,50 @@ public class IOFunctions {
 
 					final TimeUnit unit = toTimeUnit(Coerce.toVncKeyword(args.second()));
 
-					final long timeoutMillis =  unit.toMillis(Math.max(0,timeout));
+					final long timeoutMillis = unit.toMillis(Math.max(0,timeout));
 
 					final File file = convertToFile(
 											args.second(),
-											"Function 'io/await-for' does not allow %s as x").getAbsoluteFile();
+											"Function 'io/await-for' does not allow %s as file").getAbsoluteFile();
 
-					
-					
+				
 					final Set<WatchEvent.Kind<?>> events = new HashSet<>();
-					for(VncVal v : args.drop(3).getList()) {
+					for(VncVal v : args.slice(3).getList()) {
 						final VncKeyword mode = Coerce.toVncKeyword(v);
 						switch(mode.getSimpleName()) {
-							case "created":	
+							case "created":
 								events.add(StandardWatchEventKinds.ENTRY_CREATE);
 								break;
-							case "deleted":	
+							case "deleted":
 								events.add(StandardWatchEventKinds.ENTRY_DELETE);
 								break;
-							case "modified":	
+							case "modified":
 								events.add(StandardWatchEventKinds.ENTRY_MODIFY);
 								break;
 							default:
 								throw new VncException(
 										String.format(
-												"Function 'io/await-for' invalid mode '%s'. Use one or "
-												 + "multiple of {:created, :deleted, :modified}",
-												mode.toString()));		
+												"Function 'io/await-for' invalid mode '%s'. Use one or " +
+												"multiple of {:created, :deleted, :modified}",
+												mode.toString()));
 						}
 					}
 					
+					if (events.isEmpty()) {
+						throw new VncException(
+								"Function 'io/await-for' missing a mode. Pass one or " +
+								"multiple of {:created, :deleted, :modified}");
+					}
+					
 					try {
-						return VncBoolean.of(FileUtil.awaitFile(file.toPath(), timeoutMillis, events));
+						return VncBoolean.of(FileUtil.awaitFile(
+												file.getCanonicalFile().toPath(), 
+												timeoutMillis, 
+												events));
 					}
 					catch(InterruptedException ex) {
 						throw new com.github.jlangch.venice.InterruptedException(
-								"interrupted while calling (io/await-for timeout-ms file mode)", ex);
+								"Interrupted while calling function 'io/await-for'", ex);
 					}
 					catch(IOException ex) {
 						throw new VncException(
@@ -556,7 +564,7 @@ public class IOFunctions {
 								ex);
 					}
 				}
-		
+
 				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
