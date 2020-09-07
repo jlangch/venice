@@ -68,7 +68,6 @@ public class ScheduleFunctions {
 						"(deref (schedule-delay (fn [] 100) 2 :seconds))")
 					.build()
 		) {		
-			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {	
 				assertArity("schedule-delay", args, 3);
 	
@@ -77,24 +76,6 @@ public class ScheduleFunctions {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncKeyword unit = Coerce.toVncKeyword(args.third());
-	
-				// wrap the passed function so that its return value can be
-				// wrapped with a VncTunnelAsJavaObject. So that there are no 
-				// VncVal -> Java Object conversions. Thus
-				// the function's return value is not touched (just 
-				// wrapped/unwrapped with a VncTunnelAsJavaObject)!			
-				final VncFunction wrapped = new VncFunction(fn.getQualifiedName(), fn.getMeta()) {
-					public VncVal apply(final VncList args) {
-						return new VncTunnelAsJavaObject(fn.apply(args));
-					}
-					
-					private static final long serialVersionUID = -1L;
-				};
-				
-				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
-													ThreadLocalMap.getCallStack().peek(),
-													Callable.class, 
-													VncHashMap.of(new VncKeyword("call"), wrapped));
 	
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
@@ -109,7 +90,7 @@ public class ScheduleFunctions {
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
-						return task.call();
+						return fn.applyOf();
 					}
 					finally {
 						// clean up
