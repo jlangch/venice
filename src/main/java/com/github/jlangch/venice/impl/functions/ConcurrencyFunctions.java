@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
@@ -57,7 +56,6 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
-import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -1255,7 +1253,6 @@ public class ConcurrencyFunctions {
 						"         {:child @f :parent {:a a :b b}})))                          ")
 					.build()
 		) {		
-			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {	
 				assertArity("future", args, 1);
 
