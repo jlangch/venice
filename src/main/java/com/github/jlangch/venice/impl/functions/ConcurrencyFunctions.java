@@ -1262,25 +1262,7 @@ public class ConcurrencyFunctions {
 				JavaInterop.getInterceptor().validateVeniceFunction("future");
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
-	
-				// wrap the passed function so that its return value can be
-				// wrapped with a VncTunnelAsJavaObject. So that there are no 
-				// VncVal -> Java Object conversions. Thus
-				// the function's return value is not touched (just 
-				// wrapped/unwrapped with a VncTunnelAsJavaObject)!			
-				final VncFunction wrapped = new VncFunction(fn.getQualifiedName(), fn.getMeta()) {
-					public VncVal apply(final VncList args) {
-						return new VncTunnelAsJavaObject(fn.apply(args));
-					}
-					
-					private static final long serialVersionUID = -1L;
-				};
-				
-				final Callable<VncVal> task = (Callable<VncVal>)DynamicInvocationHandler.proxify(
-													ThreadLocalMap.getCallStack().peek(),
-													Callable.class, 
-													VncHashMap.of(new VncKeyword("call"), wrapped));
-	
+		
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
@@ -1294,7 +1276,7 @@ public class ConcurrencyFunctions {
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
-						return task.call();
+						return fn.applyOf();
 					}
 					finally {
 						// clean up
