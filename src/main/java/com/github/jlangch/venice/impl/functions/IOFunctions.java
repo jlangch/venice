@@ -589,7 +589,7 @@ public class IOFunctions {
 						"(io/watch-dir dir event-fn failure-fn termination-fn)")		
 					.doc(
 						"Watch a directory for changes, and call the function event-fn when it " +
-						"does. Calls the optional failure-fn if an error occurs. On closing the " +
+						"does. Calls the optional failure-fn if an error occurs. On closing " +
 						"the watcher termination-fn is called. \n" +
 						"event-fn is a two argument function that receives the path and mode " +
 						"{:created, :deleted, :modified} of the changed file. \n" +
@@ -624,8 +624,8 @@ public class IOFunctions {
 				}
 				
 				final VncFunction eventFn = Coerce.toVncFunction(args.second());
-				final VncFunction failFn = args.size() > 2 ? Coerce.toVncFunction(args.third()) : null;
-				final VncFunction termFn = args.size() > 3 ? Coerce.toVncFunction(args.fourth()) : null;
+				final VncFunction failFn = Coerce.toVncFunctionOptional(args.third());
+				final VncFunction termFn = Coerce.toVncFunctionOptional(args.fourth());
 				
 				final Function<WatchEvent.Kind<?>, VncKeyword> convert = (event) -> {
 					switch(event.name()) {

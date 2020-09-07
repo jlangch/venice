@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.util;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
@@ -153,6 +154,21 @@ public class Coerce {
 
 	public static VncFunction toVncFunction(final VncVal val) {
 		if (val == null || Types.isVncFunction(val)) {
+			return (VncFunction)val;
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot coerce value of type %s to function. %s", 
+					Types.getType(val),
+					ErrorMessage.buildErrLocation(val)));
+		}
+	}
+
+	public static VncFunction toVncFunctionOptional(final VncVal val) {
+		if (val == null || val == Constants.Nil) {
+			return null;
+		}
+		else if (Types.isVncFunction(val)) {
 			return (VncFunction)val;
 		}
 		else {
