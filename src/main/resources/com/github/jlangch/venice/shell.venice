@@ -39,6 +39,24 @@
     (throw (venice-exception "Can only run on Mac OSX or Linux!"))))
 
 
+(defn
+  ^{ :arglists '("(open url)")
+     :doc """
+          Opens a file or an url with the associated application.
+          """
+     :examples '(
+          """(shell/open "img.png")"""
+          """(shell/open "https://www.heise.de/")""") }
+
+  open [url]
+
+  (let [url (str url)]
+    (case (os-type)
+      :mac-osx (sh "/usr/bin/open" url)
+      :linux   (sh "/usr/bin/xdg-open" url)
+      :windows (sh "cmd" "/C" "start" url))))
+
+
 (defmulti
   ^{ :arglists '("(kill pid & options)")
      :doc """
