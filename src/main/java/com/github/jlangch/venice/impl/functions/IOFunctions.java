@@ -55,6 +55,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -62,6 +63,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -77,12 +82,14 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.MimeTypes;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class IOFunctions {
@@ -488,85 +495,244 @@ public class IOFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	// https://github.com/juxt/dirwatch/blob/master/src/juxt/dirwatch.clj
 	public static VncFunction io_await_for =
-			new VncFunction(
-					"io/await-for",
-					VncFunction
-						.meta()
-						.arglists("(io/await-for timeout time-unit file & modes)")		
-						.doc(
-							"Blocks the current thread until the file has been created, deleted, or " + 
-							"modified according to the passed modes {:created, :deleted, :modified}, " +
-							"or the timeout has elapsed. Returns logical false if returning due to " +
-							"timeout, logical true otherwise. \n" +
-							"Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					assertMinArity("io/await-for", args, 3);
+		new VncFunction(
+				"io/await-for",
+				VncFunction
+					.meta()
+					.arglists("(io/await-for timeout time-unit file & modes)")		
+					.doc(
+						"Blocks the current thread until the file has been created, deleted, or " + 
+						"modified according to the passed modes {:created, :deleted, :modified}, " +
+						"or the timeout has elapsed. Returns logical false if returning due to " +
+						"timeout, logical true otherwise. \n" +
+						"Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
+					.examples(
+						"(io/await-for 10 :seconds \"/tmp/data.json\" :created)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertMinArity("io/await-for", args, 3);
 
-					JavaInterop.getInterceptor().validateVeniceFunction("io/await-for");
+				JavaInterop.getInterceptor().validateVeniceFunction("io/await-for");
 
-					final long timeout = Coerce.toVncLong(args.first()).getValue();
+				final long timeout = Coerce.toVncLong(args.first()).getValue();
 
-					final TimeUnit unit = toTimeUnit(Coerce.toVncKeyword(args.second()));
+				final TimeUnit unit = toTimeUnit(Coerce.toVncKeyword(args.second()));
 
-					final long timeoutMillis = unit.toMillis(Math.max(0,timeout));
+				final long timeoutMillis = unit.toMillis(Math.max(0,timeout));
 
-					final File file = convertToFile(
-											args.third(),
-											"Function 'io/await-for' does not allow %s as file").getAbsoluteFile();
+				final File file = convertToFile(
+										args.third(),
+										"Function 'io/await-for' does not allow %s as file").getAbsoluteFile();
 
-				
-					final Set<WatchEvent.Kind<?>> events = new HashSet<>();
-					for(VncVal v : args.slice(3).getList()) {
-						final VncKeyword mode = Coerce.toVncKeyword(v);
-						switch(mode.getSimpleName()) {
-							case "created":
-								events.add(StandardWatchEventKinds.ENTRY_CREATE);
-								break;
-							case "deleted":
-								events.add(StandardWatchEventKinds.ENTRY_DELETE);
-								break;
-							case "modified":
-								events.add(StandardWatchEventKinds.ENTRY_MODIFY);
-								break;
-							default:
-								throw new VncException(
-										String.format(
-												"Function 'io/await-for' invalid mode '%s'. Use one or " +
-												"multiple of {:created, :deleted, :modified}",
-												mode.toString()));
-						}
-					}
-					
-					if (events.isEmpty()) {
-						throw new VncException(
-								"Function 'io/await-for' missing a mode. Pass one or " +
-								"multiple of {:created, :deleted, :modified}");
-					}
-					
-					try {
-						return VncBoolean.of(FileUtil.awaitFile(
-												file.getCanonicalFile().toPath(), 
-												timeoutMillis, 
-												events));
-					}
-					catch(InterruptedException ex) {
-						throw new com.github.jlangch.venice.InterruptedException(
-								"Interrupted while calling function 'io/await-for'", ex);
-					}
-					catch(IOException ex) {
-						throw new VncException(
-								String.format(
-										"Function 'io/await-for' failed to await for file '%s'",
-										file.getPath()),
-								ex);
+			
+				final Set<WatchEvent.Kind<?>> events = new HashSet<>();
+				for(VncVal v : args.slice(3).getList()) {
+					final VncKeyword mode = Coerce.toVncKeyword(v);
+					switch(mode.getSimpleName()) {
+						case "created":
+							events.add(StandardWatchEventKinds.ENTRY_CREATE);
+							break;
+						case "deleted":
+							events.add(StandardWatchEventKinds.ENTRY_DELETE);
+							break;
+						case "modified":
+							events.add(StandardWatchEventKinds.ENTRY_MODIFY);
+							break;
+						default:
+							throw new VncException(
+									String.format(
+											"Function 'io/await-for' invalid mode '%s'. Use one or " +
+											"multiple of {:created, :deleted, :modified}",
+											mode.toString()));
 					}
 				}
+				
+				if (events.isEmpty()) {
+					throw new VncException(
+							"Function 'io/await-for' missing a mode. Pass one or " +
+							"multiple of {:created, :deleted, :modified}");
+				}
+				
+				try {
+					return VncBoolean.of(FileUtil.awaitFile(
+											file.getCanonicalFile().toPath(), 
+											timeoutMillis, 
+											events));
+				}
+				catch(InterruptedException ex) {
+					throw new com.github.jlangch.venice.InterruptedException(
+							"Interrupted while calling function 'io/await-for'", ex);
+				}
+				catch(IOException ex) {
+					throw new VncException(
+							String.format(
+									"Function 'io/await-for' failed to await for file '%s'",
+									file.getPath()),
+							ex);
+				}
+			}
 
-				private static final long serialVersionUID = -1848883965231344442L;
-			};
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_watch_dir =
+		new VncFunction(
+				"io/watch-dir",
+				VncFunction
+					.meta()
+					.arglists(
+						"(io/watch-dir dir event-fn)",	
+						"(io/watch-dir dir event-fn failure-fn)",		
+						"(io/watch-dir dir event-fn failure-fn termination-fn)")		
+					.doc(
+						"Watch a directory for changes, and call the function event-fn when it " +
+						"does. Calls the optional failure-fn if an error occurs. On closing the " +
+						"the watcher termination-fn is called. \n" +
+						"event-fn is a two argument function that receives the path and mode " +
+						"{:created, :deleted, :modified} of the changed file. \n" +
+						"failure-fn is a two argument function that receives the watch dir and the " +
+						"failure exception. \n" +
+						"termination-fn is a one argument function receives the watch dir.\n" +
+						"Returns a watcher that is activley watching a directory. The watcher is \n" +
+						"a resource which should be closed with io/close-watcher.")
+					.examples(
+						"(do                                                           \n" +
+					    "  (defn log [msg] (locking log (println msg)))                \n" +
+						"                                                              \n" +
+						"  (let [w (io/watch-dir \"/tmp\" #(log (str %1 \" \" %2)))]   \n" +
+					    "    (sleep 30 :seconds)                                       \n" +
+						"    (io/close-watcher w)))                                      ")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/watch-dir", args, 2, 3, 4);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("io/watch-dir");
+
+				final File dir = convertToFile(
+										args.first(),
+										"Function 'io/watch-dir' does not allow %s as file").getAbsoluteFile();	
+				
+				if (!dir.isDirectory()) {
+					throw new VncException(
+							String.format(
+									"Function 'io/watch-dir': dir '%s' is not a directpry",
+									dir.toString()));
+				}
+				
+				final VncFunction eventFn = Coerce.toVncFunction(args.second());
+				final VncFunction failFn = args.size() > 2 ? Coerce.toVncFunction(args.third()) : null;
+				final VncFunction termFn = args.size() > 3 ? Coerce.toVncFunction(args.fourth()) : null;
+				
+				final Function<WatchEvent.Kind<?>, VncKeyword> convert = (event) -> {
+					switch(event.name()) {
+						case "ENTRY_CREATE": return new VncKeyword("created");
+						case "ENTRY_DELETE": return new VncKeyword("deleted");
+						case "ENTRY_MODIFY": return new VncKeyword("modified");
+						default: return new VncKeyword("unknown");
+					}
+				};
+				
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+				
+				// thread local values from the parent thread
+				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
+						new AtomicReference<>(ThreadLocalMap.getValues());
+
+				final Consumer<Runnable> wrapper = (runnable) -> {
+					try {
+						// inherit thread local values to the child thread
+						ThreadLocalMap.setValues(parentThreadLocals.get());
+						ThreadLocalMap.clearCallStack();
+						JavaInterop.register(parentInterceptor);	
+						
+						runnable.run();
+					}
+					finally {
+						// clean up
+						JavaInterop.unregister();
+						ThreadLocalMap.remove();
+					}
+				};
+				
+				final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
+						(path, event) -> wrapper.accept( () ->	
+											ConcurrencyFunctions.future.applyOf(
+												CoreFunctions.partial.applyOf(
+														eventFn,
+														new VncString(path.toString()),
+														convert.apply(event))));
+						
+				final BiConsumer<Path,Exception> errorListener =
+						failFn == null 
+							? null
+							: (path, ex) -> wrapper.accept( () ->
+												ConcurrencyFunctions.future.applyOf(
+													CoreFunctions.partial.applyOf(
+														failFn,
+														new VncString(path.toString()),
+														new VncJavaObject(ex))));
+							
+				final Consumer<Path> terminationListener =
+						termFn == null 
+							? null
+							: (path) -> wrapper.accept( () ->
+											ConcurrencyFunctions.future.applyOf(
+												CoreFunctions.partial.applyOf(
+													termFn,
+													new VncString(path.toString()))));
+
+				try {
+					return new VncJavaObject(
+									FileUtil.watchDir(
+										dir.toPath(), 
+										eventListener,
+										errorListener,
+										terminationListener));
+				}
+				catch(IOException ex) {
+					throw new VncException(
+							String.format(
+									"Function 'io/watch-dir' failed to watch dir '%s'",
+									dir.toString()),
+							ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_close_watcher =
+		new VncFunction(
+				"io/close-watcher",
+				VncFunction
+					.meta()
+					.arglists("(io/close-watcher watcher)")		
+					.doc("Closes a watcher created from 'io/watch-dir'.")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("io/close-watcher", args, 1);
+
+				JavaInterop.getInterceptor().validateVeniceFunction("io/close-watcher");
+
+				final WatchService ws = Coerce.toVncJavaObject(args.first(), WatchService.class);
+				try {
+					ws.close();
+					return Nil;
+				}
+				catch(IOException ex) {
+					throw new VncException(
+							"Function 'io/close-watcher' failed to close watch service",
+							ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction io_delete_file =
 		new VncFunction(
@@ -2232,7 +2398,9 @@ public class IOFunctions {
 					.add(io_file_can_write_Q)
 					.add(io_file_can_execute_Q)
 					.add(io_file_hidden_Q)
-					.add(io_await_for)
+					.add(io_await_for)	
+					.add(io_watch_dir)
+					.add(io_close_watcher)
 					.add(io_list_files)
 					.add(io_list_file_tree)
 					.add(io_list_files_glob_pattern)

@@ -29,6 +29,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - function `map-keys` and `map-vals`
 - function `io/await-for` to wait for a file getting created, modified, or deleted
+- function `io/watch-dir` and `io/close-watcher` to watch file modifications in a directory
 
 
 

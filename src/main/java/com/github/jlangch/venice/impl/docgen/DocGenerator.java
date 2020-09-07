@@ -1254,7 +1254,9 @@ public class DocGenerator {
 
 		final DocSection file_watch = new DocSection("file watch");
 		all.addSection(file_watch);
-		file_watch.addItem(getDocItem("io/await-for"));
+		file_watch.addItem(getDocItem("io/await-for", false));
+		file_watch.addItem(getDocItem("io/watch-dir", false));
+		file_watch.addItem(getDocItem("io/close-watcher", false));
 		
 		final DocSection file_other = new DocSection("file other");
 		all.addSection(file_other);
