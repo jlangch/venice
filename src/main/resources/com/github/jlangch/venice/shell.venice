@@ -20,6 +20,13 @@
 ;;;; limitations under the License.
 
 ;;;; Shell utilities
+;;;;                                                         macos  unix windows
+;;;;   (open url)                                              x      x     x
+;;;;   (open-macos-app name)                                   x
+;;;;   (diff file1 file2)                                      x      x     x
+;;;;   (kill pid & options)                                    x      x     x
+;;;;   (process-running? pid)                                  x      x     x
+;;;;   (wait-for-process-exit pid timeout)                     x      x     x
 
 
 (ns shell)
@@ -40,6 +47,19 @@
 
 
 (defn
+  ^{ :arglists '("(diff file1 file2)")
+     :doc "Compare two files and print the differences."
+     :examples '("""(diff "/tmp/x.txt" "/tmp/y.txt")""") }
+
+  diff [file1 file2]
+
+  (case (os-type)
+    :mac-osx (sh "diff" (str file1) (str file2))
+    :linux   (sh "diff" (str file1) (str file2))
+    :windows (sh "cmd" "/C" "FC" (str file1) (str file2))))
+
+
+(defn
   ^{ :arglists '("(open url)")
      :doc "Opens a file or an url with the associated application."
      :examples '(
@@ -55,18 +75,18 @@
       :windows (sh "cmd" "/C" "start" url))))
 
 
-  (defn
-    ^{ :arglists '("(open-macos-app name)")
-       :doc "Opens a Mac OSX applicaton application."
-       :examples '(
-            """(shell/open-macos-app "ArangoDB")""") }
+(defn
+  ^{ :arglists '("(open-macos-app name)")
+     :doc "Opens a Mac OSX applicaton application."
+     :examples '(
+          """(shell/open-macos-app "ArangoDB")""") }
 
-    open-macos-app [name]
+  open-macos-app [name]
 
-    (when-not (os-type? :mac-osx)
-      (throw (venice-exception "Can only open a Mac OSX applicaton on Mac OSX!")))
+  (when-not (os-type? :mac-osx)
+    (throw (venice-exception "Can only open a Mac OSX applicaton on Mac OSX!")))
 
-    (sh "/usr/bin/open" "-a" name))
+  (sh "/usr/bin/open" "-a" name))
 
 
 (defmulti
