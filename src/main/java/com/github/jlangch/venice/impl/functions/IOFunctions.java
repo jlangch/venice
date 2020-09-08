@@ -1845,6 +1845,8 @@ public class IOFunctions {
 			) {
 				public VncVal apply(final VncList args) {
 					assertMinArity(args, 1);
+					
+					sandboxFunctionCallValidation();
 
 					final String uri = Coerce.toVncString(args.first()).getValue();
 

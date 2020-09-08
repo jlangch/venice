@@ -103,6 +103,7 @@ public class IOFnBlacklisted {
 					"io/temp-dir",
 					"io/temp-file",
 					"io/tmp-dir",
+					"io/uri-stream",
 					"io/user-dir",
 					"io/wait-for",
 					
