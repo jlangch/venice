@@ -589,7 +589,7 @@ public class IOFunctions {
 						"(io/watch-dir dir event-fn failure-fn termination-fn)")		
 					.doc(
 						"Watch a directory for changes, and call the function event-fn when it " +
-						"does. Calls the optional failure-fn if an error occurs. On closing " +
+						"does. Calls the optional failure-fn if errors occur. On closing " +
 						"the watcher termination-fn is called. \n" +
 						"event-fn is a two argument function that receives the path and mode " +
 						"{:created, :deleted, :modified} of the changed file. \n" +
@@ -643,6 +643,8 @@ public class IOFunctions {
 						new AtomicReference<>(ThreadLocalMap.getValues());
 
 				final Consumer<Runnable> wrapper = (runnable) -> {
+					// The watch-dir listeners is called from the JavaVM. Rig a
+					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
 						ThreadLocalMap.setValues(parentThreadLocals.get());

@@ -1267,6 +1267,8 @@ public class ConcurrencyFunctions {
 						new AtomicReference<>(ThreadLocalMap.getValues());
 				
 				final Callable<VncVal> taskWrapper = () -> {
+					// The future function is called from the JavaVM. Rig a
+					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
 						ThreadLocalMap.setValues(parentThreadLocals.get());

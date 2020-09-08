@@ -124,10 +124,11 @@ public class MetaUtil {
 	}
 	
 	
-	// Var definition
+	// Var documentation
 	public static final VncKeyword ARGLIST = new VncKeyword(":arglists"); 
 	public static final VncKeyword DOC = new VncKeyword(":doc"); 
 	public static final VncKeyword EXAMPLES = new VncKeyword(":examples"); 
+	public static final VncKeyword FUNCTION_REFS = new VncKeyword(":function-refs"); 
 	
 	// File location
 	public static final VncKeyword FILE = new VncKeyword(":file"); 

@@ -274,7 +274,7 @@ public abstract class VncFunction
 		public MetaBuilder arglists(final String... arglists) {
 			meta.put(
 				MetaUtil.ARGLIST, 
-				VncList.ofList(Arrays.stream(arglists).map(s -> new VncString(s)).collect(Collectors.toList())));
+				VncList.ofList(Arrays.stream(arglists).map(a -> new VncString(a)).collect(Collectors.toList())));
 			return this;
 		}
 		
@@ -286,7 +286,14 @@ public abstract class VncFunction
 		public MetaBuilder examples(final String... examples) { 
 			meta.put(
 				MetaUtil.EXAMPLES, 
-				VncList.ofList(Arrays.stream(examples).map(s -> new VncString(s)).collect(Collectors.toList())));
+				VncList.ofList(Arrays.stream(examples).map(e -> new VncString(e)).collect(Collectors.toList())));
+			return this;
+		}
+		
+		public MetaBuilder functionRefs(final String... refs) { 
+			meta.put(
+				MetaUtil.FUNCTION_REFS, 
+				VncList.ofList(Arrays.stream(refs).map(r -> new VncString(r)).collect(Collectors.toList())));
 			return this;
 		}
 			

@@ -29,6 +29,7 @@
 
 (do
   (load-module :xchart)
+  (load-module :shell)
 
   ;; https://www.worldometers.info/population/europe/
   (def country-config
@@ -46,27 +47,24 @@
   (def quarantine-case-limit 60)
 
 
-  ;;; impure functions ----------------------------------------------- [start] -
+  ;; impure functions ------------------------------------------------ [start] -
 
-  (defn view [file]
-    (if (os-type? :mac-osx)
-      (do (sh "open" (str file)) nil)
-      (println "Viewing the chart" file "is not supported on" (os-name))))
+  (defn view [file] (shell/open file))
 
-  (defn save-chart [chart file]
-    (xchart/write-to-file chart :png 240 file))
+  (defn save-chart [chart file dpi]
+    (xchart/write-to-file chart :png dpi file))
 
   (defn load-country-html-data [country]
-    (println "Loading cases for" country)
+    (println "Loading cases for" country "...")
     (io/download (str "https://www.worldometers.info/coronavirus/country/"
                       (str/lower-case country)
                       "/")))
 
   (defn load-countries-html-data [countries]
-    ;; returns a list of tuples [country html]
+    ; returns a list of tuples [country html]
     (map #(vector % (load-country-html-data %)) countries))
 
-  ;;; impure functions ------------------------------------------------- [end] -
+  ;; impure functions -------------------------------------------------- [end] -
 
 
   (defn color
@@ -74,7 +72,7 @@
     ([r g b a] (. :java.awt.Color :new r g b a)))
 
   (defn extract-html-cases-section [html]
-    ;; extract the daily cases section from HTML page (javascript)
+    ; extract the daily cases section from HTML page (javascript)
     (->> (str/split-lines html)
          (drop-while #(not (str/contains? % "'graph-cases-daily'" )))
          (take-while #(not (str/contains? % "});" )))
@@ -82,7 +80,7 @@
          (butlast)))
 
   (defn parse-date [date]
-    ;; convert "Feb 02 to "2020 Feb 02" and parse it
+    ; convert "Feb 02 to "2020 Feb 02" and parse it
     (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
 
   (defn extract-months [data]
@@ -117,11 +115,12 @@
       [ date cases tot avg-day avg-norm ]))
 
   (defn process [country population data]
-    (loop [d data tuples []]
+    (loop [d data, tuples []]
       (if (>= (count d) sample-days)
-        (recur (rest d) (conj tuples (process-sample country
-                                                     population
-                                                     (take sample-days d))))
+        (recur (rest d)
+               (conj tuples (process-sample country
+                                            population
+                                            (take sample-days d))))
         tuples)))
 
   (defn compute-country [country population html]
@@ -173,21 +172,24 @@
            :width 2000
            :height 500
            :render-style :line
-           :x-axis { :title "Date" :date-pattern "MMM-dd" }
+           :x-axis { :title "Date", :date-pattern "MMM-dd" }
            :y-axis { :title "Cases 14 days per 100'000" }
            :theme :xchart } )))
 
   (defn create-chart [country-html-data country-names]
     (let [country-populations (map-vals :population country-config)
           country-colors      (map-vals :color country-config)]
-      (-> (compute-countries country-html-data country-populations country-names)
+      (-> (compute-countries country-html-data
+                             country-populations
+                             country-names)
           (add-quarantine)
           (render-chart country-colors))))
 
-  ;; scrape up the Covid-19 data from HTMl, create a chart, and view the chart
+  ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
   (let [chart-file    "covid-19.png"
         country-names (remove #{"Quarantine"} (keys country-config))]
     (-> (load-countries-html-data country-names)
         (create-chart country-names)
-        (save-chart chart-file))
-    (view chart-file)))
+        (save-chart chart-file 240))
+    (view chart-file)
+    nil))
