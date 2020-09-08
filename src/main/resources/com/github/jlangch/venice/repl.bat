@@ -6,7 +6,7 @@ REM # --home
 REM #    |
 REM #    +-- libs
 REM #    |    +-- repl.json
-REM #    |    +-- venice-1.7.29.jar
+REM #    |    +-- venice-1.9.0.jar
 REM #    |    +-- jansi-1.18.jar
 REM #    |
 REM #    +-- repl.bat
