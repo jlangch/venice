@@ -1,0 +1,110 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2020 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Gradle utilities
+
+
+(ns gradle)
+
+(defmacro
+  ^{ :arglists '("(with-home gradle-dir proj-dir & forms)")
+     :doc "Sets the Gradle home directory for all subsequent calls."
+     :examples '(
+          """
+          (gradle/with-home "/Users/juerg/Documents/Tools/groovy/gradle-5.6.2"
+                            "/Users/juerg/Documents/my-project"
+            (gradle/version))
+          """) }
+
+  with-home [gradle-dir proj-dir & forms]
+
+  `(binding [*gradle-home*      ~gradle-dir
+             *gradle-script*    (gradle/script-path ~gradle-dir)
+             *gradle-proj-home* ~proj-dir]
+    (do ~@forms)))
+
+
+(defn version []
+  ^{ :arglists '("(gradle/version)")
+     :doc "Returns the Gradle version"
+     :examples '(
+          """
+          (gradle/with-home "/Users/juerg/Documents/Tools/groovy/gradle-5.6.2"
+                            "/Users/juerg/Documents/my-project"
+            (gradle/version))
+          """) }
+  (-<> ((gradle/exec) (str *gradle-script* " -version") :throw-ex true)
+       (:out <>)
+       (str/split-lines <>)
+       (filter #(str/starts-with? % "Gradle ") <>)
+       (map #(str/subs % 7) <>)
+       (first <>)))
+
+
+(defn task
+  ^{ :arglists '(
+        "(gradle/task name & options)"
+        "(gradle/task name out-fn & options)"
+        "(gradle/task name out-fn err-fn throw-ex & options)")
+     :doc "Runs a gradle task"
+     :examples '(
+          """
+          (gradle/with-home "/Users/juerg/Documents/Tools/groovy/gradle-5.6.2"
+                            "/Users/juerg/Documents/my-project"
+            (gradle/task compile)
+            (gradle/task compile "--warning-mode=all" "--stacktrace")
+            (gradle/task compile println)
+            (gradle/task compile println println true)
+            (gradle/task compile println println true "--stacktrace"))
+          """) }
+  ([name & options]
+    (gradle/task name println println true options))
+
+  ([name out-fn & options]
+    (gradle/task name out-fn out-fn true options))
+
+  ([name out-fn err-fn throw-ex & options]
+    ;; Gradle options
+    ;;   --debug
+    ;;   --warning-mode=all
+    ;;   --stacktrace
+    ;;   --info
+    ;;   --debug
+    ;;   -Dorg.gradle.java.home=...
+    ((gradle/exec) (str/join " " (conj (cons *gradle-script* options) name))
+                   :dir *gradle-proj-home*
+                   :out-fn out-fn
+                   :err-fn err-fn
+                   :throw-ex throw-ex)))
+
+
+(defn script-path [home]
+  (case (os-type)
+    :mac-osx (str home "/bin/gradle")
+    :linux   (str home "/bin/gradle")
+    :windows (str home "/bin/gradle.bat")))
+
+
+(defn exec []
+  (case (os-type)
+    :mac-osx (partial sh "/bin/sh" "-c")
+    :linux   (partial sh "/bin/sh" "-c")
+    :windows (partial sh "cmd" "/C")))

@@ -103,6 +103,7 @@ public class ModuleLoader {
 							"crypt", 
 							"fam", 
 							"geoip", 
+							"gradle", 
 							"http", 
 							"jackson", 
 							"java", 
