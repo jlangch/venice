@@ -87,12 +87,12 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			// [SECURITY]
 			//
 			// Ensure that the Venice callback function is running in the Venice's 
-			// sandbox. The Java callback parent could actually fork a thread
+			// sandbox. The Java callback parent could have forked a thread
 			// to run this Venice proxy callback!
 			
 			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
 			if (proxyInterceptor == parentInterceptor) {
-				// we run in the same thread
+				// we run in the same security context (thread)
 				try {
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);

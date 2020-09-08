@@ -21,14 +21,11 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.function.Function;
-
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public interface IVncFunction extends Function<VncList,VncVal> {
+public interface IVncFunction {
 	 
-	@Override
 	VncVal apply(VncList args);
 	
 	default boolean isAnonymous() { 
