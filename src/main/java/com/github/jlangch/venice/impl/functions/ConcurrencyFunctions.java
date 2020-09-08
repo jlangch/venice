@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
@@ -134,7 +132,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("deref", args, 1, 3);
+				assertArity(args, 1, 3);
 
 				final VncVal first = args.first();
 
@@ -216,7 +214,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("deref?", args, 1);
+				assertArity(args, 1);
 
 				final VncVal first = args.first();
 
@@ -266,7 +264,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("realized?", args, 1);
+				assertArity(args, 1);
 				
 				if (Types.isVncJavaObject(args.first())) {
 					final Object delegate = ((VncJavaObject)args.first()).getDelegate();
@@ -312,7 +310,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("add-watch", args, 3);
+				assertArity(args, 3);
 				
 				final VncVal ref = args.first();
 				final VncKeyword key = Coerce.toVncKeyword(args.second());
@@ -355,7 +353,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("remove-watch", args, 2);
+				assertArity(args, 2);
 				
 				final VncVal ref = args.first();
 				final VncKeyword key = Coerce.toVncKeyword(args.second());
@@ -415,7 +413,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("atom", args, 1);
+				assertMinArity(args, 1);
 				
 				final VncHashMap options = VncHashMap.ofAll(args.rest());
 				final VncVal meta = options.get(new VncKeyword("meta"));
@@ -444,7 +442,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("atom?", args, 1);
+				assertArity(args, 1);
 				
 				return VncBoolean.of(Types.isVncAtom(args.first()));
 			}
@@ -476,7 +474,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("reset!", args, 2);
+				assertArity(args, 2);
 				
 				final VncVal val = args.first();
 				
@@ -522,7 +520,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("swap!", args, 2);
+				assertMinArity(args, 2);
 				
 				final VncVal val = args.first();
 				
@@ -565,7 +563,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("compare-and-set!", args, 3);
+				assertArity(args, 3);
 				
 				final VncAtom atm = Coerce.toVncAtom(args.first());		
 				
@@ -600,7 +598,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("volatile", args, 1);
+				assertArity(args, 1);
 				
 				return new VncVolatile(args.first(), args.getMeta());
 			}
@@ -622,7 +620,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("volatile?", args, 1);
+				assertArity(args, 1);
 				
 				return VncBoolean.of(Types.isVncVolatile(args.first()));
 			}
@@ -666,7 +664,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("agent", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("agent");
 
@@ -698,7 +696,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("send", args, 2);
+				assertMinArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("send");
 
@@ -741,7 +739,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("send-off", args, 2);
+				assertMinArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("send-off");
 
@@ -780,7 +778,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("restart-agent", args, 2);
+				assertArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("restart-agent");
 
@@ -824,7 +822,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("set-error-handler!", args, 2);
+				assertArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("set-error-handler!");
 
@@ -862,7 +860,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("agent-error", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("agent-error");
 
@@ -896,7 +894,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("agent-error-mode", args, 1);
+				assertArity(args, 1);
 				
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -934,7 +932,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("await", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("await");
 
@@ -975,7 +973,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("await-for", args, 2);
+				assertMinArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("await-for");
 
@@ -1012,7 +1010,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("shutdown-agents", args, 0);
+				assertArity(args, 0);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("shutdown-agents");
 
@@ -1041,7 +1039,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("shutdown-agents?", args, 0);
+				assertArity(args, 0);
 		
 				return VncBoolean.of(Agent.isShutdown());
 			}
@@ -1068,7 +1066,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("await-termination-agents", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("await-termination-agents");
 
@@ -1100,7 +1098,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("await-termination-agents?", args, 0);
+				assertArity(args, 0);
 		
 				return VncBoolean.of(Agent.isShutdown());
 			}
@@ -1133,7 +1131,7 @@ public class ConcurrencyFunctions {
 		) {
 			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {
-				assertArity("deliver", args, 2);
+				assertArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("deliver");
 
@@ -1183,7 +1181,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("promise", args, 0);
+				assertArity(args, 0);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("promise");
 
@@ -1204,7 +1202,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("promise?", args, 1);
+				assertArity(args, 1);
 	
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), CompletableFuture.class));
 			}
@@ -1254,7 +1252,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
-				assertArity("future", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("future");
 
@@ -1303,7 +1301,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("future?", args, 1);
+				assertArity(args, 1);
 	
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), Future.class));
 			}
@@ -1329,7 +1327,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("future-done?", args, 1);
+				assertArity(args, 1);
 	
 				if (Types.isVncJavaObject(args.first(), Future.class)) {
 					try {
@@ -1369,7 +1367,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("future-cancel", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("future-cancel");
 	
@@ -1404,7 +1402,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("future-cancelled?", args, 1);
+				assertArity(args, 1);
 	
 				if (Types.isVncJavaObject(args.first(), Future.class)) {
 					try {
@@ -1447,7 +1445,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("futures-fork", args, 2);
+				assertArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("futures-fork");
 	
@@ -1488,7 +1486,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("futures-wait", args, 0);
+				assertMinArity(args, 0);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("futures-wait");
 	
@@ -1539,7 +1537,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("delay?", args, 1);
+				assertArity(args, 1);
 	
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), Delay.class));
 			}
@@ -1561,7 +1559,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("force", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("force");
 	
@@ -1624,7 +1622,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("thread-local?", args, 1);
+				assertArity(args, 1);
 				
 				return VncBoolean.of(Types.isVncThreadLocal(args.first()));
 			}
@@ -1643,7 +1641,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("thread-local-clear", args, 0);
+				assertArity(args, 0);
 				new VncThreadLocal().clear();
 				return this;
 			}
@@ -1662,7 +1660,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("thread-local-map", args, 0);
+				assertArity(args, 0);
 				return VncThreadLocal.toMap();
 			}
 			
@@ -1691,7 +1689,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("thread-id", args, 0);
+				assertArity(args, 0);
 				return new VncLong(Thread.currentThread().getId());
 			}
 			
@@ -1709,7 +1707,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("thread-name", args, 0);
+				assertArity(args, 0);
 				return new VncString(Thread.currentThread().getName());
 			}
 			
@@ -1732,7 +1730,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("thread-interrupted?", args, 0);
+				assertArity(args, 0);
 				return VncBoolean.of(Thread.currentThread().isInterrupted());
 			}
 			
@@ -1759,7 +1757,7 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("thread-interrupted", args, 0);
+				assertArity(args, 0);
 				return VncBoolean.of(Thread.interrupted());
 			}
 			

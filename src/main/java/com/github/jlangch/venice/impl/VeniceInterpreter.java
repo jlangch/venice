@@ -1018,6 +1018,8 @@ public class VeniceInterpreter implements Serializable  {
 			if (!(fn != null && fn instanceof VncFunction && ((VncFunction)fn).isMacro())) break;
 			
 			final VncFunction macro = (VncFunction)fn;
+			
+			final VncList macroArgs = ((VncList)ast_).rest();
 
 			// validate that the macro is allowed by the sandbox
 			if (checkSandbox) {
@@ -1029,12 +1031,12 @@ public class VeniceInterpreter implements Serializable  {
 			if (meterRegistry.enabled) {
 				final long nanosRun = System.nanoTime();
 				
-				ast_ = macro.apply(((VncList)ast_).rest());
+				ast_ = macro.apply(macroArgs);
 				
 				meterRegistry.record(macro.getQualifiedName() + "[m]", System.nanoTime() - nanosRun);
 			}
 			else {
-				ast_ = macro.apply(((VncList)ast_).rest());
+				ast_ = macro.apply(macroArgs);
 			}
 		}
 	 

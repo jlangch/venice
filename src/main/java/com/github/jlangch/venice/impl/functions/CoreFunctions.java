@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
@@ -192,7 +190,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("nil?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(args.first() == Nil);
 			}
@@ -217,7 +215,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("some?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(args.first() != Nil);
 			}
@@ -241,7 +239,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("true?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(VncBoolean.isTrue(args.first()));
 			}
@@ -265,7 +263,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("false?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(VncBoolean.isFalse(args.first()));
 			}
@@ -288,7 +286,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("boolean?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncBoolean(args.first()));
 			}
@@ -313,7 +311,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("int?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncInteger(args.first()));
 			}
@@ -338,7 +336,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("long?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncLong(args.first()));
 			}
@@ -364,7 +362,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("double?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncDouble(args.first()));
 			}
@@ -387,7 +385,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("decimal?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncBigDecimal(args.first()));
 			}
@@ -410,7 +408,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("bigint?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncBigInteger(args.first()));
 			}
@@ -435,7 +433,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("number?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(
 							Types.isVncLong(args.first())
@@ -461,7 +459,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("string?", args, 1);
+				assertArity(args, 1);
 
 				if (args.first() instanceof VncKeyword) {
 					return False;
@@ -491,7 +489,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("char", args, 1);
+				assertArity(args, 1);
 		
 				final VncVal c = args.first();
 				
@@ -538,7 +536,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("char?", args, 1);
+				assertArity(args, 1);
 		
 				return VncBoolean.of(Types.isVncChar(args.first()));
 			}
@@ -559,7 +557,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("symbol", args, 1);
+				assertArity(args, 1);
 
 				if (Types.isVncSymbol(args.first())) {
 					return args.first();
@@ -592,7 +590,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("symbol?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncSymbol(args.first()));
 			}
@@ -613,7 +611,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("keyword", args, 1);
+				assertArity(args, 1);
 
 				if (Types.isVncKeyword(args.first())) {
 					return args.first();
@@ -646,7 +644,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("keyword?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncKeyword(args.first()));
 			}
@@ -665,7 +663,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("fn?", args, 1);
+				assertArity(args, 1);
 
 				if (!Types.isVncFunction(args.first())) {
 					return False;
@@ -687,7 +685,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("macro?", args, 1);
+				assertArity(args, 1);
 
 				if (!Types.isVncFunction(args.first())) {
 					return False;
@@ -710,7 +708,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("fn-body", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				if (!Types.isVncFunction(args.first())) {
 					return Nil;
@@ -833,7 +831,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				try {
-					assertArity("read-string", args, 1, 2);
+					assertArity(args, 1, 2);
 
 					String origin = null;
 					
@@ -874,7 +872,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("just", args, 1);
+				assertArity(args, 1);
 
 				return new VncJust(args.first());
 			}
@@ -893,7 +891,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("just?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncJust(args.first()));
 			}
@@ -918,7 +916,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("=", args, 1);
+				assertMinArity(args, 1);
 
 				if (args.size() == 2) {
 					return VncBoolean.of(Types._equal_strict_Q(args.first(), args.second()));
@@ -949,7 +947,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("==", args, 1);
+				assertMinArity(args, 1);
 
 				if (args.size() == 2) {
 					return VncBoolean.of(Types._equal_Q(args.first(), args.second()));
@@ -982,7 +980,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("match?", args, 2);
+				assertArity(args, 2);
 
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
@@ -1014,7 +1012,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("not-match?", args, 2);
+				assertArity(args, 2);
 
 				if (!Types.isVncString(args.first())) {
 					throw new VncException(String.format(
@@ -1044,7 +1042,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("<", args, 2);
+				assertArity(args, 2);
 
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
@@ -1085,7 +1083,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("<=", args, 2);
+				assertArity(args, 2);
 
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
@@ -1126,7 +1124,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(">", args, 2);
+				assertArity(args, 2);
 
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
@@ -1167,7 +1165,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(">=", args, 2);
+				assertArity(args, 2);
 
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
@@ -1219,7 +1217,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("boolean", args, 1);
+				assertArity(args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {
@@ -1255,7 +1253,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("long", args, 1);
+				assertArity(args, 1);
 
 				final VncVal arg = args.first();
 				
@@ -1329,7 +1327,7 @@ public class CoreFunctions {
 				.build()
 	) {
 		public VncVal apply(final VncList args) {
-			assertArity("int", args, 1);
+			assertArity(args, 1);
 
 			final VncVal arg = args.first();
 			
@@ -1402,7 +1400,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("double", args, 1);
+				assertArity(args, 1);
 
 				final VncVal arg = args.first();
 				
@@ -1476,7 +1474,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("decimal", args, 1, 3);
+				assertArity(args, 1, 3);
 
 				if (args.isEmpty()) {
 					return new VncBigDecimal(BigDecimal.ZERO);
@@ -1537,7 +1535,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("bigint", args, 1);
+				assertArity(args, 1);
 
 				if (args.isEmpty()) {
 					return new VncBigDecimal(BigDecimal.ZERO);
@@ -1619,7 +1617,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("list*", args, 1);
+				assertMinArity(args, 1);
 
 				if (args.size() == 1 && args.first() == Nil) {
 					return Nil;
@@ -1653,7 +1651,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("list?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncList(args.first()));
 			}
@@ -1697,7 +1695,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("mutable-list?", args, 1);
+					assertArity(args, 1);
 
 					return VncBoolean.of(Types.isVncMutableList(args.first()));
 				}
@@ -1747,7 +1745,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("vector?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(vector_Q(args.first()));
 			}
@@ -1771,7 +1769,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("subvec", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final VncVector vec = Coerce.toVncVector(args.first());
 				final VncLong from = Coerce.toVncLong(args.second());
@@ -1803,7 +1801,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("replace", args, 2);
+				assertArity(args, 2);
 
 				final VncMap map = Coerce.toVncMap(args.first());
 				final VncVal coll = args.second();
@@ -1873,7 +1871,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("shuffle", args, 1);
+				assertArity(args, 1);
 
 				final VncVal coll = args.first();
 
@@ -1935,7 +1933,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("mutable-vector?", args, 1);
+					assertArity(args, 1);
 
 					return VncBoolean.of(Types.isVncMutableVector(args.first()));
 				}
@@ -2023,7 +2021,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("lazy-seq", args, 0, 1, 2);
+				assertArity(args, 0, 1, 2);
 				
 				if (args.size() == 0) {
 					// empty lazy sequence
@@ -2081,7 +2079,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("lazyseq?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncLazySeq(args.first()));
 			}
@@ -2162,7 +2160,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("set?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncHashSet(args.first()));
 			}
@@ -2181,7 +2179,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("sorted-set?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncSortedSet(args.first()));
 			}
@@ -2200,7 +2198,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("mutable-set?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncMutableSet(args.first()));
 			}
@@ -2222,7 +2220,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("difference", args, 1);
+				assertMinArity(args, 1);
 
 				Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
 
@@ -2250,7 +2248,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("union", args, 1);
+				assertMinArity(args, 1);
 
 				final Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
 
@@ -2278,7 +2276,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("intersection", args, 1);
+				assertMinArity(args, 1);
 
 				final Set<VncVal> intersection = new HashSet<>();
 
@@ -2335,7 +2333,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("juxt", args, 1);
+				assertMinArity(args, 1);
 
 				final List<IVncFunction> functions =
 						args.getList()
@@ -2389,7 +2387,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("fnil", args, 2, 3, 4);
+				assertArity(args, 2, 3, 4);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -2605,7 +2603,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("stack", args, 0);
+				assertArity(args, 0);
 
 				return new VncStack();
 			}
@@ -2638,7 +2636,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("queue", args, 0, 1);
+				assertArity(args, 0, 1);
 
 				return args.isEmpty() ? new VncQueue() : new VncQueue(Coerce.toVncLong(args.first()).getIntValue());
 			}
@@ -2657,7 +2655,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("map-entry", args, 2);
+				assertArity(args, 2);
 
 				return new VncMapEntry(args.first(), args.second());
 			}
@@ -2676,7 +2674,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("map?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncMap(args.first()));
 			}
@@ -2695,7 +2693,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("hash-map?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncHashMap(args.first()));
 			}
@@ -2714,7 +2712,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("ordered-map?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncOrderedMap(args.first()));
 			}
@@ -2733,7 +2731,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("sorted-map?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncSortedMap(args.first()));
 			}
@@ -2752,7 +2750,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("mutable-map?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncMutableMap(args.first()));
 			}
@@ -2771,7 +2769,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("map-entry?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncMapEntry(args.first()));
 			}
@@ -2790,7 +2788,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("stack?", args, 1);
+					assertArity(args, 1);
 
 					return VncBoolean.of(Types.isVncStack(args.first()));
 				}
@@ -2809,7 +2807,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("queue?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncQueue(args.first()));
 			}
@@ -2836,7 +2834,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("contains?", args, 2);
+				assertArity(args, 2);
 
 				final VncVal coll = args.first();
 				final VncVal key = args.second();
@@ -2887,7 +2885,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("not-contains?", args, 2);
+				assertArity(args, 2);
 
 				return VncBoolean.of(VncBoolean.isFalse(contains_Q.apply(args)));
 			}
@@ -3069,7 +3067,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("assoc-in", args, 3);
+				assertArity(args, 3);
 
 				final VncVal coll = args.first(); // may be Nil
 				final VncSequence keys = Coerce.toVncSequence(args.second());
@@ -3115,7 +3113,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("dissoc-in", args, 2);
+				assertArity(args, 2);
 
 				final VncVal coll = args.first();
 				final VncSequence keys = Coerce.toVncSequence(args.second());
@@ -3155,7 +3153,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("update-in", args, 3);
+				assertMinArity(args, 3);
 
 				final VncFunction up = new VncFunction("up", this.getMeta()) {
 					public VncVal apply(final VncList args) {
@@ -3214,7 +3212,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("get-in", args, 2, 3);
+				assertArity(args, 2, 3);
 		
 				VncCollection coll = Coerce.toVncCollection(args.first());
 				VncSequence keys = Coerce.toVncSequence(args.second());
@@ -3400,7 +3398,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("get", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final VncVal coll = args.first();
 				
@@ -3465,7 +3463,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("find", args, 2);
+				assertArity(args, 2);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -3495,7 +3493,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("key", args, 1);
+				assertArity(args, 1);
 				
 				final VncVal first = args.first();
 				if (Types.isVncMapEntry(first)) {
@@ -3520,7 +3518,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("keys", args, 1);
+				assertArity(args, 1);
 
 				return Coerce.toVncMap(args.first()).keys();
 			}
@@ -3541,7 +3539,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("val", args, 1);
+				assertArity(args, 1);
 		
 				final VncVal first = args.first();
 				if (Types.isVncMapEntry(first)) {
@@ -3566,7 +3564,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("vals", args, 1);
+				assertArity(args, 1);
 
 				final VncMap mhm = Coerce.toVncMap(args.first());
 				return VncList.ofColl(mhm.getMap().values());
@@ -3586,7 +3584,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("entries", args, 1);
+				assertArity(args, 1);
 
 				final VncMap mhm = Coerce.toVncMap(args.first());
 				return VncList.ofList(mhm.entries());
@@ -3615,7 +3613,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("update", args, 3);
+				assertArity(args, 3);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -3673,7 +3671,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("update!", args, 3);
+				assertArity(args, 3);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -3722,7 +3720,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("split-at", args, 2);
+				assertArity(args, 2);
 
 				if (args.second() == Nil) {
 					return VncVector.of(VncList.empty(), VncList.empty());
@@ -3757,7 +3755,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("split-with", args, 2);
+				assertArity(args, 2);
 
 				if (args.second() == Nil) {
 					return VncVector.of(VncList.empty(), VncList.empty());
@@ -3831,7 +3829,7 @@ public class CoreFunctions {
 		) {
 			@SuppressWarnings("unchecked")
 			public VncVal apply(final VncList args) {
-				assertArity("into", args, 0, 1, 2);
+				assertArity(args, 0, 1, 2);
 
 				if (args.size() == 0) {
 					return VncList.empty();
@@ -3976,7 +3974,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("sequential?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncSequence(args.first()));
 			}
@@ -3995,7 +3993,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("coll?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncCollection(args.first()));
 			}
@@ -4021,7 +4019,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("every?", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				if (args.second() == Nil) {
 					return False;
@@ -4065,7 +4063,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("not-every?", args, 2);
+				assertArity(args, 2);
 
 				return VncBoolean.of(VncBoolean.isFalse(every_Q.apply(args)));
 			}
@@ -4092,7 +4090,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("any?", args, 1, 2);
+				assertArity(args, 1, 2);
 
 
 				if (args.second() == Nil) {
@@ -4137,7 +4135,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("not-any?", args, 2);
+				assertArity(args, 2);
 
 				return VncBoolean.of(VncBoolean.isFalse(any_Q.apply(args)));
 			}
@@ -4165,7 +4163,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("some", args, 2);
+				assertArity(args, 2);
 
 				if (args.second() == Nil) {
 					return Nil;
@@ -4222,7 +4220,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("every-pred", args, 1);
+				assertMinArity(args, 1);
 
 				final List<VncFunction> predicates = args.getList()
 														 .stream()
@@ -4274,7 +4272,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("any-pred", args, 1);
+				assertMinArity(args, 1);
 
 				final List<VncFunction> predicates = args.getList()
 														 .stream()
@@ -4323,7 +4321,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("count", args, 1);
+				assertArity(args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {
@@ -4359,7 +4357,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("empty", args, 1);
+				assertArity(args, 1);
 
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -4395,7 +4393,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("empty?", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (val == Nil) {
@@ -4429,7 +4427,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("not-empty?", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (val == Nil) {
@@ -4482,7 +4480,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("cons", args, 2);
+				assertArity(args, 2);
 
 				final VncVal x = args.first();
 				final VncVal coll = args.second();
@@ -4643,7 +4641,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("cons!", args, 2);
+				assertArity(args, 2);
 
 				final VncVal coll = args.second();
 
@@ -4831,7 +4829,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("interleave", args, 2);
+				assertMinArity(args, 2);
 
 				final int numColl = args.size();
 				
@@ -4872,7 +4870,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("interpose", args, 2);
+				assertArity(args, 2);
 
 				final VncVal sep = args.first();
 				final VncSequence coll = Coerce.toVncSequence(args.second());
@@ -4912,7 +4910,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("first", args, 0, 1);
+				assertArity(args, 0, 1);
 
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -4950,7 +4948,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("second", args, 1);
+				assertArity(args, 1);
 
 
 				final VncVal coll = args.first();
@@ -4990,7 +4988,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("third", args, 1);
+				assertArity(args, 1);
 
 
 				final VncVal coll = args.first();
@@ -5030,7 +5028,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("fourth", args, 1);
+				assertArity(args, 1);
 
 
 				final VncVal coll = args.first();
@@ -5069,7 +5067,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("nth", args, 2);
+				assertArity(args, 2);
 
 				final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 
@@ -5111,7 +5109,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("last", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (val == Nil) {
@@ -5153,7 +5151,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("rest", args, 1);
+				assertArity(args, 1);
 
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -5204,7 +5202,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("butlast", args, 1);
+				assertArity(args, 1);
 
 				final VncVal coll = args.first();
 				if (coll == Nil) {
@@ -5256,7 +5254,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("nfirst", args, 2);
+				assertArity(args, 2);
 
 				final VncVal coll = args.first();
 				int n = Coerce.toVncLong(args.second()).getValue().intValue();
@@ -5325,7 +5323,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("nlast", args, 2);
+				assertArity(args, 2);
 
 				final VncVal coll = args.first();
 				int n = Coerce.toVncLong(args.second()).getValue().intValue();
@@ -5391,7 +5389,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("partition", args, 2, 3 ,4);
+				assertArity(args, 2, 3 ,4);
 
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
@@ -5450,7 +5448,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("empty-to-nil", args, 1);
+				assertArity(args, 1);
 
 				final VncVal arg = args.first();
 				if (Types.isVncString(arg)) {
@@ -5486,7 +5484,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("instance?", args, 2);
+					assertArity(args, 2);
 
 					final VncKeyword type = Coerce.toVncKeyword(args.first());					
 					final VncKeyword qualifiedType = type.hasNamespace() 
@@ -5516,7 +5514,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("pop", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (val == Nil) {
@@ -5557,7 +5555,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("pop!", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (val == Nil) {
@@ -5593,7 +5591,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("push!", args, 2);
+					assertArity(args, 2);
 
 					final VncVal val = args.first();
 					if (val == Nil) {
@@ -5636,7 +5634,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("offer!", args, 2, 3);
+					assertArity(args, 2, 3);
 
 					final VncVal val = args.first();
 					if (val == Nil) {
@@ -5683,7 +5681,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity("poll!", args, 1, 2);
+					assertArity(args, 1, 2);
 
 					final VncVal val = args.first();
 					if (val == Nil) {
@@ -5724,7 +5722,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("peek", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (val == Nil) {
@@ -5771,7 +5769,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("sort", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final IVncFunction compfn = args.size() == 1
 											? compare // -> sort by natural order
@@ -5826,7 +5824,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("sort-by", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final IVncFunction keyfn = Coerce.toIVncFunction(args.first());
 				final IVncFunction compfn = args.size() == 2
@@ -5864,7 +5862,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("group-by", args, 2);
+				assertArity(args, 2);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -5906,7 +5904,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("frequencies", args, 1);
+				assertArity(args, 1);
 
 				final VncSequence coll = Coerce.toVncSequence(args.first());
 
@@ -5978,7 +5976,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("comp", args, 0);
+				assertMinArity(args, 0);
 
 				final List<IVncFunction> fns =
 						args.getList()
@@ -6035,7 +6033,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("compare", args, 2);
+				assertArity(args, 2);
 
 				return new VncLong(args.first().compareTo(args.second()));
 			}
@@ -6062,7 +6060,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("partial", args, 2);
+				assertMinArity(args, 2);
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fnArgs = args.rest();
@@ -6150,7 +6148,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("map-keys", args, 2);
+				assertMinArity(args, 2);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -6189,7 +6187,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("map-vals", args, 2);
+				assertMinArity(args, 2);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -6231,7 +6229,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("docoll", args, 2);
+				assertArity(args, 2);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -6286,7 +6284,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("doall", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				if (args.size() == 1) {
 					if (Types.isVncLazySeq(args.first())) {
@@ -6366,7 +6364,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("map-invert", args, 1);
+				assertArity(args, 1);
 
 				final VncMap m = Coerce.toVncMap(args.first());
 
@@ -6394,7 +6392,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("filter-k", args, 2);
+				assertArity(args, 2);
 
 				final IVncFunction filterFn = Coerce.toIVncFunction(args.first());
 				VncMap map = Coerce.toVncMap(args.second());
@@ -6432,7 +6430,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("filter-kv", args, 2);
+				assertArity(args, 2);
 
 				final IVncFunction filterFn = Coerce.toIVncFunction(args.first());
 				final VncMap map = Coerce.toVncMap(args.second());
@@ -6484,7 +6482,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("reduce", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final boolean noInitValue = args.size() < 3;
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
@@ -6554,7 +6552,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("reduce-kv", args, 3);
+				assertArity(args, 3);
 
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
 				final List<VncMapEntry> values = Coerce.toVncMap(args.third()).entries();
@@ -6597,7 +6595,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("merge", args, 1);
+				assertMinArity(args, 1);
 
 				// remove Nil
 				final List<VncVal> maps = args.stream()
@@ -6634,7 +6632,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("merge-with", args, 1);
+				assertMinArity(args, 1);
 
 				final List<VncMap> rest = args.rest()
 											  .stream()
@@ -6688,7 +6686,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("disj", args, 2);
+				assertMinArity(args, 2);
 
 				if (args.first() instanceof VncSet) {
 					return ((VncSet)args.first()).removeAll(args.rest());
@@ -6722,7 +6720,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("seq", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (Types.isVncMap(val)) {
@@ -6774,7 +6772,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("repeat", args, 1, 2);
+				assertArity(args, 1, 2);
 				
 				if (args.size() == 1) {
 					final VncVal val = args.first();
@@ -6823,7 +6821,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("repeatedly", args, 2);
+				assertArity(args, 2);
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
@@ -6861,7 +6859,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("meta", args, 1);
+				assertArity(args, 1);
 
 				return args.first().getMeta();
 			}
@@ -6879,7 +6877,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("meta", args, 2);
+				assertArity(args, 2);
 
 				return args.first().withMeta(Coerce.toVncMap(args.second()));
 			}
@@ -6898,7 +6896,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("vary-meta", args, 2);
+				assertMinArity(args, 2);
 
 				final VncVal obj = args.first();
 				final VncVal meta = obj.getMeta();
@@ -6929,7 +6927,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("gensym", args, 0, 1);
+				assertArity(args, 0, 1);
 
 				return args.isEmpty()
 						? GenSym.generate()
@@ -6956,7 +6954,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("name", args, 1);
+				assertArity(args, 1);
 
 				final VncVal arg = args.first();
 
@@ -6999,7 +6997,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("type", args, 1);
+				assertArity(args, 1);
 				return Types.getType(args.first());
 			}
 
@@ -7020,7 +7018,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("supertype", args, 1);
+				assertArity(args, 1);
 				return Types.getSupertype(args.first());
 			}
 
@@ -7071,7 +7069,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("highlight", args, 1);
+				assertArity(args, 1);
 				
 				final String form = Coerce.toVncString(args.first()).getValue();
 				

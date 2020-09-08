@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.File;
@@ -65,7 +63,7 @@ public class ModuleFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertArity("*load-module", args, 1);
+				assertArity(args, 1);
 
 				try {
 					final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
@@ -94,7 +92,7 @@ public class ModuleFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("*load-classpath-file", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("*load-classpath-file");
 
@@ -132,7 +130,7 @@ public class ModuleFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity("*load-resource", args, 2);
+				assertMinArity(args, 2);
 				
 				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest().rest());

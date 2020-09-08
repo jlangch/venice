@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.BufferedReader;
@@ -89,7 +87,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("json/write", args, 1);
+				assertMinArity(args, 1);
 	
 				final VncVal val = args.first();
 				
@@ -142,7 +140,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("json/spit", args, 2);
+				assertMinArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("json/spit");
 
@@ -240,7 +238,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("json/read-str", args, 1);
+				assertMinArity(args, 1);
 	
 				final VncVal val = args.first();
 				
@@ -307,7 +305,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("json/slurp", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("json/slurp");
 
@@ -371,7 +369,7 @@ public class JsonFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("json/pretty-print", args, 1);
+				assertArity(args, 1);
 	
 				final VncVal val = args.first();
 				

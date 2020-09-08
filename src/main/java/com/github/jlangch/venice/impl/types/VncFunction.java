@@ -28,7 +28,9 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -220,6 +222,24 @@ public abstract class VncFunction
 						.append("}"));
 	}
 
+	protected void assertArity(final VncList args, final int... expectedArities) {
+		final int arity = args.size();
+		for (int ii=0; ii<expectedArities.length; ii++) {
+			if (expectedArities[ii] == arity) return;
+		}		
+		throw new ArityException(arity, qualifiedName);
+	}
+	
+	protected void assertMinArity(final VncList args, final int minArity) {
+		final int arity = args.size();
+		if (arity < minArity) {
+			throw new ArityException(arity, qualifiedName);
+		}
+	}
+
+	protected void sandboxFunctionValidation() {
+		JavaInterop.getInterceptor().validateVeniceFunction(qualifiedName);
+	}
 	
 	public static String createAnonymousFuncName() {
 		return createAnonymousFuncName(null);

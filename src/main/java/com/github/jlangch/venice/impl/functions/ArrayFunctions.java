@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.lang.reflect.Array;
@@ -61,7 +59,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("aset", args, 3);
+				assertArity(args, 3);
 
 				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 				final VncInteger idx = Numeric.toInteger(args.second());
@@ -114,7 +112,7 @@ public class ArrayFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
-					assertArity("aget", args, 2);
+					assertArity(args, 2);
 
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 					final VncInteger idx = Numeric.toInteger(args.second());
@@ -150,7 +148,7 @@ public class ArrayFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
-					assertArity("alength", args, 1);
+					assertArity(args, 1);
 
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 	
@@ -179,7 +177,7 @@ public class ArrayFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
-					assertArity("asub", args, 3);
+					assertArity(args, 3);
 	
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 					final int start = Coerce.toVncLong(args.second()).getIntValue();
@@ -219,7 +217,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("amap", args, 2);
+				assertArity(args, 2);
 	
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncJavaObject oArr = Coerce.toVncJavaObject(args.second());
@@ -312,7 +310,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("acopy", args, 5);
+				assertArity(args, 5);
 	
 				final VncJavaObject joSrc = Coerce.toVncJavaObject(args.nth(0));
 				final int srcPos = Coerce.toVncLong(args.nth(1)).getIntValue();
@@ -369,7 +367,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertMinArity("make-array", args, 2);
+				assertMinArity(args, 2);
 
 				final String className = Coerce.toVncKeyword(args.first()).getValue();
 				
@@ -420,7 +418,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("object-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -467,7 +465,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("string-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -519,7 +517,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("byte-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -572,7 +570,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("int-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -625,7 +623,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("long-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -678,7 +676,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("float-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -731,7 +729,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity("double-array", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				final VncVal arg = args.first();
 				

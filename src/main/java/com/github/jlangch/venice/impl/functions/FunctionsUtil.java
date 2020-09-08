@@ -39,8 +39,8 @@ public class FunctionsUtil {
 			final int... expectedArities
 	) {
 		final int arity = args.size();
-		for (int a : expectedArities) {
-			if (a == arity) return;
+		for (int ii=0; ii<expectedArities.length; ii++) {
+			if (expectedArities[ii] == arity) return;
 		}		
 		throw new ArityException(arity, fnName);
 	}

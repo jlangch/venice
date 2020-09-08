@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -76,7 +74,7 @@ public class CsvFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("cvs/read", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("cvs/read");
 
@@ -157,7 +155,7 @@ public class CsvFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("cvs/write", args, 2);
+				assertMinArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("cvs/write");
 
@@ -218,7 +216,7 @@ public class CsvFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertMinArity("cvs/write-str", args, 1);
+					assertMinArity(args, 1);
 		
 					try {
 						final VncHashMap options = VncHashMap.ofAll(args.rest());

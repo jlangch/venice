@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
@@ -60,7 +59,7 @@ public class RegexFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertArity("regex/pattern", args, 1);
+					assertArity(args, 1);
 		
 					// "[Regex Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)"
 					return new VncJavaObject(
@@ -87,7 +86,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/matcher", args, 2);
+				assertArity(args, 2);
 
 				final VncVal pattern = args.first();
 				final Pattern p = Types.isVncString(pattern)
@@ -117,7 +116,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/find", args, 1);
+				assertArity(args, 1);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
@@ -143,7 +142,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/matches", args, 2);
+				assertArity(args, 2);
 	
 				final VncVal pattern = args.first();
 				final Pattern p = Types.isVncString(pattern)
@@ -182,7 +181,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/matches", args, 1);
+				assertArity(args, 1);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
@@ -209,7 +208,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/find", args, 1);
+				assertArity(args, 1);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				if (m.find()) {
@@ -239,7 +238,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/find-all", args, 1);
+				assertArity(args, 1);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				final List<VncVal> matches = new ArrayList<>();
@@ -269,7 +268,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/find-group", args, 1);
+				assertArity(args, 1);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				if (m.find()) {
@@ -299,7 +298,7 @@ public class RegexFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertArity("regex/find-all-groups", args, 1);
+					assertArity(args, 1);
 		
 					final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
 					final List<VncVal> groups = new ArrayList<>();
@@ -332,7 +331,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/reset", args, 2);
+				assertArity(args, 2);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				final String s = Coerce.toVncString(args.second()).getValue();		
@@ -361,7 +360,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/group", args, 2);
+				assertArity(args, 2);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				final int g = Coerce.toVncLong(args.second()).getValue().intValue();		
@@ -393,7 +392,7 @@ public class RegexFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("regex/groupcount", args, 1);
+				assertArity(args, 1);
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 					

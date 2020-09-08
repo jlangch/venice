@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
@@ -78,7 +77,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/date", args, 0, 1);
+				assertArity(args, 0, 1);
 
 				if (args.size() == 0) {
 					return new VncJavaObject(new Date());
@@ -135,7 +134,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/date?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), Date.class));
 			}
@@ -168,7 +167,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/local-date", args, 0, 1, 3);
+				assertArity(args, 0, 1, 3);
 
 				if (args.size() == 0) {
 					return new VncJavaObject(LocalDate.now());
@@ -240,7 +239,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/local-date?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), LocalDate.class));
 			}
@@ -263,7 +262,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/local-date-parse", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final VncString date = Coerce.toVncString(args.first());
 				final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
@@ -304,7 +303,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/local-date-time", args, 0, 1, 3, 6, 7);
+				assertArity(args, 0, 1, 3, 6, 7);
 
 				if (args.size() == 0) {
 					return new VncJavaObject(LocalDateTime.now());
@@ -399,7 +398,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/local-date-time?", args, 1);
+				assertArity(args, 1);
 
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), LocalDateTime.class));
 			}
@@ -420,7 +419,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/local-date-time-parse", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final VncString date = Coerce.toVncString(args.first());
 				final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
@@ -474,7 +473,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/zoned-date-time", args, 0, 1, 2, 3, 4, 6, 7, 8);
+				assertArity(args, 0, 1, 2, 3, 4, 6, 7, 8);
 
 				ZoneId zoneId = null;
 				VncList argList = args;
@@ -581,7 +580,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/zoned-date-time?", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				return VncBoolean.of(Types.isVncJavaObject(val, ZonedDateTime.class));
@@ -605,7 +604,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/zoned-date-time-parse", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				final VncString date = Coerce.toVncString(args.first());
 				final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
@@ -635,7 +634,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/after?", args, 2);
+				assertArity(args, 2);
 
 				final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -672,7 +671,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/not-after?", args, 2);
+				assertArity(args, 2);
 
 				final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -709,7 +708,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/before?", args, 2);
+				assertArity(args, 2);
 
 				final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -746,7 +745,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/not-before?", args, 2);
+				assertArity(args, 2);
 
 				final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -790,7 +789,7 @@ public class TimeFunctions {
 						.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/plus", args, 3);
+				assertArity(args, 3);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
@@ -835,7 +834,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/minus", args, 3);
+				assertArity(args, 3);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
@@ -883,7 +882,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/period", args, 3);
+				assertArity(args, 3);
 
 				final Object from = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final Object to = Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -934,7 +933,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/year", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -971,7 +970,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/month", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1008,7 +1007,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/day-of-week", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1045,7 +1044,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/day-of-month", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1082,7 +1081,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/day-of-year", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1119,7 +1118,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/first-day-of-month", args, 1);
+				assertArity(args, 1);
 
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1159,7 +1158,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/last-day-of-month", args, 1);
+				assertArity(args, 1);
 
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1199,7 +1198,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/hour", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1236,7 +1235,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/minute", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1273,7 +1272,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/second", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1311,7 +1310,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/length-of-year", args, 1);
+				assertArity(args, 1);
 
 
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -1350,7 +1349,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/length-of-month", args, 1);
+				assertArity(args, 1);
 
 
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -1389,7 +1388,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/leap-year?", args, 1);
+				assertArity(args, 1);
 
 
 				if (args.first() instanceof VncLong) {
@@ -1439,7 +1438,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/with-time", args, 4, 5);
+				assertArity(args, 4, 5);
 
 				final Object dt = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1493,7 +1492,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/latest", args, 1);
+				assertArity(args, 1);
 
 				final List<VncVal> dates = toJavaList(args, "time/latest");
 
@@ -1532,7 +1531,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/earliest", args, 1);
+				assertArity(args, 1);
 
 				final List<VncVal> dates = toJavaList(args, "time/earliest");
 
@@ -1573,7 +1572,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/within?", args, 3);
+				assertArity(args, 3);
 
 				final VncVal date = args.first();
 				final VncVal start = args.second();
@@ -1609,7 +1608,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/zone", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1643,7 +1642,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/zone-offset", args, 1);
+				assertArity(args, 1);
 
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
@@ -1688,7 +1687,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/formatter", args, 1, 2);
+				assertArity(args, 1, 2);
 
 				// locale
 				final Locale locale = args.size() == 2 ? getLocale(args.second()) : null;
@@ -1718,7 +1717,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/format", args, 2, 3);
+				assertArity(args, 2, 3);
 
 				if (!Types.isVncJavaObject(args.first())) {
 					throw new VncException(String.format(
@@ -1775,7 +1774,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/zone-ids", args, 0);
+				assertArity(args, 0);
 
 
 				final List<String> zoneList = new ArrayList<>(ZoneId.getAvailableZoneIds());
@@ -1811,7 +1810,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity("time/to-millis", args, 1);
+				assertArity(args, 1);
 
 				final VncVal val = args.first();
 				if (Types.isVncJavaObject(val)) {

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.awt.Color;
@@ -99,7 +97,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("pdf/render", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("pdf/render");
 
@@ -159,7 +157,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("pdf/watermark", args, 2);
+				assertMinArity(args, 2);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("pdf/watermark");
 
@@ -222,7 +220,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/check-required-libs", args, 0);
+				assertArity(args, 0);
 				
 				// com.github.librepdf:openpdf:xxx
 				if (ReflectionAccessor.classExists("com.lowagie.text.Anchor")
@@ -261,7 +259,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/available?", args, 0);
+				assertArity(args, 0);
 				
 				try {
 					pdf_check_required_libs.apply(VncList.empty());
@@ -290,7 +288,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("pdf/merge", args, 1);
+				assertMinArity(args, 1);
 				
 				JavaInterop.getInterceptor().validateVeniceFunction("pdf/merge");
 
@@ -358,7 +356,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("pdf/copy", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("pdf/copy");
 
@@ -439,7 +437,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity("pdf/pages", args, 1);
+				assertArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("pdf/pages");
 
@@ -481,7 +479,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity("pdf/text-to-pdf", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("pdf/text-to-pdf");
 

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -142,7 +140,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("proxify", args, 2);
+			assertArity(args, 2);
 
 			JavaInterop.getInterceptor().validateVeniceFunction("proxify");
 
@@ -184,7 +182,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("cast", args, 2);
+			assertArity(args, 2);
 
 			if (Types.isVncJavaObject(args.second())) {
 				final Class<?> clazz = JavaInteropUtil.toClass(
@@ -227,7 +225,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("formal-type", args, 1);
+			assertArity(args, 1);
 
 			if (Types.isVncJavaObject(args.first())) {
 				final VncJavaObject obj = (VncJavaObject)args.first();
@@ -260,7 +258,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("class", args, 1);
+			assertArity(args, 1);
 					
 			return new VncJavaObject(
 						JavaInteropUtil.toClass(
@@ -285,7 +283,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("stacktrace", args, 1);
+			assertArity(args, 1);
 
 			if (Types.isVncJavaObject(args.first())) {
 				final VncJavaObject obj = (VncJavaObject)args.first();
@@ -326,7 +324,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("exists-class?", args, 1);
+			assertArity(args, 1);
 					
 			try {
 				JavaInteropUtil.toClass(
@@ -356,7 +354,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("supers", args, 1);
+			assertArity(args, 1);
 					
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -390,7 +388,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("bases", args, 1);
+			assertArity(args, 1);
 			
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -423,7 +421,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("describe-class", args, 1);
+			assertArity(args, 1);
 				
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -516,7 +514,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("java-obj?", args, 1);
+			assertArity(args, 1);
 			
 			return VncBoolean.of(Types.isVncJavaObject(args.first()));
 		}
@@ -537,7 +535,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("java-enumeration-to-list", args, 1);
+			assertArity(args, 1);
 			
 			if (Types.isVncJavaObject(args.first(), Enumeration.class)) {
 				final Enumeration<?> e = (Enumeration<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -571,7 +569,7 @@ public class JavaInteropFunctions {
 			
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("java-iterator-to-list", args, 1);
+			assertArity(args, 1);
 			
 			if (Types.isVncJavaObject(args.first(), Iterator.class)) {
 				final Iterator<?> i = (Iterator<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -604,7 +602,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("java-wrap", args, 1);
+			assertArity(args, 1);
 			
 			final VncVal arg = args.first();
 			
@@ -629,7 +627,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity("java-unwrap", args, 1);
+			assertArity(args, 1);
 			
 			final VncVal arg = args.first();
 			

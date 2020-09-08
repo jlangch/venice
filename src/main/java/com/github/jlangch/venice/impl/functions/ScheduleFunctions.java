@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertArity;
-
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -69,7 +67,7 @@ public class ScheduleFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
-				assertArity("schedule-delay", args, 3);
+				assertArity(args, 3);
 	
 				JavaInterop.getInterceptor().validateVeniceFunction("schedule-delay");
 
@@ -132,7 +130,7 @@ public class ScheduleFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
-				assertArity("schedule-at-fixed-rate", args, 4);
+				assertArity(args, 4);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("schedule-at-fixed-rate");
 

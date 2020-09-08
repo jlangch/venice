@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.assertMinArity;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.BufferedReader;
@@ -150,7 +149,7 @@ public class ShellFunctions {
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
-				assertMinArity("sh", args, 1);
+				assertMinArity(args, 1);
 
 				JavaInterop.getInterceptor().validateVeniceFunction("sh");
 
