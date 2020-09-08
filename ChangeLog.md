@@ -30,7 +30,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - function `map-keys` and `map-vals`
 - function `io/await-for` to wait for a file getting created, modified, or deleted
 - function `io/watch-dir` and `io/close-watcher` to watch file modifications in a directory
-- function `shell/open` to opens a file or an url with the associated application
+- function `shell/open` to open a file or an url with the associated application
+- 'gradle' extension module to run gradle build tasks
 
 
 

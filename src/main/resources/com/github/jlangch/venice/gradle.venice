@@ -29,8 +29,8 @@
      :doc "Sets the Gradle home directory for all subsequent calls."
      :examples '(
           """
-          (gradle/with-home "/Users/juerg/Documents/Tools/groovy/gradle-5.6.2"
-                            "/Users/juerg/Documents/my-project"
+          (gradle/with-home "/Users/foo/Documents/Tools/gradle-5.6.2"
+                            "/Users/foo/Documents/Projects/my-project"
             (gradle/version))
           """) }
 
@@ -47,8 +47,8 @@
      :doc "Returns the Gradle version"
      :examples '(
           """
-          (gradle/with-home "/Users/juerg/Documents/Tools/groovy/gradle-5.6.2"
-                            "/Users/juerg/Documents/my-project"
+          (gradle/with-home "/Users/foo/Documents/Tools/gradle-5.6.2"
+                            "/Users/foo/Documents/Projects/my-project"
             (gradle/version))
           """) }
   (-<> ((gradle/exec) (str *gradle-script* " -version") :throw-ex true)
@@ -67,8 +67,8 @@
      :doc "Runs a gradle task"
      :examples '(
           """
-          (gradle/with-home "/Users/juerg/Documents/Tools/groovy/gradle-5.6.2"
-                            "/Users/juerg/Documents/my-project"
+          (gradle/with-home "/Users/foo/Documents/Tools/gradle-5.6.2"
+                            "/Users/foo/Documents/Projects/my-project"
             (gradle/task compile)
             (gradle/task compile "--warning-mode=all" "--stacktrace")
             (gradle/task compile println)
