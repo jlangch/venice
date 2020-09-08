@@ -41,9 +41,7 @@
 
 (defn
   ^{ :arglists '("(open url)")
-     :doc """
-          Opens a file or an url with the associated application.
-          """
+     :doc "Opens a file or an url with the associated application."
      :examples '(
           """(shell/open "img.png")"""
           """(shell/open "https://www.heise.de/")""") }
@@ -55,6 +53,20 @@
       :mac-osx (sh "/usr/bin/open" url)
       :linux   (sh "/usr/bin/xdg-open" url)
       :windows (sh "cmd" "/C" "start" url))))
+
+
+  (defn
+    ^{ :arglists '("(open-macos-app name)")
+       :doc "Opens a Mac OSX applicaton application."
+       :examples '(
+            """(shell/open-macos-app "ArangoDB")""") }
+
+    open-macos-app [name]
+
+    (when-not (os-type? :mac-osx)
+      (throw (venice-exception "Can only open a Mac OSX applicaton on Mac OSX!")))
+
+    (sh "/usr/bin/open" "-a" name))
 
 
 (defmulti
