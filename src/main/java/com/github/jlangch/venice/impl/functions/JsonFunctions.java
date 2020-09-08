@@ -40,7 +40,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -142,7 +141,7 @@ public class JsonFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("json/spit");
+				sandboxFunctionCallValidation();
 
 				final Object out = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final VncVal val = args.second();
@@ -307,7 +306,7 @@ public class JsonFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("json/slurp");
+				sandboxFunctionCallValidation();
 
 				final VncVal val = args.first();
 				

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -96,7 +95,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip");
+				sandboxFunctionCallValidation();
 
 				if (args.isEmpty()) {
 					return Nil;
@@ -182,7 +181,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 3);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip-append");
+				sandboxFunctionCallValidation();
 
 				final File file = convertToFile(
 									args.first(),
@@ -264,7 +263,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip-remove");
+				sandboxFunctionCallValidation();
 
 				final File file = convertToFile(
 									args.first(),
@@ -307,7 +306,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip-size");
+				sandboxFunctionCallValidation();
 
 				if (args.isEmpty()) {
 					return new VncLong(0);
@@ -363,7 +362,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/unzip");
+				sandboxFunctionCallValidation();
 
 				final VncVal buf = args.first();
 				final String entryName = Coerce.toVncString(args.second()).getValue();
@@ -423,7 +422,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/unzip-first");
+				sandboxFunctionCallValidation();
 
 				final VncVal buf = args.first();
 				try {
@@ -483,7 +482,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/unzip-nth");
+				sandboxFunctionCallValidation();
 
 				final VncVal buf = args.first();
 				final int entryIdx = Coerce.toVncLong(args.second()).getIntValue();
@@ -545,7 +544,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/unzip-all");
+				sandboxFunctionCallValidation();
 
 				final VncVal buf = args.first();
 				try {
@@ -624,7 +623,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip-file");
+				sandboxFunctionCallValidation();
 
 				int ii = 0;
 
@@ -716,7 +715,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip-list");
+				sandboxFunctionCallValidation();
 
 				try {
 					final VncVal f = args.first();
@@ -772,7 +771,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/zip-list-entry-names");
+				sandboxFunctionCallValidation();
 
 				try {
 					final VncVal f = args.first();
@@ -830,7 +829,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/unzip-to-dir");
+				sandboxFunctionCallValidation();
 
 				final VncVal f = args.first();
 				final File dir = Coerce.toVncJavaObject(args.second(), File.class);
@@ -889,7 +888,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/gzip");
+				sandboxFunctionCallValidation();
 
 				final VncVal f = args.first();
 				try {
@@ -949,7 +948,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/gzip-to-stream");
+				sandboxFunctionCallValidation();
 
 				final VncVal f = args.first();
 				final OutputStream os = (OutputStream)Coerce.toVncJavaObject(args.second()).getDelegate();
@@ -1009,7 +1008,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/ungzip");
+				sandboxFunctionCallValidation();
 
 				final VncVal f = args.first();
 				try {
@@ -1065,7 +1064,7 @@ public class ZipFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("io/ungzip-to-stream");
+				sandboxFunctionCallValidation();
 
 				final VncVal buf = args.first();
 				try {

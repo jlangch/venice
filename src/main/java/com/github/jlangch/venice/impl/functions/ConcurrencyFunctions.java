@@ -666,7 +666,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("agent");
+				sandboxFunctionCallValidation();
 
 				final VncMap opts = VncHashMap.ofAll(args.rest());
 
@@ -698,7 +698,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("send");
+				sandboxFunctionCallValidation();
 
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -741,7 +741,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("send-off");
+				sandboxFunctionCallValidation();
 
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -780,7 +780,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("restart-agent");
+				sandboxFunctionCallValidation();
 
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -824,7 +824,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("set-error-handler!");
+				sandboxFunctionCallValidation();
 
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -862,7 +862,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("agent-error");
+				sandboxFunctionCallValidation();
 
 				if (Types.isVncJavaObject(args.first(), Agent.class)) {
 					final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -934,7 +934,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("await");
+				sandboxFunctionCallValidation();
 
 				final List<Agent> agents = args.getList()
 											   .stream()
@@ -975,7 +975,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("await-for");
+				sandboxFunctionCallValidation();
 
 				final long timeoutMillis = Coerce.toVncLong(args.first()).getValue();
 				final List<Agent> agents = args.rest()
@@ -1012,7 +1012,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 0);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("shutdown-agents");
+				sandboxFunctionCallValidation();
 
 				Agent.shutdown();
 				
@@ -1068,7 +1068,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("await-termination-agents");
+				sandboxFunctionCallValidation();
 
 				final long timeoutMillis = Coerce.toVncLong(args.first()).getValue();
 	
@@ -1133,7 +1133,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("deliver");
+				sandboxFunctionCallValidation();
 
 				final Object promise = Coerce.toVncJavaObject(args.first()).getDelegate();
 				final VncVal value = args.second();
@@ -1183,7 +1183,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 0);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("promise");
+				sandboxFunctionCallValidation();
 
 				return new VncJavaObject(new CompletableFuture<VncVal>());
 			}
@@ -1254,7 +1254,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {	
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("future");
+				sandboxFunctionCallValidation();
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 		
@@ -1369,7 +1369,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("future-cancel");
+				sandboxFunctionCallValidation();
 	
 				if (Types.isVncJavaObject(args.first(), Future.class)) {
 					try {
@@ -1447,7 +1447,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("futures-fork");
+				sandboxFunctionCallValidation();
 	
 				final VncLong count = Coerce.toVncLong(args.first());
 				final VncFunction workerFactoryFn = Coerce.toVncFunction(args.second());
@@ -1488,7 +1488,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 0);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("futures-wait");
+				sandboxFunctionCallValidation();
 	
 				for(VncVal v : args.getList()) {
 					final Future<?> future = Coerce.toVncJavaObject(v, Future.class);
@@ -1561,7 +1561,7 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("force");
+				sandboxFunctionCallValidation();
 	
 				if (Types.isVncJavaObject(args.first(), Delay.class)) {
 					final Delay delay = Coerce.toVncJavaObject(args.first(), Delay.class);

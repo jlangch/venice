@@ -347,7 +347,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 0);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("gc");
+				sandboxFunctionCallValidation();
 				
 				Runtime.getRuntime().runFinalization();
 				Runtime.getRuntime().gc();
@@ -392,7 +392,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("shutdown-hook");
+				sandboxFunctionCallValidation();
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 

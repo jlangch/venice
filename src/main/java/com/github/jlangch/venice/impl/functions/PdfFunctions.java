@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -99,7 +98,7 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("pdf/render");
+				sandboxFunctionCallValidation();
 
 				final VncString xhtml = Coerce.toVncString(args.first()); 
 
@@ -159,7 +158,7 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("pdf/watermark");
+				sandboxFunctionCallValidation();
 
 				final VncVal pdf = args.first();
 				
@@ -290,7 +289,7 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 				
-				JavaInterop.getInterceptor().validateVeniceFunction("pdf/merge");
+				sandboxFunctionCallValidation();
 
 				final List<VncVal> pdfs = args.getList();
 
@@ -358,7 +357,7 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("pdf/copy");
+				sandboxFunctionCallValidation();
 
 				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 
@@ -439,7 +438,7 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("pdf/pages");
+				sandboxFunctionCallValidation();
 
 				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 				
@@ -481,7 +480,7 @@ public class PdfFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				JavaInterop.getInterceptor().validateVeniceFunction("pdf/text-to-pdf");
+				sandboxFunctionCallValidation();
 
 				try {
 					final String text = Coerce.toVncString(args.first()).getValue();

@@ -222,6 +222,7 @@ public abstract class VncFunction
 						.append("}"));
 	}
 
+	
 	protected void assertArity(final VncList args, final int... expectedArities) {
 		final int arity = args.size();
 		for (int ii=0; ii<expectedArities.length; ii++) {
@@ -237,9 +238,10 @@ public abstract class VncFunction
 		}
 	}
 
-	protected void sandboxFunctionValidation() {
+	protected void sandboxFunctionCallValidation() {
 		JavaInterop.getInterceptor().validateVeniceFunction(qualifiedName);
 	}
+	
 	
 	public static String createAnonymousFuncName() {
 		return createAnonymousFuncName(null);

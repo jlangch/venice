@@ -102,7 +102,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			JavaInterop.getInterceptor().validateVeniceFunction(".");
+			sandboxFunctionCallValidation();
 
 			return JavaInteropUtil.applyJavaAccess(
 					args, 
@@ -141,8 +141,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 2);
-
-			JavaInterop.getInterceptor().validateVeniceFunction("proxify");
+			sandboxFunctionCallValidation();
 
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
