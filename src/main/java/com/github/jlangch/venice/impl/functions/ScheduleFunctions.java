@@ -31,13 +31,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -122,9 +120,9 @@ public class ScheduleFunctions {
 						"will work on the returned future. \n" + 
 						"Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
 					.examples(
-						"(schedule-at-fixed-rate (fn[] (println \"test\")) 1 2 :seconds)",
+						"(schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)",
 						
-						"(let [s (schedule-at-fixed-rate (fn[] (println \"test\")) 1 2 :seconds)] \n" +
+						"(let [s (schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)] \n" +
 						"   (sleep 16 :seconds) \n" +
 						"   (future-cancel s))")
 					.build()
@@ -138,25 +136,7 @@ public class ScheduleFunctions {
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncLong period = Coerce.toVncLong(args.third());
 				final VncKeyword unit = Coerce.toVncKeyword(args.nth(3));
-	
-				// wrap the passed function so that its return value can be
-				// wrapped with a VncTunnelAsJavaObject. So that there are no 
-				// VncVal -> Java Object conversions. Thus
-				// the function's return value is not touched (just 
-				// wrapped/unwrapped with a VncTunnelAsJavaObject)!			
-				final VncFunction wrapped = new VncFunction(fn.getQualifiedName(), fn.getMeta()) {
-					public VncVal apply(final VncList args) {
-						return new VncTunnelAsJavaObject(fn.apply(args));
-					}
-					
-					private static final long serialVersionUID = -1L;
-				};
-				
-				final Runnable task = (Runnable)DynamicInvocationHandler.proxify(
-													ThreadLocalMap.getCallStack().peek(),
-													Runnable.class, 
-													VncHashMap.of(new VncKeyword("run"), wrapped));
-	
+		
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
@@ -170,7 +150,7 @@ public class ScheduleFunctions {
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
-						task.run();
+						fn.applyOf();
 					}
 					finally {
 						// clean up

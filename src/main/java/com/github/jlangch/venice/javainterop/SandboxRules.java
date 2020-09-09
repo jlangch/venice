@@ -691,6 +691,9 @@ public class SandboxRules {
 							"user.home",
 							"user.name")));
 
+	public static final Set<String> DEFAULT_SYSTEM_ENVS = 
+			Collections.unmodifiableSet(
+				new HashSet<>());
 
 	public static Set<String> DEFAULT_WHITELISTED_MODULES =
 			Collections.unmodifiableSet(
@@ -701,10 +704,6 @@ public class SandboxRules {
 						"math",
 						"walk",
 						"xml")));
-
-	public static final Set<String> DEFAULT_SYSTEM_ENVS = 
-			Collections.unmodifiableSet(
-				new HashSet<>());
 	
 
 	private final List<String> rules = new ArrayList<>();

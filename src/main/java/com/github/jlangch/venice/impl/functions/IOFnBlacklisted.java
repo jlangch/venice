@@ -47,7 +47,6 @@ public class IOFnBlacklisted {
 					"gc",
 					"shutdown-hook",
 					"sh",
-					"system-prop",
 					
 					// concurrency
 					"deliver",

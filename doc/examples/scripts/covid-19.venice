@@ -33,15 +33,18 @@
 
   ;; https://www.worldometers.info/population/europe/
   (def country-config
-    (ordered-map "Switzerland" { :population  8725700  :color :x-green      }
-                 "Romania"     { :population 19372000  :color :x-blue       }
-                 "Austria"     { :population  8955100  :color :x-purple     }
-                 "Hungary"     { :population  9684600  :color :x-orange     }
-                 "Germany"     { :population 83517000  :color :x-red        }
-                 "Italy"       { :population 60550000  :color :x-pink       }
-                 "France"      { :population 65129800  :color :x-light-blue }
-                 "Sweden"      { :population 10036300  :color :x-dark-gray  }
-                 "Quarantine"  { :population        0  :color :x-light-gray } ))
+    (ordered-map
+      "Switzerland" { :population  8725700  :color :x-green      :stroke :solid     }
+      "Romania"     { :population 19372000  :color :x-blue       :stroke :solid     }
+      "Austria"     { :population  8955100  :color :x-purple     :stroke :solid     }
+      "Hungary"     { :population  9684600  :color :x-orange     :stroke :solid     }
+      "Germany"     { :population 83517000  :color :x-red        :stroke :solid     }
+      "Italy"       { :population 60550000  :color :x-pink       :stroke :solid     }
+      "France"      { :population 65129800  :color :x-light-blue :stroke :solid     }
+      "Sweden"      { :population 10036300  :color :x-dark-gray  :stroke :solid     }
+      "Greece"      { :population 10473400  :color :x-pink       :stroke :dash-dash }
+      "Spain"       { :population 46736700  :color :x-red        :stroke :dash-dash }
+      "Quarantine"  { :population        0  :color :x-light-gray :stroke :solid     } ))
 
   (def sample-days 14)
   (def quarantine-case-limit 60)
@@ -148,16 +151,17 @@
              [ [ first-day quarantine-case-limit ]
                [ last-day  quarantine-case-limit ] ])))
 
-  (defn series [country-data country-colors country]
-    (let [data (get country-data country)
-          col  (get country-colors country)]
+  (defn series [country-data country-config country]
+    (let [data   (get country-data country)
+          style  (get country-config country)]
       { :x     (map first data)
         :y     (map second data)
         :style { :marker-type :none
-                 :line-color  col }}))
+                 :line-color  (:color style)
+                 :line-style  (:stroke style) }}))
 
-  (defn render-chart [country-data country-colors]
-    (let [country-series (partial series country-data country-colors)]
+  (defn render-chart [country-data country-config]
+    (let [country-series (partial series country-data country-config)]
       (xchart/xy-chart
          (ordered-map "Switzerland" (country-series "Switzerland")
                       "Romania"     (country-series "Romania")
@@ -167,6 +171,8 @@
                       "Italy"       (country-series "Italy")
                       "France"      (country-series "France")
                       "Sweden"      (country-series "Sweden")
+                      ; "Spain"       (country-series "Spain")
+                      ; "Greece"      (country-series "Greece")
                       "Quarantine"  (country-series "Quarantine"))
          { :title "Covid-19 (~(str (time/local-date)))"
            :width 2000
@@ -177,13 +183,12 @@
            :theme :xchart } )))
 
   (defn create-chart [country-html-data country-names]
-    (let [country-populations (map-vals :population country-config)
-          country-colors      (map-vals :color country-config)]
+    (let [country-populations (map-vals :population country-config)]
       (-> (compute-countries country-html-data
                              country-populations
                              country-names)
           (add-quarantine)
-          (render-chart country-colors))))
+          (render-chart country-config))))
 
   ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
   (let [chart-file    "covid-19.png"
