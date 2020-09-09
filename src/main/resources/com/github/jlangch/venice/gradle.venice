@@ -26,7 +26,10 @@
 
 (defmacro
   ^{ :arglists '("(with-home gradle-dir proj-dir & forms)")
-     :doc "Sets the Gradle home directory for all subsequent calls."
+     :doc """
+          Sets the Gradle home and the project directory for all \
+          subsequent forms.
+          """
      :examples '(
           """
           (gradle/with-home "/Users/foo/Documents/Tools/gradle-5.6.2"
@@ -42,7 +45,7 @@
     (do ~@forms)))
 
 
-(defn version []
+(defn
   ^{ :arglists '("(gradle/version)")
      :doc "Returns the Gradle version"
      :examples '(
@@ -51,6 +54,9 @@
                             "/Users/foo/Documents/Projects/my-project"
             (gradle/version))
           """) }
+
+  version []
+
   (-<> ((gradle/exec) (str *gradle-script* " -version") :throw-ex true)
        (:out <>)
        (str/split-lines <>)
@@ -59,11 +65,11 @@
        (first <>)))
 
 
-(defn task
+(defn
   ^{ :arglists '(
-        "(gradle/task name & options)"
-        "(gradle/task name out-fn & options)"
-        "(gradle/task name out-fn err-fn throw-ex & options)")
+          "(gradle/task name & options)"
+          "(gradle/task name out-fn & options)"
+          "(gradle/task name out-fn err-fn throw-ex & options)")
      :doc "Runs a gradle task"
      :examples '(
           """
@@ -75,6 +81,8 @@
             (gradle/task compile println println true)
             (gradle/task compile println println true "--stacktrace"))
           """) }
+  task
+
   ([name & options]
     (gradle/task name println println true options))
 

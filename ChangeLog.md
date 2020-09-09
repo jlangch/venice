@@ -32,6 +32,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - function `io/watch-dir` and `io/close-watcher` to watch file modifications in a directory
 - function `shell/open` to open a file or an url with the associated application
 - 'gradle' extension module to run gradle build tasks
+- support for SHA-1 hashes (`crypt/sha1-hash`)
 
 
 

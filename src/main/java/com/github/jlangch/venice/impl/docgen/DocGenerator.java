@@ -55,7 +55,7 @@ public class DocGenerator {
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
 							.createEnv(
-								Arrays.asList("app", "xml", "crypt"), 
+								Arrays.asList("app", "xml", "crypt", "gradle"), 
 								false, 
 								false, 
 								new VncKeyword("docgen"))
@@ -1598,6 +1598,7 @@ public class DocGenerator {
 		final DocSection crypt = new DocSection("Cryptography");
 		all.addSection(crypt);
 		crypt.addItem(getDocItem("crypt/md5-hash"));
+		crypt.addItem(getDocItem("crypt/sha1-hash"));
 		crypt.addItem(getDocItem("crypt/sha512-hash"));
 		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
 		crypt.addItem(getDocItem("crypt/encrypt"));
@@ -1627,6 +1628,11 @@ public class DocGenerator {
 		cidr_trie.addItem(getDocItem("cidr/lookup"));
 		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
 		
+		final DocSection gradle = new DocSection("Gradle");
+		all.addSection(gradle);
+		gradle.addItem(getDocItem("gradle/with-home", false));
+		gradle.addItem(getDocItem("gradle/version", false));
+		gradle.addItem(getDocItem("gradle/task", false));
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);

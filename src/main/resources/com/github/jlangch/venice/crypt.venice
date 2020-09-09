@@ -25,6 +25,7 @@
 (ns crypt)
 
 (import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
+(import :com.github.jlangch.venice.impl.util.crypt.SHA1_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.SHA512_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.PBKDF2_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.CipherSuiteFactory)
@@ -52,7 +53,34 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/sha512-hash data)", "(crypt/sha512-hash data salt)")
+  ^{ :arglists '("(crypt/sha1-hash data)"
+                 "(crypt/sha1-hash data salt)")
+     :doc "Hashes a string or a bytebuf using SHA1 with an optional salt."
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (str/bytebuf-to-hex
+              (crypt/sha1-hash "hello world")
+              :upper))
+           """,
+           """
+           (do
+             (load-module :crypt)
+               (str/bytebuf-to-hex
+                 (crypt/sha1-hash "hello world" "-salt-")
+                 :upper))
+           """ ) }
+
+  crypt/sha1-hash
+
+  ([text] (. :SHA1_Hash :hash text nil))
+  ([text salt] (. :SHA1_Hash :hash text salt)))
+
+
+(defn
+  ^{ :arglists '("(crypt/sha512-hash data)"
+                 "(crypt/sha512-hash data salt)")
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
      :examples (list
           """
@@ -77,7 +105,7 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/pbkdf2-hash text salt)",
+  ^{ :arglists '("(crypt/pbkdf2-hash text salt)"
                  "(crypt/pbkdf2-hash text salt iterations key-length)")
      :doc """
           Hashes a string using PBKDF2. iterations default to 1000, key-length \
