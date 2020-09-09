@@ -60,3 +60,11 @@
 [Combinators](https://youtu.be/zhj_tUMwTe0)
 
 [Combinators](https://codeburst.io/combinators-82799638c90d)
+
+
+
+## Property Based Testing
+
+[Scott Wlaschin](https://www.youtube.com/watch?v=IYzDFHx6QPY)
+
+[John Hughes](https://vimeo.com/68383317)
