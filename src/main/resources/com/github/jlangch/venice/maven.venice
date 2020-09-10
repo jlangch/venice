@@ -29,15 +29,6 @@
 
 (def maven/repo "https://repo1.maven.org/maven2")
 
-(defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
-  (let [target (str target-dir "/" target-file)]
-     (when progress-fn
-       (println (str "Downloading " uri))
-       (println (str "         to " target "...")))
-     (ansi/without-cursor
-       (->> (io/download uri :binary true :progress-fn progress-fn)
-          (io/spit target)))))
-
 
 (defn
   ^{ :arglists '(
@@ -94,13 +85,22 @@
 (defn
   ^{ :arglists '("(maven/download artefact options*)")
      :doc """
-          Downloads an artefact in the format 'group-id:artefact-id:version'
-          from a Maven repository.
+          Downloads an artefact in the format 'group-id:artefact-id:version' \
+          from a Maven repository. Can download any combination of the jar, \
+          sources, or pom artefacts to a directory.
+
+          Options:
+            :jar {true,false}       download the jar, defaults to true
+            :sources {true,false}   download the sources, defaults to false
+            :pom {true,false}       download the pom, defaults to false
+            :dir path               download dir, defaults to "."
+            :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
+            :silent {true,false}    if silent is true does not show a progress bar, defaults to true
           """
      :examples '(
           """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :sources true :pom true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir ".")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :jar false :sources true)"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true)"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" ) }
@@ -114,12 +114,7 @@
         pom         (:pom opts false)
         dir         (:dir opts ".")
         repo        (:repo opts maven/repo)
-        progress-fn (if silent
-                      nil
-                      (ansi/progress-bar :caption     "            "
-                                         :start-msg   "    started "
-                                         :end-msg     "            OK"
-                                         :failed-msg  "            FAILED"))]
+        progress-fn (maven/progress-bar silent)]
     (when jar
       (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
         (maven/download-artefact-file uri dir filename progress-fn)))
@@ -128,4 +123,57 @@
         (maven/download-artefact-file uri dir filename progress-fn)))
     (when pom
       (let [[uri filename] (maven/parse-artefact artefact repo ".pom")]
-        (maven/download-artefact-file uri dir filename progress-fn)))))
+        (maven/download-artefact-file uri dir filename progress-fn)))
+    nil))
+
+
+(defn
+  ^{ :arglists '("(maven/download-jar artefact options*)")
+     :doc """
+          Downloads a jar artefact in the format 'group-id:artefact-id:version' \
+          from a Maven repository. Returns the jar as byte buffer.
+
+          Options:
+            :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
+            :silent {true,false}    if silent is true does not show a progress bar, defaults to true
+          """
+     :examples '(
+          """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir ".")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :repo "https://repo1.maven.org/maven2")"""
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" ) }
+
+  maven/download-jar [artefact & options]
+
+  (let [opts        (apply hash-map options)
+        silent      (:silent opts true)
+        repo        (:repo opts maven/repo)
+        progress-fn (maven/progress-bar silent)]
+    (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
+      (maven/get-artefact-file uri progress-fn))))
+
+
+(defn- maven/progress-bar [silent]
+  (if silent
+    nil
+    (ansi/progress-bar :caption     "            "
+                       :start-msg   "    started "
+                       :end-msg     "            OK"
+                       :failed-msg  "            FAILED")))
+
+
+(defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
+  (let [target (str target-dir "/" target-file)]
+     (when progress-fn
+       (println (str "Downloading " uri))
+       (println (str "         to " target "...")))
+     (ansi/without-cursor
+       (->> (io/download uri :binary true :progress-fn progress-fn)
+            (io/spit target)))))
+
+
+(defn- maven/get-artefact-file [uri progress-fn]
+  (when progress-fn
+    (println (str "Downloading " uri "...")))
+  (ansi/without-cursor
+    (io/download uri :binary true :progress-fn progress-fn)))
