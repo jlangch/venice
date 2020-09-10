@@ -37,6 +37,12 @@
 [Paper: How to write a financial contract](https://www.microsoft.com/en-us/research/uploads/prod/2000/09/pj-eber.pdf)
 
 
+## Leonardo Borges on Monads:
+  * [Monads in Small Bites - Part I   - Functors](http://www.leonardoborges.com/writings/2012/11/30/monads-in-small-bites-part-i-functors/)
+  * [Monads in Small Bites - Part II  - Applicative Functors](http://www.leonardoborges.com/writings/2012/12/02/monads-in-small-bites-part-ii-applicative-functors/)
+  * [Monads in Small Bites - Part III - Monoids](http://www.leonardoborges.com/writings/2012/12/05/monads-in-small-bites-part-iii-monoids/)
+  * [Monads in Small Bites - Part IV  - Monads](http://www.leonardoborges.com/writings/2012/12/08/monads-in-small-bites-part-iv-monads/)
+
 ## Alan Kay
 
 [Alan Kay: Doing with Images Makes Symbols](https://www.youtube.com/watch?v=p2LZLYcu_JY)
