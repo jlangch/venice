@@ -42,6 +42,7 @@ public class IOFnBlacklisted {
 					"load-classpath-file",
 					"*load-file",
 					"*load-classpath-file",
+					"load-jar",
 
 					// system
 					"gc",

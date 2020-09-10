@@ -65,6 +65,8 @@ public class ModuleFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
+				sandboxFunctionCallValidation();
+
 				try {
 					final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
 					
@@ -131,7 +133,9 @@ public class ModuleFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
-				
+
+				sandboxFunctionCallValidation();
+
 				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
 					final boolean binary = VncBoolean.isTrue(options.get(new VncKeyword("binary")));
