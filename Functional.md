@@ -43,6 +43,13 @@
   * [Monads in Small Bites - Part III - Monoids](http://www.leonardoborges.com/writings/2012/12/05/monads-in-small-bites-part-iii-monoids/)
   * [Monads in Small Bites - Part IV  - Monads](http://www.leonardoborges.com/writings/2012/12/08/monads-in-small-bites-part-iv-monads/)
 
+## Konrad Hinsen on Monads:		
+  * [Monad tutorial part 1](https://github.com/khinsen/monads-in-clojure/blob/master/PART1.md)		
+  * [Monad tutorial part 2](https://github.com/khinsen/monads-in-clojure/blob/master/PART2.md)		
+  * [Monad tutorial part 3](https://github.com/khinsen/monads-in-clojure/blob/master/PART3.md)		
+  * [Monad tutorial part 4](https://github.com/khinsen/monads-in-clojure/blob/master/PART4.md)
+
+
 ## Alan Kay
 
 [Alan Kay: Doing with Images Makes Symbols](https://www.youtube.com/watch?v=p2LZLYcu_JY)
