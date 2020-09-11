@@ -94,8 +94,9 @@
             :sources {true,false}   download the sources, defaults to false
             :pom {true,false}       download the pom, defaults to false
             :dir path               download dir, defaults to "."
-            :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
-            :silent {true,false}    if silent is true does not show a progress bar, defaults to true
+            :repo maven-repo        a maven repo, defaults to "https://repo1.maven.org/maven2"
+            :silent {true,false}    if silent is true does not show a progress bar,
+                                    defaults to true
           """
      :examples '(
           """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
@@ -145,12 +146,12 @@
 
   maven/download-jar [artefact & options]
 
-  (let [opts        (apply hash-map options)
-        silent      (:silent opts true)
-        repo        (:repo opts maven/repo)
-        progress-fn (maven/progress-bar silent)]
-    (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
-      (maven/get-artefact-file uri progress-fn))))
+  (let [opts         (apply hash-map options)
+        silent       (:silent opts true)
+        repo         (:repo opts maven/repo)
+        progress-fn  (maven/progress-bar silent)]
+        [uri _]      (maven/parse-artefact artefact repo ".jar")]
+    (maven/get-artefact-file uri progress-fn)))
 
 
 (defn- maven/progress-bar [silent]
@@ -164,12 +165,12 @@
 
 (defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
   (let [target (str target-dir "/" target-file)]
-     (when progress-fn
-       (println (str "Downloading " uri))
-       (println (str "         to " target "...")))
-     (ansi/without-cursor
-       (->> (io/download uri :binary true :progress-fn progress-fn)
-            (io/spit target)))))
+    (when progress-fn
+      (println (str "Downloading " uri))
+      (println (str "         to " target "...")))
+    (ansi/without-cursor
+      (->> (io/download uri :binary true :progress-fn progress-fn)
+           (io/spit target)))))
 
 
 (defn- maven/get-artefact-file [uri progress-fn]

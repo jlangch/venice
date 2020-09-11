@@ -102,6 +102,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
+			assertMinArity(args, 2);
 			sandboxFunctionCallValidation();
 
 			return JavaInteropUtil.applyJavaAccess(
