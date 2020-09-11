@@ -12,6 +12,8 @@
 #    |    +-- script-1.venice
 #    |    +-- script-2.venice
 #    |
+#    +-- tmp
+#    |
 #    +-- repl.sh
 # ------------------------------------------------------------------------------
 
@@ -22,6 +24,7 @@ java \
   -server \
   -Xmx4G \
   -XX:-OmitStackTraceInFastThrow \
+  -Djava.io.tmpdir=tmp \
   -cp "libs:libs/*" \
   com.github.jlangch.venice.Launcher \
   -loadpath "scripts" \

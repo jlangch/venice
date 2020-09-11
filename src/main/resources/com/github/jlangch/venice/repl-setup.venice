@@ -289,6 +289,9 @@
       (when-not (io/exists-dir? "fonts")
         (io/mkdirs "fonts")))
 
+    (when-not (io/exists-dir? "tmp")
+      (io/mkdirs "tmp"))
+
     (println)
     (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
     (println "Using the platforms's default charset" charset)
