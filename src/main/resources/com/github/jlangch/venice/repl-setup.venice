@@ -279,18 +279,18 @@
         libs          (if (= setup-mode :extended) libs-ext libs-min)
         fonts         (if (= setup-mode :extended) fonts-ext fonts-min)
         charset       (name (charset-default-encoding))]
-    (when-not (io/exists-dir? "libs")
-      (io/mkdirs "libs"))
+    (when-not (io/exists-dir? "./libs")
+      (io/mkdirs "./libs"))
 
-    (when-not (io/exists-dir? "scripts/pdf")
-      (io/mkdirs "scripts/pdf"))
+    (when-not (io/exists-dir? "./scripts/pdf")
+      (io/mkdirs "./scripts/pdf"))
 
     (when-not (empty? fonts)
-      (when-not (io/exists-dir? "fonts")
-        (io/mkdirs "fonts")))
+      (when-not (io/exists-dir? "./fonts")
+        (io/mkdirs "./fonts")))
 
-    (when-not (io/exists-dir? "tmp")
-      (io/mkdirs "tmp"))
+    (when-not (io/exists-dir? "./tmp")
+      (io/mkdirs "./tmp"))
 
     (println)
     (println (str "Setting up the REPL on '" (os-name) "' " (os-version)))
