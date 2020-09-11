@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util;
+package com.github.jlangch.venice.impl.javainterop;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 
-
+// https://medium.com/@isuru89/java-a-child-first-class-loader-cbd9c3d0305
 public class DynamicClassLoader extends URLClassLoader {
 	
 	public DynamicClassLoader() {
@@ -115,13 +115,12 @@ public class DynamicClassLoader extends URLClassLoader {
 	}
 
 	private static ClassLoader getParentClassLoader() {
-		final boolean useLocalClassLoader =
-						(Thread.currentThread().getContextClassLoader() == null) 
-							|| (Thread.currentThread().getContextClassLoader() == ClassLoader.getSystemClassLoader());
+		final ClassLoader ctxClassLoader = Thread.currentThread().getContextClassLoader();
+		final ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
 		
-		return useLocalClassLoader 
+		return ctxClassLoader == null || ctxClassLoader == sysClassLoader 
 				? VeniceInterpreter.class.getClassLoader()
-				: Thread.currentThread().getContextClassLoader();
+				: ctxClassLoader;
 	}
 	
 	
