@@ -149,7 +149,7 @@
   (let [opts         (apply hash-map options)
         silent       (:silent opts true)
         repo         (:repo opts maven/repo)
-        progress-fn  (maven/progress-bar silent)]
+        progress-fn  (maven/progress-bar silent)
         [uri _]      (maven/parse-artefact artefact repo ".jar")]
     (maven/get-artefact-file uri progress-fn)))
 
