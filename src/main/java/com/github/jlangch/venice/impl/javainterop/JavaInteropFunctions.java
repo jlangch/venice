@@ -238,7 +238,7 @@ public class JavaInteropFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Function 'forma-type' is not supported on non Java object (%s)", 
+						"Function 'formal-type' is not supported on non Java object (%s)", 
 						Types.getType(args.first())));
 			}
 		}
