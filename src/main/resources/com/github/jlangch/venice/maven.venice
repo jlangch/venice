@@ -117,42 +117,78 @@
         repo        (:repo opts maven/repo)
         progress-fn (maven/progress-bar silent)]
     (when jar
-      (let [[uri filename] (maven/parse-artefact artefact repo ".jar")]
+      (let [suffix         (maven/artefact-suffix :jar)
+            [uri filename] (maven/parse-artefact artefact repo suffix)]
         (maven/download-artefact-file uri dir filename progress-fn)))
     (when sources
-      (let [[uri filename] (maven/parse-artefact artefact repo "-sources.jar")]
+      (let [suffix         (maven/artefact-suffix :sources)
+            [uri filename] (maven/parse-artefact artefact repo suffix)]
         (maven/download-artefact-file uri dir filename progress-fn)))
     (when pom
-      (let [[uri filename] (maven/parse-artefact artefact repo ".pom")]
+      (let [suffix         (maven/artefact-suffix :pom)
+            [uri filename] (maven/parse-artefact artefact repo suffix)]
         (maven/download-artefact-file uri dir filename progress-fn)))
     nil))
 
 
 (defn
-  ^{ :arglists '("(maven/download-jar artefact options*)")
+  ^{ :arglists '("(maven/get artefact type options*)")
      :doc """
-          Downloads a jar artefact in the format 'group-id:artefact-id:version' \
-          from a Maven repository. Returns the jar as byte buffer.
+          Downloads artefact in the format 'group-id:artefact-id:version' \
+          from a Maven repository. The artefact type 'type' is one of \
+          {:jar, :sources, :pom}.
+          Returns the artefact as byte buffer.
 
           Options:
             :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
             :silent {true,false}    if silent is true does not show a progress bar, defaults to true
           """
      :examples '(
-          """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir ".")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :repo "https://repo1.maven.org/maven2")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" ) }
+          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar)"""
+          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :silent false)"""
+          """(maven/get "org.knowm.xchart:xchart:3.6.1" :sources)"""
+          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" ) }
 
-  maven/download-jar [artefact & options]
+  maven/get [artefact type & options]
 
   (let [opts         (apply hash-map options)
         silent       (:silent opts true)
         repo         (:repo opts maven/repo)
+        suffix       (maven/artefact-suffix type)
         progress-fn  (maven/progress-bar silent)
-        [uri _]      (maven/parse-artefact artefact repo ".jar")]
+        [uri _]      (maven/parse-artefact artefact repo suffix)]
     (maven/get-artefact-file uri progress-fn)))
 
+
+(defn
+  ^{ :arglists '("(maven/uri artefact type options*)")
+     :doc """
+          Returns an URI for an artefact in the format 'group-id:artefact-id:version' \
+          from a Maven repository.
+          The artefact type 'type' is one of {:jar, :sources, :pom}
+
+          Options:
+            :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
+          """
+     :examples '(
+          """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar)"""
+          """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" ) }
+
+  maven/uri [artefact type & options]
+
+  (let [opts         (apply hash-map options)
+        repo         (:repo opts maven/repo)
+        suffix       (maven/artefact-suffix type)
+        [uri _]      (maven/parse-artefact artefact repo suffix)]
+    uri))
+
+
+(defn- maven/artefact-suffix [type]
+  (case type
+    :jar     ".jar"
+    :sources "-sources.jar"
+    :pom     ".pom"
+    (throw (. :VncException :new "Invalid artefact type ~{type}"))))
 
 (defn- maven/progress-bar [silent]
   (if silent
