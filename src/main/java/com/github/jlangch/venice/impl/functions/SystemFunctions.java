@@ -27,7 +27,9 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -817,6 +820,44 @@ public class SystemFunctions {
 			
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+
+	public static VncFunction load_jar =
+		new VncFunction(
+				"load-jar",
+				VncFunction
+					.meta()
+					.arglists("(load-jar url)")
+					.doc("Dynamically load a JAR into the classpath.")
+					.examples("(load-jar url)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1);
+
+				final VncString url = Coerce.toVncString(args.first());
+				final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+				if (cl != null && cl instanceof DynamicClassLoader2) {
+					try {
+						((DynamicClassLoader2)cl).addURL(new URL(url.getValue()));
+						return Nil;
+					}
+					catch (MalformedURLException ex) {
+						throw new VncException(
+								String.format("Malformed URL '%s'", url.getValue()),
+								ex);
+					}
+				}
+				else {
+					throw new VncException(
+							"There is no thread context ClassLoader available to dynamically " +
+							"load a JAR. For security reasons dynamically loading JARs is only " +
+							"available in the REPL!");
+				}
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
 
 		
@@ -869,6 +910,7 @@ public class SystemFunctions {
 					.add(java_source_location)
 					.add(used_memory)
 					.add(charset_default_encoding)
+					.add(load_jar)
 					.toMap();
 
 
