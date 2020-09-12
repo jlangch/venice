@@ -55,7 +55,7 @@ public class DocGenerator {
 	public DocGenerator() {
 		this.env = new VeniceInterpreter()
 							.createEnv(
-								Arrays.asList("app", "xml", "crypt", "gradle"), 
+								Arrays.asList("app", "xml", "crypt", "gradle", "ansi", "maven"), 
 								false, 
 								false, 
 								new VncKeyword("docgen"))
@@ -1633,6 +1633,12 @@ public class DocGenerator {
 		gradle.addItem(getDocItem("gradle/with-home", false));
 		gradle.addItem(getDocItem("gradle/version", false));
 		gradle.addItem(getDocItem("gradle/task", false));
+		
+		final DocSection maven = new DocSection("Maven");
+		all.addSection(maven);
+		maven.addItem(getDocItem("maven/download", false));
+		maven.addItem(getDocItem("maven/get", false));
+		maven.addItem(getDocItem("maven/uri", false));
 		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);

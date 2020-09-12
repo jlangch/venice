@@ -828,8 +828,15 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(load-jar url)")
-					.doc("Dynamically load a JAR into the classpath.")
-					.examples("(load-jar url)")
+					.doc(
+						"Dynamically load a JAR into the classpath. \n\n" +
+						"Dynamically loading JARs is experimental and for security reasons " +
+						"available in the REPL only!")
+					.examples(
+						"(do                                                              \n" +
+						"  (load-module :maven)                                           \n" +
+						"  (let [uri (maven/uri \"org.knowm.xchart:xchart:3.6.5\" :jar)]  \n" +
+						"    (load-jar uri)))                                               ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
