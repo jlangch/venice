@@ -1555,6 +1555,7 @@ public class DocGenerator {
 		support.addItem(getDocItem("bases"));
 		support.addItem(getDocItem("formal-type"));
 		support.addItem(getDocItem("stacktrace", false, false));
+		support.addItem(getDocItem("classloader"));
 
 		return section;
 	}

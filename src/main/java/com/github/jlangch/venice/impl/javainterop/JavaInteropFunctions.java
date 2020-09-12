@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -264,6 +266,65 @@ public class JavaInteropFunctions {
 						JavaInteropUtil.toClass(
 							args.first(), 
 							Namespaces.getCurrentNamespace().getJavaImports()));
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaClassLoaderFn extends AbstractJavaFn {
+		public JavaClassLoaderFn() {
+			super(
+				"classloader", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(classloader)",
+						"(classloader type)")
+					.doc(
+						"Returns the classloader.")
+					.examples(
+						";; Returns the current classloader\n" +
+						"(classloader)",
+						
+						";; Returns the system classloader\n" +
+						"(classloader :system)",
+						
+						";; Returns the classloader which loaded the Venice classes\n" +
+						"(classloader :application)",
+						
+						";; Returns the thread-context classloader\n" +
+						"(classloader :thread-context)")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity(args, 0, 1);
+				
+			if (args.size() == 0) {
+				// current classloader
+				final ClassLoader cl = Thread.currentThread().getContextClassLoader();	
+				return new VncJavaObject(cl != null ? cl.getClass() 
+											        : VeniceInterpreter.class.getClassLoader());
+			}
+			else {
+				if (Types.isVncKeyword(args.first())) {
+					final VncKeyword type = (VncKeyword)args.first();
+					
+					if ("system".equals(type.getValue())) {
+						return new VncJavaObject(ClassLoader.getSystemClassLoader());
+					}
+					else if ("application".equals(type.getValue())) {
+						return new VncJavaObject(VeniceInterpreter.class.getClassLoader());
+					}
+					else if ("thread-context".equals(type.getValue())) {
+						final ClassLoader cl = Thread.currentThread().getContextClassLoader();	
+						return cl == null ? Constants.Nil : new VncJavaObject(cl);
+					}
+				}
+				
+				throw new VncException("Function 'classloader' unknown argument");
+			}
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -731,5 +792,6 @@ public class JavaInteropFunctions {
 					.add(new JavaObjWrapFn())
 					.add(new JavaObjUnwrapFn())
 					.add(new JavaExStacktraceFn())
+					.add(new JavaClassLoaderFn())
 					.toMap();	
 }
