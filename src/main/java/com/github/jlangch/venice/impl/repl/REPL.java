@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -173,8 +175,11 @@ public class REPL {
 						? new ReplHighlighter(config)
 						: null;
 		
-		Env env = loadEnv(cli, out, err, in, cli.switchPresent("-macroexpand"));
-
+		Env env = loadEnv(cli, out, err, in, false);		
+		venice.setMacroexpandOnLoad(cli.switchPresent("-macroexpand"), env);		
+		if (allowDynamicClassLoader) {
+			mainThread.setContextClassLoader(new DynamicClassLoader2());
+		}
 		env.setGlobal(new Var(
 						new VncSymbol("*repl-color-theme*"), 
 						new VncKeyword(config.getColorMode().name().toLowerCase()),
@@ -187,22 +192,12 @@ public class REPL {
 		
 		final History history = new DefaultHistory();
 		
-		final LineReader reader = LineReaderBuilder
-									.builder()
-									.appName("Venice")
-									.terminal(terminal)
-									.history(history)
-									.expander(new NullExpander())
-									.completer(completer)
-									.highlighter(highlighter)
-									.parser(parser)
-									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
-									.variable(LineReader.INDENTATION, 2)
-				                    .variable(LineReader.LIST_MAX, 100)
-									.variable(LineReader.HISTORY_SIZE, 20)
-									.variable(LineReader.HISTORY_FILE, HISTORY_FILE)
-									.variable(LineReader.HISTORY_FILE_SIZE, 25)
-									.build();
+		final LineReader reader = createLineReader(
+									terminal,
+									history,
+									completer,
+									parser,
+									secondaryPrompt);
 		
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 		
@@ -248,7 +243,22 @@ public class REPL {
 						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));				
 						if (cmd.equals("reload")) {
 							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
+							if (allowDynamicClassLoader) {
+								// create a new context class loader
+								mainThread.setContextClassLoader(new DynamicClassLoader2());
+							}
 							printer.println("system", "reloaded");					
+						}
+						else if (cmd.equals("dynamic-class-loader")) {
+							if (!allowDynamicClassLoader) {
+								allowDynamicClassLoader = true;
+								// create a new context class loader
+								mainThread.setContextClassLoader(new DynamicClassLoader2());
+								printer.println("system", "dynamic class loader activated");
+							}
+							else {
+								printer.println("system", "dynamic class loader already activated");
+							}
 						}
 						else if (isExitCommand(cmd)) {
 							if (config.isClearCommandHistoryOnExit()) {
@@ -279,6 +289,31 @@ public class REPL {
 				printer.printex("error", ex);
 			}
 		}
+	}
+	
+	private LineReader createLineReader(
+			final Terminal terminal,
+			final History history,
+			final ReplCompleter completer,
+			final ReplParser parser,
+			final String secondaryPrompt
+	) {
+		return LineReaderBuilder
+				.builder()
+				.appName("Venice")
+				.terminal(terminal)
+				.history(history)
+				.expander(new NullExpander())
+				.completer(completer)
+				.highlighter(highlighter)
+				.parser(parser)
+				.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
+				.variable(LineReader.INDENTATION, 2)
+                .variable(LineReader.LIST_MAX, 100)
+				.variable(LineReader.HISTORY_SIZE, 20)
+				.variable(LineReader.HISTORY_FILE, HISTORY_FILE)
+				.variable(LineReader.HISTORY_FILE_SIZE, 25)
+				.build();
 	}
 	
 	private void handleCommand(
@@ -763,7 +798,15 @@ public class REPL {
 		printer.println("stdout", "REPL classpath:");		
 		Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
 		      .sorted()
-		      .forEach(f -> printer.println("stdout", "  " + f));					
+		      .forEach(f -> printer.println("stdout", "  " + f));
+		
+		final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		if (cl instanceof URLClassLoader) {
+			printer.println("stdout", "REPL dynamic classpath:");		
+			Arrays.stream(((URLClassLoader)cl).getURLs())
+				  .sorted()
+				  .forEach(u -> printer.println("stdout", "  " + u.toString()));
+		}
 	}
 	
 	private boolean isSetupMode(final CommandLineArgs cli) {
@@ -872,4 +915,5 @@ public class REPL {
 	private boolean ansiTerminal = false;
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
+	private boolean allowDynamicClassLoader = false;
 }
