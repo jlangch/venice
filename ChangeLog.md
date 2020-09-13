@@ -34,6 +34,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - 'gradle' extension module to run gradle build tasks
 - support for SHA-1 hashes (`crypt/sha1-hash`)
 
+### Fixed
+
+- REPL `reload` command to reinitialize the namespace registry
+
 
 
 ## [1.9.0] - 2020-09-01
