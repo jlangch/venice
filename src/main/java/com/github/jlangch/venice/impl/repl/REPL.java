@@ -249,7 +249,7 @@ public class REPL {
 							}
 							printer.println("system", "reloaded");					
 						}
-						else if (cmd.equals("dynamic-class-loader")) {
+						else if (cmd.equals("activate-class-loader")) {
 							if (!allowDynamicClassLoader) {
 								allowDynamicClassLoader = true;
 								// create a new context class loader

@@ -1541,7 +1541,6 @@ public class DocGenerator {
 		java.addItem(getDocItem("java-iterator-to-list"));
 		java.addItem(getDocItem("java-enumeration-to-list"));
 		java.addItem(getDocItem("cast"));
-		java.addItem(getDocItem("class"));
 
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);	
@@ -1555,8 +1554,15 @@ public class DocGenerator {
 		support.addItem(getDocItem("bases"));
 		support.addItem(getDocItem("formal-type"));
 		support.addItem(getDocItem("stacktrace", false, false));
-		support.addItem(getDocItem("classloader"));
 
+		final DocSection clazz = new DocSection("Class");
+		all.addSection(clazz);	
+		clazz.addItem(getDocItem("class"));
+		clazz.addItem(getDocItem("class-of"));
+		clazz.addItem(getDocItem("class-name"));
+		clazz.addItem(getDocItem("classloader"));
+		clazz.addItem(getDocItem("classloader-of"));
+		
 		return section;
 	}
 

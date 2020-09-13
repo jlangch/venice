@@ -60,7 +60,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	private VncJavaObject(final Object obj, final Class<?> formalType, final VncVal meta) {
 		super(meta);
-
+		
 		this.delegate = obj instanceof VncVal ? ((VncVal)obj).convertToJavaObject() : obj;
 		this.delegateFormalType = formalType;
 	}
@@ -278,7 +278,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	@Override 
 	public String toString() {
-		return (isArray()) 
+		return isArray() 
 					? ArrayFunctions.arrayToString(this)
 					: delegate.toString();
 	}

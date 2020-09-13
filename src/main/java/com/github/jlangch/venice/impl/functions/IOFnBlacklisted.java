@@ -46,6 +46,7 @@ public class IOFnBlacklisted {
 					// classloader
 					"load-jar",
 					"classloader",
+					"classloader-of",
 
 					// system
 					"gc",

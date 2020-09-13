@@ -261,11 +261,74 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 					
 			return new VncJavaObject(
 						JavaInteropUtil.toClass(
 							args.first(), 
 							Namespaces.getCurrentNamespace().getJavaImports()));
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaClassOfFn extends AbstractJavaFn {
+		public JavaClassOfFn() {
+			super(
+				"class-of", 
+				VncFunction
+					.meta()
+					.arglists("(class-of x)")
+					.doc("Returns the Java class of a value.")
+					.examples(
+						"(class-of 100)",
+						"(class-of (. :java.awt.Point :new 10 10))")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity(args, 1);
+			sandboxFunctionCallValidation();
+				
+			if (Types.isVncJavaObject(args.first())) {
+				final Object obj = ((VncJavaObject)args.first()).getDelegate();
+				return new VncJavaObject(obj.getClass());
+			}
+			else {
+				return new VncJavaObject(args.first().getClass());
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaClassNameFn extends AbstractJavaFn {
+		public JavaClassNameFn() {
+			super(
+				"class-name", 
+				VncFunction
+					.meta()
+					.arglists("(class-name class)")
+					.doc("Returns the Java class name of a class.")
+					.examples("(class-name (class :java.util.ArrayList))")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity(args, 1);
+			sandboxFunctionCallValidation();
+				
+			if (Types.isVncJavaObject(args.first(), Class.class)) {
+				final Class<?> clazz = (Class<?>)((VncJavaObject)args.first()).getDelegate();
+				return new VncString(clazz.getName());
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'class-name' requires a Java class as argument", 
+						Types.getType(args.first())));
+			}
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -300,6 +363,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 0, 1);
+			sandboxFunctionCallValidation();
 				
 			if (args.size() == 0) {
 				// current classloader
@@ -330,6 +394,53 @@ public class JavaInteropFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
+	public static class JavaClassLoaderOfFn extends AbstractJavaFn {
+		public JavaClassLoaderOfFn() {
+			super(
+				"classloader-of", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(classloader-of x)")
+					.doc(
+						"Returns the classloader of a value or a Java class. \n\n" +
+						"Note: \n" +
+						"Some Java VM implementations may use 'null' to represent \n" + 
+						"the  bootstrap class loader. This method will return 'nil' \n" + 
+						"in such implementations if this class was loaded by the \n" + 
+						"bootstrap class loader.")
+					.examples(
+						"(classloader-of (class :java.awt.Point))",
+						"(classloader-of (. :java.awt.Point :new 10 10))",
+						"(classloader-of (class-of \"abcdef\"))",
+						"(classloader-of \"abcdef\")")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity(args, 1);
+			sandboxFunctionCallValidation();
+
+			if (Types.isVncJavaObject(args.first(), Class.class)) {
+				final Object obj = ((VncJavaObject)args.first()).getDelegate();
+				final ClassLoader cl = ((Class<?>)obj).getClassLoader();
+				return cl == null ? Constants.Nil : new VncJavaObject(cl);
+			}
+			else if (Types.isVncJavaObject(args.first())) {
+				final Object obj = ((VncJavaObject)args.first()).getDelegate();
+				final ClassLoader cl = obj.getClass().getClassLoader();
+				return cl == null ? Constants.Nil : new VncJavaObject(cl);
+			}
+			else {
+				final ClassLoader cl = args.first().getClass().getClassLoader();
+				return cl == null ? Constants.Nil : new VncJavaObject(cl);
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
 	public static class JavaExStacktraceFn extends AbstractJavaFn {
 		public JavaExStacktraceFn() {
 			super(
@@ -345,6 +456,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 
 			if (Types.isVncJavaObject(args.first())) {
 				final VncJavaObject obj = (VncJavaObject)args.first();
@@ -386,6 +498,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 					
 			try {
 				JavaInteropUtil.toClass(
@@ -416,6 +529,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 					
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -450,6 +564,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 			
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -483,6 +598,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 				
 			final Class<?> clazz = JavaInteropUtil.toClass(
 										args.first(), 
@@ -576,6 +692,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 			
 			return VncBoolean.of(Types.isVncJavaObject(args.first()));
 		}
@@ -597,6 +714,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 			
 			if (Types.isVncJavaObject(args.first(), Enumeration.class)) {
 				final Enumeration<?> e = (Enumeration<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -631,6 +749,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 			
 			if (Types.isVncJavaObject(args.first(), Iterator.class)) {
 				final Iterator<?> i = (Iterator<?>)Coerce.toVncJavaObject(args.first()).getDelegate();
@@ -664,6 +783,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 			
 			final VncVal arg = args.first();
 			
@@ -689,6 +809,7 @@ public class JavaInteropFunctions {
 		@Override
 		public VncVal apply(final VncList args) {
 			assertArity(args, 1);
+			sandboxFunctionCallValidation();
 			
 			final VncVal arg = args.first();
 			
@@ -784,7 +905,6 @@ public class JavaInteropFunctions {
 					.add(new SupersFn())
 					.add(new BasesFn())
 					.add(new DescribeJavaClassFn())
-					.add(new JavaClassFn())
 					.add(new JavaExistsClassQFn())
 					.add(new JavaObjQFn())
 					.add(new JavaEnumToListFn())
@@ -792,6 +912,10 @@ public class JavaInteropFunctions {
 					.add(new JavaObjWrapFn())
 					.add(new JavaObjUnwrapFn())
 					.add(new JavaExStacktraceFn())
+					.add(new JavaClassFn())
+					.add(new JavaClassOfFn())
+					.add(new JavaClassNameFn())
 					.add(new JavaClassLoaderFn())
+					.add(new JavaClassLoaderOfFn())
 					.toMap();	
 }
