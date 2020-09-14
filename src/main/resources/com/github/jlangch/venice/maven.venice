@@ -140,8 +140,8 @@
           Returns the artefact as byte buffer.
 
           Options:
-            :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
-            :silent {true,false}    if silent is true does not show a progress bar, defaults to true
+            :repo maven-repo       a maven repo, defaults to "https://repo1.maven.org/maven2"
+            :silent {true,false}   if silent is true does not show a progress bar, defaults to true
           """
      :examples '(
           """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar)"""
@@ -168,7 +168,7 @@
           The artefact type 'type' is one of {:jar, :sources, :pom}
 
           Options:
-            :repo mave-repo         a maven repo, defaults to "https://repo1.maven.org/maven2"
+            :repo maven-repo   a maven repo, defaults to "https://repo1.maven.org/maven2"
           """
      :examples '(
           """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar)"""

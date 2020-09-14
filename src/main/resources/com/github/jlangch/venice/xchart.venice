@@ -95,7 +95,7 @@
               ---------------------------------------------------
               (do
                 (load-module :maven)
-                (maven/download "org.knowm.xchart:xchart:3.6.3"))
+                (maven/download "org.knowm.xchart:xchart:3.6.5"))
               ---------------------------------------------------
               """))))
 
