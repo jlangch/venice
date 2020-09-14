@@ -151,12 +151,24 @@ public class DynamicClassLoader2 extends URLClassLoader {
 	private static ClassLoader getParentClassLoader() {
 		final ClassLoader ctxClassLoader = Thread.currentThread().getContextClassLoader();
 		final ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
+		final ClassLoader vncClassLoader = VeniceInterpreter.class.getClassLoader();
 		
-		return ctxClassLoader == null || ctxClassLoader == sysClassLoader 
-				? VeniceInterpreter.class.getClassLoader()
-				: ctxClassLoader;
+		if (ctxClassLoader == null) {
+			return vncClassLoader;
+		}
+		else if (ctxClassLoader == sysClassLoader) {
+			return vncClassLoader;
+		}
+		else if (DynamicClassLoader2.class.getSimpleName().equals(
+					ctxClassLoader.getClass().getSimpleName())) {
+			return vncClassLoader;
+		}
+		else {
+			return ctxClassLoader;
+		}
 	}
 
+	
 	
 	private static final URL[] EMPTY_URLS = new URL[]{};
 

@@ -243,10 +243,12 @@ public class REPL {
 						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));				
 						if (cmd.equals("reload")) {
 							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
-							if (allowDynamicClassLoader) {
-								// create a new context class loader
-								mainThread.setContextClassLoader(new DynamicClassLoader2());
-							}
+							// Resetting the dynamic classloader is NOT working properly!
+							// thus libraries cannot be reloaded!
+							// if (allowDynamicClassLoader) {
+							// 	// create a new context class loader
+							// 	mainThread.setContextClassLoader(new DynamicClassLoader2());
+							// }
 							printer.println("system", "reloaded");					
 						}
 						else if (cmd.equals("activate-class-loader")) {
