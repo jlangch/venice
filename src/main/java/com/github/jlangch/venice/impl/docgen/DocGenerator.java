@@ -904,6 +904,7 @@ public class DocGenerator {
 		all.addSection(java);
 		java.addItem(getDocItem("java-version"));
 		java.addItem(getDocItem("java-version-info"));
+		java.addItem(getDocItem("java-major-version"));
 
 		final DocSection os = new DocSection("OS");
 		all.addSection(os);

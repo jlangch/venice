@@ -82,6 +82,14 @@ public class SystemFunctionsTest {
 	}
 
 	@Test
+	public void test_java_major_version() {
+		final Venice venice = new Venice();
+
+		final Long version = (Long)venice.eval("(java-major-version)");
+		assertTrue(version > 0L);
+	}
+
+	@Test
 	public void test_java_version_info() {
 		final Venice venice = new Venice();
 

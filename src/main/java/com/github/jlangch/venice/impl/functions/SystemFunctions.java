@@ -719,14 +719,43 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(java-version)")
-					.doc("Returns the Java VM version.")
+					.doc("Returns the Java VM version (1.8.0_252, 11.0.7, ...")
 					.examples("(java-version)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 0);
 
-				return new VncString(System.getProperty("java.version"));
+				final String version = System.getProperty("java.version");
+				
+				return new VncString(version);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction java_major_version =
+		new VncFunction(
+				"java-major-version",
+				VncFunction
+					.meta()
+					.arglists("(java-major-version)")
+					.doc("Returns the Java major version (8, 9, 11, ...).")
+					.examples("(java-major-version)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 0);
+
+				String version = System.getProperty("java.version");
+				
+				if (version.startsWith("1.")) {
+					version = version.substring(2);
+				}
+				
+				return new VncLong(
+							Long.parseLong(
+									version.substring(0, version.indexOf("."))));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -915,6 +944,7 @@ public class SystemFunctions {
 					.add(java_version)
 					.add(java_version_info)
 					.add(java_source_location)
+					.add(java_major_version)
 					.add(used_memory)
 					.add(charset_default_encoding)
 					.add(load_jar)
