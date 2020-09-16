@@ -23,6 +23,9 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
+import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.classForName;
+import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.invokeInstanceMethod;
+import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.invokeStaticMethod;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -58,6 +61,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
 public class SystemFunctions {
@@ -278,8 +282,25 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 0);
 
-				return new VncString(
-							ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+				if (javaMajorVersion() <= 8) {
+					return new VncString(
+								ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+				}
+				else {
+					// Java 9+  -> ProcessHandle.current().pid()					
+					final ReturnValue procHandle = invokeStaticMethod(
+														classForName("java.lang.ProcessHandle"),
+														"current",
+														new Object[]{});
+					
+					final ReturnValue ret = invokeInstanceMethod(
+												procHandle.getValue(), 
+												procHandle.getFormalType(),
+												"pid", 
+												new Object[]{});
+					
+					return new VncLong((Long)ret.getValue());
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -747,15 +768,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 0);
 
-				String version = System.getProperty("java.version");
-				
-				if (version.startsWith("1.")) {
-					version = version.substring(2);
-				}
-				
-				return new VncLong(
-							Long.parseLong(
-									version.substring(0, version.indexOf("."))));
+				return new VncLong(javaMajorVersion());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -910,6 +923,17 @@ public class SystemFunctions {
 		}
 	}
 
+	private static long javaMajorVersion() {
+		String version = System.getProperty("java.version");
+		
+		if (version.startsWith("1.")) {
+			version = version.substring(2);
+		}
+		
+		return Long.parseLong(version.substring(0, version.indexOf(".")));
+	}
+	
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions

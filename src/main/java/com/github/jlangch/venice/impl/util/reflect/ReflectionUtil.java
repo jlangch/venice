@@ -503,7 +503,7 @@ public class ReflectionUtil {
 			final Class<?> clazz, 
 			final boolean includeInheritedClasses
 	) {
-		return getAllPublicMethods(clazz, null, null, true, true, false, true, true);
+		return getAllPublicMethods(clazz, null, null, includeInheritedClasses, true, false, true, true);
 	}
 	
 	public static List<Method> getAllPublicInstanceMethods(
@@ -512,14 +512,14 @@ public class ReflectionUtil {
 			final Integer arity,
 			final boolean includeInheritedClasses
 	) {
-		return getAllPublicMethods(clazz, methodName, arity, true, true, false, true, true);
+		return getAllPublicMethods(clazz, methodName, arity, includeInheritedClasses, true, false, true, true);
 	}
 	
 	public static List<Method> getAllPublicStaticMethods(
 			final Class<?> clazz, 
 			final boolean includeInheritedClasses
 	) {
-		return getAllPublicMethods(clazz, null, null, true, false, true, true, true);
+		return getAllPublicMethods(clazz, null, null, includeInheritedClasses, false, true, true, true);
 	}
 	
 	public static List<Method> getAllPublicStaticMethods(
@@ -528,7 +528,7 @@ public class ReflectionUtil {
 			final Integer arity,
 			final boolean includeInheritedClasses
 	) {
-		return getAllPublicMethods(clazz, methodName, arity, true, false, true, true, true);
+		return getAllPublicMethods(clazz, methodName, arity, includeInheritedClasses, false, true, true, true);
 	}
 
 	public static List<Method> getAllPublicMethods(
@@ -553,7 +553,7 @@ public class ReflectionUtil {
 								|| (addStaticMethods && isStatic(m)))
 				.filter(m -> addTransientMethods || !isTransient(m))
 				.filter(m -> addDeprecatedMethods || !isDeprecated(m))
-				.filter(m -> arity == null  || arity == arity(m))
+				.filter(m -> arity == null || arity == arity(m))
 				//.filter(m -> arity == null  || arity == arity(m) || (m.isVarArgs() && arity >= (arity(m) - 1)))
 				.collect(Collectors.toList());
 	}

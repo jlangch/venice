@@ -162,7 +162,11 @@ public class JavaInteropUtil {
 													? copyToJavaMethodArgs(params)
 													: convertToJavaMethodArgs(params);
 	
-					if (methodArgs.length > 0 || ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs)) {
+					boolean isInstanceMethod = 
+							methodArgs.length > 0 
+								|| (targetFormalType != null && ReflectionAccessor.isInstanceMethod(targetFormalType, methodName, methodArgs))
+								|| ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs);
+					if (isInstanceMethod) {
 						// instance method
 						return JavaInteropUtil.convertToVncVal(
 								JavaInterop

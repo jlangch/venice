@@ -186,7 +186,10 @@ public class JavaInteropFunctions {
 		public VncVal apply(final VncList args) {
 			assertArity(args, 2);
 
-			if (Types.isVncJavaObject(args.second())) {
+			if (args.second() == Constants.Nil) {
+				return Constants.Nil;
+			}
+			else if (Types.isVncJavaObject(args.second())) {
 				final Class<?> clazz = JavaInteropUtil.toClass(
 											args.first(), 
 											Namespaces.getCurrentNamespace().getJavaImports());

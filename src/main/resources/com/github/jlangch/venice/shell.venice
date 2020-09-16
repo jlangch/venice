@@ -21,12 +21,13 @@
 
 ;;;; Shell utilities
 ;;;;                                                         macos  unix windows
-;;;;   (open url)                                              x      x     x
-;;;;   (open-macos-app name)                                   x
-;;;;   (diff file1 file2)                                      x      x     x
-;;;;   (kill pid & options)                                    x      x     x
-;;;;   (process-running? pid)                                  x      x     x
-;;;;   (wait-for-process-exit pid timeout)                     x      x     x
+;;;;   (shell/open url)                                        x      x     x
+;;;;   (shell/open-macos-app name)                             x
+;;;;   (shell/diff file1 file2)                                x      x     x
+;;;;   (shell/kill pid & options)                              x      x     x
+;;;;   (shell/process-running? pid)                            x      x     x
+;;;;   (shell/wait-for-process-exit pid timeout)               x      x     x
+;;;;   (shell/pid)                                             x      x     x
 
 
 (ns shell)
@@ -44,6 +45,20 @@
 
   (when-not (or (os-type? :mac-osx) (os-type? :linux))
     (throw (venice-exception "Can only run on Mac OSX or Linux!"))))
+
+
+(defn
+  ^{ :arglists '("(require-java-9+)")
+     :doc """
+          Validates if the Java VM is of version 9 or newer.
+          """
+     :examples '(
+          "(shell/require-java-9+)") }
+
+  require-java-9+ []
+
+  (when (< (java-major-version) 9)
+    (throw (venice-exception "Can only run on a Java VM 9+!"))))
 
 
 (defn
@@ -89,43 +104,77 @@
   (sh "/usr/bin/open" "-a" name))
 
 
-(defmulti
-  ^{ :arglists '("(kill pid & options)")
-     :doc """
-          Kills a process by the process' pid.
+(defn
+  ^{ :arglists '("(pid)")
+     :doc "Returns the pid (type long) of this process."
+     :examples '("(shell/pid") }
 
-          Options are
-            :force     If true forces the process to be killed (-SIGKILL on Unix
-                       like OSs)
-            :throw-ex  If true throw an exception if the exit code is not equal
-                       to zero, if false returns the exit code. Defaults to
-                       false. It's recommended to use (with-sh-throw (sh "foo"))
-                       instead.
+  pid []
 
-          Returns a map of
-               :exit => exit code
-               :out  => captured stdout
-               :err  => captured stderr
-          """
-     :examples '(
-          "(shell/kill 123)"
-          "(shell/kill \"123\")"
-          "(shell/kill 123 :force true"
-          "(shell/kill 123 :force true :throw-ex false") }
-
-  kill (fn [pid & options] (os-type)))
+  (require-java-9+)
+  (-> (. :java.lang.ProcessHandle :current)
+      (. :pid)))
 
 
-(defmulti
-  ^{ :arglists '("(process-running? pid)")
-     :doc """
-          Returns true if the pid represents a running process, false otherwise.
-          """
-     :examples '(
-          "(shell/process-running? 123)"
-          "(shell/process-running? \"123\")") }
+(defn
+  ^{ :arglists '("(process-handle pid)")
+     :doc "Returns the process handle for a pid or nil if there is no process."
+     :examples '("(shell/process-handle 4556") }
 
-  process-running? (fn [pid] (os-type)))
+  process-handle [pid]
+
+  (require-java-9+)
+  (-<> (. :java.lang.ProcessHandle :of pid)
+       (. <> :orElse nil)
+       (cast :java.lang.ProcessHandle <>)))
+
+
+(defn
+  ^{ :arglists '("(alive? pid)")
+     :doc "Returns true if the process represented by this pid is alive otherwise false."
+     :examples '("(shell/alive? 4556") }
+
+  alive? [pid]
+
+  (require-java-9+)
+  (let [handle (process-handle pid)]
+    (if (some? handle)
+      (. handle :isAlive)
+      false)))
+
+
+(defn
+  ^{ :arglists '("(kill pid)")
+     :doc
+        """
+        Requests the process to be killed. Returns true if the process is killed
+        and false if the process stays alive. Returns nil if the process does
+        not exist.
+        """
+     :examples '("(shell/kill 4556") }
+
+  kill [pid]
+
+  (require-java-9+)
+  (if-let [handle (process-handle pid)]
+    (. handle :destroy)))
+
+
+(defn
+  ^{ :arglists '("(kill-forcibly pid)")
+     :doc
+     """
+     Requests the process to be killed forcibly. Returns true if the process is
+     killed and false if the process stays alive. Returns nil if the process
+     does not exist.
+     """
+     :examples '("(shell/kill-forcibly 4556") }
+
+  kill-forcibly [pid]
+
+  (require-java-9+)
+  (if-let [handle (process-handle pid)]
+    (. handle :destroyForcibly​)))
 
 
 (defn
@@ -136,74 +185,16 @@
           the pid is returned.
           """
      :examples '(
-          "(shell/wait-for-process-exit 12345 20)"
-          "(shell/wait-for-process-exit \"12345\" 20)") }
+          "(shell/wait-for-process-exit 12345 20)") }
 
   wait-for-process-exit [pid timeout]
 
-  (loop [secs timeout]
-    (when (and (pos? secs) (process-running? pid))
-      (sleep 1 :seconds)
-      (recur (dec secs))))
-  (if (process-running? pid) pid nil))
-
-
-
-;; -----------------------------------------------------------------------------
-;; process-running? defmethod implementations
-;; -----------------------------------------------------------------------------
-
-(defmethod process-running? :mac-osx [pid]
-  (if (some? pid)
-    (->> (sh "ps" "-ef" :throw-ex true)
-         (:out)
-         (str/split-lines)
-         (map #(second (str/split (str/trim %) " +")))
-         (filter #(== % (str pid)))
-         (not-empty?))
-  false))
-
-(defmethod process-running? :linux [pid]
-  (if (some? pid)
-    (->> (sh "ps" "-ef" :throw-ex true)
-         (:out)
-         (str/split-lines)
-         (map #(second (str/split (str/trim %) " +")))
-         (filter #(== % (str pid)))
-         (not-empty?))
-  false))
-
-(defmethod process-running? :windows [pid]
-  (if (some? pid)
-    (->> (sh "tasklist")
-         (:out)
-         (str/split-lines)
-         (map #(second (str/split (str/trim %) " +")))
-         (filter #(== % (str pid)))
-         (not-empty?))
-  false))
-
-
-;; -----------------------------------------------------------------------------
-;; kill defmethod implementations
-;; -----------------------------------------------------------------------------
-
-(defmethod kill :mac-osx [pid & options]
-  (let [opts     (apply hash-map options)
-        signal   (if (get opts :force false) "-SIGINT" "-SIGKILL")
-        throw-ex (get opts :throw-ex true)]
-    (sh "kill" signal pid :throw-ex throw-ex)))
-
-
-(defmethod kill :linux [pid & options]
-  (let [opts     (apply hash-map options)
-        signal   (if (get opts :force false) "-SIGINT" "-SIGKILL")
-        throw-ex (get opts :throw-ex true)]
-    (sh "kill" signal pid :throw-ex throw-ex)))
-
-
-(defmethod kill :windows [pid & options]
-  (let [opts     (apply hash-map options)
-        force    (if (get opts :force false) "/F" "")
-        throw-ex (get opts :throw-ex true)]
-    (sh "cmd" "/C" "taskkill ${force} /PID ${pid}" :throw-ex throw-ex)))
+  (require-java-9+)
+  (let [handle (process-handle pid)]
+    (if (some? handle)
+      (let [future (. handle :onExit)]
+        (try
+          (. future :get timeout :SECONDS)
+          nil
+          (catch :java.lang.Exception e pid)))
+      pid)))

@@ -154,8 +154,8 @@
   (validate-installed tc-home)
   (let [pid-file (get-pid-file tc-home)]
     (when (io/exists-file? pid-file)
-      (let [pid (first (str/split-lines (io/slurp pid-file)))]
-        (when (shell/process-running? pid)
+      (let [pid (long (first (str/split-lines (io/slurp pid-file))))]
+        (when (shell/alive? pid)
           pid)))))
 
 
@@ -279,23 +279,23 @@
 
         (sleep 1 :seconds)
 
-        (when (shell/process-running? pid)
+        (when (shell/alive? pid)
           (when (pos? timeout)
             (println "Awaiting Tomcat shutdown ...")
             (shell/wait-for-process-exit pid timeout) ; gracefully wait
 
-            (when (shell/process-running? pid)
+            (when (shell/alive? pid)
               (println "Timeout: Killing Tomcat...")
-              (sh "kill" "-9" pid :throw-ex true)
+              (shell/kill-forcibly pid)
               (sleep 1 :seconds)))
 
           (when (neg? timeout)
             (loop []
-              (when (shell/process-running? pid)
+              (when (shell/alive? pid)
                 (sleep 1 :seconds)
                 (recur )))))
 
-        (when-not (shell/process-running? pid)
+        (when-not (shell/alive? pid)
           (let [pid-file (get-pid-file tc-home)]
             (when (io/exists-file? pid-file)
               (println "Deleting Tomcat PID file" pid-file)
