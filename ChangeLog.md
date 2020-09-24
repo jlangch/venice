@@ -33,11 +33,12 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - function `shell/open` to open a file or an url with the associated application
 - 'gradle' extension module to run gradle build tasks
 - support for SHA-1 hashes (`crypt/sha1-hash`)
-- REPL support for drag/drop Venice files
+- REPL support for drag/drop Venice files for execution
 
 ### Changed
 
 - the function `load-file` to accept absolute file paths, if the Venice sandbox permits it.
+
 
 
 ## [1.9.0] - 2020-09-01
