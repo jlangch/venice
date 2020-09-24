@@ -706,8 +706,15 @@
      :doc """
           Sequentially read and evaluate the set of forms contained in the file.
           The global var *load-path* holds a list of paths that are tried to \
-          load the file. If *load-path* is empty the file is loaded from the \
-          current working directory.
+          load the file from. If the file can not be found on the *load-path* and \
+          and the sandbox permits the file is either loaded from the current \
+          working directory if it has a relative path or it is loaded from its \
+          absolute path.
+          With 'force' set to false (the default) the file is only loaded once \
+          and then served from a cache. With 'force' set to true it is always \
+          loaded physically.
+          The file is expected to have the file extension '.venice' if missing \
+          the extension '.venice' will implicitely be added.
           """
      :examples '(
           """(load-file "coffee")""",
@@ -724,7 +731,7 @@
                    (name ~file)
                    (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (*load-resource fc# core/*load-path* :binary false)]
+         (let [code# (*load-file fc# core/*load-path* :binary false)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
@@ -1283,7 +1290,7 @@
 (defn
   ^{ :arglists '("(load-resource res)")
      :doc """
-          Loads a resource from the application archive or the load-path. \
+          Loads a resource from the application archive or the *load-path*. \
           Returns a bytebuffer or nil if the resource is not found in any \
           of the two locations.
           """ }

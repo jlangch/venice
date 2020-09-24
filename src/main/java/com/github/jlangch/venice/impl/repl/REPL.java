@@ -274,6 +274,18 @@ public class REPL {
 							handleCommand(cmd, env, terminal, history);
 						}
 					}
+					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
+						final String sexpr = String.format(
+												"(load-file \"%s\")", 
+												line.trim());
+						history.add(sexpr);
+						ThreadLocalMap.clearCallStack();			
+						final VncVal result = venice.RE(sexpr, "user", env);
+						if (result != null) {
+							printer.println("result", resultPrefix + venice.PRINT(result));
+							resultHistory.add(result);
+						}
+					}
 					else {
 						ThreadLocalMap.clearCallStack();			
 						final VncVal result = venice.RE(line, "user", env);

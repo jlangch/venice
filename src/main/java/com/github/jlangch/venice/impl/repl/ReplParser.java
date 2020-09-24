@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.File;
+
 import org.jline.reader.EOFError;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.SyntaxError;
@@ -28,6 +30,7 @@ import org.jline.reader.impl.DefaultParser;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReplParser extends DefaultParser {
@@ -65,7 +68,12 @@ public class ReplParser extends DefaultParser {
 	public void reset() {
 		eof = false;
 	}
-	
+
+	public static boolean isDroppedVeniceScriptFile(final String buffer) {
+		final String filename = StringUtil.trimToEmpty(buffer);
+		return filename.endsWith(".venice") && new File(filename).isFile();
+	}
+
 	public static boolean isCommand(final String buffer) {
 		final int len = buffer.length();
 

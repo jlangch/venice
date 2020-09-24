@@ -122,5 +122,10 @@ public class AcceptAllInterceptor extends Interceptor {
 	) throws SecurityException {
 		// ok
 	}
-
+	
+	@Override
+	public void validateLoadVeniceFileFromOutsideLoadPaths() 
+	throws SecurityException {
+		// ok
+	}
 }

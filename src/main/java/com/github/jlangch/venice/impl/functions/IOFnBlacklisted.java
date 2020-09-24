@@ -41,6 +41,7 @@ public class IOFnBlacklisted {
 					"load-file",
 					"load-classpath-file",
 					"*load-file",
+					"*load-resource",
 					"*load-classpath-file",
 					
 					// classloader

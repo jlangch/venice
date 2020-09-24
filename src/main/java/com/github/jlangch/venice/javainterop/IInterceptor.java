@@ -182,7 +182,8 @@ public interface IInterceptor {
 	 * 
 	 * @param funcName A venice function name
 	 * 
-	 * @throws SecurityException if the function is blacklisted and not allowed to be invoked.
+	 * @throws SecurityException if the function is blacklisted and not
+	 * 							 allowed to be invoked.
 	 */
 	void validateVeniceFunction(String funcName) throws SecurityException;
 	
@@ -192,6 +193,15 @@ public interface IInterceptor {
 	 * @throws SecurityException if the execution time exceeds the configured limit.
 	 */
 	void validateMaxExecutionTime() throws SecurityException;
+	
+	/**
+	 * Validates loading of Venice script files from outside the defined load
+	 * paths.
+	 * 
+	 * @throws SecurityException if loading Venice script files from outside 
+	 * 							 the defined load paths is not permitted
+	 */
+	void validateLoadVeniceFileFromOutsideLoadPaths() throws SecurityException;
 
 	/**
 	 * @return the max execution time in seconds a Venice script under this 
@@ -204,7 +214,6 @@ public interface IInterceptor {
 	 * <code>Sandbox</code> is allowed to use.
 	 */
 	Integer getMaxFutureThreadPoolSize();
-	
 	
 	MeterRegistry getMeterRegistry();
 

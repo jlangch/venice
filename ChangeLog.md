@@ -37,7 +37,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Changed
 
-- the function `load-file` to accept absolute file paths, if Venice is not in in sandbox mode.
+- the function `load-file` to accept absolute file paths, if the Venice sandbox permits it.
 
 
 ## [1.9.0] - 2020-09-01

@@ -141,6 +141,15 @@ public abstract class Interceptor implements IInterceptor {
 	) throws SecurityException {
 		// ok, no black listed Venice module
 	}
+	
+	@Override
+	public void validateLoadVeniceFileFromOutsideLoadPaths() 
+	throws SecurityException {
+		throw new SecurityException(String.format(
+				"Venice Sandbox (%s): Access denied to load Venice files from "
+				+ "outside the defined load paths.", 
+				getClass().getSimpleName()));
+	}
 
 	@Override
 	public void validateMaxExecutionTime() throws SecurityException {
