@@ -713,8 +713,8 @@
           With 'force' set to false (the default) the file is only loaded once \
           and then served from a cache. With 'force' set to true it is always \
           loaded physically.
-          The file is expected to have the file extension '.venice' if missing \
-          the extension '.venice' will implicitely be added.
+          The function is restricted to load files with the extension '.venice'. \
+          If the file extension is missing '.venice' will be implicitely added.
           """
      :examples '(
           """(load-file "coffee")""",
@@ -731,7 +731,7 @@
                    (name ~file)
                    (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (*load-file fc# core/*load-path* :binary false)]
+         (let [code# (load-file* fc# core/*load-path* :binary false)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
@@ -777,7 +777,7 @@
                    (name ~file)
                    (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (*load-classpath-file fc#)]
+         (let [code# (load-classpath-file* fc#)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
@@ -812,7 +812,7 @@
 
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
-       (let [code# (str "(do " (*load-module ~m) ")")
+       (let [code# (str "(do " (load-module* ~m) ")")
              parsed# (read-string code# ~m)
              expanded# (if core/*macroexpand-on-load*
                          (macroexpand-all parsed#)
@@ -1297,7 +1297,7 @@
 
   load-resource [res]
 
-  (*load-resource res *load-path* :binary true))
+  (load-resource* res *load-path* :binary true))
 
 
 (defn-

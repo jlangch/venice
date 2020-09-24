@@ -37,12 +37,13 @@ public class IOFnBlacklisted {
 					"println",
 					"newline",
 
-					// load (macros)
+					// load
 					"load-file",
 					"load-classpath-file",
-					"*load-file",
-					"*load-resource",
-					"*load-classpath-file",
+					"load-resource",
+					"load-file*",
+					"load-resource*",
+					"load-classpath-file*",
 					
 					// classloader
 					"load-jar",

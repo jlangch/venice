@@ -55,10 +55,10 @@ public class ModuleFunctions {
 
 	public static VncFunction loadModule = 
 		new VncFunction(
-				"*load-module", 
+				"load-module*", 
 				VncFunction
 					.meta()
-					.arglists("(*load-module name)")		
+					.arglists("(load-module* name)")		
 					.doc("Loads a Venice extension module.")
 					.build()
 		) {	
@@ -86,10 +86,10 @@ public class ModuleFunctions {
 	
 	public static VncFunction loadClasspathFile = 
 		new VncFunction(
-				"*load-classpath-file",
+				"load-classpath-file*",
 				VncFunction
 					.meta()
-					.arglists("(*load-classpath-file name)")		
+					.arglists("(load-classpath-file* name)")		
 					.doc("Loads a Venice file from the classpath.")
 					.build()
 		) {
@@ -119,10 +119,10 @@ public class ModuleFunctions {
 		
 	public static VncFunction loadFile = 
 		new VncFunction(
-				"*load-file",
+				"load-file*",
 				VncFunction
 					.meta()
-					.arglists("(*load-file file load-paths & options)")		
+					.arglists("(load-file* file load-paths & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
 						"or nil if the file does not exist. \n\n" +
@@ -199,10 +199,10 @@ public class ModuleFunctions {
 		
 	public static VncFunction loadResource = 
 		new VncFunction(
-				"*load-resource",
+				"load-resource*",
 				VncFunction
 					.meta()
-					.arglists("(*load-resource file load-paths & options)")		
+					.arglists("(load-resource* file load-paths & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
 						"or nil if the file does not exist. \n\n" +
@@ -319,12 +319,15 @@ public class ModuleFunctions {
 		}
 	}
 
-	private static boolean isFileWithinDirectory(final File path, final File file)  throws IOException {
-		final File dir = path.getAbsoluteFile();
-		if (dir.isDirectory()) {
-			final File fl = new File(dir, file.getPath());
+	private static boolean isFileWithinDirectory(
+			final File dir, 
+			final File file
+	) throws IOException {
+		final File dir_ = dir.getAbsoluteFile();
+		if (dir_.isDirectory()) {
+			final File fl = new File(dir_, file.getPath());
 			if (fl.isFile()) {
-				if (fl.getCanonicalPath().startsWith(dir.getCanonicalPath())) {
+				if (fl.getCanonicalPath().startsWith(dir_.getCanonicalPath())) {
 					// Prevent accessing files outside the load-path.
 					// E.g.: ../../coffee
 					return true;

@@ -146,8 +146,8 @@ public abstract class Interceptor implements IInterceptor {
 	public void validateLoadVeniceFileFromOutsideLoadPaths() 
 	throws SecurityException {
 		throw new SecurityException(String.format(
-				"Venice Sandbox (%s): Access denied to load Venice files from "
-				+ "outside the defined load paths.", 
+				"Venice Sandbox (%s): Denied to load Venice files from "
+					+ "outside the defined load paths.", 
 				getClass().getSimpleName()));
 	}
 
