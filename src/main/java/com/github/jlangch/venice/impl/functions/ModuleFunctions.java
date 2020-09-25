@@ -58,7 +58,7 @@ public class ModuleFunctions {
 				"load-module*", 
 				VncFunction
 					.meta()
-					.privateFn()
+					//.privateFn()
 					.arglists("(load-module* name)")		
 					.doc("Loads a Venice extension module.")
 					.build()
@@ -96,7 +96,7 @@ public class ModuleFunctions {
 				"load-classpath-file*",
 				VncFunction
 					.meta()
-					.privateFn()
+					//.privateFn()
 					.arglists("(load-classpath-file* name)")		
 					.doc("Loads a Venice file from the classpath.")
 					.build()
@@ -136,7 +136,7 @@ public class ModuleFunctions {
 				"load-file*",
 				VncFunction
 					.meta()
-					.privateFn()
+					//.privateFn()
 					.arglists("(load-file* file load-paths & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
@@ -223,7 +223,7 @@ public class ModuleFunctions {
 				"load-resource*",
 				VncFunction
 					.meta()
-					.privateFn()
+					//.privateFn()
 					.arglists("(load-resource* file load-paths & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
