@@ -731,7 +731,7 @@
                    (name ~file)
                    (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (load-file* fc# core/*load-path* :binary false)]
+         (let [code# (core/load-file-bridge fc#)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
@@ -740,6 +740,8 @@
                (cons! fc# core/*loaded-files*)
                (eval expanded#)
                fc#)))))))
+
+(defn load-file-bridge [f] (core/load-file* f core/*load-path* :binary false))
 
 
 (defmacro
@@ -777,7 +779,7 @@
                    (name ~file)
                    (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (load-classpath-file* fc#)]
+         (let [code# (core/load-classpath-file-bridge fc#)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
@@ -786,6 +788,8 @@
                (cons! fc# core/*loaded-files*)
                (eval expanded#)
                fc#)))))))
+
+(defn load-classpath-file-bridge [f] (core/load-classpath-file* f))
 
 
 (defmacro
@@ -812,7 +816,7 @@
 
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
-       (let [code# (str "(do " (load-module* ~m) ")")
+       (let [code# (str "(do " (core/load-module-bridge ~m) ")")
              parsed# (read-string code# ~m)
              expanded# (if core/*macroexpand-on-load*
                          (macroexpand-all parsed#)
@@ -820,6 +824,8 @@
          (cons! (keyword (name ~m)) core/*loaded-modules*)
          (eval expanded#)
          (keyword (name ~m))))))
+
+(defn load-module-bridge [m] (core/load-module* m))
 
 
 (defmacro
