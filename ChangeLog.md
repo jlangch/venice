@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Scope
 
-Improve Java interop. **MethodHandle** and **LambdaMetafactory** improve reflection performance
+Improve Java interop. **MethodHandle** and **LambdaMetaFactory** improve reflection performance
 and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
@@ -23,7 +23,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.9.1] - 2020-09-xx
+## [1.9.1] - 2020-10-xx
 
 ### Added
 
@@ -34,6 +34,11 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - 'gradle' extension module to run gradle build tasks
 - support for SHA-1 hashes (`crypt/sha1-hash`)
 - REPL support for drag/drop Venice files for execution
+
+
+### Fixed
+
+- core functions `load-module*`, `load-classpath-file*`, `load-file*`, and `load-resource*` to be private for security reasons.
 
 ### Changed
 

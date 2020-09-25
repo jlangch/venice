@@ -58,10 +58,12 @@ public class ModuleFunctions {
 				"load-module*", 
 				VncFunction
 					.meta()
+					.privateFn()
 					.arglists("(load-module* name)")		
 					.doc("Loads a Venice extension module.")
 					.build()
 		) {	
+			@Override
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
@@ -80,7 +82,12 @@ public class ModuleFunctions {
 					throw new VncException("Failed to load Venice module", ex);
 				}
 			}
-	
+			
+			@Override
+			public boolean isRedefinable() { 
+				return false;  // security
+			}
+
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
@@ -89,10 +96,12 @@ public class ModuleFunctions {
 				"load-classpath-file*",
 				VncFunction
 					.meta()
+					.privateFn()
 					.arglists("(load-classpath-file* name)")		
 					.doc("Loads a Venice file from the classpath.")
 					.build()
 		) {
+			@Override
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
@@ -113,6 +122,11 @@ public class ModuleFunctions {
 					throw new VncException("Failed to load Venice classpath file", ex);
 				}
 			}
+			
+			@Override
+			public boolean isRedefinable() { 
+				return false;  // security
+			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
@@ -122,6 +136,7 @@ public class ModuleFunctions {
 				"load-file*",
 				VncFunction
 					.meta()
+					.privateFn()
 					.arglists("(load-file* file load-paths & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
@@ -131,6 +146,7 @@ public class ModuleFunctions {
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
 		) {
+			@Override
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
@@ -193,6 +209,11 @@ public class ModuleFunctions {
 					throw new VncException("Failed to load the Venice file '" + file + "'", ex);
 				}
 			}
+			
+			@Override
+			public boolean isRedefinable() { 
+				return false;  // security
+			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
@@ -202,6 +223,7 @@ public class ModuleFunctions {
 				"load-resource*",
 				VncFunction
 					.meta()
+					.privateFn()
 					.arglists("(load-resource* file load-paths & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
@@ -211,6 +233,7 @@ public class ModuleFunctions {
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
 					.build()
 		) {
+			@Override
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 
@@ -254,6 +277,11 @@ public class ModuleFunctions {
 				catch (Exception ex) {
 					throw new VncException("Failed to load the resource '" + file + "'", ex);
 				}
+			}
+			
+			@Override
+			public boolean isRedefinable() { 
+				return false;  // security
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;

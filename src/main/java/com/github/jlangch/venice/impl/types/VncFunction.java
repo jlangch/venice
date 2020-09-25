@@ -318,7 +318,14 @@ public abstract class VncFunction
 				VncList.ofList(Arrays.stream(refs).map(r -> new VncString(r)).collect(Collectors.toList())));
 			return this;
 		}
-			
+
+		public MetaBuilder privateFn() { 
+			meta.put(
+				MetaUtil.PRIVATE, 
+				VncBoolean.True);
+			return this;
+		}
+
 		public VncHashMap build() {
 			return new VncHashMap(meta);
 		}

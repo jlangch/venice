@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -318,7 +319,15 @@ public class VncHashMap extends VncMap {
 		}
 
 		public Builder add(final VncFunction fn) {
-			map.put(new VncSymbol(fn.getQualifiedName()), fn);
+			if (fn.isPrivate()) {
+				map.put(new VncSymbol(
+								fn.getQualifiedName(), 
+								VncHashMap.of(MetaUtil.PRIVATE, VncBoolean.True)),
+						fn);
+			}
+			else {
+				map.put(new VncSymbol(fn.getQualifiedName()), fn);
+			}
 			return this;
 		}
 
