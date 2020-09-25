@@ -83,6 +83,7 @@ import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
+import com.github.jlangch.venice.impl.util.io.LoadPaths;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -220,7 +221,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 
 		// set the load path
-		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPath.toVncList(loadPaths), false));
+		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPaths.toVncList(loadPaths), false));
 		
 		// set the run mode
 		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));

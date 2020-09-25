@@ -741,6 +741,7 @@
                (eval expanded#)
                fc#)))))))
 
+; bridge into the core private function (macros run in the caller namespace)
 (defn load-file-bridge [f] (core/load-file* f core/*load-path* :binary false))
 
 
@@ -789,6 +790,7 @@
                (eval expanded#)
                fc#)))))))
 
+; bridge into the core private function (macros run in the caller namespace)
 (defn load-classpath-file-bridge [f] (core/load-classpath-file* f))
 
 
@@ -825,6 +827,7 @@
          (eval expanded#)
          (keyword (name ~m))))))
 
+; bridge into the core private function (macros run in the caller namespace)
 (defn load-module-bridge [m] (core/load-module* m))
 
 

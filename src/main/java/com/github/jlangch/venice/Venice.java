@@ -37,7 +37,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -52,6 +51,7 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.util.io.LoadPaths;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -87,7 +87,7 @@ public class Venice {
 	 */
 	public Venice(final IInterceptor interceptor, final List<String> loadPaths) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
-		this.loadPaths = LoadPath.sanitize(loadPaths);
+		this.loadPaths = LoadPaths.sanitize(loadPaths);
 		this.meterRegistry = this.interceptor.getMeterRegistry();
 	}
 	

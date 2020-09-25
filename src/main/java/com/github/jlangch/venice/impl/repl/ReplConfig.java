@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.Tuple2;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.nanojson.JsonObject;
 import com.github.jlangch.venice.nanojson.JsonParser;
 

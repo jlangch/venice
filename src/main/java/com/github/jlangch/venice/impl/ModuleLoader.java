@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
 public class ModuleLoader {

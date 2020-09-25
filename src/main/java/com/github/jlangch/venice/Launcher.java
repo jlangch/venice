@@ -27,7 +27,6 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.LoadPath;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -44,11 +43,12 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
-import com.github.jlangch.venice.impl.util.FileUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.io.FileUtil;
+import com.github.jlangch.venice.impl.util.io.LoadPaths;
+import com.github.jlangch.venice.impl.util.io.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -60,7 +60,7 @@ public class Launcher {
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		JavaInterop.register(interceptor);
 		
-		final List<String> loadPaths = LoadPath.parseFromString(cli.switchValue("-loadpath"));
+		final List<String> loadPaths = LoadPaths.parseFromString(cli.switchValue("-loadpath"));
 		final boolean macroexpand = cli.switchPresent("-macroexpand");
 
 		try {

@@ -43,7 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.ZipFileSystemUtil;
+import com.github.jlangch.venice.impl.util.io.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 

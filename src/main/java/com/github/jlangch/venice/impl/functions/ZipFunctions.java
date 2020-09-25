@@ -47,7 +47,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.Zipper;
+import com.github.jlangch.venice.impl.util.io.Zipper;
 
 
 public class ZipFunctions {

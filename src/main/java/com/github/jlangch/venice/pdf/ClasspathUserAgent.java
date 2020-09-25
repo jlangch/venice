@@ -31,8 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextUserAgent;
 
-import com.github.jlangch.venice.impl.util.ClassPathResource;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
 /**

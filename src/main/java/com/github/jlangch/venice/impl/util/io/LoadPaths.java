@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.util.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class LoadPath {
+public class LoadPaths {
 	
 	public static List<String> parseFromString(final String path) {
 		final String loadPath = StringUtil.trimToNull(path);

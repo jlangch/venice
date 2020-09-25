@@ -26,6 +26,8 @@ import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+
 
 public class Licenses {
 

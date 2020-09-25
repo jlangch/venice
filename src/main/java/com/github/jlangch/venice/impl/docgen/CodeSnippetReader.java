@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.github.jlangch.venice.impl.VeniceClasspath.*;
-import com.github.jlangch.venice.impl.util.ClassPathResource;
+
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
 public class CodeSnippetReader {
