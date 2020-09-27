@@ -29,17 +29,31 @@ import java.util.stream.Collectors;
 
 
 public class SandboxRecorder extends Interceptor {
+
 	
-	public SandboxRecorder(final Writer writer) {
+	public SandboxRecorder() {
+		this(null);
+	}
+	
+	public SandboxRecorder(final ILoadPaths loadPaths) {
+		super(loadPaths);
+		this.writer = new PrintWriter(System.out);
+	}
+
+	public SandboxRecorder(
+			final Writer writer,
+			final ILoadPaths loadPaths
+	) {
+		super(loadPaths);
 		this.writer = new PrintWriter(writer);
 	}
 	
-	public SandboxRecorder(final OutputStream os) {
+	public SandboxRecorder(
+			final OutputStream os,
+			final ILoadPaths loadPaths
+	) {
+		super(loadPaths);
 		this.writer = new PrintWriter(os);
-	}
-	
-	public SandboxRecorder() {
-		this.writer = new PrintWriter(System.out);
 	}
 	
 

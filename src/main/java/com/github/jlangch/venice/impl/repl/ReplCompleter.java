@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.File;
 import java.util.List;
 
 import org.jline.reader.Candidate;
@@ -34,7 +35,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ReplCompleter implements Completer {
 	
-	public ReplCompleter(final VeniceInterpreter venice, final Env env, final List<String> loadPaths) {
+	public ReplCompleter(final VeniceInterpreter venice, final Env env, final List<File> loadPaths) {
 		this.venice = venice;
 		this.env = env;
 		this.filePathCompleter = new FilePathCompleter(loadPaths);

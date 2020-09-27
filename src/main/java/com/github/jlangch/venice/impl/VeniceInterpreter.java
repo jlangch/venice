@@ -83,7 +83,6 @@ import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
-import com.github.jlangch.venice.impl.util.io.LoadPaths;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -109,11 +108,6 @@ public class VeniceInterpreter implements Serializable  {
 											   : interceptor;
 
 		this.meterRegistry = this.interceptor.getMeterRegistry();
-										
-
-		if (loadPaths != null) {
-			this.loadPaths.addAll(loadPaths);
-		}
 		
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
@@ -219,9 +213,6 @@ public class VeniceInterpreter implements Serializable  {
 
 		// ansi terminal (set when run from a REPL in an ASNI terminal)
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
-
-		// set the load path
-		env.setGlobal(new Var(new VncSymbol("*load-path*"), LoadPaths.toVncList(loadPaths), false));
 		
 		// set the run mode
 		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
@@ -1922,7 +1913,6 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
-	private final List<String> loadPaths = new ArrayList<>();
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();

@@ -28,8 +28,11 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 public abstract class Interceptor implements IInterceptor {
  
-	public Interceptor() {
+	public Interceptor(final ILoadPaths loadPaths) {
 		this.meterRegistry = new MeterRegistry(false);
+		this.loadPaths = loadPaths == null 
+							? LoadPathsFactory.rejectAll() 
+							: loadPaths;
 	}
 	
 	@Override
@@ -141,15 +144,6 @@ public abstract class Interceptor implements IInterceptor {
 	) throws SecurityException {
 		// ok, no black listed Venice module
 	}
-	
-	@Override
-	public void validateLoadVeniceFileFromOutsideLoadPaths() 
-	throws SecurityException {
-		throw new SecurityException(String.format(
-				"Venice Sandbox (%s): Denied to load Venice files from "
-					+ "outside the defined load paths.", 
-				getClass().getSimpleName()));
-	}
 
 	@Override
 	public void validateMaxExecutionTime() throws SecurityException {
@@ -166,10 +160,16 @@ public abstract class Interceptor implements IInterceptor {
 	}
 
 	@Override
+	public ILoadPaths getLoadPaths() {
+		return loadPaths;
+	}
+
+	@Override
 	public MeterRegistry getMeterRegistry() {
 		return meterRegistry;
 	}
 
 	
 	private final MeterRegistry meterRegistry;
+	private final ILoadPaths loadPaths;
 }

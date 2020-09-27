@@ -705,8 +705,7 @@
           "(load-file file force)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the file.
-          The global var *load-path* holds a list of paths that are tried to \
-          load the file from. If the file can not be found on the *load-path* and \
+          If the file can not be found on the global load paths and \
           and the sandbox permits the file is either loaded from the current \
           working directory if it has a relative path or it is loaded from its \
           absolute path.
@@ -715,6 +714,8 @@
           loaded physically.
           The function is restricted to load files with the extension '.venice'. \
           If the file extension is missing '.venice' will be implicitely added.
+          Returns 'true' if the file has been successfully loaded and 'false' if \
+          the file has been already loaded. Throws an exception on loading error.
           """
      :examples '(
           """(load-file "coffee")""",
@@ -730,19 +731,19 @@
     `(let [fc# (if (str/ends-with? (name ~file) ".venice")
                    (name ~file)
                    (str (name ~file) ".venice"))]
-       (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (core/load-file-bridge fc#)]
-           (when (some? code#)
-             (let [parsed# (read-string (str "(do " code# ")") fc#)
-                   expanded# (if core/*macroexpand-on-load*
-                               (macroexpand-all parsed#)
-                               parsed#)]
-               (cons! fc# core/*loaded-files*)
-               (eval expanded#)
-               fc#)))))))
-
-; bridge into the core private function (macros run in the caller namespace)
-(defn load-file-bridge [f] (core/load-file* f core/*load-path* :binary false))
+       (if (or ~force (not-contains? core/*loaded-files* fc#))
+         (do
+           (let [code# (core/load-file* fc#)]
+             (when (some? code#)
+               (let [parsed# (read-string (str "(do " code# ")") fc#)
+                     expanded# (if core/*macroexpand-on-load*
+                                 (macroexpand-all parsed#)
+                                 parsed#)]
+                 (cons! fc# core/*loaded-files*)
+                 (eval expanded#)
+                 fc#)))
+            true)
+        false))))
 
 
 (defmacro
@@ -780,7 +781,7 @@
                    (name ~file)
                    (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (core/load-classpath-file-bridge fc#)]
+         (let [code# (core/load-classpath-file* fc#)]
            (when (some? code#)
              (let [parsed# (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
@@ -790,26 +791,27 @@
                (eval expanded#)
                fc#)))))))
 
-; bridge into the core private function (macros run in the caller namespace)
-(defn load-classpath-file-bridge [f] (core/load-classpath-file* f))
-
 
 (defmacro
   ^{ :arglists '(
           "(load-module m)",
           "(load-module m force)")
-     :doc "Loads a Venice predefined extension module."
+     :doc """
+          Loads a Venice predefined extension module.
+          Returns 'true' if the module has been successfully loaded and 'false' if \
+          the module has been already loaded. Throws an exception on loading error.
+          """
      :examples '(
-           """
-           (load-module :math)
-           """,
-           """
-           (do
-             (load-module :math)
-             ; reload the module
-             (ns-remove math)
-             (load-module :math true))
-           """) }
+          """
+          (load-module :math)
+          """,
+          """
+          (do
+            (load-module :math)
+            ; reload the module
+            (ns-remove math)
+            (load-module :math true))
+          """) }
 
   load-module
 
@@ -818,7 +820,7 @@
 
   ([m force]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
-       (let [code# (str "(do " (core/load-module-bridge ~m) ")")
+       (let [code# (str "(do " (core/load-module* ~m) ")")
              parsed# (read-string code# ~m)
              expanded# (if core/*macroexpand-on-load*
                          (macroexpand-all parsed#)
@@ -826,9 +828,6 @@
          (cons! (keyword (name ~m)) core/*loaded-modules*)
          (eval expanded#)
          (keyword (name ~m))))))
-
-; bridge into the core private function (macros run in the caller namespace)
-(defn load-module-bridge [m] (core/load-module* m))
 
 
 (defmacro

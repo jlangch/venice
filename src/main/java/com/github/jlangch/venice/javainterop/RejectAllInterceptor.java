@@ -31,6 +31,10 @@ import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 
 public class RejectAllInterceptor extends Interceptor {
 	
+	public RejectAllInterceptor() {
+		super(LoadPathsFactory.rejectAll());
+	}
+
 	@Override
 	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 

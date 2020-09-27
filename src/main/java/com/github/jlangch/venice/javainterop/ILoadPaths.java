@@ -19,9 +19,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.functions;
+package com.github.jlangch.venice.javainterop;
 
-public class ModuleFunctionsTest {
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.util.List;
+
+
+public interface ILoadPaths {
+
+	String loadVeniceFile(String file);
+
+	ByteBuffer loadBinaryResource(String file);
 	
+	String loadTextResource(String file, String encoding);
 
+	
+	List<File> getPaths();
+	
+	boolean isAllowLoadingAll();
 }

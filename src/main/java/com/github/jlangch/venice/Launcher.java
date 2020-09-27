@@ -47,20 +47,25 @@ import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
-import com.github.jlangch.venice.impl.util.io.LoadPaths;
 import com.github.jlangch.venice.impl.util.io.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
+import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 
 
 public class Launcher {
 	
 	public static void main(final String[] args) {
 		final CommandLineArgs cli = new CommandLineArgs(args);
-		final IInterceptor interceptor = new AcceptAllInterceptor();
+		
+		final ILoadPaths loadPaths = LoadPathsFactory.parseDelimitedLoadPath(
+											cli.switchValue("-loadpath"),
+											true);
+		
+		final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 		JavaInterop.register(interceptor);
 		
-		final List<String> loadPaths = LoadPaths.parseFromString(cli.switchValue("-loadpath"));
 		final boolean macroexpand = cli.switchPresent("-macroexpand");
 
 		try {
@@ -70,7 +75,7 @@ public class Launcher {
 				final String script = new String(FileUtil.load(new File(file)));
 				
 				System.out.println(
-						runScript(cli, loadPaths, macroexpand, interceptor, script, new File(file).getName()));
+						runScript(cli, macroexpand, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-cp-file")) {
 				// run the file from the classpath
@@ -78,14 +83,14 @@ public class Launcher {
 				final String script = new ClassPathResource(file).getResourceAsString();
 				
 				System.out.println(
-						runScript(cli, loadPaths, macroexpand, interceptor, script, new File(file).getName()));
+						runScript(cli, macroexpand, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-script")) {
 				// run the script passed as command line argument
 				final String script = cli.switchValue("-script");
 				
 				System.out.println(
-						runScript(cli, loadPaths, macroexpand, interceptor, script, "script"));
+						runScript(cli, macroexpand, interceptor, script, "script"));
 			}
 			else if (cli.switchPresent("-app")) {
 				// run the Venice application archive
@@ -106,15 +111,15 @@ public class Launcher {
 				// run a custom application repl
 				final String file = cli.switchValue("-app-repl");
 					
-				new CustomREPL(interceptor, loadPaths, new File(file)).run(args);
+				new CustomREPL(interceptor, new File(file)).run(args);
 			}
 			else if (cli.switchPresent("-repl")) {
 				// run the Venice repl
-				new REPL(interceptor, loadPaths).run(args);
+				new REPL(interceptor).run(args);
 			}
 			else {
 				// run the Venice repl
-				new REPL(interceptor, loadPaths).run(args);
+				new REPL(interceptor).run(args);
 			}
 			
 			System.exit(SystemFunctions.SYSTEM_EXIT_CODE.get());
@@ -155,13 +160,12 @@ public class Launcher {
 	
 	private static String runScript(
 			final CommandLineArgs cli,
-			final List<String> loadPaths,
 			final boolean macroexpand,
 			final IInterceptor interceptor,
 			final String script,
 			final String name
 	) {
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 		
 		final Env env = createEnv(
 							venice, 

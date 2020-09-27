@@ -26,8 +26,19 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class SandboxInterceptor extends ValueFilterInterceptor {
-	
-	public SandboxInterceptor(final SandboxRules rules) {
+
+	public SandboxInterceptor(
+			final SandboxRules rules
+	) {
+		this(rules, LoadPathsFactory.rejectAll());
+	}
+
+	public SandboxInterceptor(
+			final SandboxRules rules,
+			final ILoadPaths loadPaths
+	) {
+		super(loadPaths);
+		
 		this.sandboxRulesOrg = rules;
 		this.sandboxRules = CompiledSandboxRules.compile(rules);
 

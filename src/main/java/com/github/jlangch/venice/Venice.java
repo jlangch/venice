@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +50,6 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
-import com.github.jlangch.venice.impl.util.io.LoadPaths;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
@@ -63,7 +61,7 @@ import com.github.jlangch.venice.util.Timer;
 public class Venice {
 
 	public Venice() {
-		this(null, null);
+		this(null);
 	}
 
 	/**
@@ -73,21 +71,7 @@ public class Venice {
 	 * 			an optional interceptor that defines the sandbox 
 	 */
 	public Venice(final IInterceptor interceptor) {
-		this(interceptor, null);
-	}
-
-	/**
-	 * Create new sandboxed Venice instance
-	 * 
-	 * @param interceptor
-	 * 			 an optional interceptor that defines the sandbox 
-	 * @param loadPaths 
-	 * 			an optional list of file load paths used by the function 
-	 * 			'load-file'
-	 */
-	public Venice(final IInterceptor interceptor, final List<String> loadPaths) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
-		this.loadPaths = LoadPaths.sanitize(loadPaths);
 		this.meterRegistry = this.interceptor.getMeterRegistry();
 	}
 	
@@ -129,8 +113,7 @@ public class Venice {
 		//       to have a safe sandbox in-place if macros are misused to
 		//       execute code at expansion time.
 		final VeniceInterpreter venice = new VeniceInterpreter(
-												new RejectAllInterceptor(), 
-												loadPaths);
+												new RejectAllInterceptor());
 		
 		final Env env = venice.createEnv(macroexpand, false, new VncKeyword("macroexpand"))
 							  .setStdoutPrintStream(null)
@@ -183,7 +166,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+			final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
@@ -280,7 +263,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+			final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 			final Env env = createEnv(venice, macroexpand, params);
 			
@@ -489,7 +472,6 @@ public class Venice {
 							true /* daemon threads */));
 	
 	private final IInterceptor interceptor;
-	private final List<String> loadPaths;
 	private final MeterRegistry meterRegistry;
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 	private final PrintStream stdout = new PrintStream(System.out, true);

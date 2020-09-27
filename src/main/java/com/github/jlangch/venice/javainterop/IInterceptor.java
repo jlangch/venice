@@ -195,13 +195,9 @@ public interface IInterceptor {
 	void validateMaxExecutionTime() throws SecurityException;
 	
 	/**
-	 * Validates loading of Venice script files from outside the defined load
-	 * paths.
-	 * 
-	 * @throws SecurityException if loading Venice script files from outside 
-	 * 							 the defined load paths is not permitted
+	 * @return the load paths for loading Venice files and resources
 	 */
-	void validateLoadVeniceFileFromOutsideLoadPaths() throws SecurityException;
+	ILoadPaths getLoadPaths();
 
 	/**
 	 * @return the max execution time in seconds a Venice script under this 

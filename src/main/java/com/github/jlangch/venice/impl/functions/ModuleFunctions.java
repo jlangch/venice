@@ -23,10 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
@@ -43,7 +41,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.io.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -58,7 +55,6 @@ public class ModuleFunctions {
 				"load-module*", 
 				VncFunction
 					.meta()
-					.privateFn()
 					.arglists("(load-module* name)")		
 					.doc("Loads a Venice extension module.")
 					.build()
@@ -96,7 +92,6 @@ public class ModuleFunctions {
 				"load-classpath-file*",
 				VncFunction
 					.meta()
-					.privateFn()
 					.arglists("(load-classpath-file* name)")		
 					.doc("Loads a Venice file from the classpath.")
 					.build()
@@ -136,71 +131,29 @@ public class ModuleFunctions {
 				"load-file*",
 				VncFunction
 					.meta()
-					.privateFn()
-					.arglists("(load-file* file load-paths & options)")		
-					.doc(
-						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
-						"or nil if the file does not exist. \n\n" +
-						"Options: \n" +
-						"  :binary true/false - e.g :binary true, defaults to true \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+					.arglists("(load-file* file)")		
+					.doc("Loads a venice file from the given load-paths")
 					.build()
 		) {
 			@Override
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				assertArity(args, 1);
 
 				sandboxFunctionCallValidation();
 				
-				final File file = new File(name(args.first()));					
+				final String file = name(args.first());					
 				try {
-					final VncList loadPaths = Coerce.toVncList(args.second());
-
-					final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
-					final boolean binary = VncBoolean.isTrue(options.get(new VncKeyword("binary")));
-					final String encoding = encoding(options.get(new VncKeyword("encoding")));
-									
-					if (file.isAbsolute()) {
-						final IInterceptor interceptor = JavaInterop.getInterceptor();
-
-						interceptor.validateLoadVeniceFileFromOutsideLoadPaths();
-						final VncVal data = load(file.toPath());
+					final IInterceptor interceptor = JavaInterop.getInterceptor();
 						
-						if (data == Nil) {
-							throw new VncException(
-									"Failed to load the Venice file '" + file + "'!");
-						}
-						else {
-							return binary ? data : convertToString(data, encoding);
-						}
+					final String data = interceptor.getLoadPaths().loadVeniceFile(file);
+						
+					if (data == null) {
+						throw new VncException(
+								"Failed to load the Venice file '" + file + "'!");
 					}
 					else {
-						VncVal data = loadPaths.getList()
-									           .stream()
-									           .map(p -> name(p))
-									           .map(p -> loadFile(p, file))
-									           .filter(d -> d != Nil)
-									           .findFirst()
-									           .orElse(Nil);
-									
-						if (data == Nil) {
-							final IInterceptor interceptor = JavaInterop.getInterceptor();
-							interceptor.validateLoadVeniceFileFromOutsideLoadPaths();
-
-							// try to load it from current working directory
-							data = loadFileFromDir(new File("."), file);
-						}
-						
-						if (data == Nil) {
-							throw new VncException(
-									"Failed to load the Venice file '" + file + "'! "
-										+ "The file was not found on the defined load paths "
-										+ "or in the current working directory.");
-						}
-						else {
-							return binary ? data : convertToString(data, encoding);
-						}
-					}					
+						return new VncString(data);
+					}
 				} 
 				catch (VncException ex) {
 					throw ex;
@@ -223,8 +176,7 @@ public class ModuleFunctions {
 				"load-resource*",
 				VncFunction
 					.meta()
-					.privateFn()
-					.arglists("(load-resource* file load-paths & options)")		
+					.arglists("(load-resource* file & options)")		
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
 						"or nil if the file does not exist. \n\n" +
@@ -235,39 +187,38 @@ public class ModuleFunctions {
 		) {
 			@Override
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				assertMinArity(args, 1);
 
 				sandboxFunctionCallValidation();
 				
-				final File file = new File(name(args.first()));	
+				final String file = name(args.first());					
 				try {				
-					final VncList loadPaths = Coerce.toVncList(args.second());
-
 					final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
 					final boolean binary = VncBoolean.isTrue(options.get(new VncKeyword("binary")));
 					final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
-					if (file.isAbsolute()) {
-						throw new VncException(
-								"Rejected to load the resource '" + file + "' from an absolute path! "
-									+ "Resources can only be loaded from the defined load paths.");
-					}
-					else {
-						final VncVal data = loadPaths.getList()
-													 .stream()
-													 .map(p -> name(p))
-													 .map(p -> loadFile(p, file))
-													 .filter(d -> d != Nil)
-													 .findFirst()
-													 .orElse(Nil);
+					final IInterceptor interceptor = JavaInterop.getInterceptor();
+										
+					if (binary) {
+						final ByteBuffer data = interceptor.getLoadPaths().loadBinaryResource(file);
 						
-						if (data == Nil) {
+						if (data == null) {
 							throw new VncException(
-									"Failed to load the resource '" + file + "'! "
-										+ "The resources was not found on the defined load paths.");
+									"Failed to load the resource file '" + file + "'!");
 						}
 						else {
-							return binary ? data : convertToString(data, encoding);
+							return new VncByteBuffer(data);
+						}
+					}
+					else {
+						final String data = interceptor.getLoadPaths().loadTextResource(file, encoding);
+						
+						if (data == null) {
+							throw new VncException(
+									"Failed to load the resource file '" + file + "'!");
+						}
+						else {
+							return new VncString(data);
 						}
 					}
 				} 
@@ -307,88 +258,11 @@ public class ModuleFunctions {
 		return s.endsWith(".venice") ? s : s + ".venice";
 	}
 
-	private static VncVal loadFile(
-			final String loadPath, 
-			final File file
-	) {
-		return loadPath.endsWith(".zip")
-					? loadFileFromZip(new File(loadPath), file)
-					: loadFileFromDir(new File(loadPath), file);
-	}
 
-	private static VncVal loadFileFromZip(
-			final File zip, 
-			final File file
-	) {
-		if (zip.exists()) {
-			try {
-				return ZipFileSystemUtil.loadBinaryFileFromZip(zip, file);
-			}
-			catch(Exception ex) {
-				return Nil;
-			}
-		}
-		
-		return Nil;
-	}
-	
-	private static VncVal loadFileFromDir(final File path, final File file) {
-		try {
-			if (isFileWithinDirectory(path, file)) {
-				final File dir = path.getAbsoluteFile();
-				return load(new File(dir, file.getPath()).toPath());
-			}
-			else {
-				return Nil;
-			}
-		}
-		catch (Exception ex) {
-			throw new VncException(String.format("Failed to load file '%s'", file.getPath()), ex);
-		}
-	}
-
-	private static boolean isFileWithinDirectory(
-			final File dir, 
-			final File file
-	) throws IOException {
-		final File dir_ = dir.getAbsoluteFile();
-		if (dir_.isDirectory()) {
-			final File fl = new File(dir_, file.getPath());
-			if (fl.isFile()) {
-				if (fl.getCanonicalPath().startsWith(dir_.getCanonicalPath())) {
-					// Prevent accessing files outside the load-path.
-					// E.g.: ../../coffee
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	private static VncVal load(final Path path) {
-		try {
-			return new VncByteBuffer(Files.readAllBytes(path));
-		}
-		catch (Exception ex) {
-			return Nil;
-		}
-	}
-
-	private static VncVal convertToString(final VncVal binary, final String encoding) {
-		try {
-			return binary == Nil
-					? Nil
-					: new VncString(new String(((VncByteBuffer)binary).getBytes(), encoding));
-		}
-		catch (Exception ex) {
-			return Nil;
-		}
-	}
 
 	private static String encoding(final VncVal enc) {
 		return enc == Nil
-				? "utf-8"
+				? Charset.defaultCharset().name()
 				: Types.isVncKeyword(enc)
 					? Coerce.toVncKeyword(enc).getValue()
 					: Coerce.toVncString(enc).getValue();

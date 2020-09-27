@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.repl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,11 +58,9 @@ public class CustomREPL {
 	
 	public CustomREPL(
 			final IInterceptor interceptor, 
-			final List<String> loadPaths,
 			final File app
 	) {
 		this.interceptor = interceptor;
-		this.loadPaths = loadPaths;
 		this.app = app;
 	}
 	
@@ -165,7 +162,7 @@ public class CustomREPL {
 
 		final TerminalPrinter printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 		
 		final Env env = loadEnv(venice, cli, out, err, in);
 		
@@ -322,7 +319,6 @@ public class CustomREPL {
 	private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";
 	private static final String DEFAULT_PROMPT_SECONDARY = "      | ";
 	
-	private final List<String> loadPaths;
 	private final File app;
 
 	private String prompt = DEFAULT_PROMPT_PRIMARY;

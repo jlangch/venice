@@ -39,10 +39,10 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class FilePathCompleter {
 
-	public FilePathCompleter(final List<String> loadPaths) {
+	public FilePathCompleter(final List<File> loadPaths) {
 		this.loadPaths = loadPaths == null ? new ArrayList<>() : new ArrayList<>(loadPaths);
 		if (this.loadPaths.isEmpty()) {
-			this.loadPaths.add(".");
+			this.loadPaths.add(new File("."));
 		}
 	}
 
@@ -80,9 +80,9 @@ public class FilePathCompleter {
     	return candidates;
 	}
  
-    private List<String> listFiles(final String root, final String dir) {
+    private List<String> listFiles(final File root, final String dir) {
     	try {
-    		final File root_ = new File(root).getAbsoluteFile().getCanonicalFile();
+    		final File root_ = root.getAbsoluteFile().getCanonicalFile();
     		final String sRoot_ = root_.getPath() + "/";
     		
     		final File start = new File(root_, dir);
@@ -129,5 +129,5 @@ public class FilePathCompleter {
 	private final Pattern p0 = Pattern.compile("^.*[(]load-file\\s*$");
 	private final Pattern p1 = Pattern.compile("^.*[(]load-file\\s*[\"]([^\"]*)$");		
 
-	private final List<String> loadPaths;
+	private final List<File> loadPaths;
 }

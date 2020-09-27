@@ -23,7 +23,12 @@ package com.github.jlangch.venice.javainterop;
 
 public class AcceptAllInterceptor extends Interceptor {
 	
+	public AcceptAllInterceptor(final ILoadPaths loadPaths) {
+		super(loadPaths == null ? LoadPathsFactory.acceptAll() : loadPaths);
+	}
+	
 	public AcceptAllInterceptor() {
+		super(LoadPathsFactory.acceptAll());
 	}
 	
 
@@ -120,12 +125,6 @@ public class AcceptAllInterceptor extends Interceptor {
 	public void validateLoadModule(
 			final String moduleName
 	) throws SecurityException {
-		// ok
-	}
-	
-	@Override
-	public void validateLoadVeniceFileFromOutsideLoadPaths() 
-	throws SecurityException {
 		// ok
 	}
 }

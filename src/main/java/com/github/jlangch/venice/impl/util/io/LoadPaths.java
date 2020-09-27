@@ -23,57 +23,249 @@ package com.github.jlangch.venice.impl.util.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
-public class LoadPaths {
-	
-	public static List<String> parseFromString(final String path) {
-		final String loadPath = StringUtil.trimToNull(path);
-		return loadPath == null
-				? new ArrayList<>()
-				: sanitize(Arrays.asList(loadPath.split(";")));
+public class LoadPaths implements ILoadPaths {
+
+	private LoadPaths(
+			final List<File> paths, 
+			final boolean allowLoadingAll
+	) {
+		if (paths != null) {
+			this.paths.addAll(paths);
+		}
+		this.allowLoadingAll = allowLoadingAll;
 	}
 
-	public static List<String> sanitize(final List<String> paths) {
-		if (paths == null) {
-			return new ArrayList<>();
+
+	public static LoadPaths rejectAll() {
+		return new LoadPaths(null, false);
+	}
+
+	public static LoadPaths acceptAll() {
+		return new LoadPaths(null, true);
+	}
+
+	/**
+	 * Create a load path from any number of paths. A path must be
+	 * an existing regular file or a directory. Paths must be absolute.
+	 * 
+	 * @param paths the paths
+	 * @return the load path object
+	 */
+	public static LoadPaths of(
+			final List<File> paths, 
+			final boolean allowLoadingFromAnywhere
+	) {
+		if (paths == null || paths.isEmpty()) {
+			return new LoadPaths(null, allowLoadingFromAnywhere);
 		}
 		else {
-			return paths
-					.stream()
-					.map(p -> StringUtil.trimToNull(p))
-					.filter(p -> p != null)					
-					.map(p -> makeCanocicalPath(p))
-					.collect(Collectors.toList());
+			final List<File> savePaths = new ArrayList<>();
+			
+			for(File p : paths) {
+				if (p != null) {
+					if (p.isFile() || p.isDirectory()) {
+						savePaths.add(canonical(p.getAbsoluteFile()));
+					}
+					else {
+						// skip silently
+					}
+				}
+			}
+			
+			return new LoadPaths(savePaths, allowLoadingFromAnywhere);
+		}
+	}
+	
+	@Override
+	public String loadVeniceFile(final String file) {
+		if (file == null) {
+			return null;
+		}
+		else {
+			final String vncFile = file.endsWith(".venice") ? file : file + ".venice";
+			
+			final ByteBuffer data = load(vncFile);
+	
+			return data == null 
+					? null 
+					: new String(data.array(), getCharset("UTF-8"));
 		}
 	}
 
-	public static VncList toVncList(final List<String> paths) {
-		return paths == null || paths.isEmpty()
-				? VncList.empty()
-				: VncList.ofList(paths
-									.stream()
-									.map(p -> new VncString(p))
-									.collect(Collectors.toList()));
+	@Override
+	public ByteBuffer loadBinaryResource(final String file) {
+		return load(file);
+	}
+	
+	@Override
+	public String loadTextResource(final String file, final String encoding) {
+		final ByteBuffer data = load(file);
+		
+		return data == null 
+				? null 
+				: new String(data.array(), getCharset(encoding));
+	}
+
+	@Override
+	public List<File> getPaths() {
+		return Collections.unmodifiableList(paths);
+	}
+
+	@Override
+	public boolean isAllowLoadingAll() {
+		return allowLoadingAll;
 	}
 	
 	
-	private static String makeCanocicalPath(final String path) {
+	private ByteBuffer load(final String file) {
+		final ByteBuffer data = paths.stream()
+						             .map(p -> load(p, file))
+						             .filter(d -> d != null)
+						             .findFirst()
+						             .orElse(null);
+		
+		if (data != null) {
+			return data;
+		}
+		else if (allowLoadingAll) {
+			final File f = new File(file);
+			if (f.isFile()) {
+				return loadFile(f);			
+			}
+		}
+		
+		return null;
+	}
+
+	private ByteBuffer load(
+			final File loadPath, 
+			final String file
+	) {
+		if (loadPath.getName().endsWith(".zip")) {
+			return loadFileFromZip(loadPath, new File(file));
+		}
+		else if (loadPath.isDirectory()) {
+			return loadFileFromDir(loadPath, new File(file));
+		}
+		else if (loadPath.isFile()) {
+			final File f = canonical(new File(file));
+			if (loadPath.equals(f)) {
+				try {
+					return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
+				}
+				catch(IOException ex) {
+					return null;
+				}
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			return null;
+		}
+	}
+	
+	private ByteBuffer loadFileFromZip(
+			final File zip, 
+			final File file
+	) {
+		if (zip.exists()) {
+			try {
+				return ZipFileSystemUtil
+							.loadBinaryFileFromZip(zip, file)
+							.getValue();
+			}
+			catch(Exception ex) {
+				return null;
+			}
+		}
+		else {
+			return null;
+		}
+	}
+	
+	private ByteBuffer loadFileFromDir(final File loadPath, final File file) {
 		try {
-			return new File(path).getCanonicalPath();
+			if (file.isAbsolute()) {
+				return isFileWithinDirectory(loadPath, file)
+						? loadFile(file)
+						: null;
+			}
+			else {
+				final File f = new File(loadPath, file.getPath());
+				return f.isFile()
+						? loadFile(new File(loadPath, file.getPath()))
+						: null;
+			}
+		}
+		catch (Exception ex) {
+			throw new VncException(
+						String.format("Failed to load file '%s'", file.getPath()), 
+						ex);
+		}
+	}
+	
+	private static File canonical(final File file) {
+		try {
+			return file.getCanonicalFile();
 		}
 		catch(IOException ex) {
-			throw new RuntimeException(
-					"Cannot make a canonical path form \"" + path + "\"");
+			throw new VncException(
+					String.format(
+							"The file '%s' can not be converted to a canonical path!",
+							file.getPath()),
+					ex);
 		}
 	}
+	
+	private ByteBuffer loadFile(final File file) {
+		try {
+			return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
+		}
+		catch(IOException ex) {
+			return null;
+		}
+	}
+	
+	private boolean isFileWithinDirectory(
+			final File dir, 
+			final File file
+	) throws IOException {
+		final File dir_ = dir.getAbsoluteFile();
+		if (dir_.isDirectory()) {
+			final File fl = new File(dir_, file.getPath());
+			if (fl.isFile()) {
+				if (fl.getCanonicalPath().startsWith(dir_.getCanonicalPath())) {
+					// Prevent accessing files outside the load-path.
+					// E.g.: ../../coffee
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private Charset getCharset(final String encoding) {
+		return encoding != null 
+					? Charset.forName(encoding) 
+					: Charset.defaultCharset();
+	}
+		
 
+	// a list of existing canonical paths
+	private final List<File> paths = new ArrayList<>();
+	private final boolean allowLoadingAll;
 }

@@ -22,7 +22,11 @@
 package com.github.jlangch.venice.javainterop;
 
 public class ValueFilterInterceptor extends Interceptor {
-	
+
+	public ValueFilterInterceptor(final ILoadPaths loadPaths) {
+		super(loadPaths);
+	}
+
 	@Override
 	public ReturnValue onInvokeInstanceMethod(
 			final IInvoker invoker, 

@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,6 +65,8 @@ import com.github.jlangch.venice.impl.util.Licenses;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
+import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
@@ -73,9 +74,8 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class REPL {
 	
-	public REPL(final IInterceptor interceptor, final List<String> loadPaths) {
+	public REPL(final IInterceptor interceptor) {
 		this.interceptor = interceptor;
-		this.loadPaths = loadPaths;
 	}
 	
 	public void run(final String[] args) {
@@ -169,7 +169,7 @@ public class REPL {
 
 		printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
-		venice = new VeniceInterpreter(interceptor, loadPaths);
+		venice = new VeniceInterpreter(interceptor);
 		
 		highlighter = config.isSyntaxHighlighting()
 						? new ReplHighlighter(config)
@@ -188,7 +188,10 @@ public class REPL {
 		final ReplParser parser = new ReplParser(venice);
 		parser.setEscapeChars(new char[0]);  // leave the char escape handling to Venice
 		
-		final ReplCompleter completer = new ReplCompleter(venice, env, loadPaths);
+		final ReplCompleter completer = new ReplCompleter(
+												venice, 
+												env, 
+												interceptor.getLoadPaths().getPaths());
 		
 		final History history = new DefaultHistory();
 		
@@ -382,6 +385,9 @@ public class REPL {
 			else if (cmd.equals("colors")) {
 				printConfiguredColors();
 			}
+			else if (cmd.equals("load-paths")) {
+				printLoadPaths(interceptor.getLoadPaths());
+			}
 			else if (cmd.equals("info")) {
 				printInfo(terminal);
 			}
@@ -552,7 +558,11 @@ public class REPL {
 				}
 			}
 			else if (params[0].equals("accept-all")) {
-				activate(new AcceptAllInterceptor());
+				activate(
+					new AcceptAllInterceptor(
+						LoadPathsFactory.of(
+								interceptor.getLoadPaths().getPaths(), 
+								true)));
 				return;
 			}
 			else if (params[0].equals("reject-all")) {
@@ -560,7 +570,12 @@ public class REPL {
 				return;			
 			}
 			else if (params[0].equals("customized")) {
-				activate(new SandboxInterceptor(new SandboxRules()));
+				activate(
+					new SandboxInterceptor(
+						new SandboxRules(),
+						LoadPathsFactory.of(
+								interceptor.getLoadPaths().getPaths(), 
+								true)));
 				return;			
 			}
 			else if (params[0].equals("config")) {
@@ -634,7 +649,12 @@ public class REPL {
 				}
 				
 				// activate the change
-				activate(new SandboxInterceptor(rules));
+				activate(
+					new SandboxInterceptor(
+						rules,
+						LoadPathsFactory.of(
+							interceptor.getLoadPaths().getPaths(), 
+							true)));
 				return;
 			}
 		}
@@ -658,7 +678,7 @@ public class REPL {
 	
 	private void activate(final IInterceptor interceptor) {
 		this.interceptor = interceptor; 
-		this.venice = new VeniceInterpreter(interceptor, loadPaths);
+		this.venice = new VeniceInterpreter(interceptor);
 		JavaInterop.register(interceptor);			
 	}
 
@@ -771,6 +791,12 @@ public class REPL {
 		printer.println("error",     "error");
 		printer.println("system",    "system");
 		printer.println("interrupt", "interrupt");
+	}
+	
+	private void printLoadPaths(final ILoadPaths loadPaths) {
+		printer.println("stdout", "Allow loading all: " + loadPaths.isAllowLoadingAll());
+		printer.println("stdout", "Paths: ");
+		loadPaths.getPaths().forEach(p -> printer.println("stdout", "   " + p.getPath()));
 	}
 	
 	private void printInfo(final Terminal terminal) {
@@ -918,8 +944,6 @@ public class REPL {
 
 	private final static String DELIM = StringUtil.repeat('-', 80);
 	private final static String HISTORY_FILE = ".repl.history";
-
-	private final List<String> loadPaths;
 
 	private ReplConfig config;
 	private IInterceptor interceptor;
