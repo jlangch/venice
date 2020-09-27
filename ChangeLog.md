@@ -34,11 +34,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - 'gradle' extension module to run gradle build tasks
 - support for SHA-1 hashes (`crypt/sha1-hash`)
 - REPL support for drag/drop Venice files for execution
-
-
-### Fixed
-
-- core functions `load-module*`, `load-classpath-file*`, `load-file*`, and `load-resource*` to be private for security reasons.
+- load paths (used with e.g. `load-file`) to the sandbox to make load paths more secure
 
 ### Changed
 
