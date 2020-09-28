@@ -30,28 +30,35 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.LoadPaths;
 
 
+/**
+ * Factory for creating <code>ILoadPaths</code> objects. 
+ * 
+ * @see com.github.jlangch.venice.javainterop.ILoadPaths
+ * @author juerg
+ */
 public class LoadPathsFactory {
 
 	/**
-	 * Creates a load path that can load file from everywhere
+	 * Creates a load path that can load files from everywhere
+	 * in the filesystem.
 	 * 
 	 * @return an ILoadPaths 
 	 */
 	public static ILoadPaths acceptAll() {
-		return LoadPaths.acceptAll();
+		return LoadPaths.of(null, true);
 	}
 
 	/**
-	 * Creates a load path that rejects load any file 
+	 * Creates a load path that rejects to load any file 
 	 * 
 	 * @return an ILoadPaths 
 	 */
 	public static ILoadPaths rejectAll() {
-		return LoadPaths.rejectAll();
+		return LoadPaths.of(null, false);
 	}
 
 	/**
-	 * Creates a load path that allows loading file on from the
+	 * Creates a load path that allows loading files only from the
 	 * specified load paths. The file paths to load a file must
 	 * be relative to a load path.
 	 * 
@@ -63,22 +70,22 @@ public class LoadPathsFactory {
 	}
 
 	/**
-	 * Creates a load path that allows loading file on from the
+	 * Creates a load path that allows loading files from the
 	 * specified load paths. The file paths to load a file must
 	 * be relative to a load path.
-	 * If 'allowLoadingAll' is <code>true</code> files are allowed
+	 * If 'unlimitedAccess' is <code>true</code> files are allowed
 	 * to be loaded from outside the load paths.
 	 * 
 	 * @param paths a list of absolute directories
-	 * @param allowLoadingAll If <code>true</code> allow files to be
+	 * @param unlimitedAccess If <code>true</code> allow files to be
 	 *                        loaded from outside the load paths.
 	 * @return an ILoadPaths 
 	 */
 	public static ILoadPaths of(
 			final List<File> paths, 
-			final boolean allowLoadingAll
+			final boolean unlimitedAccess
 	) {
-		return LoadPaths.of(paths, allowLoadingAll);
+		return LoadPaths.of(paths, unlimitedAccess);
 	}
 
 	/**
@@ -97,20 +104,20 @@ public class LoadPathsFactory {
 	 * Creates a load path from semi-colon delimited list of 
 	 * paths. The file paths to load a file must
 	 * be relative to a load path.
-	 * If 'allowLoadingAll' is <code>true</code> files are allowed
+	 * If 'unlimitedAccess' is <code>true</code> files are allowed
 	 * to be loaded from outside the load paths.
 	 * 
 	 * @param loadPaths a semi-colon delimited list of paths
-	 * @param allowLoadingAll If <code>true</code> allow files to be
+	 * @param unlimitedAccess If <code>true</code> allow files to be
 	 *                        loaded from outside the load paths.
 	 * @return an ILoadPaths 
 	 */
 	public static ILoadPaths parseDelimitedLoadPath(
 			final String loadPaths, 
-			final boolean allowLoadingAll
+			final boolean unlimitedAccess
 	) {
 		if (loadPaths == null) {
-			return of(null, allowLoadingAll);
+			return of(null, unlimitedAccess);
 		}
 		else {
 			return LoadPaths.of(
@@ -119,7 +126,7 @@ public class LoadPathsFactory {
 						  .filter(p -> p != null)
 						  .map(p -> new File(p))
 						  .collect(Collectors.toList()),
-						  allowLoadingAll);
+					unlimitedAccess);
 		}
 	}
 

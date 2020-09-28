@@ -38,36 +38,20 @@ public class LoadPaths implements ILoadPaths {
 
 	private LoadPaths(
 			final List<File> paths, 
-			final boolean allowLoadingAll
+			final boolean unlimitedAccess
 	) {
 		if (paths != null) {
 			this.paths.addAll(paths);
 		}
-		this.allowLoadingAll = allowLoadingAll;
+		this.unlimitedAccess = unlimitedAccess;
 	}
 
-
-	public static LoadPaths rejectAll() {
-		return new LoadPaths(null, false);
-	}
-
-	public static LoadPaths acceptAll() {
-		return new LoadPaths(null, true);
-	}
-
-	/**
-	 * Create a load path from any number of paths. A path must be
-	 * an existing regular file or a directory. Paths must be absolute.
-	 * 
-	 * @param paths the paths
-	 * @return the load path object
-	 */
 	public static LoadPaths of(
 			final List<File> paths, 
-			final boolean allowLoadingFromAnywhere
+			final boolean unlimitedAccess
 	) {
 		if (paths == null || paths.isEmpty()) {
-			return new LoadPaths(null, allowLoadingFromAnywhere);
+			return new LoadPaths(null, unlimitedAccess);
 		}
 		else {
 			final List<File> savePaths = new ArrayList<>();
@@ -83,19 +67,21 @@ public class LoadPaths implements ILoadPaths {
 				}
 			}
 			
-			return new LoadPaths(savePaths, allowLoadingFromAnywhere);
+			return new LoadPaths(savePaths, unlimitedAccess);
 		}
 	}
 	
 	@Override
-	public String loadVeniceFile(final String file) {
+	public String loadVeniceFile(final File file) {
 		if (file == null) {
 			return null;
 		}
 		else {
-			final String vncFile = file.endsWith(".venice") ? file : file + ".venice";
+			final String path = file.getPath();
 			
-			final ByteBuffer data = load(vncFile);
+			final String vncFile = path.endsWith(".venice") ? path : path + ".venice";
+			
+			final ByteBuffer data = load(new File(vncFile));
 	
 			return data == null 
 					? null 
@@ -104,12 +90,12 @@ public class LoadPaths implements ILoadPaths {
 	}
 
 	@Override
-	public ByteBuffer loadBinaryResource(final String file) {
+	public ByteBuffer loadBinaryResource(final File file) {
 		return load(file);
 	}
 	
 	@Override
-	public String loadTextResource(final String file, final String encoding) {
+	public String loadTextResource(final File file, final String encoding) {
 		final ByteBuffer data = load(file);
 		
 		return data == null 
@@ -123,43 +109,41 @@ public class LoadPaths implements ILoadPaths {
 	}
 
 	@Override
-	public boolean isAllowLoadingAll() {
-		return allowLoadingAll;
+	public boolean isUnlimitedAccess() {
+		return unlimitedAccess;
 	}
 	
 	
-	private ByteBuffer load(final String file) {
-		final ByteBuffer data = paths.stream()
-						             .map(p -> load(p, file))
-						             .filter(d -> d != null)
-						             .findFirst()
-						             .orElse(null);
+	private ByteBuffer load(final File file) {
+		final ByteBuffer dataFromLoadPath = paths.stream()
+									             .map(p -> loadFromLoadPath(p, file))
+									             .filter(d -> d != null)
+									             .findFirst()
+									             .orElse(null);
 		
-		if (data != null) {
-			return data;
+		if (dataFromLoadPath != null) {
+			return dataFromLoadPath;
 		}
-		else if (allowLoadingAll) {
-			final File f = new File(file);
-			if (f.isFile()) {
-				return loadFile(f);			
-			}
+		else if (unlimitedAccess && file.isFile()) {
+			return loadFile(file);			
 		}
-		
-		return null;
+		else {	
+			return null;
+		}
 	}
 
-	private ByteBuffer load(
+	private ByteBuffer loadFromLoadPath(
 			final File loadPath, 
-			final String file
+			final File file
 	) {
 		if (loadPath.getName().endsWith(".zip")) {
-			return loadFileFromZip(loadPath, new File(file));
+			return loadFileFromZip(loadPath, file);
 		}
 		else if (loadPath.isDirectory()) {
-			return loadFileFromDir(loadPath, new File(file));
+			return loadFileFromDir(loadPath, file);
 		}
 		else if (loadPath.isFile()) {
-			final File f = canonical(new File(file));
+			final File f = canonical(file);
 			if (loadPath.equals(f)) {
 				try {
 					return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
@@ -259,13 +243,13 @@ public class LoadPaths implements ILoadPaths {
 	}
 	
 	private Charset getCharset(final String encoding) {
-		return encoding != null 
-					? Charset.forName(encoding) 
-					: Charset.defaultCharset();
+		return encoding == null || encoding.isEmpty()
+				? Charset.defaultCharset()
+				: Charset.forName(encoding);
 	}
 		
 
 	// a list of existing canonical paths
 	private final List<File> paths = new ArrayList<>();
-	private final boolean allowLoadingAll;
+	private final boolean unlimitedAccess;
 }

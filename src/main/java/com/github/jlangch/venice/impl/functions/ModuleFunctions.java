@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -145,7 +146,7 @@ public class ModuleFunctions {
 				try {
 					final IInterceptor interceptor = JavaInterop.getInterceptor();
 						
-					final String data = interceptor.getLoadPaths().loadVeniceFile(file);
+					final String data = interceptor.getLoadPaths().loadVeniceFile(new File(file));
 						
 					if (data == null) {
 						throw new VncException(
@@ -200,7 +201,7 @@ public class ModuleFunctions {
 					final IInterceptor interceptor = JavaInterop.getInterceptor();
 										
 					if (binary) {
-						final ByteBuffer data = interceptor.getLoadPaths().loadBinaryResource(file);
+						final ByteBuffer data = interceptor.getLoadPaths().loadBinaryResource(new File(file));
 						
 						if (data == null) {
 							throw new VncException(
@@ -211,7 +212,7 @@ public class ModuleFunctions {
 						}
 					}
 					else {
-						final String data = interceptor.getLoadPaths().loadTextResource(file, encoding);
+						final String data = interceptor.getLoadPaths().loadTextResource(new File(file), encoding);
 						
 						if (data == null) {
 							throw new VncException(

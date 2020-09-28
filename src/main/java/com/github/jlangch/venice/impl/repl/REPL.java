@@ -794,7 +794,7 @@ public class REPL {
 	}
 	
 	private void printLoadPaths(final ILoadPaths loadPaths) {
-		printer.println("stdout", "Allow loading all: " + loadPaths.isAllowLoadingAll());
+		printer.println("stdout", "Unlimited access: " + loadPaths.isUnlimitedAccess());
 		printer.println("stdout", "Paths: ");
 		loadPaths.getPaths().forEach(p -> printer.println("stdout", "   " + p.getPath()));
 	}
