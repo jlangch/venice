@@ -34,6 +34,17 @@ Elapsed time: 26,35 ms
 ```
 
 
+## Drag and Drop Venice files into the REPL for execution
+
+Drag and drop a Venice files into the REPL and press [RETURN] to execute it:
+
+```text
+venice> /Users/foo/test.venice
+```
+
+This is identical to run `(load-file "/Users/foo/test.venice")`.
+
+
 
 ## Display global symbols
 
@@ -51,6 +62,15 @@ venice> !env global *file*
 
 ## Function documentation
 
+Print the documentation for a Venice function
+
+```text
+venice> (doc filter)
+
+venice> (doc +)
+```
+
+
 E.g.: Find the Venice cryptography PBKDF2 hash function and print the doc for it:
 
 ```text
@@ -58,15 +78,6 @@ venice> (load-module :crypt)
 venice> !env global crypt*
 
 venice> (doc crypt/pbkdf2-hash)
-```
-
-
-Print the documentation for a Venice function
-
-```text
-venice> (doc zipmap)
-
-venice> (doc +)
 ```
 
 

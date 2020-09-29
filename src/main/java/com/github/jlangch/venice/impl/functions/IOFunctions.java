@@ -795,10 +795,10 @@ public class IOFunctions {
 
 					if (file.isDirectory()) {
 						try {
-						    Files.walk(file.toPath())
-						    	 .sorted(Comparator.reverseOrder())
-						    	 .map(Path::toFile)
-						    	 .forEach(File::delete);						
+							Files.walk(file.toPath())
+								 .sorted(Comparator.reverseOrder())
+								 .map(Path::toFile)
+								 .forEach(File::delete);
 						}
 						catch(Exception ex) {
 							throw new VncException(
@@ -811,7 +811,7 @@ public class IOFunctions {
 					}
 					else {
 						// ignore
-					}						
+					}	
 				});
 
 				return Nil;
@@ -938,13 +938,13 @@ public class IOFunctions {
 					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
 
 					final List<VncVal> files = new ArrayList<>();
-				    Files.walk(dir.toPath())
-				    	 .map(Path::toFile)
-				    	 .forEach(f -> {
+					Files.walk(dir.toPath())
+						 .map(Path::toFile)
+						 .forEach(f -> {
 							if (filterFn == null || VncBoolean.isTrue(filterFn.apply(VncList.of(new VncJavaObject(f))))) {
 								files.add(new VncJavaObject(f));
 							}
-				    	 });						
+						 });
 
 					return VncList.ofList(files);
 				}
