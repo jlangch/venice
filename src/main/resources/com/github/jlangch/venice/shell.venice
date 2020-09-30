@@ -216,18 +216,21 @@
   (require-java-9+)
   (let [handle (if (process-handle? p) p (process-handle p))]
     (when (some? handle)
-      (let [info     (. handle :info)
-            start    (cast :java.time.Instant
-                           (java-unwrap-optional (. info :startInstant)))
-            duration (cast :java.time.Duration
-                           (java-unwrap-optional (. info :totalCpuDuration)))]
+      (let [get-or-nil   (fn [obj key] (java-unwrap-optional (. obj key)))
+            map-instant  (fn [x] (if x (time/local-date-time x) nil))
+            map-duration (fn [x] (if x (/ (. x :toNanos) 1_000_000) nil))
+            info         (. handle :info)]
         (hash-map
-          :arguments                  (java-unwrap-optional (. info :arguments))
-          :command                    (java-unwrap-optional (. info :command))
-          :command-line               (java-unwrap-optional (. info :commandLine))
-          :start-time                 (if start (time/local-date-time start) nil)
-          :total-cpu-duration-millis  (if duration (/ (. duration :toNanos) 1_000_000) nil)
-          :user                       (java-unwrap-optional (. info :user)))))))
+          :arguments         (get-or-nil info :arguments)
+          :command           (get-or-nil info :command)
+          :command-line      (get-or-nil info :commandLine)
+          :start-time        (->> (get-or-nil info :startInstant)
+                                  (cast :java.time.Instant)
+                                  (map-instant))
+          :total-cpu-millis  (->> (get-or-nil info :totalCpuDuration)
+                                  (cast :java.time.Duration)
+                                  (map-duration))
+          :user              (get-or-nil info :user))))))
 
 
 (defn
