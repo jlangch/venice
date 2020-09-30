@@ -23,7 +23,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 
 
-## [1.9.1] - 2020-10-xx
+## [1.9.1] - 2020-10-01
 
 ### Added
 
@@ -31,6 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - function `io/await-for` to wait for a file getting created, modified, or deleted
 - function `io/watch-dir` and `io/close-watcher` to watch file modifications in a directory
 - function `shell/open` to open a file or an url with the associated application
+- process management function for the shell extension module
 - 'gradle' extension module to run gradle build tasks
 - support for SHA-1 hashes (`crypt/sha1-hash`)
 - REPL support for drag/drop Venice files for execution
