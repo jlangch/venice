@@ -1541,8 +1541,10 @@ public class DocGenerator {
 		java.addItem(getDocItem("import"));
 		java.addItem(getDocItem("java-iterator-to-list"));
 		java.addItem(getDocItem("java-enumeration-to-list"));
+		java.addItem(getDocItem("java-unwrap-optional"));
 		java.addItem(getDocItem("cast"));
 		java.addItem(getDocItem("class"));
+		
 
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);	

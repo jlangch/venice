@@ -832,7 +832,7 @@ public class JavaInteropFunctions {
 				VncFunction
 					.meta()
 					.arglists("(java-unwrap-optional val)")		
-					.doc("Unwraps a Java optional to its value or nil")
+					.doc("Unwraps a Java :java.util.Optional to its contained value or nil")
 					.build());
 		}
 		
