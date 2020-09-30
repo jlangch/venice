@@ -82,10 +82,14 @@
 
 (defn
   ^{ :arglists '("(open url)")
-     :doc "Opens a file or an url with the associated application."
+     :doc
+        """
+        Opens a file or an url with the associated platform specific \
+        application.
+        """
      :examples '(
-          """(shell/open "img.png")"""
-          """(shell/open "https://www.heise.de/")""") }
+        """(shell/open "img.png")"""
+        """(shell/open "https://www.heise.de/")""") }
 
   open [url]
 
@@ -98,7 +102,7 @@
 
 (defn
   ^{ :arglists '("(open-macos-app name)")
-     :doc "Opens a Mac OSX applicaton application."
+     :doc "Opens a Mac OSX app."
      :examples '("""(shell/open-macos-app "ArangoDB")""") }
 
   open-macos-app [name]
@@ -139,7 +143,7 @@
   ^{ :arglists '("(process-handle pid)")
      :doc
         """
-        Returns the process handle (:java.lang.ProcessHandle) for a pid or \
+        Returns the process handle (:java.lang.ProcessHandle) for a PID or \
         nil if there is no process.
         Requires Java 9+.
         """
@@ -194,7 +198,7 @@
         "(alive? process-handle)")
      :doc
         """
-        Returns true if the process represented by a pid or a process handle \
+        Returns true if the process represented by a PID or a process handle \
         is alive otherwise false.
         Requires Java 9+.
         """
@@ -216,7 +220,7 @@
         "(process-info process-handle)")
      :doc
         """
-        Returns true the process info for a process represented by a pid or a \
+        Returns the process info for a process represented by a PID or a \
         process handle.
         Requires Java 9+.
         """
