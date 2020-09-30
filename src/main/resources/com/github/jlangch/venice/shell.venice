@@ -28,6 +28,10 @@
 ;;;;   (shell/process-running? pid)                  9+        x      x     x
 ;;;;   (shell/wait-for-process-exit pid timeout)     9+        x      x     x
 ;;;;   (shell/pid)                                   9+        x      x     x
+;;;;   (shell/process-handle p)                      9+        x      x     x
+;;;;   (shell/process-handle? p)                     9+        x      x     x
+;;;;   (shell/process-info p)                        9+        x      x     x
+;;;;   (shell/processes)                             9+        x      x     x
 
 
 (ns shell)
@@ -93,8 +97,7 @@
 (defn
   ^{ :arglists '("(open-macos-app name)")
      :doc "Opens a Mac OSX applicaton application."
-     :examples '(
-          """(shell/open-macos-app "ArangoDB")""") }
+     :examples '("""(shell/open-macos-app "ArangoDB")""") }
 
   open-macos-app [name]
 
@@ -115,7 +118,8 @@
         process represented by the handle.
         Requires Java 9+.
         """
-     :examples '("(shell/pid)") }
+     :examples '(
+        "(shell/pid)") }
 
   pid
 
@@ -137,14 +141,17 @@
         nil if there is no process.
         Requires Java 9+.
         """
-     :examples '("(shell/process-handle 4556)") }
+     :examples '(
+        "(shell/process-handle 4556)") }
 
   process-handle [pid]
 
   (require-java-9+)
-  (-<> (. :java.lang.ProcessHandle :of pid)
-       (. <> :orElse nil)
-       (cast :java.lang.ProcessHandle <>)))
+  (if (process-handle? pid)
+      pid
+      (-<> (. :java.lang.ProcessHandle :of pid)
+           (. <> :orElse nil)
+           (cast :java.lang.ProcessHandle <>))))
 
 
 (defn
@@ -155,7 +162,8 @@
         running processes.
         Requires Java 9+.
         """
-     :examples '("(shell/processes)") }
+     :examples '(
+        "(shell/processes)") }
 
   processes []
 
@@ -188,12 +196,13 @@
         is alive otherwise false.
         Requires Java 9+.
         """
-     :examples '("(shell/alive? 4556)") }
+     :examples '(
+        "(shell/alive? 4556)") }
 
   alive? [p]
 
   (require-java-9+)
-  (let [handle (if (process-handle? p) p (process-handle p))]
+  (let [handle (process-handle p)]
     (if (some? handle)
       (. handle :isAlive)
       false)))
@@ -209,12 +218,13 @@
         process handle.
         Requires Java 9+.
         """
-     :examples '("(shell/process-info 4556)") }
+     :examples '(
+        "(shell/process-info 4556)") }
 
   process-info [p]
 
   (require-java-9+)
-  (let [handle (if (process-handle? p) p (process-handle p))]
+  (let [handle (process-handle p)]
     (when (some? handle)
       (let [get-or-nil   (fn [obj key] (java-unwrap-optional (. obj key)))
             map-instant  (fn [x] (if x (time/local-date-time x) nil))
@@ -245,12 +255,13 @@
         (:java.lang.ProcessHandle).
         Requires Java 9+.
         """
-     :examples '("(shell/kill 4556)") }
+     :examples '(
+        "(shell/kill 4556)") }
 
   kill [p]
 
   (require-java-9+)
-  (if-let [handle (if (process-handle? p) p (process-handle p))]
+  (if-let [handle (process-handle p)]
     (. handle :destroy)))
 
 
@@ -266,12 +277,13 @@
         (:java.lang.ProcessHandle).
         Requires Java 9+.
         """
-     :examples '("(shell/kill-forcibly 4556)") }
+     :examples '(
+        "(shell/kill-forcibly 4556)") }
 
   kill-forcibly [p]
 
   (require-java-9+)
-  (if-let [handle (if (process-handle? p) p (process-handle p))]
+  (if-let [handle (process-handle p)]
     (. handle :destroyForcibly​)))
 
 
@@ -279,26 +291,25 @@
   ^{ :arglists '(
         "(wait-for-process-exit pid timeout)"
         "(wait-for-process-exit process-handle timeout)")
-     :doc """
-          Waits until the process with the pid exits. Waits max timeout \
-          seconds. Returns nil if the process exits before reaching the \
-          timeout, else the pid is returned. Accepts a process PID or a \
-          process handle (:java.lang.ProcessHandle).
-          Requires Java 9+.
-          """
+     :doc
+        """
+        Waits until the process with the pid exits. Waits max timeout \
+        seconds. Returns nil if the process exits before reaching the \
+        timeout, else the pid is returned. Accepts a process PID or a \
+        process handle (:java.lang.ProcessHandle).
+        Requires Java 9+.
+        """
      :examples '(
-          "(shell/wait-for-process-exit 12345 20)") }
+        "(shell/wait-for-process-exit 12345 20)") }
 
   wait-for-process-exit [p timeout]
 
   (require-java-9+)
-  (let [[handle pid] (if (process-handle? p)
-                         [p (pid p)]
-                         [(process-handle p) p])]
+  (let [handle (process-handle p)]
     (if (some? handle)
       (let [future (. handle :onExit)]
         (try
           (. future :get timeout :SECONDS)
           nil
           (catch :java.lang.Exception e))))
-      pid))
+      (pid handle)))
