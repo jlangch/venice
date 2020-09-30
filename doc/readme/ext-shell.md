@@ -115,7 +115,7 @@ _Note: Requires Java 9+_
 
 ## current-process
 
-Returns the process handle of the current process .
+Returns the process handle of the current process.
         
 _Note: Requires Java 9+_
 
