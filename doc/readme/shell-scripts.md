@@ -7,8 +7,8 @@ like 'awk, 'sed'.
 
 The REPL let's you interactively run and test commands.
 
-If you need to deal with processes the `sh` function is the place to go (see the
-Venice _cheatsheet_ for details)
+The `sh` function is the swiss army knife to deal with the native process of the 
+underlying operating system (see the Venice _cheatsheet_ for details).
 
 ```clojure
 (sh "kill" "-9" 56789 :throw-ex true)
@@ -29,6 +29,13 @@ Venice _cheatsheet_ for details)
 (->> (io/list-files-glob "." "*.png")
      (docoll println))
 ```
+
+
+## Shell Extension Module
+
+The [Shell Extension Module ](ext-shell.md) offers OS agnostic functions to manage processes and 
+open files with the platform specific application.
+
 
 
 ## Example
