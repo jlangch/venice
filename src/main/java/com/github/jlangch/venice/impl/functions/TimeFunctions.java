@@ -326,7 +326,11 @@ public class TimeFunctions {
 							return val;
 						}
 						else if (obj instanceof LocalDate) {
-							return new VncJavaObject( ((LocalDate)obj).atTime(0, 0, 0));
+							return new VncJavaObject(((LocalDate)obj).atTime(0, 0, 0));
+						}
+						else if (obj instanceof Instant) {
+							return new VncJavaObject(
+									LocalDateTime.ofInstant((Instant)obj, ZoneOffset.systemDefault()));
 						}
 						else {
 							throw new VncException(String.format(

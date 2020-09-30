@@ -20,14 +20,14 @@
 ;;;; limitations under the License.
 
 ;;;; Shell utilities
-;;;;                                                         macos  unix windows
-;;;;   (shell/open url)                                        x      x     x
-;;;;   (shell/open-macos-app name)                             x
-;;;;   (shell/diff file1 file2)                                x      x     x
-;;;;   (shell/kill pid & options)                              x      x     x
-;;;;   (shell/process-running? pid)                            x      x     x
-;;;;   (shell/wait-for-process-exit pid timeout)               x      x     x
-;;;;   (shell/pid)                                             x      x     x
+;;;;                                               java      macos  unix windows
+;;;;   (shell/open url)                              8+        x      x     x
+;;;;   (shell/open-macos-app name)                   8+        x
+;;;;   (shell/diff file1 file2)                      8+        x      x     x
+;;;;   (shell/kill pid & options)                    9+        x      x     x
+;;;;   (shell/process-running? pid)                  9+        x      x     x
+;;;;   (shell/wait-for-process-exit pid timeout)     9+        x      x     x
+;;;;   (shell/pid)                                   9+        x      x     x
 
 
 (ns shell)
@@ -105,21 +105,39 @@
 
 
 (defn
-  ^{ :arglists '("(pid)")
-     :doc "Returns the pid (type long) of this process."
-     :examples '("(shell/pid") }
+  ^{ :arglists '(
+        "(pid)"
+        "(pid process-handle)")
+     :doc
+        """
+        Without argument returns the pid (type long) of this process. With \
+        a process-handle (:java.lang.ProcessHandle) returns the pid for the \
+        process represented by the handle.
+        Requires Java 9+.
+        """
+     :examples '("(shell/pid)") }
 
-  pid []
+  pid
 
-  (require-java-9+)
-  (-> (. :java.lang.ProcessHandle :current)
-      (. :pid)))
+  ([]
+    (require-java-9+)
+    (-> (. :java.lang.ProcessHandle :current)
+        (. :pid)))
+
+  ([process-handle]
+    (require-java-9+)
+    (. process-handle :pid)))
 
 
 (defn
   ^{ :arglists '("(process-handle pid)")
-     :doc "Returns the process handle for a pid or nil if there is no process."
-     :examples '("(shell/process-handle 4556") }
+     :doc
+        """
+        Returns the process handle (:java.lang.ProcessHandle) for a pid or \
+        nil if there is no process.
+        Requires Java 9+.
+        """
+     :examples '("(shell/process-handle 4556)") }
 
   process-handle [pid]
 
@@ -130,71 +148,155 @@
 
 
 (defn
-  ^{ :arglists '("(alive? pid)")
-     :doc "Returns true if the process represented by this pid is alive otherwise false."
-     :examples '("(shell/alive? 4556") }
+  ^{ :arglists '("(processes)")
+     :doc
+        """
+        Returns the process handle (:java.lang.ProcessHandle) for all  \
+        running processes.
+        Requires Java 9+.
+        """
+     :examples '("(shell/processes)") }
 
-  alive? [pid]
+  processes []
 
   (require-java-9+)
-  (let [handle (process-handle pid)]
+  (->> (. :java.lang.ProcessHandle :allProcesses)
+       (seq)
+       (map #(cast :java.lang.ProcessHandle %))))
+
+
+(defn
+  ^{ :arglists '("(process-handle? p)")
+     :doc
+        """
+        Returns true if p is a process handle (:java.lang.ProcessHandle).
+        Requires Java 9+.
+        """ }
+
+  process-handle? [p]
+
+  (instance? :java.lang.ProcessHandle p))
+
+
+(defn
+  ^{ :arglists '(
+        "(alive? pid)"
+        "(alive? process-handle)")
+     :doc
+        """
+        Returns true if the process represented by a pid or a process handle \
+        is alive otherwise false.
+        Requires Java 9+.
+        """
+     :examples '("(shell/alive? 4556)") }
+
+  alive? [p]
+
+  (require-java-9+)
+  (let [handle (if (process-handle? p) p (process-handle p))]
     (if (some? handle)
       (. handle :isAlive)
       false)))
 
 
 (defn
-  ^{ :arglists '("(kill pid)")
+  ^{ :arglists '(
+        "(process-info pid)"
+        "(process-info process-handle)")
      :doc
         """
-        Requests the process to be killed. Returns true if the process is killed
-        and false if the process stays alive. Returns nil if the process does
-        not exist.
+        Returns true the process info for a process represented by a pid or a \
+        process handle.
+        Requires Java 9+.
         """
-     :examples '("(shell/kill 4556") }
+     :examples '("(shell/process-info 4556)") }
 
-  kill [pid]
+  process-info [p]
 
   (require-java-9+)
-  (if-let [handle (process-handle pid)]
+  (let [handle (if (process-handle? p) p (process-handle p))]
+    (when (some? handle)
+      (let [info     (. handle :info)
+            opt      (fn [optional] (if (. optional :isPresent)
+                                        (. optional :get)
+                                        nil))
+            start    (cast :java.time.Instant (opt (. info :startInstant)))
+            duration (cast :java.time.Duration (opt (. info :totalCpuDuration)))]
+        (hash-map
+          :arguments                  (opt (. info :arguments))
+          :command                    (opt (. info :command))
+          :command-line               (opt (. info :commandLine))
+          :start-time                 (if start (time/local-date-time start) nil)
+          :total-cpu-duration-millis  (if duration (/ (. duration :toNanos) 1_000_000) nil)
+          :user                       (opt (. info :user)))))))
+
+
+(defn
+  ^{ :arglists '(
+        "(kill pid)"
+        "(kill process-handle)")
+     :doc
+        """
+        Requests the process to be killed. Returns true if the process is \
+        killed and false if the process stays alive. Returns nil if the \
+        process does not exist. Accepts a process PID or a process handle \
+        (:java.lang.ProcessHandle).
+        Requires Java 9+.
+        """
+     :examples '("(shell/kill 4556)") }
+
+  kill [p]
+
+  (require-java-9+)
+  (if-let [handle (if (process-handle? p) p (process-handle p))]
     (. handle :destroy)))
 
 
 (defn
-  ^{ :arglists '("(kill-forcibly pid)")
+  ^{ :arglists '(
+        "(kill-forcibly pid)"
+        "(kill-forcibly process-handle)")
      :doc
-     """
-     Requests the process to be killed forcibly. Returns true if the process is
-     killed and false if the process stays alive. Returns nil if the process
-     does not exist.
-     """
-     :examples '("(shell/kill-forcibly 4556") }
+        """
+        Requests the process to be killed forcibly. Returns true if the process \
+        is killed and false if the process stays alive. Returns nil if the \
+        process does not exist. Accepts a process PID or a process handle \
+        (:java.lang.ProcessHandle).
+        Requires Java 9+.
+        """
+     :examples '("(shell/kill-forcibly 4556)") }
 
-  kill-forcibly [pid]
+  kill-forcibly [p]
 
   (require-java-9+)
-  (if-let [handle (process-handle pid)]
+  (if-let [handle (if (process-handle? p) p (process-handle p))]
     (. handle :destroyForcibly​)))
 
 
 (defn
-  ^{ :arglists '("(wait-for-process-exit pid timeout)")
+  ^{ :arglists '(
+        "(wait-for-process-exit pid timeout)"
+        "(wait-for-process-exit process-handle timeout)")
      :doc """
-          Waits until the process with the pid exits. Waits max timeout seconds.
-          Returns nil if the process exits before reaching the timeout, else
-          the pid is returned.
+          Waits until the process with the pid exits. Waits max timeout \
+          seconds. Returns nil if the process exits before reaching the \
+          timeout, else the pid is returned. Accepts a process PID or a \
+          process handle (:java.lang.ProcessHandle).
+          Requires Java 9+.
           """
      :examples '(
           "(shell/wait-for-process-exit 12345 20)") }
 
-  wait-for-process-exit [pid timeout]
+  wait-for-process-exit [p timeout]
 
   (require-java-9+)
-  (let [handle (process-handle pid)]
+  (let [[handle pid] (if (process-handle? p)
+                         [p (pid p)]
+                         [(process-handle p) p])]
     (if (some? handle)
       (let [future (. handle :onExit)]
         (try
           (. future :get timeout :SECONDS)
           nil
-          (catch :java.lang.Exception e pid)))
-      pid)))
+          (catch :java.lang.Exception e))))
+      pid))

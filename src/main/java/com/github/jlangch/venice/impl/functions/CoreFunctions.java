@@ -6710,7 +6710,7 @@ public class CoreFunctions {
 					.doc(
 						"Returns a seq on the collection. If the collection is " +
 						"empty, returns nil. (seq nil) returns nil. seq also works on " +
-						"Strings.")
+						"Strings and converts Java streams to lists.")
 					.examples(
 						"(seq nil)",
 						"(seq [1 2 3])",
@@ -6723,7 +6723,15 @@ public class CoreFunctions {
 				assertArity(args, 1);
 
 				final VncVal val = args.first();
-				if (Types.isVncMap(val)) {
+				if (Types.isVncJavaObject(val, java.util.stream.Stream.class)) {
+					// convert to venice list // TODO: handle the formal type
+					@SuppressWarnings("unchecked")
+					java.util.stream.Stream<Object> stream = (java.util.stream.Stream<Object>)((VncJavaObject)val).getDelegate();
+					return VncList.ofList(
+							stream.map(o -> new VncJavaObject(o))
+								  .collect(Collectors.toList()));
+				}
+				else if (Types.isVncMap(val)) {
 					if (((VncMap)val).isEmpty()) {
 						return Nil;
 					}

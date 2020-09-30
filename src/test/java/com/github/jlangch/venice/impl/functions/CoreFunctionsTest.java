@@ -32,12 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
@@ -3293,7 +3295,16 @@ public class CoreFunctionsTest {
 		assertEquals(null, venice.eval("(seq '())"));
 		assertEquals(null, venice.eval("(seq [])"));
 		assertEquals(null, venice.eval("(seq {})"));
+	}
 
+	@Test
+	public void test_seq_java_stream() {
+		final Venice venice = new Venice();
+
+		final List<String> strings = Arrays.asList("1", "2", "3");	
+		assertEquals(
+			"(1 2 3)", 
+			venice.eval("(str (seq s))", Parameters.of("s", strings.stream())));
 	}
 	
 	@Test
