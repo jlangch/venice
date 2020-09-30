@@ -217,18 +217,17 @@
   (let [handle (if (process-handle? p) p (process-handle p))]
     (when (some? handle)
       (let [info     (. handle :info)
-            opt      (fn [optional] (if (. optional :isPresent)
-                                        (. optional :get)
-                                        nil))
-            start    (cast :java.time.Instant (opt (. info :startInstant)))
-            duration (cast :java.time.Duration (opt (. info :totalCpuDuration)))]
+            start    (cast :java.time.Instant
+                           (java-unwrap-optional (. info :startInstant)))
+            duration (cast :java.time.Duration
+                           (java-unwrap-optional (. info :totalCpuDuration)))]
         (hash-map
-          :arguments                  (opt (. info :arguments))
-          :command                    (opt (. info :command))
-          :command-line               (opt (. info :commandLine))
+          :arguments                  (java-unwrap-optional (. info :arguments))
+          :command                    (java-unwrap-optional (. info :command))
+          :command-line               (java-unwrap-optional (. info :commandLine))
           :start-time                 (if start (time/local-date-time start) nil)
           :total-cpu-duration-millis  (if duration (/ (. duration :toNanos) 1_000_000) nil)
-          :user                       (opt (. info :user)))))))
+          :user                       (java-unwrap-optional (. info :user)))))))
 
 
 (defn
