@@ -69,7 +69,7 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/cdf4d1b/cheatsheet.htm
 * [CSV](doc/readme/csv.md)
 * [PDF](doc/readme/pdf.md)
 * [Extension modules](doc/readme/extension-modules.md)
-* [Alternative to shell scripts](doc/readme/shell-scripts.md)
+* [Shell Scripts](doc/readme/shell-scripts.md)
 * [Benchmarks & Profiling](doc/readme/profiling.md)
 * [Tree walker](doc/readme/walk.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)

@@ -1,4 +1,4 @@
-# Alternative to shell scripts
+# Shell Scripts
 
 
 Venice allows you to write shell scripts without a hassle. The 'io' functions
@@ -7,7 +7,7 @@ like 'awk, 'sed'.
 
 The REPL let's you interactively run and test commands.
 
-The `sh` function is the swiss army knife to deal with the native process of the 
+The `sh` function is the swiss army knife to deal with the native processes of the 
 underlying operating system (see the Venice _cheatsheet_ for details).
 
 ```clojure
@@ -33,7 +33,7 @@ underlying operating system (see the Venice _cheatsheet_ for details).
 
 ## Shell Extension Module
 
-The [Shell Extension Module ](ext-shell.md) offers OS agnostic functions to manage processes and 
+The [Shell Extension Module ](ext-shell.md) offers OS agnostic functions to manage processes or 
 open files with the platform specific application.
 
 
