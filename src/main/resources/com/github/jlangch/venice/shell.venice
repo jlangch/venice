@@ -34,6 +34,8 @@
 ;;;;   (shell/process-handle? p)                     9+        x      x     x
 ;;;;   (shell/process-info p)                        9+        x      x     x
 ;;;;   (shell/processes)                             9+        x      x     x
+;;;;   (shell/descendant-processes)                  9+        x      x     x
+;;;;   (shell/parent-process)                        9+        x      x     x
 
 
 (ns shell)
@@ -247,6 +249,68 @@
                                   (cast :java.time.Duration)
                                   (map-duration))
           :user              (get-or-nil info :user))))))
+
+
+(defn
+  ^{ :arglists '(
+        "(current-process)")
+     :doc
+        """
+        Returns process handle of the current process.
+        Requires Java 9+.
+        """
+     :examples '(
+        "(shell/current-process)") }
+
+  current-process [p]
+
+  (require-java-9+)
+  (->> (. :java.lang.ProcessHandle :current)
+       (cast :java.lang.ProcessHandle)))
+
+
+(defn
+  ^{ :arglists '(
+        "(descendant-processes pid)"
+        "(descendant-processes process-handle)")
+     :doc
+        """
+        Returns the descendant processed of a process represented by a PID \
+        or a process handle.
+        Requires Java 9+.
+        """
+     :examples '(
+        "(shell/descendant-processes 4556)") }
+
+  descendant-processes [p]
+
+  (require-java-9+)
+  (if-let [handle (process-handle p)]
+    (->> (. handle :descendants)
+         (seq)
+         (map #(cast :java.lang.ProcessHandle %)))))
+
+
+(defn
+  ^{ :arglists '(
+        "(parent-process pid)"
+        "(parent-process process-handle)")
+     :doc
+        """
+        Returns the parent of a process represented by a PID or a \
+        process handle.
+        Requires Java 9+.
+        """
+     :examples '(
+        "(shell/parent-process 4556)") }
+
+  parent-process [p]
+
+  (require-java-9+)
+  (if-let [handle (process-handle p)]
+    (->> (. handle :parent)
+         (cast :java.lang.ProcessHandle)
+         (java-unwrap-optional))))
 
 
 (defn

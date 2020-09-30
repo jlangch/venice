@@ -113,6 +113,41 @@ _Note: Requires Java 9+_
 ```
 
 
+## current-process
+
+Returns the process handle of the current process .
+        
+_Note: Requires Java 9+_
+
+```
+(shell/current-process)
+```
+
+
+## descendant-processes
+
+Returns the descendant processed of a process represented by a PID
+or a process handle.
+        
+_Note: Requires Java 9+_
+
+```
+(shell/descendant-processes p)
+```
+
+
+## parent-process
+
+Returns the parent of a process represented by a PID or a process
+handle.
+
+_Note: Requires Java 9+_
+
+```
+(shell/parent-process p)
+```
+
+
 ## kill
 
 Requests the process to be killed. Returns true if the process is 
