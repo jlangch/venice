@@ -6724,7 +6724,8 @@ public class CoreFunctions {
 
 				final VncVal val = args.first();
 				if (Types.isVncJavaObject(val, java.util.stream.Stream.class)) {
-					// convert to venice list // TODO: handle the formal type
+					// convert to venice list 
+					// TODO: handle the formal type
 					@SuppressWarnings("unchecked")
 					java.util.stream.Stream<Object> stream = (java.util.stream.Stream<Object>)((VncJavaObject)val).getDelegate();
 					return VncList.ofList(

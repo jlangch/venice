@@ -823,7 +823,42 @@ public class JavaInteropFunctions {
 	
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
+
+
+	public static class JavaUnwrapOptionalFn extends AbstractJavaFn {
+		public JavaUnwrapOptionalFn() {
+			super(
+				"java-unwrap-optional", 
+				VncFunction
+					.meta()
+					.arglists("(java-unwrap-optional val)")		
+					.doc("Unwraps a Java optional to its value or nil")
+					.build());
+		}
+		
+		@Override
+		@SuppressWarnings("unchecked")
+		public VncVal apply(final VncList args) {
+			assertArity(args, 1);
+			sandboxFunctionCallValidation();
+			
+			if (Types.isVncJavaObject(args.first(), java.util.Optional.class)) {
+				// TODO: handle the formal type
+				java.util.Optional<Object> optional = (java.util.Optional<Object>)((VncJavaObject)args.first()).getDelegate();
+				return optional.isPresent() 
+						? new VncJavaObject(optional.get())
+						: Constants.Nil;
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'java-unwrap-optional' does not allow %s as parameter", 
+						Types.getType(args.first())));
+			}
+		}
 	
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
 	private static VncHashMap mapField(final Field f) {
 		return new VncHashMap()
 				.assoc(new VncKeyword(":name"), new VncKeyword(f.getName()))
@@ -920,5 +955,6 @@ public class JavaInteropFunctions {
 					.add(new JavaClassNameFn())
 					.add(new JavaClassLoaderFn())
 					.add(new JavaClassLoaderOfFn())
+					.add(new JavaUnwrapOptionalFn())
 					.toMap();	
 }
