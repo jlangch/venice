@@ -8,6 +8,15 @@ The REPL let's you interactively run and test commands.
 
 ## Noticeable Functions 
 
+### System functions
+
+- os−type, os−type? 
+- os−arch, os−name, os−version 
+- current−time−millis
+- sleep 
+- host−name, host−address
+
+
 ### File I/O
 
 ### Web download
