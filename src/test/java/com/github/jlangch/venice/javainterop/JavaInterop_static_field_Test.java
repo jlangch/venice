@@ -58,6 +58,8 @@ public class JavaInterop_static_field_Test {
 		assertEquals(0, venice.eval("(:red (. :java.awt.Color :BLUE))"));		
 		assertEquals(0, venice.eval("(:green (. :java.awt.Color :BLUE))"));		
 		assertEquals(255, venice.eval("(:blue (. :java.awt.Color :BLUE))"));		
+		
+		assertEquals(true, venice.eval("(:empty (. :java.awt.Rectangle :new))"));		
 	}
 
 	
