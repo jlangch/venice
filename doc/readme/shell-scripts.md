@@ -21,13 +21,11 @@ The REPL let's you interactively run and test commands.
 ### File I/O
 
 ### Zip/Gzip
- 
-- io/zip, io/zip? 
-- io/zip−file 
-- io/zip−list 
-- io/zip−list−entry−names 
-- io/zip−append 
-- io/zip−remove
+
+- io/zip? 
+- io/zip, io/zip−file 
+- io/zip−list, io/zip−list−entry−names 
+- io/zip−append, io/zip−remove
 - io/unzip, io/unzip−to−dir
 - io/unzip−first, io/unzip−nth, io/unzip−all
 
