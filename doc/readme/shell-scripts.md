@@ -84,6 +84,27 @@ underlying operating system (see the Venice _cheatsheet_ for details).
 The [Shell Extension Module ](ext-shell.md) offers OS agnostic functions to manage processes or 
 open files with the platform specific application.
 
+**Utils**
+
+- shell/open
+- shell/open-macos-app
+- shell/diff
+
+**Processes**
+
+- shell/alive?
+- shell/process-handle
+- shell/process-info
+- shell/current-process
+- shell/pid
+- shell/processes
+- shell/parent-process
+- shell/descendant-processes
+- shell/kill, shell/kill-forcibly
+- shell/wait-for-process-exit
+
+For details see: The [Shell Extension Module ](ext-shell.md)
+
 
 
 ## Example
