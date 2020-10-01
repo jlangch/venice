@@ -1,11 +1,18 @@
 # Shell Scripts
 
-
 Venice allows you to write shell scripts without a hassle. The 'io' functions
 are pretty powerful when dealing with files. You're not going to miss Unix tools
 like 'awk, 'sed'.
 
 The REPL let's you interactively run and test commands.
+
+## Noticeable Functions 
+
+### File I/O
+
+### Web download
+
+### Executing shell commands 
 
 The `sh` function is the swiss army knife to deal with the native processes of the 
 underlying operating system (see the Venice _cheatsheet_ for details).
@@ -31,7 +38,7 @@ underlying operating system (see the Venice _cheatsheet_ for details).
 ```
 
 
-## Shell Extension Module
+### Shell Extension Module
 
 The [Shell Extension Module ](ext-shell.md) offers OS agnostic functions to manage processes or 
 open files with the platform specific application.
