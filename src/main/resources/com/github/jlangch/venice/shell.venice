@@ -121,8 +121,8 @@
         "(pid process-handle)")
      :doc
         """
-        Without argument returns the pid (type long) of this process. With \
-        a process-handle (:java.lang.ProcessHandle) returns the pid for the \
+        Without argument returns the PID (type long) of this process. With \
+        a process-handle (:java.lang.ProcessHandle) returns the PID for the \
         process represented by the handle.
         Requires Java 9+.
         """
@@ -179,7 +179,7 @@
   ^{ :arglists '("(processes)")
      :doc
         """
-        Returns the process handle (:java.lang.ProcessHandle) for all  \
+        Returns the process handles (:java.lang.ProcessHandle) for all  \
         running processes.
         Requires Java 9+.
         """
@@ -275,7 +275,7 @@
         "(descendant-processes process-handle)")
      :doc
         """
-        Returns the descendant processed of a process represented by a PID \
+        Returns the descendants of a process represented by a PID \
         or a process handle.
         Requires Java 9+.
         """
@@ -321,7 +321,7 @@
         """
         Requests the process to be killed. Returns true if the process is \
         killed and false if the process stays alive. Returns nil if the \
-        process does not exist. Accepts a process PID or a process handle \
+        process does not exist. Accepts a PID or a process handle \
         (:java.lang.ProcessHandle).
         Requires Java 9+.
         """
@@ -343,7 +343,7 @@
         """
         Requests the process to be killed forcibly. Returns true if the process \
         is killed and false if the process stays alive. Returns nil if the \
-        process does not exist. Accepts a process PID or a process handle \
+        process does not exist. Accepts a PID or a process handle \
         (:java.lang.ProcessHandle).
         Requires Java 9+.
         """
@@ -365,7 +365,7 @@
         """
         Waits until the process with the pid exits. Waits max timeout \
         seconds. Returns nil if the process exits before reaching the \
-        timeout, else the pid is returned. Accepts a process PID or a \
+        timeout, else the pid is returned. Accepts a PID or a \
         process handle (:java.lang.ProcessHandle).
         Requires Java 9+.
         """
