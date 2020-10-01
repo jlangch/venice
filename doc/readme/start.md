@@ -134,8 +134,7 @@ foo> repl.bat
 
 A Venice REPL can be run without local installation in a [GitPod](https://gitpod.io/) workspace. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
 
-Just fire up a Venice GitPod workspace in your browser by clicking this button: 
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice) (_https://gitpod.io/#https://github.com/jlangch/venice_). GitPod will ask you to login to GitHub and will launch a Venice workspace.
+Just fire up a Venice GitPod workspace in your browser by opening this URL _(https://gitpod.io/#https://github.com/jlangch/venice)_. GitPod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it.
 
 Wait until the workspace has been built ...
 
