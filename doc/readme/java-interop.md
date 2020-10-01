@@ -24,8 +24,25 @@ static field: `(. :class :field)`
 
 ```clojure
 (do
-   (import :java.math.BigInteger)
+   ;; constructor no args
+   (. :java.awt.Point :new)
    
+   ;; constructor
+   (. :java.awt.Point :new 10 20)
+   
+   ;; instance method
+   (let [r (. :java.awt.Rectangle :new 100 200)]
+      (. r :translate 10 10)
+      r)
+
+   ;; instance method no args
+   (let [r (. :java.awt.Rectangle :new 100 200)]
+      (. r :isEmpty))
+  
+   ;; instance get property 'width' via 'getWidth'
+   (let [r (. :java.awt.Rectangle :new 100 200)]
+      (. r :width))
+  
    ;; static field
    (. :java.lang.Math :PI)
 
@@ -33,19 +50,25 @@ static field: `(. :class :field)`
    (. :java.lang.Math :min 20 30)
 
    ;; constructor and instance method
-   (-> (. :java.time.ZonedDateTime :now) 
+   (-> (. :java.time.LocalDate :now) 
        (. :plusDays 5))
 
-   ;; class object
+   ;; using imports
+   (import :java.time.LocalDate)
+   (. :LocalDate :now) 
+
+   ;; class from a Venice class reference
    (. :java.lang.Math :class)
-   (-> (. :java.time.ZonedDateTime :now) 
+
+   ;; class from an object
+   (-> (. :LocalDate :now) 
        (. :class))
        
-   ;; constructor and instance method
-   (defn bigint [x] (. :BigInteger :new x))
-   (-> (bigint "100000000")
-        (. :multiply (bigint "600000000"))
-        (. :add (bigint "300000000"))))
+   ;; using doto to calling multiple methods on a mutable Java object
+   (doto (. :java.util.HashMap :new)
+         (. :put :a 1)
+         (. :put :b 2))
+)
 ```
 
 
