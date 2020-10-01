@@ -10,6 +10,18 @@ Float, Double, and BigDecimal.
 
 ## Calling Java
 
+Java calls follow the pattern:
+
+constructor: `(. :class :new arg1 arg2 ...)`
+
+instance method: `(. object :method arg1 arg2 ...)`
+
+static method: `(. :class :method arg1 arg2 ...)`
+
+static field: `(. :class :field)`
+
+
+
 ```clojure
 (do
    (import :java.math.BigInteger)
