@@ -11,7 +11,8 @@ The REPL let's you interactively run and test commands.
 ### System functions
 
 - os−type, os−type? 
-- os−arch, os−name, os−version 
+- os−arch, os−name, os−version
+- system-env
 - current−time−millis
 - sleep 
 - host−name, host−address
