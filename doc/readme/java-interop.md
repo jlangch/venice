@@ -10,7 +10,7 @@ Float, Double, and BigDecimal.
 
 ## Calling Java
 
-Java calls follow the pattern:
+Java calls follow the patterns:
 
 constructor: `(. :class :new arg1 arg2 ...)`
 
@@ -20,6 +20,8 @@ static method: `(. :class :method arg1 arg2 ...)`
 
 static field: `(. :class :field)`
 
+get property: `(:property object)`
+
 
 
 ```clojure
@@ -27,7 +29,7 @@ static field: `(. :class :field)`
    ;; constructor no args
    (. :java.awt.Point :new)
    
-   ;; constructor
+   ;; constructor with two arguments
    (. :java.awt.Point :new 10 20)
    
    ;; instance method
@@ -35,14 +37,18 @@ static field: `(. :class :field)`
       (. r :translate 10 10)
       r)
 
-   ;; instance method no args
+   ;; instance no arg methods
    (let [r (. :java.awt.Rectangle :new 100 200)]
-      (. r :isEmpty))
-  
-   ;; instance get property 'width' via 'getWidth'
+      (. r :isEmpty)   ; isEmpty()
+      (. r :getWidth)  ; getWidth()
+      (. r :getX))     ; getX()
+ 
+   ;; accessing bean getter properties
    (let [r (. :java.awt.Rectangle :new 100 200)]
-      (. r :width))
-  
+      (:empty r)  ; isEmpty()
+      (:width r)  ; getWidth()
+      (:x r))     ; getX()
+ 
    ;; static field
    (. :java.lang.Math :PI)
 
