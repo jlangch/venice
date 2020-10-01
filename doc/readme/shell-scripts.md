@@ -20,6 +20,20 @@ The REPL let's you interactively run and test commands.
 
 ### File I/O
 
+- io/file 
+- io/file−parent, io/file−name
+- io/file−path, io/file−absolute−path, io/file−canonical−path 
+- io/file−ext?, io/file−size 
+- io/mkdir, io/mkdirs 
+- io/slurp, io/slurp−lines, io/spit 
+- io/copy−file, io/move−file
+- io/delete−file, io/delete−file−on−exit, io/delete−file−tree 
+- io/list−files, io/list−files−glob, io/list−file−tree 
+- io/file?, io/exists−file?, io/exists−dir?, io/file−can−read?, io/file−can−write?, io/file−can−execute?, io/file−hidden? 
+- io/await−for, io/watch−dir, io/close−watcher 
+- io/temp−file, io/tmp−dir, io/user−dir, io/user−home−dir 	
+
+
 ### Zip/Gzip
 
 - io/zip? 
