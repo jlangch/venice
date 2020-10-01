@@ -24,8 +24,11 @@ package com.github.jlangch.venice.javainterop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.types.VncString;
 
@@ -121,6 +124,19 @@ public class JavaFunctionsTest {
 		assertEquals(
 				VncString.class.getClassLoader(), 
 				venice.eval("(classloader-of \"abcdef\")"));
+	}
+
+	@Test
+	public void test_java_unwrap_optional() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"123", 
+				venice.eval("(java-unwrap-optional s)", Parameters.of("s", Optional.of("123"))));
+
+		assertEquals(
+				null, 
+				venice.eval("(java-unwrap-optional s)", Parameters.of("s", Optional.empty())));
 	}
 }
 
