@@ -19,6 +19,14 @@ Opens a file or an URL with the associated platform specific application.
 (shell/open url)
 ```
 
+Example:
+
+```
+(do
+  (load-module :shell)
+  (shell/open "image.png"))
+```
+
 
 ## open-macos-app
 
@@ -26,6 +34,14 @@ Opens a Mac OSX app.
 
 ```
 (shell/open-macos-app name)
+```
+
+Example:
+
+```
+(do
+  (load-module :shell)
+  (shell/open-macos-app "Firefox"))
 ```
 
 
