@@ -25,13 +25,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ## [1.9.2] - 2020-11-xx
 
-### Added
-
-- ...
-
 ### Fixed
 
-- Venice precompiled script execution to use the active sandbox interceptor
+- a security issue with Venice precompiled script execution not using the active interceptor
 - load paths for running a Venice app (the application zip must be added to the load paths)
 
 
