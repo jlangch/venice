@@ -3,6 +3,8 @@
 
 ## Hashes
 
+Venice supports PBKDF2, SHA-512, SHA-1, and MD5 hashes.
+
 ### PBKDF2
 
 Just using a salt:
@@ -45,6 +47,27 @@ Specifying a salt, the number of iterations, and key length:
 
   (str/bytebuf-to-hex
     (crypt/sha512-hash (bytebuf [54 78 99]) "-salt-")
+    :upper))
+```
+
+
+### SHA-1
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/sha1-hash "hello world" "-salt-")
+    :upper))
+```
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (str/bytebuf-to-hex
+    (crypt/sha1-hash (bytebuf [54 78 99]) "-salt-")
     :upper))
 ```
 
