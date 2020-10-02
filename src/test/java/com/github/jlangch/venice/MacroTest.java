@@ -32,9 +32,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 
 
 public class MacroTest {
@@ -749,7 +749,7 @@ public class MacroTest {
 	public void test_macroexpand_all_via_interpreter() {
 		final VeniceInterpreter venice = new VeniceInterpreter();	
 		
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"));
+		final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
 		
 		assertEquals("(if true (do 1))", 
 					 venice.MACROEXPAND(

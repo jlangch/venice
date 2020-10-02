@@ -181,7 +181,7 @@ public class VeniceInterpreter implements Serializable  {
 	public Env createEnv(
 			final boolean macroexpandOnLoad, 
 			final boolean ansiTerminal, 
-			final VncKeyword runMode
+			final RunMode runMode
 	) {  
 		return createEnv(null, macroexpandOnLoad, ansiTerminal, runMode);
 	}
@@ -190,7 +190,7 @@ public class VeniceInterpreter implements Serializable  {
 			final List<String> preloadExtensionModules,
 			final boolean macroexpandOnLoad, 
 			final boolean ansiTerminal,
-			final VncKeyword runMode  // one of {:repl, :script, :app}
+			final RunMode runMode
 	) {
 		sealedSystemNS.set(false);
 
@@ -215,7 +215,7 @@ public class VeniceInterpreter implements Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 		
 		// set the run mode
-		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode, false));
+		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode.mode, false));
 
 		// loaded modules & files
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));

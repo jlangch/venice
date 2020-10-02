@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -36,7 +37,6 @@ import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -149,7 +149,7 @@ public class Launcher {
 		final Env env = createEnv(
 							venice,
 							macroexpand,
-							new VncKeyword("app"),
+							RunMode.APP,
 							Arrays.asList(
 								convertCliArgsToVar(cli),
 								convertAppNameToVar(name),
@@ -170,7 +170,7 @@ public class Launcher {
 		final Env env = createEnv(
 							venice, 
 							macroexpand,
-							new VncKeyword("script"),
+							RunMode.SCRIPT,
 							Arrays.asList(
 								convertCliArgsToVar(cli)));
 
@@ -180,7 +180,7 @@ public class Launcher {
 	private static Env createEnv(
 			final VeniceInterpreter venice,
 			final boolean macroexpand, 
-			final VncKeyword runMode,  // one of {:repl, :script, :app}
+			final RunMode runMode,
 			final List<Var> vars
 	) {
 		return venice.createEnv(macroexpand, false, runMode)

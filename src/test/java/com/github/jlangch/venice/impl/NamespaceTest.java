@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -193,7 +192,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = false;
 
-		final Env env = venice.createEnv(macroexpandOnLoad, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(macroexpandOnLoad, false, RunMode.SCRIPT)
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		final String macros =
@@ -240,7 +239,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = false;
 
-		final Env env = venice.createEnv(macroexpandOnLoad, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(macroexpandOnLoad, false, RunMode.SCRIPT)
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]
@@ -292,7 +291,7 @@ public class NamespaceTest {
 
 		final boolean macroexpandOnLoad = true;
 
-		final Env env = venice.createEnv(macroexpandOnLoad, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(macroexpandOnLoad, false, RunMode.SCRIPT)
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]
@@ -347,7 +346,7 @@ public class NamespaceTest {
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		// Start off with macroexpand = false
-		final Env env = venice.createEnv(false, false, new VncKeyword("script"))
+		final Env env = venice.createEnv(false, false, RunMode.SCRIPT)
 							  .setStdoutPrintStream(new PrintStream(System.out, true));
 
 		// [1]

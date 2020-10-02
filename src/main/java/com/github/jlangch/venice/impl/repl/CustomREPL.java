@@ -42,13 +42,13 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -232,7 +232,7 @@ public class CustomREPL {
 			final PrintStream err,
 			final BufferedReader in
 	) {
-		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
+		return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setGlobal(new Var(new VncSymbol("*REPL*"), new VncJavaObject(this), false))
 					 .setStdoutPrintStream(out)

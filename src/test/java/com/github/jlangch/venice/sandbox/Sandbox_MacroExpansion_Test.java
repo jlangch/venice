@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
@@ -39,7 +39,7 @@ public class Sandbox_MacroExpansion_Test {
 	public void test_execution_at_macro_expansion_ok() {
 		final VeniceInterpreter venice = new VeniceInterpreter(new RejectAllInterceptor());	
 		
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"));
+		final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
 		
 		final String macro =
 				"(do                                             \n" +
@@ -72,7 +72,7 @@ public class Sandbox_MacroExpansion_Test {
 	public void test_execution_at_macro_expansion_sandbox_violation() {
 		final VeniceInterpreter venice = new VeniceInterpreter(new RejectAllInterceptor());	
 		
-		final Env env = venice.createEnv(true, false, new VncKeyword("script"));
+		final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
 		
 		final String macro =
 				"(do                                             \n" +

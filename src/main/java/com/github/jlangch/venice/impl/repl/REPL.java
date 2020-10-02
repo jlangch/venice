@@ -48,6 +48,7 @@ import org.jline.utils.OSUtils;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -669,7 +670,7 @@ public class REPL {
 			final BufferedReader in,
 			final boolean macroexpand
 	) {
-		return venice.createEnv(macroexpand, ansiTerminal, new VncKeyword("repl"))
+		return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setStdoutPrintStream(out)
 					 .setStderrPrintStream(err)

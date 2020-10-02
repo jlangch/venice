@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -43,7 +45,6 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -115,7 +116,7 @@ public class Venice {
 		final VeniceInterpreter venice = new VeniceInterpreter(
 												new RejectAllInterceptor());
 		
-		final Env env = venice.createEnv(macroexpand, false, new VncKeyword("macroexpand"))
+		final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
 							  .setStdoutPrintStream(null)
 							  .setStderrPrintStream(null)
 							  .setStdinReader(null);
@@ -314,7 +315,7 @@ public class Venice {
 			final boolean macroexpand, 
 			final Map<String,Object> params
 	) {
-		return addParams(venice.createEnv(macroexpand, false, new VncKeyword("script")), params);
+		return addParams(venice.createEnv(macroexpand, false, RunMode.SCRIPT), params);
 	}
 	
 	private Env addParams(final Env env, final Map<String,Object> params) {
@@ -338,7 +339,7 @@ public class Venice {
 					stderrAdded = true;
 				}
 				else if (key.equals("*in*")) {
-					env.setStdinReader(buildReader(val, "*in*"));
+					env.setStdinReader(buildIOReader(val, "*in*"));
 					
 					stdinAdded = true;
 				}
@@ -385,15 +386,15 @@ public class Venice {
 		}
 	}
 	
-	private java.io.Reader buildReader(final Object val, final String type) {
+	private Reader buildIOReader(final Object val, final String type) {
 		if (val == null) {
 			return new InputStreamReader(new NullInputStream());
 		}
 		else if (val instanceof InputStream) {
 			return new InputStreamReader((InputStream)val);
 		}
-		else if (val instanceof java.io.Reader) {
-			return (java.io.Reader)val;
+		else if (val instanceof Reader) {
+			return (Reader)val;
 		}
 		else {
 			throw new VncException(String.format(
@@ -449,7 +450,7 @@ public class Venice {
 		Env env = precompiledEnv.get();
 		if (env == null) {
 			env = new VeniceInterpreter()
-						.createEnv(true, false, new VncKeyword("script"))
+						.createEnv(true, false, RunMode.SCRIPT)
 						.setStdoutPrintStream(null)
 						.setStderrPrintStream(null)
 						.setStdinReader(null);
@@ -476,5 +477,5 @@ public class Venice {
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
 	private final PrintStream stdout = new PrintStream(System.out, true);
 	private final PrintStream stderr = new PrintStream(System.err, true);
-	private final java.io.Reader stdin = new InputStreamReader(System.in);
+	private final Reader stdin = new InputStreamReader(System.in);
 }
