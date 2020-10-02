@@ -77,7 +77,10 @@ public class Venice {
 	}
 	
 	/**
-	 * Pre-compiles a Venice script.
+	 * Pre-compiles a Venice script with disabled up-front macro expansion.
+	 * 
+	 * <p>Note: for best performance up-front macro expansion should be enabled
+	 * for pre-compilation!
 	 * 
 	 * @param scriptName A mandatory script name
 	 * @param script A mandatory script
@@ -92,7 +95,7 @@ public class Venice {
 	 * 
 	 * @param scriptName A mandatory script name
 	 * @param script A mandatory script
-	 * @param macroexpand If true expand macros upfront
+	 * @param macroexpand If true expand macros up-front
 	 * @return the pre-compiled script
 	 */
 	public PreCompiled precompile(
