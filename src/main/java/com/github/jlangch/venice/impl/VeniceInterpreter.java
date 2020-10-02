@@ -90,10 +90,6 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 
 public class VeniceInterpreter implements Serializable  {
 
-	public VeniceInterpreter() {
-		this(null, null);
-	}
-
 	public VeniceInterpreter(
 			final IInterceptor interceptor
 	) {
@@ -104,9 +100,11 @@ public class VeniceInterpreter implements Serializable  {
 			final IInterceptor interceptor, 
 			final List<String> loadPaths
 	) {
-		this.interceptor = interceptor == null ? new AcceptAllInterceptor() 
-											   : interceptor;
-
+		if (interceptor == null) {
+			throw new SecurityException("VeniceInterpreter requires an interceptor");
+		}
+		
+		this.interceptor = interceptor;
 		this.meterRegistry = this.interceptor.getMeterRegistry();
 		
 		// performance optimization
@@ -187,7 +185,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	public Env createEnv(
-			final List<String> preloadExtensionModules,
+			final List<String> preloadedExtensionModules,
 			final boolean macroexpandOnLoad, 
 			final boolean ansiTerminal,
 			final RunMode runMode
@@ -241,7 +239,7 @@ public class VeniceInterpreter implements Serializable  {
 		sealedSystemNS.set(true);
 
 		// load other modules requested for preload
-		toEmpty(preloadExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
+		toEmpty(preloadedExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
 
 		return env;
 	}

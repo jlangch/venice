@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Fixed
+
+- Venice precompiled script execution to use the active sandbox interceptor
+
 
 
 ## [1.9.1] - 2020-10-01

@@ -37,13 +37,14 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 
 public class ReaderTest {
 
 	@Test
 	public void test_too_much_input() {
-		final VeniceInterpreter vi = new VeniceInterpreter();
+		final VeniceInterpreter vi = new VeniceInterpreter(new AcceptAllInterceptor());
 		
 		final VncVal ast = vi.READ("(+ 1 2)\n(+ 3 4)", "test");
 		

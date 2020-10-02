@@ -47,13 +47,14 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class DocGenerator {
 
 	public DocGenerator() {
-		this.env = new VeniceInterpreter()
+		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
 								Arrays.asList("app", "xml", "crypt", "gradle", "ansi", "maven"), 
 								false, 

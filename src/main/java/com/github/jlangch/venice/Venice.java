@@ -449,7 +449,7 @@ public class Venice {
 	private Env getPrecompiledEnv() {
 		Env env = precompiledEnv.get();
 		if (env == null) {
-			env = new VeniceInterpreter()
+			env = new VeniceInterpreter(interceptor)
 						.createEnv(true, false, RunMode.SCRIPT)
 						.setStdoutPrintStream(null)
 						.setStderrPrintStream(null)

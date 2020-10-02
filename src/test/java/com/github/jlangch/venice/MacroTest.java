@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 
 
 public class MacroTest {
@@ -747,7 +748,7 @@ public class MacroTest {
 
 	@Test
 	public void test_macroexpand_all_via_interpreter() {
-		final VeniceInterpreter venice = new VeniceInterpreter();	
+		final VeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());	
 		
 		final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
 		
