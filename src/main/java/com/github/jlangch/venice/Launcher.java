@@ -63,13 +63,13 @@ public class Launcher {
 											cli.switchValue("-loadpath"),
 											true);
 		
-		final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-		JavaInterop.register(interceptor);
-		
 		final boolean macroexpand = cli.switchPresent("-macroexpand");
 
 		try {
 			if (cli.switchPresent("-file")) {
+				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+				JavaInterop.register(interceptor);
+				
 				// run the file from the filesystem
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
 				final String script = new String(FileUtil.load(new File(file)));
@@ -78,6 +78,9 @@ public class Launcher {
 						runScript(cli, macroexpand, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-cp-file")) {
+				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+				JavaInterop.register(interceptor);
+				
 				// run the file from the classpath
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
 				final String script = new ClassPathResource(file).getResourceAsString();
@@ -86,6 +89,9 @@ public class Launcher {
 						runScript(cli, macroexpand, interceptor, script, new File(file).getName()));
 			}
 			else if (cli.switchPresent("-script")) {
+				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+				JavaInterop.register(interceptor);
+				
 				// run the script passed as command line argument
 				final String script = cli.switchValue("-script");
 				
@@ -96,6 +102,16 @@ public class Launcher {
 				// run the Venice application archive
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
+				// Merge the load paths from the command line with the application archive
+				final List<File> mergedLoadPaths = Arrays.asList(appFile.getAbsoluteFile());
+				mergedLoadPaths.addAll(loadPaths.getPaths());
+				final ILoadPaths appLoadPaths = LoadPathsFactory.of(
+													mergedLoadPaths, 
+													loadPaths.isUnlimitedAccess());
+
+				final IInterceptor interceptor = new AcceptAllInterceptor(appLoadPaths);
+				JavaInterop.register(interceptor);
+
 				final VncMap manifest = getManifest(appFile);
 				
 				final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
@@ -108,16 +124,25 @@ public class Launcher {
 				runApp(cli, macroexpand, interceptor, appBootstrap, appName, appFile);
 			}
 			else if (cli.switchPresent("-app-repl")) {
+				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+				JavaInterop.register(interceptor);
+				
 				// run a custom application repl
 				final String file = cli.switchValue("-app-repl");
 					
 				new CustomREPL(interceptor, new File(file)).run(args);
 			}
 			else if (cli.switchPresent("-repl")) {
+				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+				JavaInterop.register(interceptor);
+				
 				// run the Venice repl
 				new REPL(interceptor).run(args);
 			}
 			else {
+				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
+				JavaInterop.register(interceptor);
+				
 				// run the Venice repl
 				new REPL(interceptor).run(args);
 			}
@@ -142,9 +167,7 @@ public class Launcher {
 			final String name,
 			final File appArchive
 	) {
-		final List<String> loadPaths = Arrays.asList(appArchive.getAbsolutePath());
-
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor, loadPaths);
+		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 			
 		final Env env = createEnv(
 							venice,

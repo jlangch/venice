@@ -93,13 +93,6 @@ public class VeniceInterpreter implements Serializable  {
 	public VeniceInterpreter(
 			final IInterceptor interceptor
 	) {
-		this(interceptor, null);
-	}
-
-	public VeniceInterpreter(
-			final IInterceptor interceptor, 
-			final List<String> loadPaths
-	) {
 		if (interceptor == null) {
 			throw new SecurityException("VeniceInterpreter requires an interceptor");
 		}

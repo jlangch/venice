@@ -32,6 +32,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Fixed
 
 - Venice precompiled script execution to use the active sandbox interceptor
+- load paths for running a Venice app (the application zip must be added to the load paths)
 
 
 
