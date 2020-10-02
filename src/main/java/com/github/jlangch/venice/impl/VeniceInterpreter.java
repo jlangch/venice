@@ -90,11 +90,9 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 
 public class VeniceInterpreter implements Serializable  {
 
-	public VeniceInterpreter(
-			final IInterceptor interceptor
-	) {
+	public VeniceInterpreter(final IInterceptor interceptor) {
 		if (interceptor == null) {
-			throw new SecurityException("VeniceInterpreter requires an interceptor");
+			throw new SecurityException("VeniceInterpreter can not run without an interceptor");
 		}
 		
 		this.interceptor = interceptor;
