@@ -644,6 +644,29 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction sandbox_type =
+		new VncFunction(
+				"sandbox-type",
+				VncFunction
+					.meta()
+					.arglists("(sandbox-type )")
+					.doc("Returns the sandbox type")
+					.examples("(sandbox-type )")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 0);
+
+				final IInterceptor interceptor = JavaInterop.getInterceptor();
+				 
+				return interceptor == null
+						? Constants.Nil
+						: new VncKeyword(interceptor.getClass().getSimpleName());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction system_prop =
 		new VncFunction(
 				"system-prop",
@@ -954,6 +977,7 @@ public class SystemFunctions {
 					.add(cpus)
 					.add(shutdown_hook)
 					.add(sandboxed_Q)
+					.add(sandbox_type)
 					.add(sleep)
 					.add(callstack)
 					.add(os_type)
