@@ -43,10 +43,17 @@ public class RejectAllInterceptor extends Interceptor {
 			final String method, 
 			final Object... args
 	) throws SecurityException {
-		throw new SecurityException(String.format(
-					"%s: Access denied to target %s",
-					PREFIX,
-					receiver.getClass().getName()));
+		if (receiver == null) {
+			throw new SecurityException(String.format(
+					"%s: Access to any java object denied",
+					PREFIX));
+		}
+		else {
+			throw new SecurityException(String.format(
+						"%s: Access denied to target %s",
+						PREFIX,
+						receiver.getClass().getName()));
+		}
 	}
 
 	@Override
@@ -80,10 +87,17 @@ public class RejectAllInterceptor extends Interceptor {
 			final Object receiver, 
 			final String property
 	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to target %s",
-				PREFIX,
-				receiver.getClass().getName()));
+		if (receiver == null) {
+			throw new SecurityException(String.format(
+					"%s: Access to any java object denied",
+					PREFIX));
+		}
+		else {
+			throw new SecurityException(String.format(
+					"%s: Access denied to target %s",
+					PREFIX,
+					receiver.getClass().getName()));
+		}
 	}
 
 	@Override
@@ -93,10 +107,17 @@ public class RejectAllInterceptor extends Interceptor {
 			final String property, 
 			final Object value
 	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to target %s", 
-				PREFIX,
-				receiver.getClass().getName()));
+		if (receiver == null) {
+			throw new SecurityException(String.format(
+					"%s: Access to any java object denied",
+					PREFIX));
+		}
+		else {
+			throw new SecurityException(String.format(
+					"%s: Access denied to target %s", 
+					PREFIX,
+					receiver.getClass().getName()));
+		}
 	}
 
 	@Override
@@ -118,10 +139,17 @@ public class RejectAllInterceptor extends Interceptor {
 			final Class<?> receiverFormalType,
 			final String fieldName
 	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to target %s",
-				PREFIX,
-				receiver.getClass().getName()));
+		if (receiver == null) {
+			throw new SecurityException(String.format(
+					"%s: Access to any java object denied",
+					PREFIX));
+		}
+		else {
+			throw new SecurityException(String.format(
+					"%s: Access denied to target %s",
+					PREFIX,
+					receiver.getClass().getName()));
+		}
 	}
 
 	@Override
@@ -180,7 +208,7 @@ public class RejectAllInterceptor extends Interceptor {
 
 	public List<String> getBlacklistedVeniceFunctions() {
 		final List<String> list = new ArrayList<>(blacklistedVeniceFunctions);
-		Collections.sort(list);
+		Collections.sort(list); 
 		return list;
 	}
 
