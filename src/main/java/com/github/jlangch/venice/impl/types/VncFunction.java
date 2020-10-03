@@ -40,7 +40,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public abstract class VncFunction 
 	extends VncVal 
-	implements IVncFunction, INamespaceAware {
+	implements IVncFunction, 
+	           INamespaceAware, 
+	           IJavaBridgeFunction {
 
 	public VncFunction(final String name) {
 		this(name, null, false, Constants.Nil);
@@ -204,7 +206,7 @@ public abstract class VncFunction
 
 	@Override
 	public Object convertToJavaObject() {
-		return null;
+		return this;
 	}
 
 	@Override 
@@ -221,7 +223,7 @@ public abstract class VncFunction
 						.append(StringUtil.quote(namespace == null ? "" : namespace, '\"'))
 						.append("}"));
 	}
-
+	
 	
 	protected void assertArity(final VncList args, final int... expectedArities) {
 		final int arity = args.size();
