@@ -702,7 +702,6 @@ public class SandboxRules {
 						"crypt",
 						"kira",
 						"math",
-						"walk",
 						"xml")));
 	
 
