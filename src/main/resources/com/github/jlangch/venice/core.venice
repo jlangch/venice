@@ -1386,10 +1386,12 @@
 
 (defn as-consumer [f] (proxify :java.util.function.Consumer { :accept f }))
 
-(defn as-supplier [f] (proxify :java.util.function.Function { :get f }))
+(defn as-supplier [f] (proxify :java.util.function.Supplier { :get f }))
+
+(defn as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
 
 (defn as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
 
-(defn as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
+(defn as-biconsumer [f] (proxify :java.util.function.BiConsumer { :apply f }))
 
 (defn as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))
