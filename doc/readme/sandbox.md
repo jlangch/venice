@@ -10,12 +10,15 @@ undesirable operations.
 ### Multi-Threading
 
 The sandbox is local to a thread. This allows multi-threaded applications to 
-isolate execution properly, but it also means you cannot let Venice to create 
-threads through Java interop, or else it will escape the sandbox.
+isolate execution properly. 
 
-To ensure this you should prohibit the use of threads. The only safe way to 
-work with threads and respecting the sandbox is by using Venice' built-in 
-[Concurrency](concurrency.md) features like futures, agents, delays, schedulers, ...
+When using Venice' built-in [Concurrency](concurrency.md) features like futures, 
+agents, delays, schedulers, ..., Venice ensures that the underlying threads 
+inherit the configured sandbox and are operating properly within the sandbox. 
+
+However if you create your own, unmanaged threads, given the sandbox allows it, 
+these threads have always a restricted sandbox attached rejecting all Java calls 
+and Venice I/O functions and prohibiting access to stdin, stdout and stderr.
 
 The "Dining Philosophers" example in the [Concurrency](concurrency.md) section 
 demonstrates how to use Venice futures instead of bare Java threads.
@@ -193,6 +196,38 @@ import com.github.jlangch.venice.Venice;
 final Venice venice = new Venice();
 
 ...
+```
+
+#### Creating your own unmanaged threads
+
+As mentioned above you can create your own threads if the configured 
+sandbox allows it. 
+
+However what you can do within these threads is very limited because a 
+restricted sandbox is attached to this unmanaged threads.
+
+This means:
+
+- No access to Java Calls
+- No access to Venice I/O functions
+- No access to 'load-file' and 'load-resource'
+- No access to stdin, stdout, and stderr
+- Access only to a few extension modules ("crypt", "kira", "xml")
+
+```clojure
+(do
+  (defn async [f] (-> (. :java.lang.Thread :new f) 
+                      (. :start)))
+
+  (def fruits (atom ()))
+
+  (async #(swap! fruits conj :apple))
+  (async #(swap! fruits conj :mango))
+  (async #(swap! fruits conj :orange))
+
+  (sleep 2 :seconds)
+ 
+  @fruits)
 ```
  
 
