@@ -155,7 +155,7 @@ public class JavaInterop_proxy_Test {
 				"    (defn pred [x] (> x 2))                                      " +
 			    "                                                                 " +
 				"    (-> (. [1 2 3 4] :stream)                                    " +
-			    "        (. :filter pred)                                         " +
+			    "        (. :filter (as-predicate pred))                          " +
 			    "        (. :collect (. :Collectors :toList)))                    " +
 				") ";
 
@@ -171,11 +171,66 @@ public class JavaInterop_proxy_Test {
 				"    (import :java.util.stream.Collectors)                        " +
 			    "                                                                 " +
 				"    (-> (. [1 2 3 4] :stream)                                    " +
-			    "        (. :filter #(> % 2))                                     " +
+			    "        (. :filter (as-predicate #(> % 2)))                      " +
 			    "        (. :collect (. :Collectors :toList)))                    " +
 				") ";
 
 		assertEquals("[3, 4]", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_filter_map() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :java.util.function.Predicate)                       " +
+				"    (import :java.util.function.Function)                        " +
+				"    (import :java.util.stream.Collectors)                        " +
+			    "                                                                 " +
+				"    (-> (. [1 2 3 4] :stream)                                    " +
+			    "        (. :filter (proxify :Predicate { :test #(> % 2) }))      " +
+			    "        (. :map (proxify :Function { :apply #(* % 10) }))        " +
+			    "        (. :collect (. :Collectors :toList)))                    " +
+				") ";
+
+		assertEquals("[30, 40]", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_filter_map2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :java.util.stream.Collectors)                        " +
+				"    (defn pred [x] (> x 2))                                      " +
+				"    (defn mul [x] (* x 10))                                      " +
+			    "                                                                 " +
+				"    (-> (. [1 2 3 4] :stream)                                    " +
+			    "        (. :filter (as-predicate pred))                          " +
+			    "        (. :map (as-function mul))                               " +
+			    "        (. :collect (. :Collectors :toList)))                    " +
+				") ";
+
+		assertEquals("[30, 40]", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_filter_map3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :java.util.stream.Collectors)                        " +
+			    "                                                                 " +
+				"    (-> (. [1 2 3 4] :stream)                                    " +
+			    "        (. :filter (as-predicate #(> % 2)))                      " +
+			    "        (. :map (as-function #(* % 10)))                         " +
+			    "        (. :collect (. :Collectors :toList)))                    " +
+				") ";
+
+		assertEquals("[30, 40]", venice.eval(script).toString());
 	}
 		
 	@Test
@@ -194,6 +249,19 @@ public class JavaInterop_proxy_Test {
 	}
 	
 	@Test
+	public void test_proxy_Streams_reduce2() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(do                                                     " +
+				"    (-> (. [1 2 3 4] :stream)                           " +
+			    "        (. :reduce 0 (as-binaryoperator #(+ %1 %2))))   " +
+				") ";
+		
+		assertEquals("10", venice.eval(script).toString());
+	}
+	
+	@Test
 	public void test_proxy_Streams_reduce_optional() {
 		final Venice venice = new Venice();
 		
@@ -204,6 +272,20 @@ public class JavaInterop_proxy_Test {
 				"    (-> (. [1 2 3 4] :stream)                                            " +
 			    "        (. :reduce (proxify :BinaryOperator { :apply #(+ %1 %2) }))      " +
 				"        (. :orElse 0))                                                   " +
+				") ";
+		
+		assertEquals("10", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_reduce_optional2() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(do                                                   " +
+				"    (-> (. [1 2 3 4] :stream)                         " +
+			    "        (. :reduce (as-binaryoperator #(+ %1 %2)))    " +
+				"        (. :orElse 0))                                " +
 				") ";
 		
 		assertEquals("10", venice.eval(script).toString());

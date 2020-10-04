@@ -1374,3 +1374,22 @@
 
   ;;(core/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))
   (*macroexpand-all form))
+
+
+(defn as-runnable [f] (proxify :java.lang.Runnable { :run f }))
+
+(defn as-callable [f] (proxify :java.util.concurrent.Callable { :call f }))
+
+(defn as-predicate [f] (proxify :java.util.function.Predicate { :test f }))
+
+(defn as-function [f] (proxify :java.util.function.Function { :apply f }))
+
+(defn as-consumer [f] (proxify :java.util.function.Consumer { :accept f }))
+
+(defn as-supplier [f] (proxify :java.util.function.Function { :get f }))
+
+(defn as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
+
+(defn as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
+
+(defn as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))

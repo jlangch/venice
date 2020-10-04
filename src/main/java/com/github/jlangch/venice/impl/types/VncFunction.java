@@ -41,8 +41,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public abstract class VncFunction 
 	extends VncVal 
 	implements IVncFunction, 
-	           INamespaceAware, 
-	           IJavaBridgeFunction {
+	           INamespaceAware {
 
 	public VncFunction(final String name) {
 		this(name, null, false, Constants.Nil);

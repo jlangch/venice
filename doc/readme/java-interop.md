@@ -178,14 +178,16 @@ a Java Dynamic Proxy:
 ```clojure
 (do
     (import :java.util.function.Predicate)
+    (import :java.util.function.Function)
     (import :java.util.stream.Collectors)
 
     (-> (. [1 2 3 4] :stream)
         (. :filter (proxify :Predicate { :test #(> % 2) }))
+        (. :map (proxify :Function { :apply #(* % 10) }))
         (. :collect (. :Collectors :toList))))
 ```
 
-_Note:_  this is not the fastest way to filter collections
+_Note:_  this is not the fastest way to filter/map collections
 
 
 ## Filtering Java objects:
