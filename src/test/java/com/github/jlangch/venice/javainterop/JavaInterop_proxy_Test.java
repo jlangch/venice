@@ -179,6 +179,24 @@ public class JavaInterop_proxy_Test {
 	}
 	
 	@Test
+	public void test_proxy_Streams_filter_parallel() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :java.util.stream.Collectors)                        " +
+			    "                                                                 " +
+				"    (-> (. [1 2 3 4 5 6 7 8 9 10 11 12 13 14] :parallelStream)   " +
+			    "        (. :filter (as-predicate #(> % 2)))                      " +
+			    "        (. :collect (. :Collectors :toList)))                    " +
+				") ";
+
+		assertEquals(
+				"[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]", 
+				venice.eval(script).toString());
+	}
+	
+	@Test
 	public void test_proxy_Streams_filter_map() {
 		final Venice venice = new Venice();
 
@@ -224,13 +242,30 @@ public class JavaInterop_proxy_Test {
 				"(do                                                              " +
 				"    (import :java.util.stream.Collectors)                        " +
 			    "                                                                 " +
-				"    (-> (. [1 2 3 4] :stream)                                    " +
+				"    (-> (. [1 2 3 4 5 6 7 8] :stream)                            " +
 			    "        (. :filter (as-predicate #(> % 2)))                      " +
 			    "        (. :map (as-function #(* % 10)))                         " +
 			    "        (. :collect (. :Collectors :toList)))                    " +
 				") ";
 
-		assertEquals("[30, 40]", venice.eval(script).toString());
+		assertEquals("[30, 40, 50, 60, 70, 80]", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_filter_map_parallel() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                              " +
+				"    (import :java.util.stream.Collectors)                        " +
+			    "                                                                 " +
+				"    (-> (. [1 2 3 4 5 6 7 8] :parallelStream)                    " +
+			    "        (. :filter (as-predicate #(> % 2)))                      " +
+			    "        (. :map (as-function #(* % 10)))                         " +
+			    "        (. :collect (. :Collectors :toList)))                    " +
+				") ";
+
+		assertEquals("[30, 40, 50, 60, 70, 80]", venice.eval(script).toString());
 	}
 		
 	@Test
@@ -255,6 +290,19 @@ public class JavaInterop_proxy_Test {
 		final String script =
 				"(do                                                     " +
 				"    (-> (. [1 2 3 4] :stream)                           " +
+			    "        (. :reduce 0 (as-binaryoperator #(+ %1 %2))))   " +
+				") ";
+		
+		assertEquals("10", venice.eval(script).toString());
+	}
+	
+	@Test
+	public void test_proxy_Streams_reduce_parallel() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(do                                                     " +
+				"    (-> (. [1 2 3 4] :parallelStream)                   " +
 			    "        (. :reduce 0 (as-binaryoperator #(+ %1 %2))))   " +
 				") ";
 		

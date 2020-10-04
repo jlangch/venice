@@ -125,18 +125,21 @@ public class JavaInteropFunctions {
 					.doc(
 						"Proxifies a Java interface to be passed as a Callback object to " +
 						"Java functions. The interface's methods are implemented by Venice " +
-						"functions.")
+						"functions. \n" +
+						"The dynamic invocation handler takes care that the methods are " +
+						"called in the context of Venice sandbox even if the Java method " +
+						"that invokes the callback methods is running in another thread.")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.File :java.io.FilenameFilter) \n" +
 						"\n" +
 						"   (def file-filter \n" +
-						"        (fn [dir name] (str/ends-with? name \".xxx\"))) \n" +
+						"      (fn [dir name] (str/ends-with? name \".xxx\"))) \n" +
 						"\n" +
 						"   (let [dir (io/tmp-dir )] \n" +
-						"        ;; create a dynamic proxy for the interface FilenameFilter\n" +
-						"        ;; and implement its function 'accept' by 'file-filter'\n" +
-						"        (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +
+						"      ;; create a dynamic proxy for the interface FilenameFilter\n" +
+						"      ;; and implement its function 'accept' by 'file-filter'\n" +
+						"      (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +
 						")")
 					.build());
 		}
