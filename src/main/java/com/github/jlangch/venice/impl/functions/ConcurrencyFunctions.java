@@ -502,7 +502,7 @@ public class ConcurrencyFunctions {
 					.arglists("(swap! box f & args)")		
 					.doc(
 						"Atomically swaps the value of an atom or a volatile to be: " + 
-						"(apply f current-value-of-boxargs). Note that f may be called " + 
+						"(apply f current-value-of-box args). Note that f may be called " + 
 						"multiple times, and thus should be free of side effects.  Returns " + 
 						"the value that was swapped in.")
 					.examples(
@@ -513,6 +513,11 @@ public class ConcurrencyFunctions {
 						"(do                           \n" +
 						"   (def counter (atom 0))     \n" +
 						"   (swap! counter inc))         ",
+						"(do                           \n" +
+						"   (def fruits (atom ()))     \n" +
+						"   (swap! fruits :apple)      \n" +
+						"   (swap! fruits :mango)      \n" +
+						"   @fruits)                     ",
 						"(do                               \n" +
 						"   (def counter (volatile 0))     \n" +
 						"   (swap! counter (partial + 6))  \n" +
@@ -522,22 +527,22 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
 				
-				final VncVal val = args.first();
+				final VncVal box = args.first();
 				
-				if (Types.isVncAtom(val)) {
+				if (Types.isVncAtom(box)) {
 					final VncFunction fn = Coerce.toVncFunction(args.second());
 					final VncList swapArgs = args.slice(2);					
-					return ((VncAtom)val).swap(fn, swapArgs);
+					return ((VncAtom)box).swap(fn, swapArgs);
 				}
-				else if (Types.isVncVolatile(val)) {
+				else if (Types.isVncVolatile(box)) {
 					final VncFunction fn = Coerce.toVncFunction(args.second());
 					final VncList swapArgs = args.slice(2);					
-					return ((VncVolatile)val).swap(fn, swapArgs);
+					return ((VncVolatile)box).swap(fn, swapArgs);
 				}
 				else {
 					throw new VncException(String.format(
-							"Function 'sawp!' does not allow type %s as argument.",
-							Types.getType(val)));
+							"Function 'swap!' does not allow type %s as argument.",
+							Types.getType(box)));
 				}
 
 			}
@@ -1893,5 +1898,5 @@ public class ConcurrencyFunctions {
 	private final static AtomicLong futureThreadPoolCounter = new AtomicLong(0);
 
 	private static ExecutorService executor;
-	private static int maximumThreadPoolSize = 1000;
+	private static int maximumThreadPoolSize = 100;
 }
