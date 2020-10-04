@@ -187,6 +187,18 @@ a Java Dynamic Proxy:
         (. :collect (. :Collectors :toList))))
 ```
 
+With Venice 1.9.3+ this can be simplified to:
+
+```clojure
+(do
+    (import :java.util.stream.Collectors)
+
+    (-> (. [1 2 3 4] :stream)
+        (. :filter (as-predicate #(> % 2)))
+        (. :map (as-function #(* % 10)))
+        (. :collect (. :Collectors :toList))))
+```
+
 _Note:_  this is not the fastest way to filter/map collections
 
 
