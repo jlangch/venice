@@ -172,6 +172,28 @@ a Java Dynamic Proxy:
    (swing-gui "Test"))
 ```
 
+Venice 1.9.3 provides a few helper functions to simplify using Java Dynamic Proxies 
+with Java functional interfaces:
+
+- `java.lang.Runnable` -> `(as-runnable f)`
+- `java.util.concurrent.Callable` -> `(as-callable f)`
+- `java.util.function.Predicate` -> `(as-predicate f)`
+- `java.util.function.Function` -> `(as-function f)`
+- `java.util.function.Consumer` -> `(as-consumer f)`
+- `java.util.function.Supplier` -> `(as-supplier f)`
+- `java.util.function.BiPredicate` -> `(as-bipredicate f)`
+- `java.util.function.BiFunction` -> `(as-bifunction f)`
+- `java.util.function.BiConsumer` -> `(as-biconsumer f)`
+- `java.util.function.BinaryOperator` -> `(as-binaryoperator f)`
+
+
+Examples:
+
+Instead of `(proxify :java.lang.Runnable { :run #(sleep 10) })` use `(as-runnable #(sleep 10))`
+
+Instead of `(proxify :java.util.function.Function { :apply #(+ % 1) })` use `(as-function #(+ % 1))`
+
+
 
 ## Mixing Venice functions with Java streams
 
