@@ -33,6 +33,8 @@ public class RejectAllInterceptor extends Interceptor {
 	
 	public RejectAllInterceptor() {
 		super(LoadPathsFactory.rejectAll());
+		
+		this.executionTimeDeadline = calcExecutionTimeDeadline(MAX_EXECUTION_TIME_SECONDS);
 	}
 
 	@Override
@@ -206,6 +208,25 @@ public class RejectAllInterceptor extends Interceptor {
 		}
 	}
 
+	@Override
+	public void validateMaxExecutionTime() throws SecurityException {
+		if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
+			throw new SecurityException(
+					"Venice Sandbox: The sandbox exceeded the max execution time");
+		}
+	}
+
+	@Override
+	public Integer getMaxExecutionTimeSeconds() {
+		return MAX_EXECUTION_TIME_SECONDS;
+	}
+
+	@Override
+	public Integer getMaxFutureThreadPoolSize() {
+		return MAX_FUTURE_THREAD_POOL_SIZE;
+	}
+
+	
 	public List<String> getBlacklistedVeniceFunctions() {
 		final List<String> list = new ArrayList<>(blacklistedVeniceFunctions);
 		Collections.sort(list); 
@@ -219,7 +240,21 @@ public class RejectAllInterceptor extends Interceptor {
 	}
 
 	
-	private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
+	private static long calcExecutionTimeDeadline(final Integer maxExecutionTimeSeconds) {
+		return maxExecutionTimeSeconds == null
+				? -1L
+				: System.currentTimeMillis() + maxExecutionTimeSeconds * 1000L;		
+	}
 	
+	
+	
+	private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
+
+	private static final Integer MAX_EXECUTION_TIME_SECONDS = null; // null is unlimited
+
+	private static final Integer MAX_FUTURE_THREAD_POOL_SIZE = 5;
+
 	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getIoFunctions();
+	
+	private final long executionTimeDeadline;
 }
