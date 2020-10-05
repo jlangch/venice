@@ -70,7 +70,7 @@ get property: `(:property object)`
    (-> (. :LocalDate :now) 
        (. :class))
        
-   ;; using doto to calling multiple methods on a mutable Java object
+   ;; using doto for calling multiple methods on a mutable Java object
    (doto (. :java.util.HashMap :new)
          (. :put :a 1)
          (. :put :b 2))
