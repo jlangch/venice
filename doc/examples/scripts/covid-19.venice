@@ -180,7 +180,7 @@
            :height 500
            :render-style :line
            :x-axis { :title "Date", :date-pattern "MMM-dd" }
-           :y-axis { :title "Cases 14 days per 100'000" }
+           :y-axis { :title "Cases ~{sample-days} days per 100'000" }
            :theme :xchart } )))
 
   (defn create-chart [country-html-data country-names]

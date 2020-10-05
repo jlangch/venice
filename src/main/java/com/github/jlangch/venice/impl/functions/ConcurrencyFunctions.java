@@ -515,8 +515,8 @@ public class ConcurrencyFunctions {
 						"   (swap! counter inc))         ",
 						"(do                           \n" +
 						"   (def fruits (atom ()))     \n" +
-						"   (swap! fruits :apple)      \n" +
-						"   (swap! fruits :mango)      \n" +
+						"   (swap! fruits conj :apple) \n" +
+						"   (swap! fruits conj :mango) \n" +
 						"   @fruits)                     ",
 						"(do                               \n" +
 						"   (def counter (volatile 0))     \n" +

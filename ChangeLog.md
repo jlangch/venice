@@ -27,7 +27,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
-- ...
+- few helper functions to simplify using Java Dynamic Proxies with Java functional interfaces.
+  E.g.: Instead of `(proxify :java.util.function.Function { :apply #(+ % 1) })` use `(as-function #(+ % 1))`
+  
 
 
 

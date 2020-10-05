@@ -1538,7 +1538,6 @@ public class DocGenerator {
 		final DocSection java = new DocSection("Java");
 		all.addSection(java);	
 		java.addItem(getDocItem("."));
-		java.addItem(getDocItem("proxify"));
 		java.addItem(getDocItem("import"));
 		java.addItem(getDocItem("java-iterator-to-list"));
 		java.addItem(getDocItem("java-enumeration-to-list"));
@@ -1546,6 +1545,19 @@ public class DocGenerator {
 		java.addItem(getDocItem("cast"));
 		java.addItem(getDocItem("class"));
 		
+		final DocSection proxy = new DocSection("Proxify");
+		all.addSection(proxy);	
+		proxy.addItem(getDocItem("proxify"));
+		proxy.addItem(getDocItem("as-runnable"));
+		proxy.addItem(getDocItem("as-callable"));
+		proxy.addItem(getDocItem("as-predicate"));
+		proxy.addItem(getDocItem("as-function"));
+		proxy.addItem(getDocItem("as-consumer"));
+		proxy.addItem(getDocItem("as-supplier"));
+		proxy.addItem(getDocItem("as-bipredicate"));
+		proxy.addItem(getDocItem("as-bifunction"));
+		proxy.addItem(getDocItem("as-biconsumer"));
+		proxy.addItem(getDocItem("as-binaryoperator"));
 
 		final DocSection test = new DocSection("Test");
 		all.addSection(test);	
