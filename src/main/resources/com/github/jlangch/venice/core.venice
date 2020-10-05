@@ -1376,22 +1376,71 @@
   (*macroexpand-all form))
 
 
-(defn as-runnable [f] (proxify :java.lang.Runnable { :run f }))
+(defn
+  ^{ :arglists '("(as-runnable f)")
+      :doc "Wraps the function f in a 'java.lang.Runnable'" }
 
-(defn as-callable [f] (proxify :java.util.concurrent.Callable { :call f }))
+  as-runnable [f] (proxify :java.lang.Runnable { :run f }))
 
-(defn as-predicate [f] (proxify :java.util.function.Predicate { :test f }))
 
-(defn as-function [f] (proxify :java.util.function.Function { :apply f }))
+(defn
+  ^{ :arglists '("(as-callable f)")
+      :doc "Wraps the function f in a 'java.util.concurrent.Callable'" }
 
-(defn as-consumer [f] (proxify :java.util.function.Consumer { :accept f }))
+  as-callable [f] (proxify :java.util.concurrent.Callable { :call f }))
 
-(defn as-supplier [f] (proxify :java.util.function.Supplier { :get f }))
 
-(defn as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
+(defn
+  ^{ :arglists '("(as-predicate f)")
+      :doc "Wraps the function f in a 'java.util.function.Predicate'" }
 
-(defn as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
+  as-predicate [f] (proxify :java.util.function.Predicate { :test f }))
 
-(defn as-biconsumer [f] (proxify :java.util.function.BiConsumer { :apply f }))
 
-(defn as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))
+(defn
+  ^{ :arglists '("(as-function f)")
+      :doc "Wraps the function f in a 'java.util.function.Function'" }
+
+  as-function [f] (proxify :java.util.function.Function { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-consumer f)")
+      :doc "Wraps the function f in a 'java.util.function.Consumer'" }
+
+  as-consumer [f] (proxify :java.util.function.Consumer { :accept f }))
+
+
+(defn
+  ^{ :arglists '("(as-supplier f)")
+      :doc "Wraps the function f in a 'java.util.function.Supplier'" }
+
+  as-supplier [f] (proxify :java.util.function.Supplier { :get f }))
+
+
+(defn
+  ^{ :arglists '("(as-bipredicate f)")
+      :doc "Wraps the function f in a 'java.util.function.BiPredicate'" }
+
+  as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-bifunction f)")
+      :doc "Wraps the function f in a 'java.util.function.BiFunction'" }
+
+  as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-biconsumer f)")
+      :doc "Wraps the function f in a 'java.util.function.BiConsumer'" }
+
+  as-biconsumer [f] (proxify :java.util.function.BiConsumer { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-binaryoperator f)")
+      :doc "Wraps the function f in a 'java.util.function.BinaryOperator'" }
+
+  as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))

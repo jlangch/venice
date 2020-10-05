@@ -611,8 +611,10 @@ public class ZipFunctions {
 						"Options: \n" +
 						"  :filter-fn fn - filters the files to be added to the zip.")
 					.examples(
+						"; zip files\n" +
 						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
 
+						"; zip all files in a directory\n" +
 						"(io/zip-file \"test.zip\" \"dir\")",
 
 						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))  \n" +
