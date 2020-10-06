@@ -26,15 +26,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.RunMode;
@@ -44,19 +40,21 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
+import com.github.jlangch.venice.impl.functions.ScheduleFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
+import com.github.jlangch.venice.util.FunctionExecutionMeter;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
-import com.github.jlangch.venice.util.Timer;
 
 
 public class Venice {
@@ -284,34 +282,23 @@ public class Venice {
 			return jResult;
 		});
 	}
-	
+
+	public FunctionExecutionMeter getFunctionExecutionMeter() {
+		return new FunctionExecutionMeter(meterRegistry);
+	}
+
 	/**
 	 * @return the Venice version
 	 */
 	public static String getVersion() {
 		return Version.VERSION;
 	}
-	
-	public void enableTimer() {
-		meterRegistry.enable();
-	}
-	
-	public void disableTimer() {
-		meterRegistry.disable();
-	}
-	
-	public void resetTimer() {
-		meterRegistry.reset();
-	}
 
-	public Collection<Timer> getTimerData() {
-		return meterRegistry.getTimerData();
+	public static void shutdownExecutorServices() {
+		ConcurrencyFunctions.shutdown();
+		ScheduleFunctions.shutdown();
+		Agent.shutdown();
 	}
-
-	public String getTimerDataFormatted(final String title) {
-		return meterRegistry.getTimerDataFormatted(title, false);
-	}
-	
 	
 	private Env createEnv(
 			final VeniceInterpreter venice, 
@@ -411,7 +398,8 @@ public class Venice {
 	private Object runWithSandbox(final Callable<Object> callable) {
 		try {
 			if (interceptor.getMaxFutureThreadPoolSize() != null) {
-				ConcurrencyFunctions.setMaximumThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());
+				ConcurrencyFunctions
+					.setMaximumFutureThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());
 			}
 
 			if (interceptor.getMaxExecutionTimeSeconds() == null) {
@@ -440,8 +428,13 @@ public class Venice {
 			final int timeoutSeconds
 	) throws Exception {
 		try {
-			final Future<Object> future = executor.submit(callable);
-		    return future.get(interceptor.getMaxExecutionTimeSeconds(), TimeUnit.SECONDS);
+			final Future<Object> future = mngExecutor
+											.getExecutor()
+											.submit(callable);
+			
+		    return future.get(
+		    		interceptor.getMaxExecutionTimeSeconds(), 
+		    		TimeUnit.SECONDS);
 		} 
 		catch (TimeoutException ex) {
 			throw new SecurityException(
@@ -465,16 +458,9 @@ public class Venice {
 	}
 	
 	
-	
-	private final static AtomicLong timeoutThreadPoolCounter = new AtomicLong(0);
-
-	private final static ExecutorService executor = 
-			Executors.newCachedThreadPool(
-					ThreadPoolUtil.createThreadFactory(
-							"venice-timeout-pool-%d", 
-							timeoutThreadPoolCounter,
-							true /* daemon threads */));
-	
+	private static ManagedCachedThreadPoolExecutor mngExecutor = 
+			new ManagedCachedThreadPoolExecutor("venice-timeout-pool", 100);
+		
 	private final IInterceptor interceptor;
 	private final MeterRegistry meterRegistry;
 	private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);

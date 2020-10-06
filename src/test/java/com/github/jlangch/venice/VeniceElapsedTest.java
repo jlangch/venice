@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.support.AuditEvent;
 import com.github.jlangch.venice.support.AuditEventType;
+import com.github.jlangch.venice.util.FunctionExecutionMeter;
 
 
 public class VeniceElapsedTest {
@@ -167,12 +168,13 @@ public class VeniceElapsedTest {
 	@Test
 	public void evalWithTimer() {
 		final Venice venice = new Venice();
+		final FunctionExecutionMeter meter = venice.getFunctionExecutionMeter();
 
-		venice.enableTimer();
+		meter.enable();
 		
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer()");
+		String timerData = meter.getDataFormatted("evalWithTimer()");
 		assertNotNull(timerData);
 		//System.out.println(timerData);
 	}
@@ -180,7 +182,8 @@ public class VeniceElapsedTest {
 	@Test
 	public void evalWithTimer_Warmup() {
 		final Venice venice = new Venice();
-		
+		final FunctionExecutionMeter meter = venice.getFunctionExecutionMeter();
+
 		// warmup
 		for(int ii=0; ii<2000; ii++) {
 			venice.eval("(+ 1 x)", Parameters.of("x", 6L));
@@ -188,12 +191,12 @@ public class VeniceElapsedTest {
 
 		System.gc();
 
-		venice.resetTimer();
-		venice.enableTimer();
+		meter.reset();
+		meter.enable();
 		
 		assertEquals(Long.valueOf(7), venice.eval("(+ 1 x)", Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer_Warmup()");
+		String timerData = meter.getDataFormatted("evalWithTimer_Warmup()");
 		assertNotNull(timerData);
 		//System.out.println(timerData);
 	}
@@ -201,15 +204,16 @@ public class VeniceElapsedTest {
 	@Test
 	public void evalWithTimer_Precompiled() {
 		final Venice venice = new Venice();
+		final FunctionExecutionMeter meter = venice.getFunctionExecutionMeter();
 
 		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
 		
-		venice.resetTimer();
-		venice.enableTimer();
+		meter.reset();
+		meter.enable();
 		
 		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled()");
+		String timerData = meter.getDataFormatted("evalWithTimer_Precompiled()");
 		assertNotNull(timerData);
 		//System.out.println(timerData);
 	}
@@ -217,6 +221,7 @@ public class VeniceElapsedTest {
 	@Test
 	public void evalWithTimer_Precompiled_Warmup() {
 		final Venice venice = new Venice();
+		final FunctionExecutionMeter meter = venice.getFunctionExecutionMeter();
 
 		final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
 
@@ -227,12 +232,12 @@ public class VeniceElapsedTest {
 
 		System.gc();
 
-		venice.resetTimer();
-		venice.enableTimer();
+		meter.reset();
+		meter.enable();
 		
 		assertEquals(Long.valueOf(7), venice.eval(precomp, Parameters.of("x", 6L)));
 		
-		String timerData = venice.getTimerDataFormatted("evalWithTimer_Precompiled_Warmup()");
+		String timerData = meter.getDataFormatted("evalWithTimer_Precompiled_Warmup()");
 		assertNotNull(timerData);
 		//System.out.println(timerData);
 	}

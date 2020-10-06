@@ -32,13 +32,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -64,7 +60,7 @@ import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -1287,7 +1283,9 @@ public class ConcurrencyFunctions {
 					}
 				};
 				
-				final Future<VncVal> future = getExecutor().submit(taskWrapper);
+				final Future<VncVal> future = mngdExecutor
+												.getExecutor()
+												.submit(taskWrapper);
 				
 				return new VncJavaObject(future);
 			}
@@ -1776,55 +1774,17 @@ public class ConcurrencyFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static void shutdown() {
-		synchronized(futureThreadPoolCounter) {
-			if (executor != null) {
-				executor.shutdown();
-			}
-		}
+		mngdExecutor.shutdown();
+	}
+
+	public static void setMaximumFutureThreadPoolSize(final int maximumPoolSize) {
+		mngdExecutor.setMaximumThreadPoolSize(maximumPoolSize);
 	}
 	
-	public static void setMaximumThreadPoolSize(final int maximumPoolSize) {
-		synchronized(futureThreadPoolCounter) {
-			if (executor != null) {
-				maximumThreadPoolSize = maximumPoolSize;
-				((ThreadPoolExecutor)executor).setMaximumPoolSize(maximumPoolSize);
-			}
-		}		
-	}
 
-	public static void shutdownNow() {
-		synchronized(futureThreadPoolCounter) {
-			if (executor != null) {
-				executor.shutdownNow();
-			}
-		}
-	}
-
-
-	private static ExecutorService getExecutor() {
-		synchronized(futureThreadPoolCounter) {
-			if (executor == null) {
-				executor = createExecutor();				
-				((ThreadPoolExecutor)executor).setMaximumPoolSize(maximumThreadPoolSize);
-			}
-			return executor;
-		}
-	}
-
-	private static ExecutorService createExecutor() {
-		return Executors.newCachedThreadPool(
-				ThreadPoolUtil.createThreadFactory(
-						"venice-future-pool-%d", 
-						futureThreadPoolCounter,
-						true /* daemon threads */));
-		
-	}
-	
 	private static void safelyCancelFuture(final Future<?> future) {
 		try { 
-			if (!future.isCancelled()) {
-				future.cancel(true);
-			}
+			future.cancel(true);
 		}
 		catch(Exception e) { 
 		}
@@ -1895,8 +1855,6 @@ public class ConcurrencyFunctions {
 					.toMap();	
 	
 	
-	private final static AtomicLong futureThreadPoolCounter = new AtomicLong(0);
-
-	private static ExecutorService executor;
-	private static int maximumThreadPoolSize = 100;
+	private static ManagedCachedThreadPoolExecutor mngdExecutor = 
+			new ManagedCachedThreadPoolExecutor("venice-future-pool", 100);
 }

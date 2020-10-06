@@ -36,7 +36,9 @@ public class ThreadPoolUtil {
 			public Thread newThread(final Runnable runnable) {
 				final Thread thread = new Thread(runnable);
 				thread.setDaemon(deamon);
-				thread.setName(String.format(poolNameFormat, threadPoolCounter.getAndIncrement()));
+				thread.setName(String.format(
+								poolNameFormat, 
+								threadPoolCounter.getAndIncrement()));
 				return thread;
 			}
 		};

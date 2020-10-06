@@ -23,11 +23,8 @@ package com.github.jlangch.venice.impl.functions;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
@@ -41,7 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -95,11 +92,13 @@ public class ScheduleFunctions {
 					}
 				};
 				
-				final ScheduledFuture<VncVal> future = getExecutor().schedule(
-														taskWrapper, 
-														delay.getValue(),
-														toTimeUnit(unit));
-				
+				final ScheduledFuture<VncVal> future = mngdExecutor
+														.getExecutor()
+														.schedule(
+															taskWrapper, 
+															delay.getValue(),
+															toTimeUnit(unit));
+					
 				return new VncJavaObject(future);
 			}
 			
@@ -159,7 +158,9 @@ public class ScheduleFunctions {
 					}
 				};
 				
-				final ScheduledFuture<?> future = getExecutor().scheduleAtFixedRate(
+				final ScheduledFuture<?> future = mngdExecutor
+													.getExecutor()
+													.scheduleAtFixedRate(
 														taskWrapper, 
 														delay.getValue(),
 														period.getValue(),
@@ -171,22 +172,6 @@ public class ScheduleFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-
-	public static void shutdown() {
-		synchronized(threadPoolCounter) {
-			if (executor != null) {
-				executor.shutdown();
-			}
-		}
-	}
-
-	public static void shutdownNow() {
-		synchronized(threadPoolCounter) {
-			if (executor != null) {
-				executor.shutdownNow();
-			}
-		}
-	}
 	
 	
 	private static TimeUnit toTimeUnit(final VncKeyword unit) {
@@ -200,26 +185,14 @@ public class ScheduleFunctions {
 		}
 	}
 
+	///////////////////////////////////////////////////////////////////////////
+	// Utils
+	///////////////////////////////////////////////////////////////////////////
 
-	private static ScheduledExecutorService getExecutor() {
-		synchronized(threadPoolCounter) {
-			if (executor == null) {
-				executor = createExecutor();				
-			}
-			return executor;
-		}
+	public static void shutdown() {
+		mngdExecutor.shutdown();
 	}
 
-	
-	private static ScheduledExecutorService createExecutor() {
-		return Executors.newScheduledThreadPool(
-						4,
-						ThreadPoolUtil.createThreadFactory(
-								"venice-scheduler-pool-%d", 
-								threadPoolCounter,
-								true /* daemon threads */));
-		
-	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -233,7 +206,6 @@ public class ScheduleFunctions {
 					.toMap();	
 	
 	
-	private final static AtomicLong threadPoolCounter = new AtomicLong(0);
-
-	private static ScheduledExecutorService executor = null;
+	private static ManagedScheduledThreadPoolExecutor mngdExecutor =
+		new ManagedScheduledThreadPoolExecutor("venice-scheduler-pool", 4);
 }
