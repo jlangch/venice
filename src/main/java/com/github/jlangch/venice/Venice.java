@@ -57,8 +57,14 @@ import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
 
 
+/**
+ * Evaluator for Venice scripts
+ */
 public class Venice {
 
+	/**
+	 * Create new Venice instance without a sandbox
+	 */
 	public Venice() {
 		this(null);
 	}
@@ -89,11 +95,12 @@ public class Venice {
 	}
 	
 	/**
-	 * Pre-compiles a Venice script.
+	 * Pre-compiles a Venice script with optional up-front macro expansion
 	 * 
 	 * @param scriptName A mandatory script name
 	 * @param script A mandatory script
-	 * @param macroexpand If true expand macros up-front
+	 * @param macroexpand If true expand macros up-front (this can speed-up 
+	 * 					  execution significantly)
 	 * @return the pre-compiled script
 	 */
 	public PreCompiled precompile(
@@ -193,7 +200,7 @@ public class Venice {
 	}
 
 	/**
-	 * Evaluates a script.
+	 * Evaluates a script with disabled up-front macro expansion
 	 * 
 	 * @param script A mandatory script
 	 * @return The result
@@ -203,7 +210,7 @@ public class Venice {
 	}
 
 	/**
-	 * Evaluates a script with parameters
+	 * Evaluates a script with disabled up-front macro expansion
 	 * 
 	 * @param scriptName An optional scriptName
 	 * @param script A mandatory script
@@ -214,7 +221,7 @@ public class Venice {
 	}
 
 	/**
-	 * Evaluates a script with parameters
+	 * Evaluates a script with parameters and disabled up-front macro expansion
 	 * 
 	 * @param script A mandatory script
 	 * @param params Optional parameters
@@ -225,7 +232,7 @@ public class Venice {
 	}
 	
 	/**
-	 * Evaluates a script with parameters
+	 * Evaluates a script with parameters and disabled up-front macro expansion
 	 * 
 	 * @param scriptName An optional scriptName
 	 * @param script A mandatory script
@@ -241,11 +248,12 @@ public class Venice {
 	}
 
 	/**
-	 * Evaluates a script with parameters
+	 * Evaluates a script with parameters and optional up-front macro expansion
 	 * 
 	 * @param scriptName An optional scriptName
 	 * @param script A mandatory script
-	 * @param macroexpand If true expand macros upfront
+	 * @param macroexpand If true expand macros up-front (this can speed-up 
+	 * 					  execution significantly)
 	 * @param params The optional parameters
 	 * @return The result
 	 */
@@ -283,6 +291,10 @@ public class Venice {
 		});
 	}
 
+	/**
+	 * @return the function meter that manages collected runtime execution time 
+	 *         for functions 
+	 */
 	public FunctionExecutionMeter getFunctionExecutionMeter() {
 		return new FunctionExecutionMeter(meterRegistry);
 	}
@@ -294,6 +306,12 @@ public class Venice {
 		return Version.VERSION;
 	}
 
+	/**
+	 * Shutdown all Venice executor services.
+	 * 
+	 * <p>Be aware that executor services are shared across multiple Venice instances.
+	 * After shutdown, some Venice functions like agents may not work anymore.
+	 */
 	public static void shutdownExecutorServices() {
 		ConcurrencyFunctions.shutdown();
 		ScheduleFunctions.shutdown();
