@@ -54,6 +54,53 @@ import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 
 
+/**
+ * The <code>Launcher</code> runs Venice scripts and apps and launches the REPL.
+ * 
+ * <p>The launcher is configured as the Venice JAR's main-class.
+ *  
+ * <p>Running scripts:
+ * <pre>java -jar venice-1.9.1.jar -script "(+ 1 1)"</pre>
+ *  
+ * <p>Running a REPL:
+ * <pre>
+ *    $java \
+ *        -server \
+ *        -Xmx6G \
+ *        -XX:-OmitStackTraceInFastThrow \
+ *        -cp "libs/*" \
+ *        com.github.jlangch.venice.Launcher \
+ *        -repl \
+ *        -colors
+ *  </pre>
+ *  
+ *  <p>Launcher command line options:
+ *  <pre>
+ *  -loadpath path    defines a load path
+ *                    E.g.: -loadpath "/users/foo/scripts;/users/foo/res"
+ *  
+ *  -macroexpand      turns up-front macro expansion on, resulting in a
+ *                    much better performance
+ *                    
+ *  -file script      loads the script to run from a file
+ *                    E.g.:  -file ./test.venice
+ *                    
+ *  -cp-file res      loads the script to run from the classpath
+ *                    E.g.:  -cp-file com/github/jlangch/venice/test.venice
+ *                    
+ *  -script script    run a script
+ *                    E.g.:  -script "(+ 1 10)"
+ *  
+ *  -app app          run a Venice app 
+ *                    E.g.:  -app test-app.zip
+ *    
+ *  -repl             start a REPL
+ *  </pre>
+ *  
+ *  <p>Note:
+ *  The options '-file', '-cp-file', '-script', '-app', and '-repl' exclude each 
+ *  other
+ */
 public class Launcher {
 	
 	public static void main(final String[] args) {

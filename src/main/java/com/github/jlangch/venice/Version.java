@@ -22,6 +22,11 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Represents the Venice version as {major}.{minor}.{patch} like "1.1.0".
+ * 
+ * <p> Venice follows semantic versioning
+ */
 public class Version {
 	
 	/**
