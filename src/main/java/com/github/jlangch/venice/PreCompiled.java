@@ -58,6 +58,11 @@ public class PreCompiled implements Serializable {
 		return precompiled;
 	}
 	
+	/**
+	 * Serializes this pre-compiled Venice script
+	 * 
+	 * @return the serialized byte array
+	 */
 	public byte[] serialize() {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
@@ -71,10 +76,19 @@ public class PreCompiled implements Serializable {
 		}
 	}
 
+	/**
+	 * Deserializes a pre-compiled Venice script
+	 * 
+	 * @param precompiled a serialized, pre-compiled Venice script
+	 * @return the deserialized pre-compiled script
+	 * @throws IncompatibleVersionException 
+	 * 				if the Venice version of the deserialized script
+	 *              does not match this Venice version
+	 */
 	public static PreCompiled deserialize(final byte[] precompiled) {
 		final PreCompiled preCompiled = deserialize_(precompiled); 
 		if (!preCompiled.version.equals(Version.VERSION)) {
-			throw new RuntimeException(String.format(
+			throw new IncompatibleVersionException(String.format(
 					"Failed to deserialize pre-compiled Venice script. "
 						+ "The pre-compiled version %s does not match this Venice version %s",
 					preCompiled.version,
