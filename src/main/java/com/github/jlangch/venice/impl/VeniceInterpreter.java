@@ -186,7 +186,7 @@ public class VeniceInterpreter implements Serializable  {
 		final Env env = new Env(null);
 			
 		// loaded modules: preset with implicitly preloaded modules
-		final VncMutableSet loadedModules = new VncMutableSet(ModuleLoader.PRELOADED_MODULES);
+		final VncMutableSet loadedModules = new VncMutableSet(Modules.PRELOADED_MODULES);
 		
 		for(Map.Entry<VncVal,VncVal> e: Functions.functions.entrySet()) {
 			final VncSymbol sym = (VncSymbol)e.getKey();
@@ -236,7 +236,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	public List<String> getAvailableModules() {
-		final List<String> modules = new ArrayList<>(ModuleLoader.VALID_MODULES);
+		final List<String> modules = new ArrayList<>(Modules.VALID_MODULES);
 		modules.removeAll(Arrays.asList("core", "test", "http", "jackson"));
 		Collections.sort(modules);
 		return modules;
@@ -648,7 +648,7 @@ public class VeniceInterpreter implements Serializable  {
 				case "modules": // (modules )
 					try (WithCallStack cs = new WithCallStack(new CallFrame("modules", ast))) {
 						return VncList.ofList(
-									ModuleLoader
+									Modules
 										.VALID_MODULES
 										.stream()
 										.filter(s ->!s.equals("core"))  // skip core module

@@ -30,7 +30,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.Modules;
 
 
 public class VeniceScriptEngineFactory implements ScriptEngineFactory {
@@ -56,7 +56,7 @@ public class VeniceScriptEngineFactory implements ScriptEngineFactory {
 
 	@Override
 	public List<String> getExtensions() {
-		return new ArrayList<>(ModuleLoader.VALID_MODULES);
+		return new ArrayList<>(Modules.VALID_MODULES);
 	}
 
 	@Override

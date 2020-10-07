@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.Modules;
 import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
 import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
@@ -75,7 +76,7 @@ public class DocForm {
 	}
 
 	private static VncString docForKeyword(final VncKeyword keyword, final Env env) {
-		if (ModuleLoader.isValidModule(keyword)) {
+		if (Modules.isValidModule(keyword)) {
 			return docForModule(keyword, env);
 		}
 		else {
