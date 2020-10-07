@@ -21,12 +21,17 @@
  */
 package com.github.jlangch.venice;
 
+
 public class Version {
 	
+	/**
+	 * @return the Venice version
+	 */
 	public static String getBuildVersion() {
 		final String version = Version.class.getPackage().getImplementationVersion();
 		return version == null ? "0.0.0" : version;
 	}
 
+	/** Defines the Venice version */
 	public final static String VERSION = getBuildVersion();
 }

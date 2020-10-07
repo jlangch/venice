@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice;
 
+/**
+ * Thrown if the arity of a function does not match with number of the
+ * passed arguments to the function.
+ */
 public class ArityException extends VncException {
 
 	public ArityException(final int arity, final String fnName) {

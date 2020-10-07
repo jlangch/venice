@@ -68,6 +68,14 @@ public class Embed_02_PassingParameters {
                         "(+ x y 1)", 
                         Parameters.of("x", 6, "y", 3L)));
 
+        // up-front macro expansion, returns a long: 10 
+        System.out.println(
+                venice.eval(
+                        "test",
+                        "(+ x y 1)", 
+                        true, // up-front macro expansion
+                        Parameters.of("x", 6, "y", 3L)));
+
         // pass a java.awt.Point
         // returns a string: "Point=(x: 100.0, y: 200.0)"
         System.out.println(
@@ -141,7 +149,7 @@ public class Embed_04_Precompile {
         final Venice venice = new Venice();
 
 
-        // precompile and expand macros
+        // turn up-front macro expansion on
         final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
 
         // single-threaded

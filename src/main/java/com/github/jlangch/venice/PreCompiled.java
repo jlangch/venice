@@ -30,6 +30,9 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 
+/**
+ * Holds a pre-compiled Venice script
+ */
 public class PreCompiled implements Serializable {
 	
 	public PreCompiled(final String name, final Object precompiled, final boolean macroexpand) {

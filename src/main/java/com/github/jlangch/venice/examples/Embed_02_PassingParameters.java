@@ -36,6 +36,14 @@ public class Embed_02_PassingParameters {
                         "(+ x y 1)", 
                         Parameters.of("x", 6, "y", 3L)));
 
+        // up-front macro expansion, returns a long: 10 
+        System.out.println(
+                venice.eval(
+                        "test",
+                        "(+ x y 1)", 
+                        true, // up-front macro expansion
+                        Parameters.of("x", 6, "y", 3L)));
+
         // returns a string: "Point=(x: 100.0, y: 200.0)"
         System.out.println(
                 venice.eval(
