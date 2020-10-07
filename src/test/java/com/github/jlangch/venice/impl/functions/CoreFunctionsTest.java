@@ -2774,14 +2774,6 @@ public class CoreFunctionsTest {
 		assertEquals("user/alpha", venice.eval("(do (defn alpha [] 100) (name alpha)))"));	
 		assertEquals("user/alpha", venice.eval("(do (let [x (fn alpha [] 100)] (name x)))"));	
 	}
-
-	@Test
-	public void test_resolve() {
-		final Venice venice = new Venice();
-
-		assertTrue(((String)venice.eval("(str (resolve '+))")).startsWith("function +"));	
-		assertTrue(((String)venice.eval("(str (resolve (symbol \"+\")))")).startsWith("function +"));	
-	}
 	
 	@Test
 	public void test_newline() {

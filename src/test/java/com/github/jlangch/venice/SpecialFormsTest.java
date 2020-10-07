@@ -260,6 +260,14 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_inspect() {
+		final Venice venice = new Venice();
+
+		assertEquals("+",  venice.eval("(:name (inspect '+))"));
+		assertEquals("core/function",  venice.eval("(:type (inspect '+))"));
+	}
+
+	@Test
 	public void test_fn_anonymous() {
 		final Venice venice = new Venice();
 		
@@ -712,6 +720,28 @@ public class SpecialFormsTest {
 		
 		assertEquals("2",   venice.eval("(str ({\"a\" 1 \"b\" 2} \"b\"))"));
 	}	
+
+	@Test
+	public void test_resolve() {
+		final Venice venice = new Venice();
+
+		assertTrue(((String)venice.eval("(str (resolve '+))")).startsWith("function +"));	
+		assertTrue(((String)venice.eval("(str (resolve (symbol \"+\")))")).startsWith("function +"));	
+		
+		assertEquals(3L, venice.eval("((resolve '+) 1 2)"));	
+		assertEquals(3L, venice.eval("((resolve (symbol \"+\")) 1 2)"));	
+	}
+
+	@Test
+	public void test_var_get() {
+		final Venice venice = new Venice();
+
+		assertTrue(((String)venice.eval("(str (var-get '+))")).startsWith("function +"));	
+		assertTrue(((String)venice.eval("(str (var-get (symbol \"+\")))")).startsWith("function +"));	
+		
+		assertEquals(3L, venice.eval("((var-get '+) 1 2)"));	
+		assertEquals(3L, venice.eval("((var-get (symbol \"+\")) 1 2)"));	
+	}
 
 	@Test
 	public void test_set_BANG_1() {
