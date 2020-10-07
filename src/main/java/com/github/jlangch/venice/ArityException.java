@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+
 /**
  * Thrown if the arity of a function does not match with number of the
  * passed arguments to the function.

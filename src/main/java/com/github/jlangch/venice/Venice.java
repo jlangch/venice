@@ -445,18 +445,20 @@ public class Venice {
 			final Callable<Object> callable, 
 			final int timeoutSeconds
 	) throws Exception {
+		final Future<Object> future = mngExecutor
+										.getExecutor()
+										.submit(callable);
+
 		try {
-			final Future<Object> future = mngExecutor
-											.getExecutor()
-											.submit(callable);
-			
 		    return future.get(
 		    		interceptor.getMaxExecutionTimeSeconds(), 
 		    		TimeUnit.SECONDS);
 		} 
 		catch (TimeoutException ex) {
+			future.cancel(true);			
 			throw new SecurityException(
-					"Venice Sandbox: The sandbox exceeded the max execution time");
+					"Venice Sandbox: The sandbox exceeded the max execution time. "
+						+ "Requested cancellation!");
 		}
 	}
 	

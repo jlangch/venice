@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+
 /**
  * Thrown if Venice can not handle a script because of incompatible versions.
  */
