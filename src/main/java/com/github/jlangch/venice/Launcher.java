@@ -55,7 +55,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 
 
 /**
- * The <code>Launcher</code> runs Venice scripts and apps and launches the REPL.
+ * The <code>Launcher</code> runs Venice scripts or apps and starts the REPL.
  * 
  * <p>The launcher is configured as the Venice JAR's main-class.
  *  
@@ -64,14 +64,14 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *  
  * <p>Running a REPL:
  * <pre>
- *    $java \
- *        -server \
- *        -Xmx6G \
- *        -XX:-OmitStackTraceInFastThrow \
- *        -cp "libs/*" \
- *        com.github.jlangch.venice.Launcher \
- *        -repl \
- *        -colors
+ *    java \
+ *       -server \
+ *       -Xmx6G \
+ *       -XX:-OmitStackTraceInFastThrow \
+ *       -cp "libs/*" \
+ *       com.github.jlangch.venice.Launcher \
+ *       -repl \
+ *       -colors
  *  </pre>
  *  
  *  <p>Launcher command line options:
@@ -95,6 +95,8 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *                    E.g.:  -app test-app.zip
  *    
  *  -repl             start a REPL
+ *  
+ *  -help             prints a help
  *  </pre>
  *  
  *  <p>Note:
@@ -113,7 +115,10 @@ public class Launcher {
 		final boolean macroexpand = cli.switchPresent("-macroexpand");
 
 		try {
-			if (cli.switchPresent("-file")) {
+			if (cli.switchPresent("-help")) {
+				printHelp();
+			}
+			else if (cli.switchPresent("-file")) {
 				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
 				JavaInterop.register(interceptor);
 				
@@ -205,7 +210,54 @@ public class Launcher {
 			System.exit(99);
 		}	
 	}
-	
+
+	private static void printHelp() {
+		System.out.println(
+			 "The Launcher runs Venice scripts or apps and starts the REPL. \n" +
+			 "\n" +
+			 "The launcher is configured as the Venice JAR's main-class. \n" +
+			 "\n" +
+			 "Running scripts: \n" +
+			 "    java -jar venice-1.9.1.jar -script \"(+ 1 1)\" \n" +
+			 "\n" +
+			 "Running a REPL:  \n" +
+			 "    java \\ \n" +
+			 "       -server \\ \n" +
+			 "       -Xmx6G \\ \n" +
+			 "       -XX:-OmitStackTraceInFastThrow \\ \n" +
+			 "       -cp \"libs/*\" \\ \n" +
+			 "       com.github.jlangch.venice.Launcher \\ \n" +
+			 "       -repl \\ \n" +
+			 "       -colors \n" +
+			 "\n\n" +
+			 "Launcher command line options: \n" +
+			 "  -loadpath path    defines a load path \n" +
+			 "                    E.g.: -loadpath \"/users/foo/scripts;/users/foo/res\" \n" +
+			 "\n" +
+			 "  -macroexpand      turns up-front macro expansion on, resulting in a \n" +
+			 "                    much better performance \n" +
+			 "\n" +
+			 "  -file script      loads the script to run from a file \n" +
+			 "                    E.g.:  -file ./test.venice \n" +
+			 "\n" +
+			 "  -cp-file res      loads the script to run from the classpath \n" +
+			 "                    E.g.:  -cp-file com/github/jlangch/venice/test.venice \n" +
+			 "\n" +
+			 "  -script script    run a script \n" +
+			 "                    E.g.:  -script \"(+ 1 10)\" \n" +
+			 "\n" +
+			 "  -app app          run a Venice app  \n" +
+			 "                    E.g.:  -app test-app.zip \n" +
+			 "\n" +
+			 "  -repl             start a REPL \n" +
+			 "\n" +
+			 "  -help             prints a help \n" +
+			 "\n" +
+			 "Note: \n" +
+			 "  The options '-file', '-cp-file', '-script', '-app', and '-repl' exclude \n" +
+			 "  each other \n");
+	}
+
 	private static String runApp(
 			final CommandLineArgs cli,
 			final boolean macroexpand,
