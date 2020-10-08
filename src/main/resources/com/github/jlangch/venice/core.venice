@@ -1364,8 +1364,8 @@
 
 (defn
   ^{ :arglists '("(macroexpand-all form)")
-      :doc "Recursively expands all macros in the form."
-      :examples (list
+     :doc "Recursively expands all macros in the form."
+     :examples (list
           "(macroexpand-all '(and true true))",
           "(macroexpand-all '(and true (or true false) true))"
           "(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
@@ -1373,74 +1373,74 @@
   macroexpand-all [form]
 
   ;;(core/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))
-  (*macroexpand-all form))
+  (macroexpand-all* form))
 
 
 (defn
   ^{ :arglists '("(as-runnable f)")
-      :doc "Wraps the function f in a 'java.lang.Runnable'" }
+     :doc "Wraps the function f in a 'java.lang.Runnable'" }
 
   as-runnable [f] (proxify :java.lang.Runnable { :run f }))
 
 
 (defn
   ^{ :arglists '("(as-callable f)")
-      :doc "Wraps the function f in a 'java.util.concurrent.Callable'" }
+     :doc "Wraps the function f in a 'java.util.concurrent.Callable'" }
 
   as-callable [f] (proxify :java.util.concurrent.Callable { :call f }))
 
 
 (defn
   ^{ :arglists '("(as-predicate f)")
-      :doc "Wraps the function f in a 'java.util.function.Predicate'" }
+     :doc "Wraps the function f in a 'java.util.function.Predicate'" }
 
   as-predicate [f] (proxify :java.util.function.Predicate { :test f }))
 
 
 (defn
   ^{ :arglists '("(as-function f)")
-      :doc "Wraps the function f in a 'java.util.function.Function'" }
+     :doc "Wraps the function f in a 'java.util.function.Function'" }
 
   as-function [f] (proxify :java.util.function.Function { :apply f }))
 
 
 (defn
   ^{ :arglists '("(as-consumer f)")
-      :doc "Wraps the function f in a 'java.util.function.Consumer'" }
+     :doc "Wraps the function f in a 'java.util.function.Consumer'" }
 
   as-consumer [f] (proxify :java.util.function.Consumer { :accept f }))
 
 
 (defn
   ^{ :arglists '("(as-supplier f)")
-      :doc "Wraps the function f in a 'java.util.function.Supplier'" }
+     :doc "Wraps the function f in a 'java.util.function.Supplier'" }
 
   as-supplier [f] (proxify :java.util.function.Supplier { :get f }))
 
 
 (defn
   ^{ :arglists '("(as-bipredicate f)")
-      :doc "Wraps the function f in a 'java.util.function.BiPredicate'" }
+     :doc "Wraps the function f in a 'java.util.function.BiPredicate'" }
 
   as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
 
 
 (defn
   ^{ :arglists '("(as-bifunction f)")
-      :doc "Wraps the function f in a 'java.util.function.BiFunction'" }
+     :doc "Wraps the function f in a 'java.util.function.BiFunction'" }
 
   as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
 
 
 (defn
   ^{ :arglists '("(as-biconsumer f)")
-      :doc "Wraps the function f in a 'java.util.function.BiConsumer'" }
+     :doc "Wraps the function f in a 'java.util.function.BiConsumer'" }
 
   as-biconsumer [f] (proxify :java.util.function.BiConsumer { :apply f }))
 
 
 (defn
   ^{ :arglists '("(as-binaryoperator f)")
-      :doc "Wraps the function f in a 'java.util.function.BinaryOperator'" }
+     :doc "Wraps the function f in a 'java.util.function.BinaryOperator'" }
 
   as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))

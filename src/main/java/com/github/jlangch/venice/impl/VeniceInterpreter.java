@@ -614,11 +614,11 @@ public class VeniceInterpreter implements Serializable  {
 						return macroexpand(evaluate(ast.second(), env), env, null);
 					}
 
-				case "*macroexpand-all": 
+				case "macroexpand-all*": 
 					// Note: This special form is exposed through the public Venice function 
 					//       'core/macroexpand-all' in the 'core' module.
 					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
-					try (WithCallStack cs = new WithCallStack(new CallFrame("*macroexpand-all", ast))) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame("macroexpand-all*", ast))) {
 						return macroexpand_all(evaluate(ast.second(), env), env);
 					}
 					
