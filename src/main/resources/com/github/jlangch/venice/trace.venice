@@ -32,7 +32,7 @@
   (println (str "TRACE" (when name (str " " name)) ": " value)))
 
 
-(defn trace-indent []
+(defn- trace-indent []
   (apply str (repeat *trace-depth* "| ")))
 
 
@@ -46,15 +46,32 @@
 
 
 (defmacro trace-var [sym]
-  `(let [ns (var-ns ~sym)
-         n  (var-name ~sym)
-         s  (str ns "/" n)
-         f  (var-get (symbol s))]
-     (if (fn? f)
-       (do
-         (println "Tracing function" s)
-         (alter-var! (symbol s)
-                     (fn tracing-wrapper [& args]
-                       (trace-fn-call (symbol s) f args))))
-       (println "Not a function:" s "!"))
-     nil))
+ `(let [ns (var-ns ~sym)
+        n  (var-name ~sym)
+        s  (str ns "/" n)
+        f  (var-get (symbol s))]
+    (if (fn? f)
+      (if (-> f meta :traced not)
+        (let [wrapper (fn tracing-wrapper [& args]
+                        (trace/trace-fn-call (symbol s) f args))]
+          (vary-meta wrapper assoc :traced f)
+          (alter-var! (symbol s) wrapper)
+          (println "Tracing function" s))
+        (println "Already a tracing function:" s "!"))
+      (println "Not a function:" s "!"))
+    nil))
+
+
+(defmacro untrace-var [sym]
+ `(let [ns (var-ns ~sym)
+        n  (var-name ~sym)
+        s  (str ns "/" n)
+        f  (var-get (symbol s))]
+    (if (fn? f)
+      (if (-> f meta :traced)
+        (let [delegate (-> f meta :traced)]
+          (alter-var! (symbol s) delegate)
+          (println "Untracing function" s))
+        (println "Not a tracing function" s "!"))
+      (println "Not a function:" s "!"))
+    nil))
