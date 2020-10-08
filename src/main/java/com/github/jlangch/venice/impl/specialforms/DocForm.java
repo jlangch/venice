@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Modules;
-import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
 import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
 import com.github.jlangch.venice.impl.env.Env;
@@ -67,7 +66,7 @@ public class DocForm {
 	}
 	
 	private static VncString docForSymbol(final VncSymbol sym, final Env env) {
-		VncVal docVal = SpecialForms.ns.get(sym); // special form?
+		VncVal docVal = SpecialFormsDoc.ns.get(sym); // special form?
 		if (docVal == null) {
 			docVal = env.get(sym); // var?
 		}

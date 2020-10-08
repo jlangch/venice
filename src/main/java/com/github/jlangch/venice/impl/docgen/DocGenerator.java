@@ -36,9 +36,9 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.RunMode;
-import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -1701,7 +1701,7 @@ public class DocGenerator {
 
 	private DocItem getDocItem_(final String name, final boolean runExamples, final boolean catchEx) {
 		// Special forms
-		VncFunction fn = (VncFunction)SpecialForms.ns.get(new VncSymbol(name));
+		VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(name));
 		if (fn == null) {
 			// functions & macros
 			fn = getFunction(name);

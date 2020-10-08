@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.specialforms;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
@@ -36,7 +36,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
  * The special form pseudo functions just serve for the cheat-sheet generation 
  * and the 'doc' function!
  */
-public class SpecialForms {
+public class SpecialFormsDoc {
 
 	public static VncFunction doc = 
 		new SpecialFormsDocFunction(
