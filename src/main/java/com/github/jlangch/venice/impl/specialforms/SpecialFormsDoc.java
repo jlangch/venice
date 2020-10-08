@@ -1179,6 +1179,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("var-ns"),			var_ns)
 					.put(new VncSymbol("var-local?"),		var_local_QUESTION)
 					.put(new VncSymbol("var-global?"),		var_global_QUESTION)
+					.put(new VncSymbol("alter-var!"),		alter_var_BANG)
 					.put(new VncSymbol("def"),				def)
 					.put(new VncSymbol("defonce"),			defonce)
 					.put(new VncSymbol("defmulti"),			defmulti)
