@@ -122,6 +122,26 @@ public class Env implements Serializable {
 	}
 
 	/**
+	 * Checks if a symbol is global
+	 *
+	 * @param sym a symbol
+	 * @return returns true if a symbol is global else false
+	 */
+	public boolean isGlobal(final VncSymbol sym) {
+		return sym.hasNamespace() ? true : findLocalVar(sym) == null;
+	}
+
+	/**
+	 * Checks if a symbol is local
+	 *
+	 * @param sym a symbol
+	 * @return returns true if a symbol is local else false
+	 */
+	public boolean isLocal(final VncSymbol sym) {
+		return sym.hasNamespace() ? false : findLocalVar(sym) != null;
+	}
+
+	/**
 	 * Checks if a symbol is bound to a value
 	 *
 	 * @param sym a symbol
@@ -135,6 +155,37 @@ public class Env implements Serializable {
 		else {
 			final VncVal v = findLocalVar(sym);
 			return v != null ? true : getGlobalVar(sym) != null;
+		}
+	}
+
+	/**
+	 * Returns the symbol's namespace or null if the symbol is local
+	 *
+	 * @param sym a symbol
+	 * @return returns the symbol'snamespace
+	 */
+	public String getNamespace(final VncSymbol sym) {
+		if (sym.hasNamespace()) {
+			return sym.getNamespace();
+		}
+		else {
+			if (findLocalVar(sym) != null) {
+				return null;
+			}
+			else {
+				final String name = sym.getName();
+				final VncSymbol ns = Namespaces.getCurrentNS();
+				
+				if (!Namespaces.isCoreNS(ns)) {
+					final VncSymbol qualifiedKey = new VncSymbol(ns.getName(), name, Constants.Nil);
+					final Var v = getGlobalVarRaw(qualifiedKey);
+					if (v != null) {
+						return Namespaces.getCurrentNS().getName();
+					}
+				}
+
+				return Namespaces.NS_CORE.getName();
+			}
 		}
 	}
 
@@ -275,6 +326,34 @@ public class Env implements Serializable {
 		setGlobalVar(val.getName(), val);
 
 		return this;
+	}
+
+	public Env alterGlobal(final Var val) {
+		if (val.getName().equals(Namespaces.NS_CURRENT_SYMBOL)) {
+			throw new VncException(String.format("Internal error setting var %s", val.getName().getName()));
+		}
+
+		final Var v = getGlobalVar(val.getName());
+		if (v == null) {
+			final VncSymbol sym = val.getName();
+			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+				throw new VncException(String.format(
+							"The non existing global var '%s' can not be altered!", 
+							sym.getQualifiedName()));
+			}
+		}
+		else if (!v.isOverwritable()) {
+			final VncSymbol sym = val.getName();
+			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+				throw new VncException(String.format(
+							"The non overwritable global var '%s' can not be altered!", 
+							sym.getQualifiedName()));
+			}
+		}
+		else {
+			setGlobalVar(v.getName(), new Var(v.getName(), val.getVal()));
+			return this;
+		}
 	}
 
 	public Env addGlobalVars(final List<Var> vars) {

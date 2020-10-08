@@ -599,11 +599,42 @@ public class VeniceInterpreter implements Serializable  {
 					return env.getOrNil(sym);
 				}
 				
-				case "var-get": { // (var-get sym)
-					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
+				case "var-get": { // (var-get v)
+					final VncSymbol sym = Coerce.toVncSymbol(ast.second());
 					return env.getOrNil(sym);
 				}
-				
+
+				case "var-ns": { // (var-ns v)
+					final String ns = env.getNamespace(Coerce.toVncSymbol(ast.second()));
+					return ns == null ? Nil : new VncString(ns);
+				}
+
+				case "var-name": { // (var-name v)
+					return new VncString(Coerce.toVncSymbol(ast.second()).getName());
+				}
+
+				case "var-local?": { // (var-local? v)
+					return VncBoolean.of(env.isLocal(Coerce.toVncSymbol(ast.second())));
+				}
+
+				case "var-global?": { // (var-global? v)
+					return VncBoolean.of(env.isGlobal(Coerce.toVncSymbol(ast.second())));
+				}
+
+				case "alter-var!": { // (alter-var! sym val)
+					final VncSymbol sym = Coerce.toVncSymbol(ast.second());
+					final VncVal val = ast.third();
+					if (!env.isGlobal(sym)) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("alter-var!", ast))) {
+							throw new VncException(String.format(
+									"Can only alter global vars. %s is not global!",
+									sym.getQualifiedName()));
+						}
+					}
+					env.alterGlobal(new Var(sym, val));
+					return Nil;
+				}
+
 				case "inspect": { // (inspect sym)
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return Inspector.inspect(env.get(sym));

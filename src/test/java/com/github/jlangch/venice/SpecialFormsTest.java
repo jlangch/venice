@@ -736,11 +736,68 @@ public class SpecialFormsTest {
 	public void test_var_get() {
 		final Venice venice = new Venice();
 
-		assertTrue(((String)venice.eval("(str (var-get '+))")).startsWith("function +"));	
-		assertTrue(((String)venice.eval("(str (var-get (symbol \"+\")))")).startsWith("function +"));	
+		assertTrue(((String)venice.eval("(str (var-get +))")).startsWith("function +"));	
 		
-		assertEquals(3L, venice.eval("((var-get '+) 1 2)"));	
-		assertEquals(3L, venice.eval("((var-get (symbol \"+\")) 1 2)"));	
+		assertEquals(3L, venice.eval("((var-get +) 1 2)"));	
+	}
+
+	@Test
+	public void test_var_name() {
+		final Venice venice = new Venice();
+
+		assertEquals("+", venice.eval("(var-name +)"));	
+
+		assertEquals("x", venice.eval("(do (def x 10) (var-name x))"));	
+
+		assertEquals("x", venice.eval("(let [x 10] (var-name x))"));	
+	}
+
+	@Test
+	public void test_var_ns() {
+		final Venice venice = new Venice();
+
+		assertEquals("core", venice.eval("(var-ns +)"));	
+
+		assertEquals("user", venice.eval("(do (def x 10) (var-ns x))"));	
+
+		assertEquals(null, venice.eval("(let [x 10] (var-ns x))"));	
+	}
+
+	@Test
+	public void test_var_local_QUESTION() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(var-local? +)"));	
+
+		assertFalse((Boolean)venice.eval("(do (def x 10) (var-local? x))"));	
+
+		assertTrue((Boolean)venice.eval("(let [x 10] (var-local? x))"));	
+	}
+
+	@Test
+	public void test_var_global_QUESTION() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(var-global? +)"));	
+
+		assertTrue((Boolean)venice.eval("(do (def x 10) (var-global? x))"));	
+
+		assertFalse((Boolean)venice.eval("(let [x 10] (var-global? x))"));	
+	}
+
+	@Test
+	public void test_alter_var_BANG() {
+		final Venice venice = new Venice();
+
+		assertEquals(100L, venice.eval("(do (def x 10) (alter-var! x 100) x)"));	
+
+		assertEquals(200L, venice.eval("(do (def x 10) (alter-var! x 100) (alter-var! x 200) x)"));	
+
+		// can not alter non existing vars
+		assertThrows(VncException.class, () -> venice.eval("(alter-var! x 100)"));					
+
+		// can not alter local vars
+		assertThrows(VncException.class, () -> venice.eval("(let [x 10] (alter-var! x 100))"));					
 	}
 
 	@Test

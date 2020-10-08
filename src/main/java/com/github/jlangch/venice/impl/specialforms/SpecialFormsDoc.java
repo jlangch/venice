@@ -141,10 +141,105 @@ public class SpecialFormsDoc {
 				"var-get",
 				VncFunction
 					.meta()
-					.arglists("(var-get sym)")
-					.doc("Returns the var associated with the symbol")
+					.arglists("(var-get v)")
+					.doc("Returns the var value associated with the variable")
 					.examples(
-						"(var-get '+)")
+						"(var-get +)",
+						"((var-get +) 1 2)")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction var_ns = 
+		new SpecialFormsDocFunction(
+				"var-ns",
+				VncFunction
+					.meta()
+					.arglists("(var-ns v)")
+					.doc("Returns the namespace of the var")
+					.examples(
+						"(var-ns +)",
+						"(do             \n" +
+						"  (def x 10)    \n" +
+						"  (var-ns x))   ",
+						"(let [x 10]     \n" +
+						"  (var-ns x))   ")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction var_name = 
+		new SpecialFormsDocFunction(
+				"var-name",
+				VncFunction
+					.meta()
+					.arglists("(var-name v)")
+					.doc("Returns the name of the var")
+					.examples(
+							"(var-name +)",
+							"(do             \n" +
+							"  (def x 10)    \n" +
+							"  (var-name x))   ",
+							"(let [x 10]     \n" +
+							"  (var-name x))   ")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction var_local_QUESTION = 
+		new SpecialFormsDocFunction(
+				"var-local?",
+				VncFunction
+					.meta()
+					.arglists("(var-local? v)")
+					.doc("Returns true if the var is local else false")
+					.examples(
+							"(var-local? +)",
+							"(do               \n" +
+							"  (def x 10)      \n" +
+							"  (var-local? x))   ",
+							"(let [x 10]       \n" +
+							"  (var-local? x))   ")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction var_global_QUESTION = 
+		new SpecialFormsDocFunction(
+				"var-global?",
+				VncFunction
+					.meta()
+					.arglists("(var-global? v)")
+					.doc("Returns true if the var is global else false")
+					.examples(
+							"(var-global? +)",
+							"(do                \n" +
+							"  (def x 10)       \n" +
+							"  (var-global? x))   ",
+							"(let [x 10]        \n" +
+							"  (var-global? x))   ")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+
+	public static VncFunction alter_var_BANG = 
+		new SpecialFormsDocFunction(
+				"alter-var!",
+				VncFunction
+					.meta()
+					.arglists("(alter-var! sym val)")
+					.doc("Alters an existing global var")
+					.examples(
+							"(do                    \n" +
+							"  (def x 10)           \n" +
+							"  (alter-var! x 100)   \n" +
+							"  x)                     ")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -963,7 +1058,7 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_version = 
+	public static VncFunction global_var_version = 
 		new SpecialFormsDocFunction(
 				"*version*",
 				VncFunction
@@ -975,7 +1070,7 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_newline = 
+	public static VncFunction global_var_newline = 
 		new SpecialFormsDocFunction(
 				"*newline*",
 				VncFunction
@@ -987,7 +1082,7 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_loaded_modules = 
+	public static VncFunction global_var_loaded_modules = 
 		new SpecialFormsDocFunction(
 				"*loaded-modules*",
 				VncFunction
@@ -999,7 +1094,7 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_loaded_files = 
+	public static VncFunction global_var_loaded_files = 
 		new SpecialFormsDocFunction(
 				"*loaded-files*",
 				VncFunction
@@ -1011,7 +1106,7 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_ns = 
+	public static VncFunction global_var_ns = 
 		new SpecialFormsDocFunction(
 				"*ns*",
 				VncFunction
@@ -1027,7 +1122,7 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_run_mode = 
+	public static VncFunction global_var_run_mode = 
 		new SpecialFormsDocFunction(
 				"*run-mode*",
 				VncFunction
@@ -1041,7 +1136,7 @@ public class SpecialFormsDoc {
 		};
 	
 
-	public static VncFunction var_ansi_term = 
+	public static VncFunction global_var_ansi_term = 
 		new SpecialFormsDocFunction(
 				"*ansi-term*",
 				VncFunction
@@ -1080,6 +1175,10 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("eval"),				eval)
 					.put(new VncSymbol("resolve"),			resolve)
 					.put(new VncSymbol("var-get"),			var_get)
+					.put(new VncSymbol("var-name"),			var_name)
+					.put(new VncSymbol("var-ns"),			var_ns)
+					.put(new VncSymbol("var-local?"),		var_local_QUESTION)
+					.put(new VncSymbol("var-global?"),		var_global_QUESTION)
 					.put(new VncSymbol("def"),				def)
 					.put(new VncSymbol("defonce"),			defonce)
 					.put(new VncSymbol("defmulti"),			defmulti)
@@ -1112,12 +1211,12 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("dobench"),			dobench)
 					.put(new VncSymbol("dorun"),			dorun)
 					.put(new VncSymbol("prof"),				prof)
-					.put(new VncSymbol("*version*"),		var_version)
-					.put(new VncSymbol("*newline*"),		var_newline)
-					.put(new VncSymbol("*loaded-modules*"),	var_loaded_modules)
-					.put(new VncSymbol("*loaded-files*"),	var_loaded_files)
-					.put(new VncSymbol("*ns*"),				var_ns)
-					.put(new VncSymbol("*run-mode*"),		var_run_mode)
-					.put(new VncSymbol("*ansi-term*"),		var_ansi_term)
+					.put(new VncSymbol("*version*"),		global_var_version)
+					.put(new VncSymbol("*newline*"),		global_var_newline)
+					.put(new VncSymbol("*loaded-modules*"),	global_var_loaded_modules)
+					.put(new VncSymbol("*loaded-files*"),	global_var_loaded_files)
+					.put(new VncSymbol("*ns*"),				global_var_ns)
+					.put(new VncSymbol("*run-mode*"),		global_var_run_mode)
+					.put(new VncSymbol("*ansi-term*"),		global_var_ansi_term)
 					.toMap();
 }

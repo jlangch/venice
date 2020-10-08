@@ -855,9 +855,14 @@ public class DocGenerator {
 
 		final DocSection env = new DocSection("Environment");
 		all.addSection(env);
-		env.addItem(getDocItem("var-get"));
-		env.addItem(getDocItem("bound?"));
 		env.addItem(getDocItem("resolve"));
+		env.addItem(getDocItem("bound?"));
+		env.addItem(getDocItem("var-get"));
+		env.addItem(getDocItem("var-name"));
+		env.addItem(getDocItem("var-ns"));
+		env.addItem(getDocItem("var-local?"));
+		env.addItem(getDocItem("var-global?"));
+		env.addItem(getDocItem("alter-var!"));
 		
 		final DocSection walk = new DocSection("Tree Walker");
 		all.addSection(walk);
