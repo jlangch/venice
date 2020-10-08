@@ -23,3 +23,38 @@
 
 
 (ns trace)
+
+
+(def-dynamic *trace-depth* 0)
+
+
+(defn- tracer [name value]
+  (println (str "TRACE" (when name (str " " name)) ": " value)))
+
+
+(defn trace-indent []
+  (apply str (repeat *trace-depth* "| ")))
+
+
+(defn trace-fn-call [name f args]
+  (let [id (gensym "t")]
+    (tracer id (str (trace-indent) (pr-str (cons name args))))
+    (binding [*trace-depth* (inc *trace-depth*)]
+      (let [result (apply f args)]
+        (tracer id (str (trace-indent) "=> " (pr-str result)))
+        result))))
+
+
+(defmacro trace-var [sym]
+  `(let [ns (var-ns ~sym)
+         n  (var-name ~sym)
+         s  (str ns "/" n)
+         f  (var-get (symbol s))]
+     (if (fn? f)
+       (do
+         (println "Tracing function" s)
+         (alter-var! (symbol s)
+                     (fn tracing-wrapper [& args]
+                       (trace-fn-call (symbol s) f args))))
+       (println "Not a function:" s "!"))
+     nil))

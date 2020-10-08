@@ -17,6 +17,13 @@
 [Verifying Gradle Wrappers with GitHub Actions](https://blog.gradle.org/gradle-wrapper-checksum-verification-github-action)
 
 
+### Java 9 Modules
+[Java 8 with module info](https://stackoverflow.com/questions/55100737/compile-a-jdk-8-project-a-jdk-9-module-info-java-in-gradle)
+
+[Gradle multi-release JARs](https://blog.gradle.org/mrjars)
+
+
+
 ## Debugger
 
 [The Debuggable Interpreter Design Pattern](http://www.bergel.eu/download/papers/Berg07d-debugger.pdf)

@@ -737,8 +737,12 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		assertTrue(((String)venice.eval("(str (var-get +))")).startsWith("function +"));	
+		assertTrue(((String)venice.eval("(str (var-get '+))")).startsWith("function +"));	
+		assertTrue(((String)venice.eval("(str (var-get (symbol \"+\")))")).startsWith("function +"));	
 		
 		assertEquals(3L, venice.eval("((var-get +) 1 2)"));	
+		assertEquals(3L, venice.eval("((var-get '+) 1 2)"));	
+		assertEquals(3L, venice.eval("((var-get (symbol \"+\")) 1 2)"));	
 	}
 
 	@Test
@@ -746,10 +750,16 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("+", venice.eval("(var-name +)"));	
+		assertEquals("+", venice.eval("(var-name '+)"));	
+		assertEquals("+", venice.eval("(var-name (symbol \"+\"))"));	
 
 		assertEquals("x", venice.eval("(do (def x 10) (var-name x))"));	
+		assertEquals("x", venice.eval("(do (def x 10) (var-name 'x))"));	
+		assertEquals("x", venice.eval("(do (def x 10) (var-name (symbol \"x\")))"));	
 
 		assertEquals("x", venice.eval("(let [x 10] (var-name x))"));	
+		assertEquals("x", venice.eval("(let [x 10] (var-name 'x))"));	
+		assertEquals("x", venice.eval("(let [x 10] (var-name (symbol \"x\")))"));	
 	}
 
 	@Test
@@ -757,10 +767,16 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		assertEquals("core", venice.eval("(var-ns +)"));	
+		assertEquals("core", venice.eval("(var-ns '+)"));	
+		assertEquals("core", venice.eval("(var-ns (symbol \"+\"))"));	
 
 		assertEquals("user", venice.eval("(do (def x 10) (var-ns x))"));	
+		assertEquals("user", venice.eval("(do (def x 10) (var-ns 'x))"));	
+		assertEquals("user", venice.eval("(do (def x 10) (var-ns (symbol \"x\")))"));	
 
 		assertEquals(null, venice.eval("(let [x 10] (var-ns x))"));	
+		assertEquals(null, venice.eval("(let [x 10] (var-ns 'x))"));	
+		assertEquals(null, venice.eval("(let [x 10] (var-ns (symbol \"x\")))"));	
 	}
 
 	@Test
@@ -768,10 +784,16 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		assertFalse((Boolean)venice.eval("(var-local? +)"));	
+		assertFalse((Boolean)venice.eval("(var-local? '+)"));	
+		assertFalse((Boolean)venice.eval("(var-local? (symbol \"+\"))"));	
 
 		assertFalse((Boolean)venice.eval("(do (def x 10) (var-local? x))"));	
+		assertFalse((Boolean)venice.eval("(do (def x 10) (var-local? 'x))"));	
+		assertFalse((Boolean)venice.eval("(do (def x 10) (var-local? (symbol \"x\")))"));	
 
 		assertTrue((Boolean)venice.eval("(let [x 10] (var-local? x))"));	
+		assertTrue((Boolean)venice.eval("(let [x 10] (var-local? 'x))"));	
+		assertTrue((Boolean)venice.eval("(let [x 10] (var-local? (symbol \"x\")))"));	
 	}
 
 	@Test
@@ -779,10 +801,16 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		assertTrue((Boolean)venice.eval("(var-global? +)"));	
+		assertTrue((Boolean)venice.eval("(var-global? '+)"));	
+		assertTrue((Boolean)venice.eval("(var-global? (symbol \"+\"))"));	
 
 		assertTrue((Boolean)venice.eval("(do (def x 10) (var-global? x))"));	
+		assertTrue((Boolean)venice.eval("(do (def x 10) (var-global? 'x))"));	
+		assertTrue((Boolean)venice.eval("(do (def x 10) (var-global? (symbol \"x\")))"));	
 
 		assertFalse((Boolean)venice.eval("(let [x 10] (var-global? x))"));	
+		assertFalse((Boolean)venice.eval("(let [x 10] (var-global? 'x))"));	
+		assertFalse((Boolean)venice.eval("(let [x 10] (var-global? (symbol \"x\")))"));	
 	}
 
 	@Test
@@ -790,14 +818,20 @@ public class SpecialFormsTest {
 		final Venice venice = new Venice();
 
 		assertEquals(100L, venice.eval("(do (def x 10) (alter-var! x 100) x)"));	
+		assertEquals(100L, venice.eval("(do (def x 10) (alter-var! 'x 100) x)"));	
+		assertEquals(100L, venice.eval("(do (def x 10) (alter-var! (symbol \"x\") 100) x)"));	
 
 		assertEquals(200L, venice.eval("(do (def x 10) (alter-var! x 100) (alter-var! x 200) x)"));	
 
 		// can not alter non existing vars
 		assertThrows(VncException.class, () -> venice.eval("(alter-var! x 100)"));					
+		assertThrows(VncException.class, () -> venice.eval("(alter-var! 'x 100)"));					
+		assertThrows(VncException.class, () -> venice.eval("(alter-var! (symbol \"x\") 100)"));					
 
 		// can not alter local vars
 		assertThrows(VncException.class, () -> venice.eval("(let [x 10] (alter-var! x 100))"));					
+		assertThrows(VncException.class, () -> venice.eval("(let [x 10] (alter-var! 'x 100))"));					
+		assertThrows(VncException.class, () -> venice.eval("(let [x 10] (alter-var! (symbol \"x\") 100))"));					
 	}
 
 	@Test

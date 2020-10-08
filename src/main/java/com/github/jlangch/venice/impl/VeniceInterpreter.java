@@ -600,30 +600,46 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "var-get": { // (var-get v)
-					final VncSymbol sym = Coerce.toVncSymbol(ast.second());
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.getOrNil(sym);
 				}
 
 				case "var-ns": { // (var-ns v)
-					final String ns = env.getNamespace(Coerce.toVncSymbol(ast.second()));
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
+					final String ns = env.getNamespace(sym);
 					return ns == null ? Nil : new VncString(ns);
 				}
 
 				case "var-name": { // (var-name v)
-					return new VncString(Coerce.toVncSymbol(ast.second()).getName());
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return new VncString(sym.getName());
 				}
 
 				case "var-local?": { // (var-local? v)
-					return VncBoolean.of(env.isLocal(Coerce.toVncSymbol(ast.second())));
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return VncBoolean.of(env.isLocal(sym));
 				}
 
 				case "var-global?": { // (var-global? v)
-					return VncBoolean.of(env.isGlobal(Coerce.toVncSymbol(ast.second())));
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return VncBoolean.of(env.isGlobal(sym));
 				}
 
 				case "alter-var!": { // (alter-var! sym val)
-					final VncSymbol sym = Coerce.toVncSymbol(ast.second());
-					final VncVal val = ast.third();
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
+					final VncVal val = evaluate(ast.third(), env);
 					if (!env.isGlobal(sym)) {
 						try (WithCallStack cs = new WithCallStack(new CallFrame("alter-var!", ast))) {
 							throw new VncException(String.format(

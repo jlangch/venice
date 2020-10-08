@@ -142,9 +142,11 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists("(var-get v)")
-					.doc("Returns the var value associated with the variable")
+					.doc("Returns the var value associated with the var")
 					.examples(
 						"(var-get +)",
+						"(var-get '+)",
+						"(var-get (symbol \"+\"))",
 						"((var-get +) 1 2)")
 					.build()
 		) {
@@ -160,6 +162,8 @@ public class SpecialFormsDoc {
 					.doc("Returns the namespace of the var")
 					.examples(
 						"(var-ns +)",
+						"(var-ns '+)",
+						"(var-ns (symbol \"+\"))",
 						"(do             \n" +
 						"  (def x 10)    \n" +
 						"  (var-ns x))   ",
@@ -179,6 +183,8 @@ public class SpecialFormsDoc {
 					.doc("Returns the name of the var")
 					.examples(
 							"(var-name +)",
+							"(var-name '+)",
+							"(var-name (symbol \"+\"))",
 							"(do             \n" +
 							"  (def x 10)    \n" +
 							"  (var-name x))   ",
@@ -198,6 +204,8 @@ public class SpecialFormsDoc {
 					.doc("Returns true if the var is local else false")
 					.examples(
 							"(var-local? +)",
+							"(var-local? '+)",
+							"(var-local? (symbol \"+\"))",
 							"(do               \n" +
 							"  (def x 10)      \n" +
 							"  (var-local? x))   ",
@@ -217,6 +225,8 @@ public class SpecialFormsDoc {
 					.doc("Returns true if the var is global else false")
 					.examples(
 							"(var-global? +)",
+							"(var-global? '+)",
+							"(var-global? (symbol \"+\"))",
 							"(do                \n" +
 							"  (def x 10)       \n" +
 							"  (var-global? x))   ",
@@ -239,7 +249,11 @@ public class SpecialFormsDoc {
 							"(do                    \n" +
 							"  (def x 10)           \n" +
 							"  (alter-var! x 100)   \n" +
-							"  x)                     ")
+							"  x)                     ",
+							"(do                                \n" +
+							"  (def x 10)                       \n" +
+							"  (alter-var! (symbol \"x\") 100)  \n" +
+							"  x)                                 ")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
