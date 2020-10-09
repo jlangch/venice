@@ -42,7 +42,7 @@ public class Sandbox_SpecialForms_Test {
 	@Test
 	public void test_RejectAllInterceptor_set_BANG() {
 		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(do (def x 10) (set! x 100))");
+			new Venice(new RejectAllInterceptor()).eval("(set! x 100)");
 		});
 	}
 	
@@ -52,7 +52,7 @@ public class Sandbox_SpecialForms_Test {
 				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("set!"));				
 		
 		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(do (def x 10) (set! x 100))");
+			new Venice(interceptor).eval("(set! x 100)");
 		});
 	}
 	
@@ -63,7 +63,7 @@ public class Sandbox_SpecialForms_Test {
 				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*special-forms*"));
 	
 		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(do (def x 10) (set! x 100))");
+			new Venice(interceptor).eval("(set! x 100)");
 		});
 	}
 }

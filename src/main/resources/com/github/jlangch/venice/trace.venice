@@ -25,7 +25,19 @@
 (ns trace)
 
 
-(def-dynamic *trace-depth* 0)
+(def-dynamic ^{ :private true } *trace-depth* 0)
+
+
+(defmacro
+  ^{ :arglists '("(qualified-name v)")
+     :doc "Returns the qualified symbol name of a var"
+     :examples (list "(qualified-name +)" ) }
+
+  qualified-name [v] `(str (var-ns ~v) "/" (var-name ~v)))
+
+
+(defn- limit [s]
+  (str/truncate s 60 "..."))
 
 
 (defn- tracer [name value]
@@ -38,40 +50,38 @@
 
 (defn trace-fn-call [name f args]
   (let [id (gensym "t")]
-    (tracer id (str (trace-indent) (pr-str (cons name args))))
+    (tracer id (str (trace-indent) (limit (pr-str (cons name args)))))
     (binding [*trace-depth* (inc *trace-depth*)]
       (let [result (apply f args)]
-        (tracer id (str (trace-indent) "=> " (pr-str result)))
+        (tracer id (str (trace-indent) "=> " (limit (pr-str result))))
         result))))
 
 
-(defmacro trace-var [sym]
- `(let [ns (var-ns ~sym)
-        n  (var-name ~sym)
-        s  (str ns "/" n)
-        f  (var-get (symbol s))]
-    (if (fn? f)
-      (if (-> f meta :traced not)
-        (let [wrapper (fn tracing-wrapper [& args]
-                        (trace/trace-fn-call (symbol s) f args))]
-          (vary-meta wrapper assoc :traced f)
-          (alter-var! (symbol s) wrapper)
-          (println "Tracing function" s))
-        (println "Already a tracing function:" s "!"))
-      (println "Not a function:" s "!"))
-    nil))
+(defmacro traced? [v]
+ `(let [n (trace/qualified-name ~v)
+        f (var-get (symbol n))]
+    (and (fn? f) (-> f meta :traced nil? not))))
 
 
-(defmacro untrace-var [sym]
- `(let [ns (var-ns ~sym)
-        n  (var-name ~sym)
-        s  (str ns "/" n)
-        f  (var-get (symbol s))]
+(defmacro traceable? [v]
+ `(let [n (trace/qualified-name ~v)
+        f (var-get (symbol n))]
+    (and (fn? f) (-> f meta :traced not))))
+
+
+(defmacro trace-var [v]
+ `(let [n (trace/qualified-name ~v)
+        f (var-get (symbol n))]
+    (if (and (fn? f) (-> f meta :traced not))
+      (let [wrapper (fn tracing-wrapper [& args]
+                      (trace/trace-fn-call (symbol n) f args))]
+        (vary-meta wrapper assoc :traced f)
+        (alter-var! (symbol n) wrapper)))))
+
+
+(defmacro untrace-var [v]
+ `(let [n (trace/qualified-name ~v)
+        f (var-get (symbol n))]
     (if (fn? f)
-      (if (-> f meta :traced)
-        (let [delegate (-> f meta :traced)]
-          (alter-var! (symbol s) delegate)
-          (println "Untracing function" s))
-        (println "Not a tracing function" s "!"))
-      (println "Not a function:" s "!"))
-    nil))
+      (when-let [delegate (-> f meta :traced)]
+        (alter-var! (symbol n) delegate)))))
