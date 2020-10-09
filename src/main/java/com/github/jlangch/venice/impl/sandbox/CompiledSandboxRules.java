@@ -292,7 +292,7 @@ public class CompiledSandboxRules {
 				if (r.equals("*io*")) {
 					blacklisted.addAll(RestrictedBlacklistedFunctions.getIoFunctions());
 				}
-				else if (r.equals("*special-form*")) {
+				else if (r.equals("*special-forms*")) {
 					blacklisted.addAll(RestrictedBlacklistedFunctions.getSpecialForms());
 				}
 				else {			
@@ -304,7 +304,7 @@ public class CompiledSandboxRules {
 				if (r.equals("*io*")) {
 					blacklisted.removeAll(RestrictedBlacklistedFunctions.getIoFunctions());
 				}
-				else if (r.equals("*special-form*")) {
+				else if (r.equals("*special-forms*")) {
 					blacklisted.removeAll(RestrictedBlacklistedFunctions.getSpecialForms());
 				}
 				else {			
