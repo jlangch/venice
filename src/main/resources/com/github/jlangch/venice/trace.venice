@@ -57,6 +57,13 @@
         result))))
 
 
+(defn trace
+  ([value] (trace nil value))
+  ([name value]
+     (tracer name (limit (pr-str value)))
+     value))
+
+
 (defmacro traced? [v]
  `(let [n (trace/qualified-name ~v)
         f (var-get (symbol n))]
