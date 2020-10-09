@@ -19,14 +19,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.functions;
+package com.github.jlangch.venice.impl.sandbox;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 
-public class IOFnBlacklisted {
+public class RestrictedBlacklistedFunctions {
 
 	public static Set<String> getIoFunctions() {
 		return new HashSet<>(
@@ -129,6 +129,28 @@ public class IOFnBlacklisted {
 					"io/gzip-to-stream",
 					"io/ungzip",
 					"io/ungzip-to-stream"));
+	}
+
+	public static Set<String> getSpecialForms() {
+		return new HashSet<>(
+				Arrays.asList(
+					"set!",
+					"ns-remove",
+					"ns-unmap",
+					"resolve",
+					"var-get",
+					"var-ns",
+					"var-name",
+					"alter-var!",
+					"inspect",
+					"dorun",
+					"dobench"));
+	}
+	
+	public static Set<String> getAll() {
+		final Set<String> items = new HashSet<>(getIoFunctions());
+		items.addAll(getSpecialForms());
+		return items;
 	}
 
 }

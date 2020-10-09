@@ -50,6 +50,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
@@ -411,6 +412,8 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "set!": { // (set! name expr)
+					specialFormCallValidation("set!");
+
 					final VncSymbol name = qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(ast.second(), env));
 					final Var globVar = env.getGlobalVarOrNull(name);
@@ -497,6 +500,8 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns": { // (ns alpha)
+					specialFormCallValidation("ns");
+
 					final VncVal name = ast.second();
 					final VncSymbol ns = Types.isVncSymbol(name)
 											? (VncSymbol)name
@@ -523,6 +528,8 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns-remove": { // (ns-remove ns)
+					specialFormCallValidation("ns-remove");
+
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 						// prevent Venice's system namespaces from being altered
@@ -538,6 +545,8 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				
 				case "ns-unmap": { // (ns-unmap ns sym)
+					specialFormCallValidation("ns-unmap");
+
 					final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
 					if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 						// prevent Venice's system namespaces from being altered
@@ -595,11 +604,13 @@ public class VeniceInterpreter implements Serializable  {
 				}
 							 	
 				case "resolve": { // (resolve sym)
+					specialFormCallValidation("resolve");
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return env.getOrNil(sym);
 				}
 				
 				case "var-get": { // (var-get v)
+					specialFormCallValidation("var-get");
 					final VncSymbol sym = Types.isVncSymbol(ast.second())
 											? (VncSymbol)ast.second()
 											: Coerce.toVncSymbol(evaluate(ast.second(), env));
@@ -607,6 +618,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "var-ns": { // (var-ns v)
+					specialFormCallValidation("var-ns");
 					final VncSymbol sym = Types.isVncSymbol(ast.second())
 											? (VncSymbol)ast.second()
 											: Coerce.toVncSymbol(evaluate(ast.second(), env));
@@ -615,6 +627,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "var-name": { // (var-name v)
+					specialFormCallValidation("var-name");
 					final VncSymbol sym = Types.isVncSymbol(ast.second())
 											? (VncSymbol)ast.second()
 											: Coerce.toVncSymbol(evaluate(ast.second(), env));
@@ -636,6 +649,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "alter-var!": { // (alter-var! sym val)
+					specialFormCallValidation("alter-var!");
 					final VncSymbol sym = Types.isVncSymbol(ast.second())
 											? (VncSymbol)ast.second()
 											: Coerce.toVncSymbol(evaluate(ast.second(), env));
@@ -652,6 +666,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 
 				case "inspect": { // (inspect sym)
+					specialFormCallValidation("inspect");
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
 					return Inspector.inspect(env.get(sym));
 				}
@@ -705,6 +720,7 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					
 				case "eval": {
+					specialFormCallValidation("eval");
 					final Namespace ns = Namespaces.getCurrentNamespace();
 					try {
 						return evaluate(Coerce.toVncSequence(evaluate_values(ast.rest(), env)).last(), env);
@@ -862,9 +878,11 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					
 				case "dorun":
+					specialFormCallValidation("dorun");
 					return dorun_(ast, env);
 				
 				case "dobench":
+					specialFormCallValidation("dobench");
 					return dobench_(ast, env);
 					
 				case "if": 
@@ -885,6 +903,7 @@ public class VeniceInterpreter implements Serializable  {
 					return fn_(ast, env);
 					
 				case "prof":
+					specialFormCallValidation("prof");
 					return prof_(ast, env);
 					
 				case "locking":
@@ -1940,6 +1959,10 @@ public class VeniceInterpreter implements Serializable  {
 		}
 		
 		return sym;
+	}
+	
+	private void specialFormCallValidation(final String name) {
+		JavaInterop.getInterceptor().validateVeniceFunction(name);
 	}
 	
 	

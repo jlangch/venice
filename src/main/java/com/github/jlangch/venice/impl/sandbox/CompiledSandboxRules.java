@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
 import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
@@ -291,7 +290,10 @@ public class CompiledSandboxRules {
 			if (rule.startsWith("blacklist:venice:func:")) {
 				final String r = rule.substring("blacklist:venice:func:".length());
 				if (r.equals("*io*")) {
-					blacklisted.addAll(IOFnBlacklisted.getIoFunctions());
+					blacklisted.addAll(RestrictedBlacklistedFunctions.getIoFunctions());
+				}
+				else if (r.equals("*special-form*")) {
+					blacklisted.addAll(RestrictedBlacklistedFunctions.getSpecialForms());
 				}
 				else {			
 					blacklisted.add(r);
@@ -300,7 +302,10 @@ public class CompiledSandboxRules {
 			else if (rule.startsWith("whitelist:venice:func:")) {
 				final String r = rule.substring("whitelist:venice:func:".length());
 				if (r.equals("*io*")) {
-					blacklisted.removeAll(IOFnBlacklisted.getIoFunctions());
+					blacklisted.removeAll(RestrictedBlacklistedFunctions.getIoFunctions());
+				}
+				else if (r.equals("*special-form*")) {
+					blacklisted.removeAll(RestrictedBlacklistedFunctions.getSpecialForms());
 				}
 				else {			
 					blacklisted.remove(r);

@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.github.jlangch.venice.impl.functions.IOFnBlacklisted;
+import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
 
 
 public class RejectAllInterceptor extends Interceptor {
@@ -254,7 +254,7 @@ public class RejectAllInterceptor extends Interceptor {
 
 	private static final Integer MAX_FUTURE_THREAD_POOL_SIZE = 5;
 
-	private final Set<String> blacklistedVeniceFunctions = IOFnBlacklisted.getIoFunctions();
+	private final Set<String> blacklistedVeniceFunctions = RestrictedBlacklistedFunctions.getAll();
 	
 	private final long executionTimeDeadline;
 }
