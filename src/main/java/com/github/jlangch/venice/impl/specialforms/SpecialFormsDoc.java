@@ -164,11 +164,26 @@ public class SpecialFormsDoc {
 						"(var-ns +)",
 						"(var-ns '+)",
 						"(var-ns (symbol \"+\"))",
-						"(do             \n" +
-						"  (def x 10)    \n" +
-						"  (var-ns x))   ",
-						"(let [x 10]     \n" +
-						"  (var-ns x))   ")
+						";; alias def'd function \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (var-ns add))",
+						"(do  \n" +
+						"  (def x 10) \n" +
+						"  (var-ns x))",
+						"(let [x 10]\n" +
+						"  (var-ns x))",
+						";; compare with namespace \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (namespace add))",
+						";; compare alias def'd function with namespace \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (namespace add))")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -185,11 +200,26 @@ public class SpecialFormsDoc {
 							"(var-name +)",
 							"(var-name '+)",
 							"(var-name (symbol \"+\"))",
-							"(do             \n" +
-							"  (def x 10)    \n" +
-							"  (var-name x))   ",
-							"(let [x 10]     \n" +
-							"  (var-name x))   ")
+							";; alias def'd function \n" +
+							"(do \n" +
+							"  (ns foo) \n" +
+							"  (def add +)\n" +
+							"  (var-name add))",
+							"(do \n" +
+							"  (def x 10) \n" +
+							"  (var-name x))",
+							"(let [x 10] \n" +
+							"  (var-name x))",
+							";; compare with name \n" +
+							"(do \n" +
+							"  (ns foo) \n" +
+							"  (def add +)\n" +
+							"  (name add))",
+							";; compare alias def'd function with name \n" +
+							"(do \n" +
+							"  (ns foo) \n" +
+							"  (def add +)\n" +
+							"  (name add))")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1066,7 +1096,20 @@ public class SpecialFormsDoc {
 					.doc("Returns the namespace String of a symbol or keyword, or nil if not present.")
 					.examples(
 						"(namespace 'user/foo)",
-						"(namespace :user/foo)")
+						"(namespace :user/foo)",
+						"(namespace +)",
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +) \n" +
+						"  (namespace add))",
+						";; compare with var-ns \n" +
+						"(var-ns +)",
+						";; compare alias def'd function with var-ns \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (var-ns add))")
+
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

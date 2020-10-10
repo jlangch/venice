@@ -411,34 +411,6 @@ public class VeniceInterpreter implements Serializable  {
 					return DefTypeForm.createType(args, env);
 				}
 
-				case "set!": { // (set! name expr)
-					specialFormCallValidation("set!");
-
-					final VncSymbol name = qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env));
-					final Var globVar = env.getGlobalVarOrNull(name);
-					if (globVar != null) {
-						final VncVal expr = ast.third();
-						final VncVal val = evaluate(expr, env).withMeta(name.getMeta());
-						
-						if (globVar instanceof DynamicVar) {
-							env.popGlobalDynamic(globVar.getName());
-							env.pushGlobalDynamic(globVar.getName(), val);
-						}
-						else {
-							env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
-						}
-						return val;
-					}
-					else {
-						try (WithCallStack cs = new WithCallStack(new CallFrame("set!", name))) {
-							throw new VncException(String.format(
-										"The global var or thread-local '%s' does not exist!", 
-										name.getName()));
-						}
-					}
-				}
-				
 				case "defmulti": { // (defmulti name dispatch-fn)
 					final VncSymbol name =  validateSymbolWithCurrNS(
 												qualifySymbolWithCurrNS(
@@ -560,20 +532,6 @@ public class VeniceInterpreter implements Serializable  {
 						return Nil;
 					}
 				}
-
-				case "namespace": { // (namespace x)
-					final VncVal val = evaluate(ast.second(), env);
-					if (val instanceof INamespaceAware) {
-						return new VncString(((INamespaceAware)val).getNamespace());
-					}
-					else {
-						try (WithCallStack cs = new WithCallStack(new CallFrame("namespace", ast))) {
-							throw new VncException(String.format(
-									"The type '%s' does not support namespaces!",
-									Types.getType(val)));
-						}
-					}
-				}
 				
 				case "import":
 					try (WithCallStack cs = new WithCallStack(new CallFrame("import", ast))) {
@@ -599,6 +557,20 @@ public class VeniceInterpreter implements Serializable  {
 								throw new VncException(String.format(
 									"The namespace '%s' does not exist", ns.toString()));
 							}
+						}
+					}
+				}
+
+				case "namespace": { // (namespace x)
+					final VncVal val = evaluate(ast.second(), env);
+					if (val instanceof INamespaceAware) {
+						return new VncString(((INamespaceAware)val).getNamespace());
+					}
+					else {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("namespace", ast))) {
+							throw new VncException(String.format(
+									"The type '%s' does not support namespaces!",
+									Types.getType(val)));
 						}
 					}
 				}
@@ -648,23 +620,35 @@ public class VeniceInterpreter implements Serializable  {
 					return VncBoolean.of(env.isGlobal(sym));
 				}
 
-				case "alter-var!": { // (alter-var! sym val)
-					specialFormCallValidation("alter-var!");
+				case "set!": { // (set! name expr)
+					specialFormCallValidation("set!");
+
 					final VncSymbol sym = Types.isVncSymbol(ast.second())
 											? (VncSymbol)ast.second()
 											: Coerce.toVncSymbol(evaluate(ast.second(), env));
-					final VncVal val = evaluate(ast.third(), env);
-					if (!env.isGlobal(sym)) {
-						try (WithCallStack cs = new WithCallStack(new CallFrame("alter-var!", ast))) {
+					final Var globVar = env.getGlobalVarOrNull(sym);
+					if (globVar != null) {
+						final VncVal expr = ast.third();
+						final VncVal val = evaluate(expr, env);
+						
+						if (globVar instanceof DynamicVar) {
+							env.popGlobalDynamic(globVar.getName());
+							env.pushGlobalDynamic(globVar.getName(), val);
+						}
+						else {
+							env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
+						}
+						return val;
+					}
+					else {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("set!", sym))) {
 							throw new VncException(String.format(
-									"Can only alter global vars. %s is not global!",
-									sym.getQualifiedName()));
+										"The global or thread-local var '%s' does not exist!", 
+										sym.getName()));
 						}
 					}
-					env.alterGlobal(new Var(sym, val));
-					return Nil;
 				}
-
+				
 				case "inspect": { // (inspect sym)
 					specialFormCallValidation("inspect");
 					final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));

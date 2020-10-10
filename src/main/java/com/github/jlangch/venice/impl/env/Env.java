@@ -328,34 +328,6 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public Env alterGlobal(final Var val) {
-		if (val.getName().equals(Namespaces.NS_CURRENT_SYMBOL)) {
-			throw new VncException(String.format("Internal error setting var %s", val.getName().getName()));
-		}
-
-		final Var v = getGlobalVar(val.getName());
-		if (v == null) {
-			final VncSymbol sym = val.getName();
-			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
-				throw new VncException(String.format(
-							"The non existing global var '%s' can not be altered!", 
-							sym.getQualifiedName()));
-			}
-		}
-		else if (!v.isOverwritable()) {
-			final VncSymbol sym = val.getName();
-			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
-				throw new VncException(String.format(
-							"The non overwritable global var '%s' can not be altered!", 
-							sym.getQualifiedName()));
-			}
-		}
-		else {
-			setGlobalVar(v.getName(), new Var(v.getName(), val.getVal()));
-			return this;
-		}
-	}
-
 	public Env addGlobalVars(final List<Var> vars) {
 		vars.forEach(v -> setGlobal(v));
 		return this;

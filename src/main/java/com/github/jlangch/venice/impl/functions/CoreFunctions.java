@@ -6959,7 +6959,19 @@ public class CoreFunctions {
 					.examples(
 						"(name :x)",
 						"(name 'x)",
-						"(name \"x\")")
+						"(name \"x\")",
+						"(name +)",
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +) \n" +
+						"  (name add))",
+						";; compare with var-name \n" +
+						"(var-name +)",
+						";; compare alias def'd function with var-name \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +) \n" +
+						"  (var-name add))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

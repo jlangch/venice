@@ -83,7 +83,7 @@
       (let [wrapper (fn tracing-wrapper [& args]
                       (trace/trace-fn-call (symbol n) f args))]
         (vary-meta wrapper assoc :traced f)
-        (alter-var! (symbol n) wrapper)))))
+        (set! (symbol n) wrapper)))))
 
 
 (defmacro untrace-var [v]
@@ -91,4 +91,4 @@
         f (var-get (symbol n))]
     (if (fn? f)
       (when-let [delegate (-> f meta :traced)]
-        (alter-var! (symbol n) delegate)))))
+        (set! (symbol n) delegate)))))

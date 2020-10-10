@@ -141,7 +141,6 @@ public class RestrictedBlacklistedFunctions {
 					"var-get",
 					"var-ns",
 					"var-name",
-					"alter-var!",
 					"inspect",
 					"dorun",
 					"dobench"));
