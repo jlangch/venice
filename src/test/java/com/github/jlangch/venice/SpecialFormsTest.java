@@ -816,6 +816,13 @@ public class SpecialFormsTest {
 	}
 
 	@Test
+	public void test_var_thread_local_QUESTION() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(binding [x 100] (var-thread-local? x))"));	
+	}
+
+	@Test
 	public void test_var_global_QUESTION() {
 		final Venice venice = new Venice();
 

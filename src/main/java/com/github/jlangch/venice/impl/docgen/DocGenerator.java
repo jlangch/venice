@@ -56,7 +56,7 @@ public class DocGenerator {
 	public DocGenerator() {
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
-								Arrays.asList("app", "xml", "crypt", "gradle", "ansi", "maven"), 
+								Arrays.asList("app", "xml", "crypt", "gradle", "trace", "ansi", "maven"), 
 								false, 
 								false, 
 								RunMode.DOCGEN)
@@ -861,8 +861,11 @@ public class DocGenerator {
 		env.addItem(getDocItem("var-get"));
 		env.addItem(getDocItem("var-name"));
 		env.addItem(getDocItem("var-ns"));
+		env.addItem(getDocItem("var-thread-local?"));
 		env.addItem(getDocItem("var-local?"));
 		env.addItem(getDocItem("var-global?"));
+		env.addItem(getDocItem("name"));
+		env.addItem(getDocItem("namespace"));
 		
 		final DocSection walk = new DocSection("Tree Walker");
 		all.addSection(walk);
@@ -1593,6 +1596,14 @@ public class DocGenerator {
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
+		
+		final DocSection trace = new DocSection("Tracing");
+		all.addSection(trace);
+		trace.addItem(getDocItem("trace/trace"));
+		trace.addItem(getDocItem("trace/traced?"));
+		trace.addItem(getDocItem("trace/traceable?"));
+		trace.addItem(getDocItem("trace/trace-var"));
+		trace.addItem(getDocItem("trace/untrace-var"));
 		
 		final DocSection json = new DocSection("JSON");
 		all.addSection(json);

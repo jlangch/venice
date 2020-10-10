@@ -57,7 +57,22 @@
         result))))
 
 
-(defn trace
+(defn
+  ^{ :arglists '(
+        "(trace val)",
+        "(trace name val)")
+     :doc
+        """
+        Sends name (optional) and value to the tracer function, then
+        returns value. May be wrapped around any expression without
+        affecting the result.
+        """
+     :examples (list
+        """(trace  (+ 1 2))"""
+        """(trace "add" (+ 1 2))""" ) }
+
+  trace
+
   ([value] (trace nil value))
   ([name value]
      (tracer name (limit (pr-str value)))

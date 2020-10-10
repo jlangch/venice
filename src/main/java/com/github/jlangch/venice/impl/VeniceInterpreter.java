@@ -613,6 +613,13 @@ public class VeniceInterpreter implements Serializable  {
 					return VncBoolean.of(env.isLocal(sym));
 				}
 
+				case "var-thread-local?": { // (var-thread-local? v)
+					final VncSymbol sym = Types.isVncSymbol(ast.second())
+											? (VncSymbol)ast.second()
+											: Coerce.toVncSymbol(evaluate(ast.second(), env));
+					return VncBoolean.of(env.isThreadLocal(sym));
+				}
+
 				case "var-global?": { // (var-global? v)
 					final VncSymbol sym = Types.isVncSymbol(ast.second())
 											? (VncSymbol)ast.second()

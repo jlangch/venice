@@ -6987,7 +6987,7 @@ public class CoreFunctions {
 						"  (name add))",
 						";; compare with var-name \n" +
 						"(var-name +)",
-						";; compare alias def'd function with var-name \n" +
+						";; compare aliased function with var-name \n" +
 						"(do \n" +
 						"  (ns foo) \n" +
 						"  (def add +) \n" +

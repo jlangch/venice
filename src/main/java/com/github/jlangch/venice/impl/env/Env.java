@@ -128,7 +128,19 @@ public class Env implements Serializable {
 	 * @return returns true if a symbol is global else false
 	 */
 	public boolean isGlobal(final VncSymbol sym) {
-		return sym.hasNamespace() ? true : findLocalVar(sym) == null;
+		final Var dv = getGlobalVar(sym);
+		return dv != null && !(dv instanceof DynamicVar);
+	}
+
+	/**
+	 * Checks if a symbol is thread local
+	 *
+	 * @param sym a symbol
+	 * @return returns true if a symbol is thread local else false
+	 */
+	public boolean isThreadLocal(final VncSymbol sym) {
+		final Var dv = getGlobalVar(sym);
+		return dv != null && dv instanceof DynamicVar;
 	}
 
 	/**

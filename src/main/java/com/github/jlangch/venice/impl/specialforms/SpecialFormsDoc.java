@@ -142,12 +142,15 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists("(var-get v)")
-					.doc("Returns the var value associated with the var")
+					.doc("Returns a var's value.")
 					.examples(
 						"(var-get +)",
 						"(var-get '+)",
 						"(var-get (symbol \"+\"))",
-						"((var-get +) 1 2)")
+						"((var-get +) 1 2)",
+						"(do \n" +
+						"  (def x 10) \n" +
+						"  (var-get 'x))")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -159,12 +162,12 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists("(var-ns v)")
-					.doc("Returns the namespace of the var")
+					.doc("Returns the namespace of the var's symbol")
 					.examples(
 						"(var-ns +)",
 						"(var-ns '+)",
 						"(var-ns (symbol \"+\"))",
-						";; alias def'd function \n" +
+						";; aliased function \n" +
 						"(do \n" +
 						"  (ns foo) \n" +
 						"  (def add +)\n" +
@@ -179,7 +182,7 @@ public class SpecialFormsDoc {
 						"  (ns foo) \n" +
 						"  (def add +)\n" +
 						"  (namespace add))",
-						";; compare alias def'd function with namespace \n" +
+						";; compare aliased function with namespace \n" +
 						"(do \n" +
 						"  (ns foo) \n" +
 						"  (def add +)\n" +
@@ -195,12 +198,12 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists("(var-name v)")
-					.doc("Returns the name of the var")
+					.doc("Returns the name of the var's symbol")
 					.examples(
 							"(var-name +)",
 							"(var-name '+)",
 							"(var-name (symbol \"+\"))",
-							";; alias def'd function \n" +
+							";; aliased function \n" +
 							"(do \n" +
 							"  (ns foo) \n" +
 							"  (def add +)\n" +
@@ -215,7 +218,7 @@ public class SpecialFormsDoc {
 							"  (ns foo) \n" +
 							"  (def add +)\n" +
 							"  (name add))",
-							";; compare alias def'd function with name \n" +
+							";; compare aliasedd function with name \n" +
 							"(do \n" +
 							"  (ns foo) \n" +
 							"  (def add +)\n" +
@@ -246,6 +249,21 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction var_thread_local_QUESTION = 
+		new SpecialFormsDocFunction(
+				"var-thread-local?",
+				VncFunction
+					.meta()
+					.arglists("(var-thread-local? v)")
+					.doc("Returns true if the var is thread-local else false")
+					.examples(
+							"(binding [x 100] \n" +
+							"  (var-local? x))")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction var_global_QUESTION = 
 		new SpecialFormsDocFunction(
 				"var-global?",
@@ -262,28 +280,6 @@ public class SpecialFormsDoc {
 							"  (var-global? x))   ",
 							"(let [x 10]        \n" +
 							"  (var-global? x))   ")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-
-	public static VncFunction alter_var_BANG = 
-		new SpecialFormsDocFunction(
-				"alter-var!",
-				VncFunction
-					.meta()
-					.arglists("(alter-var! sym val)")
-					.doc("Alters an existing global var")
-					.examples(
-							"(do                    \n" +
-							"  (def x 10)           \n" +
-							"  (alter-var! x 100)   \n" +
-							"  x)                     ",
-							"(do                                \n" +
-							"  (def x 10)                       \n" +
-							"  (alter-var! (symbol \"x\") 100)  \n" +
-							"  x)                                 ")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1235,8 +1231,8 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("var-name"),			var_name)
 					.put(new VncSymbol("var-ns"),			var_ns)
 					.put(new VncSymbol("var-local?"),		var_local_QUESTION)
+					.put(new VncSymbol("var-thread-local?"),var_thread_local_QUESTION)
 					.put(new VncSymbol("var-global?"),		var_global_QUESTION)
-					.put(new VncSymbol("alter-var!"),		alter_var_BANG)
 					.put(new VncSymbol("def"),				def)
 					.put(new VncSymbol("defonce"),			defonce)
 					.put(new VncSymbol("defmulti"),			defmulti)
