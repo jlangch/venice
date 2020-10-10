@@ -549,26 +549,46 @@ public class CoreFunctions {
 				"symbol",
 				VncFunction
 					.meta()
-					.arglists("(symbol name)")
+					.arglists(
+						"(symbol name)",
+						"(symbol ns name)")
 					.doc("Returns a symbol from the given name")
 					.examples(
 						"(symbol \"a\")",
+						"(symbol \"foo\" \"a\")",
+						"(symbol *ns* \"a\")",
 						"(symbol 'a)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				assertArity(args, 1,2);
 
-				if (Types.isVncSymbol(args.first())) {
-					return args.first();
-				}
-				else if (Types.isVncString(args.first())) {
-					return new VncSymbol(((VncString)args.first()).getValue());
+				if (args.size() == 1) {
+					if (Types.isVncSymbol(args.first())) {
+						return args.first();
+					}
+					else if (Types.isVncString(args.first())) {
+						return new VncSymbol(((VncString)args.first()).getValue());
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'symbol' does not allow %s name.",
+								Types.getType(args.first())));
+					}
 				}
 				else {
-					throw new VncException(String.format(
-							"Function 'symbol' does not allow %s name.",
-							Types.getType(args.first())));
+					if (Types.isVncSymbol(args.first())) {
+						return new VncSymbol(
+								Coerce.toVncSymbol(args.first()).getName(),
+								Coerce.toVncString(args.second()).getValue(), 
+								Nil);
+					}
+					else {
+						return new VncSymbol(
+								Coerce.toVncString(args.first()).getValue(),
+								Coerce.toVncString(args.second()).getValue(), 
+								Nil);
+					}
 				}
 			}
 

@@ -3659,6 +3659,9 @@ public class CoreFunctionsTest {
 		
 		assertEquals("a", venice.eval("(str (symbol \"a\"))"));
 		assertEquals("a", venice.eval("(str (symbol :a))"));
+		assertEquals("a", venice.eval("(str (symbol (symbol \"a\")))"));
+		assertEquals("foo/a", venice.eval("(str (symbol \"foo\" \"a\"))"));
+		assertEquals("user/a", venice.eval("(str (symbol *ns* \"a\"))"));
 		assertTrue((Boolean)venice.eval("(symbol? (symbol \"a\"))"));	
 		assertTrue((Boolean)venice.eval("(symbol? (symbol :a))"));	
 	}
@@ -3667,6 +3670,11 @@ public class CoreFunctionsTest {
 	public void test_symbol_Q() {
 		final Venice venice = new Venice();
 
+		assertTrue((Boolean)venice.eval("(symbol? (symbol :a))"));
+		assertTrue((Boolean)venice.eval("(symbol? (symbol 'a))"));
+		assertTrue((Boolean)venice.eval("(symbol? 'a)"));
+		assertTrue((Boolean)venice.eval("(symbol? '<>)"));
+
 		assertFalse((Boolean)venice.eval("(symbol? nil)"));	
 		assertFalse((Boolean)venice.eval("(symbol? true)"));	
 		assertFalse((Boolean)venice.eval("(symbol? 1)"));	
@@ -3674,9 +3682,6 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(symbol? -3.0M)"));
 		assertFalse((Boolean)venice.eval("(symbol? \"ABC\")"));
 		assertFalse((Boolean)venice.eval("(symbol? :a)"));
-		assertTrue((Boolean)venice.eval("(symbol? (symbol :a))"));
-		assertTrue((Boolean)venice.eval("(symbol? (symbol '<>))"));
-		assertTrue((Boolean)venice.eval("(symbol? '<>)"));
 		assertFalse((Boolean)venice.eval("(symbol? '())"));
 		assertFalse((Boolean)venice.eval("(symbol? [])"));
 		assertFalse((Boolean)venice.eval("(symbol? {})"));

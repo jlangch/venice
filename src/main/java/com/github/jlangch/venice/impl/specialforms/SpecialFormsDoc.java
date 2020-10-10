@@ -1093,7 +1093,7 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists("(namespace x)")
-					.doc("Returns the namespace String of a symbol or keyword, or nil if not present.")
+					.doc("Returns the namespace string of a symbol, keyword, or function.")
 					.examples(
 						"(namespace 'user/foo)",
 						"(namespace :user/foo)",
