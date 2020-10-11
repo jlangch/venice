@@ -19,11 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.types.custom;
 
 import java.util.Set;
 
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
@@ -44,6 +45,7 @@ public class CustomWrappableTypes {
 					VncInteger.TYPE,
 					VncDouble.TYPE,
 					VncBigDecimal.TYPE,
+					VncBigInteger.TYPE,
 					VncJust.TYPE);
 	}
 

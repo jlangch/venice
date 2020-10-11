@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.ReadEvalFunction;
 import com.github.jlangch.venice.impl.env.Env;
@@ -44,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
