@@ -160,7 +160,6 @@
                  :line-color  (:color style)
                  :line-style  (:stroke style) }}))
 
-
   (defn render-chart [country-data country-config]
     (let [country-series (partial series country-data country-config)]
       (xchart/xy-chart
@@ -191,11 +190,14 @@
           (add-quarantine)
           (render-chart country-config))))
 
-  ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
-  (let [chart-file    "covid-19.png"
-        country-names (remove #{"Quarantine"} (keys country-config))]
-    (-> (load-countries-html-data country-names)
-        (create-chart country-names)
-        (save-chart chart-file 240))
-    (view chart-file)
-    nil))
+  (defn main []
+    ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
+    (let [chart-file    "covid-19.png"
+          country-names (remove #{"Quarantine"} (keys country-config))]
+      (-> (load-countries-html-data country-names)
+          (create-chart country-names)
+          (save-chart chart-file 240))
+      (view chart-file)
+      nil))
+
+  (main))
