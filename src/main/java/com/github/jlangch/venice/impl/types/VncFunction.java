@@ -188,6 +188,11 @@ public abstract class VncFunction
 		return Constants.Nil;
 	}
 
+	public boolean emptyBody() { 
+		final VncVal body = getBody();
+		return body == Constants.Nil || ((VncList)body).isEmpty();
+	}
+
 	@Override
 	public VncVal getMeta() { 
 		return fnMeta.get(); 

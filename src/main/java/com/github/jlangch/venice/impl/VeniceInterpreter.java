@@ -924,7 +924,7 @@ public class VeniceInterpreter implements Serializable  {
 						
 						// Automatic TCO (tail call optimization)
 						if (isAutoTCO() 
-								&& fn.getBody() != Nil  // no VncMultiArityFunction, VncMultiFunction
+								&& !fn.emptyBody()  // no VncMultiArityFunction, VncMultiFunction
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
 						) {
