@@ -75,7 +75,7 @@ public abstract class VncFunction
 		this.simpleName = pos < 0 ? name : name.substring(pos+1);
 		this.qualifiedName = "core".equals(namespace) ? simpleName : namespace + "/" + simpleName;
 
-		this.params = params;
+		this.params = params == null ? VncVector.empty() : params;
 		
 		int fixedArgs = 0;
 		boolean variadic = false;

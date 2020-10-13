@@ -632,7 +632,7 @@ public class SpecialFormsTest {
 	public void test_loop_deep() {
 		final Venice venice = new Venice();
 		
-		
+		// single loop expression
 		final String lisp = 
 				"(do                                             " +
 				"  (def sum                                      " +
@@ -641,6 +641,50 @@ public class SpecialFormsTest {
 				"          (if (zero? cnt)                       " +
 				"              acc                               " +
 				"              (recur (dec cnt) (+ acc cnt)))))) " +
+				"                                                " +
+				"   (sum 100000)                                 " +
+				")                                               ";
+
+		assertEquals(Long.valueOf(5000050000L), venice.eval(lisp));
+	}
+
+	@Test
+	public void test_loop_deep2() {
+		final Venice venice = new Venice();
+		
+		// multiple loop expression
+		final String lisp = 
+				"(do                                             " +
+				"  (def sum                                      " +
+				"    (fn [n]                                     " +
+				"      (loop [cnt n acc 0]                       " +
+				"          10                                    " +
+				"          20                                    " +
+				"          (if (zero? cnt)                       " +
+				"              acc                               " +
+				"              (recur (dec cnt) (+ acc cnt)))))) " +
+				"                                                " +
+				"   (sum 100000)                                 " +
+				")                                               ";
+
+		assertEquals(Long.valueOf(5000050000L), venice.eval(lisp));
+	}
+
+	@Test
+	public void test_loop_deep3() {
+		final Venice venice = new Venice();
+		
+		// multiple loop expression, if expressions reversed
+		final String lisp = 
+				"(do                                             " +
+				"  (def sum                                      " +
+				"    (fn [n]                                     " +
+				"      (loop [cnt n acc 0]                       " +
+				"          10                                    " +
+				"          20                                    " +
+				"          (if (not (zero? cnt))                 " +
+				"              (recur (dec cnt) (+ acc cnt))     " +
+				"              acc))))                           " +
 				"                                                " +
 				"   (sum 100000)                                 " +
 				")                                               ";

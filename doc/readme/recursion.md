@@ -34,7 +34,9 @@ mutual recursion is available for more involved forms of recursion.
 )
 ```
 
-Simple recursion a few thousand calls deep throws a  _StackOverflowError_ .
+Simple recursion a few thousand calls deep throws a *StackOverflowError*.
+
+*Note: The recursive call to 'factorial' in these two simple recursion examples is not in tail position. Recursive functions like this can not be tail call optimized!*			
 
 
 ## self-recursive calls (loop - recur)
@@ -43,7 +45,7 @@ Venice self-recursive calls do not consume stack space. It's the only
 non-stack-consuming looping construct in Venice. The `recur` expression
 must be in tail position.
 
-_Definition:_  The tail position is a position which an expression would return 
+*Definition:*  The tail position is a position which an expression would return 
 a value from. There are no more forms evaluated after the form in the tail 
 position is evaluated.
  
@@ -143,3 +145,41 @@ Examples:
 
    (trampoline (factorial 10000)))
 ```
+
+
+## Automated tail call optimization (TCO)
+
+Venice has experimental automated tail call optimization built-in, but it is 
+not yet enabled for production builds.
+
+```clojure
+(do
+  (defn factorial [n] (factorial* n 1N))
+
+  (defn factorial* [n acc] 
+    (if (== n 1)
+        acc
+        (factorial* (dec n) (* acc n))))
+        
+  (factorial 200))
+```
+
+```clojure
+(do
+  (defn factorial2 [n] 
+    (let [fact (fn [n acc]
+                  (if (== n 1)
+                      acc
+                      (fact (dec n) (* acc n))))]
+      (fact n 1N)))
+      
+  (factorial2 200))
+```
+
+Note: tail call recursive functions, can always be written in terms of a 
+reducing (folding) function. E.g.:
+
+```clojure
+(reduce * 1N (range 1 201))  ;; reducing factorial
+```
+

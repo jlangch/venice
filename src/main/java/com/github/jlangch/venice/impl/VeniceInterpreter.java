@@ -922,22 +922,36 @@ public class VeniceInterpreter implements Serializable  {
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						// invoke function with call frame
-						try {
-							callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
-							
-							// Note: the overhead with callstack and interrupt check is ~150ns
-							return fn.apply(elArgs);
+						// Automatic TCO
+						if (autoTCO 
+								&& fn.getBody() != Nil  // no VncMultiArityFunction, VncMultiFunction
+								&& !callStack.isEmpty() 
+								&& fnName.equals(callStack.peek().getFnName())
+						) {
+							// currently there is no tail position check
+							env.addLocalVars(Destructuring.destructure(fn.getParams(), elArgs));
+							final VncList body = (VncList)fn.getBody();
+							evaluate_values(body.butlast(), env);
+							orig_ast = body.last();
 						}
-						finally {
-							callStack.pop();
-							checkInterrupted(fnName);
-							if (checkSandbox) {
-								interceptor.validateMaxExecutionTime();
+						else {
+							// invoke function with call frame
+							try {
+								callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
+								
+								// Note: the overhead with callstack and interrupt check is ~150ns
+								return fn.apply(elArgs);
 							}
-							if (meterRegistry.enabled) {
-								final long elapsed = System.nanoTime() - nanos;
-								meterRegistry.record(fn.getQualifiedName(), elapsed);
+							finally {
+								callStack.pop();
+								checkInterrupted(fnName);
+								if (checkSandbox) {
+									interceptor.validateMaxExecutionTime();
+								}
+								if (meterRegistry.enabled) {
+									final long elapsed = System.nanoTime() - nanos;
+									meterRegistry.record(fn.getQualifiedName(), elapsed);
+								}
 							}
 						}
 					}
@@ -1778,16 +1792,7 @@ public class VeniceInterpreter implements Serializable  {
 			public VncVal apply(final VncList args) {
 				final Env localEnv = new Env(env);
 
-				// destructuring fn params -> args
-				if (plainSymbolParams) {
-					for(int ii=0; ii<params.size(); ii++) {
-						localEnv.setLocal(
-							new Var((VncSymbol)params.nth(ii), args.nthOrDefault(ii, Nil)));
-					}
-				}
-				else {
-					localEnv.addLocalVars(Destructuring.destructure(params, args));	
-				}
+				addFnArgsToEnv(args, localEnv);
 
 				if (switchToFunctionNamespaceAtRuntime) {
 					final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
@@ -1797,7 +1802,7 @@ public class VeniceInterpreter implements Serializable  {
 						threadLocalMap.setCurrentNS(ns);
 						
 						if (hasPreConditions) {
-							validateFnPreconditions(name, preConditions, localEnv);
+							validateFnPreconditions(localEnv);
 						}
 						return evaluateBody(body, localEnv);
 					}
@@ -1809,7 +1814,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				else {
 					if (hasPreConditions) {
-						validateFnPreconditions(name, preConditions, localEnv);
+						validateFnPreconditions(localEnv);
 					}
 					return evaluateBody(body, localEnv);
 				}
@@ -1819,7 +1824,37 @@ public class VeniceInterpreter implements Serializable  {
 			public VncVal getBody() {
 				return body;
 			}
-			
+
+			private void addFnArgsToEnv(final VncList args, final Env env) {
+				// destructuring fn params -> args
+				if (plainSymbolParams) {
+					for(int ii=0; ii<params.size(); ii++) {
+						env.setLocal(
+							new Var((VncSymbol)params.nth(ii), args.nthOrDefault(ii, Nil)));
+					}
+				}
+				else {
+					env.addLocalVars(Destructuring.destructure(params, args));	
+				}
+			}
+
+			private void validateFnPreconditions(final Env env) {
+				if (preConditions != null && !preConditions.isEmpty()) {
+			 		final Env local = new Env(env);	
+			 		final Iterator<VncVal> iter = preConditions.iterator();
+			 		while (iter.hasNext()) {
+			 			final VncVal v = iter.next();
+						if (!isFnConditionTrue(evaluate(v, local))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame(name, v))) {
+								throw new AssertionException(String.format(
+										"pre-condition assert failed: %s",
+										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
+							}
+						}
+		 			}
+				}
+			}
+
 			private static final long serialVersionUID = -1L;
 		};
 	}
@@ -1839,27 +1874,6 @@ public class VeniceInterpreter implements Serializable  {
 		return Types.isVncSequence(result) 
 				? VncBoolean.isTrue(((VncSequence)result).first()) 
 				: VncBoolean.isTrue(result);
-	}
-
-	private void validateFnPreconditions(
-			final String fnName, 
-			final VncVector preConditions, 
-			final Env env
-	) {
-		if (preConditions != null && !preConditions.isEmpty()) {
-	 		final Env local = new Env(env);	
-	 		final Iterator<VncVal> iter = preConditions.iterator();
-	 		while (iter.hasNext()) {
-	 			final VncVal v = iter.next();
-				if (!isFnConditionTrue(evaluate(v, local))) {
-					try (WithCallStack cs = new WithCallStack(new CallFrame(fnName, v))) {
-						throw new AssertionException(String.format(
-								"pre-condition assert failed: %s",
-								((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
-					}
-				}
- 			}
-		}
 	}
 	
 	private VncVal evaluateBody(final VncList body, final Env env) {
@@ -1961,6 +1975,10 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
+	
+	// Currently I don't see a major advantage compared to self-recursion 
+	// using loop - recur
+	private final boolean autoTCO = false;
 	
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
