@@ -922,8 +922,8 @@ public class VeniceInterpreter implements Serializable  {
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
-						// Automatic TCO
-						if (autoTCO 
+						// Automatic TCO (tail call optimization)
+						if (isAutoTCO() 
 								&& fn.getBody() != Nil  // no VncMultiArityFunction, VncMultiFunction
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
@@ -1970,16 +1970,19 @@ public class VeniceInterpreter implements Serializable  {
 	private void specialFormCallValidation(final String name) {
 		JavaInterop.getInterceptor().validateVeniceFunction(name);
 	}
-	
+
+	private boolean isAutoTCO() {
+		// Currently I don't see a major advantage of automated tail call optimization 
+		// compared to self-recursion using loop - recur. The code of the latter even
+		// looks cleaner
+		return false;
+	}
+
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
-	
-	// Currently I don't see a major advantage compared to self-recursion 
-	// using loop - recur
-	private final boolean autoTCO = false;
-	
+		
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
 	private final MeterRegistry meterRegistry;

@@ -40,11 +40,8 @@
           """
      :examples (list
           """
-          (do
-            (load-module :crypt)
-            (str/bytebuf-to-hex
-              (crypt/md5-hash "hello world")
-              :upper))
+          (-> (crypt/md5-hash "hello world")
+              (str/bytebuf-to-hex :upper))
            """ ) }
 
   crypt/md5-hash [text]
@@ -58,18 +55,12 @@
      :doc "Hashes a string or a bytebuf using SHA1 with an optional salt."
      :examples (list
           """
-          (do
-            (load-module :crypt)
-            (str/bytebuf-to-hex
-              (crypt/sha1-hash "hello world")
-              :upper))
+          (-> (crypt/sha1-hash "hello world")
+              (str/bytebuf-to-hex :upper))
            """,
            """
-           (do
-             (load-module :crypt)
-               (str/bytebuf-to-hex
-                 (crypt/sha1-hash "hello world" "-salt-")
-                 :upper))
+           (-> (crypt/sha1-hash "hello world" "-salt-")
+               (str/bytebuf-to-hex :upper))
            """ ) }
 
   crypt/sha1-hash
@@ -84,18 +75,12 @@
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
      :examples (list
           """
-          (do
-            (load-module :crypt)
-            (str/bytebuf-to-hex
-              (crypt/sha512-hash "hello world")
-              :upper))
+          (-> (crypt/sha512-hash "hello world")
+              (str/bytebuf-to-hex :upper))
            """,
            """
-           (do
-             (load-module :crypt)
-               (str/bytebuf-to-hex
-                 (crypt/sha512-hash "hello world" "-salt-")
-                 :upper))
+           (-> (crypt/sha512-hash "hello world" "-salt-")
+               (str/bytebuf-to-hex :upper))
            """ ) }
 
   crypt/sha512-hash
@@ -113,18 +98,12 @@
           """
      :examples (list
           """
-          (do
-            (load-module :crypt)
-            (str/bytebuf-to-hex
-              (crypt/pbkdf2-hash "hello world" "-salt-")
-              :upper))
+          (-> (crypt/pbkdf2-hash "hello world" "-salt-")
+              (str/bytebuf-to-hex :upper))
            """,
            """
-           (do
-             (load-module :crypt)
-             (str/bytebuf-to-hex
-               (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
-               :upper))
+           (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+               (str/bytebuf-to-hex :upper))
            """ ) }
 
   crypt/pbkdf2-hash

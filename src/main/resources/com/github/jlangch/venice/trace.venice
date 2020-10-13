@@ -33,7 +33,7 @@
 (defmacro
   ^{ :arglists '("(qualified-name v)")
      :doc "Returns the qualified symbol name of a var"
-     :examples (list "(qualified-name +)" ) }
+     :examples (list "(trace/qualified-name +)" ) }
 
   qualified-name [v] `(str (var-ns ~v) "/" (var-name ~v)))
 
@@ -70,9 +70,9 @@
         affecting the result.
         """
      :examples (list
-        """(trace (+ 1 2))"""
-        """(trace "add" (+ 1 2))"""
-        """(* 4 (trace (+ 1 2)))""" ) }
+        """(trace/trace (+ 1 2))"""
+        """(trace/trace "add" (+ 1 2))"""
+        """(* 4 (trace/trace (+ 1 2)))""" ) }
 
   trace
 
@@ -85,7 +85,7 @@
 (defmacro
   ^{ :arglists '("(traced? v)")
      :doc "Returns true if the given var is currently traced, false otherwise"
-     :examples (list "(traced? +)" ) }
+     :examples (list "(trace/traced? +)" ) }
 
   traced? [v]
 
@@ -97,7 +97,7 @@
 (defmacro
   ^{ :arglists '("(traceable? v)")
      :doc "Returns true if the given var can be traced, false otherwise"
-     :examples (list "(traceable? +)" ) }
+     :examples (list "(trace/traceable? +)" ) }
 
   traceable? [v]
 
@@ -109,7 +109,7 @@
 (defmacro
   ^{ :arglists '("(trace-var v)")
      :doc "Traces the var"
-     :examples (list "(trace-var +)" ) }
+     :examples (list "(trace/trace-var +)" ) }
 
   trace-var [v]
 
@@ -119,13 +119,14 @@
       (let [wrapper (fn tracing-wrapper [& args]
                       (trace/trace-fn-call (symbol n) f args))]
         (vary-meta wrapper assoc :traced f)
-        (set! (symbol n) wrapper)))))
+        (set! (symbol n) wrapper)
+        :traced))))
 
 
 (defmacro
   ^{ :arglists '("(trace-var v)")
      :doc "Untraces the var"
-     :examples (list "(untrace-var +)" ) }
+     :examples (list "(trace/untrace-var +)" ) }
 
   untrace-var [v]
 
@@ -133,4 +134,5 @@
         f (var-get (symbol n))]
     (if (fn? f)
       (when-let [delegate (-> f meta :traced)]
-        (set! (symbol n) delegate)))))
+        (set! (symbol n) delegate)
+        :untraced))))

@@ -54,9 +54,14 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 public class DocGenerator {
 
 	public DocGenerator() {
+		this.preloadedModules
+			.addAll(Arrays.asList(
+						"app",    "xml",   "crypt",   "gradle", 
+						"trace",  "ansi",  "maven"));
+		
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
-								Arrays.asList("app", "xml", "crypt", "gradle", "trace", "ansi", "maven"), 
+								preloadedModules, 
 								false, 
 								false, 
 								RunMode.DOCGEN)
@@ -119,7 +124,8 @@ public class DocGenerator {
 				getTypesSection(),
 				getNamespaceSection(),
 				getJavaInteropSection(),
-				getAppSection());
+				getAppSection(),
+				getModulesSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -1597,14 +1603,6 @@ public class DocGenerator {
 		final DocSection all = new DocSection("");
 		section.addSection(all);
 		
-		final DocSection trace = new DocSection("Tracing");
-		all.addSection(trace);
-		trace.addItem(getDocItem("trace/trace"));
-		trace.addItem(getDocItem("trace/traced?"));
-		trace.addItem(getDocItem("trace/traceable?"));
-		trace.addItem(getDocItem("trace/trace-var"));
-		trace.addItem(getDocItem("trace/untrace-var"));
-		
 		final DocSection json = new DocSection("JSON");
 		all.addSection(json);
 		json.addItem(getDocItem("json/write-str"));
@@ -1612,15 +1610,7 @@ public class DocGenerator {
 		json.addItem(getDocItem("json/spit"));
 		json.addItem(getDocItem("json/slurp"));
 		json.addItem(getDocItem("json/pretty-print"));
-		
-		final DocSection xml = new DocSection("XML");
-		all.addSection(xml);
-		xml.addItem(getDocItem("xml/parse-str"));
-		xml.addItem(getDocItem("xml/parse"));
-		xml.addItem(getDocItem("xml/path->"));
-		xml.addItem(getDocItem("xml/children"));
-		xml.addItem(getDocItem("xml/text"));
-		
+
 		final DocSection pdf = new DocSection("PDF");
 		all.addSection(pdf);
 		pdf.addItem(getDocItem("pdf/render", false));
@@ -1634,16 +1624,7 @@ public class DocGenerator {
 		pdf_tools.addItem(getDocItem("pdf/merge", false));
 		pdf_tools.addItem(getDocItem("pdf/copy", false));
 		pdf_tools.addItem(getDocItem("pdf/pages"));
-		
-		final DocSection crypt = new DocSection("Cryptography");
-		all.addSection(crypt);
-		crypt.addItem(getDocItem("crypt/md5-hash"));
-		crypt.addItem(getDocItem("crypt/sha1-hash"));
-		crypt.addItem(getDocItem("crypt/sha512-hash"));
-		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
-		crypt.addItem(getDocItem("crypt/encrypt"));
-		crypt.addItem(getDocItem("crypt/decrypt"));
-		
+
 		final DocSection csv = new DocSection("CSV");
 		all.addSection(csv);
 		csv.addItem(getDocItem("csv/read"));
@@ -1668,18 +1649,6 @@ public class DocGenerator {
 		cidr_trie.addItem(getDocItem("cidr/lookup"));
 		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
 		
-		final DocSection gradle = new DocSection("Gradle");
-		all.addSection(gradle);
-		gradle.addItem(getDocItem("gradle/with-home", false));
-		gradle.addItem(getDocItem("gradle/version", false));
-		gradle.addItem(getDocItem("gradle/task", false));
-		
-		final DocSection maven = new DocSection("Maven");
-		all.addSection(maven);
-		maven.addItem(getDocItem("maven/download", false));
-		maven.addItem(getDocItem("maven/get", false));
-		maven.addItem(getDocItem("maven/uri", false));
-		
 		final DocSection other = new DocSection("Other");
 		all.addSection(other);
 		other.addItem(getDocItem("*version*"));
@@ -1689,6 +1658,57 @@ public class DocGenerator {
 		other.addItem(getDocItem("*ns*"));
 		other.addItem(getDocItem("*run-mode*"));
 		other.addItem(getDocItem("*ansi-term*"));
+
+		return section;
+	}
+
+	private DocSection getModulesSection() {
+		final DocSection section = new DocSection("Extension Modules (selection)", id());
+
+		final DocSection all = new DocSection("");
+		section.addSection(all);
+		
+		final DocSection trace = new DocSection("Tracing");
+		all.addSection(trace);
+		trace.addItem(new DocItem("(load-module :trace)", null));
+		trace.addItem(getDocItem("trace/trace"));
+		trace.addItem(getDocItem("trace/traced?"));
+		trace.addItem(getDocItem("trace/traceable?"));
+		trace.addItem(getDocItem("trace/trace-var"));
+		trace.addItem(getDocItem("trace/untrace-var"));
+		
+		final DocSection xml = new DocSection("XML");
+		all.addSection(xml);
+		xml.addItem(new DocItem("(load-module :xml)", null));
+		xml.addItem(getDocItem("xml/parse-str"));
+		xml.addItem(getDocItem("xml/parse"));
+		xml.addItem(getDocItem("xml/path->"));
+		xml.addItem(getDocItem("xml/children"));
+		xml.addItem(getDocItem("xml/text"));
+		
+		final DocSection crypt = new DocSection("Cryptography");
+		all.addSection(crypt);
+		crypt.addItem(new DocItem("(load-module :crypt)", null));
+		crypt.addItem(getDocItem("crypt/md5-hash"));
+		crypt.addItem(getDocItem("crypt/sha1-hash"));
+		crypt.addItem(getDocItem("crypt/sha512-hash"));
+		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
+		crypt.addItem(getDocItem("crypt/encrypt"));
+		crypt.addItem(getDocItem("crypt/decrypt"));
+		
+		final DocSection gradle = new DocSection("Gradle");
+		all.addSection(gradle);
+		gradle.addItem(new DocItem("(load-module :gradle)", null));
+		gradle.addItem(getDocItem("gradle/with-home", false));
+		gradle.addItem(getDocItem("gradle/version", false));
+		gradle.addItem(getDocItem("gradle/task", false));
+		
+		final DocSection maven = new DocSection("Maven");
+		all.addSection(maven);
+		maven.addItem(new DocItem("(load-module :maven)", null));
+		maven.addItem(getDocItem("maven/download", false));
+		maven.addItem(getDocItem("maven/get", false));
+		maven.addItem(getDocItem("maven/uri", false));
 
 		return section;
 	}
@@ -1779,9 +1799,17 @@ public class DocGenerator {
 			final CapturingPrintStream ps_err = new CapturingPrintStream();
 
 			try {
+				final String script = 
+						"(do \n" +
+						preloadedModules
+							.stream()
+							.map(m -> "  (load-module :" + m + ") \n")
+							.collect(Collectors.joining("\n")) +
+						"(pr-str " + example + "\n))";
+				
 				final String result = (String)runner.eval(
 											"example",
-											"(pr-str " + example + "\n)",
+											script,
 											Parameters.of(
 												"*out*", ps_out,
 												"*err*", ps_err));
@@ -1850,6 +1878,8 @@ public class DocGenerator {
 	
 	
 	private final AtomicLong gen = new AtomicLong(1000);
+	
+	private final List<String> preloadedModules = new ArrayList<>();
 
 	private final Map<String, DocItem> docItems = new HashMap<>();
 	private final Env env;
