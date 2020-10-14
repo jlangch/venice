@@ -738,6 +738,32 @@ public class SpecialFormsTest {
 
 		assertEquals(Long.valueOf(89L), venice.eval(lisp));
 	}
+
+	@Test
+	public void test_loop_not_tail_pos_1() {
+		final Venice venice = new Venice();
+		
+		final String s = 
+				"(loop [x 10]           \n" +
+				"   (when (> x 1)       \n" +
+				"      (recur (- x 2))  \n" +
+				"      67))               ";
+
+		assertThrows(VncException.class, () -> venice.eval(s));
+	}
+
+	@Test
+	public void test_loop_not_tail_pos_2() {
+		final Venice venice = new Venice();
+		
+		final String s = 
+				"(loop [x 10]           \n" +
+				"   (when (> x 1)       \n" +
+				"      (recur (- x 2))) \n" +
+				"   67)                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(s));
+	}
 	
 	@Test
 	public void test_keyword_as_function() {
