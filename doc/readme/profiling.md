@@ -232,33 +232,33 @@ Metrics:
 --------------------------------------------------
 Metrics: fibonacci
 --------------------------------------------------
-macroexpand      [ 54400]:   445,10 ms     8,18 us
-user/_test       [     1]:   403,48 ms            
-user/fib         [   100]:   403,36 ms     4,03 ms
-cond[m]          [ 24700]:   223,11 ms     9,03 us
-math/bigint-add  [  4900]:   132,95 ms    27,13 us
-math/bigint      [  9800]:   122,04 ms    12,45 us
-case[m]          [  5000]:   116,03 ms    23,21 us
-when[m]          [ 24700]:    91,61 ms     3,71 us
-mapcat           [  5000]:    41,98 ms     8,40 us
-cons             [213500]:    25,33 ms      118 ns
-math/bigint?     [  9800]:    21,52 ms     2,20 us
-instance?        [  9800]:    13,94 ms     1,42 us
-rest             [ 74100]:     8,01 ms      108 ns
-concat           [ 29700]:     7,63 ms      256 ns
-list             [ 24700]:     3,31 ms      134 ns
-second           [ 24700]:     2,79 ms      113 ns
-first            [ 24700]:     2,67 ms      108 ns
-partition        [  5000]:     2,65 ms      530 ns
-.                [  4900]:     2,45 ms      499 ns
-not-empty?       [ 24700]:     2,37 ms       95 ns
-count            [ 10000]:     1,20 ms      119 ns
-odd?             [ 10000]:   973,08 us       97 ns
-==               [ 10000]:   939,74 us       93 ns
-gensym           [  5000]:   919,17 us      183 ns
-butlast          [  5000]:   751,97 us      150 ns
-dec              [  4900]:   641,48 us      130 ns
-last             [  5000]:   599,37 us      119 ns
+macroexpand      [ 54400]:   423,29 ms     7,78 us
+user/_test       [     1]:   378,83 ms            
+user/fib         [   100]:   378,57 ms     3,79 ms
+cond[m]          [ 24700]:   211,58 ms     8,57 us
+math/bigint-add  [  4900]:   123,78 ms    25,26 us
+math/bigint      [  9800]:   115,10 ms    11,75 us
+case[m]          [  5000]:   108,21 ms    21,64 us
+when[m]          [ 24700]:    87,53 ms     3,54 us
+mapcat           [  5000]:    39,04 ms     7,81 us
+cons             [213500]:    22,62 ms      105 ns
+math/bigint?     [  9800]:    19,95 ms     2,04 us
+instance?        [  9800]:    13,53 ms     1,38 us
+rest             [ 74100]:     7,66 ms      103 ns
+concat           [ 29700]:     7,63 ms      257 ns
+list             [ 24700]:     3,32 ms      134 ns
+first            [ 24700]:     3,18 ms      128 ns
+partition        [  5000]:     2,27 ms      453 ns
+not-empty?       [ 24700]:     2,21 ms       89 ns
+.                [  4900]:     2,18 ms      445 ns
+second           [ 24700]:     2,04 ms       82 ns
+count            [ 10000]:     1,19 ms      118 ns
+gensym           [  5000]:   984,13 us      196 ns
+odd?             [ 10000]:   910,53 us       91 ns
+==               [ 10000]:   909,58 us       90 ns
+butlast          [  5000]:   886,89 us      177 ns
+dec              [  4900]:   693,19 us      141 ns
+last             [  5000]:   557,28 us      111 ns
 --------------------------------------------------
 ```
 

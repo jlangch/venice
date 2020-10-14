@@ -90,7 +90,27 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
-
+/**
+ * The Venice interpreter runs the scripts and handles the special forms
+ * 
+ * 	
+ * <p>Tail recursion (loop-recur):		
+ * <pre>		
+ *   +----------------+-------------------------------------------+---------------+
+ *   | Form           | Tail Position                             | recur target? |
+ *   +----------------+-------------------------------------------+---------------+
+ *   | fn, defn       | (fn [args] expressions tail)              | No            |
+ *   | loop           | (loop [bindings] expressions tail)        | Yes           |
+ *   | let            | (let [bindings] expressions tail)         | No            |
+ *   | do             | (do expressions tail)                     | No            |
+ *   | if, if-not     | (if test then tail else tail)             | No            |
+ *   | when, when-not | (when test expressions tail)              | No            |
+ *   | cond           | (cond test tail ... :else else tail)      | No            |
+ *   | case           | (case const tail ... default tail)        | No            |
+ *   | or, and        | (or test test ... tail)                   | No            |
+ *   +----------------+-------------------------------------------+---------------+
+ * </pre>
+ */
 public class VeniceInterpreter implements Serializable  {
 
 	public VeniceInterpreter(final IInterceptor interceptor) {
@@ -313,6 +333,38 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 					
+				case "if": 
+					// (if cond expr-true expr-false*)
+					final VncVal cond = evaluate(ast.second(), env);
+					orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
+									? ast.fourth()   // eval false slot form (nil if not available)
+									: ast.third();   // eval true slot form
+					break;
+					
+				case "let":  { // (let [bindings*] exprs*)
+					env = new Env(env);  // let introduces a new environment
+	
+					final VncVector bindings = Coerce.toVncVector(ast.second());
+					final VncList expressions = ast.slice(2);
+				
+					for(int i=0; i<bindings.size(); i+=2) {
+						final VncVal sym = bindings.nth(i);
+						final VncVal val = evaluate(bindings.nth(i+1), env);
+						env.addLocalVars(Destructuring.destructure(sym, val));
+					}
+						
+					evaluate_values(expressions.butlast(), env);
+					orig_ast = expressions.last();
+					break;
+				}
+					
+				case "fn":
+					// (fn name? [params*] condition-map? expr*)
+					return fn_(ast, env);
+					
+				case "eval":
+					return eval_(new CallFrame("eval", a0.getMeta()), ast, env);
+					
 				case "def":  // (def name value)
 					return def_(new CallFrame("def", a0.getMeta()), ast, env);
 				
@@ -422,32 +474,6 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "modules": // (modules )
 					return modules_(new CallFrame("modules", a0.getMeta()), ast, env);
-					
-				case "eval":
-					return eval_(new CallFrame("eval", a0.getMeta()), ast, env);
-					
-				case "let":  { // (let [bindings*] exprs*)
-					env = new Env(env);
-	
-					final VncVector bindings = Coerce.toVncVector(ast.second());
-					final VncList expressions = ast.slice(2);
-				
-					for(int i=0; i<bindings.size(); i+=2) {
-						final VncVal sym = bindings.nth(i);
-						final VncVal val = evaluate(bindings.nth(i+1), env);
-
-						env.addLocalVars(Destructuring.destructure(sym, val));
-					}
-						
-					if (expressions.isEmpty()) {
-						orig_ast = Constants.Nil;
-					}
-					else {
-						evaluate_values(expressions.butlast(), env);
-						orig_ast = expressions.last();
-					}
-					break;
-				}
 				
 				case "binding":  // (binding [bindings*] exprs*)
 					return binding_(ast, new Env(env));
@@ -475,6 +501,8 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					
 					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
+					
+					// optimization for small loops
 					if (expressions.size() == 1) {
 						orig_ast = expressions.first();
 					}
@@ -486,20 +514,6 @@ public class VeniceInterpreter implements Serializable  {
 				break;
 	
 				case "recur":  { // (recur exprs*)
-					// +----------------+-------------------------------------------+---------------+
-					// | Form           | Tail Position                             | recur target? |
-					// +----------------+-------------------------------------------+---------------+
-					// | fn, defn       | (fn [args] expressions tail)              | No            |
-					// | loop           | (loop [bindings] expressions tail)        | Yes           |
-					// | let            | (let [bindings] expressions tail)         | No            |
-					// | do             | (do expressions tail)                     | No            |
-					// | if, if-not     | (if test then tail else tail)             | No            |
-					// | when, when-not | (when test expressions tail)              | No            |
-					// | cond           | (cond test test tail ... :else else tail) | No            |
-					// | case           | (case const const tail ... default tail)  | No            |
-					// | or, and        | (or test test ... tail)                   | No            |
-					// +----------------+-------------------------------------------+---------------+
-
 					if (recursionPoint == null) {
 						try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
 							throw new VncException("The recur expression is not in tail position!");
@@ -566,6 +580,9 @@ public class VeniceInterpreter implements Serializable  {
 				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
 					return try_with_(new CallFrame("try-with", a0.getMeta()), ast, new Env(env));
 					
+				case "locking":
+					return locking_(new CallFrame("locking", a0.getMeta()), ast, env);
+					
 				case "dorun":
 					specialFormCallValidation("dorun");
 					return dorun_(new CallFrame("dorun", a0.getMeta()), ast, env);
@@ -573,31 +590,11 @@ public class VeniceInterpreter implements Serializable  {
 				case "dobench":
 					specialFormCallValidation("dobench");
 					return dobench_(new CallFrame("dobench", a0.getMeta()), ast, env);
-					
-				case "if": 
-					// (if cond expr-true expr-false*)
-					final VncVal cond = evaluate(ast.second(), env);
-					if (VncBoolean.isFalse(cond) || cond == Nil) {
-						// eval false slot form (nil if not available)
-						orig_ast = ast.fourth();
-					} 
-					else {
-						// eval true slot form
-						orig_ast = ast.third();
-					}
-					break;
-					
-				case "fn":
-					// (fn name? [params*] condition-map? expr*)
-					return fn_(ast, env);
-					
+										
 				case "prof":
 					specialFormCallValidation("prof");
 					return prof_(new CallFrame("prof", a0.getMeta()), ast, env);
-					
-				case "locking":
-					return locking_(new CallFrame("locking", a0.getMeta()), ast, env);
-					
+
 				default:				
 					final VncList el = (VncList)evaluate_values(ast, env);
 					final VncVal elFirst = el.first();
@@ -632,11 +629,10 @@ public class VeniceInterpreter implements Serializable  {
 							orig_ast = body.last();
 						}
 						else {
-							// invoke function with call frame
+							// invoke function with a new call frame
+							// Note: the overhead with callstack and interrupt check is ~150ns
 							try {
-								callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
-								
-								// Note: the overhead with callstack and interrupt check is ~150ns
+								callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));								
 								return fn.apply(elArgs);
 							}
 							finally {
@@ -666,7 +662,7 @@ public class VeniceInterpreter implements Serializable  {
 									Types.getType(elFirst)));
 						}
 					}
-				
+					break;
 			}
 		}
 	}
