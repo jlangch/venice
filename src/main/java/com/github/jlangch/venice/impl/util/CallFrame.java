@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -32,6 +33,11 @@ import com.github.jlangch.venice.util.StackFrame;
 
 
 public class CallFrame {
+
+	public CallFrame(final VncSymbol sym) {
+		this.fnName = sym.getQualifiedName();
+		this.meta = sym.getMeta();
+	}
 
 	public CallFrame(final String fnName, final VncVal meta) {
 		this.fnName = fnName;

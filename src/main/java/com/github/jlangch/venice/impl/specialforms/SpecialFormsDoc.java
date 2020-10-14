@@ -437,7 +437,7 @@ public class SpecialFormsDoc {
 					.examples(
 							"(do                                                                       \n" +
 							"   ;;defmulti with dispatch function                                      \n" +
-							"   (defmulti salary (fn[amount] (amount :t)))                             \n" +
+							"   (defmulti salary (fn [amount] (amount :t)))                            \n" +
 							"                                                                          \n" +
 							"   ;;defmethod provides a function implementation for a particular value  \n" +
 							"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
