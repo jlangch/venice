@@ -32,6 +32,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   E.g.: `(proxify :java.util.function.Function { :apply #(+ % 1) })` can be simplified to `(as-function #(+ % 1))`
 - experimental automatic tail call optimization
   
+### Fixed
+
+- stack trace for special form errors.The line/col information was missing for errors 
+  with some special forms.
 
 
 
