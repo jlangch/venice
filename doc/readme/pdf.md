@@ -5,8 +5,8 @@ libs are on the runtime classpath:
 
  - org.xhtmlrenderer:flying-saucer-core:9.1.20
  - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20
- - com.github.librepdf:openpdf:1.3.19
- - com.github.librepdf:pdf-toolbox:1.3.19
+ - com.github.librepdf:openpdf:1.3.22
+ - com.github.librepdf:pdf-toolbox:1.3.22
  
 Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layout and formatting with output to PDF.
 
@@ -119,15 +119,20 @@ References:
 ## Tables
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
 
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+
+
   (defn format-birth-date [s] (if (string? s) s (time/format s "yyyy-MM-dd")))
-  
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -222,56 +227,56 @@ References:
            }
          </style>
        </head>
-       
+
        <body>
          <div class="title">Venice PDF Tables</div>
          <div class="subtitle">Example</div>
-                 
+
          <table class="people people1">
            <tbody>
-             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
              <tr>
-               <td>${ (kira/escape-xml (nth p 0)) }$</td>
-               <td>${ (kira/escape-xml (nth p 1)) }$</td>
-               <td>${ (kira/escape-xml (nth p 2)) }$</td>
-               <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+               <td>${ (kira/escape-xml last) }$</td>
+               <td>${ (kira/escape-xml first) }$</td>
+               <td>${ (kira/escape-xml city) }$</td>
+               <td>${ (kira/escape-xml gender) }$</td>
+               <td>${ (kira/escape-xml age) }$</td>
+               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
          </table>
-                 
+
          <table class="people people2">
            <tbody>
-             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
              <tr>
-               <td>${ (kira/escape-xml (nth p 0)) }$</td>
-               <td>${ (kira/escape-xml (nth p 1)) }$</td>
-               <td>${ (kira/escape-xml (nth p 2)) }$</td>
-               <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+               <td>${ (kira/escape-xml last) }$</td>
+               <td>${ (kira/escape-xml first) }$</td>
+               <td>${ (kira/escape-xml city) }$</td>
+               <td>${ (kira/escape-xml gender) }$</td>
+               <td>${ (kira/escape-xml age) }$</td>
+               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
          </table>
-         
+
          <table class="people people3">
            <tbody>
-             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
              <tr>
-               <td>${ (kira/escape-xml (nth p 0)) }$</td>
-               <td>${ (kira/escape-xml (nth p 1)) }$</td>
-               <td>${ (kira/escape-xml (nth p 2)) }$</td>
-               <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+               <td>${ (kira/escape-xml last) }$</td>
+               <td>${ (kira/escape-xml first) }$</td>
+               <td>${ (kira/escape-xml city) }$</td>
+               <td>${ (kira/escape-xml gender) }$</td>
+               <td>${ (kira/escape-xml age) }$</td>
+               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
          </table>
-         
+
        </body>
      </html>
      """)
@@ -279,9 +284,9 @@ References:
   (def data {
        :persons
            [ [ "Last Name" "First Name" "City"   "Gender" "Age" "Birthdate"                   ]
-             [ "Meier"     "Peter"      "Bern"    "m"      42    (time/local-date 1977 10  1) ] 
-             [ "Schmid"    "Hans"       "Luzern"  "m"      56    (time/local-date 1963  8 12) ] 
-             [ "Winter"    "Maria"      "Aarau"   "f"      23    (time/local-date 1996  4  8) ] 
+             [ "Meier"     "Peter"      "Bern"    "m"      42    (time/local-date 1977 10  1) ]
+             [ "Schmid"    "Hans"       "Luzern"  "m"      56    (time/local-date 1963  8 12) ]
+             [ "Winter"    "Maria"      "Aarau"   "f"      23    (time/local-date 1996  4  8) ]
              [ "Halter"    "Carla"      "Zürich"  "f"       9    (time/local-date 2010  9 28) ] ]
       } )
 
@@ -1111,6 +1116,6 @@ Copy pages from a PDF to a new PDF
   
   (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.20")
   (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20")
-  (maven/download "com.github.librepdf:openpdf:1.3.19")
-  (maven/download "com.github.librepdf:pdf-toolbox:1.3.19"))
+  (maven/download "com.github.librepdf:openpdf:1.3.22")
+  (maven/download "com.github.librepdf:pdf-toolbox:1.3.22"))
 ```

@@ -84,8 +84,13 @@ public class TimeFunctionsTest {
 		assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-12-01\" \"yyyy-MM-dd\"))"));		
 		assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH))"));		
 		
-		// TODO: why does this fail??
-		//assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-Dez-01\" \"yyyy-MMM-dd\" :GERMAN))"));
+		// TODO: why does this fail?
+		//  see: https://medium.com/better-programming/localization-changes-in-java-9-c05ffde8cc2f	
+		//assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018-Dez-01\" \"yyyy-MMM-dd\" :GERMAN))"));	
+		
+		// works on JDK 11
+		//assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018 Dez. 01\" \"yyyy MMM dd\" :de))"));
+		//assertEquals("2018-12-01", venice.eval("(str (time/local-date-parse \"2018 Dez. 01\" \"yyyy MMM dd\" :de_DE))"));
 	}
 
 	@Test

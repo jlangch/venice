@@ -134,14 +134,14 @@
 
          <table class="people people1">
            <tbody>
-             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
              <tr>
-               <td>${ (kira/escape-xml (nth p 0)) }$</td>
-               <td>${ (kira/escape-xml (nth p 1)) }$</td>
-               <td>${ (kira/escape-xml (nth p 2)) }$</td>
-               <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+               <td>${ (kira/escape-xml last) }$</td>
+               <td>${ (kira/escape-xml first) }$</td>
+               <td>${ (kira/escape-xml city) }$</td>
+               <td>${ (kira/escape-xml gender) }$</td>
+               <td>${ (kira/escape-xml age) }$</td>
+               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
@@ -149,14 +149,14 @@
 
          <table class="people people2">
            <tbody>
-             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
              <tr>
-               <td>${ (kira/escape-xml (nth p 0)) }$</td>
-               <td>${ (kira/escape-xml (nth p 1)) }$</td>
-               <td>${ (kira/escape-xml (nth p 2)) }$</td>
-               <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+               <td>${ (kira/escape-xml last) }$</td>
+               <td>${ (kira/escape-xml first) }$</td>
+               <td>${ (kira/escape-xml city) }$</td>
+               <td>${ (kira/escape-xml gender) }$</td>
+               <td>${ (kira/escape-xml age) }$</td>
+               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>
@@ -164,14 +164,14 @@
 
          <table class="people people3">
            <tbody>
-             ${ (kira/foreach persons (fn [p] (kira/emit }$
+             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
              <tr>
-               <td>${ (kira/escape-xml (nth p 0)) }$</td>
-               <td>${ (kira/escape-xml (nth p 1)) }$</td>
-               <td>${ (kira/escape-xml (nth p 2)) }$</td>
-               <td>${ (kira/escape-xml (nth p 3)) }$</td>
-               <td>${ (kira/escape-xml (nth p 4)) }$</td>
-               <td>${ (kira/escape-xml (nth p 5) test/format-birth-date) }$</td>
+               <td>${ (kira/escape-xml last) }$</td>
+               <td>${ (kira/escape-xml first) }$</td>
+               <td>${ (kira/escape-xml city) }$</td>
+               <td>${ (kira/escape-xml gender) }$</td>
+               <td>${ (kira/escape-xml age) }$</td>
+               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
              ${ ))) }$
            </tbody>

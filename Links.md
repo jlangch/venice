@@ -18,6 +18,9 @@
 
 
 ### Java 9 Modules
+
+[Java 8 with module info](https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle)
+
 [Java 8 with module info](https://stackoverflow.com/questions/55100737/compile-a-jdk-8-project-a-jdk-9-module-info-java-in-gradle)
 
 [Gradle multi-release JARs](https://blog.gradle.org/mrjars)
