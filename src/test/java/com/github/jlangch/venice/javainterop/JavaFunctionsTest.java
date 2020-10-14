@@ -23,6 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
@@ -42,6 +43,15 @@ public class JavaFunctionsTest {
 		assertEquals(
 				java.util.ArrayList.class, 
 				venice.eval("(class :java.util.ArrayList)"));
+	}
+
+	@Test
+	public void test_class_version() {
+		final Venice venice = new Venice();
+
+		final long version = (Long)venice.eval("(class-version :com.github.jlangch.venice.Venice)");
+		
+		assertTrue(version >= 52);
 	}
 
 	@Test

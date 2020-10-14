@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -209,7 +210,6 @@ public class JavaInteropFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
-
 	public static class FormalTypeFn extends AbstractJavaFn {
 		public FormalTypeFn() {
 			super(
@@ -335,6 +335,42 @@ public class JavaInteropFunctions {
 						"Function 'class-name' requires a Java class as argument", 
 						Types.getType(args.first())));
 			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaClassVersionFn extends AbstractJavaFn {
+		public JavaClassVersionFn() {
+			super(
+				"class-version", 
+				VncFunction
+					.meta()
+					.arglists("(class-version class)")
+					.doc(
+						"Returns the major version of a Java class.\n\n" +
+						"Java major versions:\n" +
+						"  - Java 8 uses major version 52\n" +
+						"  - Java 9 uses major version 53\n" +
+						"  - Java 10 uses major version 54\n" +
+						"  - Java 11 uses major version 55\n" +
+						"  - Java 12 uses major version 56\n" +
+						"  - Java 13 uses major version 57\n" +
+						"  - Java 14 uses major version 58\n" +
+						"  - Java 15 uses major version 59")
+					.examples("(class-version :com.github.jlangch.venice.Venice)")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			assertArity(args, 1);
+			sandboxFunctionCallValidation();
+				
+			final VncKeyword cl = Coerce.toVncKeyword(args.first());
+			final String name = cl.getValue().replace(".", "/") + ".class";
+					
+			return new VncLong(ClassVersionChecker.getClassResourceMajorVersion(name));
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -956,6 +992,7 @@ public class JavaInteropFunctions {
 					.add(new JavaClassFn())
 					.add(new JavaClassOfFn())
 					.add(new JavaClassNameFn())
+					.add(new JavaClassVersionFn())
 					.add(new JavaClassLoaderFn())
 					.add(new JavaClassLoaderOfFn())
 					.add(new JavaUnwrapOptionalFn())

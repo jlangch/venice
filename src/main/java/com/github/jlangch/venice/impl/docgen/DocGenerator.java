@@ -1591,6 +1591,7 @@ public class DocGenerator {
 		clazz.addItem(getDocItem("class"));
 		clazz.addItem(getDocItem("class-of"));
 		clazz.addItem(getDocItem("class-name"));
+		clazz.addItem(getDocItem("class-version"));
 		clazz.addItem(getDocItem("classloader"));
 		clazz.addItem(getDocItem("classloader-of"));
 		
