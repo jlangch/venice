@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.javainterop;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
@@ -31,41 +32,33 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 /**
  * Reads the Java major version from a class file
  * 
+ * <p>The definition of the class file format can be found here: 
+ * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html">Format</a>
+ * 
  * <ul>
- * <li> Java 1.2 uses major version 46
- * <li> Java 1.3 uses major version 47
- * <li> Java 1.4 uses major version 48
- * <li> Java 5 uses major version 49
- * <li> Java 6 uses major version 50
- * <li> Java 7 uses major version 51
- * <li> Java 8 uses major version 52
- * <li> Java 9 uses major version 53
- * <li> Java 10 uses major version 54
- * <li> Java 11 uses major version 55
- * <li> Java 12 uses major version 56
- * <li> Java 13 uses major version 57
- * <li> Java 14 uses major version 58
- * <li> Java 15 uses major version 59
+ * <li> Java 1.2 uses major version 46</li>
+ * <li> Java 1.3 uses major version 47</li>
+ * <li> Java 1.4 uses major version 48</li>
+ * <li> Java 5 uses major version 49</li>
+ * <li> Java 6 uses major version 50</li>
+ * <li> Java 7 uses major version 51</li>
+ * <li> Java 8 uses major version 52</li>
+ * <li> Java 9 uses major version 53</li>
+ * <li> Java 10 uses major version 54</li>
+ * <li> Java 11 uses major version 55</li>
+ * <li> Java 12 uses major version 56</li>
+ * <li> Java 13 uses major version 57</li>
+ * <li> Java 14 uses major version 58</li>
+ * <li> Java 15 uses major version 59</li>
  * </ul>
  */
 public class ClassVersionChecker {
 
-	@SuppressWarnings("unused")
 	public static int getClassResourceMajorVersion(final String classResource) {
-		try (DataInputStream in = new DataInputStream(
-									new ClassPathResource(classResource)
-											.getInputStream())) {
-			
-			final int magic = in.readInt();
-			if (magic != MAGIC) {
-				throw new RuntimeException(
-						classResource + " is not a valid class!");
-			}
-			
-			final int minor = in.readUnsignedShort();
-			final int major = in.readUnsignedShort();
-			
-			return major;
+		try {		
+			return readMajorVersion(
+						new ClassPathResource(classResource).getInputStream(), 
+						classResource);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(
@@ -74,19 +67,11 @@ public class ClassVersionChecker {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public static int getClassFileMajorVersion(final String filename) {
-		try (DataInputStream in = new DataInputStream(new FileInputStream(filename))) {
-			
-			final int magic = in.readInt();
-			if (magic != MAGIC) {
-				throw new RuntimeException(filename + " is not a valid class!");
-			}
-			
-			final int minor = in.readUnsignedShort();
-			final int major = in.readUnsignedShort();
-			
-			return major;
+		try {
+			return readMajorVersion(
+						new FileInputStream(filename), 
+						filename);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(
@@ -95,6 +80,22 @@ public class ClassVersionChecker {
 		}
 	}
 	
+	@SuppressWarnings("unused")
+	private static int readMajorVersion(final InputStream in, final String source) throws IOException {
+		try (DataInputStream din = new DataInputStream(in)) {
+			
+			final int magic = din.readInt();
+			if (magic != MAGIC) {
+				throw new RuntimeException(source + " is not a valid class!");
+			}
+			
+			final int minor = din.readUnsignedShort();
+			final int major = din.readUnsignedShort();
+			
+			return major;
+		}
+	}
 	
-	private static int MAGIC = 0xcafebabe;
+	
+	private static int MAGIC = 0xcafebabe; // 4 bytes
 }
