@@ -29,6 +29,7 @@
 //   The Venice Gradle build is prepared to support building a Java 8 library 
 //   for JPMS. The 'compileModuleInfoJava' task provides a Java 9 compiled 
 //   'module-info.class' in the root output directory.
+//   See also: https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle
 //
 //
 // Build commands
