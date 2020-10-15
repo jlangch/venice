@@ -129,9 +129,6 @@ plugins {
 
     // https://github.com/kordamp/jdeprscan-gradle-plugin
     id 'org.kordamp.gradle.jdeprscan' version '0.8.0'
-    
-    // https://github.com/java9-modularity/gradle-modules-plugin
-    //id 'org.javamodularity.moduleplugin' version '1.7.0'
 }
 
 
@@ -157,7 +154,7 @@ compileTestJava {
     options.compilerArgs += '-parameters'
 }
 
-/* currently disabled
+/* JPMS support currently disabled
 task compileModuleInfoJava(type: JavaCompile) {
     classpath = files() // empty
     source = 'src/main/java9/module-info.java'

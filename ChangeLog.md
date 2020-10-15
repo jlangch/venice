@@ -28,9 +28,13 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - a tracing extension module to help with debugging
-- a few helper functions to simplify using Java Dynamic Proxies with Java functional interfaces.
-  E.g.: `(proxify :java.util.function.Function { :apply #(+ % 1) })` can be simplified to `(as-function #(+ % 1))`
-- experimental automatic tail call optimization
+- a few helper functions to simplify using Java Dynamic Proxies with Java functional 
+  interfaces.
+  E.g.: `(proxify :java.util.function.Function { :apply #(+ % 1) })` can be simplified 
+  to `(as-function #(+ % 1))`
+- experimental automatic tail call optimization, not yet enabled for releases.
+- experimental JPMS (Java Platform Module System support), not yet enabled for releases. 
+  Enhanced the Gradle build for building Venice as a Java 8 library supporting JPMS
   
 ### Fixed
 
