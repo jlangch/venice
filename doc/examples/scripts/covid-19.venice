@@ -48,7 +48,7 @@
 
   (def sample-days 14)
   (def quarantine-case-limit 60)
-
+  (def worldometers-url "https://www.worldometers.info/coronavirus/country/")
 
   ;; impure functions ------------------------------------------------ [start] -
 
@@ -59,9 +59,8 @@
 
   (defn load-country-html-data [country]
     (println "Loading cases for" country "...")
-    (io/download (str "https://www.worldometers.info/coronavirus/country/"
-                      (str/lower-case country)
-                      "/")))
+    (io/download (str worldometers-url (str/lower-case country) "/")
+                 :user-agent "Mozilla"))
 
   (defn load-countries-html-data [countries]
     ; returns a list of tuples [country html]
