@@ -23,6 +23,14 @@
 // -----------------------------------------------------------------------------
 // Gradle build
 // -----------------------------------------------------------------------------
+// 
+// JPMS (Java Platform Module System)
+//
+//   The Venice Gradle build is prepared to support building a Java 8 library 
+//   for JPMS. The 'compileModuleInfoJava' task provides a Java 9 compiled 
+//   'module-info.class' in the root output directory.
+//
+//
 // Build commands
 //
 //   - Build the Venice jar
@@ -107,13 +115,23 @@
 //    Repeat step 5) and 6) whenever the Gradle build changes
 // -----------------------------------------------------------------------------
 
-// https://github.com/johnrengelman/shadow/
 plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'com.github.johnrengelman.shadow' version '6.0.0'
     id 'eclipse'
+
+    // https://github.com/johnrengelman/shadow/
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+
+    // https://github.com/kordamp/jdeps-gradle-plugin
+    id 'org.kordamp.gradle.jdeps' version '0.11.0'
+
+    // https://github.com/kordamp/jdeprscan-gradle-plugin
+    id 'org.kordamp.gradle.jdeprscan' version '0.8.0'
+    
+    // https://github.com/java9-modularity/gradle-modules-plugin
+    //id 'org.javamodularity.moduleplugin' version '1.7.0'
 }
 
 
@@ -129,15 +147,33 @@ compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     options.encoding = 'UTF-8'
-    options.compilerArgs += "-parameters"
+    options.compilerArgs += '-parameters'
 }
 
 compileTestJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     options.encoding = 'UTF-8'
-    options.compilerArgs += "-parameters"
+    options.compilerArgs += '-parameters'
 }
+
+/* currently disabled
+task compileModuleInfoJava(type: JavaCompile) {
+    classpath = files() // empty
+    source = 'src/main/java9/module-info.java'
+    destinationDir = compileJava.destinationDir // same dir to see classes compiled by compileJava
+
+    doFirst {
+        options.compilerArgs = [
+           '--release', '9',
+           '--module-path', compileJava.classpath.asPath
+        ]
+    }
+}
+
+compileModuleInfoJava.dependsOn compileJava
+classes.dependsOn compileModuleInfoJava
+*/
 
 
 repositories {
@@ -279,6 +315,17 @@ signing {
     useGpgCmd()  // use the local GPG agent to sign the artefacts
     
     sign publishing.publications.venicePublication
+}
+
+jdepsReport {
+    sourceSets = ['main']
+    configurations = ['runtime']
+}
+
+jdeprscanReport {
+    // requires Java 9+
+    sourceSets = ['main']
+    configurations = ['runtime']
 }
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
