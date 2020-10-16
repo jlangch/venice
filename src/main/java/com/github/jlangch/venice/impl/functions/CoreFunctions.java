@@ -6797,7 +6797,9 @@ public class CoreFunctions {
 						"the value x repeated n times.")
 					.examples(
 						"(repeat 3 \"hello\")",
-						"(repeat 5 [1 2])")
+						"(repeat 5 [1 2])",
+						"(repeat \":\")",
+						"(interleave [:a :b :c] (repeat 100))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

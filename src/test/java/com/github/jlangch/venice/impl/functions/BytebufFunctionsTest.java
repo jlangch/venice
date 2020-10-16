@@ -75,6 +75,13 @@ public class BytebufFunctionsTest {
 
 		assertEquals("abcdef",  venice.eval("(bytebuf-to-string (bytebuf [97 98 99 100 101 102]) :UTF-8)"));		
 	}
+	
+	@Test
+	public void test_bytebuf_to_list() {
+		final Venice venice = new Venice();
+
+		assertEquals("(97I 98I 99I 100I)",  venice.eval("(pr-str (doall (bytebuf-to-list (bytebuf [97 98 99 100]))))"));		
+	}
 
 	@Test
 	public void test_bytebuf_sub() {

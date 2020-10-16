@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -39,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -258,6 +260,43 @@ public class BytebufFunctions {
 					throw new VncException(String.format(
 							"Failed to convert bytebuf to string"));
 				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_to_list =
+		new VncFunction(
+				"bytebuf-to-list",
+				VncFunction
+					.meta()
+					.arglists("(bytebuf-to-list buf)")
+					.doc( "Returns the bytebuf as lazy list of integers")
+					.examples("(doall (bytebuf-to-list (bytebuf [97 98 99])))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+				final AtomicLong idx = new AtomicLong(0L);
+				
+				final VncFunction iter = new VncFunction("iter") {
+					@Override
+					public VncVal apply(final VncList args) {
+						final int ii = (int)idx.getAndIncrement();
+						if (ii >= buf.limit()) {
+							return Nil;
+						}
+						else {
+							final int val = buf.get(ii) & 0xFF;
+							return new VncInteger(val);
+						}
+					}
+					private static final long serialVersionUID = 1L;
+				};
+				
+				return VncLazySeq.iterate(iter, Nil);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -537,16 +576,28 @@ public class BytebufFunctions {
 					.examples(
 					    "(-> (bytebuf-allocate 4)   \n" +
 						"    (bytebuf-put-byte! 1)  \n" +
-						"    (bytebuf-put-byte! 2))")
+						"    (bytebuf-put-byte! 2I))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final VncLong val = Coerce.toVncLong(args.nth(1));
-
-				buf.put(val.getValue().byteValue());
+				
+				final VncVal b = args.nth(1);
+				if (b instanceof VncInteger) {
+					final VncInteger val = Coerce.toVncInteger(args.nth(1));
+					buf.put(val.getValue().byteValue());
+				}
+				else if (b instanceof VncLong) {
+					final VncLong val = Coerce.toVncLong(args.nth(1));
+					buf.put(val.getValue().byteValue());
+				}
+				else {
+					throw new VncException(
+							"Function 'bytebuf-put-byte!' expects an integer or a long value"
+								+ "as second arg");
+				}
 				
 				return args.nth(0);
 			}
@@ -747,6 +798,7 @@ public class BytebufFunctions {
 				.add(bytebuf_capacity)
 				.add(bytebuf_limit)
 				.add(bytebuf_to_string)
+				.add(bytebuf_to_list)
 				.add(bytebuf_from_string)
 				.add(bytebuf_sub)
 				.add(bytebuf_get_byte)

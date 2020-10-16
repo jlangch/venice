@@ -1403,6 +1403,7 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("bytebuf-capacity"));
 		bb_use.addItem(getDocItem("bytebuf-limit"));
 		bb_use.addItem(getDocItem("bytebuf-to-string"));
+		bb_use.addItem(getDocItem("bytebuf-to-list"));
 		bb_use.addItem(getDocItem("bytebuf-sub"));
 		bb_use.addItem(getDocItem("bytebuf-pos"));
 		bb_use.addItem(getDocItem("bytebuf-pos!"));
