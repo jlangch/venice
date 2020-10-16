@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -233,69 +231,6 @@ public class CoreFunctionsTest {
 		assertEquals("[1 2]", venice.eval("(str (butlast [1 2 3]))"));
 		assertEquals("[1 2 3]", venice.eval("(str (butlast [1 2 3 4]))"));
 		assertEquals("[1 2 3 4]", venice.eval("(str (butlast [1 2 3 4 5]))"));
-	}
-	
-	@Test
-	public void test_bytebuf() {
-		final Venice venice = new Venice();
-
-		assertArrayEquals(new byte[0], ((ByteBuffer)venice.eval("(bytebuf)")).array());	
-		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf [0 1 2])")).array());		
-		assertEquals("(0 1 2)", venice.eval("(str (into '() (bytebuf [0 1 2])))"));		
-		assertEquals("(97 98 99)", venice.eval("(str (into '() (bytebuf \"abc\")))"));		
-		assertEquals("[0 1 2]", venice.eval("(str (into [] (bytebuf [0 1 2])))"));		
-		assertEquals("[97 98 99]", venice.eval("(str (into [] (bytebuf \"abc\")))"));		
-	}
-	
-	@Test
-	public void test_bytebuf_allocate() {
-		final Venice venice = new Venice();
-
-		assertArrayEquals(new byte[] {0,0}, ((ByteBuffer)venice.eval("(bytebuf-allocate 2)")).array());	
-	}
-	
-	@Test
-	public void test_bytebuf_Q() {
-		final Venice venice = new Venice();
-
-		assertTrue((Boolean)venice.eval("(bytebuf? (bytebuf))"));		
-		assertFalse((Boolean)venice.eval("(bytebuf? 1)"));		
-	}
-	
-	@Test
-	public void test_bytebuf_from_string() {
-		final Venice venice = new Venice();
-
-		assertArrayEquals(new byte[] {97,98,99,100,101,102}, ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8)")).array());		
-	}
-	
-	@Test
-	public void test_bytebuf_to_string() {
-		final Venice venice = new Venice();
-
-		assertEquals("abcdef",  venice.eval("(bytebuf-to-string (bytebuf [97 98 99 100 101 102]) :UTF-8)"));		
-	}
-
-	@Test
-	public void test_bytebuf_sub() {
-		final Venice venice = new Venice();
-
-		assertArrayEquals(new byte[] {3,4,5}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 3)")).array());		
-		assertArrayEquals(new byte[] {0,1,2}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 0 3)")).array());		
-		assertArrayEquals(new byte[] {2,3,4}, ((ByteBuffer)venice.eval("(bytebuf-sub (bytebuf [0 1 2 3 4 5]) 2 5)")).array());		
-	}
-
-	@Test
-	public void test_bytebuf_put_buf_BANG() {
-		final Venice venice = new Venice();
-
-		assertArrayEquals(new byte[] {1,2,3,0,0}, ((ByteBuffer)venice.eval("(-> (bytebuf-allocate 5) (bytebuf-pos! 0) (bytebuf-put-buf! (bytebuf [1 2 3]) 0 3))")).array());		
-		assertArrayEquals(new byte[] {0,1,2,3,0}, ((ByteBuffer)venice.eval("(-> (bytebuf-allocate 5) (bytebuf-pos! 1) (bytebuf-put-buf! (bytebuf [1 2 3]) 0 3))")).array());		
-		assertArrayEquals(new byte[] {0,0,1,2,3}, ((ByteBuffer)venice.eval("(-> (bytebuf-allocate 5) (bytebuf-pos! 2) (bytebuf-put-buf! (bytebuf [1 2 3]) 0 3))")).array());		
-
-		assertArrayEquals(new byte[] {3,4,5,0,0}, ((ByteBuffer)venice.eval("(-> (bytebuf-allocate 5) (bytebuf-pos! 0) (bytebuf-put-buf! (bytebuf [1 2 3 4 5]) 2 3))")).array());		
-		assertArrayEquals(new byte[] {0,3,4,5,0}, ((ByteBuffer)venice.eval("(-> (bytebuf-allocate 5) (bytebuf-pos! 1) (bytebuf-put-buf! (bytebuf [1 2 3 4 5]) 2 3))")).array());		
-		assertArrayEquals(new byte[] {0,0,3,4,5}, ((ByteBuffer)venice.eval("(-> (bytebuf-allocate 5) (bytebuf-pos! 2) (bytebuf-put-buf! (bytebuf [1 2 3 4 5]) 2 3))")).array());		
 	}
 
 	@Test

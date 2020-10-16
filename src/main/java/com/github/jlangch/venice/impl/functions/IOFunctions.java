@@ -2204,9 +2204,9 @@ public class IOFunctions {
 					.arglists(
 						"(io/load-classpath-resource name)")
 					.doc(
-						"Loads a classpath resource.")
+						"Loads a classpath resource. Returns a bytebuf")
 					.examples(
-						"(io/load-classpath-resource \"org/foo/images/foo.png\"")
+						"(io/load-classpath-resource \"org/foo/images/foo.png\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

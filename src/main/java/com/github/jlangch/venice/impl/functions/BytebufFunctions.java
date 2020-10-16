@@ -335,13 +335,42 @@ public class BytebufFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction bytebuf_get_byte =
+		new VncFunction(
+				"bytebuf-get-byte",
+				VncFunction
+					.meta()
+					.arglists("(bytebuf-get-byte! buf pos)")
+					.doc("Writes a byte to the buffer at the current position, and then " + 
+						 "increments the position by one.")
+					.examples(
+					    "(-> (bytebuf-allocate 4)   \n" +
+						"    (bytebuf-put-byte! 1)  \n" +
+						"    (bytebuf-put-byte! 2)  \n" +
+						"    (bytebuf-get-byte 0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				final VncLong pos = Coerce.toVncLong(args.nth(1));
+
+				final int v = buf.get(pos.getIntValue()) & 0xFF;
+				
+				return new VncInteger(v);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction bytebuf_put_byte_BANG =
 		new VncFunction(
 				"bytebuf-put-byte!",
 				VncFunction
 					.meta()
 					.arglists("(bytebuf-put-byte! buf b)")
-					.doc("Writes a byte to the buffer at the current position, and then" + 
+					.doc("Writes a byte to the buffer at the current position, and then " + 
 						 "increments the position by one.")
 					.examples(
 					    "(-> (bytebuf-allocate 4)   \n" +
@@ -369,7 +398,7 @@ public class BytebufFunctions {
 				VncFunction
 					.meta()
 					.arglists("(bytebuf-put-long! buf l)")
-					.doc("Writes a long (8 bytes) to buffer at the current position, and then" + 
+					.doc("Writes a long (8 bytes) to buffer at the current position, and then " + 
 						 "increments the position by eight.")
 					.examples(
 					    "(-> (bytebuf-allocate 16)   \n" +
@@ -397,7 +426,7 @@ public class BytebufFunctions {
 				VncFunction
 					.meta()
 					.arglists("(bytebuf-put-int! buf i)")
-					.doc("Writes an integer (4 bytes) to buffer at the current position, and then" + 
+					.doc("Writes an integer (4 bytes) to buffer at the current position, and then " + 
 						 "increments the position by four.")
 					.examples(
 					    "(-> (bytebuf-allocate 8)   \n" +
@@ -502,6 +531,7 @@ public class BytebufFunctions {
 				.add(bytebuf_to_string)
 				.add(bytebuf_from_string)
 				.add(bytebuf_sub)
+				.add(bytebuf_get_byte)
 				.add(bytebuf_put_buf_BANG)
 				.add(bytebuf_put_byte_BANG)
 				.add(bytebuf_put_long_BANG)
