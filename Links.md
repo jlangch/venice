@@ -16,6 +16,7 @@
 
 [Verifying Gradle Wrappers with GitHub Actions](https://blog.gradle.org/gradle-wrapper-checksum-verification-github-action)
 
+[My task… what’s wrong with your Gradle task?](https://blog.softwaremill.com/my-task-whats-wrong-with-your-gradle-task-82312100c595)
 
 ### Java 9 Modules
 
