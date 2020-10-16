@@ -325,6 +325,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal a0 = ast.first();		
 			final String a0sym = (a0 instanceof VncSymbol) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			
+			// special form dispatcher
 			switch (a0sym) {		
 				case "do": {
 						final VncList expressions = ast.rest();
@@ -342,21 +343,74 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 					
 				case "let":  { // (let [bindings*] exprs*)
-					env = new Env(env);  // let introduces a new environment
-	
-					final VncVector bindings = Coerce.toVncVector(ast.second());
-					final VncList expressions = ast.slice(2);
-				
-					for(int i=0; i<bindings.size(); i+=2) {
-						final VncVal sym = bindings.nth(i);
-						final VncVal val = evaluate(bindings.nth(i+1), env);
-						env.addLocalVars(Destructuring.destructure(sym, val));
+						env = new Env(env);  // let introduces a new environment
+		
+						final VncVector bindings = Coerce.toVncVector(ast.second());
+						final VncList expressions = ast.slice(2);
+					
+						for(int i=0; i<bindings.size(); i+=2) {
+							final VncVal sym = bindings.nth(i);
+							final VncVal val = evaluate(bindings.nth(i+1), env);
+							env.addLocalVars(Destructuring.destructure(sym, val));
+						}
+							
+						evaluate_values(expressions.butlast(), env);
+						orig_ast = expressions.last();
 					}
-						
-					evaluate_values(expressions.butlast(), env);
-					orig_ast = expressions.last();
 					break;
-				}
+				
+				case "loop": { // (loop [bindings*] exprs*)
+						recursionPoint = null;
+						env = new Env(env);
+		
+						final VncVector bindings = Coerce.toVncVector(ast.second());
+						final VncList expressions = ast.slice(2);
+						
+						final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
+						for(int i=0; i<bindings.size(); i+=2) {
+							final VncSymbol sym = Coerce.toVncSymbol(bindings.nth(i));
+							final VncVal val = evaluate(bindings.nth(i+1), env);
+		
+							env.setLocal(new Var(sym, val));
+							bindingNames.add(sym);
+						}
+						
+						recursionPoint = new RecursionPoint(bindingNames, expressions, env);
+						
+						// optimization for small loops
+						if (expressions.size() == 1) {
+							orig_ast = expressions.first();
+						}
+						else {
+							evaluate_values(expressions.butlast(), env);
+							orig_ast = expressions.last();						
+						}
+					}
+					break;
+	
+				case "recur":  { // (recur exprs*)
+						if (recursionPoint == null) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
+								throw new VncException("The recur expression is not in tail position!");
+							}
+						}
+	
+						env = buildRecursionEnv(ast, env, recursionPoint);					
+						
+						final VncList expressions = recursionPoint.getLoopExpressions();					
+						if (expressions.size() > 1) {
+							evaluate_values(expressions.butlast(), env);
+						}
+						orig_ast = expressions.last();						
+					}
+					break;
+					
+				case "quasiquote":
+					orig_ast = quasiquote(ast.second());
+					break;
+					
+				case "quote":
+					return ast.second();
 					
 				case "fn":
 					// (fn name? [params*] condition-map? expr*)
@@ -462,13 +516,6 @@ public class VeniceInterpreter implements Serializable  {
 				case "macroexpand-info": 
 					return macroexpand_info_(new CallFrame("macroexpand-info", a0.getMeta()), ast, env);
 					
-				case "quote":
-					return ast.second();
-					
-				case "quasiquote":
-					orig_ast = quasiquote(ast.second());
-					break;
-					
 				case "doc": // (doc sym)
 					return doc_(new CallFrame("doc", a0.getMeta()), ast, env);
 					
@@ -484,95 +531,6 @@ public class VeniceInterpreter implements Serializable  {
 				case "global-vars-count": // (global-vars-count)
 					return new VncLong(env.globalsCount());
 					
-				case "loop": { // (loop [bindings*] exprs*)
-					recursionPoint = null;
-					env = new Env(env);
-	
-					final VncVector bindings = Coerce.toVncVector(ast.second());
-					final VncList expressions = ast.slice(2);
-					
-					final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
-					for(int i=0; i<bindings.size(); i+=2) {
-						final VncSymbol sym = Coerce.toVncSymbol(bindings.nth(i));
-						final VncVal val = evaluate(bindings.nth(i+1), env);
-	
-						env.setLocal(new Var(sym, val));
-						bindingNames.add(sym);
-					}
-					
-					recursionPoint = new RecursionPoint(bindingNames, expressions, env);
-					
-					// optimization for small loops
-					if (expressions.size() == 1) {
-						orig_ast = expressions.first();
-					}
-					else {
-						evaluate_values(expressions.butlast(), env);
-						orig_ast = expressions.last();						
-					}
-				}
-				break;
-	
-				case "recur":  { // (recur exprs*)
-					if (recursionPoint == null) {
-						try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
-							throw new VncException("The recur expression is not in tail position!");
-						}
-					}
-
-					final Env recur_env = recursionPoint.getLoopEnv();
-	
-					// denormalize for best performance (short loops are performance critical)
-					switch(ast.size()) {
-						case 1:
-							break;
-						case 2:
-							// [1][2] calculate and bind the single new value
-							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env)));
-							break;
-						case 3:
-							// [1] calculate the new values
-							final VncVal v1 = evaluate(ast.second(), env);
-							final VncVal v2 = evaluate(ast.third(), env);
-							// [2] bind the new values
-							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
-							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
-							break;
-						case 4:
-							// [1] calculate the new values
-							final VncVal v1_ = evaluate(ast.second(), env);
-							final VncVal v2_ = evaluate(ast.third(), env);
-							final VncVal v3_ = evaluate(ast.fourth(), env);
-							// [2] bind the new values
-							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1_));
-							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2_));
-							recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(2), v3_));
-							break;
-						default:
-							// [1] calculate new values
-							final VncList values = ast.rest();
-							final VncVal[] newValues = new VncVal[values.size()];
-							for(int kk=0; kk<values.size(); kk++) {
-								newValues[kk++] = evaluate(values.nth(kk), env);
-							}
-							
-							// [2] bind the new values
-							for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
-								recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(ii), newValues[ii]));
-							}
-							break;
-					}
-					
-					// [3] continue on the loop with the new bindings
-					final VncList expressions = recursionPoint.getLoopExpressions();
-					
-					env = recur_env;
-					if (expressions.size() > 1) {
-						evaluate_values(expressions.butlast(), env);
-					}
-					orig_ast = expressions.last();						
-				}
-				break;
 					
 				case "try": // (try expr (catch :Exception e expr) (finally expr))
 					return try_(new CallFrame("try", a0.getMeta()), ast, new Env(env));
@@ -617,7 +575,7 @@ public class VeniceInterpreter implements Serializable  {
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 						
 						// Automatic TCO (tail call optimization)
-						if (isAutoTCO() 
+						if (supportsAutoTCO() 
 								&& !fn.emptyBody()  // no VncMultiArityFunction, VncMultiFunction
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
@@ -1974,6 +1932,53 @@ public class VeniceInterpreter implements Serializable  {
 			private static final long serialVersionUID = -1L;
 		};
 	}
+	
+	private Env buildRecursionEnv(final VncList ast, final Env env, final RecursionPoint recursionPoint) {
+		final Env recur_env = recursionPoint.getLoopEnv();
+		
+		// denormalize for best performance (short loops are performance critical)
+		switch(ast.size()) {
+			case 1:
+				break;
+			case 2:
+				// [1][2] calculate and bind the single new value
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env)));
+				break;
+			case 3:
+				// [1] calculate the new values
+				final VncVal v1 = evaluate(ast.second(), env);
+				final VncVal v2 = evaluate(ast.third(), env);
+				// [2] bind the new values
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
+				break;
+			case 4:
+				// [1] calculate the new values
+				final VncVal v1_ = evaluate(ast.second(), env);
+				final VncVal v2_ = evaluate(ast.third(), env);
+				final VncVal v3_ = evaluate(ast.fourth(), env);
+				// [2] bind the new values
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1_));
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2_));
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(2), v3_));
+				break;
+			default:
+				// [1] calculate new values
+				final VncList values = ast.rest();
+				final VncVal[] newValues = new VncVal[values.size()];
+				for(int kk=0; kk<values.size(); kk++) {
+					newValues[kk++] = evaluate(values.nth(kk), env);
+				}
+				
+				// [2] bind the new values
+				for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
+					recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(ii), newValues[ii]));
+				}
+				break;
+		}
+		
+		return recur_env;
+	}
 
 	private VncVector getFnPreconditions(final VncVal prePostConditions, final Env env) {
 		if (Types.isVncMap(prePostConditions)) {
@@ -2102,7 +2107,7 @@ public class VeniceInterpreter implements Serializable  {
 		JavaInterop.getInterceptor().validateVeniceFunction(name);
 	}
 
-	private boolean isAutoTCO() {
+	public static boolean supportsAutoTCO() {
 		// Currently I don't see a major advantage of automated tail call optimization 
 		// compared to self-recursion using loop - recur. The code of the latter even
 		// looks cleaner

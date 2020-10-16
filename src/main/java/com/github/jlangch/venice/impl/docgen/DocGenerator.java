@@ -117,13 +117,13 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getByteBufSection(),
 				getTimeSection(),
+				getRegexSection(),
 				getTransducersSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
 				getSpecialFormsSection(),
 				getTypesSection(),
 				getNamespaceSection(),
-				getJavaInteropSection(),
 				getAppSection(),
 				getModulesSection());
 	}
@@ -133,10 +133,10 @@ public class DocGenerator {
 				getCollectionsSection(),
 				getLazySequencesSection(),
 				getArraysSection(),
-				getRegexSection(),
 				getConcurrencySection(),
 				getSystemSection(),
 				getIOSection(),
+				getJavaInteropSection(),
 				getMiscellaneousSection());
 	}
 
