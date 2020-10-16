@@ -1406,10 +1406,23 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("bytebuf-sub"));
 		bb_use.addItem(getDocItem("bytebuf-pos"));
 		bb_use.addItem(getDocItem("bytebuf-pos!"));
-		bb_use.addItem(getDocItem("bytebuf-put-byte!"));
-		bb_use.addItem(getDocItem("bytebuf-put-long!"));
-		bb_use.addItem(getDocItem("bytebuf-put-int!"));
-		bb_use.addItem(getDocItem("bytebuf-put-buf!"));
+
+		final DocSection bb_read = new DocSection("Read");
+		all.addSection(bb_read);
+		bb_read.addItem(getDocItem("bytebuf-get-byte"));
+		bb_read.addItem(getDocItem("bytebuf-get-int"));
+		bb_read.addItem(getDocItem("bytebuf-get-long"));
+		bb_read.addItem(getDocItem("bytebuf-get-float"));
+		bb_read.addItem(getDocItem("bytebuf-get-double"));
+
+		final DocSection bb_write = new DocSection("Write");
+		all.addSection(bb_write);
+		bb_write.addItem(getDocItem("bytebuf-put-byte!"));
+		bb_write.addItem(getDocItem("bytebuf-put-int!"));
+		bb_write.addItem(getDocItem("bytebuf-put-long!"));
+		bb_write.addItem(getDocItem("bytebuf-put-float!"));
+		bb_write.addItem(getDocItem("bytebuf-put-double!"));
+		bb_write.addItem(getDocItem("bytebuf-put-buf!"));
 
 		final DocSection encode = new DocSection("Base64");
 		all.addSection(encode);

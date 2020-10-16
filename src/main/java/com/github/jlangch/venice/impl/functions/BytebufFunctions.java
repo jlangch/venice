@@ -31,6 +31,7 @@ import java.util.Map;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -340,9 +341,13 @@ public class BytebufFunctions {
 				"bytebuf-get-byte",
 				VncFunction
 					.meta()
-					.arglists("(bytebuf-get-byte! buf pos)")
-					.doc("Writes a byte to the buffer at the current position, and then " + 
-						 "increments the position by one.")
+					.arglists(
+						"(bytebuf-get-byte buf)",
+						"(bytebuf-get-byte buf pos)")
+					.doc(
+						"Reads a byte from the buffer. Without a pos reads from the " +
+						"current position and increments the position by one. With a " +
+						"position reads the byte from that position.")
 					.examples(
 					    "(-> (bytebuf-allocate 4)   \n" +
 						"    (bytebuf-put-byte! 1)  \n" +
@@ -351,14 +356,171 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				assertArity(args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final VncLong pos = Coerce.toVncLong(args.nth(1));
-
-				final int v = buf.get(pos.getIntValue()) & 0xFF;
 				
-				return new VncInteger(v);
+				if (args.size() == 1) {
+					final int v = buf.get() & 0xFF;
+					return new VncInteger(v);
+				}
+				else {
+					final VncLong pos = Coerce.toVncLong(args.nth(1));
+					final int v = buf.get(pos.getIntValue()) & 0xFF;
+					return new VncInteger(v);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_get_int =
+		new VncFunction(
+				"bytebuf-get-int",
+				VncFunction
+					.meta()
+					.arglists(
+						"(bytebuf-get-int buf)",
+						"(bytebuf-get-int buf pos)")
+					.doc(
+						"Reads an integer from the buffer. Without a pos reads from the " +
+						"current position and increments the position by four. With a " +
+						"position reads the integer from that position.")
+					.examples(
+					    "(-> (bytebuf-allocate 8)   \n" +
+						"    (bytebuf-put-int! 1I)  \n" +
+						"    (bytebuf-put-int! 2I)  \n" +
+						"    (bytebuf-get-int 0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				
+				if (args.size() == 1) {
+					final int v = buf.getInt();
+					return new VncInteger(v);
+				}
+				else {
+					final VncLong pos = Coerce.toVncLong(args.nth(1));
+					final int v = buf.getInt(pos.getIntValue());
+					return new VncInteger(v);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_get_long =
+		new VncFunction(
+				"bytebuf-get-long",
+				VncFunction
+					.meta()
+					.arglists(
+						"(bytebuf-get-long buf)",
+						"(bytebuf-get-long buf pos)")
+					.doc(
+						"Reads a long from the buffer. Without a pos reads from the " +
+						"current position and increments the position by eight. With a " +
+						"position reads the long from that position.")
+					.examples(
+					    "(-> (bytebuf-allocate 16)   \n" +
+						"    (bytebuf-put-long! 20)  \n" +
+						"    (bytebuf-put-long! 40)  \n" +
+						"    (bytebuf-get-long 0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				
+				if (args.size() == 1) {
+					final long v = buf.getLong();
+					return new VncLong(v);
+				}
+				else {
+					final VncLong pos = Coerce.toVncLong(args.nth(1));
+					final long v = buf.getLong(pos.getValue().intValue());
+					return new VncLong(v);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_get_float =
+		new VncFunction(
+				"bytebuf-get-float",
+				VncFunction
+					.meta()
+					.arglists(
+						"(bytebuf-get-float buf)",
+						"(bytebuf-get-float buf pos)")
+					.doc(
+						"Reads a float from the buffer. Without a pos reads from the " +
+						"current position and increments the position by four. With a " +
+						"position reads the float from that position.")
+					.examples(
+					    "(-> (bytebuf-allocate 16)   \n" +
+						"    (bytebuf-put-float! 20.0)  \n" +
+						"    (bytebuf-put-float! 40.0)  \n" +
+						"    (bytebuf-get-float 0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				
+				if (args.size() == 1) {
+					final float v = buf.getFloat();
+					return new VncDouble(v);
+				}
+				else {
+					final VncLong pos = Coerce.toVncLong(args.nth(1));
+					final float v = buf.getFloat(pos.getValue().intValue());
+					return new VncDouble(v);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_get_double =
+		new VncFunction(
+				"bytebuf-get-double",
+				VncFunction
+					.meta()
+					.arglists(
+						"(bytebuf-get-double buf)",
+						"(bytebuf-get-double buf pos)")
+					.doc(
+						"Reads a double from the buffer. Without a pos reads from the " +
+						"current position and increments the position by eight. With a " +
+						"position reads the double from that position.")
+					.examples(
+					    "(-> (bytebuf-allocate 16)   \n" +
+						"    (bytebuf-put-double! 20.0)  \n" +
+						"    (bytebuf-put-double! 40.0)  \n" +
+						"    (bytebuf-get-double 0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				
+				if (args.size() == 1) {
+					final double v = buf.getDouble();
+					return new VncDouble(v);
+				}
+				else {
+					final VncLong pos = Coerce.toVncLong(args.nth(1));
+					final double v = buf.getDouble(pos.getValue().intValue());
+					return new VncDouble(v);
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -441,6 +603,62 @@ public class BytebufFunctions {
 				final VncInteger val = Coerce.toVncInteger(args.nth(1));
 
 				buf.putInt(val.getValue());
+				
+				return args.nth(0);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_put_double_BANG =
+		new VncFunction(
+				"bytebuf-put-double!",
+				VncFunction
+					.meta()
+					.arglists("(bytebuf-put-double! buf d)")
+					.doc("Writes a double (8 bytes) to buffer at the current position, and then " + 
+						 "increments the position by eight.")
+					.examples(
+					    "(-> (bytebuf-allocate 16)     \n" +
+						"    (bytebuf-put-double! 64.0)  \n" +
+						"    (bytebuf-put-double! 200.0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				final VncDouble val = Coerce.toVncDouble(args.nth(1));
+
+				buf.putDouble(val.getValue());
+				
+				return args.nth(0);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction bytebuf_put_float_BANG =
+		new VncFunction(
+				"bytebuf-put-float!",
+				VncFunction
+					.meta()
+					.arglists("(bytebuf-put-float! buf d)")
+					.doc("Writes a float (4 bytes) to buffer at the current position, and then " + 
+						 "increments the position by four.")
+					.examples(
+					    "(-> (bytebuf-allocate 8)       \n" +
+						"    (bytebuf-put-float! 64.0)  \n" +
+						"    (bytebuf-put-float! 200.0))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 2);
+
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
+				final VncDouble val = Coerce.toVncDouble(args.nth(1));
+
+				buf.putFloat(val.getValue().floatValue());
 				
 				return args.nth(0);
 			}
@@ -532,10 +750,16 @@ public class BytebufFunctions {
 				.add(bytebuf_from_string)
 				.add(bytebuf_sub)
 				.add(bytebuf_get_byte)
+				.add(bytebuf_get_int)
+				.add(bytebuf_get_long)
+				.add(bytebuf_get_float)
+				.add(bytebuf_get_double)
 				.add(bytebuf_put_buf_BANG)
 				.add(bytebuf_put_byte_BANG)
-				.add(bytebuf_put_long_BANG)
 				.add(bytebuf_put_int_BANG)
+				.add(bytebuf_put_long_BANG)
+				.add(bytebuf_put_float_BANG)
+				.add(bytebuf_put_double_BANG)
 				.add(bytebuf_pos)
 				.add(bytebuf_pos_BANG)
 
