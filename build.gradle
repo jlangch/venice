@@ -145,14 +145,14 @@ compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     options.encoding = 'UTF-8'
-    options.compilerArgs += '-parameters'
+    options.compilerArgs = [ '-parameters' ]
 }
 
 compileTestJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     options.encoding = 'UTF-8'
-    options.compilerArgs += '-parameters'
+    options.compilerArgs += [ '-parameters' ]
 }
 
 /* JPMS support currently disabled

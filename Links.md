@@ -18,13 +18,16 @@
 
 [My task… what’s wrong with your Gradle task?](https://blog.softwaremill.com/my-task-whats-wrong-with-your-gradle-task-82312100c595)
 
+
 ### Java 9 Modules
 
-[Java 8 with module info](https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle)
+[Java 8 with module info (1)](https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle)
 
-[Java 8 with module info](https://stackoverflow.com/questions/55100737/compile-a-jdk-8-project-a-jdk-9-module-info-java-in-gradle)
+[Java 8 with module info (2)](https://stackoverflow.com/questions/55100737/compile-a-jdk-8-project-a-jdk-9-module-info-java-in-gradle)
 
 [Gradle multi-release JARs](https://blog.gradle.org/mrjars)
+
+[Reflection](https://www.sitepoint.com/reflection-vs-encapsulation-in-the-java-module-system/)
 
 
 
