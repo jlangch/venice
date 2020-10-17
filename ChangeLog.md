@@ -38,9 +38,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
   
 ### Fixed
 
-- stack trace for special form errors.The line/col information was missing for errors 
-  with some special forms.
-- function `map` to support for lazy seq when passing multiple collections. 
+- stack trace for some special form errors. The line/col information was missing.
+- stack trace for symbol not found errors. The line/col information was missing.
+- function `map` to support lazy seq when passing multiple collections. 
   E.g: `(map list [:a :b :c] (lazy-seq 1 inc))`
 
 
