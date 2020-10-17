@@ -37,9 +37,9 @@ public class CallstackTest {
 	public void testPushPop() {
 		final CallStack stack = new CallStack();
 		
-		stack.push(new CallFrame("fn-1", new VncLong(1)));
-		stack.push(new CallFrame("fn-2", new VncLong(2)));
-		stack.push(new CallFrame("fn-3", new VncLong(3)));
+		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
+		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
+		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
 				
 		assertEquals("fn-3", stack.pop().getFnName());
 		assertEquals("fn-2", stack.pop().getFnName());
@@ -51,9 +51,9 @@ public class CallstackTest {
 	public void testClear() {
 		final CallStack stack = new CallStack();
 		
-		stack.push(new CallFrame("fn-1", new VncLong(1)));
-		stack.push(new CallFrame("fn-2", new VncLong(2)));
-		stack.push(new CallFrame("fn-3", new VncLong(3)));
+		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
+		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
+		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
 			
 		stack.clear();
 		
@@ -64,9 +64,9 @@ public class CallstackTest {
 	public void testCopy() {
 		final CallStack stack = new CallStack();
 		
-		stack.push(new CallFrame("fn-1", new VncLong(1)));
-		stack.push(new CallFrame("fn-2", new VncLong(2)));
-		stack.push(new CallFrame("fn-3", new VncLong(3)));
+		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
+		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
+		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
 		
 		final CallStack copy = stack.copy();
 		
@@ -80,9 +80,9 @@ public class CallstackTest {
 	public void testList() {
 		final CallStack stack = new CallStack();
 		
-		stack.push(new CallFrame("fn-1", new VncLong(1)));
-		stack.push(new CallFrame("fn-2", new VncLong(2)));
-		stack.push(new CallFrame("fn-3", new VncLong(3)));
+		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
+		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
+		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
 		
 		final List<String> items = stack.toList();
 		
@@ -96,9 +96,9 @@ public class CallstackTest {
 	public void testCallFrames() {
 		final CallStack stack = new CallStack();
 		
-		stack.push(new CallFrame("fn-1", new VncLong(1)));
-		stack.push(new CallFrame("fn-2", new VncLong(2)));
-		stack.push(new CallFrame("fn-3", new VncLong(3)));
+		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
+		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
+		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
 		
 		final List<CallFrame> items = stack.callstack();
 		

@@ -285,7 +285,7 @@ public class Agent implements IDeref {
 													"agent->%s->%s", 
 													sendType.toString().toLowerCase(), 
 													fn.getQualifiedName()),
-											fnArgs);
+											fnArgs.getMeta());
 
 			try {				
 				callStack.clear();
