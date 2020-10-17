@@ -5400,12 +5400,14 @@ public class CoreFunctions {
 						"apart. If step is not supplied, defaults to n, i.e. the partitions " +
 						"do not overlap. If a padcoll collection is supplied, use its elements as " +
 						"necessary to complete last partition upto n items. In case there are " +
-						"not enough padding elements, return a partition with less than n items.")
+						"not enough padding elements, return a partition with less than n items. " +
+						"padcoll may be a lazy sequence")
 					.examples(
 						"(partition 4 (range 20))",
 						"(partition 4 6 (range 20))",
 						"(partition 3 6 [\"a\"] (range 20))",
-						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))")
+						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))",
+						"(partition 4 6 (lazy-seq (constantly 99)) (range 20))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5413,7 +5415,7 @@ public class CoreFunctions {
 
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
-				final List<VncVal> padcoll = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)).getList() : new ArrayList<>();
+				final VncSequence padseq = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)) : VncList.empty();
 				final List<VncVal> coll = args.last() == Nil ? new ArrayList<>() : Coerce.toVncSequence(args.last()).getList();
 
 				if (n <= 0) {
@@ -5440,9 +5442,17 @@ public class CoreFunctions {
 						result = result.addAtEnd(VncList.ofList(split.subList(0, n)));
 					}
 					else {
+						// padding
 						final List<VncVal> split_ = new ArrayList<>(split);
-						for(int ii=0; ii<(n-split.size()) && ii<padcoll.size(); ii++) {
-							split_.add(padcoll.get(ii));
+						if (padseq instanceof VncLazySeq) {
+							for(int ii=0; ii<(n-split.size()); ii++) {
+								split_.add(padseq.nth(ii));
+							}
+						}
+						else {
+							for(int ii=0; ii<(n-split.size()) && ii<padseq.size(); ii++) {
+								split_.add(padseq.nth(ii));
+							}
 						}
 						result = result.addAtEnd(VncList.ofList(split_));
 					}

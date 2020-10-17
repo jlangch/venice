@@ -40,13 +40,13 @@
        flatten
        (apply str)
        (seq)
-       (partition 40 40 (repeat 40 " "))
+       (partition 40 40 (lazy-seq (constantly " ")))
        (map #(apply str %))))
 
 
 (defn ascii-lines [s]
   (->> (map #(ascii %) s)
-       (partition 16 16 (repeat 16 " "))
+       (partition 16 16 (lazy-seq (constantly " ")))
        (map #(apply str %))))
 
 
@@ -56,21 +56,16 @@
     (io/file? s) (hexdump-lines (io/slurp s :binary true) opts)
     (bytebuf? s) (hexdump-lines (bytebuf-to-list s) opts)
     (coll? s)    (let [{:keys [offset size] :or {offset 0 size :all}} opts
-                       index (fn [s] (map vector (lazy-seq 0 inc) s))
-                       vals (->> (index s)
-                                 (drop-while #(< (first %) offset))
-                                 (#(if (= size :all) % (take size %)))
-                                ; (take (if (= :all size) (count s) size))
-                                 (map second))
+                       vals (if (= size :all) s (take size (drop offset s)))
                        byte-offsets (map #(str/format "%08x: " %) (map #(* 16 %) (lazy-seq 0 inc)))
                        hex-ascii-lines (hex-ascii-lines vals)
                        ascii-lines (ascii-lines vals)
                        parts-seq (map list
                                       byte-offsets
                                       hex-ascii-lines
-                                      (lazy-seq (fn [] " "))
+                                      (lazy-seq (constantly " "))
                                       ascii-lines
-                                      (lazy-seq (fn [] "\n")))]
+                                      (lazy-seq (constantly "\n")))]
                    (map #(apply str %) parts-seq))
     :else (throw (. :VncException :new
                     """

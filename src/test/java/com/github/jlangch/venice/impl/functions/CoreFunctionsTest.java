@@ -2935,6 +2935,17 @@ public class CoreFunctionsTest {
 		assertEquals("((1 2 3 :a :b) (4 5 :a :b :c))", venice.eval("(str (partition 5 3 [:a :b :c] '(1 2 3 4 5)))"));
 		assertEquals("((1 2 3 :a :b) (4 5 6 :a :b))", venice.eval("(str (partition 5 3 [:a :b :c] '(1 2 3 4 5 6)))"));
 		assertEquals("((1 2 3 :a :b) (4 5 6 :a :b) (7 :a :b :c))", venice.eval("(str (partition 5 3 [:a :b :c] '(1 2 3 4 5 6 7)))"));
+
+		// padding with lazy seq
+		assertEquals("()", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) nil))"));
+		assertEquals("()", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '()))"));
+		assertEquals("((1 9 9 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1)))"));
+		assertEquals("((1 2 9 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1 2)))"));
+		assertEquals("((1 2 3 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1 2 3)))"));
+		assertEquals("((1 2 3 9 9) (4 9 9 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1 2 3 4)))"));
+		assertEquals("((1 2 3 9 9) (4 5 9 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1 2 3 4 5)))"));
+		assertEquals("((1 2 3 9 9) (4 5 6 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1 2 3 4 5 6)))"));
+		assertEquals("((1 2 3 9 9) (4 5 6 9 9) (7 9 9 9 9))", venice.eval("(str (partition 5 3 (lazy-seq (constantly 9)) '(1 2 3 4 5 6 7)))"));
 	}
 	
 	@Test
