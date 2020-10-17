@@ -32,6 +32,10 @@
     (if (ascii? v) (char v) (char "."))))
 
 
+(defn byte-offsets []
+  (map #(str/format "%08x: " %) (map #(* 16 %) (lazy-seq 0 inc))))
+
+
 (defn hex-ascii-lines [s]
   (->> (map #(mod (long %) 256) s)
        (map #(str/format "%02x" %))
@@ -52,26 +56,23 @@
 
 (defn hexdump-lines [s opts]
   (cond
-    (string? s)  (hexdump-lines (io/slurp s :binary true) opts)
-    (io/file? s) (hexdump-lines (io/slurp s :binary true) opts)
-    (bytebuf? s) (hexdump-lines (bytebuf-to-list s) opts)
-    (coll? s)    (let [{:keys [offset size] :or {offset 0 size :all}} opts
-                       vals (if (= size :all) s (take size (drop offset s)))
-                       byte-offsets (map #(str/format "%08x: " %) (map #(* 16 %) (lazy-seq 0 inc)))
-                       hex-ascii-lines (hex-ascii-lines vals)
-                       ascii-lines (ascii-lines vals)
-                       parts-seq (map list
-                                      byte-offsets
-                                      hex-ascii-lines
-                                      (lazy-seq (constantly " "))
-                                      ascii-lines
-                                      (lazy-seq (constantly "\n")))]
-                   (map #(apply str %) parts-seq))
-    :else (throw (. :VncException :new
-                    """
-                    Can only hexdump a collection, a java.io.File or a String \
-                    representing a path to a file.
-                    """))))
+    (string? s)     (hexdump-lines (io/slurp s :binary true) opts)
+    (io/file? s)    (hexdump-lines (io/slurp s :binary true) opts)
+    (bytebuf? s)    (hexdump-lines (bytebuf-to-list s) opts)
+    (sequential? s) (let [{:keys [offset size] :or {offset 0 size :all}} opts
+                          vals (if (= size :all) s (take size (drop offset s)))
+                          parts-seq (map list
+                                         (byte-offsets)
+                                         (hex-ascii-lines vals)
+                                         (lazy-seq (constantly " "))
+                                         (ascii-lines vals)
+                                         (lazy-seq (constantly "\n")))]
+                      (map #(apply str %) parts-seq))
+    :else           (throw (. :VncException :new
+                              """
+                              Can only hexdump a sequential collection, an \
+                              io/file or a string representing a path to a file.
+                              """))))
 
 (defn
   ^{ :arglists '("(hexdump & opts)")
@@ -89,7 +90,7 @@
 
   hexdump [s & opts]
 
-  (let [options (apply hash-map opts)
-        hexdump-lines (hexdump-lines s options)
-        hexdump-str (apply str hexdump-lines)]
-    (println hexdump-str)))
+  (let [options (apply hash-map opts)]
+    (->> (hexdump-lines s options)
+         (apply str)
+         (println))))
