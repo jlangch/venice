@@ -70,6 +70,9 @@ public class FunctionExecutionMeter {
 	}
 
 	/**
+	 * Formats the execution times
+	 * 
+	 * @param title a title
 	 * @return formatted collected runtime execution times for functions 
 	 */
 	public String getDataFormatted(final String title) {

@@ -97,8 +97,8 @@ public class Parameters {
 	 * @param val2 the second mapping's value
 	 * @param key3 the third mapping's key
 	 * @param val3 the third mapping's value
-	 * @param key4
-	 * @param val4
+	 * @param key4 the fourth mapping's key
+	 * @param val4 the fourth mapping's value
 	 * @return a Map containing the specified mappings
 	 */
 	public static Map<String,Object> of(
