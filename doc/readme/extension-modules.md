@@ -11,6 +11,7 @@ and loads a module only once and skips subsequent load attempts.
 * [Kira Template](ext-kira.md)
 * [Shell](ext-shell.md)
 * [Charts](ext-charts.md)
+* [Hexdump](ext-hexdump.md)
 * [GEO IP](ext-geoip.md)
 * [Mercator Maps](ext-mercator.md)
 * [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
