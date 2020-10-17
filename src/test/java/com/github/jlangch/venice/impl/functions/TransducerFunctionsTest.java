@@ -704,6 +704,20 @@ public class TransducerFunctionsTest {
 
 		assertEquals("(2 3 4 5 6)", venice.eval("(pr-str (map inc [1 2 3 4 5]))"));
 
+		assertEquals("(1 3)", venice.eval("(pr-str (map (fn [x] (get x :a)) [{:a 1 :b 2} {:a 3 :b 4}]))"));
+		
+		assertEquals("(true false true)", venice.eval("(pr-str (map not [false, true, false]))"));
+
+		assertEquals("(1 2 3)", venice.eval("(pr-str (map :p [{:p 1} {:p 2} {:p 3}]))"));
+
+		// strings
+		assertEquals("(true false true false true)", venice.eval("(pr-str (map str/digit? \"1-3-5\"))"));
+	}	
+	
+	@Test
+	public void test_map_multi() {
+		final Venice venice = new Venice();
+
 		assertEquals("(5 7 9)", venice.eval("(pr-str (map + [1 2 3] [4 5 6]))"));
 
 		assertEquals("(12 15 18)", venice.eval("(pr-str (map + [1 2 3] [4 5 6] [7 8 9]))"));
@@ -712,16 +726,14 @@ public class TransducerFunctionsTest {
 
 		assertEquals("(12 15 18)", venice.eval("(pr-str (map + [1 2 3] [4 5 6 9] [7 8 9]))"));
 
-		assertEquals("(1 3)", venice.eval("(pr-str (map (fn [x] (get x :a)) [{:a 1 :b 2} {:a 3 :b 4}]))"));
-		
-		assertEquals("(true false true)", venice.eval("(pr-str (map not [false, true, false]))"));
-		
 		assertEquals("((1 1) (2 2) (3 3))", venice.eval("(pr-str (map list [1 2 3] [1 2 3]))"));
+	}	
+	
+	@Test
+	public void test_map_multi_lazy_seq() {
+		final Venice venice = new Venice();
 
-		assertEquals("(1 2 3)", venice.eval("(pr-str (map :p [{:p 1} {:p 2} {:p 3}]))"));
-
-		// strings
-		assertEquals("(true false true false true)", venice.eval("(pr-str (map str/digit? \"1-3-5\"))"));
+		assertEquals("((1 10) (2 10) (3 10))", venice.eval("(pr-str (map list [1 2 3] (lazy-seq (fn [] 10))))"));
 	}	
 	
 	@Test

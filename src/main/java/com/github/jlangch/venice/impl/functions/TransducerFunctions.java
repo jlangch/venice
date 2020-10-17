@@ -243,28 +243,30 @@ public class TransducerFunctions {
 						return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 					}
 					else {
+						final VncSequence[] seqs = new VncSequence[lists.size()];
+						for(int ii=0; ii<lists.size(); ii++) {
+							seqs[ii] = coerceToSequence(lists.nth(ii));
+						}
+						
 						// mapper with multiple collections
-						int index = 0;
 						boolean hasMore = true;
 						while(hasMore) {
 							final List<VncVal> fnArgs = new ArrayList<>();
 	
-							for(int ii=0; ii<lists.size(); ii++) {
-								VncVal seq = lists.nth(ii);							
-								final VncSequence nthList = coerceToSequence(seq);
-								if (nthList.size() > index) {
-									fnArgs.add(nthList.nth(index));
-								}
-								else {
+							for(int ii=0; ii<seqs.length; ii++) {
+								VncSequence s = seqs[ii];							
+								if (s.isEmpty()) {
 									hasMore = false;
 									break;
 								}
+								
+								fnArgs.add(s.first());
+								seqs[ii] = s.rest();
 							}
 	
 							if (hasMore) {
 								final VncVal val = VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry);
 								result.add(val);
-								index += 1;
 							}
 						}
 	

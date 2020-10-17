@@ -35,6 +35,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - experimental automatic tail call optimization, not yet enabled for releases.
 - experimental JPMS (Java Platform Module System support), not yet enabled for releases. 
   Enhanced the Gradle build for building Venice as a Java 8 library supporting JPMS
+- support for lazy seq for function `map` when passing multiple collections
   
 ### Fixed
 
