@@ -44,13 +44,13 @@
        flatten
        (apply str)
        (seq)
-       (partition 40 40 (lazy-seq (constantly " ")))
+       (partition 40 40 (repeat " "))
        (map #(apply str %))))
 
 
 (defn ascii-lines [s]
   (->> (map #(ascii %) s)
-       (partition 16 16 (lazy-seq (constantly " ")))
+       (partition 16 16 (repeat " "))
        (map #(apply str %))))
 
 
@@ -64,9 +64,9 @@
                           parts-seq (map list
                                          (byte-offsets)
                                          (hex-ascii-lines vals)
-                                         (lazy-seq (constantly " "))
+                                         (repeat " ")
                                          (ascii-lines vals)
-                                         (lazy-seq (constantly "\n")))]
+                                         (repeat "\n"))]
                       (map #(apply str %) parts-seq))
     :else           (throw (. :VncException :new
                               """
