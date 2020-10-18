@@ -849,7 +849,15 @@ public class MathFunctionsTest {
 		assertEquals("(1 1.5 2.0 2.5 3.0)", venice.eval("(str (range 1 3.1 0.5))"));
 		assertEquals("(1.0 1.5 2.0 2.5 3.0 3.5)", venice.eval("(str (range 1.0 4 0.5))"));
 	}
+	
+	@Test
+	public void test_range_lazy_seq() {
+		final Venice venice = new Venice();
 
+		assertEquals("(0 1 2 3 4 5)", venice.eval("(str (doall (take 6 (range))))"));
+		assertEquals("(3 4 5 6 7 8)", venice.eval("(str (doall (take 6 (drop 3 (range)))))"));
+	}
+	
 	@Test
 	public void test_zero_Q() {
 		final Venice venice = new Venice();

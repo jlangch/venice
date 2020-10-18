@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -1587,13 +1588,15 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists(
+						"(range)",
 						"(range end)",
 						"(range start end)",
 						"(range start end step)")
 					.doc(
 						"Returns a collection of numbers from start (inclusive) to end " +
 						"(exclusive), by step, where start defaults to 0 and step defaults to 1. " +
-						"When start is equal to end, returns empty list.")
+						"When start is equal to end, returns empty list. Without args returns a " +
+						"lazy sequence generating numbers starting with 0 and incrementing by 1.")
 					.examples(
 						"(range 10)",
 						"(range 10 20)",
@@ -1606,13 +1609,15 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2, 3);
+				assertArity(args, 0, 1, 2, 3);
 
 				VncVal start = null;
 				VncVal end = null;
 				VncVal step = null;
 
 				switch(args.size()) {
+					case 0:
+						return VncLazySeq.iterate(new VncLong(0), inc, Nil);
 					case 1:
 						start = new VncLong(0);
 						end = args.first();
