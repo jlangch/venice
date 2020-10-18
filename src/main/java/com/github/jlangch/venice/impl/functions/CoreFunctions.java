@@ -5403,11 +5403,12 @@ public class CoreFunctions {
 						"not enough padding elements, return a partition with less than n items. " +
 						"padcoll may be a lazy sequence")
 					.examples(
-						"(partition 4 (range 20))",
-						"(partition 4 6 (range 20))",
+						"(partition 3 (range 7))",
+						"(partition 3 3 (repeat 99) (range 7))",
+						"(partition 2 3 (range 7))",
+						"(partition 3 1 (range 7))",
 						"(partition 3 6 [\"a\"] (range 20))",
-						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))",
-						"(partition 4 6 (repeat 99) (range 20))")
+						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5431,13 +5432,16 @@ public class CoreFunctions {
 
 				while (!seq.isEmpty()) {
 					VncSequence part = seq.take(n);
+					if (Types.isVncLazySeq(part)) {
+						part = ((VncLazySeq)part).realize();
+					}
+
 					part = part.addAllAtEnd(padseq.take(n-part.size()));
 					result = result.addAtEnd(part);
 					seq = seq.drop(step);
 				}
 				
-				return result;
-			
+				return result;		
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

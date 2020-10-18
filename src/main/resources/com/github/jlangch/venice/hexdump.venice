@@ -23,21 +23,21 @@
 (ns hexdump)
 
 
+(defn byte [val]
+  (mod (long val) 256))
+
 (defn ascii? [val]
   (and (< 0x1F val) (< val 0x7F)))
 
-
 (defn ascii [val]
-  (let [v (mod (long val) 256)]
+  (let [v (byte val)]
     (if (ascii? v) (char v) (char "."))))
 
-
 (defn byte-offsets []
-  (map #(str/format "%08x: " %) (map #(* 16 %) (lazy-seq 0 inc))))
-
+  (map #(str/format "%08x" %) (map #(* 16 %) (lazy-seq 0 inc))))
 
 (defn hex-ascii-lines [s]
-  (->> (map #(mod (long %) 256) s)
+  (->> (map byte s)
        (map #(str/format "%02x" %))
        (partition 2)
        (interpose " ")
@@ -47,12 +47,10 @@
        (partition 40 40 (repeat " "))
        (map #(apply str %))))
 
-
 (defn ascii-lines [s]
-  (->> (map #(ascii %) s)
+  (->> (map ascii s)
        (partition 16 16 (repeat " "))
        (map #(apply str %))))
-
 
 (defn hexdump-lines [s opts]
   (cond
@@ -63,6 +61,7 @@
                           vals (if (= size :all) s (take size (drop offset s)))
                           parts-seq (map list
                                          (byte-offsets)
+                                         (repeat ": ")
                                          (hex-ascii-lines vals)
                                          (repeat " ")
                                          (ascii-lines vals)
