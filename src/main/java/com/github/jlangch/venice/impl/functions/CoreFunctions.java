@@ -5407,7 +5407,7 @@ public class CoreFunctions {
 						"(partition 4 6 (range 20))",
 						"(partition 3 6 [\"a\"] (range 20))",
 						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))",
-						"(partition 4 6 (lazy-seq (constantly 99)) (range 20))")
+						"(partition 4 6 (repeat 99) (range 20))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5416,7 +5416,7 @@ public class CoreFunctions {
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
 				final VncSequence padseq = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)) : VncList.empty();
-				final List<VncVal> coll = args.last() == Nil ? new ArrayList<>() : Coerce.toVncSequence(args.last()).getList();
+				VncSequence seq = args.last() == Nil ? VncList.empty() : Coerce.toVncSequence(args.last());
 
 				if (n <= 0) {
 					throw new VncException(String.format(
@@ -5427,37 +5427,17 @@ public class CoreFunctions {
 							"partition: step must be a positive number"));
 				}
 
-				// split at 'step'
-				final List<List<VncVal>> splits = new ArrayList<>();
-				for (int ii=0; ii<coll.size(); ii += step) {
-					splits.add(coll.subList(ii, Math.min(ii + step, coll.size())));
-				}
-
 				VncList result = VncList.empty();
-				for(List<VncVal> split : splits) {
-					if (n == split.size()) {
-						result = result.addAtEnd(VncList.ofList(split));
-					}
-					else if (n < split.size()) {
-						result = result.addAtEnd(VncList.ofList(split.subList(0, n)));
-					}
-					else {
-						// padding
-						final List<VncVal> split_ = new ArrayList<>(split);
-						if (padseq instanceof VncLazySeq) {
-							for(int ii=0; ii<(n-split.size()); ii++) {
-								split_.add(padseq.nth(ii));
-							}
-						}
-						else {
-							for(int ii=0; ii<(n-split.size()) && ii<padseq.size(); ii++) {
-								split_.add(padseq.nth(ii));
-							}
-						}
-						result = result.addAtEnd(VncList.ofList(split_));
-					}
+
+				while (!seq.isEmpty()) {
+					VncSequence part = seq.take(n);
+					part = part.addAllAtEnd(padseq.take(n-part.size()));
+					result = result.addAtEnd(part);
+					seq = seq.drop(step);
 				}
+				
 				return result;
+			
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

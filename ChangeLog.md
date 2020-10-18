@@ -29,6 +29,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - ...
 
+### Fixed
+
+- fixed function `partition` for overlapping parts (when steps is smaller than n)
 
 
 ## [1.9.3] - 2020-10-17
