@@ -31,7 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- fixed function `partition` for overlapping parts (when steps is smaller than n)
+- fixed function `partition` for overlapping parts (when steps is smaller than n, the size of a part)
 
 
 
