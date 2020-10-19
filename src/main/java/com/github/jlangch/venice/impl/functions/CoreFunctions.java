@@ -2010,9 +2010,17 @@ public class CoreFunctions {
 						"(->> (lazy-seq rand-long)                                       \n" +
 						"     (take 4)                                                   \n" +
 						"     (doall))",
+						"; lazy sequence with a constant value                           \n" +
+						"(->> (lazy-seq (constantly 5))                                  \n" +
+						"     (take 4)                                                   \n" +
+						"     (doall))",
 						"; lazy sequence with a seed value and a supplier function \n" +
-						"; producing of all positive numbers                       \n" +
-						"(->> (lazy-seq 1 #(+ % 1))                                \n" +
+						"; producing of all positive numbers (1, 2, 3, 4, ...)     \n" +
+						"(->> (lazy-seq 1 inc)                                     \n" +
+						"     (take 10)                                            \n" +
+						"     (doall))",
+						"; producing of all positive even numbers (2, 4, 6, ...)   \n" +
+						"(->> (lazy-seq 2 #(+ % 2))                                \n" +
 						"     (take 10)                                            \n" +
 						"     (doall))",
 						"; lazy sequence with a mapping                         \n" +

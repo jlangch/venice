@@ -504,6 +504,9 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("pop"));
 		list_modify.addItem(getDocItem("into"));
 		list_modify.addItem(getDocItem("concat"));
+		list_modify.addItem(getDocItem("distinct"));
+		list_modify.addItem(getDocItem("dedupe"));
+		list_modify.addItem(getDocItem("partition"));
 		list_modify.addItem(getDocItem("interpose"));
 		list_modify.addItem(getDocItem("interleave"));
 		list_modify.addItem(getDocItem("mapcat"));
