@@ -27,7 +27,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.XmlAttributesWrapper;
 
 
 /**
