@@ -51,41 +51,40 @@
                      (let [sb (str xml/*sb*)]
                        (when (and (== xml/*state* :chars) (str/trim-to-nil sb))
                          (set! xml/*current* (push-content xml/*current* sb)))))]
-    (. :XMLHandler :new
-      (proxify :IXMLHandler
-        { :startElement
-              (fn [uri local-name q-name attributes]
-                (let [attr (xml/parse-attributes attributes)
-                      elem (if (nil? attr)
-                             {:tag q-name }
-                             {:tag q-name :attrs attr}) ]
-                  (push-chars)
-                  (set! xml/*stack* (conj xml/*stack* xml/*current*))
-                  (set! xml/*current* elem)
-                  (set! xml/*state* :element)
-                  nil))
-          :endElement
-              (fn [uri local-name q-name]
+    (proxify :IXMLHandler
+      { :startElement
+            (fn [uri local-name q-name attributes]
+              (let [attr (xml/parse-attributes attributes)
+                    elem (if (nil? attr)
+                           {:tag q-name }
+                           {:tag q-name :attrs attr}) ]
                 (push-chars)
-                (set! xml/*current* (push-content (peek xml/*stack*) xml/*current*))
-                (set! xml/*stack* (pop xml/*stack*))
-                (set! xml/*state* :between)
-                nil)
-          :characters
-              (fn [chars]
-                (when-not (== xml/*state* :chars)
-                  (set! xml/*sb* (. :StringBuilder :new)))
-                (. xml/*sb* :append chars)
-                (set! xml/*state* :chars)
-                nil)
-          :setDocumentLocator (fn [locator] nil)
-          :startDocument (fn [] nil)
-          :endDocument (fn [] nil)
-          :startPrefixMapping (fn [prefix uri] nil)
-          :endPrefixMapping (fn [prefix] nil)
-          :ignorableWhitespace (fn [chars] nil)
-          :processingInstruction (fn [target data] nil)
-          :skippedEntity (fn [name] nil) }))))
+                (set! xml/*stack* (conj xml/*stack* xml/*current*))
+                (set! xml/*current* elem)
+                (set! xml/*state* :element)
+                nil))
+        :endElement
+            (fn [uri local-name q-name]
+              (push-chars)
+              (set! xml/*current* (push-content (peek xml/*stack*) xml/*current*))
+              (set! xml/*stack* (pop xml/*stack*))
+              (set! xml/*state* :between)
+              nil)
+        :characters
+            (fn [chars]
+              (when-not (== xml/*state* :chars)
+                (set! xml/*sb* (. :StringBuilder :new)))
+              (. xml/*sb* :append chars)
+              (set! xml/*state* :chars)
+              nil)
+        :setDocumentLocator (fn [locator] nil)
+        :startDocument (fn [] nil)
+        :endDocument (fn [] nil)
+        :startPrefixMapping (fn [prefix uri] nil)
+        :endPrefixMapping (fn [prefix] nil)
+        :ignorableWhitespace (fn [chars] nil)
+        :processingInstruction (fn [target data] nil)
+        :skippedEntity (fn [name] nil) })))
 
 
 (defn

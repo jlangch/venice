@@ -65,7 +65,7 @@ public class FunctionExecutionMeter {
 	/**
 	 * @return the collected runtime execution times for functions 
 	 */
-	public Collection<Timer> getData() {
+	public Collection<ElapsedTime> getData() {
 		return meterRegistry.getTimerData();
 	}
 

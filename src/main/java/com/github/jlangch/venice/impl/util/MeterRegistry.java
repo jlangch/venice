@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.util.Timer;
+import com.github.jlangch.venice.util.ElapsedTime;
 
 
 public class MeterRegistry implements Serializable {
@@ -64,12 +64,12 @@ public class MeterRegistry implements Serializable {
 	}
 	
 	public void resetAllBut(final VncSequence records) {
-		final Map<String,Timer> keep = 
+		final Map<String,ElapsedTime> keep = 
 				records.getList()
 					   .stream()
 					   .map(r -> data.get(Coerce.toVncString(r).getValue()))
 					   .filter(t -> t != null)
-					   .collect(Collectors.toMap(Timer::getName, Function.identity()));
+					   .collect(Collectors.toMap(ElapsedTime::getName, Function.identity()));
 
 		data.clear();
 		data.putAll(keep);
@@ -80,12 +80,12 @@ public class MeterRegistry implements Serializable {
 			data.compute(
 					name, 
 					(k, v) -> v == null 
-								? new Timer(name, elapsedTime) 
+								? new ElapsedTime(name, elapsedTime) 
 								: v.add(elapsedTime));
 		}
 	}
 	
-	public Collection<Timer> getTimerData() {
+	public Collection<ElapsedTime> getTimerData() {
 		return data.values();
 	}
 	
@@ -101,7 +101,7 @@ public class MeterRegistry implements Serializable {
 			final String title, 
 			final boolean withAnonymousFunctions
 	) {
-		final Collection<Timer> data = withAnonymousFunctions 
+		final Collection<ElapsedTime> data = withAnonymousFunctions 
 										? getTimerData()
 										: getTimerData()
 											.stream()
@@ -150,16 +150,16 @@ public class MeterRegistry implements Serializable {
 		return String.join("\n", lines);
 	}
 	
-	private String format(final Timer t, final int maxNameLen, final int maxCountLen) {
+	private String format(final ElapsedTime t, final int maxNameLen, final int maxCountLen) {
 		return String.format(
 					"%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s", 
 					t.name, 
 					t.count, 
-					Timer.formatNanos(t.elapsedNanos),
-					t.count == 1 ? "" : Timer.formatNanos(t.elapsedNanos / t.count));	
+					ElapsedTime.formatNanos(t.elapsedNanos),
+					t.count == 1 ? "" : ElapsedTime.formatNanos(t.elapsedNanos / t.count));	
 	}
 	
-	private VncMap convertToVncMap(final Timer timer) {
+	private VncMap convertToVncMap(final ElapsedTime timer) {
 		return VncHashMap.of(
 				new VncKeyword("name"),  new VncString(timer.name),
 				new VncKeyword("count"), new VncLong(timer.count),
@@ -169,7 +169,7 @@ public class MeterRegistry implements Serializable {
 	
 	private static final long serialVersionUID = 5426843508785133806L;
 	
-	private final Map<String,Timer> data = new ConcurrentHashMap<>();
+	private final Map<String,ElapsedTime> data = new ConcurrentHashMap<>();
 	
 	public volatile boolean enabled;
 }

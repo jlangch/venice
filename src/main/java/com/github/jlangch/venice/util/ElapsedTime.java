@@ -24,14 +24,17 @@ package com.github.jlangch.venice.util;
 import java.io.Serializable;
 
 
-public class Timer implements Serializable {
-	public Timer(final String name, final long elapsedNanos) {
+/**
+ * Defines a named total elapsed time for profiling functions
+ */
+public class ElapsedTime implements Serializable {
+	public ElapsedTime(final String name, final long elapsedNanos) {
 		this.name = name;
 		this.count = 1;
 		this.elapsedNanos = elapsedNanos;
 	}
 
-	public Timer(final String name, final int count, final long elapsedNanos) {
+	public ElapsedTime(final String name, final int count, final long elapsedNanos) {
 		this.name = name;
 		this.count = count;
 		this.elapsedNanos = elapsedNanos;
@@ -41,8 +44,8 @@ public class Timer implements Serializable {
 		return name;
 	}
 
-	public Timer add(final long elapsedNanos) {
-		return new Timer(name, count + 1, this.elapsedNanos + elapsedNanos);
+	public ElapsedTime add(final long elapsedNanos) {
+		return new ElapsedTime(name, count + 1, this.elapsedNanos + elapsedNanos);
 	}
 
 	@Override

@@ -26,6 +26,29 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 
+/**
+ * Defines a {@code SAX Parser} content handler. Venice scripts can 
+ * dynamically proxify this handler to process SAX parser events.
+ * 
+ * <pre>
+ *    (. :XMLHandler :new
+ *      (proxify :IXMLHandler
+ *        { :startElement (fn [uri local-name q-name attributes] nil)
+ *          :endElement (fn [uri local-name q-name] nil)
+ *          :characters (fn [chars] nil)
+ *          :setDocumentLocator (fn [locator] nil)
+ *          :startDocument (fn [] nil)
+ *          :endDocument (fn [] nil)
+ *          :startPrefixMapping (fn [prefix uri] nil)
+ *          :endPrefixMapping (fn [prefix] nil)
+ *          :ignorableWhitespace (fn [chars] nil)
+ *          :processingInstruction (fn [target data] nil)
+ *          :skippedEntity (fn [name] nil) }))
+ * </pre>
+ * 
+ * @see {@link XMLHandler}
+ * @see {@link XMLUtil}
+ */
 public interface IXMLHandler {
 
 	public void setDocumentLocator(Locator locator);

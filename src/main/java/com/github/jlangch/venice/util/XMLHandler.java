@@ -30,22 +30,31 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.XmlAttributesWrapper;
 
 
+/**
+ * The {@code XMLHandler} serves as an adapater to hook into Java XML processing.
+ * 
+ * <p>Venice can not extend Java classes. The {@code XMLHandler} allows Venice to 
+ * pass a dynamic proxy for the interface {@code IXMLHandler}.
+ * 
+ * @see {@link IXMLHandler}
+ * @see {@link XMLUtil}
+ */
 public class XMLHandler extends DefaultHandler {
 
-	public XMLHandler(final IXMLHandler h) {
-		this.h = h;
+	public XMLHandler(final IXMLHandler handler) {
+		this.handler = handler;
 	}
 
 
 	@Override
 	public void setDocumentLocator(final Locator locator) {
-		h.setDocumentLocator(locator);
+		handler.setDocumentLocator(locator);
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
 		try {
-			h.startDocument();
+			handler.startDocument();
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -55,7 +64,7 @@ public class XMLHandler extends DefaultHandler {
 	@Override
 	public void endDocument() throws SAXException {
 		try {
-			h.endDocument();
+			handler.endDocument();
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -68,7 +77,7 @@ public class XMLHandler extends DefaultHandler {
 			final String uri
 	) throws SAXException {
 		try {
-			h.startPrefixMapping(prefix, uri);
+			handler.startPrefixMapping(prefix, uri);
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -80,7 +89,7 @@ public class XMLHandler extends DefaultHandler {
 			final String prefix
 	) throws SAXException {
 		try {
-			h.endPrefixMapping(prefix);
+			handler.endPrefixMapping(prefix);
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -97,7 +106,7 @@ public class XMLHandler extends DefaultHandler {
 		try {
 			// wrap org.xml.sax.Attributes to allow reflective access
 			// without "illegal reflective access operations" warnings on Java 9+
-			h.startElement(uri, localName, qName, new XmlAttributesWrapper(attrs));
+			handler.startElement(uri, localName, qName, new XmlAttributesWrapper(attrs));
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -111,7 +120,7 @@ public class XMLHandler extends DefaultHandler {
 			final String qName
 	) throws SAXException {
 		try {
-			h.endElement(uri, localName, qName);
+			handler.endElement(uri, localName, qName);
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -125,7 +134,7 @@ public class XMLHandler extends DefaultHandler {
 			final int length
 	) throws SAXException {
 		try {
-			h.characters(new String(ch).substring(start, start + length));
+			handler.characters(new String(ch).substring(start, start + length));
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -139,7 +148,7 @@ public class XMLHandler extends DefaultHandler {
 			final int length
 	) throws SAXException {
 		try {
-			h.ignorableWhitespace(new String(ch).substring(start, start + length));
+			handler.ignorableWhitespace(new String(ch).substring(start, start + length));
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -152,7 +161,7 @@ public class XMLHandler extends DefaultHandler {
 			final String data
 	) throws SAXException {
 		try {
-			h.processingInstruction(target, data);
+			handler.processingInstruction(target, data);
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -164,7 +173,7 @@ public class XMLHandler extends DefaultHandler {
 			final String name
 	) throws SAXException {
 		try {
-			h.skippedEntity(name);
+			handler.skippedEntity(name);
 		}
 		catch(VncException ex) {
 			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
@@ -172,5 +181,5 @@ public class XMLHandler extends DefaultHandler {
 	}
 	
 	
-	private final IXMLHandler h;
+	private final IXMLHandler handler;
 }
