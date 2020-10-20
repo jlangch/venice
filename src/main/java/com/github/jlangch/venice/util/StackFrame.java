@@ -21,6 +21,16 @@
  */
 package com.github.jlangch.venice.util;
 
+/**
+ * Represents a stack frame in a callstack. All Venice exceptions {@code VncException}
+ * provide a {@code stacktrace}.
+ * 
+ * @see {@link VncException#hasCallStack()}
+ * @see {@link VncException#getCallStack()}
+ * @see {@link VncException#printVeniceStackTrace()}
+ * @see {@link VncException#printVeniceStackTrace(PrintStream)}
+ * @see {@link VncException#printVeniceStackTrace(PrintWriter)}
+ */
 public class StackFrame {
 
 	public StackFrame(

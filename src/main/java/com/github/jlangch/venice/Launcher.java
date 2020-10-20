@@ -55,7 +55,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 
 
 /**
- * The <code>Launcher</code> runs Venice scripts or apps and starts the REPL.
+ * The {@code Launcher} runs Venice scripts or apps and starts the REPL.
  * 
  * <p>The launcher is configured as the Venice JAR's main-class.
  *  

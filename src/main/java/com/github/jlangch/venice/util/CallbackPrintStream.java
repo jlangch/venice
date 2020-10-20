@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 /**
  * Sends the objects printed to this {@link java.io.PrintStream} to the supplied
- * consumer. If <code>autoFlush</code> is enabled sends the text whenever a
+ * consumer. If {@code autoFlush} is enabled sends the text whenever a
  * line-feed is encountered or {@link #flush()} is called, else only sends
  * on {@link #flush()}.
  */

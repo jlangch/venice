@@ -63,7 +63,7 @@ public class CapturingPrintStream extends PrintStream {
 	 * 
 	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use: <code>new CapturingPrintStream()</code>
+	 * @deprecated Use: {@code new CapturingPrintStream()}
 	 */
 	public static CapturingPrintStream create() {
 		return new CapturingPrintStream();
@@ -78,7 +78,7 @@ public class CapturingPrintStream extends PrintStream {
 	 * @param limit A capturing limit
 	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use: <code>new CapturingPrintStream(limit)</code>
+	 * @deprecated Use: {@code new CapturingPrintStream(limit)}
 	 */
 	public static CapturingPrintStream create(final int limit) {
 		return new CapturingPrintStream(limit);
@@ -94,7 +94,7 @@ public class CapturingPrintStream extends PrintStream {
 	 * @param encoding A charset encoding
 	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use: <code>new CapturingPrintStream()</code>
+	 * @deprecated Use: {@code new CapturingPrintStream()}
 	 */
 	public static CapturingPrintStream create(final String encoding) {
 		return new CapturingPrintStream();
@@ -110,7 +110,7 @@ public class CapturingPrintStream extends PrintStream {
 	 * @param limit A capturing limit
 	 * @return a {@link CapturingPrintStream}
 	 * 
-	 * @deprecated Use: <code>new CapturingPrintStream(limit)</code>
+	 * @deprecated Use: {@code new CapturingPrintStream(limit)}
 	 */
 	public static CapturingPrintStream create(final String encoding, final int limit) {
 		return new CapturingPrintStream(limit);

@@ -49,6 +49,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.util.CapturingPrintStream;
+import com.lowagie.text.pdf.PdfReader;
 
 
 public class DocGenerator {
@@ -100,12 +101,17 @@ public class DocGenerator {
 			final ByteBuffer pdf = CheatsheetRenderer.renderPDF(xhtml);
 			final byte[] pdfArr =  pdf.array();
 			save(new File(getUserDir(), "cheatsheet.pdf"), pdfArr);
-			
+
+            final PdfReader reader = new PdfReader(pdf.array());
+            final int pages = reader.getNumberOfPages();
+	        reader.close();
+
 			System.out.println(String.format(
-					"Generated Cheat Sheet at: %s. XHTML=%dKB, PDF=%dKB",
+					"Generated Cheat Sheet at: %s. XHTML: %dKB, PDF: %dKB / %d pages",
 					getUserDir(),
 					xhtml.length() / 1024,
-					pdfArr.length / 1024));
+					pdfArr.length / 1024,
+					pages));
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
