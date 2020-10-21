@@ -29,6 +29,9 @@ import java.util.Set;
 import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
 
 
+/**
+ * Defines a safe Venice sandbox rejecting all I/O functions and Java interoperability.
+ */
 public class RejectAllInterceptor extends Interceptor {
 	
 	public RejectAllInterceptor() {

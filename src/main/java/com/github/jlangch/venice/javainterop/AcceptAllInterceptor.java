@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+
+/**
+ * Defines a Venice sandbox without any restrictions.
+ */
 public class AcceptAllInterceptor extends Interceptor {
 	
 	public AcceptAllInterceptor(final ILoadPaths loadPaths) {

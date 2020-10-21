@@ -256,7 +256,7 @@
         "(current-process)")
      :doc
         """
-        Returns process handle of the current process.
+        Returns the process handle of the current process.
         Requires Java 9+.
         """
      :examples '(

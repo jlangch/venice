@@ -40,6 +40,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.Tuple2;
 
 
+/**
+ * Helper for rendering PDFs with the {@link ITextRenderer}
+ */
 public class PdfRenderer {
 
 	public static ByteBuffer render(

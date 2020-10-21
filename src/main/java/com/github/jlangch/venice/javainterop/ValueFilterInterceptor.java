@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+
 public class ValueFilterInterceptor extends Interceptor {
 
 	public ValueFilterInterceptor(final ILoadPaths loadPaths) {

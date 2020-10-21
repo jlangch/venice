@@ -9,8 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * HTML color utils.
- * 
- * @author juerg
  */
 public class HtmlColor {
 	
