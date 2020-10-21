@@ -35,8 +35,8 @@ import com.github.jlangch.venice.VncException;
  * <p>Venice can not extend Java classes. The {@code XMLHandler} allows Venice to 
  * pass a dynamic proxy for the interface {@code IXMLHandler}.
  * 
- * @see {@link IXMLHandler}
- * @see {@link XMLUtil}
+ * @see IXMLHandler
+ * @see XMLUtil
  */
 public class XMLHandler extends DefaultHandler {
 

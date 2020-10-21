@@ -46,8 +46,8 @@ import org.xml.sax.SAXException;
  *          :skippedEntity (fn [name] nil) }))
  * </pre>
  * 
- * @see {@link XMLHandler}
- * @see {@link XMLUtil}
+ * @see XMLHandler
+ * @see XMLUtil
  */
 public interface IXMLHandler {
 

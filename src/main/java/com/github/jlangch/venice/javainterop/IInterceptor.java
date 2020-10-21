@@ -207,7 +207,7 @@ public interface IInterceptor {
 	
 	/**
 	 * @return the max future thread pool size a Venice script under this 
-	 * <code>Sandbox</code> is allowed to use.
+	 * {@code Sandbox} is allowed to use.
 	 */
 	Integer getMaxFutureThreadPoolSize();
 	

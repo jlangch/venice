@@ -54,7 +54,7 @@ public class SandboxRules {
 	/**
 	 * Creates new SandboxRules starting without any defaults.
 	 * 
-	 * @return <code>SandboxRules</code>
+	 * @return {@code SandboxRules}
 	 */
 	public static SandboxRules noDefaults() {
 		return new SandboxRules(false);
@@ -79,7 +79,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withClasses(final String... rules) {
 		if (rules != null) {
@@ -107,7 +107,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withClasses(final List<String> rules) {
 		if (rules != null) {
@@ -126,7 +126,7 @@ public class SandboxRules {
 	 * <p>Adds a class rule "x.y.classname:*" for each class
 	 * 
 	 * @param classes classes
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withClasses(final Class<?>... classes) {
 		if (classes != null) {
@@ -142,7 +142,7 @@ public class SandboxRules {
 	 * <p>Adds a class rule "x.y.classname:*" for each class
 	 * 
 	 * @param classes classes
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withClasses(final Collection<Class<?>> classes) {
 		if (classes != null) {
@@ -169,7 +169,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withClasspathResources(final String... rules) {
 		if (rules != null) {
@@ -190,7 +190,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withClasspathResources(final Collection<String> rules) {
 		if (rules != null) {
@@ -213,7 +213,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withSystemProperties(final String... rules) {
 		if (rules != null) {
@@ -233,7 +233,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withSystemProperties(final Collection<String> rules) {
 		if (rules != null) {
@@ -256,7 +256,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withSystemEnvs(final String... rules) {
 		if (rules != null) {
@@ -275,7 +275,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withSystemEnvs(final Collection<String> rules) {
 		if (rules != null) {
@@ -299,7 +299,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules rejectVeniceFunctions(final String... rules) {
 		if (rules != null) {
@@ -320,7 +320,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules rejectVeniceFunctions(final Collection<String> rules) {
 		if (rules != null) {
@@ -344,7 +344,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules whitelistVeniceFunctions(final String... rules) {
 		if (rules != null) {
@@ -364,7 +364,7 @@ public class SandboxRules {
 	 * </ul>
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules whitelistVeniceFunctions(final Collection<String> rules) {
 		if (rules != null) {
@@ -380,7 +380,7 @@ public class SandboxRules {
 	 * Add rules for whitelisted Venice modules.
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withVeniceModules(final String... rules) {
 		if (rules != null) {
@@ -393,7 +393,7 @@ public class SandboxRules {
 	 * Add rules for whitelisted Venice modules.
 	 * 
 	 * @param rules rules
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withVeniceModules(final Collection<String> rules) {
 		if (rules != null) {
@@ -412,10 +412,10 @@ public class SandboxRules {
 	
 	/**
 	 * Sets the max execution time in seconds a Venice script under this 
-	 * <code>SandboxRules</code> is allowed to run.
+	 * {@code SandboxRules} is allowed to run.
 	 * 
 	 * @param maxExecTimeSeconds the max exec time in seconds
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withMaxExecTimeSeconds(final int maxExecTimeSeconds) {
 		this.maxExecTimeSeconds = maxExecTimeSeconds <= 0 ? null : maxExecTimeSeconds;
@@ -424,10 +424,10 @@ public class SandboxRules {
 	
 	/**
 	 * Sets the max thread pool size for futures a Venice script under this 
-	 * <code>SandboxRules</code> is allowed to use.
+	 * {@code SandboxRules} is allowed to use.
 	 * 
 	 * @param maximumPoolSize the max thread pool size
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withMaxFutureThreadPoolSize(final int maximumPoolSize) {
 		this.maxFutureThreadPoolSize = maximumPoolSize <= 0 ? null : maximumPoolSize;
@@ -437,7 +437,7 @@ public class SandboxRules {
 	/**
 	 * Reject access to all Venice I/O related functions
 	 * 
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules rejectAllVeniceIoFunctions() {
 		if (rules != null) {
@@ -449,7 +449,7 @@ public class SandboxRules {
 	/**
 	 * Reject access to all Java related functions
 	 * 
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules rejectAllJavaCalls() {
 		if (rules != null) {
@@ -478,7 +478,7 @@ public class SandboxRules {
 	 *   <li>user.name</li>
 	 * </ul>
 	 * 
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withStandardSystemProperties() {
 		withSystemProperties(DEFAULT_SYSTEM_PROPERTIES);
@@ -488,7 +488,7 @@ public class SandboxRules {
 	/**
 	 * Allow access to all Java system properties
 	 * 
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withAllSystemProperties() {
 		withSystemProperties("*");
@@ -500,7 +500,7 @@ public class SandboxRules {
 	 * 
 	 * <p>Standard system environment variables:
 	 * 
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withStandardSystemEnvs() {
 		withSystemEnvs(DEFAULT_SYSTEM_ENVS);
@@ -510,7 +510,7 @@ public class SandboxRules {
 	/**
 	 * Allow access to all system environment variables
 	 * 
-	 * @return this <code>SandboxRules</code>
+	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules withAllSystemEnvs() {
 		withSystemEnvs("*");
@@ -518,11 +518,11 @@ public class SandboxRules {
 	}
 		
 	/**
-	 * Merges this <code>SandboxRules</code> with the passed other 
-	 * <code>SandboxRules</code> 
+	 * Merges this {@code SandboxRules} with the passed other 
+	 * {@code SandboxRules} 
 	 * 
 	 * @param other the other SandboxRules to merge with
-	 * @return the new merged <code>SandboxRules</code>
+	 * @return the new merged {@code SandboxRules}
 	 */
 	public SandboxRules merge(final SandboxRules other) {
 		final SandboxRules merged = new SandboxRules();
@@ -532,7 +532,7 @@ public class SandboxRules {
 	}
 	
 	/**
-	 * @return the rules of this <code>SandboxRules</code>
+	 * @return the rules of this {@code SandboxRules}
 	 */
 	public List<String> getRules() {
 		return Collections.unmodifiableList(rules);
@@ -540,7 +540,7 @@ public class SandboxRules {
 	
 	/**
 	 * @return the max execution time in seconds a Venice script under this 
-	 * <code>SandboxRules</code> is allowed to run.
+	 * {@code SandboxRules} is allowed to run.
 	 */
 	public Integer getMaxExecTimeSeconds() {
 		return maxExecTimeSeconds;
@@ -548,7 +548,7 @@ public class SandboxRules {
 	
 	/**
 	 * @return the max thread pool size for futures a Venice script under this 
-	 * <code>SandboxRules</code> is allowed to use.
+	 * {@code SandboxRules} is allowed to use.
 	 */
 	public Integer getMaxFutureThreadPoolSize() {
 		return maxFutureThreadPoolSize;
@@ -567,7 +567,7 @@ public class SandboxRules {
 	 *            "java.math.BigDecimal");
 	 * </pre>
 	 * 
-	 * @return the default rules used for the <code>Sandbox</code>
+	 * @return the default rules used for the {@code Sandbox}
 	 */
 	public static List<String> getDefaultRules() {
 		return new SandboxRules()

@@ -33,8 +33,8 @@ import org.xml.sax.InputSource;
 /**
  * Parses XML from various data sources using a {@link SAXParser} internally
  * 
- * @see {@link IXMLHandler}
- * @see {@link XMLHandler}
+ * @see IXMLHandler
+ * @see XMLHandler
  */
 public class XMLUtil {
 
