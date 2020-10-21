@@ -22,6 +22,9 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown if shell execution via the 'sh' function failed
+ */
 public class ShellException extends VncException {
 
 	public ShellException(final String message) {

@@ -22,6 +22,12 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown by the {@code Reader} to signal a premature end of input.
+ * 
+ * <p>E.g.: defining a string without closing it with the end quote before
+ * the end of the input is reached
+ */
 public class EofException extends ParseError {
 
 	public EofException(final String message) {

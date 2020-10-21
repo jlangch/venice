@@ -34,6 +34,10 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.StackFrame;
 
 
+/**
+ * {@code VncException} is the superclass of those exceptions that can be 
+ * thrown during Venice form reading or execution.
+ */
 public class VncException extends RuntimeException {
 
 	public VncException() {

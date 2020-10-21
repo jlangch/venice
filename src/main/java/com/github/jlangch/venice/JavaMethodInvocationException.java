@@ -22,6 +22,9 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown if a Java interop call failed
+ */
 public class JavaMethodInvocationException extends VncException {
 
 	public JavaMethodInvocationException(final String message) {

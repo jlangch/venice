@@ -22,7 +22,9 @@
 package com.github.jlangch.venice;
 
 
-
+/**
+ * Thrown by the {@code Reader} if it fails parsing the input.
+ */
 public class ParseError extends VncException {
 
 	public ParseError(final String message) {

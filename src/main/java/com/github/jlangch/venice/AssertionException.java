@@ -22,6 +22,15 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown if an assertion validation fails.
+ * 
+ * <p>It's raised in two cases:
+ * <ul>
+ *   <li> if the assert macro expression validation fails</li>
+ *   <li> if the pre-conditions validation within a function fails</li>
+ * </ul>
+ */
 public class AssertionException extends VncException {
 
 	public AssertionException(final String message) {

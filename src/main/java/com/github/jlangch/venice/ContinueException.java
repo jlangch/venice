@@ -22,6 +22,19 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown by the {@code Reader} to signal that it is reading an incomplete form.
+ * 
+ * <p>The REPL makes use of this to allow the user to continue expressions. 
+ * The REPL displays the continue prompt '|' on the next line to request more 
+ * input.
+ * 
+ * <p>E.g.: reading an incomplete vector
+ * <pre>
+ * venice> [1 2 3
+ *       | 
+ * </pre>
+ */
 public class ContinueException extends VncException {
 
 	public ContinueException() {

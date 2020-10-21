@@ -22,6 +22,9 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown if a web application ring handler failed to redirect a request
+ */
 public class RingRedirectException extends VncException {
 
 	public RingRedirectException(final String redirectUri) {

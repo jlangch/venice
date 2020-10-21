@@ -22,6 +22,10 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * Thrown to the Java code that runs a Venice instance if a Venice form
+ * raised a value exception.
+ */
 public class JavaValueException extends VncException {
 		
 	public JavaValueException(final Object value) {
