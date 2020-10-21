@@ -32,4 +32,8 @@ public interface IVncFunction {
 		return true; 
 	}
 
+	default boolean isMacro() { 
+		return false; 
+	}
+
 }

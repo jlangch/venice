@@ -135,6 +135,7 @@ public abstract class VncFunction
 		return params; 
 	}
 	
+	@Override
 	public boolean isMacro() { 
 		return macro; 
 	}
