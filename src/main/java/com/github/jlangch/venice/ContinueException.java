@@ -31,7 +31,7 @@ package com.github.jlangch.venice;
  * 
  * <p>E.g.: reading an incomplete vector
  * <pre>
- * venice> [1 2 3
+ * venice&gt; [1 2 3
  *       | 
  * </pre>
  */
