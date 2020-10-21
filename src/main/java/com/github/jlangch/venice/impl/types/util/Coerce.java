@@ -142,7 +142,15 @@ public class Coerce {
 
 	public static IVncFunction toIVncFunction(final VncVal val) {
 		if (val == null || Types.isIVncFunction(val)) {
-			return (IVncFunction)val;
+			if (Types.isVncMacro(val)) {
+				throw new VncException(String.format(
+						"Cannot coerce a macro to a function. A macro can " +
+						"not be used if a function is expected.", 
+						ErrorMessage.buildErrLocation(val)));
+			}
+			else {
+				return (IVncFunction)val;
+			}
 		}
 		else {
 			throw new VncException(String.format(

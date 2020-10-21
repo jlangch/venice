@@ -5880,7 +5880,8 @@ public class CoreFunctions {
 						"corresponding elements, in the order they appeared in coll.")
 					.examples(
 						"(group-by count [\"a\" \"as\" \"asd\" \"aa\" \"asdf\" \"qwer\"])",
-						"(group-by odd? (range 10))")
+						"(group-by odd? (range 10))",
+						"(group-by identity (seq \"abracadabra\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
