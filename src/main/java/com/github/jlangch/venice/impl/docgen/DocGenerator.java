@@ -513,6 +513,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("distinct"));
 		list_modify.addItem(getDocItem("dedupe"));
 		list_modify.addItem(getDocItem("partition"));
+		list_modify.addItem(getDocItem("partition-by"));
 		list_modify.addItem(getDocItem("interpose"));
 		list_modify.addItem(getDocItem("interleave"));
 		list_modify.addItem(getDocItem("mapcat"));
@@ -571,6 +572,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("distinct"));
 		vec_modify.addItem(getDocItem("dedupe"));
 		vec_modify.addItem(getDocItem("partition"));
+		vec_modify.addItem(getDocItem("partition-by"));
 		vec_modify.addItem(getDocItem("interpose"));
 		vec_modify.addItem(getDocItem("interleave"));
 		vec_modify.addItem(getDocItem("mapcat"));

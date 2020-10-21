@@ -2970,6 +2970,15 @@ public class CoreFunctionsTest {
 		// partition a finit lazy sequence
 		assertEquals("((1 2) (3 4) (5))", venice.eval("(str (partition 2 (lazy-seq [1 2 3 4 5])))"));
 	}
+
+	@Test
+	public void test_partition_by() {
+		final Venice venice = new Venice();
+		
+		assertEquals("((1) (2 4) (3 5) (6))", venice.eval("(str (partition-by even? [1 2 4 3 5 6]))"));
+		assertEquals("((A) (B B) (A))", venice.eval("(str (partition-by identity (seq \"ABBA\")))"));
+		assertEquals("((1 1 1 1) (2 2) (3))", venice.eval("(str (partition-by identity [1 1 1 1 2 2 3]))"));
+	}
 	
 	@Test
 	public void test_peek() {

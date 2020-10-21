@@ -5455,6 +5455,65 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction partition_by =
+		new VncFunction(
+				"partition-by",
+				VncFunction
+					.meta()
+					.arglists("(partition-by f coll)")
+					.doc(
+						"Applies f to each value in coll, splitting it each time f returns " +
+						"a new value.")
+					.examples(
+						"(partition-by even? [1 2 4 3 5 6])",
+						"(partition-by identity (seq \"ABBA\"))",
+						"(partition-by identity [1 1 1 1 2 2 3])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 2);
+
+				final IVncFunction f = Coerce.toIVncFunction(args.first());
+				VncSequence seq = Coerce.toVncSequence(args.second());
+				
+				if (seq.isEmpty()) {
+					return VncList.empty();
+				}
+								
+				VncList result = VncList.empty();
+				VncList part = VncList.empty();
+				
+				// first element
+				VncVal v = seq.first();
+				seq = seq.rest();
+				part = part.addAtEnd(v);
+
+				VncVal splitValLast = f.apply(VncList.of(v));
+
+				while (!seq.isEmpty()) {
+					v = seq.first();
+					seq = seq.rest();
+					
+					VncVal splitVal = f.apply(VncList.of(v));
+					
+					if (!VncBoolean.isTrue(CoreFunctions.equal_Q.applyOf(splitValLast, splitVal))) {
+						splitValLast = splitVal;
+						result = result.addAtEnd(part);
+						part = VncList.empty();
+					}
+					part = part.addAtEnd(v);
+				}
+				
+				if (!part.isEmpty()) {
+					result = result.addAtEnd(part);
+				}
+				
+				return result;		
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction emptyToNil =
 		new VncFunction(
 				"empty-to-nil",
@@ -7382,6 +7441,7 @@ public class CoreFunctions {
 				.add(partial)
 				.add(mapv)
 				.add(partition)
+				.add(partition_by)
 				.add(filter_k)
 				.add(filter_kv)
 				.add(reduce)
