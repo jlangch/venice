@@ -59,7 +59,8 @@
 //       - Generate cheatsheets: ./gradlew cheatsheet
 //       - Update files with release version: ./gradlew updateReleaseVersion
 //       - Commit the changes
-//       - Update the new Git commit Id for the cheatsheet URLs in 'README.md' 
+//       - Update the Git commit Id in the cheatsheet URLs in 'README.md':
+//           ./gradlew updateReadMeCheatsheetRef
 //       - Commit the 'README.md' change
 //
 //   [2] Publish to Maven
@@ -75,7 +76,8 @@
 //           o Click Staging Repositories
 //           o Find the release 'comgithubjlangch-*'
 //           o Verify the contents are ok
-//           o Click Close (wait for validation steps under the Activity tab to complete)
+//           o Click Close (wait for validation steps under the Activity tab 
+//               to complete)
 //           o Click Release
 //
 //   [3] Draft GitHub Venice release
@@ -140,6 +142,23 @@ def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 def sonatypeUsername = project.properties['sonatypeUsername'] ?: "unknown"
 def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
 
+def getCheckedOutGitCommitId() {
+    def gitFolder = "$projectDir/.git/"
+    def takeFromId = 7
+    /*
+     * '.git/HEAD' contains either
+     *      in case of detached head: the currently checked out commit hash
+     *      otherwise: a reference to a file containing the current commit hash
+     */
+    def head = new File(gitFolder + "HEAD").text.split(":") // .git/HEAD
+    def isCommit = head.length == 1    // e5a7c79edabbf7dd39888442df081b1c9d8e88fd
+    // def isRef = head.length > 1     // ref: refs/heads/master
+
+    if (isCommit) return head[0].trim().take(takeFromId) // e5a7c79
+
+    def refHead = new File(gitFolder + head[1].trim()) // .git/refs/heads/master
+    refHead.text.trim().take(takeFromId)
+}
 
 compileJava {
     sourceCompatibility = 1.8
@@ -383,6 +402,20 @@ task updateReleaseVersion {
             fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
         }
     }
+}
+
+task updateReadMeCheatsheetRef {
+    doLast {
+        def id = new File("$projectDir/.git/refs/heads/").listFiles().first().text.take(7)
+        println "Updating Cheatsheet id ${id} -> 'README.md'"
+        ant.replaceregexp(
+                match:   "jlangch/venice/[0-9a-f]{7}/cheatsheet", 
+                replace: "jlangch/venice/${id}/cheatsheet", 
+                flags:   'g'
+        ) {
+            fileset(dir: '.', includes: 'README.md')
+        }
+     }
 }
 
 
