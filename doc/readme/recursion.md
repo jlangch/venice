@@ -85,7 +85,7 @@ a value from. There are no more forms evaluated after the form in the tail
 position is evaluated.
  
 
-**Example 1: Recursively sum up the numbers 0..n:**
+Example 1: Recursively sum up the numbers 0..n:
 
 ```clojure
 ;; Definition:
@@ -101,12 +101,12 @@ position is evaluated.
    (sum 100000)) ; => 5000050000
 ```
 
-**Example 2: Recursively compute the factorial of a number:**
+Example 2: Recursively compute the factorial of a number:
 
 ```clojure
 ;; Definition:
 ;;   factorial 1 -> 1
-;;   factorial n -> n * factorial (n -1)
+;;   factorial n -> n * factorial (n - 1)
 (do
    (defn factorial [x]
       (loop [n x, acc 1N]
@@ -118,7 +118,7 @@ position is evaluated.
    (factorial 10000)) ; => 284625968091...00000N  (35661 digits)
 ```
 
-**Example 3: Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):**
+Example 3: Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
 
 ```clojure
 ;; Definition:
@@ -129,8 +129,8 @@ position is evaluated.
    (defn fib [x]
       (loop [n x, a 0N, b 1N]
          (case n
-            0   a
-            1   b
+            0  a
+            1  b
             (recur (dec n) b (+ a b)))))
     
    (fib 6)       ; => 8N
@@ -140,7 +140,7 @@ position is evaluated.
 
 ## Recursion with lazy sequences
 
-**Example 1: Lazy Fibonacci number sequence computed by a recursive function:**
+Example 1: Lazy Fibonacci number sequence computed by a recursive function:
 
 ```clojure
 (do
@@ -151,7 +151,7 @@ position is evaluated.
    (doall (take 7 (fib))))  ; => (0 1 1 2 3 5 8)
 ```
 
-**Example 2: Factorial numbers:**
+Example 2: Factorial numbers:
 
 ```clojure
 (do
@@ -245,15 +245,17 @@ Variant 2:
   (factorial2 200))
 ```
 
-Note: tail call recursive functions, can always be written in terms of a 
+## Recursion vs Folding
+
+Tail call recursive functions, can always be written in terms of a 
 reducing (folding) function. E.g.:
 
 ```clojure
 (do
-  (defn factorial3 [n]
+  (defn factorial [n]
     ;; reducing factorial
-    (reduce * 1N (range 1 n)))
+    (reduce * 1N (range 1 (inc n))))
     
-(factorial3 5)) 
+(factorial 5)) 
 ```
 
