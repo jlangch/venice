@@ -1,12 +1,57 @@
 # Recursion
 
+Imperative languages like Java offer looping constructs like *while* or *for* loops.
+These looping constructs are based on mutable data.
 
-Venice does not support automated tail call optimization (TCO). The  _recur_  syntax 
-is a way to mimic TCO for self-recursion. In addition the  _trampoline_  function for 
-mutual recursion is available for more involved forms of recursion.
+In this Java example the mutable variable *isDone* is used to exit the loop:
+
+```java
+void doSomething() {
+  boolean isDone = false;
+  while (!isDone) {
+    isDone = true;
+  }
+}
+```
+
+But how is it possible to write a *while* loop when the expression that the loop is 
+testing is immutable?
+
+The answer is: through recursion!
+
+```java
+void doSomething() {
+  doSomething(false);
+}
+
+void doSomething(boolean isDone) {
+  if (!isDone) {
+    doSomething(true);
+  }
+}
+```
+
+The drawback of this simple recursion is the large amount of memory overhead 
+because of added stack frames for each recursion iteration.
+
+Functional languages with immutable data structures support *tail call optimization* 
+(TCO) to provide memory efficient recursion. While Venice does not support 
+automated tail call optimization it supports self recursion through the
+*loop..recur* syntax. This is a way to mimic TCO for self-recursion. 
+
+In addition Venice provides the  _trampoline_  function for mutual recursion for more 
+involved forms of recursion.
 
 
 ## simple recursion
+
+To illustrate the problem with simple recursion consuming stack frames for each 
+iteration, let's look at simple recursion example to compute the factorial for a
+number.
+
+The computation of factorial numbers is defined as
+- factorial 1 -> 1
+- factorial n -> n * factorial (n - 1)
 
 ```clojure
 (do
@@ -22,18 +67,6 @@ mutual recursion is available for more involved forms of recursion.
 )
 ```
 
-```clojure
-(do
-  (defmulti factorial identity)
-  (defmethod factorial 0 [_] 1N)
-  (defmethod factorial :default [n] (* (bigint n) (factorial (dec n))))
-
-  (factorial 5)     ; => 120N
-  (factorial 200)   ; => 78865786736479050355236...00000000N (375 digits)
-  (factorial 4000)  ; => boooom...
-)
-```
-
 Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 
 *Note: The recursive call to 'factorial' in these two simple recursion examples is not in tail position. Recursive functions like this can not be tail call optimized!*			
@@ -41,9 +74,11 @@ Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 
 ## self-recursive calls (loop - recur)
 
-Venice self-recursive calls do not consume stack space. It's the only
-non-stack-consuming looping construct in Venice. The `recur` expression
-must be in tail position.
+Venice self-recursive calls do not consume a new a stack frame for every new 
+recursion level and have a constant memory usage. It's the only non-stack-consuming 
+looping construct in Venice. To make it work the `recur` expression must be in 
+*tail position*. This way Venice can turn the recursive *loop..recur* construct 
+behind the scene into a plain loop.
 
 *Definition:*  The tail position is a position which an expression would return 
 a value from. There are no more forms evaluated after the form in the tail 
@@ -54,8 +89,8 @@ Recursively sum up the numbers 0..n:
 
 ```clojure
 ;; Definition:
-;;   (sum 0) -> 0
-;;   (sum n) -> n + (sum (dec n))
+;;   sum 0 -> 0
+;;   sum n -> n + sum (n - 1)
 (do
    (defn sum [n]
       (loop [cnt n, acc 0]
@@ -70,8 +105,8 @@ Recursively compute the factorial of a number:
 
 ```clojure
 ;; Definition:
-;;   (factorial 1) -> 1
-;;   (factorial n) -> n * (factorial (dec n))
+;;   factorial 1 -> 1
+;;   factorial n -> n * factorial (n -1)
 (do
    (defn factorial [x]
       (loop [n x, acc 1N]
@@ -87,9 +122,9 @@ Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
 
 ```clojure
 ;; Definition:
-;;   (fib 0) -> 0
-;;   (fib 1) -> 1
-;;   (fib n) -> (+ (fib (- n 2)) (fib (- n 1)))
+;;   fib 0 -> 0
+;;   fib 1 -> 1
+;;   fib n -> fib (n - 2) + fib (n - 1)
 (do
    (defn fib [x]
       (loop [n x, a 0N, b 1N]
