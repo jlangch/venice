@@ -1,9 +1,9 @@
 # Recursion
 
-Imperative languages like Java offer looping constructs like *while* or *for* loops.
+Imperative languages like *Java* offer looping constructs like *while* or *for* loops.
 These looping constructs are based on mutable data.
 
-In this Java example the mutable variable *isDone* is used to exit the loop:
+In this *Java* example the mutable variable *isDone* is used to exit the loop:
 
 ```java
 void doSomething() {
@@ -14,7 +14,7 @@ void doSomething() {
 }
 ```
 
-But how is it possible to write a *while* loop if the expression that the loop is 
+But how is it possible to write a *while* loop if the value that the loop is 
 testing is immutable and functions are pure?
 
 The answer is: through recursion!
@@ -24,7 +24,7 @@ void doSomething() {
   doSomething(false);
 }
 
-void doSomething(boolean isDone) {
+void doSomething(final boolean isDone) {
   if (!isDone) {
     doSomething(true);
   }
@@ -37,9 +37,9 @@ because of added stack frames for each recursion iteration.
 Functional languages with immutable data structures support *tail call optimization* 
 (TCO) to provide memory efficient recursion. While Venice does not support 
 automated tail call optimization it supports self recursion through the
-*loop..recur* syntax. This is a way to mimic TCO for self-recursion. 
+*loop..recur* syntax. This is a way to mimic TCO. 
 
-In addition Venice provides the  _trampoline_  function for mutual recursion for more 
+In addition Venice provides the *trampoline* function for mutual recursion for more 
 involved forms of recursion.
 
 
@@ -93,6 +93,7 @@ Example 1: Recursively sum up the numbers 0..n:
 ;;   sum n -> n + sum (n - 1)
 (do
    (defn sum [n]
+      ;; the transformed recursion uses an accumulator for intermediate results
       (loop [cnt n, acc 0]
          (if (zero? cnt)
              acc
@@ -109,6 +110,7 @@ Example 2: Recursively compute the factorial of a number:
 ;;   factorial n -> n * factorial (n - 1)
 (do
    (defn factorial [x]
+      ;; the transformed recursion uses an accumulator for intermediate results
       (loop [n x, acc 1N]
          (if (== n 1)
              acc
@@ -258,4 +260,62 @@ reducing (folding) function. E.g.:
     
 (factorial 5)) 
 ```
+
+
+## Compare recursion efficiency
+
+To see how efficient tail call optimization for recursion is we compare 
+simple recursion with self recursion applied to computing fibonacci numbers. 
+See the execution time and the number of function calls the profiler reveals.
+
+*Note: both examples run with upfront macro expansion enabled.*
+
+```clojure
+(do
+  (defn fib-simple [x]
+    (if (<= x 2)
+      x
+      (+ (fib-simple (- x 1)) (fib-simple (- x 2)))))
+ 
+  (defn fib-tco [x]
+    (loop [n x, a 0N, b 1N]
+      (case n
+        0  a
+        1  b
+        (recur (dec n) b (+ a b)))))
+
+  (perf (fib-simple 20) 100 100)
+  (println (prof :data-formatted "Metrics: fib-simple"))
+ 
+  (perf (fib-tco 20) 100 100)
+  (println (prof :data-formatted "Metrics: fib-tco")))
+```
+
+The profiler reveals that the TCO variant is way more efficient. The simple recursion 
+computes the same fibonacci number over and over again. Even with memoization it cannot
+compete with the TCO variant. Moreover the simple recursion suffers from a memory problem 
+and stack overflow when applied for larger numbers.
+
+```text
+---------------------------------------------------
+Metrics: fib-simple
+---------------------------------------------------
+user/fib-simple  [1352900]:    21.02 s     15.54 us
+user/_test       [      1]:  1661.10 ms           
+-                [1352800]:    97.24 ms       71 ns
+<=               [1352900]:    94.24 ms       69 ns
++                [ 676400]:    47.95 ms       70 ns
+---------------------------------------------------
+
+---------------------------------------------------
+Metrics: fib-tco
+---------------------------------------------------
+user/_test       [   1]:        7.20 ms           
+user/fib-tco     [ 100]:        7.04 ms    70.43 us
+==               [4000]:      390.69 us       97 ns
++                [1900]:      310.55 us      163 ns
+dec              [1900]:      251.60 us      132 ns
+---------------------------------------------------
+```
+
 
