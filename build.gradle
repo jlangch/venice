@@ -142,22 +142,33 @@ def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
 def sonatypeUsername = project.properties['sonatypeUsername'] ?: "unknown"
 def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
 
-def getCheckedOutGitCommitId() {
-    def gitFolder = "$projectDir/.git/"
-    def takeFromId = 7
-    /*
-     * '.git/HEAD' contains either
-     *      in case of detached head: the currently checked out commit hash
-     *      otherwise: a reference to a file containing the current commit hash
-     */
-    def head = new File(gitFolder + "HEAD").text.split(":") // .git/HEAD
-    def isCommit = head.length == 1    // e5a7c79edabbf7dd39888442df081b1c9d8e88fd
-    // def isRef = head.length > 1     // ref: refs/heads/master
-
-    if (isCommit) return head[0].trim().take(takeFromId) // e5a7c79
-
-    def refHead = new File(gitFolder + head[1].trim()) // .git/refs/heads/master
-    refHead.text.trim().take(takeFromId)
+def getCheckedOutGitCommitHash() {
+    def takeFromHash = 12
+    
+    try {
+        'git rev-parse --verify --short HEAD'.execute().text.trim().take(takeFromHash)
+    }
+    catch(Exception e) {
+        println "getCheckedOutGitCommitId(): 'git' not installed, falling back to '.git' folder ..."
+         
+        def gitFolder = "$projectDir/.git/"
+        /*
+         * '.git/HEAD' contains either
+         *      in case of detached head: the currently checked out commit hash
+         *      otherwise: a reference to a file containing the current commit hash
+         */
+        def head = new File(gitFolder + "HEAD").text.split(":") // .git/HEAD
+        def isCommit = head.length == 1    // e5a7c79edabbf7dd39888442df081b1c9d8e88fd
+        // def isRef = head.length > 1     // ref: refs/heads/master
+    
+        if (isCommit) {
+            return head[0].trim().take(takeFromHash) // e5a7c79edabb
+        }
+        else {
+            def refHead = new File(gitFolder + head[1].trim()) // .git/refs/heads/master
+            return refHead.text.trim().take(takeFromHash)
+        }
+    }
 }
 
 compileJava {
@@ -406,7 +417,7 @@ task updateReleaseVersion {
 
 task updateReadMeCheatsheetRef {
     doLast {
-        def id = new File("$projectDir/.git/refs/heads/").listFiles().first().text.take(7)
+        def id = getCheckedOutGitCommitHash().take(7)
         println "Updating Cheatsheet id ${id} -> 'README.md'"
         ant.replaceregexp(
                 match:   "jlangch/venice/[0-9a-f]{7}/cheatsheet", 
@@ -415,7 +426,7 @@ task updateReadMeCheatsheetRef {
         ) {
             fileset(dir: '.', includes: 'README.md')
         }
-     }
+    }
 }
 
 
@@ -525,8 +536,8 @@ dependencies {
     // have to be added explicitly.
     jmhImplementation project
     jmhImplementation 'io.vavr:vavr:0.10.3'
-    jmhImplementation 'org.openjdk.jmh:jmh-core:1.23'
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.26'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.26'
 
     // unit tests
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
@@ -536,8 +547,8 @@ dependencies {
     testRuntimeOnly 'com.github.librepdf:openpdf:1.3.22'
     testRuntimeOnly 'org.knowm.xchart:xchart:3.6.5'
     
-    compileOnly 'org.openjdk.jmh:jmh-core:1.23'
-    compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+    compileOnly 'org.openjdk.jmh:jmh-core:1.26'
+    compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.26'
 
     // required for cheatsheet generation
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.20'
