@@ -85,7 +85,7 @@ a value from. There are no more forms evaluated after the form in the tail
 position is evaluated.
  
 
-Recursively sum up the numbers 0..n:
+**Example 1: Recursively sum up the numbers 0..n:**
 
 ```clojure
 ;; Definition:
@@ -101,7 +101,7 @@ Recursively sum up the numbers 0..n:
    (sum 100000)) ; => 5000050000
 ```
 
-Recursively compute the factorial of a number:
+**Example 2: Recursively compute the factorial of a number:**
 
 ```clojure
 ;; Definition:
@@ -118,7 +118,7 @@ Recursively compute the factorial of a number:
    (factorial 10000)) ; => 284625968091...00000N  (35661 digits)
 ```
 
-Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
+**Example 3: Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):**
 
 ```clojure
 ;; Definition:
@@ -140,7 +140,7 @@ Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
 
 ## Recursion with lazy sequences
 
-Lazy Fibonacci number sequence computed by a recursive function:
+**Example 1: Lazy Fibonacci number sequence computed by a recursive function:**
 
 ```clojure
 (do
@@ -151,7 +151,7 @@ Lazy Fibonacci number sequence computed by a recursive function:
    (doall (take 7 (fib))))  ; => (0 1 1 2 3 5 8)
 ```
 
-Factorial for large numbers:
+**Example 2: Factorial numbers:**
 
 ```clojure
 (do
@@ -165,7 +165,7 @@ Factorial for large numbers:
 ```
 
 
-## mutually recursive calls (trampoline)
+## Mutually recursive calls (trampoline)
 
 `trampoline` can be used to convert algorithms requiring mutual
 recursion without stack consumption. Calls f, if f returns a function, 
@@ -213,8 +213,11 @@ Examples:
 
 ## Automated tail call optimization (TCO)
 
-Venice has experimental automated tail call optimization built-in, but it is 
-not yet enabled for production builds.
+Venice has experimental support for automated tail call optimization, but it is
+not yet enabled for production builds. The recursive calls must be in tail
+position.
+
+Variant 1:
 
 ```clojure
 (do
@@ -227,6 +230,8 @@ not yet enabled for production builds.
         
   (factorial 200))
 ```
+
+Variant 2:
 
 ```clojure
 (do
@@ -244,6 +249,11 @@ Note: tail call recursive functions, can always be written in terms of a
 reducing (folding) function. E.g.:
 
 ```clojure
-(reduce * 1N (range 1 201))  ;; reducing factorial
+(do
+  (defn factorial3 [n]
+    ;; reducing factorial
+    (reduce * 1N (range 1 n)))
+    
+(factorial3 5)) 
 ```
 
