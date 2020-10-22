@@ -14,8 +14,8 @@ void doSomething() {
 }
 ```
 
-But how is it possible to write a *while* loop when the expression that the loop is 
-testing is immutable?
+But how is it possible to write a *while* loop if the expression that the loop is 
+testing is immutable and functions are pure?
 
 The answer is: through recursion!
 
@@ -75,7 +75,7 @@ Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 ## self-recursive calls (loop - recur)
 
 Venice self-recursive calls do not consume a new a stack frame for every new 
-recursion level and have a constant memory usage. It's the only non-stack-consuming 
+recursion iteration and have a constant memory usage. It's the only non-stack-consuming 
 looping construct in Venice. To make it work the `recur` expression must be in 
 *tail position*. This way Venice can turn the recursive *loop..recur* construct 
 behind the scene into a plain loop.
