@@ -46,8 +46,14 @@
 //
 //   - Micro benchmarks
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark"
-//     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+UseParallelGC"
-//     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark" -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
+//     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} 
+//                  jmh 
+//                  -Pinclude=".*PrecompileBenchmark" 
+//                  -PjvmArgs="-XX:+UseParallelGC"
+//     $> ./gradlew jmh 
+//                  -Pinclude=".*PrecompileBenchmark" 
+//                  -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
+//
 // -----------------------------------------------------------------------------
 // Release Venice:
 //
@@ -64,43 +70,47 @@
 //       - Commit the 'README.md' change
 //
 //   [2] Publish to Maven
-//           o ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
-//                       -Dorg.gradle.internal.http.socketTimeout=60000
-//                       -Dorg.gradle.internal.http.connectionTimeout=60000
-//                       --warning-mode all
-//                       -Psigning.gnupg.keyName=[gpg-user-key-id]
-//                       -PsonatypeUsername=[name] 
-//                       -PsonatypePassword=[pw]
-//                       clean shadowJar publish
-//           o Log in to Sonatype OSSRH (https://oss.sonatype.org/)
-//           o Click Staging Repositories
-//           o Find the release 'comgithubjlangch-*'
-//           o Verify the contents are ok
-//           o Click Close (wait for validation steps under the Activity tab 
-//               to complete)
-//           o Click Release
+//       - ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
+//                   -Dorg.gradle.internal.http.socketTimeout=60000
+//                   -Dorg.gradle.internal.http.connectionTimeout=60000
+//                   --warning-mode all
+//                   -Psigning.gnupg.keyName=[gpg-user-key-id]
+//                   -PsonatypeUsername=[name] 
+//                   -PsonatypePassword=[pw]
+//                   clean shadowJar publish
+//       - Log in to Sonatype OSSRH (https://oss.sonatype.org/)
+//       - Click Staging Repositories
+//       - Find the release 'comgithubjlangch-*'
+//       - Verify the contents are ok
+//       - Click Close (wait for validation steps under the Activity tab 
+//         to complete)
+//       - Click Release
 //
 //   [3] Draft GitHub Venice release
-//      - Draft a new release in Git (https://github.com/jlangch/venice/releases)
-//        This will create the release tag
-//      - Pull the changes (commit tag)
+//       - Draft a new release in Git (https://github.com/jlangch/venice/releases)
+//         This will create the release tag
+//       - Pull the changes (commit tag)
 //   
 //   [4] Open new development cycle
 //       - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
 //       - Add an empty ChangeLog entry for the new version
+//
 // -----------------------------------------------------------------------------
-// Upgrade Gradle wrapper
-//   See https://docs.gradle.org/current/userguide/gradle_wrapper.html
-//   Upgrade:
-//      $> ./gradlew wrapper --gradle-version=6.6.1 --distribution-type=bin
+// Gradle wrapper
 //
-// Get initial Gradle wrapper
-//   See https://guides.gradle.org/creating-new-gradle-builds/
+//    Upgrade Gradle wrapper:
+//      See https://docs.gradle.org/current/userguide/gradle_wrapper.html
+//      Upgrade:
+//         $> ./gradlew wrapper --gradle-version=6.6.1 --distribution-type=bin
 //
-// Create and init a gradle project:
-//    $> mkdir test
-//    $> cd test
-//    $> gradle init
+//    Get initial Gradle wrapper
+//      See https://guides.gradle.org/creating-new-gradle-builds/
+//
+//    Create and init a gradle project:
+//       $> mkdir test
+//       $> cd test
+//       $> gradle init
+//
 // -----------------------------------------------------------------------------
 // Gradle project configuration for Eclipse IDE
 //
@@ -116,6 +126,7 @@
 //    6.  Refresh your Project in Eclipse
 //
 //    Repeat step 5) and 6) whenever the Gradle build changes
+//
 // -----------------------------------------------------------------------------
 
 plugins {
