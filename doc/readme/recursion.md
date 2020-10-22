@@ -50,7 +50,12 @@ a value from. There are no more forms evaluated after the form in the tail
 position is evaluated.
  
 
+Recursively sum up the numbers 0..n:
+
 ```clojure
+;; Definition:
+;;   (sum 0) -> 0
+;;   (sum n) -> n + (sum (dec n))
 (do
    (defn sum [n]
       (loop [cnt n, acc 0]
@@ -61,7 +66,12 @@ position is evaluated.
    (sum 100000)) ; => 5000050000
 ```
 
+Recursively compute the factorial of a number:
+
 ```clojure
+;; Definition:
+;;   (factorial 1) -> 1
+;;   (factorial n) -> n * (factorial (dec n))
 (do
    (defn factorial [x]
       (loop [n x, acc 1N]
@@ -71,6 +81,25 @@ position is evaluated.
     
    (factorial 5)      ; => 120N
    (factorial 10000)) ; => 284625968091...00000N  (35661 digits)
+```
+
+Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
+
+```clojure
+;; Definition:
+;;   (fib 0) -> 0
+;;   (fib 1) -> 1
+;;   (fib n) -> (+ (fib (- n 2)) (fib (- n 1)))
+(do
+   (defn fib [x]
+      (loop [n x, a 0N, b 1N]
+         (case n
+            0   a
+            1   b
+            (recur (dec n) b (+ a b)))))
+    
+   (fib 6)       ; => 8N
+   (fib 100000)) ; => 259740693472217...28746875N  (20901 digits)
 ```
 
 
