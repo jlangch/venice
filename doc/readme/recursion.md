@@ -287,6 +287,8 @@ See the execution time and the number of function calls the profiler reveals.
   (perf (fib-simple 20) 100 100)
   (println (prof :data-formatted "Metrics: fib-simple"))
  
+  (println)
+  
   (perf (fib-tco 20) 100 100)
   (println (prof :data-formatted "Metrics: fib-tco")))
 ```
@@ -296,9 +298,20 @@ computes the same fibonacci number over and over again. Even with memoization it
 compete with the TCO variant. Moreover the simple recursion suffers from a memory problem 
 and stack overflow when applied for larger numbers.
 
+The TCO variant is more than 200 times faster than the simple recursion.
+
+```text
+Elapsed time for a single invocation
+  fib-simple:   16.61 ms   (1661.10 ms / 100)
+  fib-tco:      70.43 us
+```
+
+It's amazing to see that the function 'fib-simple' is called 13'529 times to calculate
+(fib-simple 20) a single time!
+
 ```text
 ---------------------------------------------------
-Metrics: fib-simple
+Metrics: fib-simple    100 calls to (fib-simple 20)
 ---------------------------------------------------
 user/fib-simple  [1352900]:    21.02 s     15.54 us
 user/_test       [      1]:  1661.10 ms           
@@ -308,7 +321,7 @@ user/_test       [      1]:  1661.10 ms
 ---------------------------------------------------
 
 ---------------------------------------------------
-Metrics: fib-tco
+Metrics: fib-tco          100 calls to (fib-tco 20)
 ---------------------------------------------------
 user/_test       [   1]:        7.20 ms           
 user/fib-tco     [ 100]:        7.04 ms    70.43 us
@@ -318,4 +331,5 @@ dec              [1900]:      251.60 us      132 ns
 ---------------------------------------------------
 ```
 
+*Please note that the Venice profiler is also accumulating the elapsed time recursively for simple recursive functions resulting in a wrong value!*
 
