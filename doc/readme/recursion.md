@@ -17,7 +17,7 @@ void doSomething() {
 But how is it possible to write a *while* loop if the value that the loop is 
 testing is immutable and functions are pure?
 
-The answer is: through recursion!
+The answer is: recursion!
 
 ```java
 void doSomething() {
