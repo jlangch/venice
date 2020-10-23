@@ -1110,6 +1110,21 @@ public class SpecialFormsDoc {
 		) {
 			private static final long serialVersionUID = -1;
 		};
+		
+	public static VncFunction print_highlight = 
+		new SpecialFormsDocFunction(
+				"print-highlight",
+				VncFunction
+					.meta()
+					.arglists("(print-highlight form")
+					.doc(
+						"Prints the form highlighted to *out*")
+					.examples(
+						"(print-highlight \"(+ 1 2)\")")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
 
 	public static VncFunction global_var_version = 
 		new SpecialFormsDocFunction(
@@ -1260,6 +1275,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("ns-unmap"),			ns_unmap)
 					.put(new VncSymbol("ns-remove"),		ns_remove)
 					.put(new VncSymbol("namespace"),		namespace)
+					.put(new VncSymbol("print-highlight"),	print_highlight)					
 					.put(new VncSymbol("import"),			import_)
 					.put(new VncSymbol("imports"),			imports_)
 					.put(new VncSymbol("dobench"),			dobench)

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import java.io.File;
-
 import org.jline.reader.EOFError;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.SyntaxError;
@@ -71,7 +69,7 @@ public class ReplParser extends DefaultParser {
 
 	public static boolean isDroppedVeniceScriptFile(final String buffer) {
 		final String filename = StringUtil.trimToEmpty(buffer);
-		return filename.endsWith(".venice") && new File(filename).isFile();
+		return filename.endsWith(".venice");
 	}
 
 	public static boolean isCommand(final String buffer) {

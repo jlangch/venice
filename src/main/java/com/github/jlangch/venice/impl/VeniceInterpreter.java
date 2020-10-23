@@ -518,6 +518,9 @@ public class VeniceInterpreter implements Serializable  {
 					
 				case "doc": // (doc sym)
 					return doc_(new CallFrame("doc", a0.getMeta()), ast, env);
+				
+				case "print-highlight": // (print-highlight form)
+					return print_highlight_(new CallFrame("print-highlight", a0.getMeta()), ast, env);
 					
 				case "modules": // (modules )
 					return modules_(new CallFrame("modules", a0.getMeta()), ast, env);
@@ -1394,6 +1397,14 @@ public class VeniceInterpreter implements Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			final VncString doc = DocForm.doc(ast.second(), env);
 			evaluate(VncList.of(new VncSymbol("println"), doc), env);
+			return Nil;
+		}
+	}
+	
+	private VncVal print_highlight_(final CallFrame callframe, final VncList ast, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			final VncString form = DocForm.highlight(Coerce.toVncString(ast.second()), env);
+			evaluate(VncList.of(new VncSymbol("println"), form), env);
 			return Nil;
 		}
 	}

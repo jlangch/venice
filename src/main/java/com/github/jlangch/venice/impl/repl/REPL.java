@@ -26,7 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,8 +57,10 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.specialforms.DocForm;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
@@ -279,12 +283,20 @@ public class REPL {
 						}
 					}
 					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
-						final String sexpr = String.format(
-												"(load-file \"%s\")", 
-												line.trim());
-						history.add(sexpr);
+						final String fileName = line.trim();
+						final List<String> lines = Files.readAllLines(new File(fileName).toPath());
+						String script = null;
+						if (lines.size() < 20) {
+							// file scripts with less than 20 lines, treat them as if they have been typed
+							script = String.join("\n", lines);
+							printer.println("stdout", DocForm.highlight(new VncString(script), env).getValue());
+						}
+						else {
+							script = String.format("(load-file \"%s\")", line.trim());
+						}
+						history.add(script);
 						ThreadLocalMap.clearCallStack();			
-						final VncVal result = venice.RE(sexpr, "user", env);
+						final VncVal result = venice.RE(script, "user", env);
 						if (result != null) {
 							printer.println("result", resultPrefix + venice.PRINT(result));
 							resultHistory.add(result);

@@ -64,6 +64,26 @@ public class DocForm {
 			return docForSymbol(name.toSymbol(), env);
 		}
 	}
+
+	public static VncString highlight(
+			final VncString form, 
+			final Env env
+	) {
+		final AnsiColorTheme theme = AnsiColorThemes.getTheme(getColorTheme(env));
+
+		if (theme == null) {
+			return form;
+		}
+		else {			
+			final List<HighlightItem> items = HighlightParser.parse(form.getValue());
+			
+			return new VncString(
+					AnsiColorTheme.ANSI_RESET +
+					items.stream()
+						 .map(it -> theme.style(it.getForm(), it.getClazz()))
+						 .collect(Collectors.joining()));
+		}
+	}
 	
 	private static VncString docForSymbol(final VncSymbol sym, final Env env) {
 		VncVal docVal = SpecialFormsDoc.ns.get(sym); // special form?
@@ -87,20 +107,19 @@ public class DocForm {
 			final VncKeyword module, 
 			final Env env
 	) {
+		final String form = ModuleLoader.loadModule(module.getValue());
+		
 		final AnsiColorTheme theme = AnsiColorThemes.getTheme(getColorTheme(env));
 
-		final String script = ModuleLoader.loadModule(module.getValue());
-		
 		if (theme == null) {
-			return new VncString(script);
+			return new VncString(form);
 		}
 		else {			
-			final List<HighlightItem> items = HighlightParser
-												.parse("(do " + script + ")");
+			final List<HighlightItem> items = HighlightParser.parse("(do " + form + ")");
 			
 			return new VncString(
 					AnsiColorTheme.ANSI_RESET +
-					items.subList(3, items.size()-2)
+					items.subList(3, items.size()-1)
 						 .stream()
 						 .map(it -> theme.style(it.getForm(), it.getClazz()))
 						 .collect(Collectors.joining()));
@@ -178,7 +197,7 @@ public class DocForm {
 					type.getValue()));
 		}
 	}
-	
+
 	private static String getColorTheme(final Env env) {
 		// Note: there is a color theme only if we're running in a REPL!
 		
