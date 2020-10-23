@@ -306,9 +306,6 @@ Elapsed time for a single invocation
   fib-tco:      70.43 us
 ```
 
-It's amazing to see that the function 'fib-simple' is called 13'529 times to calculate
-(fib-simple 20) a single time!
-
 ```text
 ---------------------------------------------------
 Metrics: fib-simple    100 calls to (fib-simple 20)
