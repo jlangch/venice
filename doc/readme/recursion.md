@@ -354,5 +354,5 @@ dec              [1900]:      251.60 us      132 ns
 ---------------------------------------------------
 ```
 
-*Please note that the Venice profiler is also accumulating the elapsed time recursively for simple recursive functions resulting in a wrong value!*
+*Please note that the Venice profiler is also accumulating the elapsed time recursively for simple recursive functions resulting in a wrong value! The Venice profiler always reports the 'time with children' for a function.*
 

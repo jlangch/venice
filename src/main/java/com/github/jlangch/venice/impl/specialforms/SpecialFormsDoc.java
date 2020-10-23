@@ -737,8 +737,13 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(prof opts)")
 					.doc(
-						"Controls the code profiling. See the companion functions/macros 'dorun' and 'perf'. " +
-						"The perf macro is built on prof and dorun and provides all to do simple Venice profiling.")
+						"Controls the code profiling. See the companion functions/macros " +
+						"'dorun' and 'perf'. The perf macro is built on prof and dorun and " +
+						"provides all for simple Venice profiling.\n\n" +
+						"Profiling recursive functions: \n" + 
+						"For recursive functions the profiler reports the 'time with children' " +
+						"for the particular recursive function resulting in much higher measured " +
+						"elapsed times.")
 					.examples(
 						"(do  \n" +
 						"  (prof :on)   ; turn profiler on  \n" +
