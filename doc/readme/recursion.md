@@ -272,10 +272,10 @@ See the execution time and the number of function calls the profiler reveals.
 
 ```clojure
 (do
-  (defn fib-simple [x]
-    (if (<= x 2)
-      x
-      (+ (fib-simple (- x 1)) (fib-simple (- x 2)))))
+  (defn fib-simple [n]
+    (if (< n 2)
+      n
+      (+ (fib-simple (- n 1)) (fib-simple (- n 2)))))
  
   (defn fib-tco [x]
     (loop [n x, a 0N, b 1N]
@@ -305,6 +305,32 @@ Elapsed time for a single invocation
   fib-simple:   16.61 ms   (1661.10 ms / 100)
   fib-tco:      70.43 us
 ```
+
+The simple recursive functions 'fib-simple' is called 13'529 times to calculate
+(fib-simple 20) a single time! This is the reason for being so much slower - it's
+the price for the elegance.
+
+The number of recursive calls to 'fib-simple':
+
+```text
+                  value   #calls  
+(fib-simple 1)       1        1
+(fib-simple 2)       1        3
+(fib-simple 3)       2        5 
+(fib-simple 4)       3        9
+(fib-simple 5)       5       15
+(fib-simple 6)       8       25
+(fib-simple 7)      13       41
+(fib-simple 8)      21       67
+(fib-simple 9)      34      109
+(fib-simple 10)     55      177
+(fib-simple 11)     89      287
+(fib-simple 12)    144      465
+(fib-simple 13)    233      753
+(fib-simple 14)    377     1219
+(fib-simple 15)    610     1973
+```
+
 
 ```text
 ---------------------------------------------------

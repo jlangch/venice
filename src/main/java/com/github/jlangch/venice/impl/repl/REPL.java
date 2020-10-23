@@ -284,7 +284,11 @@ public class REPL {
 					}
 					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
 						final String fileName = line.trim();
-						final List<String> lines = Files.readAllLines(new File(fileName).toPath());
+						final List<String> lines = Files
+													.readAllLines(new File(fileName).toPath())
+													.stream()
+													.filter(l -> !l.startsWith(";;;;"))
+													.collect(Collectors.toList());						
 						String script = null;
 						if (lines.size() < 20) {
 							// file scripts with less than 20 lines, treat them as if they have been typed
