@@ -35,5 +35,9 @@ public interface IVncFunction {
 	default boolean isMacro() { 
 		return false; 
 	}
+	
+	default boolean isNative() {
+		return false;
+	}
 
 }

@@ -740,10 +740,11 @@ public class SpecialFormsDoc {
 						"Controls the code profiling. See the companion functions/macros " +
 						"'dorun' and 'perf'. The perf macro is built on prof and dorun and " +
 						"provides all for simple Venice profiling.\n\n" +
-						"Profiling recursive functions: \n" + 
-						"For recursive functions the profiler reports the 'time with children' " +
-						"for the particular recursive function resulting in much higher measured " +
-						"elapsed times.")
+						"The profiler reports a function's elapsed time as \"time with children\"! \n\n" +
+						"Profiling recursive functions: \n" +
+						"Because the profiler reports \"time with children\" and accumulates the " +
+						"elapsed time across all recursive calls the resulting time for a " +
+						"particular recursive function is higher than the effective time.")
 					.examples(
 						"(do  \n" +
 						"  (prof :on)   ; turn profiler on  \n" +

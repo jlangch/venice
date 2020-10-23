@@ -5473,6 +5473,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final IVncFunction f = Coerce.toIVncFunction(args.first());
 				VncSequence seq = Coerce.toVncSequence(args.second());
 				
@@ -5488,15 +5490,26 @@ public class CoreFunctions {
 				seq = seq.rest();
 				part = part.addAtEnd(v);
 
-				VncVal splitValLast = f.apply(VncList.of(v));
+				VncVal splitValLast = VncFunction.applyWithMeter(
+											f,
+											VncList.of(v),
+											meterRegistry);
 
 				while (!seq.isEmpty()) {
 					v = seq.first();
 					seq = seq.rest();
 					
-					VncVal splitVal = f.apply(VncList.of(v));
+					VncVal splitVal = VncFunction.applyWithMeter(
+											f,
+											VncList.of(v),
+											meterRegistry);
 					
-					if (!VncBoolean.isTrue(CoreFunctions.equal_Q.applyOf(splitValLast, splitVal))) {
+					VncBoolean equal = (VncBoolean)VncFunction.applyWithMeter(
+											CoreFunctions.equal_Q,
+											VncList.of(splitValLast, splitVal),
+											meterRegistry);
+							
+					if (!VncBoolean.isTrue(equal)) {
 						splitValLast = splitVal;
 						result = result.addAtEnd(part);
 						part = VncList.empty();

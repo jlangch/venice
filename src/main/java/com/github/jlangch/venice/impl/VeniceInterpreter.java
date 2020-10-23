@@ -1596,7 +1596,9 @@ public class VeniceInterpreter implements Serializable  {
 		// for the particular recursive function resulting in much in much higher measured 
 		// elapsed times.
 		// Profiling TCO based recursive functions report correct times.
-		// See: https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
+		//
+		// See:  - https://smartbear.com/learn/code-profiling/fundamentals-of-performance-profiling/
+		//       - https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			if (Types.isVncKeyword(ast.second())) {
 				final VncKeyword cmd = (VncKeyword)ast.second();
@@ -1909,6 +1911,11 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					return evaluateBody(body, localEnv);
 				}
+			}
+			
+			@Override
+			public boolean isNative() { 
+				return false;
 			}
 			
 			@Override

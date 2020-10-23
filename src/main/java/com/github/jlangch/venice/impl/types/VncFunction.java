@@ -127,6 +127,11 @@ public abstract class VncFunction
 		return apply(VncList.of(mvs));
 	}
 
+	@Override
+	public boolean isNative() { 
+		return true; // implemented natively in Java
+	}
+
 	public boolean isRedefinable() { 
 		return true; 
 	}
@@ -280,7 +285,9 @@ public abstract class VncFunction
 			final VncList args, 
 			final MeterRegistry meterRegistry
 	) {
-		if (meterRegistry.enabled && !fn.isAnonymous() && (fn instanceof VncFunction)) {
+		if (meterRegistry.enabled && fn.isNative()) {
+			// Non native functions are profiled by the VeniceInterpreter while executing 
+			// (interpreting) the function. Do not profile them twice!
 			final long nanos = System.nanoTime();
 			
 			final VncVal result = fn.apply(args);
