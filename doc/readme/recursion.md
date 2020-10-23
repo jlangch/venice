@@ -17,7 +17,7 @@ void doSomething() {
 But how is it possible to write a *while* loop if the value that the loop is 
 testing is immutable and functions are pure?
 
-The answer is: through recursion!
+The answer is: recursion!
 
 ```java
 void doSomething() {
@@ -305,9 +305,6 @@ Elapsed time for a single invocation
   fib-simple:   16.61 ms   (1661.10 ms / 100)
   fib-tco:      70.43 us
 ```
-
-It's amazing to see that the function 'fib-simple' is called 13'529 times to calculate
-(fib-simple 20) a single time!
 
 ```text
 ---------------------------------------------------
