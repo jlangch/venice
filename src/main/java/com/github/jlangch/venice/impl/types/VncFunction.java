@@ -123,6 +123,10 @@ public abstract class VncFunction
 	@Override
 	public abstract VncVal apply(final VncList args);
 
+	public VncFunction getFunctionForArgs(final VncList args) {
+            return this;
+        }
+
 	public VncVal applyOf(final VncVal... mvs) {
 		return apply(VncList.of(mvs));
 	}
