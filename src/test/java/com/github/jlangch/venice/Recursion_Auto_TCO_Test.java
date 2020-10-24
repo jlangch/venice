@@ -28,8 +28,29 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 
 
-public class SpecialFormsTest {
-	
+public class Recursion_Auto_TCO_Test {
+
+	@Test
+	public void test_recursion_multi_arity() {
+		if (!VeniceInterpreter.supportsAutoTCO()) {
+			return;
+		}
+		
+		final String script = 
+				"(do                                                 \n"
+				+ "  (defn factorial                                 \n"
+				+ "     ([n]     (factorial n 1))                    \n"
+				+ "     ([n acc] (if (== n 1)                        \n"
+				+ "                acc                               \n"
+				+ "                (factorial (dec n) (* acc n)))))  \n"
+				+ "                                                  \n"
+				+ "  (factorial 5))";
+
+		final Venice venice = new Venice();
+		
+		assertEquals(120L, venice.eval(script));
+	}
+
 	@Test
 	public void test_recursion() {
 		if (!VeniceInterpreter.supportsAutoTCO()) {

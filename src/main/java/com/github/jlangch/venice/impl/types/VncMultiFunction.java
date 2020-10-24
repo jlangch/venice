@@ -96,21 +96,13 @@ public class VncMultiFunction extends VncFunction {
 
 	@Override
 	public VncVal apply(final VncList params) {
-		final VncVal dispatchVal = discriminatorFn.apply(params);
-				
-		return findMethod(dispatchVal).apply(params);
+		return getFunctionForArgs(params).apply(params);
 	}
 
-	@Override public TypeRank typeRank() {
-		return TypeRank.MULTI_FUNCTION;
-	}
-	
-	@Override 
-	public String toString() {
-		return "multi-fn " + getQualifiedName();
-	}
+	@Override
+	public VncFunction getFunctionForArgs(final VncList params) {
+		final VncVal dispatchVal = discriminatorFn.apply(params);
 		
-	private VncFunction findMethod(final VncVal dispatchVal) {
 		final VncFunction fn = functions.get(dispatchVal);
 		if (fn != null) {
 			return fn;
@@ -122,9 +114,18 @@ public class VncMultiFunction extends VncFunction {
 		}
 		
 		throw new VncException(String.format(
-					"No matching '%s' multifunction method defined for dispatch value %s", 
+					"No matching '%s' multi-function method defined for dispatch value %s", 
 					getQualifiedName(),
 					Printer.pr_str(dispatchVal, true)));
+	}
+
+	@Override public TypeRank typeRank() {
+		return TypeRank.MULTI_FUNCTION;
+	}
+	
+	@Override 
+	public String toString() {
+		return "multi-fn " + getQualifiedName();
 	}
 	
 

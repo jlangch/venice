@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 
-public class AutomaticTCOTest {
+public class Recursion_Loop_Recur_Test {
 	
 	@Test
 	public void test_loop_1_arg() {

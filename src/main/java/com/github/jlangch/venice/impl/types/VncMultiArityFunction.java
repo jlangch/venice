@@ -82,13 +82,41 @@ public class VncMultiArityFunction extends VncFunction {
 
 	@Override
 	public VncVal apply(final VncList params) {
-		final VncFunction fn = findFunction(params.size());
+		return getFunctionForArgs(params).apply(params);
+	}
+
+	@Override
+	public VncFunction getFunctionForArgs(final VncList params) {
+		final int arity = params.size();
 		
-		if (fn == null) {
-			throw new VncException("No matching multi-arity function");
+		VncFunction fn = null;
+		if (arity < fixedArgFunctions.length) {
+			fn = fixedArgFunctions[arity];
 		}
 		
-		return fn.apply(params);
+		if (fn == null) {
+			// with multi-arity functions choose the matching function with
+			// highest number of fixed args
+			int fixedArgs = -1;
+			for(VncFunction candidateFn : variadicArgFunctions) {
+				final int candidateFnFixedArgs = candidateFn.getFixedArgsCount();
+				if (arity >= candidateFnFixedArgs) {
+					if (candidateFnFixedArgs > fixedArgs) {
+						fixedArgs = candidateFnFixedArgs;
+						fn = candidateFn;
+					}
+				}
+			}
+		}	
+		
+		if (fn == null) {
+			throw new VncException(String.format(
+					"No matching '%s' multi-arity function for arity %d", 
+					getQualifiedName(),
+					arity));
+		}
+
+		return fn;
 	}
 	
 	@Override public TypeRank typeRank() {
@@ -104,28 +132,6 @@ public class VncMultiArityFunction extends VncFunction {
 		list.addAll(variadicArgFunctions);
 		
 		return VncList.ofList(list);
-	}
-	
-	private VncFunction findFunction(final int arity) {
-		VncFunction fn = null;
-		if (arity < fixedArgFunctions.length) {
-			fn = fixedArgFunctions[arity];
-		}
-		if (fn == null) {
-			// with multi-arity functions choose the matching function with
-			// highest number of fixed args
-			int fixedArgs = -1;
-			for(VncFunction candidateFn : variadicArgFunctions) {
-				final int candidateFnFixedArgs = candidateFn.getFixedArgsCount();
-				if (arity >= candidateFnFixedArgs) {
-					if (candidateFnFixedArgs > fixedArgs) {
-						fixedArgs = candidateFnFixedArgs;
-						fn = candidateFn;
-					}
-				}
-			}
-		}		
-		return fn;
 	}
 
 	

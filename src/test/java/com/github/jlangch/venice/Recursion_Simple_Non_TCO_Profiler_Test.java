@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 
-public class SpecialFormsTest_prof {
+public class Recursion_Simple_Non_TCO_Profiler_Test {
 	
 	@Test
-	public void test_recursive() {
+	public void test_recursive_profiler() {
 		final Venice venice = new Venice();
 		
 		// (fib 4)

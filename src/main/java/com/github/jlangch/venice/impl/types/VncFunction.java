@@ -124,8 +124,8 @@ public abstract class VncFunction
 	public abstract VncVal apply(final VncList args);
 
 	public VncFunction getFunctionForArgs(final VncList args) {
-            return this;
-        }
+		return this;
+	}
 
 	public VncVal applyOf(final VncVal... mvs) {
 		return apply(VncList.of(mvs));
@@ -196,11 +196,6 @@ public abstract class VncFunction
 
 	public VncVal getBody() { 
 		return Constants.Nil;
-	}
-
-	public boolean emptyBody() { 
-		final VncVal body = getBody();
-		return body == Constants.Nil || ((VncList)body).isEmpty();
 	}
 
 	@Override

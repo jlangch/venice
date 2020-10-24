@@ -579,13 +579,15 @@ public class VeniceInterpreter implements Serializable  {
 						
 						// Automatic TCO (tail call optimization)
 						if (supportsAutoTCO() 
-								&& !fn.emptyBody()  // no VncMultiArityFunction, VncMultiFunction
+								&& !fn.isMacro()
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
 						) {
-							// currently there is no tail position check
-							env.addLocalVars(Destructuring.destructure(fn.getParams(), elArgs));
-							final VncList body = (VncList)fn.getBody();
+							// [1] currently there is no tail position check
+							// [2] fn may be a normal function, a multi-arity, or a multi-method function
+							final VncFunction f = fn.getFunctionForArgs(elArgs);
+							env.addLocalVars(Destructuring.destructure(f.getParams(), elArgs));
+							final VncList body = (VncList)f.getBody();
 							evaluate_values(body.butlast(), env);
 							orig_ast = body.last();
 						}
