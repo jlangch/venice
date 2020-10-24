@@ -214,7 +214,7 @@ public class Recursion_Loop_Recur_Test {
 				"      (recur (- x 2))) \n" +
 				"   67)                   ";
 
-		assertThrows(VncException.class, () -> venice.eval(s));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval(s));
 	}
 
 	@Test
@@ -227,7 +227,7 @@ public class Recursion_Loop_Recur_Test {
 				"      (recur (- x 2))  \n" +
 				"      67))               ";
 
-		assertThrows(VncException.class, () -> venice.eval(s));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval(s));
 	}
 
 	@Test
@@ -241,7 +241,7 @@ public class Recursion_Loop_Recur_Test {
 				"         (recur (- x 2))  \n" +
 				"         67)))              ";
 
-		assertThrows(VncException.class, () -> venice.eval(s));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval(s));
 	}
 
 	@Test
@@ -255,7 +255,7 @@ public class Recursion_Loop_Recur_Test {
 				"         (recur (- x 2))  \n" +
 				"         67)))              ";
 
-		assertThrows(VncException.class, () -> venice.eval(s));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval(s));
 	}
 
 }

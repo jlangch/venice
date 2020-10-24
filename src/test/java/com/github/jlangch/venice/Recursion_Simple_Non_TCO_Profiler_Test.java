@@ -39,7 +39,7 @@ public class Recursion_Simple_Non_TCO_Profiler_Test {
 		// (+ (+ (+ (fib 1) (fib 0)) 1)       (+ 1       0))
 		// (+ (+ (+  1      0)       1)       (+ 1       0))
 		//
-		// 3
+		// => 3
 
 		final String lisp = 
 				"(do                                                 \n" +

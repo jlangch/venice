@@ -22,7 +22,6 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -202,60 +201,6 @@ public class SpecialFormsTest_loop {
 				"      false  0 ))                ";
 
 		assertEquals(Long.valueOf(0L), venice.eval(s));
-	}
-
-	@Test
-	public void test_loop_not_tail_loop() {
-		final Venice venice = new Venice();
-		
-		final String s = 
-				"(loop [x 10]           \n" +
-				"   (when (> x 1)       \n" +
-				"      (recur (- x 2))) \n" +
-				"   67)                   ";
-
-		assertThrows(VncException.class, () -> venice.eval(s));
-	}
-
-	@Test
-	public void test_loop_not_tail_when() {
-		final Venice venice = new Venice();
-		
-		final String s = 
-				"(loop [x 10]           \n" +
-				"   (when (> x 1)       \n" +
-				"      (recur (- x 2))  \n" +
-				"      67))               ";
-
-		assertThrows(VncException.class, () -> venice.eval(s));
-	}
-
-	@Test
-	public void test_loop_not_tail_let() {
-		final Venice venice = new Venice();
-		
-		final String s = 
-				"(loop [x 10]              \n" +
-				"   (when (> x 1)          \n" +
-				"      (let [a 1]          \n" +
-				"         (recur (- x 2))  \n" +
-				"         67)))              ";
-
-		assertThrows(VncException.class, () -> venice.eval(s));
-	}
-
-	@Test
-	public void test_loop_not_tail_do() {
-		final Venice venice = new Venice();
-		
-		final String s = 
-				"(loop [x 10]              \n" +
-				"   (when (> x 1)          \n" +
-				"      (do                 \n" +
-				"         (recur (- x 2))  \n" +
-				"         67)))              ";
-
-		assertThrows(VncException.class, () -> venice.eval(s));
 	}
 
 }

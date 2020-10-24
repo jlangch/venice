@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.AssertionException;
+import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.DynamicVar;
@@ -391,7 +392,8 @@ public class VeniceInterpreter implements Serializable  {
 				case "recur":  { // (recur exprs*)
 						if (recursionPoint == null) {
 							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
-								throw new VncException("The recur expression is not in tail position!");
+								throw new NotInTailPositionException(
+										"The recur expression is not in tail position!");
 							}
 						}
 	
@@ -557,9 +559,8 @@ public class VeniceInterpreter implements Serializable  {
 					return prof_(new CallFrame("prof", a0.getMeta()), ast, env);
 
 				default:				
-					final VncList el = (VncList)evaluate_values(ast, env);
-					final VncVal elFirst = el.first();
-					final VncList elArgs = el.rest();
+					final VncVal elFirst = evaluate(ast.first(), env);
+					final VncList fnArgs = (VncList)evaluate_sequence_values(ast.rest(), env);
 					if (elFirst instanceof VncFunction) {
 						final VncFunction fn = (VncFunction)elFirst;
 						
@@ -576,17 +577,18 @@ public class VeniceInterpreter implements Serializable  {
 						checkInterrupted(fnName);
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
-						
+
+
 						// Automatic TCO (tail call optimization)
 						if (supportsAutoTCO() 
-								&& !fn.isMacro()
+								&& !fn.isNative()  // native functions do not have an AST body
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
 						) {
 							// [1] currently there is no tail position check
 							// [2] fn may be a normal function, a multi-arity, or a multi-method function
-							final VncFunction f = fn.getFunctionForArgs(elArgs);
-							env.addLocalVars(Destructuring.destructure(f.getParams(), elArgs));
+							final VncFunction f = fn.getFunctionForArgs(fnArgs);
+							env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 							final VncList body = (VncList)f.getBody();
 							evaluate_values(body.butlast(), env);
 							orig_ast = body.last();
@@ -596,7 +598,7 @@ public class VeniceInterpreter implements Serializable  {
 							// Note: the overhead with callstack and interrupt check is ~150ns
 							try {
 								callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));								
-								return fn.apply(elArgs);
+								return fn.apply(fnArgs);
 							}
 							finally {
 								callStack.pop();
@@ -614,7 +616,7 @@ public class VeniceInterpreter implements Serializable  {
 					else if (elFirst instanceof IVncFunction) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						return ((IVncFunction)elFirst).apply(elArgs);
+						return ((IVncFunction)elFirst).apply(fnArgs);
 					}
 					else {
 						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, a0.getMeta()))) {
@@ -635,36 +637,7 @@ public class VeniceInterpreter implements Serializable  {
 			return env.get((VncSymbol)ast);
 		}
 		else if (ast instanceof VncSequence) {
-			final VncSequence seq = (VncSequence)ast;
-			
-			switch(seq.size()) {
-				case 0: 
-					return seq;
-				case 1:
-					return seq.withVariadicValues(
-								evaluate(seq.first(), env));
-				case 2: 
-					return seq.withVariadicValues(
-								evaluate(seq.first(), env), 
-								evaluate(seq.second(), env));
-				case 3: 
-					return seq.withVariadicValues(
-								evaluate(seq.first(), env), 
-								evaluate(seq.second(), env),
-								evaluate(seq.third(), env));
-				case 4: 
-					return seq.withVariadicValues(
-								evaluate(seq.first(), env), 
-								evaluate(seq.second(), env),
-								evaluate(seq.third(), env),
-								evaluate(seq.fourth(), env));
-				default:
-					final List<VncVal> vals = new ArrayList<>(seq.size());
-					for(int ii=0; ii<seq.size(); ii++) {
-						vals.add(evaluate(seq.nth(ii), env));
-			 		}
-					return seq.withValues(vals);
-			}
+			return evaluate_sequence_values((VncSequence)ast, env);
 		}
 		else if (ast instanceof VncMap) {
 			final VncMap map = (VncMap)ast;
@@ -688,6 +661,37 @@ public class VeniceInterpreter implements Serializable  {
 		} 
 		else {
 			return ast;
+		}
+	}
+
+	private VncSequence evaluate_sequence_values(final VncSequence seq, final Env env) {
+		switch(seq.size()) {
+			case 0: 
+				return seq;
+			case 1:
+				return seq.withVariadicValues(
+							evaluate(seq.first(), env));
+			case 2: 
+				return seq.withVariadicValues(
+							evaluate(seq.first(), env), 
+							evaluate(seq.second(), env));
+			case 3: 
+				return seq.withVariadicValues(
+							evaluate(seq.first(), env), 
+							evaluate(seq.second(), env),
+							evaluate(seq.third(), env));
+			case 4: 
+				return seq.withVariadicValues(
+							evaluate(seq.first(), env), 
+							evaluate(seq.second(), env),
+							evaluate(seq.third(), env),
+							evaluate(seq.fourth(), env));
+			default:
+				final List<VncVal> vals = new ArrayList<>(seq.size());
+				for(int ii=0; ii<seq.size(); ii++) {
+					vals.add(evaluate(seq.nth(ii), env));
+		 		}
+				return seq.withValues(vals);
 		}
 	}
 
