@@ -1552,12 +1552,20 @@ public class DocGenerator {
 		generic.addItem(getDocItem("let"));
 		generic.addItem(getDocItem("binding"));
 		generic.addItem(getDocItem("fn"));
-		generic.addItem(getDocItem("loop"));
-		generic.addItem(getDocItem("recur"));
 		generic.addItem(getDocItem("set!"));
-		generic.addItem(getDocItem("try", true, true));
-		generic.addItem(getDocItem("try-with", true, true));
-		
+
+		final DocSection recur = new DocSection("Recursion");
+		all.addSection(recur);
+		recur.addItem(getDocItem("loop"));
+		recur.addItem(getDocItem("recur"));
+		recur.addItem(getDocItem("tail-pos", true, true));
+
+		final DocSection ex = new DocSection("Exception");
+		all.addSection(ex);
+		ex.addItem(getDocItem("throw", true, true));
+		ex.addItem(getDocItem("try", true, true));
+		ex.addItem(getDocItem("try-with", true, true));
+
 		final DocSection profiling = new DocSection("Profiling");
 		all.addSection(profiling);
 
