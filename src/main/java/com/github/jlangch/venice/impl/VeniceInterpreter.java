@@ -300,6 +300,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 
 		RecursionPoint recursionPoint = null;
+		boolean tailPosition = false;
 
 		VncVal orig_ast = ast_;
 		Env env = env_;
@@ -332,15 +333,18 @@ public class VeniceInterpreter implements Serializable  {
 						final VncList expressions = ast.rest();
 						evaluate_values(expressions.butlast(), env);
 						orig_ast = expressions.last();
+						tailPosition = true;
 					}
 					break;
 
-				case "if": 
-					// (if cond expr-true expr-false*)
-					final VncVal cond = evaluate(ast.second(), env);
-					orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
-									? ast.fourth()   // eval false slot form (nil if not available)
-									: ast.third();   // eval true slot form
+				case "if": {
+						// (if cond expr-true expr-false*)
+						final VncVal cond = evaluate(ast.second(), env);
+						orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
+										? ast.fourth()   // eval false slot form (nil if not available)
+										: ast.third();   // eval true slot form
+						tailPosition = true;
+					}
 					break;
 
 				case "let": { // (let [bindings*] exprs*)
@@ -357,6 +361,7 @@ public class VeniceInterpreter implements Serializable  {
 
 						evaluate_values(expressions.butlast(), env);
 						orig_ast = expressions.last();
+						tailPosition = true;
 					}
 					break;
 
@@ -385,6 +390,7 @@ public class VeniceInterpreter implements Serializable  {
 						else {
 							evaluate_values(expressions.butlast(), env);
 							orig_ast = expressions.last();
+							tailPosition = true;
 						}
 					}
 					break;
@@ -404,6 +410,7 @@ public class VeniceInterpreter implements Serializable  {
 							evaluate_values(expressions.butlast(), env);
 						}
 						orig_ast = expressions.last();
+						tailPosition = true;
 					}
 					break;
 
@@ -556,6 +563,14 @@ public class VeniceInterpreter implements Serializable  {
 				case "prof":
 					specialFormCallValidation("prof");
 					return prof_(new CallFrame("prof", a0.getMeta()), ast, env);
+				
+				case "tail-pos":
+					if (!tailPosition) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, a0.getMeta()))) {
+							throw new NotInTailPositionException("Not in tail position");
+						}
+					}
+					return Nil;
 
 				default:
 					final VncVal elFirst = evaluate(ast.first(), env);
@@ -577,22 +592,21 @@ public class VeniceInterpreter implements Serializable  {
 
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 
-
 						// Automatic TCO (tail call optimization)
-						if (supportsAutoTCO() 
+						if (supportsAutoTCO()
+								&& tailPosition
 								&& !fn.isNative()  // native functions do not have an AST body
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
 						) {
 							// [1] currently there is no tail position check
-							// [2] fn may be a normal function, a multi-arity, or a multi-method function
-							
-							//System.out.println(String.format("[%d] %s", callStack.size(), fnName));
+							// [2] fn may be a normal function, a multi-arity, or a multi-method function							
 							final VncFunction f = fn.getFunctionForArgs(fnArgs);
 							env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 							final VncList body = (VncList)f.getBody();
 							evaluate_values(body.butlast(), env);
 							orig_ast = body.last();
+							System.out.println(String.format("[%d] %s", callStack.size(), fnName));
 						}
 						else {
 							// invoke function with a new call frame
@@ -634,7 +648,10 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	private VncVal evaluate_values(final VncVal ast, final Env env) {
-		if (ast instanceof VncSymbol) {
+		if (ast == Nil) {
+			return Nil;
+		}
+		else if (ast instanceof VncSymbol) {
 			return env.get((VncSymbol)ast);
 		}
 		else if (ast instanceof VncSequence) {
@@ -1544,7 +1561,7 @@ public class VeniceInterpreter implements Serializable  {
 			argPos++;
 			final VncVector params = (VncVector)paramsOrSig;
 			
-			final VncVector preCon = getFnPreconditions(ast.nth(argPos), env);
+			final VncVector preCon = getFnPreconditions(ast.nthOrDefault(argPos, null), env);
 			if (preCon != null) argPos++;
 			
 			final VncList body = ast.slice(argPos);
@@ -1742,8 +1759,7 @@ public class VeniceInterpreter implements Serializable  {
 						throw th;
 					}
 					else {
-						env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));
-					
+						env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));					
 						return evaluateBody(catchBlock.getBody(), env);
 					}
 				}
@@ -2029,20 +2045,8 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncVal evaluateBody(final VncList body, final Env env) {
-		if (body.isEmpty()) {
-			return Constants.Nil;
-		}
-		else if (body.size() == 1) {
-			return evaluate(body.first(), env);
-		}
-		else if (body.size() == 2) {
-			evaluate(body.first(), env);
-			return evaluate(body.second(), env);
-		}
-		else {
-			evaluate_values(body.butlast(), env);
-			return evaluate(body.last(), env);
-		}
+		evaluate_values(body.butlast(), env);
+		return evaluate(body.last(), env);
 	}
 	
 
