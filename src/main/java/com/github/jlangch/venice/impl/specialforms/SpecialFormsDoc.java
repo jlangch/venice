@@ -1124,8 +1124,12 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(tail-pos)", "(tail-pos name)")
 					.doc(
-						"Throws a NotInTailPositionException if the expr is not in tail " +
-						"position otherwise returns nil")
+						"Throws a NotInTailPositionException if the expr is not in " +
+						"tail position otherwise returns nil. \n\n" +
+						"Definition: \n" +
+						"The tail position is a position which an expression would " +
+						"return a value from. There are no more forms evaluated after " +
+						"the form in the tail position is evaluated. ")
 					.examples(
 						"(do 1 (tail-pos))",
 						"(do (tail-pos) 1)")
