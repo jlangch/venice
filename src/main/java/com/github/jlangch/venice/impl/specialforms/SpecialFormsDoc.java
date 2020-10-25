@@ -1131,7 +1131,9 @@ public class SpecialFormsDoc {
 						"return a value from. There are no more forms evaluated after " +
 						"the form in the tail position is evaluated. ")
 					.examples(
+						";; in tail position \n" +
 						"(do 1 (tail-pos))",
+						";; not in tail position \n" +
 						"(do (tail-pos) 1)")
 					.build()
 		) {
