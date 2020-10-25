@@ -46,7 +46,7 @@ involved forms of recursion.
 ## simple recursion
 
 To illustrate the problem with simple recursion consuming stack frames for each 
-iteration, let's look at simple recursion example to compute the factorial for a
+iteration, let's look at a simple recursion example to compute the factorial for a
 number.
 
 The computation of factorial numbers is defined as
