@@ -294,13 +294,21 @@ public class VeniceInterpreter implements Serializable  {
 	 * @return the result
 	 */
 	private VncVal evaluate(final VncVal ast_, final Env env_) {
+		return evaluate(ast_, env_, false);
+	}
+
+	private VncVal evaluateInTailPosition(final VncVal ast_, final Env env_) {
+		return evaluate(ast_, env_, true);
+	}
+	
+	private VncVal evaluate(final VncVal ast_, final Env env_, final boolean inTailPosition) {
 		if (!(ast_ instanceof VncList)) {
 			// not an s-expr
 			return evaluate_values(ast_, env_);
 		}
 
 		RecursionPoint recursionPoint = null;
-		boolean tailPosition = false;
+		boolean tailPosition = inTailPosition;
 
 		VncVal orig_ast = ast_;
 		Env env = env_;
@@ -543,10 +551,10 @@ public class VeniceInterpreter implements Serializable  {
 				case "global-vars-count": // (global-vars-count)
 					return new VncLong(env.globalsCount());
 
-				case "try": // (try expr (catch :Exception e expr) (finally expr))
+				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
 					return try_(new CallFrame("try", a0.getMeta()), ast, new Env(env));
 
-				case "try-with": // (try-with [bindings*] expr (catch :Exception e expr) (finally expr))
+				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
 					return try_with_(new CallFrame("try-with", a0.getMeta()), ast, new Env(env));
 
 				case "locking":
@@ -1535,7 +1543,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal mutex = evaluate(ast.second(), env);
 	
 			synchronized(mutex) {
-				return evaluateBody(ast.slice(2), env);
+				return evaluateBody(ast.slice(2), env, true);
 			}
 		}
 	}
@@ -1707,7 +1715,7 @@ public class VeniceInterpreter implements Serializable  {
 			VncVal result = Nil;
 
 			try {
-				result = evaluateBody(getTryBody(ast), env);
+				result = evaluateBody(getTryBody(ast), env, true);
 			} 
 			catch (Throwable th) {
 				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ast, th);
@@ -1716,13 +1724,13 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				else {
 					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));			
-					return evaluateBody(catchBlock.getBody(), env);
+					return evaluateBody(catchBlock.getBody(), env, false);
 				}
 			}
 			finally {
 				final VncList finallyBlock = findFirstFinallyBlock(ast);
 				if (finallyBlock != null) {
-					evaluate_values(finallyBlock.rest(), env);
+					evaluateBody(finallyBlock, env, false);
 				}
 			}
 			
@@ -1756,7 +1764,7 @@ public class VeniceInterpreter implements Serializable  {
 			VncVal result = Nil;
 			try {
 				try {
-					result = evaluateBody(getTryBody(ast), env);
+					result = evaluateBody(getTryBody(ast), env, true);
 				} 
 				catch (Throwable th) {
 					final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ast, th);
@@ -1765,14 +1773,14 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					else {
 						env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));					
-						return evaluateBody(catchBlock.getBody(), env);
+						return evaluateBody(catchBlock.getBody(), env, false);
 					}
 				}
 				finally {
 					// finally is only for side effects
 					final VncList finallyBlock = findFirstFinallyBlock(ast);
 					if (finallyBlock != null) {
-						evaluate_values(finallyBlock.rest(), env);
+						evaluateBody(finallyBlock, env, false);
 					}
 				}
 			}
@@ -1874,7 +1882,7 @@ public class VeniceInterpreter implements Serializable  {
 				final VncList block = ((VncList)b);
 				final VncVal first = block.first();
 				if (Types.isVncSymbol(first) && ((VncSymbol)first).getName().equals("finally")) {
-					return block;
+					return block.rest();
 				}
 			}
 		}
@@ -1925,7 +1933,7 @@ public class VeniceInterpreter implements Serializable  {
 						if (hasPreConditions) {
 							validateFnPreconditions(localEnv);
 						}
-						return evaluateBody(body, localEnv);
+						return evaluateBody(body, localEnv, true);
 					}
 					finally {
 						// switch always back to curr namespace, just in case (ns xyz)
@@ -1937,7 +1945,7 @@ public class VeniceInterpreter implements Serializable  {
 					if (hasPreConditions) {
 						validateFnPreconditions(localEnv);
 					}
-					return evaluateBody(body, localEnv);
+					return evaluateBody(body, localEnv, false);
 				}
 			}
 			
@@ -2049,9 +2057,14 @@ public class VeniceInterpreter implements Serializable  {
 				: VncBoolean.isTrue(result);
 	}
 	
-	private VncVal evaluateBody(final VncList body, final Env env) {
+	private VncVal evaluateBody(final VncList body, final Env env, final boolean withTailPosition) {
 		evaluate_values(body.butlast(), env);
-		return evaluate(body.last(), env);
+		if (withTailPosition) {
+			return evaluateInTailPosition(body.last(), env);
+		}
+		else {
+			return evaluate(body.last(), env);
+		}
 	}
 	
 

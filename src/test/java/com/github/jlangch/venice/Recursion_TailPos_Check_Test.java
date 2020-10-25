@@ -26,17 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.VeniceInterpreter;
-
 
 public class Recursion_TailPos_Check_Test {
 
 	@Test
-	public void test_recursion_multi_arity() {
-		if (!VeniceInterpreter.supportsAutoTCO()) {
-			return;
-		}
-		
+	public void test_check() {
 		final Venice venice = new Venice();
 
 		// do
@@ -49,6 +43,38 @@ public class Recursion_TailPos_Check_Test {
 		assertNull(venice.eval("(if true (tail-pos) 2)"));
 		assertNull(venice.eval("(if false 2 (tail-pos))"));		
 		assertThrows(NotInTailPositionException.class, () -> venice.eval("(if true (+ 1 (tail-pos)) 2)"));
+
+		// when
+		assertNull(venice.eval("(when true (tail-pos))"));
+		assertNull(venice.eval("(when true 2 (tail-pos))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(when true (tail-pos) 2)"));
+
+		// let
+		assertNull(venice.eval("(let [a 1] (tail-pos))"));
+		assertNull(venice.eval("(let [a 1] 2 (tail-pos))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(let [a 1] (tail-pos) 2)"));
+
+		// locking
+		assertNull(venice.eval("(locking 1 (tail-pos))"));
+		assertNull(venice.eval("(locking 1 2 (tail-pos))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(locking 1 (tail-pos) 2)"));
+
+		// try - catch - finally
+		assertNull(venice.eval("(try (tail-pos))"));
+		assertNull( venice.eval("(try 1 (tail-pos))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try (tail-pos) 1)"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try (throw 1) (catch :ValueException ex (tail-pos)))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try (throw 1) (catch :ValueException ex 1 (tail-pos)))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try (throw 1) (catch :ValueException ex (tail-pos) 1))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try 1 (finally (tail-pos)))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try 1 (finally 1 (tail-pos)))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(try 1 (finally (tail-pos) 1))"));
+
+		// function
+		assertNull(venice.eval("(do (defn foo [] (tail-pos)) (foo))"));
+		assertNull(venice.eval("(do (defn foo [] 2 (tail-pos)) (foo))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(do (defn foo [] (tail-pos) 2) (foo))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(do (defn foo [] 2 (tail-pos) 2) (foo))"));
 	}
 
 }
