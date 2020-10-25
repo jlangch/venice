@@ -100,6 +100,11 @@ public class VncMultiFunction extends VncFunction {
 	}
 
 	@Override
+	public boolean isNative() { 
+		return false;
+	}
+
+	@Override
 	public VncFunction getFunctionForArgs(final VncList params) {
 		final VncVal dispatchVal = discriminatorFn.apply(params);
 		

@@ -58,13 +58,13 @@ public class Recursion_Auto_TCO_Test {
 		}
 		
 		final String script = 
-				"(do                                             \n"
-				+ "  (defn factorial [n]                         \n"
-				+ "    (let [fact (fn [n acc]                    \n"
-				+ "                 (if (== n 1)                 \n"
-				+ "                 acc                          \n"
-				+ "                 (fact (dec n) (* acc n))))]  \n"
-				+ "      (fact n 1)))                            \n"
+				"(do                                               \n"
+				+ "  (defn factorial [n]                           \n"
+				+ "    (let [fact (fn [n acc]                      \n"
+				+ "                 (if (== n 1)                   \n"
+				+ "                   acc                          \n"
+				+ "                   (fact (dec n) (* acc n))))]  \n"
+				+ "      (fact n 1)))                              \n"
 				+ "  (factorial 5))";
 
 		final Venice venice = new Venice();
@@ -84,8 +84,8 @@ public class Recursion_Auto_TCO_Test {
 				+ "                                         \n"
 				+ "  (defn factorial* [n acc]               \n"
 				+ "    (if (== n 1)                         \n"
-				+ "        acc                              \n"
-				+ "        (factorial* (dec n) (* acc n)))) \n"
+				+ "      acc                                \n"
+				+ "      (factorial* (dec n) (* acc n))))   \n"
 				+ "                                         \n"
 				+ "  (factorial 5))";
 
@@ -106,10 +106,10 @@ public class Recursion_Auto_TCO_Test {
 				+ "                                            \n"
 				+ "  (defn factorial* [n acc]                  \n"
 				+ "    (if (== n 1)                            \n"
-				+ "        acc                                 \n"
-				+ "        (do                                 \n"
-				+ "          (factorial* (dec n) (* acc n))    \n"
-				+ "          1)))                              \n"
+				+ "      acc                                   \n"
+				+ "      (do                                   \n"
+				+ "        (factorial* (dec n) (* acc n))      \n"
+				+ "        1)))                                \n"
 				+ "                                            \n"
 				+ "  (factorial 2))";
 

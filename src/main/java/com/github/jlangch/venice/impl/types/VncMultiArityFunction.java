@@ -86,6 +86,11 @@ public class VncMultiArityFunction extends VncFunction {
 	}
 
 	@Override
+	public boolean isNative() { 
+		return false;
+	}
+
+	@Override
 	public VncFunction getFunctionForArgs(final VncList params) {
 		final int arity = params.size();
 		
