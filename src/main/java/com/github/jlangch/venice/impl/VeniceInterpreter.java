@@ -564,10 +564,14 @@ public class VeniceInterpreter implements Serializable  {
 					specialFormCallValidation("prof");
 					return prof_(new CallFrame("prof", a0.getMeta()), ast, env);
 				
-				case "tail-pos":
+				case "tail-pos": 
 					if (!tailPosition) {
+						final VncString name = Coerce.toVncString(ast.nthOrDefault(1, VncString.empty()));
 						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, a0.getMeta()))) {
-							throw new NotInTailPositionException("Not in tail position");
+							throw new NotInTailPositionException(
+									name.isEmpty() 
+										? "Not in tail position"
+										: String.format("Not '%s' in tail position", name.getValue()));
 						}
 					}
 					return Nil;
@@ -606,7 +610,8 @@ public class VeniceInterpreter implements Serializable  {
 							final VncList body = (VncList)f.getBody();
 							evaluate_values(body.butlast(), env);
 							orig_ast = body.last();
-							System.out.println(String.format("[%d] %s", callStack.size(), fnName));
+							
+							// System.out.println(String.format("[%d] %s", callStack.size(), fnName));
 						}
 						else {
 							// invoke function with a new call frame
