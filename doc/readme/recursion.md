@@ -213,45 +213,29 @@ Examples:
 ```
 
 
-## Automated tail call optimization (TCO)
+## Automated tail call optimization (TCO) 
 
 Venice has experimental support for automated tail call optimization, but it is
 not yet enabled for production builds. The recursive calls must be in tail
 position.
 
-Variant 1:
 
 ```clojure
 (do
-  (defn factorial [n] (factorial* n 1N))
-
-  (defn factorial* [n acc] 
-    (if (== n 1)
-        acc
-        (factorial* (dec n) (* acc n))))
-        
-  (factorial 200))
-```
-
-Variant 2:
-
-```clojure
-(do
-  (defn factorial2 [n] 
-    (let [fact (fn [n acc]
-                  (if (== n 1)
-                      acc
-                      (fact (dec n) (* acc n))))]
-      (fact n 1N)))
-      
-  (factorial2 200))
+  (defn factorial
+    ([n]     (factorial n 1))
+    ([n acc] (if (== n 1)
+               acc
+               (factorial (dec n) (* acc n)))))
+ 
+  (factorial 5))
 ```
 
 
 ## Recursion vs Folding
 
-Tail call recursive functions, can always be written in terms of a 
-reducing (folding) function. E.g.:
+Tail call recursive functions, can always be written in terms of a reducing (folding) 
+function. E.g.:
 
 ```clojure
 (do
@@ -300,7 +284,7 @@ See the execution time and the number of function calls the profiler reveals.
 ```
 
 The profiler reveals that the TCO variant is way more efficient. The simple recursion 
-computes the same fibonacci number over and over again. Even with memoization it cannot
+computes the same fibonacci number over and over again. Only with memoization it almost
 compete with the TCO variant. Moreover the simple recursion suffers from a memory problem 
 and stack overflow when applied for larger numbers.
 
