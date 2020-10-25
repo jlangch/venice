@@ -96,6 +96,10 @@ public class Recursion_Auto_TCO_Test {
 
 	@Test
 	public void test_recursion_deep_multi_arity() {
+		if (!VeniceInterpreter.supportsAutoTCO()) {
+			return;
+		}
+		
 		final Venice venice = new Venice();
 		
 		final String script = 
