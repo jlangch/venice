@@ -247,6 +247,7 @@ Variant 2:
   (factorial2 200))
 ```
 
+
 ## Recursion vs Folding
 
 Tail call recursive functions, can always be written in terms of a 
@@ -260,6 +261,11 @@ reducing (folding) function. E.g.:
     
 (factorial 5)) 
 ```
+
+But not all recursive functions can be transformed into a tail recursive function
+and translated into a loop. The [Ackermann's function](https://en.wikipedia.org/wiki/Ackermann_function)
+is such an example of a non [primitive recursive function](https://en.wikipedia.org/wiki/Primitive_recursive_function) that can not be de-recursed into loops.
+
 
 
 ## Compare recursion efficiency
