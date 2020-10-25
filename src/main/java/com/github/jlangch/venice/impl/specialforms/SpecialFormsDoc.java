@@ -1117,12 +1117,29 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 		
+	public static VncFunction tail_pos = 
+		new SpecialFormsDocFunction(
+				"tail-pos",
+				VncFunction
+					.meta()
+					.arglists("(tail-pos)", "(tail-pos name)")
+					.doc(
+						"Throws a NotInTailPositionException if the expr is not in tail " +
+						"position otherwise returns nil")
+					.examples(
+						"(do 1 (tail-pos))",
+						"(do (tail-pos) 1)")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+		
 	public static VncFunction print_highlight = 
 		new SpecialFormsDocFunction(
 				"print-highlight",
 				VncFunction
 					.meta()
-					.arglists("(print-highlight form")
+					.arglists("(print-highlight form)")
 					.doc(
 						"Prints the form highlighted to *out*")
 					.examples(
@@ -1281,6 +1298,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("ns-unmap"),			ns_unmap)
 					.put(new VncSymbol("ns-remove"),		ns_remove)
 					.put(new VncSymbol("namespace"),		namespace)
+					.put(new VncSymbol("tail-pos"),			tail_pos)					
 					.put(new VncSymbol("print-highlight"),	print_highlight)					
 					.put(new VncSymbol("import"),			import_)
 					.put(new VncSymbol("imports"),			imports_)
