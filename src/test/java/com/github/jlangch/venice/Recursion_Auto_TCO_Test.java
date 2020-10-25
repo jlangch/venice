@@ -95,6 +95,23 @@ public class Recursion_Auto_TCO_Test {
 	}
 
 	@Test
+	public void test_recursion_deep_multi_arity() {
+		final Venice venice = new Venice();
+		
+		final String script = 
+				"(do                                           \n"
+				+ "  (defn sum                                 \n"
+				+ "     ([n]     (sum n 1))                    \n"
+				+ "     ([n acc] (if (== n 1)                  \n"
+				+ "                acc                         \n"
+				+ "                (sum (dec n) (+ acc n)))))  \n"
+				+ "                                            \n"
+				+ "  (sum 1_000_000))";
+
+		assertEquals(500000500000L, venice.eval(script));
+	}
+
+	@Test
 	public void test_recursion_no_tail_pos() {
 		if (!VeniceInterpreter.supportsAutoTCO()) {
 			return;

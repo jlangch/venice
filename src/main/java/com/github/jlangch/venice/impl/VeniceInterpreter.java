@@ -619,9 +619,11 @@ public class VeniceInterpreter implements Serializable  {
 							evaluate_values(body.butlast(), env);
 							orig_ast = body.last();
 							
-							// System.out.println(String.format("[%d] %s", callStack.size(), fnName));
+							//System.out.println(String.format("[%d] (tco) %s", callStack.size(), fnName));
 						}
 						else {
+							// System.out.println(String.format("[%d] (stack) %s", callStack.size(), fnName));
+
 							// invoke function with a new call frame
 							// Note: the overhead with callstack and interrupt check is ~150ns
 							try {
@@ -2160,11 +2162,8 @@ public class VeniceInterpreter implements Serializable  {
 		JavaInterop.getInterceptor().validateVeniceFunction(name);
 	}
 
-	public static boolean supportsAutoTCO() {
-		// Currently I don't see a major advantage of automated tail call optimization 
-		// compared to self-recursion using loop - recur. The code of the latter even
-		// looks cleaner
-		return false;
+	public static boolean supportsAutoTCO() {	
+		return false;  // Currently automatic TCO is disabled
 	}
 
 	

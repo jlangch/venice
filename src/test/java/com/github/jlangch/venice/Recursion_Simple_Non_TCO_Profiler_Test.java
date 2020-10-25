@@ -27,7 +27,23 @@ import org.junit.jupiter.api.Test;
 
 
 public class Recursion_Simple_Non_TCO_Profiler_Test {
-	
+
+	@Test
+	public void test_fib() {
+		final Venice venice = new Venice();
+		
+		final String lisp = 
+				"(do                                       \n" +
+				"  (defn fib [n]                           \n" +
+				"    (if (< n 2)                           \n" +
+				"      n                                   \n" +
+				"      (+ (fib (- n 1)) (fib (- n 2)))))   \n" +
+				"                                          \n" +
+				"  (fib 6))                                ";
+
+		assertEquals(8L, venice.eval(lisp));
+	}
+
 	@Test
 	public void test_recursive_profiler() {
 		final Venice venice = new Venice();
