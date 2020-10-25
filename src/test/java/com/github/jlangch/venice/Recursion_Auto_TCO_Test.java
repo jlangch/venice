@@ -52,7 +52,28 @@ public class Recursion_Auto_TCO_Test {
 	}
 
 	@Test
-	public void test_recursion() {
+	public void test_recursion_local_function() {
+		if (!VeniceInterpreter.supportsAutoTCO()) {
+			return;
+		}
+		
+		final String script = 
+				"(do                                             \n"
+				+ "  (defn factorial [n]                         \n"
+				+ "    (let [fact (fn [n acc]                    \n"
+				+ "                 (if (== n 1)                 \n"
+				+ "                 acc                          \n"
+				+ "                 (fact (dec n) (* acc n))))]  \n"
+				+ "      (fact n 1)))                            \n"
+				+ "  (factorial 5))";
+
+		final Venice venice = new Venice();
+		
+		assertEquals(120L, venice.eval(script));
+	}
+
+	@Test
+	public void test_recursion_2nd_function() {
 		if (!VeniceInterpreter.supportsAutoTCO()) {
 			return;
 		}
