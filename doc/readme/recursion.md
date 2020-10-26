@@ -223,7 +223,7 @@ position.
 ```clojure
 (do
   (defn factorial
-    ([n]     (factorial n 1))
+    ([n]     (factorial n 1N))
     ([n acc] (if (== n 1)
                acc
                (factorial (dec n) (* acc n)))))

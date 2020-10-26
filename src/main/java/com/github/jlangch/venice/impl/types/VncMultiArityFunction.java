@@ -126,7 +126,11 @@ public class VncMultiArityFunction extends VncFunction {
 					arity));
 		}
 
-		arityFunctionCache.put(arity, fn);
+		if (arity < 100) {
+			// only cache arities up to 100 otherwise we run into memory problems
+			// with with large artites mapped to a '&' param
+			arityFunctionCache.put(arity, fn);
+		}
 		
 		return fn;
 	}

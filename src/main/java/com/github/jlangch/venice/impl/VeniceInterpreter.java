@@ -605,8 +605,7 @@ public class VeniceInterpreter implements Serializable  {
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
 						) {
-							// [1] currently there is no tail position check
-							// [2] fn may be a normal function, a multi-arity, or a multi-method function							
+							// fn may be a normal function, a multi-arity, or a multi-method function							
 							final VncFunction f = fn.getFunctionForArgs(fnArgs);
 							env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 							final VncList body = (VncList)f.getBody();
@@ -2173,7 +2172,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 
 	public static boolean supportsAutoTCO() {	
-		return false;  // Currently automatic TCO is disabled
+		return true;  // Currently automatic TCO is disabled
 	}
 
 	
