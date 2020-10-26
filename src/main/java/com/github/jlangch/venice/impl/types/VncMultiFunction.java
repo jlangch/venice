@@ -95,8 +95,8 @@ public class VncMultiFunction extends VncFunction {
 	}
 
 	@Override
-	public VncVal apply(final VncList params) {
-		return getFunctionForArgs(params).apply(params);
+	public VncVal apply(final VncList args) {
+		return getFunctionForArgs(args).apply(args);
 	}
 
 	@Override
@@ -105,8 +105,8 @@ public class VncMultiFunction extends VncFunction {
 	}
 
 	@Override
-	public VncFunction getFunctionForArgs(final VncList params) {
-		final VncVal dispatchVal = discriminatorFn.apply(params);
+	public VncFunction getFunctionForArgs(final VncList args) {
+		final VncVal dispatchVal = discriminatorFn.apply(args);
 		
 		final VncFunction fn = functions.get(dispatchVal);
 		if (fn != null) {

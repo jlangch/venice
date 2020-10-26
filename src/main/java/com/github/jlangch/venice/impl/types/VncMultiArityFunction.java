@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -81,8 +82,8 @@ public class VncMultiArityFunction extends VncFunction {
 	}
 
 	@Override
-	public VncVal apply(final VncList params) {
-		return getFunctionForArgs(params).apply(params);
+	public VncVal apply(final VncList args) {
+		return getFunctionForArgs(args).apply(args);
 	}
 
 	@Override
@@ -91,10 +92,14 @@ public class VncMultiArityFunction extends VncFunction {
 	}
 
 	@Override
-	public VncFunction getFunctionForArgs(final VncList params) {
-		final int arity = params.size();
+	public VncFunction getFunctionForArgs(final VncList args) {
+		final int arity = args.size();
+
+		VncFunction fn = arityFunctionCache.get(arity);
+		if (fn != null) {
+			return fn;
+		}
 		
-		VncFunction fn = null;
 		if (arity < fixedArgFunctions.length) {
 			fn = fixedArgFunctions[arity];
 		}
@@ -121,6 +126,8 @@ public class VncMultiArityFunction extends VncFunction {
 					arity));
 		}
 
+		arityFunctionCache.put(arity, fn);
+		
 		return fn;
 	}
 	
@@ -144,4 +151,5 @@ public class VncMultiArityFunction extends VncFunction {
     
     private final List<VncFunction> variadicArgFunctions = new ArrayList<>();
     private final VncFunction[] fixedArgFunctions;
+    private final ConcurrentHashMap<Integer,VncFunction> arityFunctionCache = new ConcurrentHashMap<>();
 }

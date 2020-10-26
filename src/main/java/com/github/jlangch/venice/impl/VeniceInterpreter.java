@@ -574,13 +574,7 @@ public class VeniceInterpreter implements Serializable  {
 				
 				case "tail-pos": 
 					if (!tailPosition) {
-						final VncString name = Coerce.toVncString(ast.nthOrDefault(1, VncString.empty()));
-						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, a0.getMeta()))) {
-							throw new NotInTailPositionException(
-									name.isEmpty() 
-										? "Not in tail position"
-										: String.format("Not '%s' in tail position", name.getValue()));
-						}
+						tail_pos_warning(new CallFrame("tail-pos", a0.getMeta()), ast, env);
 					}
 					return Nil;
 
@@ -638,7 +632,13 @@ public class VeniceInterpreter implements Serializable  {
 								}
 								if (meterRegistry.enabled) {
 									final long elapsed = System.nanoTime() - nanos;
-									meterRegistry.record(fn.getQualifiedName(), elapsed);
+									if (fn instanceof VncMultiArityFunction) {
+										final VncFunction f = fn.getFunctionForArgs(fnArgs);
+										meterRegistry.record(fn.getQualifiedName() + "[" + f.getParams().size() + "]", elapsed);
+									}
+									else {
+										meterRegistry.record(fn.getQualifiedName(), elapsed);
+									}
 								}
 							}
 						}
@@ -1549,6 +1549,16 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 	}
+	
+	private void tail_pos_warning(final CallFrame callframe, final VncList ast, final Env env) {
+		final VncString name = Coerce.toVncString(ast.nthOrDefault(1, VncString.empty()));
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			throw new NotInTailPositionException(
+					name.isEmpty() 
+						? "Not in tail position"
+						: String.format("Not '%s' in tail position", name.getValue()));
+		}
+	}
 
 	private VncFunction fn_(final VncList ast, final Env env) {
 		// single arity:  (fn name? [params*] condition-map? expr*)
@@ -1632,7 +1642,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal prof_(final CallFrame callframe, final VncList ast, final Env env) {
 		// Note on profiling recursive functions: 
 		// For recursive functions the profiler reports the 'time with children
-		// for the particular recursive function resulting in much in much higher measured 
+		// for the particular recursive function resulting in much higher measured 
 		// elapsed times.
 		// Profiling TCO based recursive functions report correct times.
 		//
