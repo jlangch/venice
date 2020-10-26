@@ -69,7 +69,7 @@ The computation of factorial numbers is defined as
 
 Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 
-*Note: The recursive call to 'factorial' in these two simple recursion examples is not in tail position. Recursive functions with the recursive call nit in tail position can not be tail call optimized!*			
+*Note: The recursive call to 'factorial' in these two simple recursion examples is not in tail position. Thus they can not be tail call optimized!*			
 
 
 ## self-recursive calls (loop - recur)
