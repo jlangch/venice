@@ -216,7 +216,7 @@ Examples:
 ## Automated tail call optimization (TCO) 
 
 Venice has experimental support for automated tail call optimization, but it is
-not yet enabled for production builds. The recursive calls must be in tail
+not yet enabled for production builds. The recursive call must be in tail
 position.
 
 
