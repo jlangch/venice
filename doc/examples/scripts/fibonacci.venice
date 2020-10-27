@@ -20,11 +20,11 @@
 ;;;; limitations under the License.
 
 (do
-  (defn fib [x]
-    (loop [n x, a 0N, b 1N]
-      (case n
-        0 a
-        1 b
-        (recur (dec n) b + a b))))
+   (defn fib [x]
+     (loop [n x, a 0N, b 1N]
+       (case n
+         0 a
+         1 b
+         (recur (dec n) b (+ a b)))))
 
-   (println "fib(50):" (fib 50)))
+   (fib 50))
