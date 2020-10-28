@@ -1089,6 +1089,19 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction ns_list = 
+		new SpecialFormsDocFunction(
+				"ns-list",
+				VncFunction
+					.meta()
+					.arglists("(ns-list ns)")
+					.doc("Lists all the symbols in the namespace ns.")
+					.examples("(ns-list regex)")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction namespace = 
 		new SpecialFormsDocFunction(
 				"namespace",
@@ -1303,6 +1316,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("ns"),				ns_new)
 					.put(new VncSymbol("ns-unmap"),			ns_unmap)
 					.put(new VncSymbol("ns-remove"),		ns_remove)
+					.put(new VncSymbol("ns-list"),			ns_list)
 					.put(new VncSymbol("namespace"),		namespace)
 					.put(new VncSymbol("tail-pos"),			tail_pos)					
 					.put(new VncSymbol("print-highlight"),	print_highlight)					

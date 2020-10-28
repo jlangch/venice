@@ -1385,6 +1385,7 @@ public class DocGenerator {
 
 		final DocSection util = new DocSection("Util");
 		all.addSection(util);
+		util.addItem(getDocItem("ns-list"));
 		util.addItem(getDocItem("namespace"));
 	
 		return section;

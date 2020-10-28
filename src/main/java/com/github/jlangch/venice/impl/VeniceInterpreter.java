@@ -478,6 +478,9 @@ public class VeniceInterpreter implements Serializable  {
 				case "ns-unmap": // (ns-unmap ns sym)
 					return ns_unmap_(new CallFrame("ns-unmap", a0.getMeta()), ast, env);
 
+				case "ns-list": // (ns-list ns)
+					return ns_list_(new CallFrame("ns-list", a0.getMeta()), ast, env);
+
 				case "import":
 					return import_(new CallFrame("import", a0.getMeta()), ast, env);
 
@@ -1286,6 +1289,28 @@ public class VeniceInterpreter implements Serializable  {
 				env.removeGlobalSymbol(sym);
 				return Nil;
 			}
+		}
+	}
+	
+	private VncVal ns_list_(final CallFrame callframe, final VncList ast, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			specialFormCallValidation("ns-list");
+
+			final VncSymbol ns = Types.isVncSymbol(ast.second())
+									? (VncSymbol)ast.second()
+									: Coerce.toVncSymbol(evaluate(ast.second(), env));
+
+			final String nsName = ((VncSymbol)ns).getName();
+			
+			return VncList.ofList(
+				env.getAllGlobalSymbols()
+					.keySet()
+					.stream()
+					.map(s -> { final String n = env.getNamespace(s); 
+								return new VncSymbol(n, s.getSimpleName(), Nil); })
+					.filter(s -> nsName.equals(s.getNamespace()))
+					.sorted()
+					.collect(Collectors.toList()));
 		}
 	}
 
