@@ -291,7 +291,8 @@ public class REPL {
 													.collect(Collectors.toList());						
 						String script = null;
 						if (lines.size() < 20) {
-							// file scripts with less than 20 lines, treat them as if they have been typed
+							// file scripts with less than 20 lines, treat them as if they have 
+							// been typed to allow editing it
 							script = String.join("\n", lines);
 							printer.println("stdout", DocForm.highlight(new VncString(script), env).getValue());
 						}
@@ -307,6 +308,7 @@ public class REPL {
 						}
 					}
 					else {
+						// run the s-expr read from the line reader
 						ThreadLocalMap.clearCallStack();			
 						final VncVal result = venice.RE(line, "user", env);
 						if (result != null) {
@@ -846,9 +848,9 @@ public class REPL {
 	
 	private boolean isExitCommand(final String cmd) {
 		return cmd.equals("quit") 
-					|| cmd.equals("q") 
-					|| cmd.equals("exit") 
-					|| cmd.equals("e");
+				|| cmd.equals("q") 
+				|| cmd.equals("exit") 
+				|| cmd.equals("e");
 	}
 	
 	private void handleReplClasspathCommand() {
@@ -926,8 +928,7 @@ public class REPL {
 			"                 !sandbox add-rule rule\n" +
 			"  !java-ex     print Java exception\n" +	
 			"                 !java-ex\n" +	
-			"                 !java-ex on\n" +	
-			"                 !java-ex off\n" +	
+			"                 !java-ex {on/off}\n" +	
 			"  !clear-hist  clear the history\n" +	
 			"  !quit, !q    quit the REPL\n\n" +	
 			"Drag&Drop: \n" +	
