@@ -376,6 +376,9 @@ public class REPL {
 			else if (cmd.equals("classpath")) {
 				handleReplClasspathCommand();
 			}
+			else if (cmd.equals("loadpath")) {
+				printLoadPaths(interceptor.getLoadPaths());
+			}
 			else if (cmd.equals("launcher")) {
 				handleLauncherCommand();
 			}
@@ -386,7 +389,7 @@ public class REPL {
 				final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
 				handleEnvCommand(params, env);
 			}
-			else if (cmd.equals("clear-history")) {
+			else if (cmd.equals("clear-hist") || cmd.equals("clear-history")) {
 				clearCommandHistory(terminal, history);
 			}
 			else if (cmd.equals("sandbox")) {
@@ -401,9 +404,6 @@ public class REPL {
 			}
 			else if (cmd.equals("colors")) {
 				printConfiguredColors();
-			}
-			else if (cmd.equals("load-paths")) {
-				printLoadPaths(interceptor.getLoadPaths());
 			}
 			else if (cmd.equals("info")) {
 				printInfo(terminal);
@@ -811,7 +811,7 @@ public class REPL {
 	}
 	
 	private void printLoadPaths(final ILoadPaths loadPaths) {
-		printer.println("stdout", "Unlimited access: " + loadPaths.isUnlimitedAccess());
+		printer.println("stdout", "Restricted to load paths: " + (loadPaths.isUnlimitedAccess() ? "no" : "yes"));
 		printer.println("stdout", "Paths: ");
 		loadPaths.getPaths().forEach(p -> printer.println("stdout", "   " + p.getPath()));
 	}
@@ -858,11 +858,12 @@ public class REPL {
 		      .forEach(f -> printer.println("stdout", "  " + f));
 		
 		final ClassLoader cl = Thread.currentThread().getContextClassLoader();
-		if (cl instanceof URLClassLoader) {
+		if (cl instanceof DynamicClassLoader2) {
 			printer.println("stdout", "REPL dynamic classpath:");		
 			Arrays.stream(((URLClassLoader)cl).getURLs())
+				  .map(u -> u.toString())
 				  .sorted()
-				  .forEach(u -> printer.println("stdout", "  " + u.toString()));
+				  .forEach(u -> printer.println("stdout", "  " + u));
 		}
 	}
 	
@@ -901,6 +902,7 @@ public class REPL {
 			"  !info        show REPL setup context data\n" +	
 			"  !config      show a sample REPL config\n" +	
 			"  !classpath   show the REPL classpath\n" +	
+			"  !loadpath    show the REPL loadpath\n" +	
 			"  !highlight   turn highlighting dynamically on or off\n" +
 			"                 !highlight {on/off}\n" +	
 			"  !lic         prints the licenses for 3rd party\n" +
@@ -923,7 +925,16 @@ public class REPL {
 			"                 !sandbox customized\n" +	
 			"                 !sandbox add-rule rule\n" +
 			"  !java-ex     print Java exception\n" +	
+			"                 !java-ex\n" +	
+			"                 !java-ex on\n" +	
+			"                 !java-ex off\n" +	
+			"  !clear-hist  clear the history\n" +	
 			"  !quit, !q    quit the REPL\n\n" +	
+			"Drag&Drop: \n" +	
+			"  Scripts can be dragged to the REPL. Upon pressing [return]\n" +	
+			"  the  REPL loads the script through the dropped absolute or\n" +	
+			"  relative filename. If the script has less than 20 lines it's\n" +	
+			"  source is displayed.\n\n" +	
 			"History: \n" +	
 			"  A history of the last three result values is kept by\n" +	
 			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +	
