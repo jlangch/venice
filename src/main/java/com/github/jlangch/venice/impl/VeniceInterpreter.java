@@ -573,10 +573,7 @@ public class VeniceInterpreter implements Serializable  {
 					return prof_(new CallFrame("prof", a0.getMeta()), ast, env);
 				
 				case "tail-pos": 
-					if (!tailPosition) {
-						tail_pos_warning(new CallFrame("tail-pos", a0.getMeta()), ast, env);
-					}
-					return Nil;
+					return tail_pos_check(tailPosition, new CallFrame("tail-pos", a0.getMeta()), ast, env);
 
 				default:
 					final VncVal elFirst = evaluate(ast.first(), env);
@@ -1549,13 +1546,23 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private void tail_pos_warning(final CallFrame callframe, final VncList ast, final Env env) {
-		final VncString name = Coerce.toVncString(ast.nthOrDefault(1, VncString.empty()));
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			throw new NotInTailPositionException(
-					name.isEmpty() 
-						? "Not in tail position"
-						: String.format("Not '%s' in tail position", name.getValue()));
+	private VncVal tail_pos_check(
+			final boolean inTailPosition, 
+			final CallFrame callframe, 
+			final VncList ast, 
+			final Env env
+	) {
+		if (!inTailPosition) {
+			final VncString name = Coerce.toVncString(ast.nthOrDefault(1, VncString.empty()));
+			try (WithCallStack cs = new WithCallStack(callframe)) {
+				throw new NotInTailPositionException(
+						name.isEmpty() 
+							? "Not in tail position"
+							: String.format("Not '%s' in tail position", name.getValue()));
+			}
+		}
+		else {
+			return Nil;
 		}
 	}
 
