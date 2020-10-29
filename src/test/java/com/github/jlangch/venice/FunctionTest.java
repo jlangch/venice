@@ -29,6 +29,20 @@ import org.junit.jupiter.api.Test;
 public class FunctionTest {
 
 	@Test
+	public void test_fn_call() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                        \n" +
+				"   (defn f1 [x] 100)       \n" +
+				"   (defn f2 [x] (f1 x))    \n" +
+				"                           \n" +
+				"   (f2 10))                 ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
 	public void test_body_empty() {
 		final Venice venice = new Venice();
 

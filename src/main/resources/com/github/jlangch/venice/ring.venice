@@ -595,7 +595,7 @@
         (try-with [os output-stream]
           (if-let [charset (ring/get-charset response)]
             (io/spit-stream os body :flush true :encoding charset)
-                            (io/spit-stream os body :flush true)))
+            (io/spit-stream os body :flush true)))
 
     (bytebuf? body)
         (try-with [os output-stream]

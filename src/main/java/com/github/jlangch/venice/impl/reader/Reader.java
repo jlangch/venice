@@ -340,7 +340,7 @@ public class Reader {
 					}
 					rdr.anonymousFnArgs.startCapture();
 					final VncVal body = read_list(rdr, VncList.empty(), '(' , ')').withMeta(meta);
-					final VncVal argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
+					final VncVector argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
 					final VncVal s_expr = VncList.of(new VncSymbol("fn", meta), argsDef, body);
 					rdr.anonymousFnArgs.stopCapture();
 					return s_expr;

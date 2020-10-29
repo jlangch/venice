@@ -825,6 +825,39 @@ public class MacroTest {
 	}
 
 	@Test
+	public void test_if_let_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     " +
+				"   (defn demo [arg]                     " + 
+				"      (if-let [x arg]                   " + 
+				"         \"then\"))                     " +
+				"                                        " +
+				"   [ (demo 1) (demo nil) (demo false) ] " +
+				") ";
+
+		assertEquals("[then nil nil]", venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	public void test_if_let_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     " +
+				"   (defn demo [arg]                     " + 
+				"      (if-let [x arg]                   " + 
+				"         x                              " + 
+				"         \"else\"))                     " +
+				"                                        " +
+				"   [ (demo 1) (demo nil) (demo false) ] " +
+				") ";
+
+		assertEquals("[1 else else]", venice.eval("(str " + script + ")"));
+	}
+
+	@Test
 	public void test_when_let() {
 		final Venice venice = new Venice();
 
