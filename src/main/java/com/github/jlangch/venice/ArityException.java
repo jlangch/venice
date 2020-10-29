@@ -43,6 +43,10 @@ public class ArityException extends VncException {
 				expectedArgs));
 	}
 
+	public ArityException(final String message) {
+		super(message);
+	}
+
 	
 	private static final long serialVersionUID = 1349237272157335345L;
 }

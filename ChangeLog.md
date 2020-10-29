@@ -28,6 +28,8 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - function `partition-by`
+- arity check for passed arguments to functions. Throws an ArityException if the 
+  args do not match the function's parameter number.
 
 ### Fixed
 
