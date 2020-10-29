@@ -182,7 +182,7 @@ public class Embed_11_PrecompileSerialize {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
-        PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
+        PreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
         
         final byte[] data = precompiled.serialize();
         
