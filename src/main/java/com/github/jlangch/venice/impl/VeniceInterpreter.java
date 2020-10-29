@@ -1962,6 +1962,12 @@ public class VeniceInterpreter implements Serializable  {
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
+				if (plainSymbolParams && params.size() != args.size()) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
+						throw new ArityException(args.size(), getQualifiedName());
+					}
+				}
+				
 				final Env localEnv = new Env(env);
 
 				addFnArgsToEnv(args, localEnv);
