@@ -175,7 +175,7 @@ public class AnonymousFunctionTest {
 		// possible anonymous args: %1, %2, %3, %4, %5, %6, %7, %8, %9, %10, %, %&
 		// %11 is not taken as recognized function arg
 		assertThrows(
-				VncException.class, 
+				ArityException.class, 
 				() -> venice.eval(
 						"(do                                                                    \n" +
 						"  (defn foo [a b c d e f g h i j k] (+ a b c d e f g h i j k))         \n" + 
@@ -296,6 +296,15 @@ public class AnonymousFunctionTest {
 				"(do                                       \n" +
 				"  (defn foo [x y z] (apply + x y z))      \n" + 
 				"  (#(foo %1 %2 %&) 1 2 3 4))                "));
+	}
+		
+	@Test
+	public void test_wrong_number_of_args() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+			ArityException.class,
+			() -> venice.eval("(map #(+) [1 2 3])"));
 	}
 
 }
