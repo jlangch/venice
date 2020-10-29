@@ -674,7 +674,7 @@ public class CoreFunctionsTest {
 				"(do                                                          " +
 				"   (def counter (atom 0))                                    " +
 				"                                                             " +
-				"   (def sum (fn [[k v] x] (swap! counter (fn [n] (+ n v))))) " +
+				"   (def sum (fn [[k v]] (swap! counter (fn [n] (+ n v)))))   " +
 				"                                                             " +
 				"   (docoll sum {:a 1 :b 2 :c 3 :d 4})                        " +
 				"   (deref counter)                                           " +

@@ -549,10 +549,12 @@
 
 
 (defn xchart/add-raw-series
-       [chart s-name x-data y-data error-bars]
-       (if (some? error-bars)
-           (. chart :addSeries s-name x-data y-data error-bars)
-           (. chart :addSeries s-name x-data y-data)))
+       ([chart s-name x-data y-data]
+         (xchart/add-raw-series chart s-name x-data y-data nil))
+       ([chart s-name x-data y-data error-bars]
+         (if (some? error-bars)
+             (. chart :addSeries s-name x-data y-data error-bars)
+             (. chart :addSeries s-name x-data y-data))))
 
 
 (defn xchart/attach-default-font

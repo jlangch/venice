@@ -305,14 +305,17 @@
             (str "The expression is false."))
           """ ) }
 
-  if-let [bindings then else]
-
-  (let [form (first bindings) tst (second bindings)]
-    `(let [temp# ~tst]
-      (if temp#
-        (let [~form temp#]
-          ~then)
-        ~else))))
+  if-let
+  
+  ([bindings then]
+     `(if-let ~bindings ~then nil))
+  ([bindings then else]
+    (let [form (first bindings) tst (second bindings)]
+      `(let [temp# ~tst]
+        (if temp#
+          (let [~form temp#]
+            ~then)
+          ~else)))))
 
 
 (defmacro

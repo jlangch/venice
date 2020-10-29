@@ -29,24 +29,20 @@ package com.github.jlangch.venice;
 public class ArityException extends VncException {
 
 	public ArityException(final int arity, final String fnName) {
-		super(String.format("Wrong number of args %d passed to %s", arity, fnName));
-		
-		this.arity = arity;
-		this.name = fnName;
+		super(String.format(
+				"Wrong number of args %d passed to %s", 
+				arity, 
+				fnName));
 	}
 
-
-	public int getArity() {
-		return arity;
+	public ArityException(final int arity, final int expectedArgs, final String fnName) {
+		super(String.format(
+				"Wrong number of args %d passed to %s. Expected %d args", 
+				arity, 
+				fnName, 
+				expectedArgs));
 	}
 
-	public String getName() {
-		return name;
-	}
-	
 	
 	private static final long serialVersionUID = 1349237272157335345L;
-
-	private final int arity;
-	private final String name;
 }
