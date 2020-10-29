@@ -101,7 +101,7 @@ public class Sandbox_VeniceFunction_Test {
 	public void test_RejectAllInterceptor_gc_2() {
 		assertThrows(SecurityException.class, () -> {
 			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval("(docoll #(gc) [1])");
+			new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (gc)) [1])");
 		});
 	}
 
@@ -109,7 +109,7 @@ public class Sandbox_VeniceFunction_Test {
 	public void test_RejectAllInterceptor_gc_3() {
 		assertThrows(SecurityException.class, () -> {
 			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval("(map #(gc) [1])");
+			new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (gc)) [1])");
 		});
 	}
 	

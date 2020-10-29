@@ -468,7 +468,7 @@ public class KiraModuleTest {
 				"   (load-module :kira)                                                     \n" +
 				"                                                                           \n" +
 				"   (let [template \"formula: <% (kira/emit x) %> + <% (kira/emit y) %>\"   \n" +
-				"         tf (kira/fn [x y z] template)]                                    \n" +
+				"         tf (kira/fn [x y] template)]                                      \n" +
 				"      (tf \"a\" \"2b\"))                                                   \n" +
 				")";
 

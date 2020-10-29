@@ -148,7 +148,7 @@ public class CryptoModuleTest {
 				"(do                                                \n" +
 				"  (load-module :crypt)                             \n" +
 				"  (str/bytebuf-to-hex                              \n" + 
-				"    (crypt/md5-hash \"hello world\" \"-salt-\")    \n" + 
+				"    (crypt/md5-hash \"hello world\")               \n" + 
 				"    :upper))                                         ";
 
 		assertEquals(
@@ -164,7 +164,7 @@ public class CryptoModuleTest {
 				"(do                                                \n" +
 				"  (load-module :crypt)                             \n" +
 				"  (str/bytebuf-to-hex                              \n" + 
-				"    (crypt/md5-hash \"hello world\" \"-salt-\")))    ";
+				"    (crypt/md5-hash \"hello world\")))               ";
 
 		assertEquals(
 			"5eb63bbbe01eeed093cb22bb8f5acdc3", 
@@ -179,7 +179,7 @@ public class CryptoModuleTest {
 				"(do                                                  \n" +
 				"  (load-module :crypt)                               \n" +
 				"  (str/bytebuf-to-hex                                \n" + 
-				"    (crypt/md5-hash (bytebuf [54 78 99]) \"-salt-\") \n" + 
+				"    (crypt/md5-hash (bytebuf [54 78 99]))            \n" + 
 				"    :upper))                                           ";
 
 		assertEquals(
@@ -192,12 +192,12 @@ public class CryptoModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                           \n" + 
-				"  (load-module :crypt)                                                        \n" + 
-				"  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))             \n" + 
-				"  (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true))             \n" + 
-				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                        \n" + 
-				"  (assert (==(bytebuf [1 2 3 4 5]) (decrypt(encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
+				"(do                                                                             \n" + 
+				"  (load-module :crypt)                                                          \n" + 
+				"  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))               \n" + 
+				"  (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true))               \n" + 
+				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                          \n" + 
+				"  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
 				")";
 
 		venice.eval(script);
@@ -208,12 +208,12 @@ public class CryptoModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                           \n" + 
-				"  (load-module :crypt)                                                        \n" + 
-				"  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))            \n" + 
-				"  (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true))            \n" + 
-				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                        \n" + 
-				"  (assert (==(bytebuf [1 2 3 4 5]) (decrypt(encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
+				"(do                                                                             \n" + 
+				"  (load-module :crypt)                                                          \n" + 
+				"  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))              \n" + 
+				"  (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true))              \n" + 
+				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                          \n" + 
+				"  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
 				")";
 
 		venice.eval(script);
@@ -224,12 +224,12 @@ public class CryptoModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                           \n" + 
-				"  (load-module :crypt)                                                        \n" + 
-				"  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))          \n" + 
-				"  (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true))          \n" + 
-				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                        \n" + 
-				"  (assert (==(bytebuf [1 2 3 4 5]) (decrypt(encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
+				"(do                                                                             \n" + 
+				"  (load-module :crypt)                                                          \n" + 
+				"  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))            \n" + 
+				"  (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true))            \n" + 
+				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                          \n" + 
+				"  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
 				")";
 
 		venice.eval(script);

@@ -171,7 +171,7 @@ public class PerformanceTest {
 		final String script = 
 				"(do                                                     \n" +
 				"   (defn test [] (and true true true false))            \n" +
-				"   (perf (test 300) 20000 1000)                         \n" +
+				"   (perf (test) 20000 1000)                             \n" +
 				"	(println (prof :data-formatted \"Metrics and\")))     ";
 		
 		venice.eval(script);
