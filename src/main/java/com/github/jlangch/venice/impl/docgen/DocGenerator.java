@@ -289,6 +289,8 @@ public class DocGenerator {
 		use.addItem(getDocItem("nfirst"));
 		use.addItem(getDocItem("nlast"));
 		use.addItem(getDocItem("seq"));
+		use.addItem(getDocItem("rest"));
+		use.addItem(getDocItem("butlast"));
 		use.addItem(getDocItem("reverse"));
 		use.addItem(getDocItem("shuffle"));
 		use.addItem(getDocItem("str/index-of"));
@@ -362,6 +364,7 @@ public class DocGenerator {
 		strings.addSection(str_test);
 		str_test.addItem(getDocItem("string?"));
 		str_test.addItem(getDocItem("empty?"));
+		str_test.addItem(getDocItem("not-empty?"));
 		str_test.addItem(getDocItem("str/blank?"));
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
@@ -897,7 +900,7 @@ public class DocGenerator {
 
 		final DocSection doc = new DocSection("Documentation");
 		all.addSection(doc);
-		doc.addItem(getDocItem("doc"));
+		doc.addItem(getDocItem("doc", false));
 		doc.addItem(getDocItem("modules"));
 
 		final DocSection syntax = new DocSection("Syntax");

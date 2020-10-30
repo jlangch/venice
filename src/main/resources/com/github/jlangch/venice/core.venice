@@ -306,7 +306,7 @@
           """ ) }
 
   if-let
-  
+
   ([bindings then]
      `(if-let ~bindings ~then nil))
   ([bindings then else]
@@ -859,7 +859,8 @@
      :doc """
           If true throws an exception if the spawned shell process returns an \
           exit code other than 0. If false return the exit code. Defaults to \
-          false. For use with sh, see sh for details.
+          false. For use with sh, see sh for details. 'with-sh-throw' can be \
+          nested.
           """
      :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
 
@@ -873,7 +874,7 @@
      :doc """
           Evaluates exprs in a context in which *out* is bound to a capturing \
           output stream. Returns the string created by any nested printing \
-          calls.
+          calls. 'with-out-str' can be nested.
           """
      :examples '("""(with-out-str (println "a string"))""") }
 
@@ -889,7 +890,7 @@
      :doc """
           Evaluates exprs in a context in which *err* is bound to a capturing \
           output stream. Returns the string created by any nested printing \
-          calls.
+          calls. 'with-err-str' can be nested.
           """
      :examples '("""(with-err-str (println *err* "a string"))""") }
 

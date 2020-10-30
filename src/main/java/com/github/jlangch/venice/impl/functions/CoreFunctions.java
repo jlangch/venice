@@ -4416,8 +4416,12 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(empty? x)")
-					.doc("Returns true if x is empty")
-					.examples("(empty? {})", "(empty? [])", "(empty? '())", "(empty? \"\")")
+					.doc("Returns true if x is empty.  Accepts strings, collections and bytebufs.")
+					.examples(
+						"(empty? {})", 
+						"(empty? [])", 
+						"(empty? '())", 
+						"(empty? \"\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4450,8 +4454,12 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(not-empty? x)")
-					.doc("Returns true if x is not empty")
-					.examples("(not-empty? {:a 1})", "(not-empty? [1 2])", "(not-empty? '(1 2))")
+					.doc("Returns true if x is not empty. Accepts strings, collections and bytebufs.")
+					.examples(
+						"(not-empty? {:a 1})", 
+						"(not-empty? [1 2])", 
+						"(not-empty? '(1 2))",
+						"(not-empty? \"abc\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
