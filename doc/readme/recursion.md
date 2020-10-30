@@ -35,9 +35,9 @@ The drawback of this simple recursion is the large amount of memory overhead
 because of added stack frames for each recursion iteration.
 
 Functional languages with immutable data structures support *tail call optimization* 
-(TCO) to provide memory efficient recursion. While Venice does not support 
-automated tail call optimization it supports self recursion through the
-*loop..recur* syntax. This is a way to mimic TCO. 
+(TCO) to provide memory efficient recursion. While Venice supports 
+automated tail call optimization and self recursion through the
+*loop..recur* syntax. The latter is a way to mimic TCO. 
 
 In addition Venice provides the *trampoline* function for mutual recursion for more 
 involved forms of recursion.
@@ -215,9 +215,8 @@ Examples:
 
 ## Automated tail call optimization (TCO) 
 
-Venice has experimental support for automated tail call optimization, but it is
-not yet enabled for production builds. The recursive call must be in tail
-position.
+Venice has support for automated tail call optimization. The recursive 
+call must be in tail position.
 
 
 ```clojure
