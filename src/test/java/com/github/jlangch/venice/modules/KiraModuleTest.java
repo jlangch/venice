@@ -135,15 +135,49 @@ public class KiraModuleTest {
 
 		final String script2 =
 				"(do                                               \n" +
-				"   (load-module :kira)                            \n" +
+				"  (load-module :kira)                             \n" +
 				"                                                  \n" +
-				"   (with-out-str                                  \n" +
-				"      (kira/foreach []                            \n" +
+				"  (with-out-str                                   \n" +
+				"     (kira/foreach []                             \n" +
 				"                   (fn [x] (kira/emit (+ x 1))))) \n" +
 				")";
 
 		assertEquals("", venice.eval(script2));
 	}
+
+	@Test
+	public void test_escape_xml_nested_raw() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                                                       \n" +
+				"  (load-module :kira)                                     \n" +
+				"                                                          \n" +
+				"  (with-out-str                                           \n" +
+				"    (kira/foreach [1 2 3]                                 \n" +
+				"                  (fn [x]                                 \n" +
+				"                    (kira/emit (kira/escape-xml x))))))     ";
+
+		assertEquals("123", venice.eval(script1));
+	}
+
+	@Test
+	public void test_escape_xml_nested() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                                                   \n" +
+				"   (load-module :kira)                                \n" +
+				"                                                      \n" +
+				"   (kira/eval                                         \n" + 
+				"      \"${ (kira/foreach data (fn [x] (kira/emit }$line: ${ (kira/escape-xml x) }$\n${ ))) }$\"  \n" + 
+				"      [\"${\" \"}$\"]                                 \n" + 
+				"      {:data [1 2]})                                    \n" + 
+				")";
+
+		assertEquals("line: 1\nline: 2\n", venice.eval(script1));
+	}
+	
 	
 	
 	// ------------------------------------------------------------------------

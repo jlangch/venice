@@ -45,13 +45,14 @@
 ;; -----------------------------------------------------------------------------
 ;; Framework functions
 ;; -----------------------------------------------------------------------------
+
+(def kira/delimiters ["<%" "%>"])
+
+
 (defn- kira/read-source [source]
   (if (string? source)
     source
     (io/slurp source)))
-
-
-(def kira/delimiters ["<%" "%>"])
 
 
 (defn kira/parser-regex [delimiters]
@@ -67,14 +68,13 @@
 
 (defn kira/emit-string [s]
   (when (not-empty? s)
-    (print (str "(print " (pr-str s) ")"))))
+    (print "(print" (pr-str s) ")")))
 
 
 (defn kira/emit-expr [expr]
   (if (str/starts-with? expr "=")
     (print (str "(print " (str/trim (str/subs expr 1)) ")"))
     (print expr)))
-
 
 (defn kira/parse-string
   ([source]
@@ -89,15 +89,17 @@
               (do (kira/emit-string before)
                   (kira/emit-expr expr)
                   (recur after))
-              (kira/emit-string after))))
-        (print ")")))))
+              (do (kira/emit-string after)
+                  (print ")")))))))))
 
 
 (defn kira/compile-fn [args src delimiters]
   (eval
    `(fn ~args
       (with-out-str
-        ~(-> src kira/read-source (kira/parse-string delimiters) read-string)))))
+        ~(-> (kira/read-source src)
+             (kira/parse-string delimiters)
+             read-string)))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -106,7 +108,7 @@
 
 (defn
   ^{ :doc "Emit a string" }
-  kira/emit [s] (print (str s)))
+  kira/emit [& s] (print (apply str s)))
 
 
 (defn
