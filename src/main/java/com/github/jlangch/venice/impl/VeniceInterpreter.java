@@ -1962,24 +1962,24 @@ public class VeniceInterpreter implements Serializable  {
 		return new VncFunction(name, params, macro) {
 			@Override
 			public VncVal apply(final VncList args) {
-//				if (hasVariadicArgs()) {
-//					if (args.size() < getFixedArgsCount()) {
-//						try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
-//							throw new ArityException(String.format(
-//									"Wrong number of args (%d) passed to the variadic function %s that "
-//										+ "requires at least %d args (%s).", 
-//									args.size(), 
-//									getQualifiedName(),
-//									getFixedArgsCount(),
-//									getParams().toString(true)));
-//						}
-//					}
-//				}
-//				else if (args.size() != getFixedArgsCount()) {
-//					try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
-//						throw new ArityException(args.size(), getFixedArgsCount(), getQualifiedName());
-//					}
-//				}
+				if (hasVariadicArgs()) {
+					if (args.size() < getFixedArgsCount()) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
+							throw new ArityException(String.format(
+									"Wrong number of args (%d) passed to the variadic function %s that "
+										+ "requires at least %d args (%s).", 
+									args.size(), 
+									getQualifiedName(),
+									getFixedArgsCount(),
+									getParams().toString(true)));
+						}
+					}
+				}
+				else if (args.size() != getFixedArgsCount()) {
+					try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
+						throw new ArityException(args.size(), getFixedArgsCount(), getQualifiedName());
+					}
+				}
 
 				
 				final Env localEnv = new Env(env);
