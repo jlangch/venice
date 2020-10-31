@@ -30,6 +30,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - function `partition-by`
 - arity check for passed arguments to functions. Throws an ArityException if the 
   args do not match the function's parameter number.
+- automatic TCO, that was an experimental feature in version 1.9.3
 
 ### Fixed
 
