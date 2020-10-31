@@ -622,8 +622,9 @@
 
   list-comp [[binding_ coll-expr & bindings] body-expr]
 
-  (cond (not binding_)
-    `(list ~body-expr)
+  (cond
+    (not binding_)
+      `(list ~body-expr)
 
     (== :when binding_)
       `(when ~coll-expr (list-comp ~bindings ~body-expr))
@@ -631,6 +632,39 @@
     :else
       `(mapcat (fn [~binding_] (list-comp ~bindings ~body-expr))
                 ~coll-expr)))
+
+
+(defmacro
+  ^{ :arglists '("(doseq seq-exprs & body)")
+     :doc """
+          Repeatedly executes body (presumably for side-effects) with \
+          bindings and filtering as provided by "list-comp". Does not \
+          retain the head of the sequence. Returns nil.
+
+          Supported modifiers are: :when predicate
+          """
+     :examples '(
+          "(doseq [x (range 10)] (print x))"
+          "(doseq [x (range 10)] (print x) (print \"-\"))"
+          "(doseq [x (range 5)] (print (* x 2)))"
+          "(doseq [x (range 10) :when (odd? x)] (print x))"
+          "(doseq [x (range 10) :when (odd? x)] (print (* x 2)))"
+          "(doseq [x (list \"abc\") y [0 1 2]] (print (pr-str [x y])))") }
+
+  doseq [[binding_ coll-expr & bindings] & body]
+
+  (cond
+    (not binding_)
+      `(do ~@body nil)
+
+    (== :when binding_)
+      `(when ~coll-expr (doseq ~bindings ~@body) nil)
+
+    :else
+      `(do
+         (mapcat (fn [~binding_] (doseq ~bindings ~@body))
+                 ~coll-expr)
+         nil)))
 
 
 (defmacro
