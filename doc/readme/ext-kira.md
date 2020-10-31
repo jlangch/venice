@@ -134,9 +134,9 @@ Defining a template with parameters passed in a vector:
 #### Kira has built-in support for escaping XML/HTML:
 
 ```text
-<% (kira/escape-html text) %>
+<%= (kira/escape-html "...") %>
 
-<% (kira/escape-xml text) %>
+<%= (kira/escape-xml "...") %>
 ```
 
 Example: 
@@ -145,7 +145,7 @@ Example:
 (do
   (load-module :kira)
   
-  (def template "<formula><% (kira/escape-xml formula) %></formula>")
+  (def template "<formula><%= (kira/escape-xml formula) %></formula>")
 
   (def data { :formula "x > 100" })
   
@@ -161,7 +161,7 @@ Output:
 #### Data conversion/formatting prior to escape XML: 
 
 ```text
-<% (kira/escape-xml text fmt-fn) %>
+<%= (kira/escape-xml text fmt-fn) %>
 ```
 
 Example: 
@@ -176,7 +176,7 @@ Example:
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
   (def template
-       "<birthdate><% (kira/escape-xml (:birth-date test/data) test/format-ts) %></birthdate>")
+       "<birthdate><%= (kira/escape-xml (:birth-date test/data) test/format-ts) %></birthdate>")
 
   (def data { :birth-date (time/local-date 2000 8 1) })
   
@@ -196,7 +196,7 @@ Output:
 Any Venice functions can be used to escape/convert/format output:
 
 ```text
-<% (kira/emit (format x)) %>
+<%= (format x)) %>
 ```
 
 Example:
@@ -209,7 +209,7 @@ Example:
   
   (defn format-ts [t] (print (time/format t "yyyy-MM-dd HH:mm:ss")))
   
-  (def template "timestamp: <% (test/format-ts timestamp) %>")
+  (def template "timestamp: <%= (test/format-ts timestamp) %>")
 
   (def data { :timestamp (time/local-date-time) })
   
@@ -227,9 +227,7 @@ timestamp: 2019-06-22 19:21:07
 
 ```text
 <% (doseq [x xs] %>
-...
-<%= x %> 
-...
+   ...
 <% ) %>
 ```
 
@@ -394,7 +392,7 @@ Complex if expression
 <%) (do %>
    line1 <%= x2 %>
    line2 <%= y2 %>
-<% ))) %>
+<% )) %>
 ```
 
 ```clojure
