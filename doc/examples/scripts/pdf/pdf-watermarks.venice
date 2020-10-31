@@ -69,20 +69,20 @@
          <div class="subtitle">Example</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)

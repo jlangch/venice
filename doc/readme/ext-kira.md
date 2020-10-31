@@ -14,7 +14,7 @@ For example:
 (do
   (load-module :kira)
 
-  (kira/eval "Hello <% (kira/emit name) %>" {:name "Alice"})
+  (kira/eval "Hello <% (print name) %>" {:name "Alice"})
   ;; => "Hello Alice"
 )
 ```
@@ -67,9 +67,10 @@ Example of use:
 (kira/eval "Hello <%= name1 %> and <%= name2 %>" 
            {:name1 "Bob" :name2 "Alice"})
 
-(kira/eval "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>" 
+(kira/eval "Hello <%= (first names) %> and <%= (second names) %>" 
            {:names ["Bob" "Alice"]})
 
+;; use custom delimiters
 (kira/eval "Hello $= name $" ["$" "$"]  {:name "Bob"})
 ```
 
@@ -103,7 +104,7 @@ Defining a template with two scalar parameters:
   (load-module :kira)
   
   (def hello
-    (kira/fn [name1 name2] "Hello <%= name1 %> and <% (kira/emit name2) %>"))
+    (kira/fn [name1 name2] "Hello <%= name1 %> and <%= name2 %>"))
 
   (hello "Alice" "Bob")          ;; => "Hello Alice and Bob"
   (hello "Miss Piggy" "Kermit")  ;; => "Hello Miss Piggy and Kermit"
@@ -117,30 +118,10 @@ Defining a template with parameters passed in a vector:
   (load-module :kira)
   
   (def hello
-    (kira/fn [names] "Hello <% (kira/emit (first names)) %> and <% (kira/emit (second names)) %>"))
+    (kira/fn [names] "Hello <%= (first names) %> and <%= (second names) %>"))
 
   (hello ["Alice" "Bob"])          ;; => "Hello Alice and Bob"
   (hello ["Miss Piggy" "Kermit"])  ;; => "Hello Miss Piggy and Kermit"
-)
-```
-
-### kira/emit
-
-```clojure
-(kira/emit value)
-```
-
-Emit the passed value as string
-
-```clojure
-(do
-  (load-module :kira)
-  
-  (def hello
-    (kira/fn [v] "Hello <% (kira/emit v) %>"))
-
-  (hello "Alice")  ;; => "Hello Alice"
-  (hello 123)      ;; => "Hello 123"
 )
 ```
 
@@ -245,9 +226,11 @@ timestamp: 2019-06-22 19:21:07
 ### Loops
 
 ```text
-<% (kira/foreach coll (fn [item] (kira/emit %>
-   ...
-<% ))) %>
+<% (doseq [x xs] %>
+...
+<%= x %> 
+...
+<% ) %>
 ```
 
 Loop over a collection of items:
@@ -259,12 +242,12 @@ Loop over a collection of items:
   (def template 
        """
        <users>
-         <% (kira/foreach users (fn [user] (kira/emit %>
+         <% (doseq [user users] %>
          <user>
-           <firstname><% (kira/escape-xml (:first user)) %></firstname>
-           <lastname><% (kira/escape-xml (:last user)) %></lastname>
+           <firstname><%= (kira/escape-xml (:first user)) %></firstname>
+           <lastname><%= (kira/escape-xml (:last user)) %></lastname>
          </user>
-         <% ))) %>
+         <% ) %>
        </users>
        """)
 
@@ -280,8 +263,8 @@ Output:
 <users>
   
   <user>
-    <firstname>Thomas&amp;Müller</firstname>
-    <lastname>Meier</lastname>
+    <firstname>Thomas</firstname>
+    <lastname>Meier&amp;Müller</lastname>
   </user>
   
   <user>
@@ -298,9 +281,9 @@ Output:
 #### when
 
 ```text
-<% (when predicate (kira/emit %>
+<% (when predicate %>
    ...
-<% )) %>
+<% ) %>
 ```
 
 Example: 
@@ -312,15 +295,15 @@ Example:
   (def template 
        """
        <users>
-         <% (kira/foreach users (fn [user] (kira/emit %>
+         <% (doseq [user users] %>
          <user>
-           <firstname><% (kira/escape-xml (:first user)) %></firstname>
-           <lastname><% (kira/escape-xml (:last user)) %></lastname>
-           <% (when add-email (kira/emit %>
-           <email><% (kira/escape-xml (:email user)) %></email>
-           <% )) %>
+           <firstname><%= (kira/escape-xml (:first user)) %></firstname>
+           <lastname><%= (kira/escape-xml (:last user)) %></lastname>
+           <% (when add-email %>
+           <email><%= (kira/escape-xml (:email user)) %></email>
+           <% ) %>
          </user>
-         <% ))) %>
+         <% ) %>
        </users>
        """)
 
@@ -350,7 +333,7 @@ Output:
 #### if - then - else with value
 
 ```text
-<% (kira/emit (if (== font :large) 36 12)) %>
+<%= (if (== font :large) 36 12)) %>
 ```
 
 Example: 
@@ -365,7 +348,7 @@ Example:
          background-color: white;
          font-family: 'Open Sans', sans-serif;
          color: #444;
-         font-size: <% (kira/emit (if (== font :large) 36 12)) %>px;
+         font-size: <%= (if (== font :large) 36 12) %>px;
          line-height: 1.5em;
          font-weight: <%= weight %>;
        """)
@@ -392,21 +375,35 @@ body {
 
 #### if - then - else with blocks
 
+Simple if expression
+
 ```text
-<% (if predicate (kira/emit %>
-   ...
-<% ) (kira/emit %>
-   ...
-<% )) %>
+<% (if predicate %>
+   true
+<%  %>
+   false
+<% ) %>
+```
+
+Complex if expression
+
+```text
+<% (if predicate (do %>
+   line1 <%= x1 %>
+   line2 <%= y1 %>
+<%) (do %>
+   line1 <%= x2 %>
+   line2 <%= y2 %>
+<% ))) %>
 ```
 
 ```clojure
 (do
   (load-module :kira)
   
-  (def template 
+  (def template
        """
-       <% (if font-mono (kira/emit %>
+       <% (if font-mono %>
        @font-face {
            font-family: 'Source Code Pro';
            src: url('SourceCodePro-Regular.ttf');
@@ -415,7 +412,7 @@ body {
            color: #888;
            font-size: 10px;
        }
-       <% ) (kira/emit %>
+       <% %>
        @font-face {
            font-family: 'Open Sans';
            src: url('OpenSans-Regular.ttf');
@@ -424,7 +421,7 @@ body {
            color: #444;
            font-size: 12px;
        }
-       <% )) %>
+       <% ) %>
        """)
 
   (def data { :font-mono true })
@@ -491,25 +488,25 @@ Venice template:
   (def template 
        """
        <users>
-         <% (kira/foreach users (fn [user] (kira/emit %>
+         <% (doseq [user users] %>
          <user>
-           <firstname><% (kira/escape-xml (:first user)) %></firstname>
-           <lastname><% (kira/escape-xml (:last user)) %></lastname>
-           <birthdate><% (kira/escape-xml (:birth-date user) test/format-ts) %></birthdate>
+           <firstname><%= (kira/escape-xml (:first user)) %></firstname>
+           <lastname><%= (kira/escape-xml (:last user)) %></lastname>
+           <birthdate><%= (kira/escape-xml (:birth-date user) test/format-ts) %></birthdate>
            <address>
-             <street><% (kira/escape-xml (-> user :location :street)) %></street>
-             <zip><% (kira/escape-xml (-> user :location :zip)) %></zip>
-             <city><% (kira/escape-xml (-> user :location :city)) %></city>
+             <street><%= (kira/escape-xml (-> user :location :street)) %></street>
+             <zip><%= (kira/escape-xml (-> user :location :zip)) %></zip>
+             <city><%= (kira/escape-xml (-> user :location :city)) %></city>
            </address>
-           <% (when add-emails (kira/emit %>
+           <% (when add-emails %>
            <emails>
-             <% (kira/foreach (:emails user) (fn [[type email]] (kira/emit %>
-             <email type="<% (kira/escape-xml (name type)) %>"> <% (kira/escape-xml email) %></email>
-             <% ))) %>
+             <% (doseq [[type mail] (:emails user)] %>
+             <email type="<%= (kira/escape-xml (name type)) %>"> <%= (kira/escape-xml mail) %></email>
+             <% ) %>
            </emails>
-           <% )) %>
+           <% ) %>
          </user>
-         <% ))) %>
+         <% ) %>
        </users>
        """)
 

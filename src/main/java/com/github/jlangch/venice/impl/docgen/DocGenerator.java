@@ -996,9 +996,10 @@ public class DocGenerator {
 
 		final DocSection loop = new DocSection("Loop");
 		all.addSection(loop);
-		loop.addItem(getDocItem("list-comp"));
-		loop.addItem(getDocItem("dotimes"));
 		loop.addItem(getDocItem("while"));
+		loop.addItem(getDocItem("dotimes"));
+		loop.addItem(getDocItem("list-comp"));
+		loop.addItem(getDocItem("doseq"));
 
 		final DocSection call = new DocSection("Call");
 		all.addSection(call);

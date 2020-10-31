@@ -121,19 +121,19 @@
          <div class="subtitle">Example</div>
 
          <div class="head">Sans Serif</div>
-         <div class="sans-serif">${ (kira/escape-xml text) }$</div>
+         <div class="sans-serif">${= (kira/escape-xml text) }$</div>
 
          <div class="head">Serif</div>
-         <div class="serif">${ (kira/escape-xml text) }$</div>
+         <div class="serif">${= (kira/escape-xml text) }$</div>
 
          <div class="head">Open Sans</div>
-         <div class="open-sans">${ (kira/escape-xml text) }$</div>
+         <div class="open-sans">${= (kira/escape-xml text) }$</div>
 
          <div class="head">Open Sans Bold</div>
-         <div class="open-sans-bold">${ (kira/escape-xml text) }$</div>
+         <div class="open-sans-bold">${= (kira/escape-xml text) }$</div>
 
          <div class="head">Source Code Pro</div>
-         <div class="source-code-pro">${ (kira/escape-xml text) }$</div>
+         <div class="source-code-pro">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)

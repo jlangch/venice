@@ -75,8 +75,8 @@
          <div class="title">Venice PDF Introduction</div>
          <div class="subtitle">Example</div>
 
-         <div class="head">${ (kira/escape-xml title) }$</div>
-         <div class="date">${ (kira/escape-xml timestamp test/format-ts) }$</div>
+         <div class="head">${= (kira/escape-xml title) }$</div>
+         <div class="date">${= (kira/escape-xml timestamp test/format-ts) }$</div>
        </body>
      </html>
      """)

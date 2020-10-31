@@ -11,9 +11,9 @@
       }
 
       body {
-        font-family: ${ (kira/escape-xml fontFamiliy) }$;
-        font-size: ${ (kira/escape-xml fontSize) }$pt;
-        font-weight: ${ (kira/escape-xml fontWeight) }$;
+        font-family: ${= (kira/escape-xml fontFamiliy) }$;
+        font-size: ${= (kira/escape-xml fontSize) }$pt;
+        font-weight: ${= (kira/escape-xml fontWeight) }$;
       }
       div.page {
         page-break-before: always;
@@ -27,17 +27,17 @@
 
   <body>
     <div>
-      ${ (kira/foreach (first pages) (fn [l] (kira/emit }$
-      <div class="line">${ (kira/escape-xml l) }$</div>
-      ${ ))) }$
+      ${ (doseq [line (first pages)] }$
+      <div class="line">${= (kira/escape-xml line) }$</div>
+      ${ ) }$
     </div>
  
-    ${ (kira/foreach (rest pages) (fn [lines] (kira/emit }$
-    <div class="page">
-      ${ (kira/foreach lines (fn [l] (kira/emit }$
-      <div class="line">${ (kira/escape-xml l) }$</div>
-      ${ ))) }$
+    ${ (doseq [page (rest pages)] }$
+     <div class="page">
+      ${ (doseq [line page] }$
+      <div class="line">${= (kira/escape-xml line) }$</div>
+      ${ ) }$
     </div>
-    ${ ))) }$
+    ${ ) }$
   </body>
 </html>

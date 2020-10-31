@@ -100,28 +100,28 @@
 
        <body>
          <!-- Footer -->
-         <div id="footer_first"><hr/>${ (kira/escape-xml footer-front-page) }$</div>
-         <div id="footer_left"><hr/>${ (kira/escape-xml footer-left) }$</div>
+         <div id="footer_first"><hr/>${= (kira/escape-xml footer-front-page) }$</div>
+         <div id="footer_left"><hr/>${= (kira/escape-xml footer-left) }$</div>
          <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
 
          <div class="title">Venice PDF Footer</div>
          <div class="subtitle">Example</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
 
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)

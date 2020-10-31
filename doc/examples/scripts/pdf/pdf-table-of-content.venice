@@ -137,26 +137,26 @@
 
          <div class="page">
            <h2 id="xil_1">Chapter 1</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
 
          <div class="page">
            <h2 id="xil_2">Chapter 2</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
 
          <div class="page">
            <h2 id="xil_3">Chapter 3</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
 
          <div class="page">
            <h2 id="xil_4">Chapter 4</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
        </body>
      </html>

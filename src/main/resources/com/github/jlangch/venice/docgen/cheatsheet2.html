@@ -6,12 +6,12 @@
         <title>Venice Cheat Sheet</title>
         
         <style type="text/css">
-            ${ (when-not pdfmode (kira/emit }$
+            ${ (when-not pdfmode }$
             /* see https://fonts.google.com/ */ 
             @import url('https://fonts.googleapis.com/css?family=Audiowide|Open+Sans|Source+Code+Pro&display=swap');
-            ${ )) }$
+            ${ ) }$
            
-            ${ (when pdfmode (kira/emit }$
+            ${ (when pdfmode }$
             @font-face {
                 font-family: 'Open Sans';
                 src: url('OpenSans-Regular.ttf');
@@ -36,7 +36,7 @@
                 -fs-pdf-font-embed: embed;
                 -fs-pdf-font-encoding: Identity-H;
             }
-            ${ )) }$
+            ${ ) }$
             
             @page {
                 size: A4 portrait;
@@ -47,7 +47,7 @@
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
-                font-size: ${ (print (if pdfmode "10px" "16px")) }$;
+                font-size: ${= (if pdfmode "10px" "16px") }$;
                 line-height: 1.5em;
                 font-weight: 400;
             }            
@@ -60,7 +60,7 @@
                 font-weight: 300;
             }
             div.header h1 {
-                margin-top: ${ (print (if pdfmode "0.5em" "1.5em")) }$;
+                margin-top: ${= (if pdfmode "0.5em" "1.5em") }$;
                 font-weight: 500;
             }
             h2 {
@@ -157,7 +157,7 @@
             .embedding {
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: ${ (print (if pdfmode "0em" "10em")) }$ 0.5em 0.5em;
+                padding: ${= (if pdfmode "0em" "10em") }$ 0.5em 0.5em;
             }
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -189,7 +189,7 @@
                 clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: ${ (print (if pdfmode "0em" "20em")) }$ 0.5em 0.5em;
+                padding: ${= (if pdfmode "0em" "20em") }$ 0.5em 0.5em;
             }
             .detail {
                 background-color: #ebebeb;
@@ -229,52 +229,52 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V ${ (kira/escape-xml version) }$</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V ${= (kira/escape-xml version) }$</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
             </div>
             
             <div class="column">
-                 ${ (kira/foreach left (fn [s1] (kira/emit }$
-                 <div class="section" id="${ (kira/emit (:id s1)) }$">
-                    <h2>${ (kira/escape-xml (:title s1)) }$</h2>
-                    ${ (kira/foreach (:sections s1) (fn [s2] (kira/emit }$
-                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$
+                 ${ (doseq [s1 left] }$
+                 <div class="section" id="${= (:id s1) }$">
+                    <h2>${= (kira/escape-xml (:title s1)) }$</h2>
+                    ${ (doseq [s2 (:sections s1)] }$
+                    ${ (when (:title s2) }$<h3>${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
                     <table>
                         <tbody>
-                            ${ (kira/foreach (:sections s2) (fn [s3] (kira/emit }$
+                            ${ (doseq [s3 (:sections s2)] }$
                             <tr>
-                                <td class="shrink">${ (kira/escape-xml (:title s3)) }$</td>
-                                <td class="expand"><code>${ (kira/foreach (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:altName it)) }$</a> ${ ) (kira/emit }$<span>${ (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ))) }$</code></td>
+                                <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
+                                <td class="expand"><code>${ (doseq [it (:items s3)] }$${ (if (:id it) (do }$<a href="#${= (:id it) }$">${= (kira/escape-xml (:altName it)) }$</a> ${ ) (do }$<span>${= (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ) }$</code></td>
                             </tr>
-                            ${ ))) }$
+                            ${ ) }$
                         </tbody>
                     </table>
-                    ${ ))) }$
+                    ${ ) }$
                 </div>
-                ${ ))) }$
+                ${ ) }$
             </div>
             
             <div class="column">
-                ${ (kira/foreach right (fn [s1] (kira/emit }$
-                <div class="section" id="${ (kira/emit (:id s1)) }$">
-                    <h2>${ (kira/escape-xml (:title s1)) }$</h2>
-                    ${ (kira/foreach (:sections s1) (fn [s2] (kira/emit }$
-                    ${ (when (:title s2) (kira/emit }$<h3>${ (kira/escape-xml (:title s2)) }$</h3>${ )) }$
+                ${ (doseq [s1 right] }$
+                <div class="section" id="${= (:id s1) }$">
+                    <h2>${= (kira/escape-xml (:title s1)) }$</h2>
+                    ${ (doseq [s2 (:sections s1)] }$
+                    ${ (when (:title s2) }$<h3>${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
                     <table>
                         <tbody>
-                            ${ (kira/foreach (:sections s2) (fn [s3] (kira/emit }$
+                            ${ (doseq [s3 (:sections s2)] }$
                             <tr>
-                                <td class="shrink">${ (kira/escape-xml (:title s3)) }$</td>
-                                <td class="expand"><code>${ (kira/foreach (:items s3) (fn [it] (kira/emit }$${ (if (:id it) (kira/emit }$<a href="#${ (kira/emit (:id it)) }$">${ (kira/escape-xml (:altName it)) }$</a> ${ ) (kira/emit }$<span>${ (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ))) }$</code></td>
+                                <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
+                                <td class="expand"><code>${ (doseq [it (:items s3)] }$${ (if (:id it) (do }$<a href="#${= (:id it) }$">${= (kira/escape-xml (:altName it)) }$</a> ${ ) (do }$<span>${= (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ) }$</code></td>
                             </tr>
-                            ${ ))) }$
+                            ${ ) }$
                         </tbody>
                     </table>
-                    ${ ))) }$
+                    ${ ) }$
                 </div>
-                ${ ))) }$
+                ${ ) }$
             </div>
 
             <div style="clear: both;"></div>
@@ -282,40 +282,40 @@
             <div class="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
                
-               ${ (kira/foreach snippets (fn [s] (kira/emit }$ 
-               <h2>${ (kira/escape-xml (:title s)) }$</h2>
+               ${ (doseq [s snippets] }$ 
+               <h2>${= (kira/escape-xml (:title s)) }$</h2>
                <div class="code-snippet">
-                   <code>${ (kira/escape-xml (:code s)) }$</code>
+                   <code>${= (kira/escape-xml (:code s)) }$</code>
                </div>
-               ${ ))) }$
+               ${ ) }$
             </div>
             
             <div class="details" style="page-break-before: always;">
                 <h1>Function details</h1>
                 
-                ${ (kira/foreach details (fn [it] (kira/emit }$ 
-                ${ (when (:id it) (kira/emit }$
-                <div class="detail" id="${ (kira/emit (:id it)) }$">
+                ${ (doseq [it details] }$ 
+                ${ (when (:id it) }$
+                <div class="detail" id="${= (:id it) }$">
                     <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>${ (kira/escape-xml (:name it)) }$</h1>
-                    ${ (when (not-empty? (:signatures it)) (kira/emit }$
+                    <h1>${= (kira/escape-xml (:name it)) }$</h1>
+                    ${ (when (not-empty? (:signatures it)) }$
                     <div class="arglists">
                         <div class="arglist">
-                           ${ (kira/foreach (:signatures it) (fn [sig] (kira/emit }$
-                           <code>${ (kira/escape-xml sig) }$</code>
-                           ${ ))) }$
+                           ${ (doseq [sig (:signatures it)] }$
+                           <code>${= (kira/escape-xml sig) }$</code>
+                           ${ ) }$
                         </div>
                     </div>
-                    ${ )) }$
+                    ${ ) }$
                     <div class="descr">
-                        <code>${ (kira/escape-xml (:description it)) }$</code>
+                        <code>${= (kira/escape-xml (:description it)) }$</code>
                     </div>
                     <div class="examples">
-                        <code>${ (kira/escape-xml (:examples it)) }$</code>
+                        <code>${= (kira/escape-xml (:examples it)) }$</code>
                     </div>
                 </div>
-                ${ )) }$
-                ${ ))) }$
+                ${ ) }$
+                ${ ) }$
             </div>
         </div>
     </body>
