@@ -797,7 +797,7 @@ public class MacroTest {
 
 		assertEquals(
 				"([a 0] [a 1] [a 2] [b 0] [b 1] [b 2] [c 0] [c 1] [c 2])", 
-				venice.eval("(str (list-comp [x (into '() \"abc\") y [0 1 2]] [x y]))"));
+				venice.eval("(str (list-comp [x (seq \"abc\") y [0 1 2]] [x y]))"));
 	}
 
 	@Test
@@ -822,7 +822,7 @@ public class MacroTest {
 
 		assertEquals(
 				"[a 0] [a 1] [a 2] [b 0] [b 1] [b 2] [c 0] [c 1] [c 2] ", 
-				venice.eval("(with-out-str (doseq [x (into '() \"abc\") y [0 1 2]] (print [x y] \"\")))"));
+				venice.eval("(with-out-str (doseq [x (seq \"abc\") y [0 1 2]] (print [x y] \"\")))"));
 	}
 
 	@Test

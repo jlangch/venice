@@ -618,7 +618,7 @@
           "(list-comp [x (range 5)] (* x 2))"
           "(list-comp [x (range 10) :when (odd? x)] x)"
           "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
-          "(list-comp [x (list \"abc\") y [0 1 2]] [x y])") }
+          "(list-comp [x (seq \"abc\") y [0 1 2]] [x y])") }
 
   list-comp [[binding_ coll-expr & bindings] body-expr]
 
@@ -649,7 +649,7 @@
           "(doseq [x (range 5)] (print (* x 2)))"
           "(doseq [x (range 10) :when (odd? x)] (print x))"
           "(doseq [x (range 10) :when (odd? x)] (print (* x 2)))"
-          "(doseq [x (list \"abc\") y [0 1 2]] (print (pr-str [x y])))") }
+          "(doseq [x (seq \"abc\") y [0 1 2]] (print (pr-str [x y])))") }
 
   doseq [[binding_ coll-expr & bindings] & body]
 
