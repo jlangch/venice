@@ -276,10 +276,16 @@ Output:
 
 ### Conditionals
 
-#### when
+#### when or when-not
 
 ```text
 <% (when predicate %>
+   ...
+<% ) %>
+```
+
+```text
+<% (when-not predicate %>
    ...
 <% ) %>
 ```
