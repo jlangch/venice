@@ -31,8 +31,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - macro `doseq`
 - arity check for passed arguments to functions. Throws an ArityException if the 
   args do not match the function's parameter number.
-- automatic TCO, that was an experimental feature in version 1.9.3
-- overhauled 'kira' template extension module
+- automatic TCO, that was an experimental feature since version 1.9.3
+- improvements to the 'kira' template extension module. With the availability of 
+  `doseq` the module could be simplified. 'kira/emit' has been removed and 
+  'kira/foreach' is replaced by 'doseq'. See the documentation in the readme.
 
 ### Fixed
 
