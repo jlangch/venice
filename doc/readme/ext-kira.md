@@ -14,8 +14,8 @@ For example:
 (do
   (load-module :kira)
 
-  (kira/eval "Hello <% (print name) %>" {:name "Alice"})
-  ;; => "Hello Alice"
+  (kira/eval "<% (dotimes [x 3] %>foo<% ) %>")
+  ;; => "foofoofoo"
 )
 ```
 
@@ -207,7 +207,7 @@ Example:
   
   (load-module :kira)
   
-  (defn format-ts [t] (print (time/format t "yyyy-MM-dd HH:mm:ss")))
+  (defn format-ts [t] (time/format t "yyyy-MM-dd HH:mm:ss"))
   
   (def template "timestamp: <%= (test/format-ts timestamp) %>")
 
