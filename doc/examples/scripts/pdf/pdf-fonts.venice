@@ -29,7 +29,7 @@
 
   ;; ensure the fonts are available when loading this file
   (->> ["fonts/OpenSans-Regular.ttf"
-        "fonts/OpenSans-Bold.ttf"
+        "fonts/OpenSans-Italic.ttf"
         "fonts/SourceCodePro-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
@@ -55,8 +55,8 @@
               -fs-pdf-font-encoding: Identity-H;
            }
            @font-face {
-              font-family: 'Open Sans Bold';
-              src: url('classpath:/fonts/OpenSans-Bold.ttf');
+              font-family: 'Open Sans Italic';
+              src: url('classpath:/fonts/OpenSans-Italic.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -107,8 +107,9 @@
            div.open-sans {
              font-family: 'Open Sans', sans-serif;
            }
-           div.open-sans-bold {
-             font-family: 'Open Sans Bold', sans-serif;
+           div.open-sans-italic {
+             font-family: 'Open Sans', sans-serif;
+             font-style: italic;
            }
            div.source-code-pro {
              font-family: 'Source Code Pro', monospace;
@@ -129,8 +130,8 @@
          <div class="head">Open Sans</div>
          <div class="open-sans">${= (kira/escape-xml text) }$</div>
 
-         <div class="head">Open Sans Bold</div>
-         <div class="open-sans-bold">${= (kira/escape-xml text) }$</div>
+         <div class="head">Open Sans Italic</div>
+         <div class="open-sans-italic">${= (kira/escape-xml text) }$</div>
 
          <div class="head">Source Code Pro</div>
          <div class="source-code-pro">${= (kira/escape-xml text) }$</div>
