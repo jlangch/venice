@@ -662,8 +662,7 @@
 
     :else
       `(do
-         (mapcat (fn [~binding_] (doseq ~bindings ~@body))
-                 ~coll-expr)
+         (map (fn [~binding_] (doseq ~bindings ~@body)) ~coll-expr)
          nil)))
 
 

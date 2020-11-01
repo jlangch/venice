@@ -801,6 +801,31 @@ public class MacroTest {
 	}
 
 	@Test
+	public void test_doseq() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"0 1 2 3 4 5 6 7 8 9 ", 
+				venice.eval("(with-out-str (doseq [x (range 10)] (print x \"\")))"));
+
+		assertEquals(
+				"0 2 4 6 8 ", 
+				venice.eval("(with-out-str (doseq [x (range 5)] (print (* x 2) \"\")))"));
+
+		assertEquals(
+				"1 3 5 7 9 ", 
+				venice.eval("(with-out-str (doseq [x (range 10) :when (odd? x)] (print x \"\")))"));
+
+		assertEquals(
+				"2 6 10 14 18 ", 
+				venice.eval("(with-out-str (doseq [x (range 10) :when (odd? x)] (print (* x 2) \"\")))"));
+
+		assertEquals(
+				"[a 0] [a 1] [a 2] [b 0] [b 1] [b 2] [c 0] [c 1] [c 2] ", 
+				venice.eval("(with-out-str (doseq [x (into '() \"abc\") y [0 1 2]] (print [x y] \"\")))"));
+	}
+
+	@Test
 	public void test_time() {
 		final Venice venice = new Venice();
 
