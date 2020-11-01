@@ -1838,13 +1838,12 @@ public class DocGenerator {
 			final CapturingPrintStream ps_err = new CapturingPrintStream();
 
 			try {
-				final String script = 
-						"(do \n" +
-						preloadedModules
-							.stream()
-							.map(m -> "  (load-module :" + m + ") \n")
-							.collect(Collectors.joining("\n")) +
-						"(pr-str " + example + "\n))";
+				final String modules = preloadedModules
+											.stream()
+											.map(m -> "  (load-module :" + m + ")")
+											.collect(Collectors.joining("\n"));
+				
+				final String script = "(do \n" + modules + "\n\n  (pr-str " + example + "\n))";
 				
 				final String result = (String)runner.eval(
 											"example",
