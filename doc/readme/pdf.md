@@ -42,15 +42,20 @@ References:
 ## Introduction Example
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
-  
+
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+
+
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
-  
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -88,13 +93,13 @@ References:
            }
          </style>
        </head>
-       
+
        <body>
          <div class="title">Venice PDF Introduction</div>
          <div class="subtitle">Example</div>
-         
-         <div class="head">${ (kira/escape-xml title) }$</div>
-         <div class="date">${ (kira/escape-xml timestamp test/format-ts) }$</div>
+
+         <div class="head">${= (kira/escape-xml title) }$</div>
+         <div class="date">${= (kira/escape-xml timestamp test/format-ts) }$</div>
        </body>
      </html>
      """)
@@ -234,46 +239,46 @@ References:
 
          <table class="people people1">
            <tbody>
-             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
+             ${ (doseq [[last first city gender age birth] persons] }$
              <tr>
-               <td>${ (kira/escape-xml last) }$</td>
-               <td>${ (kira/escape-xml first) }$</td>
-               <td>${ (kira/escape-xml city) }$</td>
-               <td>${ (kira/escape-xml gender) }$</td>
-               <td>${ (kira/escape-xml age) }$</td>
-               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
+               <td>${= (kira/escape-xml last) }$</td>
+               <td>${= (kira/escape-xml first) }$</td>
+               <td>${= (kira/escape-xml city) }$</td>
+               <td>${= (kira/escape-xml gender) }$</td>
+               <td>${= (kira/escape-xml age) }$</td>
+               <td>${= (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
-             ${ ))) }$
+             ${ ) }$
            </tbody>
          </table>
 
          <table class="people people2">
            <tbody>
-             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
+             ${ (doseq [[last first city gender age birth] persons] }$
              <tr>
-               <td>${ (kira/escape-xml last) }$</td>
-               <td>${ (kira/escape-xml first) }$</td>
-               <td>${ (kira/escape-xml city) }$</td>
-               <td>${ (kira/escape-xml gender) }$</td>
-               <td>${ (kira/escape-xml age) }$</td>
-               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
+               <td>${= (kira/escape-xml last) }$</td>
+               <td>${= (kira/escape-xml first) }$</td>
+               <td>${= (kira/escape-xml city) }$</td>
+               <td>${= (kira/escape-xml gender) }$</td>
+               <td>${= (kira/escape-xml age) }$</td>
+               <td>${= (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
-             ${ ))) }$
+             ${ ) }$
            </tbody>
          </table>
 
          <table class="people people3">
            <tbody>
-             ${ (kira/foreach persons (fn [[last first city gender age birth]] (kira/emit }$
+             ${ (doseq [[last first city gender age birth] persons] }$
              <tr>
-               <td>${ (kira/escape-xml last) }$</td>
-               <td>${ (kira/escape-xml first) }$</td>
-               <td>${ (kira/escape-xml city) }$</td>
-               <td>${ (kira/escape-xml gender) }$</td>
-               <td>${ (kira/escape-xml age) }$</td>
-               <td>${ (kira/escape-xml birth test/format-birth-date) }$</td>
+               <td>${= (kira/escape-xml last) }$</td>
+               <td>${= (kira/escape-xml first) }$</td>
+               <td>${= (kira/escape-xml city) }$</td>
+               <td>${= (kira/escape-xml gender) }$</td>
+               <td>${= (kira/escape-xml age) }$</td>
+               <td>${= (kira/escape-xml birth test/format-birth-date) }$</td>
              </tr>
-             ${ ))) }$
+             ${ ) }$
            </tbody>
          </table>
 
@@ -341,13 +346,19 @@ These images are then referred to as:
 #### Example
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
   (load-module :xchart)
-  
-  (defn chart [] 
+
+  ;; ensure XChart and PDF libs are available when loading this file
+  (xchart/check-required-libs)
+  (pdf/check-required-libs)
+
+
+
+  (defn chart []
     (xchart/to-bytes-with-dpi
       (xchart/xy-chart
         { "a" { :x [0.0  3.0  5.0  7.0  9.0]
@@ -363,10 +374,10 @@ These images are then referred to as:
           :y-axis { :title "Y" :decimal-pattern "#0.#" }
           :theme :xchart } )
       :png
-      300))  
-  
+      300))
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -407,18 +418,18 @@ These images are then referred to as:
              margin-right: 2cm;
              padding: 2mm;
              border: 1px solid #C0C0C0;
-           }         
+           }
            div.chart img {
              width: 100%;
            }
          </style>
        </head>
-       
+
        <body>
          <div class="logo">
            <img src="classpath:/images/venice.png"/>
          </div>
-        
+
          <div class="title">Venice PDF Images</div>
          <div class="subtitle">Example</div>
 
@@ -430,7 +441,7 @@ These images are then referred to as:
      """)
 
   (def data { :title "Hello, world" } )
-  
+
   ; evaluate the template, render, and save it
   (-<> data
        (kira/eval template ["${" "}$"] <>)
@@ -505,15 +516,28 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
-  
+
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+  ;; ensure the fonts are available when loading this file
+  (->> ["fonts/OpenSans-Regular.ttf"
+        "fonts/OpenSans-Italic.ttf"
+        "fonts/SourceCodePro-Regular.ttf"]
+       (docoll (fn [r]
+                 (when-not (io/classpath-resource? r)
+                   (throw (. :VncException :new
+                             "Font classpath resource '~{r}' not found!"))))))
+
+
   (def text (str/lorem-ipsum :paragraphs 1))
-  
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -528,8 +552,8 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
               -fs-pdf-font-encoding: Identity-H;
            }
            @font-face {
-              font-family: 'Open Sans Bold';
-              src: url('classpath:/fonts/OpenSans-Bold.ttf');
+              font-family: 'Open Sans Italic';
+              src: url('classpath:/fonts/OpenSans-Italic.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -580,41 +604,42 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            div.open-sans {
              font-family: 'Open Sans', sans-serif;
            }
-           div.open-sans-bold {
-             font-family: 'Open Sans Bold', sans-serif;
+           div.open-sans-italic {
+             font-family: 'Open Sans', sans-serif;
+             font-style: italic;
            }
            div.source-code-pro {
              font-family: 'Source Code Pro', monospace;
            }
          </style>
        </head>
-       
+
        <body>
          <div class="title">Venice PDF Fonts</div>
          <div class="subtitle">Example</div>
 
          <div class="head">Sans Serif</div>
-         <div class="sans-serif">${ (kira/escape-xml text) }$</div>
+         <div class="sans-serif">${= (kira/escape-xml text) }$</div>
 
          <div class="head">Serif</div>
-         <div class="serif">${ (kira/escape-xml text) }$</div>
-         
+         <div class="serif">${= (kira/escape-xml text) }$</div>
+
          <div class="head">Open Sans</div>
-         <div class="open-sans">${ (kira/escape-xml text) }$</div>
-         
-         <div class="head">Open Sans Bold</div>
-         <div class="open-sans-bold">${ (kira/escape-xml text) }$</div>
-        
+         <div class="open-sans">${= (kira/escape-xml text) }$</div>
+
+         <div class="head">Open Sans Italic</div>
+         <div class="open-sans-italic">${= (kira/escape-xml text) }$</div>
+
          <div class="head">Source Code Pro</div>
-         <div class="source-code-pro">${ (kira/escape-xml text) }$</div>
+         <div class="source-code-pro">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)
 
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
-  
-  ; Evaluate the template, render, and save it.  
+
+  ; Evaluate the template, render, and save it.
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
@@ -631,25 +656,30 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 ## Table of Content
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
-  
+
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
        <head>
          <!-- Bookmarks -->
          <bookmarks>
-           <bookmark name="Chapter 1" href="#xil_1"/>   
+           <bookmark name="Chapter 1" href="#xil_1"/>
            <bookmark name="Chapter 2" href="#xil_2"/>
            <bookmark name="Chapter 3" href="#xil_3"/>
            <bookmark name="Chapter 4" href="#xil_4"/>
          </bookmarks>
-       
+
          <style type="text/css">
            @page {
              size: A4 portrait;
@@ -727,7 +757,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
          </style>
        </head>
-       
+
        <body>
          <div class="title">Venice PDF Table of Content</div>
          <div class="subtitle">Example</div>
@@ -741,29 +771,29 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
              <li><a href="#xil_4">Chapter 4</a></li>
            </ol>
          </div>
-          
+
          <div class="page">
            <h2 id="xil_1">Chapter 1</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
-         
+
          <div class="page">
            <h2 id="xil_2">Chapter 2</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
-         
+
          <div class="page">
            <h2 id="xil_3">Chapter 3</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
-         
+
          <div class="page">
            <h2 id="xil_4">Chapter 4</h2>
-           <div class="text">${ (kira/escape-xml text) }$</div>
-           <div class="text">${ (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
+           <div class="text">${= (kira/escape-xml text) }$</div>
          </div>
        </body>
      </html>
@@ -771,7 +801,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
-  
+
 
   ; evaluate the template, render, and save it
   (->> data
@@ -790,13 +820,18 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 ## Page Footers
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
-  
+
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -845,7 +880,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
              content: counter(page);
            }
            span.pagecount:before {
-             content: counter(pages); 
+             content: counter(pages);
            }
            #footer_first {
              position: running(footer_first);
@@ -854,40 +889,40 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
            #footer_left {
              position: running(footer_left);
-             text-align: left; 
+             text-align: left;
            }
            #footer_right {
              position: running(footer_right);
-             text-align: right; 
+             text-align: right;
              padding-right: 2mm;
            }
          </style>
        </head>
-       
+
        <body>
          <!-- Footer -->
-         <div id="footer_first"><hr/>${ (kira/escape-xml footer-front-page) }$</div>
-         <div id="footer_left"><hr/>${ (kira/escape-xml footer-left) }$</div>
+         <div id="footer_first"><hr/>${= (kira/escape-xml footer-front-page) }$</div>
+         <div id="footer_left"><hr/>${= (kira/escape-xml footer-left) }$</div>
          <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
 
          <div class="title">Venice PDF Footer</div>
          <div class="subtitle">Example</div>
-         
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)
@@ -896,7 +931,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
   (def data { :footer-front-page "Aarestrasse 51, 3012 Bern, Tel. 099 100 20 30, Fax 099 100 20 31, info@foo.ch, www.foo.ch"
               :footer-left "Demo"
               :text (str/lorem-ipsum :paragraphs 1) } )
-  
+
 
   ; evaluate the template, render, and save it
   (->> data
@@ -915,13 +950,18 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 ## Watermarks
 
 ```clojure
-(do 
+(do
   (ns test)
-  
+
   (load-module :kira)
-  
+
+  ;; ensure PDF libs are available when loading this file
+  (pdf/check-required-libs)
+
+
+
   ; define the template
-  (def template 
+  (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
      <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -954,33 +994,33 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
          </style>
        </head>
-       
+
        <body>
          <div class="title">Venice PDF Watermarks</div>
          <div class="subtitle">Example</div>
-         
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+
          <div style="page-break-before: always;"/>
-         <div class="text">${ (kira/escape-xml text) }$</div>
-         <div class="text">${ (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
+         <div class="text">${= (kira/escape-xml text) }$</div>
        </body>
      </html>
      """)
 
   ; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
-  
+
   (def watermark { :text              "CONFIDENTIAL"
                    :font-size         64.0
                    :font-char-spacing 10.0
