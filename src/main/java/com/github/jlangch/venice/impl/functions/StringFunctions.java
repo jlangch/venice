@@ -108,9 +108,9 @@ public class StringFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
-				
+
 				final VncVal s = args.first();
-				
+
 
 				if (s == Nil) {
 					return Nil;
@@ -198,16 +198,16 @@ public class StringFunctions {
 				}
 
 				final VncString string = Coerce.toVncString(args.first());
-				
+
 				final VncVal vSubstr = args.second();
-				
+
 				if (Types.isVncString(vSubstr)) {
 					final String text = Coerce.toVncString(args.second()).getValue();
-					
+
 					if (text.isEmpty()) {
 						return VncBoolean.False;
 					}
-					
+
 					return VncBoolean.of(string.getValue().contains(text));
 				}
 				else if (Types.isVncChar(vSubstr)) {
@@ -533,17 +533,17 @@ public class StringFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
-	
+
 				if (args.first() == Nil) {
 					return Nil;
 				}
-	
+
 				return new VncString(
 					new StringBuilder(Coerce.toVncString(args.first()).getValue())
 							.reverse()
 							.toString());
 			}
-	
+
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -573,7 +573,7 @@ public class StringFunctions {
 				if (args.size() == 1) {
 					if (args.first() == Nil) {
 						return Nil;
-					}				
+					}
 					return new VncString(Coerce
 											.toVncString(args.first())
 											.getValue()
@@ -626,7 +626,7 @@ public class StringFunctions {
 				if (args.size() == 1) {
 					if (args.first() == Nil) {
 						return Nil;
-					}				
+					}
 					return new VncString(Coerce
 											.toVncString(args.first())
 											.getValue()
@@ -715,7 +715,53 @@ public class StringFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
+
+	public static VncFunction str_pos =
+		new VncFunction(
+				"str/pos",
+				VncFunction
+					.meta()
+					.arglists("(str/pos s pos)")
+					.doc(
+						"Returns the 0 based row/column position within a string based on " +
+						"absolute character position. Returns a map with the keys " + 
+						"'row' and 'col'.\n" +
+						"Note: CR & LF count as one each regarding the absolute position.")
+					.examples(
+						"(str/pos \"abcdefghij\" 4)",
+						"(str/pos \"ab\ncdefghij\" 6)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 2);
+
+				final String string = Coerce.toVncString(args.first()).getValue();
+				final int pos = Coerce.toVncLong(args.second()).getIntValue();
+
+				final char[] chars = string.toCharArray();
+				int row=0;
+				int col=0;
+				for(int ii=0; ii<chars.length; ii++) {
+					if (ii == pos) {
+						return VncHashMap.of(
+								new VncKeyword("row"), new VncLong(row),
+								new VncKeyword("col"), new VncLong(col));
+					}
+					switch(chars[ii]) {
+						case '\r': break;
+						case '\n': row++; col=0; break;
+						default:   col++; break;
+					}
+				}
+
+				return VncHashMap.of(
+						new VncKeyword("row"), new VncLong(-1L),
+						new VncKeyword("col"), new VncLong(-1L));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_chars =
 			new VncFunction(
 					"str/chars",
@@ -736,7 +782,7 @@ public class StringFunctions {
 					}
 					else {
 						final String s = Coerce.toVncString(args.first()).getValue();
-		
+
 						return VncList.ofList(
 									s.chars()
 									 .mapToObj(c -> new VncChar((char)c))
@@ -770,7 +816,7 @@ public class StringFunctions {
 				else {
 					final VncString string = Coerce.toVncString(args.first());
 					final VncString regex = Coerce.toVncString(args.second());
-	
+
 					return VncList.ofList(
 							Arrays
 								.asList(string.getValue().split(regex.getValue()))
@@ -831,7 +877,7 @@ public class StringFunctions {
 					final String text = Coerce.toVncString(args.first()).getValue();
 					final String mode = Coerce.toVncKeyword(args.second()).getValue();
 					final String ending = "cr-lf".equals(mode) ? "\r\n" : "\n";
-					
+
 					return new VncString(
 							StringUtil
 								.splitIntoLines(text)
@@ -1027,7 +1073,7 @@ public class StringFunctions {
 				}
 				else {
 					final String s = Coerce.toVncString(args.first()).getValue();
-					
+
 					if (s.startsWith("\"") && s.endsWith("\"")) {
 						return new VncString(s.length() == 2 ? "" : s.substring(1, s.length()-1));
 					}
@@ -1058,7 +1104,7 @@ public class StringFunctions {
 				}
 				else {
 					final String s = Coerce.toVncString(args.first()).getValue();
-	
+
 					return VncBoolean.of(s.startsWith("\"") && s.endsWith("\""));
 				}
 			}
@@ -1098,17 +1144,17 @@ public class StringFunctions {
 				final String marker = Coerce.toVncString(args.nth(2)).getValue();
 				final String mode = Coerce.toVncKeyword(args.nthOrDefault(3, new VncKeyword(":end")))
 										  .getValue();
-				
+
 				int lenMarker = marker.length();
-				
+
 				if (maxLen <= lenMarker){
 					throw new VncException("A maxLen must greater than the length of the truncation marker");
 				}
-				
+
 				if (text == null || text.length() <= maxLen) {
 					return args.first();
 				}
-				
+
 
 				switch(mode) {
 					case "start": {
@@ -1117,10 +1163,10 @@ public class StringFunctions {
 					}
 					case "middle": {
 						final int lenStart = maxLen / 2 - lenMarker / 2;
-						final int lenTail = maxLen - lenStart - lenMarker;					
+						final int lenTail = maxLen - lenStart - lenMarker;
 						return new VncString(
-									text.substring(0, lenStart) 
-										+ marker 
+									text.substring(0, lenStart)
+										+ marker
 										+ text.substring(text.length() - lenTail));
 					}
 					case "end": {
@@ -1128,7 +1174,7 @@ public class StringFunctions {
 						return new VncString(text.substring(0, lenStart) + marker);
 					}
 				}
-				
+
 				throw new VncException("Invalid truncation mode ':" + mode + "'");
 			}
 
@@ -1158,29 +1204,29 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 3, 4);
 
-				final String text = args.first() == Nil 
+				final String text = args.first() == Nil
 										? ""
 										: Coerce.toVncString(args.first()).getValue();
 				final int len = Coerce.toVncLong(args.second()).getValue().intValue();
 				final String fill = Coerce.toVncString(args.nth(2)).getValue();
 				final String mode = Coerce.toVncKeyword(args.nthOrDefault(3, new VncKeyword(":end")))
 										  .getValue();
-				
+
 				if (fill.isEmpty()){
 					throw new VncException("A fill string must not be empty");
 				}
-				
+
 				if (text.length() >= len) {
 					return args.first();
 				}
-				
+
 				final int gap = len - text.length();
-				
+
 				final StringBuilder filling = new StringBuilder();
 				while(filling.length() < gap) {
 					final int delta = gap - filling.length();
-					filling.append(delta >= fill.length() 
-									? fill 
+					filling.append(delta >= fill.length()
+									? fill
 									: fill.substring(0, delta));
 				}
 
@@ -1188,7 +1234,7 @@ public class StringFunctions {
 					case "start": return new VncString(filling + text);
 					case "end": return new VncString(text + filling);
 				}
-				
+
 				throw new VncException("Invalid truncation mode ':" + mode + "'");
 			}
 
@@ -1390,7 +1436,7 @@ public class StringFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
-				
+
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
@@ -1429,7 +1475,7 @@ public class StringFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
-				
+
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
@@ -1468,7 +1514,7 @@ public class StringFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
-				
+
 				final VncVal v = args.first();
 
 				if (Types.isVncChar(v)) {
@@ -1937,7 +1983,7 @@ public class StringFunctions {
 		}
 		return s;
 	}
-	
+
 	private static Locale toLocale(final VncVal locale) {
 		if (Types.isVncJavaObject(locale, Locale.class)) {
 			return (Locale)((VncJavaObject)locale).getDelegate();
@@ -1990,7 +2036,7 @@ public class StringFunctions {
 			"^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 
 
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -2022,6 +2068,7 @@ public class StringFunctions {
 					.add(str_upper_case)
 					.add(str_join)
 					.add(str_subs)
+					.add(str_pos)
 					.add(str_chars)
 					.add(str_split)
 					.add(str_split_lines)

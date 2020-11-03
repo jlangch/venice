@@ -167,6 +167,35 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_pos() {
+		final Venice venice = new Venice();
+
+		assertEquals(0L, venice.eval("(:row (str/pos \"0\" 0))"));
+		assertEquals(0L, venice.eval("(:col (str/pos \"0\" 0))"));
+
+		assertEquals(-1L, venice.eval("(:row (str/pos \"0\" 2))"));
+		assertEquals(-1L, venice.eval("(:col (str/pos \"0\" 2))"));
+
+		assertEquals(0L, venice.eval("(:row (str/pos \"0123456789\" 0))"));
+		assertEquals(0L, venice.eval("(:col (str/pos \"0123456789\" 0))"));
+
+		assertEquals(0L, venice.eval("(:row (str/pos \"0123456789\" 3))"));
+		assertEquals(3L, venice.eval("(:col (str/pos \"0123456789\" 3))"));
+
+		assertEquals(0L, venice.eval("(:row (str/pos \"01234\n56789\" 3))"));
+		assertEquals(3L, venice.eval("(:col (str/pos \"01234\n56789\" 3))"));
+
+		assertEquals(0L, venice.eval("(:row (str/pos \"01234\n56789\" 4))"));
+		assertEquals(4L, venice.eval("(:col (str/pos \"01234\n56789\" 4))"));
+
+		assertEquals(0L, venice.eval("(:row (str/pos \"01234\n56789\" 5))"));
+		assertEquals(5L, venice.eval("(:col (str/pos \"01234\n56789\" 5))"));
+
+		assertEquals(1L, venice.eval("(:row (str/pos \"01234\n56789\" 6))"));
+		assertEquals(0L, venice.eval("(:col (str/pos \"01234\n56789\" 6))"));
+	}
+
+	@Test
 	public void test_str_quote() {
 		final Venice venice = new Venice();
 

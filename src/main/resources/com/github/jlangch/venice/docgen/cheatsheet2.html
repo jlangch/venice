@@ -246,7 +246,7 @@
                             ${ (doseq [s3 (:sections s2)] }$
                             <tr>
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
-                                <td class="expand"><code>${ (doseq [it (:items s3)] }$${ (if (:id it) (do }$<a href="#${= (:id it) }$">${= (kira/escape-xml (:altName it)) }$</a> ${ ) (do }$<span>${= (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ) }$</code></td>
+                                <td class="expand"><code>${ (doseq [{:keys [id altName name]} (:items s3)] }$${ (if id (do }$<a href="#${= id }$">${= (kira/escape-xml altName) }$</a> ${ ) (do }$<span>${= (kira/escape-xml name) }$</span><br/>${ )) }$${ ) }$</code></td>
                             </tr>
                             ${ ) }$
                         </tbody>
@@ -267,8 +267,8 @@
                             ${ (doseq [s3 (:sections s2)] }$
                             <tr>
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
-                                <td class="expand"><code>${ (doseq [it (:items s3)] }$${ (if (:id it) (do }$<a href="#${= (:id it) }$">${= (kira/escape-xml (:altName it)) }$</a> ${ ) (do }$<span>${= (kira/escape-xml (:name it)) }$</span><br/>${ )) }$${ ) }$</code></td>
-                            </tr>
+                                <td class="expand"><code>${ (doseq [{:keys [id altName name]} (:items s3)] }$${ (if id (do }$<a href="#${= id }$">${= (kira/escape-xml altName) }$</a> ${ ) (do }$<span>${= (kira/escape-xml name) }$</span><br/>${ )) }$${ ) }$</code></td>
+                             </tr>
                             ${ ) }$
                         </tbody>
                     </table>

@@ -34,7 +34,31 @@ import com.github.jlangch.venice.pdf.PdfRenderer;
 
 
 public class CheatsheetRenderer {
-	
+
+	public static String parseTemplate() {
+		try {
+			final String template = loadCheatSheetTemplate();
+			
+			final String script = "(do                                              \n" +
+								  "   (load-module :kira)                           \n" +
+								  "   (kira/parse-string template [\"${\" \"}$\"]))   ";
+			
+			// apply the template
+			return (String)new Venice().eval(
+							script,
+							Parameters.of("template", template));
+		}
+		catch(VncException ex) {
+			throw new RuntimeException(
+						"Failed to parse cheatsheet template. \n" + 
+						"Venice Callstack: \n" + ex.getCallStackAsString("   "),
+						ex);
+		}
+		catch(Exception ex) {
+			throw new RuntimeException("Failed toparse cheatsheet template", ex);
+		}
+	}
+
 	public static String renderXHTML(final Map<String,Object> data) {
 		try {
 			final String template = loadCheatSheetTemplate();

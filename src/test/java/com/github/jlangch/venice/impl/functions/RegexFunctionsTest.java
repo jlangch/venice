@@ -96,6 +96,67 @@ public class RegexFunctionsTest {
 	}
 
 	@Test
+	public void test_regex_matches() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(let [groups (regex/matches                               \n" +
+				"                \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\"   \n" +
+				"                \"672-345-456-212\")]                     \n" +
+				"   (pr-str [ (count groups)                               \n" +
+				"             (first groups)                               \n" +
+				"             (second groups)                              \n" +
+				"             (third groups)                               \n" +
+				"             (fourth groups)                               \n" +
+				"             (nth groups 4) ] ))                           ";
+		
+		assertEquals("[5 \"672-345-456-212\" \"672\" \"345\" \"456\" \"212\"]", venice.eval(script).toString());
+	}
+
+	@Test
+	public void test_regex_matches_groups_meta() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(let [groups (regex/matches                               \n" +
+				"                \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\"   \n" +
+				"                \"672-345-456-212\")]                     \n" +
+				"   (pr-str [ (:start (meta groups))                       \n" +
+				"             (:end (meta groups))                         \n" +
+				"             (:group-count (meta groups)) ] ))              ";
+		
+		assertEquals("[0 15 4]", venice.eval(script).toString());
+	}
+
+	@Test
+	public void test_regex_matches_group_element_meta() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				"(let [groups (regex/matches                               \n" +
+				"                \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\"   \n" +
+				"                \"672-345-456-212\")]                     \n" +
+				"   (pr-str [ [ 0                                          \n" +
+				"               (:start (meta (nth groups 0)))             \n" +
+				"               (:end (meta (nth groups 0))) ]             \n" +
+				"             [ 1                                          \n" +
+				"               (:start (meta (nth groups 1)))             \n" +
+				"               (:end (meta (nth groups 1))) ]             \n" +
+				"             [ 2                                          \n" +
+				"               (:start (meta (nth groups 2)))             \n" +
+				"               (:end (meta (nth groups 2))) ]             \n" +
+				"             [ 3                                          \n" +
+				"               (:start (meta (nth groups 3)))             \n" +
+				"               (:end (meta (nth groups 3))) ]             \n" +
+				"             [ 4                                          \n" +
+				"               (:start (meta (nth groups 4)))             \n" +
+				"               (:end (meta (nth groups 4))) ] ] ))          ";
+		
+		assertEquals("[[0 0 15] [1 0 3] [2 4 7] [3 8 11] [4 12 15]]", venice.eval(script).toString());
+	}
+
+	
+	@Test
 	public void test_regex_group() {
 		final Venice venice = new Venice();
 		

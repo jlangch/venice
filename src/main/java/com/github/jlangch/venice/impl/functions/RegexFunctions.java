@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -134,11 +135,23 @@ public class RegexFunctions {
 					.arglists("(regex/matches pattern str)")		
 					.doc(
 						"Returns the match, if any, of string to pattern, using " + 
-						"java.util.regex.Matcher.matches(). Returns the " + 
-						"groups.")
+						"java.util.regex.Matcher.matches(). Returns a list with the " + 
+						"groups. \n\n" +
+						"Returns matching details as meta data and groups list and items: \n" +
+						"Group: \n" +
+						"   :start       start pos of the group\n" +
+						"   :end         end pos of the group\n" +
+						"   :group-count the number of elements in the group\n" +
+						"Group element: \n" +
+						"   :start       start pos of the element\n" +
+						"   :end         end pos of the element\n")
 					.examples(
 						"(regex/matches \"hello, (.*)\" \"hello, world\")",
-						"(regex/matches \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\" \"672-345-456-212\")")
+						
+						"(regex/matches \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\" \"672-345-456-212\")",
+						
+						"(let [p (regex/pattern \"([0-9]+)-([0-9]+)\")]\n" +
+						"  (regex/matches p \"672-345\"))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -151,14 +164,28 @@ public class RegexFunctions {
 				final String s = Coerce.toVncString(args.second()).getValue();	
 				final Matcher m = p.matcher(s);
 
-				final List<VncVal> groups = new ArrayList<>();
 				if (m.matches()) {
+					final List<VncVal> groups = new ArrayList<>();
+
+					final VncMap metaGroup = VncHashMap.of(
+												new VncKeyword("start"),       new VncLong(m.start()),
+												new VncKeyword("end"),         new VncLong(m.end()),
+												new VncKeyword("group-count"), new VncLong(m.groupCount()));
+
 					for(int ii=0; ii<=m.groupCount(); ii++) {
+						final VncMap metaItem = VncHashMap.of(
+												new VncKeyword("start"), new VncLong(m.start(ii)),
+												new VncKeyword("end"),   new VncLong(m.end(ii)));
+						
 						final String group = m.group(ii);
-						groups.add(group == null ? Nil : new VncString(group));
+						groups.add(group == null ? Nil : new VncString(group, metaItem));
 					}
+					
+					return VncList.ofList(groups, metaGroup);
 				}
-				return VncList.ofList(groups);
+				else {
+					return VncList.empty();
+				}
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;

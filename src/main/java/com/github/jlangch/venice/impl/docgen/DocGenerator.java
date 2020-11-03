@@ -72,6 +72,9 @@ public class DocGenerator {
 	public static void main(final String[] args) {
 		final String version = args.length > 0 ? args[0] : "0.0.0";
 		new DocGenerator().run(version);
+
+//		System.out.println(
+//			CheatsheetRenderer.parseTemplate().replace("\\n", "\n"));
 	}
 	
 	private void run(final String version) {
@@ -299,6 +302,7 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/rest"));
 		use.addItem(getDocItem("str/butlast"));
 		use.addItem(getDocItem("str/chars"));
+		use.addItem(getDocItem("str/pos"));
 		use.addItem(getDocItem("str/repeat"));
 		use.addItem(getDocItem("str/reverse"));
 		use.addItem(getDocItem("str/truncate"));
