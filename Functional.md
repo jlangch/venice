@@ -19,6 +19,8 @@
 
 [Functors](https://www.youtube.com/watch?v=JUVMiRRq6wU)
 
+[Don’t fear the monad](https://youtu.be/ZhuHCtR3xq8)
+
 [Project Euler](https://projecteuler.net/)
 
 [The Most Beautiful Program Ever Written](https://www.youtube.com/watch?v=OyfBQmvr2Hc)
