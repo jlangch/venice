@@ -73,7 +73,7 @@
 
 (defn kira/emit-expr [expr]
   (if (str/starts-with? expr "=")
-    (print (str "(print " (str/trim (str/subs expr 1)) ")"))
+    (print (str "(print " (str/trim (str/rest expr)) ")"))
     (print expr)))
 
 
