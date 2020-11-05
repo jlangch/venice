@@ -56,6 +56,12 @@
 
 
 (defn kira/parser-regex [delimiters]
+  ;; \A      beginning of the input
+  ;; \z      end of the input
+  ;; \Q      nothing, but quotes all characters until \E
+  ;; \E      nothing, but ends quoting started by \Q
+  ;; (?s)    enables dotall mode (dot to match newline characters, too)
+  ;; (?:X)   X, as a non-capturing group
   (regex/pattern
         (str "(?s)\\A"
              "(?:" "(.*?)"
