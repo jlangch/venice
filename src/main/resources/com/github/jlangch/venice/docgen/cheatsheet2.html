@@ -362,10 +362,10 @@
                     ${ (when (not-empty? (:crossRefs it)) }$
                     <div class="seealso">
                         <h1>SEE ALSO</h1>
-                        ${ (doseq [cr (:crossRefs it)] }$ 
+                        ${ (doseq [{:keys [id name description]} (:crossRefs it)] }$ 
                         <div class="crossref">
-                            <div class="name"><a href="#${= (:id cr) }$">${= (kira/escape-xml (:name cr)) }$</a></div>
-                            <div class="descr">${= (kira/escape-xml (:description cr)) }$</div>
+                            <div class="name"><a href="#${= id }$">${= (kira/escape-xml name) }$</a></div>
+                            <div class="descr">${= (kira/escape-xml description) }$</div>
                         </div>
                         ${ ) }$
                     </div>
