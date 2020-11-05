@@ -21,75 +21,30 @@
  */
 package com.github.jlangch.venice.impl.docgen;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+public class CrossRef {
 
-import com.github.jlangch.venice.impl.util.StringUtil;
-
-
-public class DocItem {
-	
-	public DocItem(
+	public CrossRef(
 			final String name, 
-			final List<String> signatures,
-			final String description,
-			final List<ExampleOutput> examples,
-			final List<CrossRef> crossRefs,
-			final String id
+			final String id,
+			final String description
 	) {
-		this.name = name;
-		this.altName = convertDash(name);
-		this.signatures = signatures;
+		this.name = convertDash(name);
 		this.description = description;
-		this.examples = examples;
 		this.id = id;
-		this.crossRefs = new ArrayList<>();
-		
-		if (crossRefs != null) {
-			this.crossRefs.addAll(crossRefs);
-		}
-	}
-
-	public DocItem(final String name, final String id) {
-		this(name, null, null, null, null, id);
 	}
 	
 	public String getName() {
 		return name;
 	}
 
-	public String getAltName() {
-		return altName;
-	}
-
 	public String getId() {
 		return id;
-	}
-	
-	public List<String> getSignatures() {
-		return signatures;
 	}
 	
 	public String getDescription() {
 		return description;
 	}
-	
-	public String getExamples() {
-		return renderExamples();
-	}
 
-	public String renderExamples() {
-		return StringUtil.trimToNull(
-				examples
-					.stream()
-					.map(o -> o.render())
-					.collect(Collectors.joining("\n\n")));
-	}
-
-	public List<CrossRef> getCrossRefs() {
-		return crossRefs;
-	}
 
 	@Override
 	public int hashCode() {
@@ -107,7 +62,7 @@ public class DocItem {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		DocItem other = (DocItem) obj;
+		CrossRef other = (CrossRef) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -116,22 +71,14 @@ public class DocItem {
 		return true;
 	}
 
+
 	
 	private String convertDash(final String s) {
 		// prevent hyphenation within name symbols
 		return s.replace('-', '\u2212');  
 	}
-
-	// https://www.key-shortcut.com/zeichentabellen/unicode-2000-2fff
-	// https://css-tricks.com/almanac/properties/w/whitespace/
-	// https://www.cjcid.com/articles/wrapping-long-words-css-html/
 	
 	private final String name;
-	private final String altName;
 	private final String id;
-	
-	private final List<String> signatures;
 	private final String description;
-	private final List<ExampleOutput> examples;
-	private final List<CrossRef> crossRefs;
 }

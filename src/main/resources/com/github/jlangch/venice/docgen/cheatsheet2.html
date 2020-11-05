@@ -229,8 +229,28 @@
             }
             .examples {
                 background-color: #f5f5f5;
-                margin: 0;
+                margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
+            }
+            .seealso {
+                background-color: #f5f5f5;
+                margin: 0.5em 0 0.5em 0;
+                padding: 0.5em;
+            }
+            .seealso h1 {
+                margin: 0;
+                padding: 0;
+                color: #777;
+                font-size: 1.1em;
+                font-weight: 500;
+            }
+            .crossref .name {
+                margin: 1em 0 0 0;
+                padding: 0;
+            }
+            .crossref .descr {
+                margin: 0;
+                padding: 0;
             }
         </style>
     </head>
@@ -334,9 +354,22 @@
                     <div class="descr">
                         <code>${= (kira/escape-xml (:description it)) }$</code>
                     </div>
+                    ${ (when (not-empty? (:examples it)) }$
                     <div class="examples">
                         <code>${= (kira/escape-xml (:examples it)) }$</code>
                     </div>
+                    ${ ) }$
+                    ${ (when (not-empty? (:crossRefs it)) }$
+                    <div class="seealso">
+                        <h1>SEE ALSO</h1>
+                        ${ (doseq [cr (:crossRefs it)] }$ 
+                        <div class="crossref">
+                            <div class="name"><a href="#${= (:id cr) }$">${= (kira/escape-xml (:name cr)) }$</a></div>
+                            <div class="descr">${= (kira/escape-xml (:description cr)) }$</div>
+                        </div>
+                        ${ ) }$
+                    </div>
+                    ${ ) }$
                 </div>
                 ${ ) }$
                 ${ ) }$

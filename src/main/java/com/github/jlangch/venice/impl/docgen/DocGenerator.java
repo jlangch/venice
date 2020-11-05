@@ -1238,7 +1238,6 @@ public class DocGenerator {
 		to_str.addItem(getDocItem("pr-str"));
 		to_str.addItem(getDocItem("with-out-str"));
 
-
 		final DocSection from = new DocSection("from");
 		all.addSection(from);
 		from.addItem(getDocItem("read-line"));
@@ -1325,7 +1324,6 @@ public class DocGenerator {
 		http.addItem(getDocItem("io/download", false));
 		http.addItem(getDocItem("io/internet-avail?", false));
 		
-
 		final DocSection zip = new DocSection("zip");
 		all.addSection(zip);
 		zip.addItem(getDocItem("io/zip", false));
@@ -1779,23 +1777,20 @@ public class DocGenerator {
 	}
 
 	private DocItem getDocItem_(final String name, final boolean runExamples, final boolean catchEx) {
-		// Special forms
-		VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(name));
-		if (fn == null) {
-			// functions & macros
-			fn = getFunction(name);
-		}
-		
+		final VncFunction fn = findFunction(name);
+
 		if (fn != null) {
 			return new DocItem(
 					name, 
 					toStringList(fn.getArgLists()), 
 					fn.getDoc() == Constants.Nil ? "" : ((VncString)fn.getDoc()).getValue(),
 					runExamples(name, toStringList(fn.getExamples()), runExamples, catchEx),
-					id());
+					createCrossRefs(name, fn),
+					id(name));
 		}
-	
-		return null;
+		else {
+			throw new RuntimeException(String.format("Unknown function %s", name));
+		}
 	}
 
 	private List<ExampleOutput> runExamples(
@@ -1828,7 +1823,6 @@ public class DocGenerator {
 		}
 	}
 	
-
 	private ExampleOutput runExample(
 			final Venice runner,
 			final long id,
@@ -1873,6 +1867,49 @@ public class DocGenerator {
 			return new ExampleOutput(id, name, example);
 		}
 	}
+	
+	private VncFunction findFunction(final String name) {
+		// Special forms
+		VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(name));
+		if (fn != null) {
+			return fn;
+		}
+		
+		// functions & macros
+		return getFunction(name);
+	}
+	
+	private List<CrossRef> createCrossRefs(final String parentName, final VncFunction fn) {
+		final List<CrossRef> crossRefs = new ArrayList<>();
+		
+		final VncList seeAlso = fn.getSeeAlso();
+		seeAlso.forEach(v -> {
+			final String crossRefFnName = ((VncString)v).getValue();
+			
+			final VncFunction crossRefFn = findFunction(crossRefFnName);
+			if (crossRefFn != null) {
+				final String doc = crossRefFn.getDoc() == Constants.Nil 
+										? null 
+										: ((VncString)crossRefFn.getDoc()).getValue();
+				
+				if (doc != null) {
+					crossRefs.add(
+							new CrossRef(
+									crossRefFnName,
+									id(crossRefFnName),
+									StringUtil.truncate(doc, 80, "...")));
+				}
+			}
+			else {
+				throw new RuntimeException(String.format(
+							"Missing cross reference function %s -> %s",
+							parentName,
+							crossRefFnName));
+			}
+		});
+
+		return crossRefs;
+	}
 
 	private List<String> toStringList(final VncList list) {
 		try {
@@ -1912,12 +1949,18 @@ public class DocGenerator {
 		final VncVal val = env.get(new VncSymbol(name));
 		return Types.isVncFunction(val) ? (VncFunction)val : null;
 	}
-	
+
 	private String id() {
 		return String.valueOf(gen.getAndIncrement());
 	}
+
+	private String id(final String name) {
+		return idMap.computeIfAbsent(name, n -> String.valueOf(gen.getAndIncrement()));
+	}
 	
 	
+	
+	private final Map<String,String> idMap = new HashMap<>();
 	
 	private final AtomicLong gen = new AtomicLong(1000);
 	
