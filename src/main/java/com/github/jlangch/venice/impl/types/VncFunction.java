@@ -186,6 +186,10 @@ public abstract class VncFunction
 		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
 	}
 	
+	public VncList getSeeAlso() { 
+		return (VncList)getMetaVal(MetaUtil.SEE_ALSO, VncList.empty());
+	}
+	
 	public int getFixedArgsCount() {
 		return fixedArgsCount;
 	}
@@ -322,6 +326,13 @@ public abstract class VncFunction
 			meta.put(
 				MetaUtil.EXAMPLES, 
 				VncList.ofList(Arrays.stream(examples).map(e -> new VncString(e)).collect(Collectors.toList())));
+			return this;
+		}
+		
+		public MetaBuilder seeAlso(final String... refs) { 
+			meta.put(
+				MetaUtil.SEE_ALSO, 
+				VncList.ofList(Arrays.stream(refs).map(e -> new VncString(e)).collect(Collectors.toList())));
 			return this;
 		}
 		

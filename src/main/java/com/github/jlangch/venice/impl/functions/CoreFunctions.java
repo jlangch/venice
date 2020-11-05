@@ -3032,6 +3032,7 @@ public class CoreFunctions {
 						"(assoc! (mutable-vector 1 2 3) 0 10)",
 						"(assoc! (mutable-vector 1 2 3) 3 10)",
 						"(assoc! (mutable-vector 1 2 3) 6 10)")
+					.seeAlso("dissoc!")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3374,6 +3375,7 @@ public class CoreFunctions {
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :b)",
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :c :b)",
 						"(dissoc! (mutable-vector 1 2 3) 0)")
+					.seeAlso("assoc!")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
