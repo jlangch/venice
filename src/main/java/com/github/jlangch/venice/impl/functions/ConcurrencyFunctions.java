@@ -1596,8 +1596,8 @@ public class ConcurrencyFunctions {
 						"(thread-local { :a 1 :b 2 })",
 						"(do \n" +
 						"   (thread-local-clear) \n" +
-						"   (assoc (thread-local) :a 1 :b 2) \n" +
-						"   (dissoc (thread-local) :a) \n" +
+						"   (assoc! (thread-local) :a 1 :b 2) \n" +
+						"   (dissoc! (thread-local) :a) \n" +
 						"   (get (thread-local) :b 100) \n" +
 						")")
 					.build()
@@ -1621,7 +1621,10 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(thread-local? x)")		
 					.doc("Returns true if x is a thread-local, otherwise false")
-					.examples("(do\n   (def x (thread-local))\n   (thread-local? x))")
+					.examples(
+						"(do\n" +
+						"  (def x (thread-local))\n" +
+						"  (thread-local? x))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1658,7 +1661,7 @@ public class ConcurrencyFunctions {
 				VncFunction
 					.meta()
 					.arglists("(thread-local-map)")		
-					.doc("Returns the thread local vars as a map")
+					.doc("Returns a snaphost of the thread local vars as a map")
 					.examples("(do (thread-local :a 1 :b 2) (thread-local-map))")
 					.build()
 		) {		

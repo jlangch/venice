@@ -34,7 +34,7 @@ public class ThreadLocalTest {
 
 		final String s = 
 				"(do                                   \n" +
-				"   (assoc (thread-local) :a 1 :b 2)   \n" +
+				"   (assoc! (thread-local) :a 1 :b 2)  \n" +
 				"   (get (thread-local) :a)            \n" +
 				")                              ";
 	
@@ -46,9 +46,9 @@ public class ThreadLocalTest {
 		final Venice venice = new Venice();
 
 		final String s = 
-				"(do                           \n" +
-				"   (assoc (thread-local) :a 1 :b 2)  \n" +
-				"   (dissoc (thread-local) :a)        \n" +
+				"(do                                  \n" +
+				"   (assoc! (thread-local) :a 1 :b 2) \n" +
+				"   (dissoc! (thread-local) :a)       \n" +
 				"   (get (thread-local) :a 100)       \n" +
 				")                                      ";
 	

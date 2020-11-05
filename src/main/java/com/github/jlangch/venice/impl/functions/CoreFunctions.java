@@ -3009,11 +3009,6 @@ public class CoreFunctions {
 					}
 					return new VncString(s);
 				}
-				else if (Types.isVncThreadLocal(coll)) {
-					final VncThreadLocal th = (VncThreadLocal)coll;
-
-					return th.assoc((VncList)args.rest());
-				}
 				else {
 					throw new VncException(String.format(
 							"Function 'assoc' does not allow %s as collection",
@@ -3062,6 +3057,11 @@ public class CoreFunctions {
 						}
 					}
 					return seq;
+				}
+				else if (Types.isVncThreadLocal(coll)) {
+					final VncThreadLocal th = (VncThreadLocal)coll;
+
+					return th.assoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(
@@ -3353,11 +3353,6 @@ public class CoreFunctions {
 					}
 					return new VncString(s);
 				}
-				else if (Types.isVncThreadLocal(coll)) {
-					final VncThreadLocal th = (VncThreadLocal)coll;
-
-					return th.dissoc((VncList)args.rest());
-				}
 				else {
 					throw new VncException(String.format(
 							"Function 'dissoc' does not allow %s as coll",
@@ -3400,6 +3395,11 @@ public class CoreFunctions {
 						}
 					}
 					return seq;
+				}
+				else if (Types.isVncThreadLocal(coll)) {
+					final VncThreadLocal th = (VncThreadLocal)coll;
+
+					return th.dissoc((VncList)args.rest());
 				}
 				else {
 					throw new VncException(String.format(

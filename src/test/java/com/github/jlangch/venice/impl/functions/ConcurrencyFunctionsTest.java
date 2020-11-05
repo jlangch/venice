@@ -809,8 +809,8 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                                      \n" +
-				"   (assoc (thread-local) :a 10 :b 20)                    \n" +
-				"   (assoc (thread-local) :a 11)                          \n" +
+				"   (assoc! (thread-local) :a 10 :b 20)                   \n" +
+				"   (assoc! (thread-local) :a 11)                         \n" +
 				"   (let [f (future (fn [] (get (thread-local) :a)))]     \n" +
 				"        @f)                                              \n" +
 				") ";
@@ -824,10 +824,10 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                                        \n" +
-				"   (assoc (thread-local) :a 10 :b 20)                      \n" +
-				"   (assoc (thread-local) :a 11)                            \n" +
+				"   (assoc! (thread-local) :a 10 :b 20)                     \n" +
+				"   (assoc! (thread-local) :a 11)                           \n" +
 				"   [ (let [f (future (fn []                                \n" +
-				"                         (assoc (thread-local) :a 90)      \n" +
+				"                         (assoc! (thread-local) :a 90)     \n" +
 				"                         (get (thread-local) :a)))]        \n" +
 				"          @f)                                              \n" +
 				"     (get (thread-local) :a) ]                             \n" +
