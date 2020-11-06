@@ -39,7 +39,7 @@ public class DocItem {
 			final String id
 	) {
 		this.name = name;
-		this.altName = convertDash(name);
+		this.altName = name;
 		this.signatures = signatures;
 		this.description = description;
 		this.examples = examples;
@@ -116,15 +116,6 @@ public class DocItem {
 		return true;
 	}
 
-	
-	private String convertDash(final String s) {
-		// prevent hyphenation within name symbols
-		return s.replace('-', '\u2212');  
-	}
-
-	// https://www.key-shortcut.com/zeichentabellen/unicode-2000-2fff
-	// https://css-tricks.com/almanac/properties/w/whitespace/
-	// https://www.cjcid.com/articles/wrapping-long-words-css-html/
 	
 	private final String name;
 	private final String altName;

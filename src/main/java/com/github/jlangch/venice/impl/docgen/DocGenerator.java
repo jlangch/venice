@@ -1896,16 +1896,13 @@ public class DocGenerator {
 			
 			final VncFunction crossRefFn = findFunction(crossRefFnName);
 			if (crossRefFn != null) {
-				final String doc = crossRefFn.getDoc() == Constants.Nil 
-										? null 
-										: ((VncString)crossRefFn.getDoc()).getValue();
+				String doc = crossRefFn.getDoc() == Constants.Nil 
+								? null 
+								: ((VncString)crossRefFn.getDoc()).getValue();
 				
 				if (doc != null) {
 					crossRefs.add(
-							new CrossRef(
-									crossRefFnName,
-									id(crossRefFnName),
-									StringUtil.truncate(doc, 120, "...")));
+						createCrossRef(crossRefFnName, getCrossRefDescr(doc)));
 				}
 			}
 			else {
@@ -1917,6 +1914,30 @@ public class DocGenerator {
 		});
 
 		return crossRefs;
+	}
+
+	private String getCrossRefDescr(final String descr) {
+		final int posLF = descr.indexOf('\n');
+		
+		String s = (posLF == -1) ? descr.trim() : descr.substring(0, posLF).trim();
+
+		if (s.length() > 145) {
+			// do not cut in the middle of a word
+			final int spacePos = s.indexOf(' ', 135); 
+			s = (spacePos != -1)
+				  ? s.substring(0, spacePos)
+				  : s.substring(0, 140).trim();
+				  
+			if (!s.endsWith(".")) {
+				s = s + " ...";
+			}
+		}
+		
+		return s;
+	}
+
+	private CrossRef createCrossRef(final String name, final String descr) {
+		return new CrossRef(name, id(name), descr);
 	}
 
 	private List<String> toStringList(final VncList list) {
