@@ -29,6 +29,10 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 - cross references to cheatsheet
 
+### Fixed
+
+- word wrap with function names in PDF cheatsheet
+
 
 
 ## [1.9.4] - 2020-11-01
@@ -46,7 +50,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Fixed
 
-- fixed function `partition` for overlapping parts (when steps is smaller than n, the size of a part)
+- function `partition` for overlapping parts (when steps is smaller than n, the size of a part)
 - method execution to throw an exception if a macro is passed where a function is expected
 
 
