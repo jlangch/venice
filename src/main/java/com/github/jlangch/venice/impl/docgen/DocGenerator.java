@@ -1897,7 +1897,7 @@ public class DocGenerator {
 							new CrossRef(
 									crossRefFnName,
 									id(crossRefFnName),
-									StringUtil.truncate(doc, 80, "...")));
+									StringUtil.truncate(doc, 120, "...")));
 				}
 			}
 			else {

@@ -69,7 +69,8 @@
           """
      :examples '(
           "(defn sum [x y] (+ x y))"
-          "(defn sum [x y] { :pre [(> x 0)] } (+ x y))") }
+          "(defn sum [x y] { :pre [(> x 0)] } (+ x y))")
+     :see-also '("defn-" "fn" "def") }
 
    defn [name & forms]
 
@@ -83,7 +84,8 @@
           "(defn- name [args*] condition-map? expr*)"
           "(defn- name ([args*] condition-map? expr*)+)")
      :doc "Same as defn, yielding non-public def"
-     :examples '("(defn- sum [x y] (+ x y))") }
+     :examples '("(defn- sum [x y] (+ x y))")
+     :see-also '("defn" "fn" "def") }
 
    defn- [name & forms]
 
@@ -93,7 +95,8 @@
 (defmacro
   ^{ :arglists '("(and x)" "(and x & next)")
      :doc "Ands the predicate forms"
-     :examples '("(and true true)", "(and true false)") }
+     :examples '("(and true true)", "(and true false)")
+     :see-also '("or" "not") }
 
   and
 
@@ -106,7 +109,8 @@
 (defmacro
   ^{ :arglists '("(or x)" "(or x & next)")
      :doc "Ors the predicate forms"
-     :examples '("(or true false)", "(or false false)") }
+     :examples '("(or true false)", "(or false false)")
+     :see-also '("and" "not") }
 
   or
 
@@ -114,6 +118,18 @@
   ([x] x)
   ([x & next] `(let [cond# ~x]
                   (if cond# cond# (or ~@next)))))
+
+
+(defn
+  ^{ :arglists '("(not x)")
+     :doc "Returns true if x is logical false, false otherwise."
+     :examples '("(not true)"
+                 "(not (== 1 2))")
+     :see-also '("and" "or") }
+
+  not
+
+  [x] (if x false true))
 
 
 (defmacro
@@ -131,7 +147,8 @@
               (< n 0) "negative"
               (> n 0) "positive"
               :else "zero"))
-          """ ) }
+          """ )
+     :see-also '("condp" "case") }
 
   cond [& clauses]
 
@@ -173,7 +190,8 @@
             pos?  1
             neg? -1
             (constantly true)  0)
-          """ ) }
+          """ )
+     :see-also '("cond" "case" )  }
 
   condp [pred expr & clauses]
 
@@ -212,7 +230,8 @@
             20  :twenty
             30  :thirty
             :dont-know)
-          """ ) }
+          """ )
+     :see-also '("cond" "condp") }
 
      ;; rewrites to (let [e (+ 1 9)]
      ;;                (cond
@@ -244,7 +263,8 @@
           """
      :examples '(
           "(if-not (== 1 2) 100 0)",
-          "(if-not (== 1 2) 100)") }
+          "(if-not (== 1 2) 100)")
+     :see-also '("if" "when-not")  }
 
   if-not
 
@@ -255,7 +275,8 @@
 (defmacro
   ^{ :arglists '("(when test & body)")
      :doc "Evaluates test. If logical true, evaluates body in an implicit do."
-     :examples '("(when (== 1 1) true)") }
+     :examples '("(when (== 1 1) true)")
+     :see-also '("when-not" "if") }
 
   when [test & body]
 
@@ -265,7 +286,8 @@
 (defmacro
   ^{ :arglists '("(when-not test & body)")
      :doc "Evaluates test. If logical false, evaluates body in an implicit do."
-     :examples '("(when-not (== 1 2) true)") }
+     :examples '("(when-not (== 1 2) true)")
+     :see-also '("when" "if-not") }
 
   when-not [test & body]
 
@@ -303,7 +325,8 @@
           (if-let [value (* 100 2)]
             (str "The expression is true. value=" value)
             (str "The expression is false."))
-          """ ) }
+          """ )
+     :see-also '("when-let") }
 
   if-let
 
@@ -329,7 +352,8 @@
           """
           (when-let [value (* 100 2)]
             (str "The expression is true. value=" value))
-          """ ) }
+          """ )
+     :see-also '("if-let") }
 
   when-let [bindings & body]
 
@@ -343,7 +367,8 @@
 (defmacro
   ^{ :arglists '("(dotimes bindings & body)")
      :doc "Repeatedly executes body with name bound to integers from 0 through n-1."
-     :examples '("""(dotimes [n 3] (println (str "n is " n)))""" ) }
+     :examples '("""(dotimes [n 3] (println (str "n is " n)))""" )
+     :see-also '("doseq" "list-comp") }
 
   dotimes [bindings & body]
 
@@ -422,7 +447,8 @@
                             :zip 3000}})
 
             (-> person :address :street))
-          """ ) }
+          """ )
+     :see-also '("->>" "-<>" "as->") }
 
   -> [x & forms]
 
@@ -451,7 +477,8 @@
                (map (fn [x] (get x :b)))
                (filter (fn [x] (> x 4)))
                (map inc))))
-          """ ) }
+          """ )
+     :see-also '("->" "-<>" "as->") }
 
   ->> [x & forms]
 
@@ -497,7 +524,8 @@
                (+ <> 3)
                (/ 2 <>)
                (- <> 1))
-          """ ) }
+          """ )
+     :see-also '("->" "->>" "as->") }
 
   -<>
 
@@ -529,7 +557,8 @@
                 (if true
                   (update m :b #(+ % 10))
                   m))
-          """ ) }
+          """ )
+     :see-also '("->" "->>" "-<>") }
 
   as-> [expr name & forms]
 
@@ -560,7 +589,8 @@
             true inc       ; the condition is true so (inc 1) => 2
             false (* 42)   ; the condition is false so the operation is skipped
             (= 2 2) (* 3)) ; (= 2 2) is true so (* 2 3) => 6
-          """ ) }
+          """ )
+     :see-also '("cond->>") }
 
   cond-> [expr & clauses]
 
@@ -589,7 +619,8 @@
             true inc       ; the condition is true so (inc 1) => 2
             false (* 42)   ; the condition is false so the operation is skipped
             (= 2 2) (* 3)) ; (= 2 2) is true so (* 3 2) => 6
-          """ ) }
+          """ )
+     :see-also '("cond->") }
 
   cond->> [expr & clauses]
 
@@ -618,7 +649,8 @@
           "(list-comp [x (range 5)] (* x 2))"
           "(list-comp [x (range 10) :when (odd? x)] x)"
           "(list-comp [x (range 10) :when (odd? x)] (* x 2))"
-          "(list-comp [x (seq \"abc\") y [0 1 2]] [x y])") }
+          "(list-comp [x (seq \"abc\") y [0 1 2]] [x y])")
+     :see-also '("doseq" "dotimes") }
 
   list-comp [[binding_ coll-expr & bindings] body-expr]
 
@@ -649,7 +681,8 @@
           "(doseq [x (range 5)] (print (* x 2)))"
           "(doseq [x (range 10) :when (odd? x)] (print x))"
           "(doseq [x (range 10) :when (odd? x)] (print (* x 2)))"
-          "(doseq [x (seq \"abc\") y [0 1 2]] (print (pr-str [x y])))") }
+          "(doseq [x (seq \"abc\") y [0 1 2]] (print (pr-str [x y])))")
+     :see-also '("list-comp" "dotimes") }
 
   doseq [[binding_ coll-expr & bindings] & body]
 
@@ -669,7 +702,8 @@
 (defmacro
   ^{ :arglists '("(time expr)")
      :doc "Evaluates expr and prints the time it took. Returns the value of expr."
-     :examples '("(time (+ 100 200))") }
+     :examples '("(time (+ 100 200))")
+     :see-also '("perf" "prof") }
 
   time [expr]
 
@@ -699,7 +733,8 @@
           (do
             (perf (+ 120 200) 12000 1000)
             (println (prof :data-formatted)))
-          """ ) }
+          """ )
+     :see-also '("time" "prof") }
 
   perf [expr warmup-iterations test-iterations]
 
@@ -725,7 +760,8 @@
           (do
             (load-string "(def x 1)")
             (+ x 2))
-          """ ) }
+          """ )
+     :see-also '("load-file" "load-classpath-file")  }
 
   load-string [s]
 
@@ -757,7 +793,8 @@
      :examples '(
           """(load-file "coffee")""",
           """(load-file "coffee.venice")""",
-          """(load-file "beverages/coffee")""" ) }
+          """(load-file "beverages/coffee")""" )
+     :see-also '("load-classpath-file" "load-string") }
 
   load-file
 
@@ -806,7 +843,8 @@
             (ns-remove test)
             (load-classpath-file "com/github/jlangch/venice/test.venice" true)
             (test/test-fn "hello"))
-          """ ) }
+          """ )
+     :see-also '("load-file" "load-string") }
 
   load-classpath-file
 
@@ -870,7 +908,8 @@
 (defmacro
   ^{ :arglists '("(with-sh-dir dir & forms)")
      :doc "Sets the directory for use with sh, see sh for details."
-     :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""") }
+     :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""")
+     :see-also '("with-sh-env") }
 
   with-sh-dir [dir & forms]
 
@@ -880,7 +919,8 @@
 (defmacro
   ^{ :arglists '("(with-sh-env env & forms)")
      :doc "Sets the environment for use with sh, see sh for details."
-     :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""") }
+     :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""")
+     :see-also '("with-sh-dir") }
 
   with-sh-env [env & forms]
 
@@ -909,7 +949,8 @@
           output stream. Returns the string created by any nested printing \
           calls. 'with-out-str' can be nested.
           """
-     :examples '("""(with-out-str (println "a string"))""") }
+     :examples '("""(with-out-str (println "a string"))""")
+     :see-also '("with-err-str") }
 
   with-out-str [& forms]
 
@@ -925,7 +966,8 @@
           output stream. Returns the string created by any nested printing \
           calls. 'with-err-str' can be nested.
           """
-     :examples '("""(with-err-str (println *err* "a string"))""") }
+     :examples '("""(with-err-str (println *err* "a string"))""")
+     :see-also '("with-out-str") }
 
   with-err-str [& forms]
 
@@ -968,7 +1010,8 @@
      :examples '(
          "(print [10 20 30])",
          "(print *out* [10 20 30])",
-         "(print *err* [10 20 30])" ) }
+         "(print *err* [10 20 30])" )
+     :see-also '("println" "printf" "newline") }
 
   print
 
@@ -995,7 +1038,8 @@
           """(printf "%s: %d" "abc" 100)"""
           """(printf "line 1: %s%nline 2: %s%n" "123" "456")"""
           """(printf *out* "%s: %d" "abc" 100)"""
-          """(printf *err* "%s: %d" "abc" 100)""" ) }
+          """(printf *err* "%s: %d" "abc" 100)""" )
+      :see-also '("print" "println" "newline") }
 
   printf [& xs]
     (if (instance? :java.io.PrintStream (first xs))
@@ -1021,7 +1065,8 @@
           "(println 200)"
           "(println [10 20 30])"
           "(println *out* 200)"
-          "(println *err* 200)" ) }
+          "(println *err* 200)" )
+      :see-also '("print" "printf" "newline") }
 
   println
 
@@ -1048,7 +1093,8 @@
      :examples '(
           "(newline)"
           "(newline *out*)"
-          "(newline *err*)" ) }
+          "(newline *err*)" )
+      :see-also '("print" "println" "printf") }
 
   newline
 
@@ -1079,7 +1125,8 @@
      :doc """
           Reads the next line from the stream that is the current value of *in*.
           Returns nil if the of the stream is reached.
-          """ }
+          """
+     :see-also '("read-char")  }
 
   read-line  []
 
@@ -1093,7 +1140,8 @@
      :doc """
           Reads the next char from the stream that is the current value of *in*.
           Returns nil if the of the stream is reached.
-          """ }
+          """
+     :see-also '("read-line") }
 
   read-char  []
 
@@ -1102,16 +1150,6 @@
       (if (= -1I ch) nil (char ch)))
     (catch :java.io.IOException e (. :VncException :new (:message e)))))
 
-
-(defn
-  ^{ :arglists '("(not x)")
-     :doc "Returns true if x is logical false, false otherwise."
-     :examples '("(not true)"
-                 "(not (== 1 2))") }
-
-  not
-
-  [x] (if x false true))
 
 (defn
   ^{ :arglists '("(complement f)")
@@ -1147,7 +1185,9 @@
      :doc "Returns a reducing function for a transducer that returns the first item."
      :examples '(
           "(transduce (filter number?) rf-first [false 1 2])"
-          "(transduce identity rf-first [nil 1 2])") }
+          "(transduce identity rf-first [nil 1 2])")
+     :see-also '(
+          "rf-last" "rf-any?" "rf-every?") }
 
   rf-first
 
@@ -1161,7 +1201,9 @@
      :doc "Returns a reducing function for a transducer that returns the last item."
      :examples '(
           "(transduce (filter number?) rf-last [false 1 2])"
-          "(transduce identity rf-last [1 2 1.2])") }
+          "(transduce identity rf-last [1 2 1.2])")
+     :see-also '(
+          "rf-first" "rf-any?" "rf-every?") }
 
   rf-last
 
@@ -1177,7 +1219,9 @@
           predicate is true for at least one the items, false otherwise.
           """
      :examples '(
-          "(transduce (filter number?) (rf-any? pos?) [true -1 1 2 false])") }
+          "(transduce (filter number?) (rf-any? pos?) [true -1 1 2 false])")
+     :see-also '(
+          "rf-first" "rf-last" "rf-every?") }
 
   rf-any?
 
@@ -1194,7 +1238,9 @@
           predicate is true for all the items, false otherwise.
           """
      :examples '(
-          "(transduce (filter number?) (rf-every? pos?) [1 2 3])") }
+          "(transduce (filter number?) (rf-every? pos?) [1 2 3])")
+     :see-also '(
+          "rf-first" "rf-last" "rf-any?") }
 
   rf-every?
 
@@ -1376,7 +1422,8 @@
           """
           (postwalk (fn [x] (println "Walked:" (pr-str x)) x)
                     '(1 2 {:a 1 :b 2}))
-          """) }
+          """)
+     :see-also '("prewalk") }
 
   postwalk [f form]
 
@@ -1393,7 +1440,8 @@
           """
           (prewalk (fn [x] (println "Walked:" (pr-str x)) x)
                    '(1 2 {:a 1 :b 2}))
-          """) }
+          """)
+     :see-also '("postwalk") }
 
   prewalk [f form]
 
@@ -1406,7 +1454,8 @@
      :examples (list
           "(macroexpand-all '(and true true))",
           "(macroexpand-all '(and true (or true false) true))"
-          "(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" ) }
+          "(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" )
+     :see-also '("macroexpand" "defmacro") }
 
   macroexpand-all [form]
 

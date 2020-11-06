@@ -319,6 +319,7 @@ public class SpecialFormsDoc {
 						"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
 						"            (fn [price] (- price (* price percentage 0.01)))))     \n" +
 						"   ((discount 50) 300))                                              ")
+					.seeAlso("defn", "defn-", "def")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -336,6 +337,7 @@ public class SpecialFormsDoc {
 						"(eval (list + 1 2 3))",
 					 	"(let [s \"(+ 2 x)\" x 10]     \n" +
 					 	"   (eval (read-string s))))     ")
+					.seeAlso("read-string")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -351,6 +353,7 @@ public class SpecialFormsDoc {
 					.examples(
 						 "(def x 5)",
 						 "(def sum (fn [x y] (+ x y)))")
+					.seeAlso("def", "defonce")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -364,6 +367,7 @@ public class SpecialFormsDoc {
 					.arglists("(defonce name expr)")
 					.doc("Creates a global variable that can not be overwritten")
 					.examples("(defonce x 5)")
+					.seeAlso("defonce", "def-dynamic")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -646,6 +650,7 @@ public class SpecialFormsDoc {
 						"   (binding [x 200]      \n" +
 						"      (println x))       \n" +
 						"   (println x)))           ")
+					.seeAlso("def", "defonce")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -755,6 +760,7 @@ public class SpecialFormsDoc {
 						"  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
 						"  (prof :data-formatted \"Metrics test\")   ; returns the profiler data as formatted text with a title  \n" +
 						"  nil)  ")
+					.seeAlso("perf", "time")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -768,6 +774,7 @@ public class SpecialFormsDoc {
 					.arglists("(if test true-expr false-expr)")
 					.doc("Evaluates test.")
 					.examples("(if (< 10 20) \"yes\" \"no\")")
+					.seeAlso("if-not", "when")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -823,6 +830,7 @@ public class SpecialFormsDoc {
 						"                acc                                 \n" +
 						"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 						"   (sum 10000))                                       ")
+					.seeAlso("recur")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -854,6 +862,7 @@ public class SpecialFormsDoc {
 						"                acc                                 \n" +
 						"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 						"   (sum 10000))                                       ")
+					.seeAlso("loop")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -900,6 +909,7 @@ public class SpecialFormsDoc {
 						"      (catch :ValueException ex (str (:value ex)))    \n" +
 						"      (catch :RuntimeException ex \"runtime ex\")     \n" +
 						"      (finally (println \"...finally\"))))             ")
+					.seeAlso("try-with")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -924,6 +934,7 @@ public class SpecialFormsDoc {
 						"        (io/spit file \"123456789\" :append true)     \n" +
 						"        (try-with [is (. :FileInputStream :new file)] \n" +
 						"           (io/slurp-stream is :binary false))))        ")
+					.seeAlso("try")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -968,6 +979,7 @@ public class SpecialFormsDoc {
 					.examples(
 						"(defmacro unless [pred a b]   \n" + 
 						"  `(if (not ~pred) ~a ~b))      ")
+					.seeAlso("macroexpand", "macroexpand-all")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -984,6 +996,7 @@ public class SpecialFormsDoc {
 						"returns form.\n\n" +
 						"To recursively expand all macros in a form use (macroexpand-all form).")
 					.examples("(macroexpand '(-> c (+ 3) (* 2)))")
+					.seeAlso("defmacro", "macroexpand-all")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1012,6 +1025,7 @@ public class SpecialFormsDoc {
 						"  (ns alpha)                                                       \n" +
 						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (imports)))    \n" +
 						")")
+					.seeAlso("imports")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1028,6 +1042,7 @@ public class SpecialFormsDoc {
 						"(do                        \n" +
 						"  (import :java.lang.Math) \n" +
 						"  (imports))                 ")
+					.seeAlso("import")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

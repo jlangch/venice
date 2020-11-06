@@ -847,6 +847,7 @@ public class CoreFunctions {
 						"(do                                             \n" +
 						"  (eval (read-string \"(def x 100)\" \"test\")) \n" +
 						"  x)                                              ")
+					.seeAlso("eval")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
