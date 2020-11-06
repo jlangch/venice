@@ -323,6 +323,40 @@ public class KiraModuleTest {
 		assertEquals("456", venice.eval(script));
 	}
 
+	@Test
+	public void test_eval_doc() {
+		final Venice venice = new Venice();
+		
+		final String script =
+				  "(do\n"
+				+ "  (load-module :kira)\n"
+				+ "  (with-out-str\n"
+				+ "    (println (kira/eval \"Hello <%= name %>\" { :name \"Alice\" }))\n"
+				+ "    (println (kira/eval \"1 + 2 = <%= (+ 1 2) %>\"))\n"
+				+ "    (println (kira/eval \"1 + 2 = <% (print (+ 1 2)) %>\"))\n"
+				+ "    (println (kira/eval \"margin: <%= (if large \\\"1.5em\\\" \\\"0.5em\\\") %>\"\n"
+				+ "                        { :large false }))\n"
+				+ "    (println (kira/eval \"fruits: <% (doseq [f fruits] %><%= f %> <% ) %>\"\n"
+				+ "                        { :fruits '(\"apple\" \"peach\") }))\n"
+				+ "    (println (kira/eval \"fruits: <% (doseq [f fruits] %><%= f %> <% ) %>\"\n"
+				+ "                        { :fruits '(\"apple\" \"peach\") }))\n"
+				+ "    (println (kira/eval \"when: <% (when large %>is large<% ) %>\"\n"
+				+ "                        { :large true }))\n"
+				+ "    (println (kira/eval \"if: <% (if large (do %>100<% ) (do %>1<% )) %>\"\n"
+				+ "                        { :large true }))))";
+
+		assertEquals(
+				  "Hello Alice\n"
+				+ "1 + 2 = 3\n"
+				+ "1 + 2 = 3\n"
+				+ "margin: 0.5em\n"
+				+ "fruits: apple peach \n"
+				+ "fruits: apple peach \n"
+				+ "when: is large\n"
+				+ "if: 100\n", 
+				venice.eval(script));
+	}
+
 	
 	// ------------------------------------------------------------------------
 	// Formatter

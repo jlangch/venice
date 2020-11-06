@@ -57,8 +57,8 @@ public class DocGenerator {
 	public DocGenerator() {
 		this.preloadedModules
 			.addAll(Arrays.asList(
-						"app",    "xml",   "crypt",   "gradle", 
-						"trace",  "ansi",  "maven"));
+						"app",    "xml",   "crypt",  "gradle", 
+						"trace",  "ansi",  "maven",  "kira"));
 		
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -1651,7 +1651,7 @@ public class DocGenerator {
 		json.addItem(getDocItem("json/spit"));
 		json.addItem(getDocItem("json/slurp"));
 		json.addItem(getDocItem("json/pretty-print"));
-
+		
 		final DocSection pdf = new DocSection("PDF");
 		all.addSection(pdf);
 		pdf.addItem(getDocItem("pdf/render", false));
@@ -1708,7 +1708,15 @@ public class DocGenerator {
 
 		final DocSection all = new DocSection("");
 		section.addSection(all);
-		
+
+		final DocSection kira = new DocSection("Kira");
+		all.addSection(kira);
+		kira.addItem(getDocItem("kira/eval"));
+		kira.addItem(getDocItem("kira/fn"));
+		kira.addItem(getDocItem("kira/escape-xml"));
+		kira.addItem(getDocItem("kira/escape-html"));
+
+
 		final DocSection trace = new DocSection("Tracing");
 		all.addSection(trace);
 		trace.addItem(new DocItem("(load-module :trace)", null));

@@ -114,20 +114,20 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(kira/escape-xml val)" "(kira/escape-xml val f)")
+  ^{ :arglists '("(kira/escape-xml val)" "(kira/escape-xml val f)" )
      :doc """
           Returns an XML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
           An optional function f transforms the string before being escaped.
           """
-     :examples
+     :examples '(
           """
           (do
             (load-module :kira)
             (kira/eval "<formula><%= (kira/escape-xml formula) %></formula>"
                       { :formula "x > 100" }))
-          """
+          """ )
      :see-also '("kira/escape-html") }
 
   kira/escape-xml
@@ -137,21 +137,23 @@
 
 
 (defn
-  ^{ :arglists '("(kira/escape-html val)" "(kira/escape-html val f)")
+  ^{ :arglists '("(kira/escape-html val)" "(kira/escape-html val f)" )
      :doc """
           Returns a HTML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
           An optional function f transforms the string before being escaped.
           """
-     :examples
+     :examples '(
           """
           (do
+            (ns test)
             (load-module :kira)
+
             (defn format-ts [t] (time/format t "yyyy-MM-dd"))
             (kira/eval "<birthdate><%= (kira/escape-xml birth-date) test/format-ts) %></birthdate>"
                        { :birth-date (time/local-date 2000 8 1) }))
-          """
+          """ )
      :see-also '("kira/escape-html") }
 
   kira/escape-html
@@ -161,21 +163,22 @@
 
 
 (defmacro
-  ^{ :arglists '("(kira/fn args source)" "(kira/fn args source delimiters)")
+  ^{ :arglists '("(kira/fn args source)" "(kira/fn args source delimiters)" )
      :doc """
           Compile a template into a function that takes the supplied arguments. \
           The template source may be a string, or an I/O source such as a File, \
           Reader or InputStream.
           """
-     :examples
+     :examples '(
           """
           (do
             (load-module :kira)
+
             (def hello (kira/fn [name] "Hello <%= name %>"))
             (println (hello "Alice"))
             (println (hello "Bob")))
-          """
-     :see-also '("kira/eval") }
+          """ )
+     :see-also '("kira/eval" "kira/escape-xml" "kira/escape-html") }
 
   kira/fn
 
@@ -189,19 +192,32 @@
   ^{ :arglists '(
           "(kira/eval source)"
           "(kira/eval source bindings)"
-          "(kira/eval source bindings delimiters)")
+          "(kira/eval source bindings delimiters)" )
      :doc """
           Evaluate a template using the supplied bindings. The template source \
           may be a string, or an I/O source such as a File, Reader or \
           InputStream.
           """
-     :examples
+     :examples '(
           """
           (do
             (load-module :kira)
-            (kira/eval "Hello <%= name %>" { :name "Alice" }))
-          """
-     :see-also '("kira/eval") }
+
+            (println (kira/eval "Hello <%= name %>" { :name "Alice" }))
+            (println (kira/eval "1 + 2 = <%= (+ 1 2) %>"))
+            (println (kira/eval "1 + 2 = <% (print (+ 1 2)) %>"))
+            (println (kira/eval "margin: <%= (if large 100 10) %>"
+                                { :large false }))
+            (println (kira/eval "fruits: <% (doseq [f fruits] %><%= f %> <% ) %>"
+                                { :fruits '("apple" "peach") }))
+            (println (kira/eval "fruits: <% (doseq [f fruits] %><%= f %> <% ) %>"
+                                { :fruits '("apple" "peach") }))
+            (println (kira/eval "when: <% (when large %>is large<% ) %>"
+                                { :large true }))
+            (println (kira/eval "if: <% (if large (do %>100<% ) (do %>1<% )) %>"
+                                { :large true })))
+          """ )
+     :see-also '("kira/fn" "kira/escape-xml" "kira/escape-html") }
 
   kira/eval
 
