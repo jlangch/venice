@@ -234,7 +234,7 @@
         <div class="main">
             <div class="title" id="top">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 0.0.0</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.5-SNAPSHOT</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -5294,7 +5294,7 @@ If there are more forms, inserts the first form as the second item in second for
 
 ;; invoke static method 
 (. :java.time.ZonedDateTime :now)
-=&gt; 2020-11-06T21:05:04.409+01:00[Europe/Zurich]
+=&gt; 2020-11-06T22:09:52.885+01:00[Europe/Zurich]
 
 ;; invoke static method 
 (. :java.lang.Math :min 10 20)
@@ -8047,7 +8047,7 @@ If metadata-map is supplied, it will become the metadata on the atom. validate-f
          gd (cast :Graphics (. img :createGraphics))] 
      (. gd :fillOval 10 20 5 5)
      img))
-=&gt; BufferedImage@71318ec4: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
+=&gt; BufferedImage@4b952a2d: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
                     </div>
                     
                     
@@ -9091,7 +9091,7 @@ bootstrap class loader.</code>
                     
                     <div class="examples">
                         <code>(complement even?)
-=&gt; function anonymous-89495a11-5ca5-4a8a-b03f-9d3938895ef9 {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-a1263e76-c278-4727-a6ec-09ed171d2133 {visibility :public, ns &quot;core&quot;}
 
 (filter (complement even?) &apos;(1 2 3 4))
 =&gt; (1 3)</code>
@@ -10047,7 +10047,7 @@ Options:
                     
                     <div class="examples">
                         <code>(current-time-millis)
-=&gt; 1604693098617</code>
+=&gt; 1604696987048</code>
                     </div>
                     
                     
@@ -11469,7 +11469,7 @@ Test...
                         <code>(-&gt;&gt; (lazy-seq rand-long)  
      (take 4)              
      (doall))
-=&gt; (4995037320191224988 2683946486157670952 1029118914111798111 4062426056432866504)</code>
+=&gt; (628778437998368928 1092319721857547792 6970787288851714117 5866378474721895955)</code>
                     </div>
                     
                     
@@ -11495,7 +11495,7 @@ Test...
                     
                     <div class="examples">
                         <code>(dobench 10 (+ 1 1))
-=&gt; (3347 1226 1325 943 870 850 1377 836 963 830)</code>
+=&gt; (3022 1447 1436 903 920 1473 958 848 863 877)</code>
                     </div>
                     
                     
@@ -13083,8 +13083,8 @@ After 300ms: done=true
     (fn [] (log &quot;Worker&quot; n)))                    
   (apply futures-wait (futures-fork 3 factory)))     
 Worker0
-Worker2
 Worker1
+Worker2
 =&gt; nil</code>
                     </div>
                     
@@ -13117,9 +13117,9 @@ Worker1
   (defn factory [n]                                
     (fn [] (log &quot;Worker&quot; n)))                    
   (apply futures-wait (futures-fork 3 factory)))     
-Worker0
 Worker1
 Worker2
+Worker0
 =&gt; nil</code>
                     </div>
                     
@@ -17106,7 +17106,7 @@ Hello Bob
 (-&gt;&gt; (lazy-seq rand-long)                                       
      (take 4)                                                   
      (doall))
-=&gt; (2390169663341995093 3619984803304297948 1037377991227520465 7404716799116161591)
+=&gt; (6047263259618754266 2606209357808190201 6297437649639529929 65625018050822524)
 
 ; lazy sequence with a constant value                           
 (-&gt;&gt; (lazy-seq (constantly 5))                                  
@@ -18629,7 +18629,7 @@ Note: Use memoization for expensive calculations. It does not speed
           :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
   (time (fibonacci 25)))
-Elapsed time: 3.66 ms
+Elapsed time: 3.37 ms
 =&gt; 75025</code>
                     </div>
                     
@@ -19157,7 +19157,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     
                     <div class="examples">
                         <code>(nano-time)
-=&gt; 7352351686375</code>
+=&gt; 9052399234217</code>
                     </div>
                     
                     
@@ -20851,7 +20851,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                     
                     <div class="examples">
                         <code>(pid)
-=&gt; &quot;2916&quot;</code>
+=&gt; &quot;3176&quot;</code>
                     </div>
                     
                     
@@ -21663,10 +21663,10 @@ This function is based on a cryptographically strong random number generator (RN
                     
                     <div class="examples">
                         <code>(rand-double)
-=&gt; 0.3769648937993664
+=&gt; 0.37638257361495286
 
 (rand-double 100.0)
-=&gt; 74.10168664743881</code>
+=&gt; 72.94583175949028</code>
                     </div>
                     
                     
@@ -21695,10 +21695,10 @@ This function is based on a cryptographically strong random number generator (RN
                     
                     <div class="examples">
                         <code>(rand-gaussian)
-=&gt; 1.8309063732777382
+=&gt; -0.4680288109537384
 
 (rand-gaussian 0.0 5.0)
-=&gt; 6.148049822481189</code>
+=&gt; 4.194442048052843</code>
                     </div>
                     
                     
@@ -21727,10 +21727,10 @@ This function is based on a cryptographically strong random number generator (RN
                     
                     <div class="examples">
                         <code>(rand-long)
-=&gt; 1882465078023537819
+=&gt; 335075488714284795
 
 (rand-long 100)
-=&gt; 21</code>
+=&gt; 72</code>
                     </div>
                     
                     
@@ -22583,12 +22583,12 @@ Group element:
                     
                     <div class="examples">
                         <code>(repeatedly 5 #(rand-long 11))
-=&gt; (9 0 2 7 1)
+=&gt; (6 1 9 0 2)
 
 ;; compare with repeat, which only calls the &apos;rand-long&apos;
 ;; function once, repeating the value five times. 
 (repeat 5 (rand-long 11))
-=&gt; (5 5 5 5 5)</code>
+=&gt; (2 2 2 2 2)</code>
                     </div>
                     
                     
@@ -23590,13 +23590,13 @@ sh returns a map of
                     
                     <div class="examples">
                         <code>(shuffle &apos;(1 2 3 4 5 6))
-=&gt; (5 2 4 1 6 3)
+=&gt; (6 3 1 5 2 4)
 
 (shuffle [1 2 3 4 5 6])
-=&gt; [6 4 5 1 3 2]
+=&gt; [6 5 2 3 4 1]
 
 (shuffle &quot;abcdef&quot;)
-=&gt; (&quot;f&quot; &quot;e&quot; &quot;d&quot; &quot;b&quot; &quot;a&quot; &quot;c&quot;)</code>
+=&gt; (&quot;d&quot; &quot;e&quot; &quot;b&quot; &quot;f&quot; &quot;c&quot; &quot;a&quot;)</code>
                     </div>
                     
                     
@@ -26879,7 +26879,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code>(time (+ 100 200))
-Elapsed time: 5.31 µs
+Elapsed time: 6.01 µs
 =&gt; 300</code>
                     </div>
                     
@@ -26975,7 +26975,7 @@ Elapsed time: 5.31 µs
                     
                     <div class="examples">
                         <code>(time/date)
-=&gt; Fri Nov 06 21:04:50 CET 2020</code>
+=&gt; Fri Nov 06 22:09:38 CET 2020</code>
                     </div>
                     
                     
@@ -27186,16 +27186,16 @@ Elapsed time: 5.31 µs
 =&gt; &quot;06-11-2020&quot;
 
 (time/format (time/zoned-date-time) &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;)
-=&gt; &quot;2020-11-06T21:04:50.822CET&quot;
+=&gt; &quot;2020-11-06T22:09:39.024CET&quot;
 
 (time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)
-=&gt; &quot;2020-11-06T21:04:50.827+01:00&quot;
+=&gt; &quot;2020-11-06T22:09:39.03+01:00&quot;
 
 (time/format (time/zoned-date-time) (time/formatter &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;))
-=&gt; &quot;2020-11-06T21:04:50.832CET&quot;
+=&gt; &quot;2020-11-06T22:09:39.035CET&quot;
 
 (time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))
-=&gt; &quot;2020-11-06T21:04:50.837+01:00&quot;</code>
+=&gt; &quot;2020-11-06T22:09:39.04+01:00&quot;</code>
                     </div>
                     
                     
@@ -27262,10 +27262,10 @@ Elapsed time: 5.31 µs
 =&gt; 0
 
 (time/hour (time/local-date-time))
-=&gt; 21
+=&gt; 22
 
 (time/hour (time/zoned-date-time))
-=&gt; 21</code>
+=&gt; 22</code>
                     </div>
                     
                     
@@ -27533,7 +27533,7 @@ Elapsed time: 5.31 µs
                     
                     <div class="examples">
                         <code>(time/local-date-time)
-=&gt; 2020-11-06T21:04:50.411
+=&gt; 2020-11-06T22:09:38.595
 
 (time/local-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00
@@ -27551,7 +27551,7 @@ Elapsed time: 5.31 µs
 =&gt; 2013-08-01T02:00
 
 (time/local-date-time (. :java.util.Date :new))
-=&gt; 2020-11-06T21:04:50.448</code>
+=&gt; 2020-11-06T22:09:38.633</code>
                     </div>
                     
                     
@@ -27661,10 +27661,10 @@ Elapsed time: 5.31 µs
 =&gt; 2020-11-04
 
 (time/minus (time/local-date-time) :days 2)
-=&gt; 2020-11-04T21:04:50.933
+=&gt; 2020-11-04T22:09:39.139
 
 (time/minus (time/zoned-date-time) :days 2)
-=&gt; 2020-11-04T21:04:50.938+01:00[Europe/Zurich]</code>
+=&gt; 2020-11-04T22:09:39.145+01:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -27693,10 +27693,10 @@ Elapsed time: 5.31 µs
 =&gt; 0
 
 (time/minute (time/local-date-time))
-=&gt; 4
+=&gt; 9
 
 (time/minute (time/zoned-date-time))
-=&gt; 4</code>
+=&gt; 9</code>
                     </div>
                     
                     
@@ -27841,10 +27841,10 @@ Elapsed time: 5.31 µs
 =&gt; 2020-11-08
 
 (time/plus (time/local-date-time) :days 2)
-=&gt; 2020-11-08T21:04:50.918
+=&gt; 2020-11-08T22:09:39.123
 
 (time/plus (time/zoned-date-time) :days 2)
-=&gt; 2020-11-08T21:04:50.923+01:00[Europe/Zurich]</code>
+=&gt; 2020-11-08T22:09:39.129+01:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -27873,10 +27873,10 @@ Elapsed time: 5.31 µs
 =&gt; 0
 
 (time/second (time/local-date-time))
-=&gt; 50
+=&gt; 38
 
 (time/second (time/zoned-date-time))
-=&gt; 50</code>
+=&gt; 38</code>
                     </div>
                     
                     
@@ -28119,7 +28119,7 @@ Elapsed time: 5.31 µs
                     
                     <div class="examples">
                         <code>(time/zoned-date-time)
-=&gt; 2020-11-06T21:04:50.472+01:00[Europe/Zurich]
+=&gt; 2020-11-06T22:09:38.659+01:00[Europe/Zurich]
 
 (time/zoned-date-time 2018 8 1)
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -28137,10 +28137,10 @@ Elapsed time: 5.31 µs
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 (time/zoned-date-time (. :java.util.Date :new))
-=&gt; 2020-11-06T21:04:50.508+01:00[Europe/Zurich]
+=&gt; 2020-11-06T22:09:38.698+01:00[Europe/Zurich]
 
 (time/zoned-date-time :UTC)
-=&gt; 2020-11-06T20:04:50.514Z[UTC]
+=&gt; 2020-11-06T21:09:38.704Z[UTC]
 
 (time/zoned-date-time :UTC 2018 8 1)
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -28158,7 +28158,7 @@ Elapsed time: 5.31 µs
 =&gt; 2013-08-01T00:00Z[UTC]
 
 (time/zoned-date-time :UTC (. :java.util.Date :new))
-=&gt; 2020-11-06T20:04:50.550Z[UTC]</code>
+=&gt; 2020-11-06T21:09:38.736Z[UTC]</code>
                     </div>
                     
                     
@@ -28881,7 +28881,7 @@ Note that if you want to return a fn as a final value, you must wrap it in some 
                     
                     <div class="examples">
                         <code>(uuid )
-=&gt; &quot;647a5269-bd70-4a0a-b2d7-07db936d4846&quot;</code>
+=&gt; &quot;d27eb59d-9025-4522-b22e-ab3c8e2a99db&quot;</code>
                     </div>
                     
                     
