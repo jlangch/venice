@@ -100,6 +100,7 @@ public class JavaInteropFunctions {
 						";; invoke method \n(. (. :java.lang.Long :new 10) :toString)", 
 						";; get class name \n(. :java.lang.Math :class)", 
 						";; get class name \n(. (. :java.io.File :new \"/temp\") :class)")
+					.seeAlso("import", "proxify", "as-runnable", "as-callable")
 					.build());
 		}
 	
@@ -261,6 +262,7 @@ public class JavaInteropFunctions {
 					.arglists("(class name)")
 					.doc("Returns the Java class for the given name. Throws an exception if the class is not found.")
 					.examples("(class :java.util.ArrayList)")
+					.seeAlso("class-of", "class-name", "class-version")
 					.build());
 		}
 	
@@ -289,6 +291,7 @@ public class JavaInteropFunctions {
 					.examples(
 						"(class-of 100)",
 						"(class-of (. :java.awt.Point :new 10 10))")
+					.seeAlso("class", "class-name", "class-version")
 					.build());
 		}
 	
@@ -318,6 +321,7 @@ public class JavaInteropFunctions {
 					.arglists("(class-name class)")
 					.doc("Returns the Java class name of a class.")
 					.examples("(class-name (class :java.util.ArrayList))")
+					.seeAlso("class", "class-of", "class-version")
 					.build());
 		}
 	
@@ -359,6 +363,7 @@ public class JavaInteropFunctions {
 						"  - Java 14 uses major version 58\n" +
 						"  - Java 15 uses major version 59")
 					.examples("(class-version :com.github.jlangch.venice.Venice)")
+					.seeAlso("class", "class-of", "class-name")
 					.build());
 		}
 	
@@ -399,6 +404,7 @@ public class JavaInteropFunctions {
 						
 						";; Returns the thread-context classloader\n" +
 						"(classloader :thread-context)")
+					.seeAlso("class", "classloader-of")
 					.build());
 		}
 	
@@ -456,6 +462,7 @@ public class JavaInteropFunctions {
 						"(classloader-of (. :java.awt.Point :new 10 10))",
 						"(classloader-of (class-of \"abcdef\"))",
 						"(classloader-of \"abcdef\")")
+					.seeAlso("class", "classloader")
 					.build());
 		}
 	

@@ -145,11 +145,8 @@ Example:
 (do
   (load-module :kira)
   
-  (def template "<formula><%= (kira/escape-xml formula) %></formula>")
-
-  (def data { :formula "x > 100" })
-  
-  (println (kira/eval template data)))
+  (println (kira/eval "<formula><%= (kira/escape-xml formula) %></formula>"
+                      { :formula "x > 100" })))
 ```
 
 Output:
@@ -175,12 +172,8 @@ Example:
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
-  (def template
-       "<birthdate><%= (kira/escape-xml (:birth-date test/data) test/format-ts) %></birthdate>")
-
-  (def data { :birth-date (time/local-date 2000 8 1) })
-  
-  (println (kira/eval template data)))
+  (println (kira/eval "<birthdate><%= (kira/escape-xml birth-date) test/format-ts) %></birthdate>" 
+                      { :birth-date (time/local-date 2000 8 1) })))
 ```
 
 Output:

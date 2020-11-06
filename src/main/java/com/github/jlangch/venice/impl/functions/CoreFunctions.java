@@ -1978,7 +1978,7 @@ public class CoreFunctions {
 	//    - drop-while
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction new_lazyseq =
+	public static VncFunction new_lazy_seq =
 		new VncFunction(
 				"lazy-seq",
 				VncFunction
@@ -5586,6 +5586,7 @@ public class CoreFunctions {
 						.examples(
 							"(instance? :long 500)",
 							"(instance? :java.math.BigInteger 500)")
+						.seeAlso("type", "supertype")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -7123,6 +7124,7 @@ public class CoreFunctions {
 						"(type 5)",
 						"(type [1 2])",
 						"(type (. :java.math.BigInteger :valueOf 100))")
+					.seeAlso("supertype", "instance?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7144,6 +7146,7 @@ public class CoreFunctions {
 						"(supertype 5)",
 						"(supertype [1 2])",
 						"(supertype (. :java.math.BigInteger :valueOf 100))")
+					.seeAlso("type", "instance?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7365,7 +7368,7 @@ public class CoreFunctions {
 				.add(vector_Q)
 				.add(new_mutable_vector)
 				.add(mutable_vector_Q)
-				.add(new_lazyseq)
+				.add(new_lazy_seq)
 				.add(lazyseq_Q)
 				.add(map_Q)
 				.add(map_entry_Q)

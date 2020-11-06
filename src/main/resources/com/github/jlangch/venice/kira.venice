@@ -114,49 +114,71 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(kira/escape-xml val)" "(kira/escape-xml val f)")
+     :doc """
           Returns an XML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
           An optional function f transforms the string before being escaped.
-          """ }
+          """
+     :examples
+          """
+          (do
+            (load-module :kira)
+            (kira/eval "<formula><%= (kira/escape-xml formula) %></formula>"
+                      { :formula "x > 100" }))
+          """
+     :see-also '("kira/escape-html") }
+
   kira/escape-xml
+
   ([s]   (kira/escape-xml s identity))
   ([s f] (str/escape-xml (str (f s)))))
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(kira/escape-html val)" "(kira/escape-html val f)")
+     :doc """
           Returns a HTML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
           An optional function f transforms the string before being escaped.
-          """ }
+          """
+     :examples
+          """
+          (do
+            (load-module :kira)
+            (defn format-ts [t] (time/format t "yyyy-MM-dd"))
+            (kira/eval "<birthdate><%= (kira/escape-xml birth-date) test/format-ts) %></birthdate>"
+                       { :birth-date (time/local-date 2000 8 1) }))
+          """
+     :see-also '("kira/escape-html") }
+
   kira/escape-html
+
   ([s]   (kira/escape-html s identity))
   ([s f] (str/escape-html (str (f s)))))
 
 
-(defn
-  ^{ :doc """
-          Returns an XML escaped a multi-line string. Splits the string into \
-          lines, XML escapes each line, applies the mapping function f to \
-          each line, and returns the joined lines.
-          """  }
-  kira/escape-xml-multiline
-  [s f] (->> (str/split-lines s)
-             (map #(str/escape-xml %))
-             (map #(f %))
-             (str/join)))
-
-
 (defmacro
-  ^{ :doc """
+  ^{ :arglists '("(kira/fn args source)" "(kira/fn args source delimiters)")
+     :doc """
           Compile a template into a function that takes the supplied arguments. \
           The template source may be a string, or an I/O source such as a File, \
           Reader or InputStream.
-          """ }
+          """
+     :examples
+          """
+          (do
+            (load-module :kira)
+            (def hello (kira/fn [name] "Hello <%= name %>"))
+            (println (hello "Alice"))
+            (println (hello "Bob")))
+          """
+     :see-also '("kira/eval") }
+
   kira/fn
+
   ([args source]
     `(kira/compile-fn '~args ~source ~kira/delimiters))
   ([args source delimiters]
@@ -164,12 +186,25 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '(
+          "(kira/eval source)"
+          "(kira/eval source bindings)"
+          "(kira/eval source bindings delimiters)")
+     :doc """
           Evaluate a template using the supplied bindings. The template source \
           may be a string, or an I/O source such as a File, Reader or \
           InputStream.
-          """ }
+          """
+     :examples
+          """
+          (do
+            (load-module :kira)
+            (kira/eval "Hello <%= name %>" { :name "Alice" }))
+          """
+     :see-also '("kira/eval") }
+
   kira/eval
+
   ([source]
      (kira/eval source kira/delimiters {}))
   ([source bindings]

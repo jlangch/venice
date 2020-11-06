@@ -1655,7 +1655,6 @@ public class DocGenerator {
 		final DocSection pdf = new DocSection("PDF");
 		all.addSection(pdf);
 		pdf.addItem(getDocItem("pdf/render", false));
-		pdf.addItem(getDocItem("pdf/watermark", false));
 		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
 		pdf.addItem(getDocItem("pdf/available?", false));
 		pdf.addItem(getDocItem("pdf/check-required-libs", false));
@@ -1665,6 +1664,7 @@ public class DocGenerator {
 		pdf_tools.addItem(getDocItem("pdf/merge", false));
 		pdf_tools.addItem(getDocItem("pdf/copy", false));
 		pdf_tools.addItem(getDocItem("pdf/pages"));
+		pdf_tools.addItem(getDocItem("pdf/watermark", false));
 
 		final DocSection csv = new DocSection("CSV");
 		all.addSection(csv);

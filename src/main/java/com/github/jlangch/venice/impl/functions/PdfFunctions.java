@@ -93,6 +93,7 @@ public class PdfFunctions {
 						"            :base-url \"classpath:/\"\n" +
 						"            :resources {\"/chart_1.png\" (chart-create :2018) \n" +							
 						"                        \"/chart_2.png\" (chart-create :2019) })")
+					.seeAlso("pdf/text-to-pdf")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -279,11 +280,12 @@ public class PdfFunctions {
 					.meta()
 					.arglists("pdf/merge pdfs")
 					.doc(
-						"Merge multiple PDFs into a single PDF. The PDFs are passed \n" + 
+						"Merge multiple PDFs into a single PDF. The PDFs are passed " + 
 						"as bytebuf. Returns the new PDF as a bytebuf.")
 					.examples(
 						"(pdf/merge pdf1 pdf2)",
 						"(pdf/merge pdf1 pdf2 pdf3)")
+					.seeAlso("pdf/copy", "pdf/pages", "pdf/watermark")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -341,7 +343,7 @@ public class PdfFunctions {
 					.meta()
 					.arglists("pdf/copy pdf & page-nr")
 					.doc(
-						"Copies pages from a PDF to a new PDF. The PDF is passed a \n" + 
+						"Copies pages from a PDF to a new PDF. The PDF is passed " + 
 						"as bytebuf. Returns the new PDF as a bytebuf.")
 					.examples(
 						"; copy the first and second page \n" +
@@ -352,6 +354,7 @@ public class PdfFunctions {
 						
 						"; copy the pages 1, 2, 6-10, and 12 \n" +
 						"(pdf/copy pdf :1 :2 :6-10 :12)")
+					.seeAlso("pdf/merge", "pdf/pages", "pdf/watermark")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -428,11 +431,12 @@ public class PdfFunctions {
 					.meta()
 					.arglists("pdf/pages pdf")
 					.doc(
-						"Returns the number of pages of a PDF. The PDF is passed a bytebuf.")
+						"Returns the number of pages of a PDF. The PDF is passed as bytebuf.")
 					.examples(
 						"(->> (str/lorem-ipsum :paragraphs 30)  \n" +
 						"     (pdf/text-to-pdf)                 \n" +
 						"     (pdf/pages))                        ")
+					.seeAlso("pdf/merge", "pdf/copy", "pdf/watermark")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -471,10 +475,10 @@ public class PdfFunctions {
 						"  :font-size n      - font size in pt (double), defaults to 9.0\n" +
 						"  :font-weight n    - font weight (0...1000) (long), defaults to 200\n" +
 						"  :font-monospace b - monospaced font (true/false) (boolean), defaults to false")
-
 					.examples(
 						"(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
 						"     (io/spit \"text.pdf\"))                  ")
+					.seeAlso("pdf/render")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

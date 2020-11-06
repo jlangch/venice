@@ -38,6 +38,7 @@ public class Doc {
 			final VncFunction fn = (VncFunction)val;
 			final VncList argsList = fn.getArgLists();
 			final VncList examples = fn.getExamples();
+			final VncList seeAlso = fn.getSeeAlso();
 			
 			final StringBuilder sb =  new StringBuilder();
 						
@@ -52,13 +53,23 @@ public class Doc {
 			
 			if (!examples.isEmpty()) {
 				sb.append("\n\n");
-				sb.append("Examples:\n");
+				sb.append("EXAMPLES:\n");
 				sb.append(examples
 							.getList()
 							.stream()
 							.map(s -> toString(s))
-							.map(e -> indent(e, "    "))
+							.map(e -> indent(e, "   "))
 							.collect(Collectors.joining("\n\n")));
+			}
+
+			if (!seeAlso.isEmpty()) {
+				sb.append("\n\n");
+				sb.append("SEE ALSO:\n   ");
+				sb.append(seeAlso
+							.getList()
+							.stream()
+							.map(s -> toString(s))
+							.collect(Collectors.joining(", ")));
 			}
 
 			sb.append("\n");

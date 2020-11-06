@@ -176,6 +176,10 @@ public class VncMutableSet extends VncSet {
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
+
+	public void clear() {
+		value.clear();
+	}
 	
 	@Override 
 	public TypeRank typeRank() {

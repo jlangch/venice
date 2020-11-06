@@ -233,6 +233,10 @@ public class VncMutableMap extends VncMap {
 	public boolean isEmpty() {
 		return value.isEmpty();
 	}
+
+	public void clear() {
+		value.clear();
+	}
 	
 	@Override public TypeRank typeRank() {
 		return TypeRank.MUTABLEMAP;

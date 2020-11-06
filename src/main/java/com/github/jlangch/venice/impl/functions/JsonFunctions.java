@@ -83,6 +83,7 @@ public class JsonFunctions {
 					.examples(
 						"(json/write-str {:a 100 :b 100})",
 						"(json/write-str {:a 100 :b 100} :pretty true)")
+					.seeAlso("json/read-str", "json/spit", "json/slurp", "json/pretty-print")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -136,6 +137,7 @@ public class JsonFunctions {
 						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
 						"  (. out :flush)                                             \n" +
 						"  (. :java.lang.String :new (. out :toByteArray) \"utf-8\"))   ")
+					.seeAlso("json/write-str", "json/read-str", "json/slurp", "json/pretty-print")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -234,6 +236,7 @@ public class JsonFunctions {
 						"(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)",
 						"(json/read-str (json/write-str {:a 100 :b 100}) \n" +
 						"                   :value-fn (fn [k v] (if (== \"a\" k) (inc v) v)))")
+					.seeAlso("json/write-str", "json/spit", "json/slurp", "json/pretty-print")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -301,6 +304,7 @@ public class JsonFunctions {
 						"      data (bytebuf-from-string json :utf-8)            \n" +
 						"      in (. :java.io.ByteArrayInputStream :new data)]   \n" +
 						"  (str (json/slurp in)))                                  ")
+					.seeAlso("json/write-str", "json/read-str", "json/spit", "json/pretty-print")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -365,6 +369,7 @@ public class JsonFunctions {
 					.arglists("(json/pretty-print s)")		
 					.doc("Pretty prints a JSON string")
 					.examples("(json/pretty-print (json/write-str {:a 100 :b 100}))")
+					.seeAlso("json/write-str", "json/read-str", "json/spit", "json/slurp")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

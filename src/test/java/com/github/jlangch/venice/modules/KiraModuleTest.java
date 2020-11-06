@@ -80,24 +80,6 @@ public class KiraModuleTest {
 
 		assertEquals("A &lt; &gt; B", venice.eval(script2));
 	}
-	
-	@Test
-	public void test_escape_xml_multiline() {
-		final Venice venice = new Venice();
-
-		final String script1 =
-				"(do                                         \n" +
-				"   (load-module :kira)                      \n" +
-				"                                            \n" +
-				"   (kira/escape-xml-multiline               \n" +
-				"       \"line <1>\nline <2>\nline <3>\"     \n" +
-				"       #(str % \"<br/>\"))                  \n" + 
-				")";
-
-		assertEquals(
-				"line &lt;1&gt;<br/>line &lt;2&gt;<br/>line &lt;3&gt;<br/>", 
-				venice.eval(script1));
-	}
 
 	@Test
 	public void test_escape_xml_nested() {

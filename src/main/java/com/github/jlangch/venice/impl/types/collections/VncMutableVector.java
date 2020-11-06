@@ -159,6 +159,10 @@ public class VncMutableVector extends VncSequence {
 		return value.isEmpty();
 	}
 
+	public void clear() {
+		value.clear();
+	}
+
 	@Override
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
