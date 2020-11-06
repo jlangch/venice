@@ -151,6 +151,7 @@ public class SpecialFormsDoc {
 						"(do \n" +
 						"  (def x 10) \n" +
 						"  (var-get 'x))")
+					.seeAlso("var-ns", "var-name", "var-local?", "var-global?", "var-thread-local?")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -187,6 +188,7 @@ public class SpecialFormsDoc {
 						"  (ns foo) \n" +
 						"  (def add +)\n" +
 						"  (namespace add))")
+					.seeAlso("namespace", "var-get", "var-name", "var-local?", "var-global?", "var-thread-local?")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -218,11 +220,12 @@ public class SpecialFormsDoc {
 							"  (ns foo) \n" +
 							"  (def add +)\n" +
 							"  (name add))",
-							";; compare aliasedd function with name \n" +
+							";; compare aliased function with name \n" +
 							"(do \n" +
 							"  (ns foo) \n" +
 							"  (def add +)\n" +
 							"  (name add))")
+					.seeAlso("name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -244,6 +247,7 @@ public class SpecialFormsDoc {
 							"  (var-local? x))   ",
 							"(let [x 10]       \n" +
 							"  (var-local? x))   ")
+					.seeAlso("var-get", "var-ns", "var-name", "var-global?", "var-thread-local?")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -259,6 +263,7 @@ public class SpecialFormsDoc {
 					.examples(
 							"(binding [x 100] \n" +
 							"  (var-local? x))")
+					.seeAlso("var-get", "var-ns", "var-name", "var-local?", "var-global?")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -280,6 +285,7 @@ public class SpecialFormsDoc {
 							"  (var-global? x))   ",
 							"(let [x 10]        \n" +
 							"  (var-global? x))   ")
+					.seeAlso("var-get", "var-ns", "var-name", "var-local?", "var-thread-local?")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -426,6 +432,7 @@ public class SpecialFormsDoc {
 						"    (salary {:t \"bon\" :b 1000})                                         \n" +
 						"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
 						")                                                                           ")
+					.seeAlso("defmethod")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -452,6 +459,7 @@ public class SpecialFormsDoc {
 							"    (salary {:t \"bon\" :b 1000})                                         \n" +
 							"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
 							")                                                                           ")
+					.seeAlso("defmulti")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -499,6 +507,7 @@ public class SpecialFormsDoc {
 						"  (def x (named. \"count\" 200))                         \n" +
 						"  (def y (named. \"seq\" [1 2]))                         \n" +
 						"  [x y])                                                   ")
+					.seeAlso("deftype?", "deftype-of", "deftype-or", ".:")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -527,6 +536,7 @@ public class SpecialFormsDoc {
 						"  (deftype :complex [real :long, imaginary :long])  \n" +
 						"  (def x (complex. 100 200))                        \n" +
 						"  (deftype? (type x)))                                ")
+					.seeAlso("deftype", "deftype-of", "deftype-or", ".:")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -577,6 +587,7 @@ public class SpecialFormsDoc {
 						"  (ns foo)                                                    \n" +
 						"  (deftype-of :my-long :long)                                 \n" +
 						"  (+ 10 (my-long. 100000)))                                     ")
+					.seeAlso("deftype", "deftype?", "deftype-or", ".:")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -629,6 +640,7 @@ public class SpecialFormsDoc {
 						"  (deftype :complex [real :long, imaginary :long])       \n" +
 						"  (def x (.: :complex 100 200))                          \n" +
 						"  [(:real x) (:imaginary x)])                              ")
+					.seeAlso("deftype", "deftype?", "deftype-of", "deftype-or")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1062,6 +1074,7 @@ public class SpecialFormsDoc {
 						"  (ns yyy)                        \n" + 
 						"  (def foo 5)                     \n" + 
 						"  (println xxx/foo foo yyy/foo))    ")
+					.seeAlso("ns-unmap", "ns-remove", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1080,6 +1093,7 @@ public class SpecialFormsDoc {
 						"  (def foo 1)          \n" + 
 						"  (ns-unmap xxx foo)   \n" + 
 						"  (ns-unmap *ns* foo))   ")
+					.seeAlso("ns", "ns-remove", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1099,6 +1113,7 @@ public class SpecialFormsDoc {
 						"  (def goo 1)           \n" + 
 						"  (ns-remove xxx foo)   \n" + 
 						"  (ns-remove *ns* foo))   ")
+					.seeAlso("ns", "ns-unmap", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1112,6 +1127,7 @@ public class SpecialFormsDoc {
 					.arglists("(ns-list ns)")
 					.doc("Lists all the symbols in the namespace ns.")
 					.examples("(ns-list regex)")
+					.seeAlso("ns", "ns-unmap", "ns-remove", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1139,7 +1155,7 @@ public class SpecialFormsDoc {
 						"  (ns foo) \n" +
 						"  (def add +)\n" +
 						"  (var-ns add))")
-
+					.seeAlso("ns", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
