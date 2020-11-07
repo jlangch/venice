@@ -250,6 +250,11 @@ and translated into a loop. The [Ackermann's function](https://en.wikipedia.org/
 is such an example of a non [primitive recursive function](https://en.wikipedia.org/wiki/Primitive_recursive_function) that can not be de-recursed into loops.
 
 
+## Recursion and Memoization
+
+While *memoization* is doing a good job computing fibonacci numbers using 
+simple recursion it has to raise its arms with the *Ackermann* function.
+
 
 ## Compare recursion efficiency
 
