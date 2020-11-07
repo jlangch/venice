@@ -278,7 +278,7 @@ public class PdfFunctions {
 				"pdf/merge", 
 				VncFunction
 					.meta()
-					.arglists("pdf/merge pdfs")
+					.arglists("(pdf/merge pdfs)")
 					.doc(
 						"Merge multiple PDFs into a single PDF. The PDFs are passed " + 
 						"as bytebuf. Returns the new PDF as a bytebuf.")
@@ -341,7 +341,7 @@ public class PdfFunctions {
 				"pdf/copy", 
 				VncFunction
 					.meta()
-					.arglists("pdf/copy pdf & page-nr")
+					.arglists("(pdf/copy pdf & page-nr)")
 					.doc(
 						"Copies pages from a PDF to a new PDF. The PDF is passed " + 
 						"as bytebuf. Returns the new PDF as a bytebuf.")
@@ -429,7 +429,7 @@ public class PdfFunctions {
 				"pdf/pages", 
 				VncFunction
 					.meta()
-					.arglists("pdf/pages pdf")
+					.arglists("(pdf/pages pdf)")
 					.doc(
 						"Returns the number of pages of a PDF. The PDF is passed as bytebuf.")
 					.examples(
@@ -466,7 +466,7 @@ public class PdfFunctions {
 				"pdf/text-to-pdf", 
 				VncFunction
 					.meta()
-					.arglists("pdf/text-to-pdf text & options")
+					.arglists("(pdf/text-to-pdf text & options)")
 					.doc(
 						"Creates a PDF from simple text. The tool process line-feeds '\\n' " +
 						"and form-feeds. To start a new page just insert a form-feed " +

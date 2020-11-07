@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.docgen;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ExampleOutput {
 
@@ -29,13 +30,7 @@ public class ExampleOutput {
 			final String name,
 			final String example
 	) {
-		this.idx = idx;
-		this.name = name;
-		this.example = example;
-		this.stdout = null;
-		this.stderr = null;
-		this.result = null;
-		this.ex = null;
+		this(idx, name, example, null, null, null, null);
 	}
 
 	public ExampleOutput(
@@ -46,13 +41,7 @@ public class ExampleOutput {
 			final String stderr,
 			final String result
 	) {
-		this.idx = idx;
-		this.name = name;
-		this.example = example;
-		this.stdout = stdout;
-		this.stderr = stderr;
-		this.result = result;
-		this.ex = null;
+		this(idx, name, example, stdout, stderr, result, null);
 	}
 	
 	public ExampleOutput(
@@ -63,12 +52,24 @@ public class ExampleOutput {
 			final String stderr,
 			final RuntimeException ex
 	) {
+		this(idx, name, example, stdout, stderr, null, ex);
+	}
+	
+	private ExampleOutput(
+			final long idx,
+			final String name,
+			final String example,
+			final String stdout,
+			final String stderr,
+			final String result,
+			final RuntimeException ex
+	) {
 		this.idx = idx;
 		this.name = name;
-		this.example = example;
-		this.stdout = stdout;
-		this.stderr = stderr;
-		this.result = null;
+		this.example = StringUtil.emptyToNull(example);
+		this.stdout = StringUtil.emptyToNull(StringUtil.trimRight(stdout));
+		this.stderr = StringUtil.emptyToNull(StringUtil.trimRight(stderr));
+		this.result = StringUtil.emptyToNull(StringUtil.trimRight(result));
 		this.ex = ex;
 	}
 
@@ -115,27 +116,21 @@ public class ExampleOutput {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(example).append("\n");
-		if (stdout != null && !stdout.isEmpty()) {
-			sb.append(stdout);
-			if (!stdout.endsWith("\n")) {
-				sb.append("\n");
-			}
+		
+		if (stdout != null) {
+			sb.append(stdout).append("\n");
 		}
-		if (stderr != null && !stderr.isEmpty()) {
-			sb.append(stderr);
-			if (!stderr.endsWith("\n")) {
-				sb.append("\n");
-			}
+		
+		if (stderr != null) {
+			sb.append(stderr).append("\n");
 		}
 
 		if (result != null) {
-			sb.append("=> ")
-			  .append(result);
+			sb.append("=> ").append(result);
 		}
 		
 		if (ex != null) {
-			sb.append("=> ")
-			  .append(getExString());
+			sb.append("=> ").append(getExString());
 		}
 		
 		return sb.toString();

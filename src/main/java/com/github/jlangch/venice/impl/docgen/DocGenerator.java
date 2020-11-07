@@ -1711,6 +1711,7 @@ public class DocGenerator {
 
 		final DocSection kira = new DocSection("Kira");
 		all.addSection(kira);
+		kira.addItem(new DocItem("(load-module :kira)", null));
 		kira.addItem(getDocItem("kira/eval"));
 		kira.addItem(getDocItem("kira/fn"));
 		kira.addItem(getDocItem("kira/escape-xml"));

@@ -421,6 +421,19 @@ public class StringUtil {
 		return isEmpty(s) ? null : s;
 	}
 	
+	public static String trimRight(final String str) {
+		if (str == null || str.isEmpty()) {
+			return str;
+		}
+		
+		int end = str.length();
+
+		while (end != 0 && str.charAt(end - 1) <= ' ') {
+			end--;
+		}
+		return str.substring(0, end);
+	}
+	
 	public static String decodeUnicode(final String s) {
 		String working = s;
 		int index;

@@ -19,6 +19,8 @@
 
 [Functors](https://www.youtube.com/watch?v=JUVMiRRq6wU)
 
+[Functors Monoids Monads](https://www.matthewgerstman.com/tech/what-the-functor/)
+
 [Don’t fear the monad](https://youtu.be/ZhuHCtR3xq8)
 
 [Project Euler](https://projecteuler.net/)
