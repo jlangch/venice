@@ -66,7 +66,7 @@ public class ExampleOutput {
 	) {
 		this.idx = idx;
 		this.name = name;
-		this.example = StringUtil.emptyToNull(example);
+		this.example = StringUtil.emptyToNull(StringUtil.trimRight(example));
 		this.stdout = StringUtil.emptyToNull(StringUtil.trimRight(stdout));
 		this.stderr = StringUtil.emptyToNull(StringUtil.trimRight(stderr));
 		this.result = StringUtil.emptyToNull(StringUtil.trimRight(result));
@@ -115,21 +115,25 @@ public class ExampleOutput {
 	public String render() {
 		final StringBuilder sb = new StringBuilder();
 
-		sb.append(example).append("\n");
+		sb.append(example);
 		
 		if (stdout != null) {
-			sb.append(stdout).append("\n");
+			sb.append("\n");
+			sb.append(stdout);
 		}
 		
 		if (stderr != null) {
-			sb.append(stderr).append("\n");
+			sb.append("\n");
+			sb.append(stderr);
 		}
 
 		if (result != null) {
+			sb.append("\n");
 			sb.append("=> ").append(result);
 		}
 		
 		if (ex != null) {
+			sb.append("\n");
 			sb.append("=> ").append(getExString());
 		}
 		
