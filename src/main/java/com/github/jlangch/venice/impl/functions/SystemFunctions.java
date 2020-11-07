@@ -737,9 +737,10 @@ public class SystemFunctions {
 					.doc(
 						"Defines the exit code that is used if the Java VM exits. " +
 						"Defaults to 0. \n\n" +
-						"Note: The exit code is only used when the Venice launcher " +
-						"has been used to run a script file, a command line script, " +
-						"a Venice app archive, or the REPL.")
+						"Note: \n" +
+						"The exit code is only used when the Venice launcher has been" +
+						"used to run a script file, a command line script, a Venice app " +
+						"archive, or the REPL.")
 					.examples(
 						"(system-exit-code 0)")
 					.build()

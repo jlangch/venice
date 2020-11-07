@@ -453,9 +453,9 @@ public class JavaInteropFunctions {
 					.doc(
 						"Returns the classloader of a value or a Java class. \n\n" +
 						"Note: \n" +
-						"Some Java VM implementations may use 'null' to represent \n" + 
-						"the  bootstrap class loader. This method will return 'nil' \n" + 
-						"in such implementations if this class was loaded by the \n" + 
+						"Some Java VM implementations may use 'null' to represent " + 
+						"the  bootstrap class loader. This method will return 'nil' " + 
+						"in such implementations if this class was loaded by the " + 
 						"bootstrap class loader.")
 					.examples(
 						"(classloader-of (class :java.awt.Point))",

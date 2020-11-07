@@ -36,6 +36,7 @@
   ^{ :arglists '("(crypt/md5-hash data)")
      :doc """
           Hashes a string or a bytebuf using MD5.
+
           Note: MD5 is not safe any more use PBKDF2.
           """
      :examples (list
@@ -94,7 +95,7 @@
                  "(crypt/pbkdf2-hash text salt iterations key-length)")
      :doc """
           Hashes a string using PBKDF2. iterations default to 1000, key-length \
-          defaults to 256
+          defaults to 256.
           """
      :examples (list
           """
@@ -121,6 +122,7 @@
           the algorithm and passphrase. If a string is passed it is \
           encrypted and returned as a base64 encoded string. If a bytebuf \
           is passed the encryped bytebuf is returned.
+
           Supported algorithms: "DES", "3DES", "AES256"
 
           Options:
@@ -159,6 +161,7 @@
        algorithm and passphrase. If a string is passed it is base64 decoded, \
        decrypted, and returned as string. If a bytebuf is passed the decrypted \
        bytebuf is returned.
+       
        Supported algorithms: "DES", "3DES", "AES256"
 
        Options:

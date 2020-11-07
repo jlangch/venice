@@ -725,7 +725,7 @@ public class StringFunctions {
 					.doc(
 						"Returns the 0 based row/column position within a string based on " +
 						"absolute character position. Returns a map with the keys " + 
-						"'row' and 'col'.\n" +
+						"'row' and 'col'.\n\n" +
 						"Note: CR & LF count as one each regarding the absolute position.")
 					.examples(
 						"(str/pos \"abcdefghij\" 4)",
