@@ -255,6 +255,19 @@ is such an example of a non [primitive recursive function](https://en.wikipedia.
 While *memoization* is doing a good job computing fibonacci numbers using 
 simple recursion it has to raise its arms with the *Ackermann* function.
 
+```clojure
+(do
+  (def fibonacci
+    (memoize
+      (fn [n]
+        (cond
+          (<= n 0) 0
+          (< n 2) 1
+          :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
+
+  (time (fibonacci 25)))
+```
+
 
 ## Compare recursion efficiency
 
