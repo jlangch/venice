@@ -1303,8 +1303,10 @@
      :doc """
           Returns a memoized version of a referentially transparent function.
 
-          Note: Use memoization for expensive calculations. It does not speed
-                up fast function calculations, it can slow them down actually!
+          Note: 
+          Use memoization for expensive calculations. If used with fast \
+          calculations it has the opposite effect and can slow it down \
+          actually!
           """
      :examples (list
           """
