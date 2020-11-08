@@ -2109,6 +2109,24 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_lazy_seq_doall_1() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall (take 5 (lazy-seq 0 #(+ % 1))))))";
+				
+		assertEquals("(0 1 2 3 4)",venice.eval(script));					
+	}
+
+	@Test
+	public void test_lazy_seq_doall_2() {
+		final Venice venice = new Venice();
+
+		final String script = "(pr-str (doall 5 (lazy-seq 0 #(+ % 1)))))";
+				
+		assertEquals("(0 1 2 3 4)",venice.eval(script));					
+	}
+
+	@Test
 	public void test_lazy_seq_cons() {
 		final Venice venice = new Venice();
 
