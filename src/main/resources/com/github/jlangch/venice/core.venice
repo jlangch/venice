@@ -1267,7 +1267,8 @@
             (fix 1 2 3)
             (fix 1)
             (fix ))
-          """) }
+          """)
+     :see-also '("repeat" "repeatedly" "dotimes")  }
 
   constantly
 
