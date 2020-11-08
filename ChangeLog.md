@@ -27,7 +27,9 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 
 ### Added
 
+- function `cycle`
 - cross references to cheatsheet
+- syntax highlighting for cheatsheet examples
 
 ### Fixed
 
