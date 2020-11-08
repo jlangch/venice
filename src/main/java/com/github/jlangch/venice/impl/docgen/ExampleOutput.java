@@ -114,16 +114,10 @@ public class ExampleOutput {
 	}
 
 	public String render() {
-		return example + renderOutput();
-	}
-
-	public String renderXmlStyled() {
-		return exampleXmlStyled + StringEscapeUtil.escapeXml(renderOutput());
-	}
-
-	public String renderOutput() {
 		final StringBuilder sb = new StringBuilder();
 
+		sb.append(example);
+		
 		if (stdout != null) {
 			sb.append("\n");
 			sb.append(stdout);
@@ -146,6 +140,38 @@ public class ExampleOutput {
 		 
 		return sb.toString();
 	}
+
+	public String renderXmlStyled() {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(exampleXmlStyled);
+		
+		if (stdout != null) {
+			sb.append("\n");
+			sb.append(DocHighlighter.style(stdout, "#808080"));
+		}
+		
+		if (stderr != null) {
+			sb.append("\n");
+			sb.append(DocHighlighter.style(stderr, "#808080"));
+		}
+
+		if (result != null) {
+			sb.append("\n");
+			sb.append(StringEscapeUtil.escapeXml("=> "));
+			sb.append(StringEscapeUtil.escapeXml(result));
+		}
+		
+		if (ex != null) {
+			sb.append("\n");
+			sb.append(StringEscapeUtil.escapeXml("=> "));
+			sb.append(DocHighlighter.style(getExString(), "#808080"));
+		}
+		 
+		return sb.toString();
+	}
+	
+	
 	
 	private final String name;
 	private final String example;

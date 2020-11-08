@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -270,12 +271,16 @@ public class VncCustomType extends VncMap {
 
 	@Override 
 	public String toString() {
-		return "#:" + type.getValue() + values.toString();
+		return VncOrderedMap
+				.of(new VncKeyword(":custom-type*"), type) 
+				.putAll(values).toString();
 	}
 
 	@Override
 	public String toString(final boolean print_readably) {
-		return "#:" + type.getValue() + values.toString(print_readably);
+		return VncOrderedMap
+				.of(new VncKeyword(":custom-type*"), type) 
+				.putAll(values).toString(print_readably);
 	}
 
 	

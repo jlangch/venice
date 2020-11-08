@@ -42,16 +42,18 @@ public class DocHighlighter {
 				.collect(Collectors.joining());
 	}
 
-	private String style(final String text, final HighlightClass clazz) {
-		final String color = clazz == null ? null : theme.getColor(clazz);
-		
-		return color == null 
+	public static String style(final String text, final String htmlColor) {
+		return htmlColor == null 
 				? StringEscapeUtil.escapeXml(text) 
-				: String.format(TEMPLATE, color, StringEscapeUtil.escapeXml(text));
+				: String.format(TEMPLATE, htmlColor, StringEscapeUtil.escapeXml(text));
 	}
 
 	
+	private String style(final String text, final HighlightClass clazz) {
+		return style(text, theme.getColor(clazz));
+	}
+	
 	
 	private final DocColorTheme theme;
-	private final String TEMPLATE = "<span style=\"color: %s\">%s</span>";
+	private final static String TEMPLATE = "<span style=\"color: %s\">%s</span>";
 }

@@ -40,7 +40,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (complex. 100 200))                        \n" +
 				"  (pr-str x))                                         ";
 
-		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
+		assertEquals("{:$type :user/complex :real 100 :imaginary 200}", venice.eval(script));					
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ public class SpecialFormsTest_deftype {
 				"  (def y (assoc x :real 110))                       \n" +
 				"  (pr-str y))                                         ";
 
-		assertEquals("#:user/complex{:real 110 :imaginary 200}", venice.eval(script));					
+		assertEquals("{:$type :user/complex :real 110 :imaginary 200}", venice.eval(script));					
 	}
 	
 	@Test
@@ -68,14 +68,14 @@ public class SpecialFormsTest_deftype {
 				"  (def y (assoc x :real 110 :imaginary 220))        \n" +
 				"  (pr-str y))                                         ";
 
-		assertEquals("#:user/complex{:real 110 :imaginary 220}", venice.eval(script));					
+		assertEquals("{:$type :user/complex :real 110 :imaginary 220}", venice.eval(script));					
 	}
 
 	@Test
 	public void test_deftype_invalid_name() {
 		final String script =
 				"(do                                                  \n" +
-				"  (deftype :complex. [real :long, imaginary :long])    ";
+				"  (deftype :complex. [real :long, imaginary :long]))   ";
 
 		assertThrows(VncException.class, () -> new Venice().eval(script));
 	}
@@ -88,7 +88,7 @@ public class SpecialFormsTest_deftype {
 				"(do                                                 \n" +
 				"  (deftype :complex [real :long, imaginary :long])  \n" +
 				"  (def x (complex. 100 200))                        \n" +
-				"  (def y (assoc x :real__ 110))                       ";
+				"  (def y (assoc x :real__ 110)))                      ";
 
 		assertThrows(VncException.class, () -> venice.eval(script));					
 	}
@@ -101,7 +101,7 @@ public class SpecialFormsTest_deftype {
 				"(do                                                 \n" +
 				"  (deftype :complex [real :long, imaginary :long])  \n" +
 				"  (def x (complex. 100 200))                        \n" +
-				"  (def y (assoc x :real true))                        ";
+				"  (def y (assoc x :real true)))                       ";
 
 		assertThrows(VncException.class, () -> venice.eval(script));					
 	}
@@ -116,7 +116,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (complex. 100 200))                        \n" +
 				"  (pr-str x))                                         ";
 
-		assertEquals("#:user/complex{:real 100 :imaginary 200}", venice.eval(script));					
+		assertEquals("{:$type :user/complex :real 100 :imaginary 200}", venice.eval(script));					
 	}
 
 	@Test
@@ -155,7 +155,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (test. (user/complex. 100 200) 400))            \n" +
 				"  (pr-str x))                                              ";
 
-		assertEquals("#:user/test{:a #:user/complex{:real 100 :imaginary 200} :b 400}", venice.eval(script));					
+		assertEquals("{:$type :user/test :a {:$type :user/complex :real 100 :imaginary 200} :b 400}", venice.eval(script));					
 	}
 	
 	@Test
@@ -234,8 +234,8 @@ public class SpecialFormsTest_deftype {
 				"  (pr-str [x y]))                                 ";
 
 		assertEquals(
-				"[#:user/named{:name \"a\" :value 200} "
-					+ "#:user/named{:name \"b\" :value [1 2]}]", 
+				"[{:$type :user/named :name \"a\" :value 200} "
+					+ "{:$type :user/named :name \"b\" :value [1 2]}]", 
 				venice.eval(script));					
 	}
 	
@@ -249,7 +249,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (named. \"a\" '(1 2)))                     \n" +
 				"  (pr-str x))                                         ";
 
-		assertEquals("#:user/named{:name \"a\" :values (1 2)}", venice.eval(script));					
+		assertEquals("{:$type :user/named :name \"a\" :values (1 2)}", venice.eval(script));					
 	}
 	
 	@Test
@@ -262,7 +262,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (named. \"a\" [1 2]))                      \n" +
 				"  (pr-str x))                                         ";
 
-		assertEquals("#:user/named{:name \"a\" :values [1 2]}", venice.eval(script));					
+		assertEquals("{:$type :user/named :name \"a\" :values [1 2]}", venice.eval(script));					
 	}
 	
 	@Test
@@ -275,7 +275,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (named. \"a\" '(1 2)))                         \n" +
 				"  (pr-str x))                                             ";
 
-		assertEquals("#:user/named{:name \"a\" :values (1 2)}", venice.eval(script_list));					
+		assertEquals("{:$type :user/named :name \"a\" :values (1 2)}", venice.eval(script_list));					
 
 		final String script_vector =
 				"(do                                                     \n" +
@@ -283,7 +283,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (named. \"a\" [1 2]))                          \n" +
 				"  (pr-str x))                                             ";
 
-		assertEquals("#:user/named{:name \"a\" :values [1 2]}", venice.eval(script_vector));					
+		assertEquals("{:$type :user/named :name \"a\" :values [1 2]}", venice.eval(script_vector));					
 	}
 	
 	@Test
@@ -296,7 +296,7 @@ public class SpecialFormsTest_deftype {
 				"  (def x (named. \"a\" {:x 1 :y 2}))                \n" +
 				"  (pr-str x))                                         ";
 
-		assertEquals("#:user/named{:name \"a\" :values {:x 1 :y 2}}", venice.eval(script));					
+		assertEquals("{:$type :user/named :name \"a\" :values {:x 1 :y 2}}", venice.eval(script));					
 	}
 
 	@Test
