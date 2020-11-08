@@ -368,7 +368,7 @@
   ^{ :arglists '("(dotimes bindings & body)")
      :doc "Repeatedly executes body with name bound to integers from 0 through n-1."
      :examples '("""(dotimes [n 3] (println (str "n is " n)))""" )
-     :see-also '("doseq" "list-comp") }
+     :see-also '("repeat" "repeatedly" "doseq" "list-comp") }
 
   dotimes [bindings & body]
 
