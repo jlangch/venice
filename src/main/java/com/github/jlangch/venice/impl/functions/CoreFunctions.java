@@ -6887,6 +6887,7 @@ public class CoreFunctions {
 						"(repeat 5 [1 2])",
 						"(repeat \":\")",
 						"(interleave [:a :b :c] (repeat 100))")
+					.seeAlso("repeatedly", "dotimes", "constantly")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -6936,6 +6937,7 @@ public class CoreFunctions {
 						";; compare with repeat, which only calls the 'rand-long'\n" +
 						";; function once, repeating the value five times. \n" +
 						"(repeat 5 (rand-long 11))")
+					.seeAlso("repeat", "dotimes", "constantly")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
