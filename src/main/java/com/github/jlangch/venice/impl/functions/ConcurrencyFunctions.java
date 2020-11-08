@@ -1598,8 +1598,7 @@ public class ConcurrencyFunctions {
 						"   (thread-local-clear) \n" +
 						"   (assoc! (thread-local) :a 1 :b 2) \n" +
 						"   (dissoc! (thread-local) :a) \n" +
-						"   (get (thread-local) :b 100) \n" +
-						")")
+						"   (get (thread-local) :b 100))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

@@ -5922,11 +5922,12 @@ public class CoreFunctions {
 						"(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])",
 						
 						"; sort by :foo, and where :foo is equal, sort by :bar\n" +
-						"(def x [ {:foo 2 :bar 11} \n" + 
-						"         {:foo 1 :bar 99} \n" + 
-						"         {:foo 2 :bar 55} \n" + 
-						"         {:foo 1 :bar 77} ] )\n" +
-						"(sort-by (juxt :foo :bar) x)")
+						"(do \n" + 
+						"  (def x [ {:foo 2 :bar 11} \n" + 
+						"           {:foo 1 :bar 99} \n" + 
+						"           {:foo 2 :bar 55} \n" + 
+						"           {:foo 1 :bar 77} ] )\n" +
+						"  (sort-by (juxt :foo :bar) x))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

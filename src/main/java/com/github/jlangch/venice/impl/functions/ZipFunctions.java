@@ -175,7 +175,7 @@ public class ZipFunctions {
 						"    ; add text files                                                \n" +
 						"    (io/zip-append \"test.zip\" \"b.txt\" data \"x/c.txt\" data)    \n" +
 						"    ; add an empty directory                                        \n" +
-						"    (io/zip-append \"test.zip\" \"x/y/\" nil)))                       ")
+						"    (io/zip-append \"test.zip\" \"x/y/\" nil))                        ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
