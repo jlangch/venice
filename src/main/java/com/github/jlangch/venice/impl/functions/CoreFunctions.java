@@ -6386,9 +6386,11 @@ public class CoreFunctions {
 						"When lazy sequences are produced doall can be used to force " + 
 						"any effects and realize the lazy sequence.")
 					.examples(
-						"(->> (lazy-seq rand-long)  \n" +
-						"     (take 4)              \n" +
-						"     (doall))")
+						"(->> (lazy-seq #(rand-long 100))  \n" +
+						"     (take 4)                     \n" +
+						"     (doall))",
+						"(->> (lazy-seq #(rand-long 100))  \n" +
+						"     (doall 4))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
