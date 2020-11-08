@@ -6962,6 +6962,47 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction cycle =
+		new VncFunction(
+				"cycle",
+				VncFunction
+					.meta()
+					.arglists(
+						"(cycle coll)")
+					.doc(
+						"Returns a lazy (infinite!) sequence of repetitions of the items in coll.")
+					.examples(
+						"(doall (take 5 (cycle [1 2])))")
+					.seeAlso("repeat", "repeatedly", "dotimes", "constantly")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity(args, 1);
+				
+				final VncSequence seq = Coerce.toVncSequence(args.first());
+				
+				if (seq.isEmpty()) {
+					throw new VncException(String.format(
+							"cycle: the cycle collection must not be empty!",
+							Types.getType(args.first())));
+				}
+				
+				final VncFunction f = new VncFunction(createAnonymousFuncName("cycle")) {
+					private int idx = -1;
+					
+					public VncVal apply(final VncList args) {
+						idx = (idx + 1) % seq.size();
+						return seq.nth(idx);
+					}
+					private static final long serialVersionUID = -1;					
+				};
+				
+				return VncLazySeq.iterate(f, Nil);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 
 
 	///////////////////////////////////////////////////////////////////////////
@@ -7490,6 +7531,7 @@ public class CoreFunctions {
 				.add(seq)
 				.add(repeat)
 				.add(repeatedly)
+				.add(cycle)
 
 				.add(meta)
 				.add(with_meta)

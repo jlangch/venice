@@ -586,6 +586,16 @@ public class CoreFunctionsTest {
 						"	       (. :put :a 1)                      " +
 						"	       (. :put :b 2)))                    " ));
 	}
+	
+	@Test
+	public void test_cycle() {
+		final Venice venice = new Venice();
+
+		assertEquals("(1 2 1 2 1)", venice.eval("(pr-str (doall (take 5 (cycle [1 2]))))"));
+		assertEquals("(1 1 1 1 1)", venice.eval("(pr-str (doall (take 5 (cycle [1]))))"));
+
+		assertThrows(VncException.class, () -> venice.eval("(cycle [])"));
+	}
 
 	@Test
 	public void test_decimal() {
