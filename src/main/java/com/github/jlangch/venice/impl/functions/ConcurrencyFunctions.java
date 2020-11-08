@@ -1062,7 +1062,7 @@ public class ConcurrencyFunctions {
 						"(do                                   \n" +
 						"   (def x1 (agent 100))               \n" +
 						"   (def x2 (agent 100))               \n" +
-						"   (shutdown-agents )                 \n" +
+						"   (shutdown-agents)                  \n" +
 						"   (await-termination-agents 1000))     ")
 					.build()
 		) {		
@@ -1093,9 +1093,9 @@ public class ConcurrencyFunctions {
 						"   (def x1 (agent 100))              \n" +
 						"   (def x2 (agent 100))              \n" +
 						"   (shutdown-agents )                \n" +
-						"   (await-termination-agents 1000))  \n" +
+						"   (await-termination-agents 1000)   \n" +
 						"   (sleep 300)                       \n" +
-						"   (await-termination-agents? ))      ")
+						"   (await-termination-agents?))       ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
