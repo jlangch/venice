@@ -67,6 +67,8 @@ public class DocGenerator {
 								false, 
 								RunMode.DOCGEN)
 							.setStdoutPrintStream(null);
+		
+		this.codeHighlighter = new DocHighlighter(DocColorTheme.getLightTheme());
 	}
 
 	public static void main(final String[] args) {
@@ -447,6 +449,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("remove"));
 		generic.addItem(getDocItem("repeat"));
 		generic.addItem(getDocItem("repeatedly"));
+		generic.addItem(getDocItem("cycle"));
 		generic.addItem(getDocItem("replace"));
 		generic.addItem(getDocItem("range"));
 		generic.addItem(getDocItem("group-by"));
@@ -1811,14 +1814,11 @@ public class DocGenerator {
 		final Venice runner = new Venice();
 
 		try {
-			final AtomicLong idx = new AtomicLong(0L);
-			
 			return examples
 						.stream()
 						.filter(e -> !StringUtil.isEmpty(e))
 						.map(e -> runExample(
 									runner, 
-									idx.getAndIncrement(), 
 									name, 
 									e, 
 									run, 
@@ -1834,12 +1834,13 @@ public class DocGenerator {
 	
 	private ExampleOutput runExample(
 			final Venice runner,
-			final long id,
 			final String name, 
 			final String example, 
 			final boolean run,
 			final boolean catchEx
 	) {
+		final String exampleHighlighted = codeHighlighter.highlight(example);
+				
 		if (run) {
 			final CapturingPrintStream ps_out = new CapturingPrintStream();
 			final CapturingPrintStream ps_err = new CapturingPrintStream();
@@ -1860,12 +1861,14 @@ public class DocGenerator {
 												"*err*", ps_err));
 									
 				return new ExampleOutput(
-						id, name, example, ps_out.getOutput(), ps_err.getOutput(), result);
+						name, example, exampleHighlighted, 
+						ps_out.getOutput(), ps_err.getOutput(), result);
 			}
 			catch(RuntimeException ex) {
 				if (catchEx) {							
 					return new ExampleOutput(
-							id, name, example, ps_out.getOutput(), ps_err.getOutput(), ex);
+							name, example, exampleHighlighted, 
+							ps_out.getOutput(), ps_err.getOutput(), ex);
 				}
 				else {
 					throw ex;
@@ -1873,7 +1876,7 @@ public class DocGenerator {
 			}
 		}
 		else {
-			return new ExampleOutput(id, name, example);
+			return new ExampleOutput(name, example, exampleHighlighted);
 		}
 	}
 	
@@ -1998,4 +2001,5 @@ public class DocGenerator {
 
 	private final Map<String, DocItem> docItems = new HashMap<>();
 	private final Env env;
+	private final DocHighlighter codeHighlighter;
 }

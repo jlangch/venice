@@ -21,52 +21,53 @@
  */
 package com.github.jlangch.venice.impl.docgen;
 
+import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ExampleOutput {
 
 	public ExampleOutput(
-			final long idx,
 			final String name,
-			final String example
+			final String example,
+			final String exampleXmlStyled
 	) {
-		this(idx, name, example, null, null, null, null);
+		this(name, example, exampleXmlStyled, null, null, null, null);
 	}
 
 	public ExampleOutput(
-			final long idx,
 			final String name,
 			final String example,
+			final String exampleXmlStyled,
 			final String stdout,
 			final String stderr,
 			final String result
 	) {
-		this(idx, name, example, stdout, stderr, result, null);
+		this(name, example, exampleXmlStyled, stdout, stderr, result, null);
 	}
 	
 	public ExampleOutput(
-			final long idx,
 			final String name,
 			final String example,
+			final String exampleXmlStyled,
 			final String stdout,
 			final String stderr,
 			final RuntimeException ex
 	) {
-		this(idx, name, example, stdout, stderr, null, ex);
+		this(name, example, exampleXmlStyled, stdout, stderr, null, ex);
 	}
 	
 	private ExampleOutput(
-			final long idx,
 			final String name,
 			final String example,
+			final String exampleXmlStyled,
 			final String stdout,
 			final String stderr,
 			final String result,
 			final RuntimeException ex
 	) {
-		this.idx = idx;
 		this.name = name;
 		this.example = StringUtil.emptyToNull(StringUtil.trimRight(example));
+		this.exampleXmlStyled = exampleXmlStyled;
 		this.stdout = StringUtil.emptyToNull(StringUtil.trimRight(stdout));
 		this.stderr = StringUtil.emptyToNull(StringUtil.trimRight(stderr));
 		this.result = StringUtil.emptyToNull(StringUtil.trimRight(result));
@@ -75,16 +76,16 @@ public class ExampleOutput {
 
 	
 	
-	public long getIdx() {
-		return idx;
-	}
-
 	public String getName() {
 		return name;
 	}
 
 	public String getExample() {
 		return example;
+	}
+
+	public String getExampleXmlStyled() {
+		return exampleXmlStyled;
 	}
 
 	public String getResult() {
@@ -113,10 +114,16 @@ public class ExampleOutput {
 	}
 
 	public String render() {
+		return example + renderOutput();
+	}
+
+	public String renderXmlStyled() {
+		return exampleXmlStyled + StringEscapeUtil.escapeXml(renderOutput());
+	}
+
+	public String renderOutput() {
 		final StringBuilder sb = new StringBuilder();
 
-		sb.append(example);
-		
 		if (stdout != null) {
 			sb.append("\n");
 			sb.append(stdout);
@@ -136,18 +143,13 @@ public class ExampleOutput {
 			sb.append("\n");
 			sb.append("=> ").append(getExString());
 		}
-		
+		 
 		return sb.toString();
 	}
-
-	public boolean isFirst() {
-		return idx == 0L;
-	}
 	
-	
-	private final long idx;
 	private final String name;
 	private final String example;
+	private final String exampleXmlStyled;
 	private final String result;
 	private final String stdout;
 	private final String stderr;

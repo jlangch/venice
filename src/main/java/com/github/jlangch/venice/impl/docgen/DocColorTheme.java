@@ -113,13 +113,13 @@ public class DocColorTheme {
 	}
 
 	
-	private static String PURPLE      = "#000000";
-	private static String GREY        = "#000000";
-	private static String GREY_LIGHT  = "#000000";
-	private static String BLUE        = "#000000";
-	private static String GREEN       = "#000000";
-	private static String ORANGE      = "#000000";
-	private static String RED         = "#000000";
+	private static String PURPLE      = "#9932CC";
+	private static String GREY        = "#404040";
+	private static String GREY_LIGHT  = "#808080";
+	private static String BLUE        = "#4169E1";
+	private static String GREEN       = "#2E8B57";
+	private static String ORANGE      = "#E9967A";
+	private static String RED         = "#C71585";
 
 	
 	private final String name;

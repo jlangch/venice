@@ -23,10 +23,9 @@ package com.github.jlangch.venice.impl.docgen;
 
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.functions.StringFunctions;
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
-import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 
 
 public class DocHighlighter {
@@ -47,15 +46,10 @@ public class DocHighlighter {
 		final String color = clazz == null ? null : theme.getColor(clazz);
 		
 		return color == null 
-				? escapeXml(text) 
-				: String.format(TEMPLATE, color, escapeXml(text));
+				? StringEscapeUtil.escapeXml(text) 
+				: String.format(TEMPLATE, color, StringEscapeUtil.escapeXml(text));
 	}
-	
-	private String escapeXml(final String str) {
-		return ((VncString)StringFunctions
-					.str_escape_html
-					.applyOf(new VncString(str))).getValue();
-	}
+
 	
 	
 	private final DocColorTheme theme;

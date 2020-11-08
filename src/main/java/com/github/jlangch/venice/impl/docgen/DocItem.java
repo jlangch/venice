@@ -76,14 +76,18 @@ public class DocItem {
 	}
 	
 	public String getExamples() {
-		return renderExamples();
-	}
-
-	public String renderExamples() {
 		return StringUtil.trimToNull(
 				examples
 					.stream()
 					.map(o -> o.render())
+					.collect(Collectors.joining("\n\n")));
+	}
+	
+	public String getExamplesXmlStyled() {
+		return StringUtil.trimToNull(
+				examples
+					.stream()
+					.map(o -> o.renderXmlStyled())
 					.collect(Collectors.joining("\n\n")));
 	}
 

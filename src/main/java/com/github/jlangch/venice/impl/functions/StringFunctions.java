@@ -55,8 +55,8 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.HexFormatter;
 import com.github.jlangch.venice.impl.util.HexUtil;
 import com.github.jlangch.venice.impl.util.LoremIpsum;
+import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.Tuple2;
 
 
 public class StringFunctions {
@@ -1900,7 +1900,7 @@ public class StringFunctions {
 				}
 				else {
 					final String s = Coerce.toVncString(arg).getValue();
-					return new VncString(replace(s, HTML_ESCAPES));
+					return new VncString(StringEscapeUtil.escapeHtml(s));
 				}
 			}
 
@@ -1926,7 +1926,7 @@ public class StringFunctions {
 				}
 				else {
 					final String s = Coerce.toVncString(arg).getValue();
-					return new VncString(replace(s, XML_ESCAPES));
+					return new VncString(StringEscapeUtil.escapeXml(s));
 				}
 			}
 
@@ -1972,18 +1972,6 @@ public class StringFunctions {
 				.collect(Collectors.toList());
 	}
 
-	private static String replace(final String str, final List<Tuple2<String,String>> replacements) {
-		if (str == null || str.isEmpty()) {
-			return str;
-		}
-
-		String s = str;
-		for(Tuple2<String,String> r : replacements) {
-			s = s.replace(r._1, r._2);
-		}
-		return s;
-	}
-
 	private static Locale toLocale(final VncVal locale) {
 		if (Types.isVncJavaObject(locale, Locale.class)) {
 			return (Locale)((VncJavaObject)locale).getDelegate();
@@ -2014,22 +2002,6 @@ public class StringFunctions {
 		}
 	}
 
-	private static final List<Tuple2<String,String>> XML_ESCAPES =
-			Arrays.asList(
-					Tuple2.of("&", "&amp;"),
-					Tuple2.of("<", "&lt;"),
-					Tuple2.of(">", "&gt;"),
-					Tuple2.of("\"", "&quot;"),
-					Tuple2.of("'", "&apos;"));
-
-	private static final List<Tuple2<String,String>> HTML_ESCAPES =
-			Arrays.asList(
-					Tuple2.of("&", "&amp;"),
-					Tuple2.of("<", "&lt;"),
-					Tuple2.of(">", "&gt;"),
-					Tuple2.of("\"", "&quot;"),
-					Tuple2.of("'", "&apos;"),
-					Tuple2.of("\u00A0", "&nbsp;"));
 
 	// see: https://howtodoinjava.com/regex/java-regex-validate-email-address/
 	private static final String EMAIL_REGEX =

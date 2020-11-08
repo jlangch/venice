@@ -354,9 +354,9 @@
                     <div class="descr">
                         <code>${= (kira/escape-xml (:description it)) }$</code>
                     </div>
-                    ${ (when (not-empty? (:examples it)) }$
+                    ${ (when (not-empty? (:examplesXmlStyled it)) }$
                     <div class="examples">
-                        <code>${= (kira/escape-xml (:examples it)) }$</code>
+                        <code>${= (:examplesXmlStyled it) }$</code>
                     </div>
                     ${ ) }$
                     ${ (when (not-empty? (:crossRefs it)) }$
