@@ -2629,6 +2629,7 @@ public class CoreFunctions {
 					.arglists("(stack )")
 					.doc("Creates a new mutable threadsafe stack.")
 					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
+					.seeAlso("peek", "pop!", "push!", "empty?", "count")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2662,6 +2663,7 @@ public class CoreFunctions {
 						"  (offer! q 1000 3)   \n" +
 						"  (poll! q 1000)      \n" +
 						"   q)                   ")
+					.seeAlso("peek", "poll!", "offer!", "empty?", "count")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4516,6 +4518,7 @@ public class CoreFunctions {
 						"    ([a b] (cons a (fn [] (fib b (+ a b))))))    \n" +
 						"                                                 \n" +
 						"    (doall (take 6 (fib))))                        ")
+					.seeAlso("conj")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4605,6 +4608,7 @@ public class CoreFunctions {
 						"(conj {:a 1 :b 2} (map-entry :c 3))",
 						"(conj )",
 						"(conj 4)")
+					.seeAlso("cons", "into")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5658,6 +5662,7 @@ public class CoreFunctions {
 							"  (push! s 3)     \n" +
 							"  (pop! s)        \n" +
 							"  s)")
+					.seeAlso("stack", "peek", "push!", "empty?", "count")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5694,6 +5699,7 @@ public class CoreFunctions {
 							"  (push! s 3)     \n" +
 							"  (pop! s)        \n" +
 							"  s)")
+						.seeAlso("stack", "peek", "pop!", "empty?", "count")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -5737,6 +5743,7 @@ public class CoreFunctions {
 							"  (offer! s 3)    \n" +
 							"  (poll! s)       \n" +
 							"  s)")
+						.seeAlso("queue", "peek", "poll!", "empty?", "count")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -5784,6 +5791,7 @@ public class CoreFunctions {
 							"  (offer! s 3)    \n" +
 							"  (poll! s)       \n" +
 							"  s)")
+						.seeAlso("queue", "peek", "offer!", "empty?", "count")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
