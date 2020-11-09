@@ -406,6 +406,7 @@ public class ConcurrencyFunctions {
 						"  (def counter (atom 0))  \n" +
 						"  (reset! counter 9)      \n" +
 						"  @counter)                 ")
+					.seeAlso("deref", "reset!", "swap!", "compare-and-set!", "add-watch", "remove-watch")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -467,6 +468,7 @@ public class ConcurrencyFunctions {
 						"  (def counter (volatile 0))  \n" +
 						"  (reset! counter 99)         \n" +
 						"  @counter)                     ")
+					.seeAlso("atom", "volatile")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -596,6 +598,7 @@ public class ConcurrencyFunctions {
 						"  (def counter (volatile 0))  \n" +
 						"  (reset! counter 9)          \n" +
 						"  @counter)                     ")
+					.seeAlso("deref", "reset!", "swap!")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -655,13 +658,13 @@ public class ConcurrencyFunctions {
 						"argument, which will be passed the intended new state on any state " + 
 						"change. If the new state is unacceptable, the validate-fn should " + 
 						"return false or throw an exception.")
-
 					.examples(
 						"(do                         \n" +
 						"   (def x (agent 100))      \n" +
 						"   (send x + 5)             \n" +
 						"   (sleep 100)              \n" +
 						"   (deref x))                 ")
+					.seeAlso("send", "send-off", "await", "await-for", "deref", "set-error-handler!", "agent-error")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -694,6 +697,7 @@ public class ConcurrencyFunctions {
 						"   (send x (partial + 7))     \n" +
 						"   (sleep 100)                \n" +
 						"   (deref x))                   ")
+					.seeAlso("agent", "send-off", "await", "await-for", "deref")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -737,6 +741,7 @@ public class ConcurrencyFunctions {
 						"   (send-off x (partial + 7)) \n" +
 						"   (sleep 100)                \n" +
 						"   (deref x))                   ")
+					.seeAlso("agent", "send", "await", "await-for", "deref")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -820,6 +825,7 @@ public class ConcurrencyFunctions {
 						"               @ag))                         \n" +
 						"   (set-error-handler! x err-handler-fn)     \n" +
 						"   (send x (fn [n] (/ n 0))))                  ")
+					.seeAlso("agent", "agent-error-mode", "agent-error")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -858,6 +864,7 @@ public class ConcurrencyFunctions {
 						"   (send x (fn [n] (/ n 0)))                     \n" +
 						"   (sleep 500)                                   \n" +
 						"   (agent-error x))                                ")
+					.seeAlso("agent", "set-error-handler!", "agent-error-mode")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -892,6 +899,7 @@ public class ConcurrencyFunctions {
 						"(do                                              \n" +
 						"   (def x (agent 100 :error-mode :fail))         \n" +
 						"   (agent-mode x))                                 ")
+					.seeAlso("agent", "set-error-handler!", "agent-error")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -930,6 +938,7 @@ public class ConcurrencyFunctions {
 					    "                  (assoc state :done true)))     \n" +
 					    "   ;; blocks till the agent actions are finished \n" +
 						"   (await x1 x2))                                 ")
+					.seeAlso("agent", "send", "send-off", "await-for", "deref")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -971,6 +980,7 @@ public class ConcurrencyFunctions {
 					    "                  (assoc state :done true)))     \n" +
 					    "   ;; blocks till the agent actions are finished \n" +
 						"   (await-for 500 x1 x2))                          ")
+					.seeAlso("agent", "send", "send-off", "await", "deref")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1128,6 +1138,7 @@ public class ConcurrencyFunctions {
 						"   (deliver p 10)     \n" +
 						"   (deliver p 20)     \n" +
 						"   @p)                  ")
+					.seeAlso("promise", "realized?")
 					.build()
 		) {
 			@SuppressWarnings("unchecked")
@@ -1179,6 +1190,7 @@ public class ConcurrencyFunctions {
 						"   (future task1)                              \n" +
 						"   (future task2)                              \n" +
 						"   @p)                                           ")
+					.seeAlso("deliver", "promise?", "realized?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1250,6 +1262,7 @@ public class ConcurrencyFunctions {
 						"      ;; future with child thread locals                           \n" +
 						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]       \n" +
 						"         {:child @f :parent {:a a :b b}})))                          ")
+					.seeAlso("deref", "realized?", "future-done?", "future-cancel", "future-cancelled?", "futures-fork", "futures-wait")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
@@ -1327,6 +1340,7 @@ public class ConcurrencyFunctions {
 						"      (printf \"After 50ms: done=%b\\n\" (future-done? f))     \n" +
 						"      (sleep 300)                                              \n" +
 						"      (printf \"After 300ms: done=%b\\n\" (future-done? f))))    ")
+					.seeAlso("future", "realized?", "future-cancel", "future-cancelled?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1367,6 +1381,7 @@ public class ConcurrencyFunctions {
 						"      (future-cancel f)                                                 \n" +
 						"      (sleep 100)                                                       \n" +
 						"      (printf \"After 150ms: cancelled=%b\\n\" (future-cancelled? f))))   ")
+					.seeAlso("future", "future-done?", "future-cancelled?")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1402,6 +1417,7 @@ public class ConcurrencyFunctions {
 					.arglists("(future-cancelled? f)")		
 					.doc("Returns true if f is a Future is cancelled otherwise false")
 					.examples("(future-cancelled? (future (fn [] 100)))")
+					.seeAlso("future", "future-done?", "future-cancel")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1445,7 +1461,8 @@ public class ConcurrencyFunctions {
 						"  (defn factory [n]                                \n" +
 						"    (fn [] (log \"Worker\" n)))                    \n" +
 						"  (apply futures-wait (futures-fork 3 factory)))     ")
-					.build()
+					.seeAlso("future", "futures-wait")
+				.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				assertArity(args, 2);
@@ -1486,6 +1503,7 @@ public class ConcurrencyFunctions {
 						"  (defn factory [n]                                \n" +
 						"    (fn [] (log \"Worker\" n)))                    \n" +
 						"  (apply futures-wait (futures-fork 3 factory)))     ")
+					.seeAlso("future", "futures-fork")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1558,7 +1576,8 @@ public class ConcurrencyFunctions {
 					.examples(
 						"(do                                              \n" +
 						"   (def x (delay (println \"working...\") 100))  \n" +
-						"   (force x))                                      ")
+						"   (force x))")
+					.seeAlso("delay", "deref", "realized?")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1599,6 +1618,7 @@ public class ConcurrencyFunctions {
 						"   (assoc! (thread-local) :a 1 :b 2) \n" +
 						"   (dissoc! (thread-local) :a) \n" +
 						"   (get (thread-local) :b 100))")
+					.seeAlso("thread-local", "thread-local-clear", "assoc", "dissoc", "get")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1643,6 +1663,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local-clear)")		
 					.doc("Removes all thread local vars")
 					.examples("(thread-local-clear)")
+					.seeAlso("thread-local", "assoc", "dissoc", "get")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1662,6 +1683,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local-map)")		
 					.doc("Returns a snaphost of the thread local vars as a map")
 					.examples("(do (thread-local :a 1 :b 2) (thread-local-map))")
+					.seeAlso("thread-local", "thread-local-clear", "assoc",  "dissoc", "get")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1691,6 +1713,7 @@ public class ConcurrencyFunctions {
 						"lifetime. When a thread is terminated, this thread ID may " +
 						"be reused.")
 					.examples("(thread-id)")
+					.seeAlso("thread-name", "thread-interrupted?", "thread-interrupted")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1709,6 +1732,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-name)")		
 					.doc("Returns this thread's name.")
 					.examples("(thread-name)")
+					.seeAlso("thread-id", "thread-interrupted?", "thread-interrupted")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1732,6 +1756,7 @@ public class ConcurrencyFunctions {
 						"Returns true if the current thread has been interrupted " +
 						"else false.")
 					.examples("(thread-interrupted?)")
+					.seeAlso("thread-id", "thread-name", "thread-interrupted")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1759,6 +1784,7 @@ public class ConcurrencyFunctions {
 						"Returns true if the current thread has been interrupted " +
 						"else false.")
 					.examples("(thread-interrupted)")
+					.seeAlso("thread-id", "thread-name", "thread-interrupted?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

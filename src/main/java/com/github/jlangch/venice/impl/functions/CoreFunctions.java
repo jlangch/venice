@@ -2246,6 +2246,7 @@ public class CoreFunctions {
 						"(difference (set 1 2 3))",
 						"(difference (set 1 2) (set 2 3))",
 						"(difference (set 1 2) (set 1) (set 1 4) (set 3))")
+					.seeAlso("union", "intersection", "cons", "conj", "disj")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2274,6 +2275,7 @@ public class CoreFunctions {
 						"(union (set 1 2 3))",
 						"(union (set 1 2) (set 2 3))",
 						"(union (set 1 2 3) (set 1 2) (set 1 4) (set 3))")
+					.seeAlso("difference", "intersection", "cons", "conj", "disj")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2302,6 +2304,7 @@ public class CoreFunctions {
 						"(intersection (set 1))",
 						"(intersection (set 1 2) (set 2 3))",
 						"(intersection (set 1 2) (set 3 4))")
+					.seeAlso("union", "difference", "cons", "conj", "disj")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

@@ -59,6 +59,7 @@ public class ScheduleFunctions {
 					.examples(
 						"(schedule-delay (fn[] (println \"test\")) 1 :seconds)",
 						"(deref (schedule-delay (fn [] 100) 2 :seconds))")
+					.seeAlso("schedule-at-fixed-rate")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
@@ -124,6 +125,7 @@ public class ScheduleFunctions {
 						"(let [s (schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)] \n" +
 						"   (sleep 16 :seconds) \n" +
 						"   (future-cancel s))")
+					.seeAlso("schedule-delay")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
