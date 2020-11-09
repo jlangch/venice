@@ -1124,7 +1124,7 @@
   ^{ :arglists '("(read-line)")
      :doc """
           Reads the next line from the stream that is the current value of *in*.
-          Returns nil if the of the stream is reached.
+          Returns nil if the end of the stream is reached.
           """
      :see-also '("read-char")  }
 
