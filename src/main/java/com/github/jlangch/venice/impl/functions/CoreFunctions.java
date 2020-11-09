@@ -5775,7 +5775,7 @@ public class CoreFunctions {
 							"(poll! queue timeout)")
 						.doc(
 							"Polls an item from a queue with an optional timeout in milliseconds. " +
-							"If not no timeout is given returns the item if one is available else " +
+							"If no timeout is given returns the item if one is available else " +
 							"returns nil. With a timeout returns the item if one is available within" +
 							"the given timeout else returns nil.")
 						.examples(
