@@ -28,6 +28,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Added
 
 - function `cycle`
+- threading macros `some->` and  `some->>`
 - cross references to cheatsheet
 - syntax highlighting for cheatsheet examples
 

@@ -634,6 +634,67 @@
           g
           (last steps)))))
 
+(defmacro
+  ^{ :arglists '("(some-> expr & forms)")
+     :doc """
+          When expr is not nil, threads it into the first form (via ->), \
+          and when that result is not nil, through the next etc.
+          """
+     :examples (list
+          """
+          (some-> {:y 3 :x 5}
+                  :y
+                  (- 2))
+          """
+          """
+          (some-> {:y 3 :x 5}
+                  :z
+                  (- 2))
+          """ )
+     :see-also '("some->>") }
+
+  some-> [expr & forms]
+
+  (let [g (gensym)
+        steps (map (fn [step] `(if (nil? ~g) nil (-> ~g ~step)))
+                   forms)]
+    `(let [~g ~expr
+           ~@(interleave (repeat g) (butlast steps))]
+       ~(if (empty? steps)
+          g
+          (last steps)))))
+
+
+(defmacro
+  ^{ :arglists '("(some->> expr & forms)")
+     :doc """
+          When expr is not nil, threads it into the first form (via ->>), \
+          and when that result is not nil, through the next etc.
+          """
+     :examples (list
+          """
+          (some->> {:y 3 :x 5}
+                   :y
+                   (- 2))
+          """
+          """
+          (some->> {:y 3 :x 5}
+                   :z
+                   (- 2))
+          """ )
+     :see-also '("some->") }
+
+  some->> [expr & forms]
+
+  (let [g (gensym)
+        steps (map (fn [step] `(if (nil? ~g) nil (->> ~g ~step)))
+                   forms)]
+    `(let [~g ~expr
+           ~@(interleave (repeat g) (butlast steps))]
+       ~(if (empty? steps)
+          g
+          (last steps)))))
+
 
 (defmacro
   ^{ :arglists '("(list-comp seq-exprs body-expr)")

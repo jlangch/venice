@@ -1017,6 +1017,8 @@ public class DocGenerator {
 		call.addItem(getDocItem("as->"));
 		call.addItem(getDocItem("cond->"));
 		call.addItem(getDocItem("cond->>"));
+		call.addItem(getDocItem("some->"));
+		call.addItem(getDocItem("some->>"));
 
 		final DocSection loading = new DocSection("Loading");
 		all.addSection(loading);
