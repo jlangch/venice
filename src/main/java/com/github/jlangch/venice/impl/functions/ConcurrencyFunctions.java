@@ -257,6 +257,7 @@ public class ConcurrencyFunctions {
 						"   (println (realized? x))         \n" +
 						"   (println @x)                    \n" +
 						"   (println (realized? x)))          ")
+					.seeAlso("future", "delay", "promise")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -303,6 +304,7 @@ public class ConcurrencyFunctions {
 						"   (defn watcher [key ref old new]       \n" +
 						"         (println \"watcher: \" key))    \n" +
 						"   (add-watch x :test watcher))            ")
+					.seeAlso("agent")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -346,6 +348,7 @@ public class ConcurrencyFunctions {
 						"         (println \"watcher: \" key))    \n" +
 						"   (add-watch x :test watcher)           \n" +
 						"   (remove-watch x :test))                 ")
+					.seeAlso("agent")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -520,7 +523,8 @@ public class ConcurrencyFunctions {
 						"   (def counter (volatile 0))     \n" +
 						"   (swap! counter (partial + 6))  \n" +
 						"   @counter)                        ")
-					.build()
+				.seeAlso("agent", "volatile")
+				.build()
 		) {		
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 2);
@@ -563,6 +567,7 @@ public class ConcurrencyFunctions {
 						"   (def counter (atom 2))         \n" +
 						"   (compare-and-set! counter 2 4) \n" +
 						"   (deref counter))                 ")
+					.seeAlso("atom")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -697,7 +702,7 @@ public class ConcurrencyFunctions {
 						"   (send x (partial + 7))     \n" +
 						"   (sleep 100)                \n" +
 						"   (deref x))                   ")
-					.seeAlso("agent", "send-off", "await", "await-for", "deref")
+					.seeAlso("agent", "send-off")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -741,7 +746,7 @@ public class ConcurrencyFunctions {
 						"   (send-off x (partial + 7)) \n" +
 						"   (sleep 100)                \n" +
 						"   (deref x))                   ")
-					.seeAlso("agent", "send", "await", "await-for", "deref")
+					.seeAlso("agent", "send")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -781,6 +786,7 @@ public class ConcurrencyFunctions {
 						"   (def x (agent 100))       \n" +
 						"   (restart-agent x 200)     \n" +
 						"   (deref x))                  ")
+					.seeAlso("agent")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -938,7 +944,7 @@ public class ConcurrencyFunctions {
 					    "                  (assoc state :done true)))     \n" +
 					    "   ;; blocks till the agent actions are finished \n" +
 						"   (await x1 x2))                                 ")
-					.seeAlso("agent", "send", "send-off", "await-for", "deref")
+					.seeAlso("agent", "await-for")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -980,7 +986,7 @@ public class ConcurrencyFunctions {
 					    "                  (assoc state :done true)))     \n" +
 					    "   ;; blocks till the agent actions are finished \n" +
 						"   (await-for 500 x1 x2))                          ")
-					.seeAlso("agent", "send", "send-off", "await", "deref")
+					.seeAlso("agent", "await")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1018,6 +1024,7 @@ public class ConcurrencyFunctions {
 						"   (def x1 (agent 100))       \n" +
 						"   (def x2 (agent 100))       \n" +
 						"   (shutdown-agents ))          ")
+					.seeAlso("agent")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1047,6 +1054,7 @@ public class ConcurrencyFunctions {
 						"   (shutdown-agents )         \n" +
 						"   (sleep 300)                \n" +
 						"   (shutdown-agents? ))         ")
+					.seeAlso("agent")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1074,6 +1082,7 @@ public class ConcurrencyFunctions {
 						"   (def x2 (agent 100))               \n" +
 						"   (shutdown-agents)                  \n" +
 						"   (await-termination-agents 1000))     ")
+					.seeAlso("agent")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1106,6 +1115,7 @@ public class ConcurrencyFunctions {
 						"   (await-termination-agents 1000)   \n" +
 						"   (sleep 300)                       \n" +
 						"   (await-termination-agents?))       ")
+					.seeAlso("agent")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1663,7 +1673,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local-clear)")		
 					.doc("Removes all thread local vars")
 					.examples("(thread-local-clear)")
-					.seeAlso("thread-local", "assoc", "dissoc", "get")
+					.seeAlso("thread-local", "dissoc")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1683,7 +1693,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local-map)")		
 					.doc("Returns a snaphost of the thread local vars as a map")
 					.examples("(do (thread-local :a 1 :b 2) (thread-local-map))")
-					.seeAlso("thread-local", "thread-local-clear", "assoc",  "dissoc", "get")
+					.seeAlso("thread-local", "get")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1713,7 +1723,7 @@ public class ConcurrencyFunctions {
 						"lifetime. When a thread is terminated, this thread ID may " +
 						"be reused.")
 					.examples("(thread-id)")
-					.seeAlso("thread-name", "thread-interrupted?", "thread-interrupted")
+					.seeAlso("thread-name")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1732,7 +1742,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-name)")		
 					.doc("Returns this thread's name.")
 					.examples("(thread-name)")
-					.seeAlso("thread-id", "thread-interrupted?", "thread-interrupted")
+					.seeAlso("thread-id")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1756,7 +1766,7 @@ public class ConcurrencyFunctions {
 						"Returns true if the current thread has been interrupted " +
 						"else false.")
 					.examples("(thread-interrupted?)")
-					.seeAlso("thread-id", "thread-name", "thread-interrupted")
+					.seeAlso("thread-interrupted")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1784,7 +1794,7 @@ public class ConcurrencyFunctions {
 						"Returns true if the current thread has been interrupted " +
 						"else false.")
 					.examples("(thread-interrupted)")
-					.seeAlso("thread-id", "thread-name", "thread-interrupted?")
+					.seeAlso("thread-interrupted?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

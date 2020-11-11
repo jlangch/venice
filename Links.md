@@ -59,7 +59,16 @@
 [Clojure socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
 
 
-## etc
+## GitHub Wiki
+
+[Wiki content](https://docs.github.com/en/free-pro-team@latest/github/building-a-strong-community/editing-wiki-content)
+
+[Add images to the Wiki](https://github.com/RWTH-EBC/AixLib/wiki/How-to:-Add-images-to-the-Wiki)
+
+
+## /etc
+
+[Marty Lobdell - Study Less Study Smart](https://www.youtube.com/watch?v=IlU-zDU6aQ0)
 
 [Font](https://fonts.google.com/specimen/Audiowide)
 
