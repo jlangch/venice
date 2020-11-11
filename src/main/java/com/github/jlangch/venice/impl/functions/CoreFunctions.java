@@ -707,10 +707,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				if (!Types.isVncFunction(args.first())) {
-					return False;
-				}
-				return VncBoolean.of(((VncFunction)args.first()).isMacro());
+				return VncBoolean.of(Types.isVncMacro(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
