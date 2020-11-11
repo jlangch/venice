@@ -77,14 +77,14 @@ Let's first implement `when` with a function.
    (if test form nil))
 ```
 
-|        | predicate _true_             | predicate _false_ |
+|        | predicate *true*             | predicate *false* |
 | :---   | :---                         | :---                           |
 | expr   | `(when true (do (print 99) 3))` | `(when false (do (print 99) 3))` |
-| stdout | `99`                         | `99`  _should not be printed!_  |
+| stdout | `99`                         | `99`  *should not be printed!*  |
 | return | `3`                          | `nil`                           |
 
-The _form_ is evaluated eagerly in both cases whether the test predicate is _true_ 
-or _false_, because Venice evaluates expressions before passing them as arguments 
+The *form* is evaluated eagerly in both cases whether the test predicate is *true* 
+or *false*, because Venice evaluates expressions before passing them as arguments 
 to a function. Nevertheless the returned valued is in both cases correct.
 
 **when implemented as a macro:**
@@ -94,7 +94,7 @@ to a function. Nevertheless the returned valued is in both cases correct.
    (list 'if test form nil))
 ```
 
-|        | predicate _true_              | predicate _false_ |
+|        | predicate *true*              | predicate *false* |
 | :---   | :---                          | :---                          |
 | expr   | `(when true (do (print 99) 3))` | `(when false (do (print 99) 3))` |
 | stdout | `99`                          |                               |
@@ -123,7 +123,7 @@ read/compile time as an optimization.
 
 ## The Macro toolbox
 
-The Venice _Reader_ provides a few special forms to deal with macros:
+The Venice *Reader* provides a few special forms to deal with macros:
 
 * Quote (')
 * Syntax quote (`)
@@ -161,8 +161,8 @@ Regular quotes work recursively with any kind of forms and types: strings, maps,
 '{:a (1 2 3) b (c d "x")}   ; => {:a (1 2 3) b (c d "x")}
 ```
 
-With _quotes_ in our toolbox we can write our first macro. The `when` macro evaluates 
-a _test_ predicate. If logical _true_, it evaluates the _body_ .
+With *quotes* in our toolbox we can write our first macro. The `when` macro evaluates 
+a *test* predicate. If logical *true*, it evaluates the *body*.
 
 ```clojure
 (defmacro when [test form]
@@ -187,10 +187,10 @@ At macro expansion time `(when true (println 100))` is transformed to
 
 ### Syntax Quote / Unquote
 
-_Syntax quotes_  (a backquote) supress evaluation of the form that 
-follows it and all the nested forms. It is possible to  _unquote_  part of 
+*Syntax quotes* (a backquote) supress evaluation of the form that 
+follows it and all the nested forms. It is possible to *unquote* part of 
 the form that is quoted with `~`. Unquoting allows you to evaluate parts of 
-the  _syntax quoted_  expression.
+the *syntax quoted* expression.
 
 Without evaluation:
 
@@ -208,7 +208,7 @@ With evaluation:
 `(16 17 ~(map inc [16 17]))  ; => (16 17 (17 18))
 ```
 
-_Syntax quotes_  allow writing macros in a more elegant way regarding evaluation 
+*Syntax quotes* allow writing macros in a more elegant way regarding evaluation 
 rules at macro expansion time:
 
 ```clojure
@@ -220,8 +220,8 @@ At macro expansion time `(when true (println 100))` is transformed to
 `(if true (println 100) nil)`.
 
 The syntax quote is similar to templating languages where parts of the template 
-are  _fixed_  and parts are  _inserted_  (evaluated). 
-The syntax quote makes the form that follows it a  _template_ .
+are *fixed* and parts are *inserted*  (evaluated). 
+The syntax quote makes the form that follows it a *template*.
 
 The unquote which is a tilde (~) then is how parts of the template are forced to 
 be evaluated. It acts similarly to variable replacement in templates.
@@ -256,6 +256,16 @@ Other examples:
 `(1 2 ~@{:a 1 :b 2 :c 3})  ; => (1 2 [:a 1] [:b 2] [:c 3])
 ```
 
+Arbitrary `let` bindings:
+
+```clojure
+`(let [~@(interleave ['a 'b 'c] [1 2 3])] (+ a b))
+
+;; expands to:
+
+(let (a 1 b 2 c 3) (+ a b)) ;; => 3
+```
+
 
 So far our macro accepts a single form. What happens if we're going to extend the macro
 to use a body with multiple forms?
@@ -263,7 +273,7 @@ to use a body with multiple forms?
 
 #### A first approach
 
-Using _syntax quote_ and _unquote_ we can write it as:
+Using *syntax quote* and *unquote* we can write it as:
 
 ```clojure
 (defmacro when [test & body]
@@ -282,7 +292,7 @@ to see the transformed expressions, we get
 (if true (do ((println 100) (println 200))) nil)
 ```
 
-The _body_ argument holds a list and thus a list is inserted in the template
+The *body* argument holds a list and thus a list is inserted in the template
 for the variable "body" resulting in `((println 100) (println 200))`. That is not 
 a function that can be executed. We do not want the surrounding parenthesis. 
 What we actually want is "body" to be splice into the `(do ...)` list as values.
@@ -394,7 +404,7 @@ Elapsed time: 40438
 ```
 
 Surprisingly the result of `(+ 1 2)` is now `424855845202275` instead of `3`. The 
-phenomenon happened here is called _symbol capturing_. The _start_ var is captured
+phenomenon happened here is called *symbol capturing*. The *start* var is captured
 by the macro itself.
 
 Expanding the call with `macroexpand-all` shows what happens:
@@ -442,7 +452,7 @@ The `(gensym)` function lets you  manually create safe symbol names:
 
 ### Auto generate symbols
 
-By suffixing a symbol with a `#` within a _syntax quote_, Venice will 
+By suffixing a symbol with a `#` within a *syntax quote*, Venice will 
 create safe var names automatically while expanding the macro:
 
 ```clojure
@@ -489,7 +499,7 @@ Applied to our macro ...
 
 ### Limitations of auto generated symbols
 
-Auto generated symbols are not working with nested _syntax quotes_:
+Auto generated symbols are not working with nested *syntax quotes*:
 
 ```clojure
 `(let [x# 1]
@@ -498,7 +508,7 @@ Auto generated symbols are not working with nested _syntax quotes_:
        (range 3)))
 ```
 
-Because x# is going to expand to a different _gensym_ in the two different 
+Because x# is going to expand to a different *gensym* in the two different 
 contexts. 
 
 To work around this explicitly create a symbol name with `gensym`:
