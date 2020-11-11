@@ -2900,7 +2900,9 @@ public class CoreFunctionsTest {
 	public void test_partial() {
 		final Venice venice = new Venice();
 		
-		assertEquals(Long.valueOf(6), venice.eval("((partial * 2) 3)"));
+		assertEquals(6L, venice.eval("((partial * 2) 3)"));
+		
+		assertEquals(3L, venice.eval("((partial +) 3)"));
 		
 		assertEquals("[2, 4, 6, 8]", venice.eval("(map (partial * 2) [1 2 3 4])").toString());
 		

@@ -6176,7 +6176,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				assertMinArity(args, 1);
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList fnArgs = args.rest();
