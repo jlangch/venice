@@ -196,8 +196,9 @@
   ^{ :arglists '("(processes)")
      :doc
         """
-        Returns the process handles (:java.lang.ProcessHandle) for all  \
-        running processes.
+        Returns a snapshot of all processes visible to the current process.
+        Returns a list of :java.lang.ProcessHandle for the processes.
+
         Requires Java 9+.
         """
      :examples '(
@@ -226,7 +227,8 @@
   ^{ :arglists '("(processes-info)")
      :doc
         """
-        Returns the process info for all running processes.
+        Returns a snapshot of all processes visible to the current process.
+        Returns a list of process infos for the processes.
 
         The process info is a map with the keys:
           :pid                the PID
@@ -238,6 +240,7 @@
           :total-cpu-millis   the total cputime accumulated of the process
           :user               the user of the process.
 
+          Requires Java 9+.
         """
      :examples '(
         """
