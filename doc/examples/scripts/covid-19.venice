@@ -46,9 +46,24 @@
       "Spain"       { :population 46736700  :color :x-red        :stroke :dash-dash }
       "Quarantine"  { :population        0  :color :x-light-gray :stroke :solid     } ))
 
+  ;; definitions for case data statistics
   (def sample-days 14)
   (def quarantine-case-limit 60)
+  (def quarantine-case-diff 60)
+  (def population-normalized 100000)
+
+  ;; the start/end date for the cases
+  (def start-date (time/local-date 2020 02 1))
+  (def end-date nil)
+
+  ;; chart rendering
+  (def chart-width 2000)
+  (def chart-height 500)
+  (def chart-dpi 240)
+
+  ;; origin of the corona case data
   (def worldometers-url "https://www.worldometers.info/coronavirus/country/")
+
 
   ;; impure functions ------------------------------------------------ [start] -
 
@@ -85,7 +100,7 @@
     ; convert "Feb 02 to "2020 Feb 02" and parse it
     (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
 
-  (defn extract-months [data]
+  (defn extract-days [data]
     ;;  categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]        },
     (as-> data <>
           (filter #(str/contains? % "categories: [") <>)
@@ -104,8 +119,9 @@
           (map long <>)))
 
   (defn parse-cases [country html-cases-section]
-    (map vector (extract-months html-cases-section)
-                (extract-cases html-cases-section)))
+    (->> (map vector (extract-days html-cases-section)
+                     (extract-cases html-cases-section))
+         (filter #(time/within? (first %) start-date end-date))))
 
   (defn process-sample [country population data]
     (let [line       (first data)
@@ -113,7 +129,7 @@
           cases      (second line)
           tot        (reduce + (map second data))
           avg-day    (/ tot (count data))
-          avg-norm   (/ tot (/ population 100000.0))]
+          avg-norm   (/ tot (/ population (double population-normalized)))]
       [ date cases tot avg-day avg-norm ]))
 
   (defn process [country population data]
@@ -142,17 +158,24 @@
          (apply ordered-map)))
 
   (defn add-quarantine [country-data]
-    (let [sample     (get country-data "Switzerland")
-          first-day  (first (first sample))
-          last-day   (first (last sample))]
+    (let [sample (get country-data "Switzerland")]
       (assoc country-data
              "Quarantine"
+             (map (fn [x] [(first x) (+ (second x) quarantine-case-diff)])
+                  sample))))
+
+(defn add-quarantine-old [country-data]
+  (let [sample     (get country-data "Switzerland")
+        first-day  (first (first sample))
+        last-day   (first (last sample))]
+    (assoc country-data
+           "Quarantine"
              [ [ first-day quarantine-case-limit ]
                [ last-day  quarantine-case-limit ] ])))
 
   (defn series [country-data country-config country]
-    (let [data  (get country-data country)
-         style  (get country-config country)]
+    (let [data   (get country-data country)
+          style  (get country-config country)]
       { :x     (map first data)
         :y     (map second data)
         :style { :marker-type :none
@@ -174,8 +197,8 @@
                       "Greece"      (country-series "Greece")
                       "Quarantine"  (country-series "Quarantine"))
          { :title "Covid-19 (~(str (time/local-date)))"
-           :width 2000
-           :height 500
+           :width chart-width
+           :height chart-height
            :render-style :line
            :x-axis { :title "Date", :date-pattern "MMM-dd" }
            :y-axis { :title "Cases ~{sample-days} days per 100'000" }
@@ -195,7 +218,7 @@
           country-names (remove #{"Quarantine"} (keys country-config))]
       (-> (load-countries-html-data country-names)
           (create-chart country-names)
-          (save-chart chart-file 240))
+          (save-chart chart-file chart-dpi))
       (view chart-file)
       nil))
 

@@ -43,7 +43,7 @@
     (map? x)      :fam.Map
     (atom? x)     :fam.Atom
     (volatile? x) :fam.Volatile
-    (deref? x)    :fam.Dereferenceable
+    (fn? x)       :fam.Function
     :else         (type x)))
 
 
@@ -53,19 +53,25 @@
 ;;
 ;; A Functor is any type that defines how fmap applies to it.
 ;;
-;; the types nil, just, list, set, map vector, atom, volatile, future,
-;; delay, and promise are functors
+;; The types nil, just, list, set, map vector, atom, volatile, and
+;; function are functors.
+;; When fmap is used on a function, it's just doing function composition!
 ;;
 ;; functors:  applying a function to a wrapped value using fmap
 ;;
 ;; fmap:      takes a function and a functor and returns a functor
 ;;
+;; Rules:     1) Functors must preserve identity:
+;;                  fmap id == id
+;;                  (fmap f functor) == functor
+;;            2) Functors must preserve composition:
+;;                  fmap (f . g) == fmap f . fmap g
+;;                  (fmap (comp f g) functor) == ((comp (partial fmap f) (partial fam/fmap g)) functor)
+;;
 ;; example:   (fmap (partial + 3) (just 2))  ; => (just 5)
 ;;            (fmap (partial + 3) nil)       ; => nil
 ;;            (fmap (partial + 3) [2 4 6])   ; => [5 7 9]
-;;            (do
-;;              (def foo (fmap (partial + 3) (partial + 2))))
-;;              (foo 10))  ; => 15
+;;            ((fmap (partial + 1) (partial * 2)) 4)
 ;; -----------------------------------------------------------------------------
 
 (defmulti fmap (fn [f functor] (fam/box-type functor)))
@@ -96,18 +102,17 @@
   (swap! functor f)
   functor)
 
-(defmethod fmap :fam.Dereferenceable [f functor]
-  (just (f @functor)))
+(defmethod fmap :fam.Function [f functor]
+  (comp f functor))
 
 
 
 ;; -----------------------------------------------------------------------------
-;; Applicatives
+;; Applicatives (Applicative Functor)
 ;;
 ;; A Applicative is any type that defines how fapply applies to it.
 ;;
-;; the types nil, just, list, vector, atom, volatile, future, delay, and
-;; promise are applicatives
+;; the types nil, just, list, vector, atom, volatile are applicatives
 ;;
 ;; applicatives:  applying a wrapped function to a wrapped value using fapply
 ;;
@@ -137,9 +142,6 @@
 (defmethod fapply :fam.Volatile [applicative functor]
   (fam/fmap @applicative functor))
 
-(defmethod fapply :fam.Dereferenceable [applicative functor]
-  (fam/fmap @applicative functor))
-
 
 
 ;; -----------------------------------------------------------------------------
@@ -147,8 +149,7 @@
 ;;
 ;; A Monad is any type that defines how bind applies to it.
 ;;
-;; the types nil, just, atom, volatile, future, delay, and
-;; promise are monads
+;; the types nil, just, atom, volatile are monads
 ;;
 ;; monads:   applying a function that returns a wrapped value, to a wrapped
 ;;           value using bind
@@ -161,7 +162,7 @@
 ;;           (bind (just 3) half)             ; => nil
 ;;           (bind (just 4) half)             ; => (just 2)
 ;;           (bind nil half)                  ; => nil
-;;           (bind (just 20) half half)       ; => (just 5)
+;;           (bind (just 64) half half halfd) ; => (just 8)
 ;;           (bind (just 20) half half half)  ; => nil
 ;; -----------------------------------------------------------------------------
 
@@ -181,11 +182,6 @@
     (reduce (fn [m f] (fam/bind m f)) monad fs)))
 
 (defmethod bind :fam.Volatile [monad & fs]
-  (if (== 1 (count fs))
-    ((first fs) @monad)
-    (reduce (fn [m f] (fam/bind m f)) monad fs)))
-
-(defmethod bind :fam.Dereferenceable [monad & fs]
   (if (== 1 (count fs))
     ((first fs) @monad)
     (reduce (fn [m f] (fam/bind m f)) monad fs)))

@@ -23,11 +23,14 @@
 
 [Don’t fear the monad](https://youtu.be/ZhuHCtR3xq8)
 
+[Functional Programming - Ross Olsen](https://www.youtube.com/watch?v=0if71HOyVjY)
+
 [Project Euler](https://projecteuler.net/)
 
 [The Most Beautiful Program Ever Written](https://www.youtube.com/watch?v=OyfBQmvr2Hc)
 
 [Lisp 1.5 programmer's manual](http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf)
+
 
 
 ## Functional Architecture
@@ -41,17 +44,21 @@
 [Paper: How to write a financial contract](https://www.microsoft.com/en-us/research/uploads/prod/2000/09/pj-eber.pdf)
 
 
+
 ## Leonardo Borges on Monads:
   * [Monads in Small Bites - Part I   - Functors](http://www.leonardoborges.com/writings/2012/11/30/monads-in-small-bites-part-i-functors/)
   * [Monads in Small Bites - Part II  - Applicative Functors](http://www.leonardoborges.com/writings/2012/12/02/monads-in-small-bites-part-ii-applicative-functors/)
   * [Monads in Small Bites - Part III - Monoids](http://www.leonardoborges.com/writings/2012/12/05/monads-in-small-bites-part-iii-monoids/)
   * [Monads in Small Bites - Part IV  - Monads](http://www.leonardoborges.com/writings/2012/12/08/monads-in-small-bites-part-iv-monads/)
 
+
+
 ## Konrad Hinsen on Monads:		
   * [Monad tutorial part 1](https://github.com/khinsen/monads-in-clojure/blob/master/PART1.md)		
   * [Monad tutorial part 2](https://github.com/khinsen/monads-in-clojure/blob/master/PART2.md)		
   * [Monad tutorial part 3](https://github.com/khinsen/monads-in-clojure/blob/master/PART3.md)		
   * [Monad tutorial part 4](https://github.com/khinsen/monads-in-clojure/blob/master/PART4.md)
+
 
 
 ## Alan Kay
