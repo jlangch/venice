@@ -184,7 +184,16 @@
         Requires Java 9+.
         """
      :examples '(
-        "(shell/processes)") }
+        """
+        (shell/processes)
+        """
+        """
+        ;; find the PID of the ArangoDB process
+        (->> (shell/processes)
+             (map shell/process-info)
+             (filter #(str/contains? (:command-line %) "ArangoDB3-CLI"))
+             (map :pid))
+        """) }
 
   processes []
 
@@ -224,10 +233,30 @@
         """
         Returns the process info for a process represented by a PID or a \
         process handle.
+
+        The process info is map with the keys:
+          :pid                the PID
+          :alive              true if the process is alive else false
+          :arguments          the list of strings of the arguments of the process
+          :command            the executable pathname of the process
+          :command-line       the command line of the process
+          :start-time         the start time of the process
+          :total-cpu-millis   the total cputime accumulated of the process
+          :user               the user of the process.
+
         Requires Java 9+.
         """
      :examples '(
-        "(shell/process-info 4556)") }
+        """
+        (shell/process-info 4556)
+        """
+        """
+        ;; find the PID of the ArangoDB process
+        (->> (shell/processes)
+             (map shell/process-info)
+             (filter #(str/contains? (:command-line %) "ArangoDB3-CLI"))
+             (map :pid))
+        """) }
 
   process-info [p]
 
@@ -235,20 +264,23 @@
   (let [handle (process-handle p)]
     (when (some? handle)
       (let [get-or-nil   (fn [obj key] (java-unwrap-optional (. obj key)))
+            map-string   (fn [x] (if x (str x) nil))
             map-instant  (fn [x] (if x (time/local-date-time x) nil))
             map-duration (fn [x] (if x (/ (. x :toNanos) 1_000_000) nil))
             info         (. handle :info)]
         (hash-map
-          :arguments         (get-or-nil info :arguments)
-          :command           (get-or-nil info :command)
-          :command-line      (get-or-nil info :commandLine)
+          :pid               (shell/pid handle)
+          :alive             (shell/alive? handle)
+          :arguments         (map-string (get-or-nil info :arguments))
+          :command           (map-string (get-or-nil info :command))
+          :command-line      (map-string (get-or-nil info :commandLine))
           :start-time        (->> (get-or-nil info :startInstant)
                                   (cast :java.time.Instant)
                                   (map-instant))
           :total-cpu-millis  (->> (get-or-nil info :totalCpuDuration)
                                   (cast :java.time.Duration)
                                   (map-duration))
-          :user              (get-or-nil info :user))))))
+          :user              (map-string (get-or-nil info :user)))))))
 
 
 (defn
