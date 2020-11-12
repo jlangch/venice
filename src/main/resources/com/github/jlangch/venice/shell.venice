@@ -34,6 +34,7 @@
 ;;;;   (shell/process-handle? p)                     9+        x      x     x
 ;;;;   (shell/process-info p)                        9+        x      x     x
 ;;;;   (shell/processes)                             9+        x      x     x
+;;;;   (shell/processes-info)                        9+        x      x     x
 ;;;;   (shell/descendant-processes)                  9+        x      x     x
 ;;;;   (shell/parent-process)                        9+        x      x     x
 
@@ -126,8 +127,16 @@
         process represented by the handle.
         Requires Java 9+.
         """
-     :examples '(
-        "(shell/pid)") }
+     :examples '("(shell/pid)")
+     :see-also '(
+       "shell/process-handle"
+       "shell/process-info"
+       "shell/alive?"
+       "shell/kill"
+       "shell/kill-forcibly"
+       "shell/descendant-processes"
+       "shell/parent-processes"
+       "shell/wait-for-process-exit" ) }
 
   pid
 
@@ -149,8 +158,16 @@
         nil if there is no process.
         Requires Java 9+.
         """
-     :examples '(
-        "(shell/process-handle 4556)") }
+     :examples '("(shell/process-handle 4556)")
+     :see-also '(
+       "shell/pid"
+       "shell/alive?"
+       "shell/process-info"
+       "shell/kill"
+       "shell/kill-forcibly"
+       "shell/descendant-processes"
+       "shell/parent-processes"
+       "shell/wait-for-process-exit" ) }
 
   process-handle [pid]
 
@@ -189,11 +206,13 @@
         """
         """
         ;; find the PID of the ArangoDB process
+        ;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
         (->> (shell/processes)
              (map shell/process-info)
-             (filter #(str/contains? (:command-line %) "ArangoDB3-CLI"))
+             (filter #(str/contains? (:command-line %) "ArangoDB3"))
              (map :pid))
-        """) }
+        """)
+     :see-also '("shell/processes-info") }
 
   processes []
 
@@ -201,6 +220,43 @@
   (->> (. :java.lang.ProcessHandle :allProcesses)
        (seq)
        (map #(cast :java.lang.ProcessHandle %))))
+
+
+(defn
+  ^{ :arglists '("(processes-info)")
+     :doc
+        """
+        Returns the process info for all running processes.
+
+        The process info is a map with the keys:
+          :pid                the PID
+          :alive              true if the process is alive else false
+          :arguments          the list of strings of the arguments of the process
+          :command            the executable pathname of the process
+          :command-line       the command line of the process
+          :start-time         the start time of the process
+          :total-cpu-millis   the total cputime accumulated of the process
+          :user               the user of the process.
+
+        """
+     :examples '(
+        """
+        (shell/processes-info)
+        """
+        """
+        ;; find the PID of the ArangoDB process
+        ;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
+        (->> (shell/processes-info)
+             (filter #(str/contains? (:command-line %) "ArangoDB3"))
+             (map :pid))
+        """)
+     :see-also '("shell/processes") }
+
+  processes-info []
+
+  (require-java-9+)
+  (->> (shell/processes)
+       (map shell/process-info)))
 
 
 (defn
@@ -213,8 +269,8 @@
         is alive otherwise false.
         Requires Java 9+.
         """
-     :examples '(
-        "(shell/alive? 4556)") }
+     :examples '("(shell/alive? 4556)")
+     :see-also '("shell/pid") }
 
   alive? [p]
 
@@ -234,7 +290,7 @@
         Returns the process info for a process represented by a PID or a \
         process handle.
 
-        The process info is map with the keys:
+        The process info is a map with the keys:
           :pid                the PID
           :alive              true if the process is alive else false
           :arguments          the list of strings of the arguments of the process
@@ -252,12 +308,13 @@
         """
         """
         ;; find the PID of the ArangoDB process
-        ;; like: > pgrep -lf ArangoDB3 | grep -v pgrep | cut -d ' ' -f 1
+        ;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
         (->> (shell/processes)
              (map shell/process-info)
-             (filter #(str/contains? (:command-line %) "ArangoDB3-CLI"))
+             (filter #(str/contains? (:command-line %) "ArangoDB3"))
              (map :pid))
-        """) }
+        """)
+     :see-also '("shell/pid" "shell/process-handle") }
 
   process-info [p]
 
@@ -292,14 +349,15 @@
         Requires Java 9+.
         """
      :examples '(
-        "(shell/current-process)") }
+        "(shell/current-process)"
+        "(shell/process-info (shell/current-process))")
+     :see-also '("shell/current-process-info" "shell/process-info") }
 
-  current-process [p]
+  current-process []
 
   (require-java-9+)
   (->> (. :java.lang.ProcessHandle :current)
        (cast :java.lang.ProcessHandle)))
-
 
 (defn
   ^{ :arglists '(
@@ -307,12 +365,18 @@
         "(descendant-processes process-handle)")
      :doc
         """
-        Returns the descendants of a process represented by a PID \
-        or a process handle.
+        Returns the descendants (:java.lang.ProcessHandle) of a process \
+        represented by a PID or a process handle.
         Requires Java 9+.
         """
      :examples '(
-        "(shell/descendant-processes 4556)") }
+        "(shell/descendant-processes 4556)"
+        """
+        (->> (shell/current-process)
+             (shell/descendant-processes)
+             (map shell/process-info))
+        """ )
+     :see-also '("shell/process-info" "shell/pid") }
 
   descendant-processes [p]
 
@@ -329,20 +393,26 @@
         "(parent-process process-handle)")
      :doc
         """
-        Returns the parent of a process represented by a PID or a \
-        process handle.
+        Returns the parent (:java.lang.ProcessHandle) of a process represented \
+        by a PID or a process handle.
         Requires Java 9+.
         """
      :examples '(
-        "(shell/parent-process 4556)") }
+        "(shell/parent-process 4556)"
+        """
+        (->> (shell/current-process)
+             (shell/parent-process)
+             (shell/process-info))
+        """)
+     :see-also '("shell/process-info" "shell/pid") }
 
   parent-process [p]
 
   (require-java-9+)
   (if-let [handle (process-handle p)]
     (->> (. handle :parent)
-         (cast :java.lang.ProcessHandle)
-         (java-unwrap-optional))))
+         (java-unwrap-optional)
+         (cast :java.lang.ProcessHandle))))
 
 
 (defn
@@ -358,7 +428,8 @@
         Requires Java 9+.
         """
      :examples '(
-        "(shell/kill 4556)") }
+        "(shell/kill 4556)")
+     :see-also '("shell/pid", "shell/kill-forcibly") }
 
   kill [p]
 
@@ -380,7 +451,8 @@
         Requires Java 9+.
         """
      :examples '(
-        "(shell/kill-forcibly 4556)") }
+        "(shell/kill-forcibly 4556)")
+     :see-also '("shell/pid", "shell/kill") }
 
   kill-forcibly [p]
 

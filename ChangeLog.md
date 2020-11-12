@@ -31,6 +31,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 - threading macros `some->` and  `some->>`
 - cross references to cheatsheet
 - syntax highlighting for cheatsheet examples
+- `shell/processes-info` to list the process info of all running processes
 
 ### Fixed
 
