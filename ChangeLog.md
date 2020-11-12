@@ -35,6 +35,7 @@ and simplify code. See the Venice *JMH* benchmark *ReflectionBenchmark.java*
 ### Fixed
 
 - word wrap with function names in PDF cheatsheet
+- shell/process-info to handle Java Optional type better
 
 
 
