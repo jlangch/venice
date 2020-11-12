@@ -252,6 +252,7 @@
         """
         """
         ;; find the PID of the ArangoDB process
+        ;; like: > pgrep -lf ArangoDB3 | grep -v pgrep | cut -d ' ' -f 1
         (->> (shell/processes)
              (map shell/process-info)
              (filter #(str/contains? (:command-line %) "ArangoDB3-CLI"))
@@ -264,23 +265,22 @@
   (let [handle (process-handle p)]
     (when (some? handle)
       (let [get-or-nil   (fn [obj key] (java-unwrap-optional (. obj key)))
-            map-string   (fn [x] (if x (str x) nil))
             map-instant  (fn [x] (if x (time/local-date-time x) nil))
             map-duration (fn [x] (if x (/ (. x :toNanos) 1_000_000) nil))
             info         (. handle :info)]
         (hash-map
           :pid               (shell/pid handle)
           :alive             (shell/alive? handle)
-          :arguments         (map-string (get-or-nil info :arguments))
-          :command           (map-string (get-or-nil info :command))
-          :command-line      (map-string (get-or-nil info :commandLine))
+          :arguments         (get-or-nil info :arguments)
+          :command           (get-or-nil info :command)
+          :command-line      (get-or-nil info :commandLine)
           :start-time        (->> (get-or-nil info :startInstant)
                                   (cast :java.time.Instant)
                                   (map-instant))
           :total-cpu-millis  (->> (get-or-nil info :totalCpuDuration)
                                   (cast :java.time.Duration)
                                   (map-duration))
-          :user              (map-string (get-or-nil info :user)))))))
+          :user              (get-or-nil info :user))))))
 
 
 (defn
