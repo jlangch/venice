@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -890,10 +891,11 @@ public class JavaInteropFunctions {
 			
 			if (Types.isVncJavaObject(args.first(), java.util.Optional.class)) {
 				// TODO: handle the formal type
-				java.util.Optional<Object> optional = (java.util.Optional<Object>)((VncJavaObject)args.first()).getDelegate();
-				return optional.isPresent() 
-						? new VncJavaObject(optional.get())
-						: Constants.Nil;
+				final Optional<Object> optional = (Optional<Object>)((VncJavaObject)args.first()).getDelegate();
+				
+				final Object val = optional.isPresent() ? optional.get() : null;
+				
+				return JavaInteropUtil.convertToVncVal(val);
 			}
 			else {
 				throw new VncException(String.format(
