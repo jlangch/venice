@@ -6,7 +6,7 @@ processes and opening files.
 Starting with Java 9, Java opens the world to managing operating system 
 processes in a standard way.
 
-While _Venice_ is running seamlessly on Java 8+, Java 9+ is required
+While *Venice* is running seamlessly on Java 8+, Java 9+ is required
 for managing processes.
 
 
@@ -56,10 +56,10 @@ Compare two files and print the differences.
 
 ## alive?
 
-Return _true_ if the process represented by a PID or a process handle
-is alive otherwise _false_.
+Return *true* if the process represented by a PID or a process handle
+is alive otherwise *false*.
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/alive? p) 
@@ -72,7 +72,7 @@ Without argument returns the PID (type long) of current process. With
 a process-handle (:java.lang.ProcessHandle) it returns the PID for the 
 process represented by the handle.
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/pid)
@@ -82,9 +82,9 @@ _Note: Requires Java 9+_
 ## process-handle
 
 Returns the process handle (:java.lang.ProcessHandle) for a PID or
-_nil_ if there is no process associated with the PID.
+*nil* if there is no process associated with the PID.
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/process-handle p)
@@ -93,9 +93,9 @@ _Note: Requires Java 9+_
 
 ## process-handle?
 
-Returns _true_ if p is a process handle (:java.lang.ProcessHandle).
+Returns *true* if p is a process handle (:java.lang.ProcessHandle).
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/process-handle? p)
@@ -107,10 +107,11 @@ _Note: Requires Java 9+_
 Returns the process info for a process represented by a PID or a 
 process handle.
 
-Returns for each process a map with the keys ':arguments', ':command', 
-':command-line', ':start-time', ':total-cpu-millis', and ':user'
+The process info is a map with the keys :pid, :alive, 
+:arguments, :command, :command-line, :start-time, :total-cpu-millis, 
+and :user
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/process-info p)
@@ -119,13 +120,50 @@ _Note: Requires Java 9+_
 
 ## processes
 
-Returns the process handles (:java.lang.ProcessHandle) for all
-running processes.
+Returns a snapshot of all processes visible to the current process.
+Returns a list of :java.lang.ProcessHandle for the processes.
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/processes)
+```
+
+Example:
+
+```
+;; find the PID of the ArangoDB process
+;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
+(->> (shell/processes)
+     (map shell/process-info)
+     (filter #(str/contains? (:command-line %) "ArangoDB3"))
+     (map :pid))
+```
+
+
+## processes-info
+
+Returns a snapshot of all processes visible to the current process.
+Returns a list of process infos for the processes.
+
+The process info is a map with the keys :pid, :alive, 
+:arguments, :command, :command-line, :start-time, :total-cpu-millis, 
+and :user
+
+*Note: Requires Java 9+*
+
+```
+(shell/processes-info)
+```
+
+Example:
+
+```
+;; find the PID of the ArangoDB process
+;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
+(->> (shell/processes-info)
+     (filter #(str/contains? (:command-line %) "ArangoDB3"))
+     (map :pid))
 ```
 
 
@@ -133,7 +171,7 @@ _Note: Requires Java 9+_
 
 Returns the process handle of the current process.
         
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/current-process)
@@ -142,36 +180,52 @@ _Note: Requires Java 9+_
 
 ## descendant-processes
 
-Returns the descendants of a process represented by a PID
-or a process handle.
-        
-_Note: Requires Java 9+_
+Returns the descendants (list of :java.lang.ProcessHandle) of a process
+represented by a PID or a process handle.
+
+*Note: Requires Java 9+*
 
 ```
 (shell/descendant-processes p)
 ```
 
+Example:
+
+```
+(->> (shell/current-process)
+     (shell/descendant-processes)
+     (map shell/process-info))
+```
+
 
 ## parent-process
 
-Returns the parent of a process represented by a PID or a process
-handle.
+Returns the parent (:java.lang.ProcessHandle) of a process represented 
+by a PID or a process handle.
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/parent-process p)
 ```
 
+Example:
+
+```
+(->> (shell/current-process)
+     (shell/parent-process)
+     (shell/process-info))
+ ```
+
 
 ## kill
 
-Requests the process to be killed. Returns _true_ if the process is 
-killed and _false_ if the process stays alive. Returns _nil_ if the 
+Requests the process to be killed. Returns *true* if the process is 
+killed and *false* if the process stays alive. Returns *nil* if the 
 process does not exist. Accepts a PID or a process handle 
 (:java.lang.ProcessHandle).
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/kill pid)
@@ -180,12 +234,12 @@ _Note: Requires Java 9+_
 
 ## kill-forcibly
 
-Requests the process to be killed forcibly. Returns _true_ if the process 
-is killed and _false_ if the process stays alive. Returns _nil_ if the 
+Requests the process to be killed forcibly. Returns *true* if the process 
+is killed and *false* if the process stays alive. Returns *nil* if the 
 process does not exist. Accepts a PID or a process handle 
 (:java.lang.ProcessHandle).
         
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/kill-forcibly pid)
@@ -195,11 +249,11 @@ _Note: Requires Java 9+_
 ## wait-for-process-exit
 
 Waits until the process with the PID exits. Waits max timeout 
-seconds. Returns _nil_ if the process exits before reaching the 
+seconds. Returns *nil* if the process exits before reaching the 
 timeout, else the PID is returned. Accepts a PID or a 
 process handle (:java.lang.ProcessHandle).
 
-_Note: Requires Java 9+_
+*Note: Requires Java 9+*
 
 ```
 (shell/wait-for-process-exit pid timeout) 

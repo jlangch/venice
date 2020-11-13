@@ -132,11 +132,7 @@
        "shell/process-handle"
        "shell/process-info"
        "shell/alive?"
-       "shell/kill"
-       "shell/kill-forcibly"
-       "shell/descendant-processes"
-       "shell/parent-processes"
-       "shell/wait-for-process-exit" ) }
+       "shell/kill" ) }
 
   pid
 
@@ -163,11 +159,7 @@
        "shell/pid"
        "shell/alive?"
        "shell/process-info"
-       "shell/kill"
-       "shell/kill-forcibly"
-       "shell/descendant-processes"
-       "shell/parent-processes"
-       "shell/wait-for-process-exit" ) }
+       "shell/kill" ) }
 
   process-handle [pid]
 
@@ -477,7 +469,8 @@
         Requires Java 9+.
         """
      :examples '(
-        "(shell/wait-for-process-exit 12345 20)") }
+        "(shell/wait-for-process-exit 12345 20)")
+     :see-also '("shell/pid", "shell/kill") }
 
   wait-for-process-exit [p timeout]
 
