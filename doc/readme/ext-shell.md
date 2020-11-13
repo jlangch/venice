@@ -126,6 +126,13 @@ The process info is a map with the keys:
 (shell/process-info p)
 ```
 
+Example:
+
+```clojure
+(->> (shell/current-process)
+     (shell/process-info))
+ ```
+
 
 ## processes
 
@@ -167,7 +174,7 @@ and :user
 
 Example:
 
-```
+```clojure
 ;; find the PID of the ArangoDB process
 ;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
 (->> (shell/processes-info)
@@ -186,6 +193,13 @@ Returns the process handle of the current process.
 (shell/current-process)
 ```
 
+Example:
+
+```clojure
+(->> (shell/current-process)
+     (shell/process-info))
+ ```
+
 
 ## descendant-processes
 
@@ -200,7 +214,7 @@ represented by a PID or a process handle.
 
 Example:
 
-```
+```clojure
 (->> (shell/current-process)
      (shell/descendant-processes)
      (map shell/process-info))
@@ -220,7 +234,7 @@ by a PID or a process handle.
 
 Example:
 
-```
+```clojure
 (->> (shell/current-process)
      (shell/parent-process)
      (shell/process-info))
@@ -240,6 +254,16 @@ process does not exist. Accepts a PID or a process handle
 (shell/kill pid)
 ```
 
+Example:
+
+```clojure
+;; find the PID of the ArangoDB process and kill it
+(->> (shell/processes-info)
+     (filter #(str/contains? (:command-line %) "ArangoDB3"))
+     (map :pid)
+     (shell/kill))
+```
+
 
 ## kill-forcibly
 
@@ -252,6 +276,16 @@ process does not exist. Accepts a PID or a process handle
 
 ```
 (shell/kill-forcibly pid)
+```
+
+Example:
+
+```clojure
+;; find the PID of the ArangoDB process and kill it
+(->> (shell/processes-info)
+     (filter #(str/contains? (:command-line %) "ArangoDB3"))
+     (map :pid)
+     (shell/kill-forcibly))
 ```
 
 
