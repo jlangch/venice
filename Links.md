@@ -63,6 +63,8 @@
 
 [Wiki content](https://docs.github.com/en/free-pro-team@latest/github/building-a-strong-community/editing-wiki-content)
 
+[Add images](http://mikehadlow.blogspot.com/2014/03/how-to-add-images-to-github-wiki.html?m=1)
+
 [Add images to the Wiki](https://github.com/RWTH-EBC/AixLib/wiki/How-to:-Add-images-to-the-Wiki)
 
 
