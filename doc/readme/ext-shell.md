@@ -107,9 +107,16 @@ Returns *true* if p is a process handle (:java.lang.ProcessHandle).
 Returns the process info for a process represented by a PID or a 
 process handle.
 
-The process info is a map with the keys :pid, :alive, 
-:arguments, :command, :command-line, :start-time, :total-cpu-millis, 
-and :user
+The process info is a map with the keys:
+
+| :pid               | the PID |
+| :alive             | true if the process is alive else false |
+| :arguments         | the list of strings of the arguments of the process |
+| :command           | the executable pathname of the process |
+| :command-line      | the command line of the process |
+| :start-time        | the start time of the process |
+| :total-cpu-millis  | the total cputime accumulated of the process |
+| :user              | the user of the process |
 
 *Note: Requires Java 9+*
 
