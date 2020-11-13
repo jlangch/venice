@@ -293,6 +293,7 @@ Example:
   (->> (shell/processes-info)
        (filter #(str/contains? (:command-line %) "ArangoDB3"))
        (map :pid)
+       (first)
        (shell/kill)))
 ```
 
@@ -320,6 +321,7 @@ Example:
   (->> (shell/processes-info)
        (filter #(str/contains? (:command-line %) "ArangoDB3"))
        (map :pid)
+       (first)
        (shell/kill-forcibly)))
 ```
 
