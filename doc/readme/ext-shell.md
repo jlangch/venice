@@ -109,14 +109,16 @@ process handle.
 
 The process info is a map with the keys:
 
-| :pid               | the PID |
-| :alive             | true if the process is alive else false |
+| Key                | Description                                         |
+| :---               | :---                                                |
+| :pid               | the PID                                             |
+| :alive             | true if the process is alive else false             |
 | :arguments         | the list of strings of the arguments of the process |
-| :command           | the executable pathname of the process |
-| :command-line      | the command line of the process |
-| :start-time        | the start time of the process |
-| :total-cpu-millis  | the total cputime accumulated of the process |
-| :user              | the user of the process |
+| :command           | the executable pathname of the process              |
+| :command-line      | the command line of the process                     |
+| :start-time        | the start time of the process                       |
+| :total-cpu-millis  | the total cputime accumulated of the process        |
+| :user              | the user of the process                             |
 
 *Note: Requires Java 9+*
 
