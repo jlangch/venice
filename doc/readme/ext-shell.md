@@ -21,9 +21,10 @@ Opens a file or an URL with the associated platform specific application.
 
 Example:
 
-```
+```clojure
 (do
   (load-module :shell)
+  
   (shell/open "image.png"))
 ```
 
@@ -38,9 +39,10 @@ Opens a Mac OSX app.
 
 Example:
 
-```
+```clojure
 (do
   (load-module :shell)
+  
   (shell/open-macos-app "Firefox"))
 ```
 
@@ -52,6 +54,16 @@ Compare two files and print the differences.
 ```
 (shell/diff file1 file2)
 ```
+
+Example:
+
+```clojure
+(do
+  (load-module :shell)
+  
+  (diff "/tmp/x.txt" "/tmp/y.txt"))
+```
+
 
 
 ## alive?
@@ -129,8 +141,10 @@ The process info is a map with the keys:
 Example:
 
 ```clojure
-(->> (shell/current-process)
-     (shell/process-info))
+(do
+  (load-module :shell)
+  (->> (shell/current-process)
+       (shell/process-info)))
  ```
 
 
@@ -147,13 +161,16 @@ Returns a list of :java.lang.ProcessHandle for the processes.
 
 Example:
 
-```
-;; find the PID of the ArangoDB process
-;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
-(->> (shell/processes)
-     (map shell/process-info)
-     (filter #(str/contains? (:command-line %) "ArangoDB3"))
-     (map :pid))
+```clojure
+(do
+  (load-module :shell)
+  
+  ;; find the PID of the ArangoDB process
+  ;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
+  (->> (shell/processes)
+       (map shell/process-info)
+       (filter #(str/contains? (:command-line %) "ArangoDB3"))
+       (map :pid)))
 ```
 
 
@@ -175,11 +192,14 @@ and :user
 Example:
 
 ```clojure
-;; find the PID of the ArangoDB process
-;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
-(->> (shell/processes-info)
-     (filter #(str/contains? (:command-line %) "ArangoDB3"))
-     (map :pid))
+(do
+  (load-module :shell)
+  
+  ;; find the PID of the ArangoDB process
+  ;; like: pgrep -lf ArangoDB3 | cut -d ' ' -f 1
+  (->> (shell/processes-info)
+       (filter #(str/contains? (:command-line %) "ArangoDB3"))
+       (map :pid)))
 ```
 
 
@@ -196,8 +216,11 @@ Returns the process handle of the current process.
 Example:
 
 ```clojure
-(->> (shell/current-process)
-     (shell/process-info))
+(do
+  (load-module :shell)
+  
+  (->> (shell/current-process)
+       (shell/process-info)))
  ```
 
 
@@ -215,9 +238,12 @@ represented by a PID or a process handle.
 Example:
 
 ```clojure
-(->> (shell/current-process)
-     (shell/descendant-processes)
-     (map shell/process-info))
+(do
+  (load-module :shell)
+  
+  (->> (shell/current-process)
+       (shell/descendant-processes)
+       (map shell/process-info)))
 ```
 
 
@@ -235,9 +261,12 @@ by a PID or a process handle.
 Example:
 
 ```clojure
-(->> (shell/current-process)
-     (shell/parent-process)
-     (shell/process-info))
+(do
+  (load-module :shell)
+  
+  (->> (shell/current-process)
+       (shell/parent-process)
+       (shell/process-info)))
  ```
 
 
@@ -257,11 +286,14 @@ process does not exist. Accepts a PID or a process handle
 Example:
 
 ```clojure
-;; find the PID of the ArangoDB process and kill it
-(->> (shell/processes-info)
-     (filter #(str/contains? (:command-line %) "ArangoDB3"))
-     (map :pid)
-     (shell/kill))
+(do
+  (load-module :shell)
+  
+  ;; find the PID of the ArangoDB process and kill it
+  (->> (shell/processes-info)
+       (filter #(str/contains? (:command-line %) "ArangoDB3"))
+       (map :pid)
+       (shell/kill)))
 ```
 
 
@@ -281,11 +313,14 @@ process does not exist. Accepts a PID or a process handle
 Example:
 
 ```clojure
-;; find the PID of the ArangoDB process and kill it
-(->> (shell/processes-info)
-     (filter #(str/contains? (:command-line %) "ArangoDB3"))
-     (map :pid)
-     (shell/kill-forcibly))
+(do
+  (load-module :shell)
+  
+  ;; find the PID of the ArangoDB process and kill it
+  (->> (shell/processes-info)
+       (filter #(str/contains? (:command-line %) "ArangoDB3"))
+       (map :pid)
+       (shell/kill-forcibly)))
 ```
 
 
