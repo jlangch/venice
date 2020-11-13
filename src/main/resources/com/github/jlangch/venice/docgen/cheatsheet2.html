@@ -270,11 +270,11 @@
                  <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<h3>${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
-                            <tr>
+                            <tr id="${= (:id s3) }$">
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -298,11 +298,11 @@
                 <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<h3>${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
-                            <tr>
+                            <tr id="${= (:id s3) }$">
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces

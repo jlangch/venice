@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -85,6 +87,8 @@ public class DocGenerator {
 			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
+
+			validateUniqueSectionsId(left, right);
 			
 			final Map<String,Object> data = new HashMap<>();
 			data.put("meta-author", "Venice");
@@ -167,12 +171,12 @@ public class DocGenerator {
 	}
 	
 	private DocSection getPrimitivesSection() {
-		final DocSection section = new DocSection("Primitives", id());
+		final DocSection section = new DocSection("Primitives", "primitives");
 		
-		final DocSection lit = new DocSection("Literals");
+		final DocSection lit = new DocSection("Literals", "primitives.literals");
 		section.addSection(lit);
 		
-		final DocSection literals = new DocSection("Literals");
+		final DocSection literals = new DocSection("Literals", id());
 		lit.addSection(literals);
 
 		literals.addItem(new DocItem("Nil: nil", null));
@@ -185,10 +189,10 @@ public class DocGenerator {
 		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", null) );
 		literals.addItem(new DocItem("String: \"\"\"{ \"age\": 42 }\"\"\"", null) );
 
-		final DocSection numbers = new DocSection("Numbers");
+		final DocSection numbers = new DocSection("Numbers", "primitives.numbers");
 		section.addSection(numbers);
 
-		final DocSection arithmetic = new DocSection("Arithmetic");
+		final DocSection arithmetic = new DocSection("Arithmetic", id());
 		numbers.addSection(arithmetic);
 		arithmetic.addItem(getDocItem("+"));
 		arithmetic.addItem(getDocItem("-"));
@@ -210,7 +214,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
 
-		final DocSection convert = new DocSection("Convert");
+		final DocSection convert = new DocSection("Convert", id());
 		numbers.addSection(convert);
 		convert.addItem(getDocItem("int"));
 		convert.addItem(getDocItem("long"));
@@ -218,7 +222,7 @@ public class DocGenerator {
 		convert.addItem(getDocItem("decimal"));
 		convert.addItem(getDocItem("bigint"));
 
-		final DocSection compare = new DocSection("Compare");
+		final DocSection compare = new DocSection("Compare", id());
 		numbers.addSection(compare);
 		compare.addItem(getDocItem("=="));
 		compare.addItem(getDocItem("="));
@@ -228,7 +232,7 @@ public class DocGenerator {
 		compare.addItem(getDocItem(">="));
 		compare.addItem(getDocItem("compare"));
 
-		final DocSection test = new DocSection("Test");
+		final DocSection test = new DocSection("Test", id());
 		numbers.addSection(test);
 		test.addItem(getDocItem("zero?"));
 		test.addItem(getDocItem("pos?"));
@@ -241,13 +245,13 @@ public class DocGenerator {
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
 
-		final DocSection random = new DocSection("Random");
+		final DocSection random = new DocSection("Random", id());
 		numbers.addSection(random);
 		random.addItem(getDocItem("rand-long"));
 		random.addItem(getDocItem("rand-double"));
 		random.addItem(getDocItem("rand-gaussian"));
 		
-		final DocSection trigonometry = new DocSection("Trigonometry");
+		final DocSection trigonometry = new DocSection("Trigonometry", id());
 		numbers.addSection(trigonometry);
 		trigonometry.addItem(getDocItem("to-radians"));
 		trigonometry.addItem(getDocItem("to-degrees"));
@@ -255,7 +259,7 @@ public class DocGenerator {
 		trigonometry.addItem(getDocItem("cos"));
 		trigonometry.addItem(getDocItem("tan"));
 		
-		final DocSection statistics = new DocSection("Statistics");
+		final DocSection statistics = new DocSection("Statistics", id());
 		numbers.addSection(statistics);
 		statistics.addItem(getDocItem("mean"));
 		statistics.addItem(getDocItem("median"));
@@ -263,7 +267,7 @@ public class DocGenerator {
 		statistics.addItem(getDocItem("quantile"));
 		statistics.addItem(getDocItem("standard-deviation"));
 
-		final DocSection bigdecimal = new DocSection("BigDecimal");
+		final DocSection bigdecimal = new DocSection("BigDecimal", id());
 		numbers.addSection(bigdecimal);
 		bigdecimal.addItem(getDocItem("dec/add"));
 		bigdecimal.addItem(getDocItem("dec/sub"));
@@ -272,10 +276,10 @@ public class DocGenerator {
 		bigdecimal.addItem(getDocItem("dec/scale"));
 
 		
-		final DocSection strings = new DocSection("Strings");
+		final DocSection strings = new DocSection("Strings", "primitives.strings");
 		section.addSection(strings);
 
-		final DocSection create = new DocSection("Create");
+		final DocSection create = new DocSection("Create", id());
 		strings.addSection(create);
 		create.addItem(getDocItem("str"));
 		create.addItem(getDocItem("str/format"));
@@ -283,7 +287,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("str/double-quote"));
 		create.addItem(getDocItem("str/double-unquote"));
 
-		final DocSection use = new DocSection("Use");
+		final DocSection use = new DocSection("Use", id());
 		strings.addSection(use);
 		use.addItem(getDocItem("count"));
 		use.addItem(getDocItem("compare"));
@@ -311,48 +315,48 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/expand"));
 		use.addItem(getDocItem("str/lorem-ipsum"));
 		
-		final DocSection split = new DocSection("Split/Join");
+		final DocSection split = new DocSection("Split/Join", id());
 		strings.addSection(split);
 		split.addItem(getDocItem("str/split"));
 		split.addItem(getDocItem("str/split-lines"));
 		split.addItem(getDocItem("str/join"));
 		
-		final DocSection replace = new DocSection("Replace");
+		final DocSection replace = new DocSection("Replace", id());
 		strings.addSection(replace);
 		replace.addItem(getDocItem("str/replace-first"));
 		replace.addItem(getDocItem("str/replace-last"));
 		replace.addItem(getDocItem("str/replace-all"));
 		
-		final DocSection strip = new DocSection("Strip");
+		final DocSection strip = new DocSection("Strip", id());
 		strings.addSection(strip);
 		strip.addItem(getDocItem("str/strip-start"));
 		strip.addItem(getDocItem("str/strip-end"));
 		strip.addItem(getDocItem("str/strip-indent"));
 		strip.addItem(getDocItem("str/strip-margin"));
 		
-		final DocSection conv = new DocSection("Conversion");
+		final DocSection conv = new DocSection("Conversion", id());
 		strings.addSection(conv);
 		conv.addItem(getDocItem("str/lower-case"));
 		conv.addItem(getDocItem("str/upper-case"));
 		conv.addItem(getDocItem("str/cr-lf", false));
 		
-		final DocSection regex = new DocSection("Regex");
+		final DocSection regex = new DocSection("Regex", id());
 		strings.addSection(regex);
 		regex.addItem(getDocItem("match?"));
 		regex.addItem(getDocItem("not-match?"));
 
-		final DocSection trim = new DocSection("Trim");
+		final DocSection trim = new DocSection("Trim", id());
 		strings.addSection(trim);
 		trim.addItem(getDocItem("str/trim"));
 		trim.addItem(getDocItem("str/trim-to-nil"));
 
-		final DocSection hex = new DocSection("Hex");
+		final DocSection hex = new DocSection("Hex", id());
 		strings.addSection(hex);
 		hex.addItem(getDocItem("str/hex-to-bytebuf"));
 		hex.addItem(getDocItem("str/bytebuf-to-hex"));
 		hex.addItem(getDocItem("str/format-bytebuf"));
 
-		final DocSection encode = new DocSection("Encode/Decode");
+		final DocSection encode = new DocSection("Encode/Decode", id());
 		strings.addSection(encode);
 		encode.addItem(getDocItem("str/encode-base64"));
 		encode.addItem(getDocItem("str/decode-base64"));
@@ -362,11 +366,11 @@ public class DocGenerator {
 		encode.addItem(getDocItem("str/escape-xml"));
 
 
-		final DocSection validation = new DocSection("Validation");
+		final DocSection validation = new DocSection("Validation", id());
 		strings.addSection(validation);
 		validation.addItem(getDocItem("str/valid-email-addr?"));
 
-		final DocSection str_test = new DocSection("Test");
+		final DocSection str_test = new DocSection("Test", id());
 		strings.addSection(str_test);
 		str_test.addItem(getDocItem("string?"));
 		str_test.addItem(getDocItem("empty?"));
@@ -379,7 +383,7 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("str/quoted?"));
 		str_test.addItem(getDocItem("str/double-quoted?"));
 
-		final DocSection str_test_char = new DocSection("Test char");
+		final DocSection str_test_char = new DocSection("Test char", id());
 		strings.addSection(str_test_char);
 		str_test_char.addItem(getDocItem("str/char?"));
 		str_test_char.addItem(getDocItem("str/digit?"));
@@ -390,36 +394,36 @@ public class DocGenerator {
 		str_test_char.addItem(getDocItem("str/upper-case?"));
 
 		
-		final DocSection chars = new DocSection("Chars");
+		final DocSection chars = new DocSection("Chars", "primitives.chars");
 		section.addSection(chars);
 
-		final DocSection charuse = new DocSection("Use");
+		final DocSection charuse = new DocSection("Use", id());
 		chars.addSection(charuse);		
 		charuse.addItem(getDocItem("char"));
 		charuse.addItem(getDocItem("char?"));
 
 		
-		final DocSection other = new DocSection("Other");
+		final DocSection other = new DocSection("Other", "primitives.other");
 		section.addSection(other);
 
-		final DocSection keywords = new DocSection("Keywords");
+		final DocSection keywords = new DocSection("Keywords", id());
 		other.addSection(keywords);
 		keywords.addItem(new DocItem(":a :blue", null));
 		keywords.addItem(getDocItem("keyword?"));
 		keywords.addItem(getDocItem("keyword"));
 
-		final DocSection symbols = new DocSection("Symbols");
+		final DocSection symbols = new DocSection("Symbols", id());
 		other.addSection(symbols);
 		symbols.addItem(new DocItem("'a 'blue", null));
 		symbols.addItem(getDocItem("symbol?"));
 		symbols.addItem(getDocItem("symbol"));
 
-		final DocSection just = new DocSection("Just");
+		final DocSection just = new DocSection("Just", id());
 		other.addSection(just);
 		just.addItem(getDocItem("just"));
 		just.addItem(getDocItem("just?"));
 
-		final DocSection boolean_ = new DocSection("Boolean");
+		final DocSection boolean_ = new DocSection("Boolean", id());
 		other.addSection(boolean_);
 		boolean_.addItem(getDocItem("boolean"));
 		boolean_.addItem(getDocItem("not"));
@@ -431,13 +435,13 @@ public class DocGenerator {
 	}
 
 	private DocSection getCollectionsSection() {
-		final DocSection section = new DocSection("Collections", id());
+		final DocSection section = new DocSection("Collections", "collections");
 
 
-		final DocSection collections = new DocSection("Collections");
+		final DocSection collections = new DocSection("Collections", id());
 		section.addSection(collections);
 		
-		final DocSection generic = new DocSection("Generic");
+		final DocSection generic = new DocSection("Generic", "collections.generic");
 		collections.addSection(generic);
 		generic.addItem(getDocItem("count"));
 		generic.addItem(getDocItem("compare"));
@@ -459,7 +463,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("reverse"));
 		generic.addItem(getDocItem("shuffle"));
 
-		final DocSection coll_test = new DocSection("Tests");
+		final DocSection coll_test = new DocSection("Tests", "collections.tests");
 		collections.addSection(coll_test);
 		coll_test.addItem(getDocItem("empty?"));
 		coll_test.addItem(getDocItem("not-empty?"));
@@ -477,7 +481,7 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("mutable-map?"));
 		coll_test.addItem(getDocItem("bytebuf?"));
 
-		final DocSection coll_process = new DocSection("Process");
+		final DocSection coll_process = new DocSection("Process", "collections.process");
 		collections.addSection(coll_process);
 		coll_process.addItem(getDocItem("map"));
 		coll_process.addItem(getDocItem("map-indexed"));
@@ -487,17 +491,17 @@ public class DocGenerator {
 		coll_process.addItem(getDocItem("docoll"));
 
 		
-		final DocSection lists = new DocSection("Lists");
+		final DocSection lists = new DocSection("Lists", "collections.lists");
 		section.addSection(lists);
 
-		final DocSection list_create = new DocSection("Create");
+		final DocSection list_create = new DocSection("Create", id());
 		lists.addSection(list_create);
 		list_create.addItem(getDocItem("()"));
 		list_create.addItem(getDocItem("list"));
 		list_create.addItem(getDocItem("list*"));
 		list_create.addItem(getDocItem("mutable-list"));
 
-		final DocSection list_access = new DocSection("Access");
+		final DocSection list_access = new DocSection("Access", id());
 		lists.addSection(list_access);
 		list_access.addItem(getDocItem("first"));
 		list_access.addItem(getDocItem("second"));
@@ -512,7 +516,7 @@ public class DocGenerator {
 		list_access.addItem(getDocItem("nlast"));
 		list_access.addItem(getDocItem("some"));
 
-		final DocSection list_modify = new DocSection("Modify");
+		final DocSection list_modify = new DocSection("Modify", id());
 		lists.addSection(list_modify);
 		list_modify.addItem(getDocItem("cons"));
 		list_modify.addItem(getDocItem("conj"));
@@ -537,7 +541,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("split-at"));
 		list_modify.addItem(getDocItem("split-with"));
 	
-		final DocSection list_test = new DocSection("Test");
+		final DocSection list_test = new DocSection("Test", id());
 		lists.addSection(list_test);
 		list_test.addItem(getDocItem("list?"));
 		list_test.addItem(getDocItem("mutable-list?"));
@@ -547,16 +551,16 @@ public class DocGenerator {
 		list_test.addItem(getDocItem("not-any?"));
 		
 		
-		final DocSection vectors = new DocSection("Vectors");
+		final DocSection vectors = new DocSection("Vectors", "collections.vectors");
 		section.addSection(vectors);
 
-		final DocSection vec_create = new DocSection("Create");
+		final DocSection vec_create = new DocSection("Create", id());
 		vectors.addSection(vec_create);
 		vec_create.addItem(getDocItem("[]"));
 		vec_create.addItem(getDocItem("vector"));
 		vec_create.addItem(getDocItem("mapv"));
 
-		final DocSection vec_access = new DocSection("Access");
+		final DocSection vec_access = new DocSection("Access", id());
 		vectors.addSection(vec_access);
 		vec_access.addItem(getDocItem("first"));
 		vec_access.addItem(getDocItem("second"));
@@ -571,7 +575,7 @@ public class DocGenerator {
 		vec_access.addItem(getDocItem("subvec"));
 		vec_access.addItem(getDocItem("some"));
 
-		final DocSection vec_modify = new DocSection("Modify");
+		final DocSection vec_modify = new DocSection("Modify", id());
 		vectors.addSection(vec_modify);
 		vec_modify.addItem(getDocItem("cons"));
 		vec_modify.addItem(getDocItem("conj"));
@@ -597,14 +601,14 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("update!"));
 		vec_modify.addItem(getDocItem("split-with"));
 		
-		final DocSection vec_nested = new DocSection("Nested");
+		final DocSection vec_nested = new DocSection("Nested", id());
 		vectors.addSection(vec_nested);
 		vec_nested.addItem(getDocItem("get-in"));
 		vec_nested.addItem(getDocItem("assoc-in"));
 		vec_nested.addItem(getDocItem("update-in"));
 		vec_nested.addItem(getDocItem("dissoc-in"));
 			
-		final DocSection vec_test = new DocSection("Test");
+		final DocSection vec_test = new DocSection("Test", id());
 		vectors.addSection(vec_test);
 		vec_test.addItem(getDocItem("vector?"));
 		vec_test.addItem(getDocItem("contains?"));
@@ -615,17 +619,17 @@ public class DocGenerator {
 		vec_test.addItem(getDocItem("not-any?"));
 	
 		
-		final DocSection sets = new DocSection("Sets");
+		final DocSection sets = new DocSection("Sets", "collections.sets");
 		section.addSection(sets);
 
-		final DocSection set_create = new DocSection("Create");
+		final DocSection set_create = new DocSection("Create", id());
 		sets.addSection(set_create);
 		set_create.addItem(getDocItem("#{}"));
 		set_create.addItem(getDocItem("set"));
 		set_create.addItem(getDocItem("sorted-set"));
 		set_create.addItem(getDocItem("mutable-set"));
 
-		final DocSection set_modify = new DocSection("Modify");
+		final DocSection set_modify = new DocSection("Modify", id());
 		sets.addSection(set_modify);
 		set_modify.addItem(getDocItem("cons"));
 		set_modify.addItem(getDocItem("cons!"));
@@ -636,7 +640,7 @@ public class DocGenerator {
 		set_modify.addItem(getDocItem("union"));
 		set_modify.addItem(getDocItem("intersection"));
 
-		final DocSection set_test = new DocSection("Test");
+		final DocSection set_test = new DocSection("Test", id());
 		sets.addSection(set_test);
 		set_test.addItem(getDocItem("set?"));
 		set_test.addItem(getDocItem("sorted-set?"));
@@ -649,10 +653,10 @@ public class DocGenerator {
 		set_test.addItem(getDocItem("not-any?"));
 
 		
-		final DocSection maps = new DocSection("Maps");
+		final DocSection maps = new DocSection("Maps", "collections.maps");
 		section.addSection(maps);
 
-		final DocSection maps_create = new DocSection("Create");
+		final DocSection maps_create = new DocSection("Create", id());
 		maps.addSection(maps_create);
 		maps_create.addItem(getDocItem("{}"));
 		maps_create.addItem(getDocItem("hash-map"));
@@ -662,7 +666,7 @@ public class DocGenerator {
 		maps_create.addItem(getDocItem("zipmap"));
 		
 
-		final DocSection map_access = new DocSection("Access");
+		final DocSection map_access = new DocSection("Access", id());
 		maps.addSection(map_access);
 		map_access.addItem(getDocItem("find"));
 		map_access.addItem(getDocItem("get"));
@@ -672,7 +676,7 @@ public class DocGenerator {
 		map_access.addItem(getDocItem("val"));
 		map_access.addItem(getDocItem("entries"));
 
-		final DocSection map_modify = new DocSection("Modify");
+		final DocSection map_modify = new DocSection("Modify", id());
 		maps.addSection(map_modify);
 		map_modify.addItem(getDocItem("cons"));
 		map_modify.addItem(getDocItem("conj"));
@@ -694,14 +698,14 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("map-keys"));
 		map_modify.addItem(getDocItem("map-vals"));
 		
-		final DocSection map_nested = new DocSection("Nested");
+		final DocSection map_nested = new DocSection("Nested", id());
 		maps.addSection(map_nested);
 		map_nested.addItem(getDocItem("get-in"));
 		map_nested.addItem(getDocItem("assoc-in"));
 		map_nested.addItem(getDocItem("update-in"));
 		map_nested.addItem(getDocItem("dissoc-in"));
 		
-		final DocSection map_test = new DocSection("Test");
+		final DocSection map_test = new DocSection("Test", id());
 		maps.addSection(map_test);
 		map_test.addItem(getDocItem("map?"));
 		map_test.addItem(getDocItem("sequential?"));
@@ -714,15 +718,15 @@ public class DocGenerator {
 		map_test.addItem(getDocItem("not-contains?"));
 
 		
-		final DocSection stacks = new DocSection("Stack");
+		final DocSection stacks = new DocSection("Stack", "collections.stack");
 		section.addSection(stacks);
 
-		final DocSection stacks_create = new DocSection("Create");
+		final DocSection stacks_create = new DocSection("Create", id());
 		stacks.addSection(stacks_create);
 		stacks_create.addItem(getDocItem("stack"));
 		
 
-		final DocSection stacks_access = new DocSection("Access");
+		final DocSection stacks_access = new DocSection("Access", id());
 		stacks.addSection(stacks_access);
 		stacks_access.addItem(getDocItem("peek"));
 		stacks_access.addItem(getDocItem("pop!"));
@@ -730,21 +734,21 @@ public class DocGenerator {
 		stacks_access.addItem(getDocItem("count"));
 
 		
-		final DocSection stacks_test = new DocSection("Test");
+		final DocSection stacks_test = new DocSection("Test", id());
 		stacks.addSection(stacks_test);
 		stacks_test.addItem(getDocItem("empty?"));
 		stacks_test.addItem(getDocItem("stack?"));
 
 		
-		final DocSection queues = new DocSection("Queue");
+		final DocSection queues = new DocSection("Queue", "collections.queue");
 		section.addSection(queues);
 
-		final DocSection queues_create = new DocSection("Create");
+		final DocSection queues_create = new DocSection("Create", id());
 		queues.addSection(queues_create);
 		queues_create.addItem(getDocItem("queue"));
 		
 
-		final DocSection queues_access = new DocSection("Access");
+		final DocSection queues_access = new DocSection("Access", id());
 		queues.addSection(queues_access);
 		queues_access.addItem(getDocItem("peek"));
 		queues_access.addItem(getDocItem("poll!"));
@@ -752,7 +756,7 @@ public class DocGenerator {
 		queues_access.addItem(getDocItem("count"));
 
 		
-		final DocSection queues_test = new DocSection("Test");
+		final DocSection queues_test = new DocSection("Test", id());
 		queues.addSection(queues_test);
 		queues_test.addItem(getDocItem("empty?"));
 		queues_test.addItem(getDocItem("queue?"));
@@ -761,20 +765,20 @@ public class DocGenerator {
 	}		
 
 	private DocSection getLazySequencesSection() {
-		final DocSection section = new DocSection("Lazy Sequences", id());
+		final DocSection section = new DocSection("Lazy Sequences", "lazyseq");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection create = new DocSection("Create");
+		final DocSection create = new DocSection("Create", id());
 		all.addSection(create);
 		create.addItem(getDocItem("lazy-seq"));
 
-		final DocSection realize = new DocSection("Realize");
+		final DocSection realize = new DocSection("Realize", id());
 		all.addSection(realize);
 		realize.addItem(getDocItem("doall"));
 
-		final DocSection test = new DocSection("Test");
+		final DocSection test = new DocSection("Test", id());
 		all.addSection(test);
 		test.addItem(getDocItem("lazy-seq?"));
 
@@ -782,12 +786,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getArraysSection() {
-		final DocSection section = new DocSection("Arrays", id());
+		final DocSection section = new DocSection("Arrays", "arrays");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection create = new DocSection("Create");
+		final DocSection create = new DocSection("Create", id());
 		all.addSection(create);
 		create.addItem(getDocItem("make-array"));
 		create.addItem(getDocItem("object-array"));
@@ -797,7 +801,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("float-array"));
 		create.addItem(getDocItem("double-array"));
 
-		final DocSection use = new DocSection("Use");
+		final DocSection use = new DocSection("Use", id());
 		all.addSection(use);
 		use.addItem(getDocItem("aget"));
 		use.addItem(getDocItem("aset"));
@@ -810,12 +814,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getRegexSection() {
-		final DocSection section = new DocSection("Regex", id());
+		final DocSection section = new DocSection("Regex", "regex");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection general = new DocSection("General");
+		final DocSection general = new DocSection("General", id());
 		all.addSection(general);
 		general.addItem(getDocItem("regex/pattern"));
 		general.addItem(getDocItem("regex/matcher"));
@@ -834,12 +838,12 @@ public class DocGenerator {
 	}
 	
 	private DocSection getFunctionsSection() {
-		final DocSection section = new DocSection("Functions", id());
+		final DocSection section = new DocSection("Functions", "functions");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection create = new DocSection("Create");
+		final DocSection create = new DocSection("Create", id());
 		all.addSection(create);
 		create.addItem(getDocItem("fn"));
 		create.addItem(getDocItem("defn"));
@@ -856,21 +860,21 @@ public class DocGenerator {
 		create.addItem(getDocItem("every-pred"));
 		create.addItem(getDocItem("any-pred"));
 
-		final DocSection call = new DocSection("Call");
+		final DocSection call = new DocSection("Call", id());
 		all.addSection(call);
 		call.addItem(getDocItem("apply"));
 		call.addItem(getDocItem("->"));
 		call.addItem(getDocItem("->>"));
 
-		final DocSection test = new DocSection("Test");
+		final DocSection test = new DocSection("Test", id());
 		all.addSection(test);
 		test.addItem(getDocItem("fn?"));
 
-		final DocSection ex = new DocSection("Exception");
+		final DocSection ex = new DocSection("Exception", id());
 		all.addSection(ex);
 		ex.addItem(getDocItem("throw"));
 
-		final DocSection misc = new DocSection("Misc");
+		final DocSection misc = new DocSection("Misc", id());
 		all.addSection(misc);
 		misc.addItem(getDocItem("nil?"));
 		misc.addItem(getDocItem("some?"));
@@ -880,7 +884,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("coalesce"));
 		misc.addItem(getDocItem("load-resource"));
 
-		final DocSection env = new DocSection("Environment");
+		final DocSection env = new DocSection("Environment", id());
 		all.addSection(env);
 		env.addItem(getDocItem("set!"));
 		env.addItem(getDocItem("resolve"));
@@ -894,23 +898,23 @@ public class DocGenerator {
 		env.addItem(getDocItem("name"));
 		env.addItem(getDocItem("namespace"));
 		
-		final DocSection walk = new DocSection("Tree Walker");
+		final DocSection walk = new DocSection("Tree Walker", id());
 		all.addSection(walk);
 		walk.addItem(getDocItem("prewalk"));
 		walk.addItem(getDocItem("postwalk"));
 
-		final DocSection meta = new DocSection("Meta");
+		final DocSection meta = new DocSection("Meta", id());
 		all.addSection(meta);
 		meta.addItem(getDocItem("meta"));
 		meta.addItem(getDocItem("with-meta"));
 		meta.addItem(getDocItem("vary-meta"));
 
-		final DocSection doc = new DocSection("Documentation");
+		final DocSection doc = new DocSection("Documentation", id());
 		all.addSection(doc);
 		doc.addItem(getDocItem("doc", false));
 		doc.addItem(getDocItem("modules"));
 
-		final DocSection syntax = new DocSection("Syntax");
+		final DocSection syntax = new DocSection("Syntax", id());
 		all.addSection(syntax);
 		syntax.addItem(getDocItem("highlight"));
 		
@@ -919,30 +923,30 @@ public class DocGenerator {
 
 
 	private DocSection getSystemSection() {
-		final DocSection section = new DocSection("System", id());
+		final DocSection section = new DocSection("System", "system");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection venice = new DocSection("Venice");
+		final DocSection venice = new DocSection("Venice", id());
 		all.addSection(venice);
 		venice.addItem(getDocItem("version"));
 		venice.addItem(getDocItem("sandboxed?"));
 
-		final DocSection system = new DocSection("System");
+		final DocSection system = new DocSection("System", id());
 		all.addSection(system);
 		system.addItem(getDocItem("system-prop"));
 		system.addItem(getDocItem("system-env"));
 		system.addItem(getDocItem("system-exit-code"));
 		system.addItem(getDocItem("charset-default-encoding"));
 		
-		final DocSection java = new DocSection("Java");
+		final DocSection java = new DocSection("Java", id());
 		all.addSection(java);
 		java.addItem(getDocItem("java-version"));
 		java.addItem(getDocItem("java-version-info"));
 		java.addItem(getDocItem("java-major-version"));
 
-		final DocSection os = new DocSection("OS");
+		final DocSection os = new DocSection("OS", id());
 		all.addSection(os);
 		os.addItem(getDocItem("os-type"));
 		os.addItem(getDocItem("os-type?"));
@@ -950,13 +954,13 @@ public class DocGenerator {
 		os.addItem(getDocItem("os-name"));
 		os.addItem(getDocItem("os-version"));
 
-		final DocSection time = new DocSection("Time");
+		final DocSection time = new DocSection("Time", id());
 		all.addSection(time);
 		time.addItem(getDocItem("current-time-millis"));
 		time.addItem(getDocItem("nano-time"));
 		time.addItem(getDocItem("format-nano-time"));
 
-		final DocSection util = new DocSection("Other");
+		final DocSection util = new DocSection("Other", id());
 		all.addSection(util);
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
@@ -967,7 +971,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));
 
-		final DocSection shell = new DocSection("Shell");
+		final DocSection shell = new DocSection("Shell", id());
 		all.addSection(shell);
 		shell.addItem(getDocItem("sh", false));
 		shell.addItem(getDocItem("with-sh-dir", false));
@@ -978,12 +982,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getMacrosSection() {
-		final DocSection section = new DocSection("Macros", id());
+		final DocSection section = new DocSection("Macros", "macros");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection create = new DocSection("Create");
+		final DocSection create = new DocSection("Create", id());
 		all.addSection(create);		
 		create.addItem(getDocItem("defn"));
 		create.addItem(getDocItem("defn-"));
@@ -991,7 +995,7 @@ public class DocGenerator {
 		create.addItem(getDocItem("macroexpand"));
 		create.addItem(getDocItem("macroexpand-all"));
 
-		final DocSection branch = new DocSection("Branch");
+		final DocSection branch = new DocSection("Branch", id());
 		all.addSection(branch);
 		branch.addItem(getDocItem("and"));
 		branch.addItem(getDocItem("or"));
@@ -1001,14 +1005,14 @@ public class DocGenerator {
 		branch.addItem(getDocItem("if-let"));
 		branch.addItem(getDocItem("when-let"));
 
-		final DocSection loop = new DocSection("Loop");
+		final DocSection loop = new DocSection("Loop", id());
 		all.addSection(loop);
 		loop.addItem(getDocItem("while"));
 		loop.addItem(getDocItem("dotimes"));
 		loop.addItem(getDocItem("list-comp"));
 		loop.addItem(getDocItem("doseq"));
 
-		final DocSection call = new DocSection("Call");
+		final DocSection call = new DocSection("Call", id());
 		all.addSection(call);
 		call.addItem(getDocItem("doto"));
 		call.addItem(getDocItem("->"));
@@ -1020,25 +1024,25 @@ public class DocGenerator {
 		call.addItem(getDocItem("some->"));
 		call.addItem(getDocItem("some->>"));
 
-		final DocSection loading = new DocSection("Loading");
+		final DocSection loading = new DocSection("Loading", id());
 		all.addSection(loading);
 		loading.addItem(getDocItem("load-module"));
 		loading.addItem(getDocItem("load-file", false));
 		loading.addItem(getDocItem("load-classpath-file"));
 		loading.addItem(getDocItem("load-string"));
 		
-		final DocSection test = new DocSection("Test");
+		final DocSection test = new DocSection("Test", id());
 		all.addSection(test);
 		test.addItem(getDocItem("macro?"));
 		test.addItem(getDocItem("cond"));
 		test.addItem(getDocItem("condp"));
 		test.addItem(getDocItem("case"));
 
-		final DocSection assert_ = new DocSection("Assert");
+		final DocSection assert_ = new DocSection("Assert", id());
 		all.addSection(assert_);
 		assert_.addItem(getDocItem("assert"));
 
-		final DocSection util = new DocSection("Util");
+		final DocSection util = new DocSection("Util", id());
 		all.addSection(util);
 		util.addItem(getDocItem("comment"));
 		util.addItem(getDocItem("gensym"));
@@ -1046,7 +1050,7 @@ public class DocGenerator {
 		util.addItem(getDocItem("with-out-str"));
 		util.addItem(getDocItem("with-err-str"));
 		
-		final DocSection profil = new DocSection("Profiling");
+		final DocSection profil = new DocSection("Profiling", id());
 		all.addSection(profil);
 		profil.addItem(getDocItem("time"));
 		profil.addItem(getDocItem("perf", false));
@@ -1055,25 +1059,25 @@ public class DocGenerator {
 	}
 
 	private DocSection getTypesSection() {
-		final DocSection section = new DocSection("Types", id());
+		final DocSection section = new DocSection("Types", "types");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection test = new DocSection("Test");
+		final DocSection test = new DocSection("Test", id());
 		all.addSection(test);		
 		test.addItem(getDocItem("type"));
 		test.addItem(getDocItem("supertype"));
 		test.addItem(getDocItem("instance?"));
 		test.addItem(getDocItem("deftype?"));
 
-		final DocSection define = new DocSection("Define");
+		final DocSection define = new DocSection("Define", id());
 		all.addSection(define);		
 		define.addItem(getDocItem("deftype"));
 		define.addItem(getDocItem("deftype-of"));
 		define.addItem(getDocItem("deftype-or"));
 
-		final DocSection create = new DocSection("Create");
+		final DocSection create = new DocSection("Create", id());
 		all.addSection(create);
 		create.addItem(getDocItem(".:"));
 		
@@ -1081,16 +1085,16 @@ public class DocGenerator {
 	}
 
 	private DocSection getTransducersSection() {
-		final DocSection section = new DocSection("Transducers", id());
+		final DocSection section = new DocSection("Transducers", "transducers");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection run = new DocSection("Use");
+		final DocSection run = new DocSection("Use", id());
 		all.addSection(run);		
 		run.addItem(getDocItem("transduce"));
 
-		final DocSection func = new DocSection("Functions");
+		final DocSection func = new DocSection("Functions", id());
 		all.addSection(func);		
 		func.addItem(getDocItem("map"));
 		func.addItem(getDocItem("map-indexed"));
@@ -1108,14 +1112,14 @@ public class DocGenerator {
 		func.addItem(getDocItem("flatten"));
 		func.addItem(getDocItem("halt-when"));
 
-		final DocSection red = new DocSection("Reductions");
+		final DocSection red = new DocSection("Reductions", id());
 		all.addSection(red);		
 		red.addItem(getDocItem("rf-first"));
 		red.addItem(getDocItem("rf-last"));
 		red.addItem(getDocItem("rf-every?"));
 		red.addItem(getDocItem("rf-any?"));
 		
-		final DocSection early = new DocSection("Early");
+		final DocSection early = new DocSection("Early", id());
 		all.addSection(early);		
 		early.addItem(getDocItem("reduced"));
 		early.addItem(getDocItem("reduced?"));
@@ -1126,12 +1130,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getConcurrencySection() {
-		final DocSection section = new DocSection("Concurrency", id());
+		final DocSection section = new DocSection("Concurrency", "concurrency");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection atoms = new DocSection("Atoms");
+		final DocSection atoms = new DocSection("Atoms", "concurrency.atoms");
 		all.addSection(atoms);
 		atoms.addItem(getDocItem("atom"));
 		atoms.addItem(getDocItem("atom?"));
@@ -1143,7 +1147,7 @@ public class DocGenerator {
 		atoms.addItem(getDocItem("add-watch"));
 		atoms.addItem(getDocItem("remove-watch"));
 
-		final DocSection futures = new DocSection("Futures");
+		final DocSection futures = new DocSection("Futures", "concurrency.futures");
 		all.addSection(futures);
 		futures.addItem(getDocItem("future"));
 		futures.addItem(getDocItem("future?"));
@@ -1156,14 +1160,14 @@ public class DocGenerator {
 		futures.addItem(getDocItem("deref?"));
 		futures.addItem(getDocItem("realized?"));
 
-		final DocSection promises = new DocSection("Promises");
+		final DocSection promises = new DocSection("Promises", "concurrency.promises");
 		all.addSection(promises);
 		promises.addItem(getDocItem("promise"));
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
 		promises.addItem(getDocItem("realized?"));
 
-		final DocSection delay = new DocSection("Delay");
+		final DocSection delay = new DocSection("Delay", "concurrency.delay");
 		all.addSection(delay);
 		delay.addItem(getDocItem("delay"));
 		delay.addItem(getDocItem("delay?"));
@@ -1172,7 +1176,7 @@ public class DocGenerator {
 		delay.addItem(getDocItem("force"));
 		delay.addItem(getDocItem("realized?"));
 
-		final DocSection agents = new DocSection("Agents");
+		final DocSection agents = new DocSection("Agents", "concurrency.agents");
 		all.addSection(agents);
 		agents.addItem(getDocItem("agent"));
 		agents.addItem(getDocItem("send"));
@@ -1187,16 +1191,16 @@ public class DocGenerator {
 		agents.addItem(getDocItem("await-termination-agents", false));
 		agents.addItem(getDocItem("await-termination-agents?", false));
 		
-		final DocSection sched = new DocSection("Scheduler");
+		final DocSection sched = new DocSection("Scheduler", "concurrency.scheduler");
 		all.addSection(sched);
 		sched.addItem(getDocItem("schedule-delay", false));
 		sched.addItem(getDocItem("schedule-at-fixed-rate", false));
 
-		final DocSection locking = new DocSection("Locking");
+		final DocSection locking = new DocSection("Locking", "concurrency.locking");
 		all.addSection(locking);
 		locking.addItem(getDocItem("locking"));
 
-		final DocSection volatiles = new DocSection("Volatiles");
+		final DocSection volatiles = new DocSection("Volatiles", "concurrency.volatiles");
 		all.addSection(volatiles);
 		volatiles.addItem(getDocItem("volatile"));
 		volatiles.addItem(getDocItem("volatile?"));
@@ -1205,7 +1209,7 @@ public class DocGenerator {
 		volatiles.addItem(getDocItem("reset!"));
 		volatiles.addItem(getDocItem("swap!"));
 		
-		final DocSection thlocal = new DocSection("ThreadLocal");
+		final DocSection thlocal = new DocSection("ThreadLocal", "concurrency.threadlocal");
 		all.addSection(thlocal);
 		thlocal.addItem(getDocItem("thread-local"));
 		thlocal.addItem(getDocItem("thread-local?"));
@@ -1214,7 +1218,7 @@ public class DocGenerator {
 		thlocal.addItem(getDocItem("dissoc"));
 		thlocal.addItem(getDocItem("get"));
 
-		final DocSection threads = new DocSection("Threads");
+		final DocSection threads = new DocSection("Threads", "concurrency.threads");
 		all.addSection(threads);
 		threads.addItem(getDocItem("thread-id"));
 		threads.addItem(getDocItem("thread-name"));
@@ -1225,12 +1229,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getIOSection() {
-		final DocSection section = new DocSection("IO", id());
+		final DocSection section = new DocSection("IO", "io");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection to = new DocSection("to");
+		final DocSection to = new DocSection("to", "io.to");
 		all.addSection(to);
 		to.addItem(getDocItem("print"));
 		to.addItem(getDocItem("println"));
@@ -1238,17 +1242,17 @@ public class DocGenerator {
 		to.addItem(getDocItem("flush"));
 		to.addItem(getDocItem("newline"));
 
-		final DocSection to_str = new DocSection("to-str");
+		final DocSection to_str = new DocSection("to-str", "io.tostr");
 		all.addSection(to_str);
 		to_str.addItem(getDocItem("pr-str"));
 		to_str.addItem(getDocItem("with-out-str"));
 
-		final DocSection from = new DocSection("from");
+		final DocSection from = new DocSection("from", "io.from");
 		all.addSection(from);
 		from.addItem(getDocItem("read-line"));
 		from.addItem(getDocItem("read-string"));
 
-		final DocSection file = new DocSection("file");
+		final DocSection file = new DocSection("file", "io.file");
 		all.addSection(file);
 		file.addItem(getDocItem("io/file"));
 		file.addItem(getDocItem("io/file-parent"));
@@ -1259,12 +1263,12 @@ public class DocGenerator {
 		file.addItem(getDocItem("io/file-ext?"));
 		file.addItem(getDocItem("io/file-size"));
 
-		final DocSection file_dir = new DocSection("file dir");
+		final DocSection file_dir = new DocSection("file dir", "io.filedir");
 		all.addSection(file_dir);
 		file_dir.addItem(getDocItem("io/mkdir"));
 		file_dir.addItem(getDocItem("io/mkdirs"));
 
-		final DocSection file_io = new DocSection("file i/o");
+		final DocSection file_io = new DocSection("file i/o", "io.fileio");
 		all.addSection(file_io);
 		file_io.addItem(getDocItem("io/slurp"));
 		file_io.addItem(getDocItem("io/slurp-lines"));
@@ -1275,13 +1279,13 @@ public class DocGenerator {
 		file_io.addItem(getDocItem("io/delete-file-on-exit"));
 		file_io.addItem(getDocItem("io/delete-file-tree"));
 
-		final DocSection file_list = new DocSection("file list");
+		final DocSection file_list = new DocSection("file list", "io.filelist");
 		all.addSection(file_list);
 		file_list.addItem(getDocItem("io/list-files"));
 		file_list.addItem(getDocItem("io/list-files-glob"));
 		file_list.addItem(getDocItem("io/list-file-tree"));
 
-		final DocSection file_test = new DocSection("file test");
+		final DocSection file_test = new DocSection("file test", "io.filetest");
 		all.addSection(file_test);
 		file_test.addItem(getDocItem("io/file?"));
 		file_test.addItem(getDocItem("io/exists-file?"));
@@ -1291,25 +1295,25 @@ public class DocGenerator {
 		file_test.addItem(getDocItem("io/file-can-execute?", false));
 		file_test.addItem(getDocItem("io/file-hidden?", false));
 
-		final DocSection file_watch = new DocSection("file watch");
+		final DocSection file_watch = new DocSection("file watch", "io.filewatch");
 		all.addSection(file_watch);
 		file_watch.addItem(getDocItem("io/await-for", false));
 		file_watch.addItem(getDocItem("io/watch-dir", false));
 		file_watch.addItem(getDocItem("io/close-watcher", false));
 		
-		final DocSection file_other = new DocSection("file other");
+		final DocSection file_other = new DocSection("file other", "io.fileother");
 		all.addSection(file_other);
 		file_other.addItem(getDocItem("io/temp-file"));
 		file_other.addItem(getDocItem("io/tmp-dir"));
 		file_other.addItem(getDocItem("io/user-dir"));
 		file_other.addItem(getDocItem("io/user-home-dir"));
 
-		final DocSection classpath = new DocSection("classpath");
+		final DocSection classpath = new DocSection("classpath", "io.classpath");
 		all.addSection(classpath);
 		classpath.addItem(getDocItem("io/load-classpath-resource", false));
 		classpath.addItem(getDocItem("io/classpath-resource?", false));
 		
-		final DocSection stream = new DocSection("stream");
+		final DocSection stream = new DocSection("stream", "io.stream");
 		all.addSection(stream);
 		stream.addItem(getDocItem("io/copy-stream"));
 		stream.addItem(getDocItem("io/slurp-stream"));
@@ -1319,17 +1323,17 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
 		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
 
-		final DocSection rd_wr = new DocSection("reader/writer");
+		final DocSection rd_wr = new DocSection("reader/writer", "io.readerwriter");
 		all.addSection(rd_wr);
 		rd_wr.addItem(getDocItem("io/buffered-reader"));
 		rd_wr.addItem(getDocItem("io/buffered-writer"));
 
-		final DocSection http = new DocSection("http");
+		final DocSection http = new DocSection("http", "io.http");
 		all.addSection(http);
 		http.addItem(getDocItem("io/download", false));
 		http.addItem(getDocItem("io/internet-avail?", false));
 		
-		final DocSection zip = new DocSection("zip");
+		final DocSection zip = new DocSection("zip", "io.zip");
 		all.addSection(zip);
 		zip.addItem(getDocItem("io/zip", false));
 		zip.addItem(getDocItem("io/zip-file", false));
@@ -1344,7 +1348,7 @@ public class DocGenerator {
 		zip.addItem(getDocItem("io/unzip-all"));
 		zip.addItem(getDocItem("io/unzip-to-dir", false));
 
-		final DocSection gzip = new DocSection("gzip");
+		final DocSection gzip = new DocSection("gzip", "io.gzip");
 		all.addSection(gzip);
 		gzip.addItem(getDocItem("io/gzip", false));
 		gzip.addItem(getDocItem("io/gzip-to-stream"));
@@ -1352,7 +1356,7 @@ public class DocGenerator {
 		gzip.addItem(getDocItem("io/ungzip"));
 		gzip.addItem(getDocItem("io/ungzip-to-stream"));
 
-		final DocSection other = new DocSection("other");
+		final DocSection other = new DocSection("other", "io.other");
 		all.addSection(other);
 		other.addItem(getDocItem("with-out-str"));
 		other.addItem(getDocItem("io/mime-type"));
@@ -1362,12 +1366,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getAppSection() {
-		final DocSection section = new DocSection("Application", id());
+		final DocSection section = new DocSection("Application", "application");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection mgmt = new DocSection("Management");
+		final DocSection mgmt = new DocSection("Management", id());
 		all.addSection(mgmt);
 		mgmt.addItem(getDocItem("app/build"));
 		mgmt.addItem(getDocItem("app/manifest"));
@@ -1376,25 +1380,25 @@ public class DocGenerator {
 	}
 
 	private DocSection getNamespaceSection() {
-		final DocSection section = new DocSection("Namespace", id());
+		final DocSection section = new DocSection("Namespace", "namespace");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection open = new DocSection("Open");
+		final DocSection open = new DocSection("Open", id());
 		all.addSection(open);
 		open.addItem(getDocItem("ns"));
 
-		final DocSection curr = new DocSection("Current");
+		final DocSection curr = new DocSection("Current", id());
 		all.addSection(curr);
 		curr.addItem(getDocItem("*ns*"));
 
-		final DocSection remove = new DocSection("Remove");
+		final DocSection remove = new DocSection("Remove", id());
 		all.addSection(remove);
 		remove.addItem(getDocItem("ns-unmap"));
 		remove.addItem(getDocItem("ns-remove"));
 
-		final DocSection util = new DocSection("Util");
+		final DocSection util = new DocSection("Util", id());
 		all.addSection(util);
 		util.addItem(getDocItem("ns-list"));
 		util.addItem(getDocItem("namespace"));
@@ -1403,24 +1407,24 @@ public class DocGenerator {
 	}
 
 	private DocSection getByteBufSection() {
-		final DocSection section = new DocSection("Byte Buffer", id());
+		final DocSection section = new DocSection("Byte Buffer", "bytebuf");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection bb_create = new DocSection("Create");
+		final DocSection bb_create = new DocSection("Create", id());
 		all.addSection(bb_create);
 		bb_create.addItem(getDocItem("bytebuf"));
 		bb_create.addItem(getDocItem("bytebuf-allocate"));
 		bb_create.addItem(getDocItem("bytebuf-from-string"));
 		
-		final DocSection bb_test = new DocSection("Test");
+		final DocSection bb_test = new DocSection("Test", id());
 		all.addSection(bb_test);
 		bb_test.addItem(getDocItem("empty?"));
 		bb_test.addItem(getDocItem("not-empty?"));
 		bb_test.addItem(getDocItem("bytebuf?"));
 
-		final DocSection bb_use = new DocSection("Use");
+		final DocSection bb_use = new DocSection("Use", id());
 		all.addSection(bb_use);
 		bb_use.addItem(getDocItem("count"));
 		bb_use.addItem(getDocItem("bytebuf-capacity"));
@@ -1431,7 +1435,7 @@ public class DocGenerator {
 		bb_use.addItem(getDocItem("bytebuf-pos"));
 		bb_use.addItem(getDocItem("bytebuf-pos!"));
 
-		final DocSection bb_read = new DocSection("Read");
+		final DocSection bb_read = new DocSection("Read", id());
 		all.addSection(bb_read);
 		bb_read.addItem(getDocItem("bytebuf-get-byte"));
 		bb_read.addItem(getDocItem("bytebuf-get-int"));
@@ -1439,7 +1443,7 @@ public class DocGenerator {
 		bb_read.addItem(getDocItem("bytebuf-get-float"));
 		bb_read.addItem(getDocItem("bytebuf-get-double"));
 
-		final DocSection bb_write = new DocSection("Write");
+		final DocSection bb_write = new DocSection("Write", id());
 		all.addSection(bb_write);
 		bb_write.addItem(getDocItem("bytebuf-put-byte!"));
 		bb_write.addItem(getDocItem("bytebuf-put-int!"));
@@ -1448,12 +1452,12 @@ public class DocGenerator {
 		bb_write.addItem(getDocItem("bytebuf-put-double!"));
 		bb_write.addItem(getDocItem("bytebuf-put-buf!"));
 
-		final DocSection encode = new DocSection("Base64");
+		final DocSection encode = new DocSection("Base64", id());
 		all.addSection(encode);
 		encode.addItem(getDocItem("str/encode-base64"));
 		encode.addItem(getDocItem("str/decode-base64"));
 
-		final DocSection hex = new DocSection("Hex");
+		final DocSection hex = new DocSection("Hex", id());
 		all.addSection(hex);
 		hex.addItem(getDocItem("str/hex-to-bytebuf"));
 		hex.addItem(getDocItem("str/bytebuf-to-hex"));
@@ -1463,35 +1467,35 @@ public class DocGenerator {
 	}
 
 	private DocSection getTimeSection() {
-		final DocSection section = new DocSection("Time", id());
+		final DocSection section = new DocSection("Time", "time");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection date = new DocSection("Date");
+		final DocSection date = new DocSection("Date", id());
 		all.addSection(date);
 		date.addItem(getDocItem("time/date"));
 		date.addItem(getDocItem("time/date?"));
 
-		final DocSection local_date = new DocSection("Local Date");
+		final DocSection local_date = new DocSection("Local Date", id());
 		all.addSection(local_date);
 		local_date.addItem(getDocItem("time/local-date"));
 		local_date.addItem(getDocItem("time/local-date?"));
 		local_date.addItem(getDocItem("time/local-date-parse"));
 
-		final DocSection local_date_time = new DocSection("Local Date Time");
+		final DocSection local_date_time = new DocSection("Local Date Time", id());
 		all.addSection(local_date_time);
 		local_date_time.addItem(getDocItem("time/local-date-time"));
 		local_date_time.addItem(getDocItem("time/local-date-time?"));
 		local_date_time.addItem(getDocItem("time/local-date-time-parse"));
 
-		final DocSection zoned_date_time = new DocSection("Zoned Date Time");
+		final DocSection zoned_date_time = new DocSection("Zoned Date Time", id());
 		all.addSection(zoned_date_time);
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time?"));
 		zoned_date_time.addItem(getDocItem("time/zoned-date-time-parse"));
 		
-		final DocSection fields = new DocSection("Fields");
+		final DocSection fields = new DocSection("Fields", id());
 		all.addSection(fields);
 		fields.addItem(getDocItem("time/year"));
 		fields.addItem(getDocItem("time/month"));
@@ -1502,24 +1506,24 @@ public class DocGenerator {
 		fields.addItem(getDocItem("time/minute"));
 		fields.addItem(getDocItem("time/second"));
 
-		final DocSection etc = new DocSection("Fields etc");
+		final DocSection etc = new DocSection("Fields etc", id());
 		all.addSection(etc);
 		etc.addItem(getDocItem("time/length-of-year"));
 		etc.addItem(getDocItem("time/length-of-month"));
 		etc.addItem(getDocItem("time/first-day-of-month"));
 		etc.addItem(getDocItem("time/last-day-of-month"));
 		
-		final DocSection zone = new DocSection("Zone");
+		final DocSection zone = new DocSection("Zone", id());
 		all.addSection(zone);
 		zone.addItem(getDocItem("time/zone"));
 		zone.addItem(getDocItem("time/zone-offset"));
 
-		final DocSection format = new DocSection("Format");
+		final DocSection format = new DocSection("Format", id());
 		all.addSection(format);
 		format.addItem(getDocItem("time/formatter"));
 		format.addItem(getDocItem("time/format"));
 		
-		final DocSection compare = new DocSection("Test");
+		final DocSection compare = new DocSection("Test", id());
 		all.addSection(compare);
 		compare.addItem(getDocItem("time/after?"));
 		compare.addItem(getDocItem("time/not-after?"));
@@ -1528,7 +1532,7 @@ public class DocGenerator {
 		compare.addItem(getDocItem("time/within?"));
 		compare.addItem(getDocItem("time/leap-year?"));
 		
-		final DocSection misc = new DocSection("Miscellaneous");
+		final DocSection misc = new DocSection("Miscellaneous", id());
 		all.addSection(misc);
 		misc.addItem(getDocItem("time/with-time"));
 		misc.addItem(getDocItem("time/plus"));
@@ -1537,7 +1541,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("time/earliest"));
 		misc.addItem(getDocItem("time/latest"));
 
-		final DocSection util = new DocSection("Util");
+		final DocSection util = new DocSection("Util", id());
 		all.addSection(util);
 		util.addItem(getDocItem("time/zone-ids"));
 		util.addItem(getDocItem("time/to-millis"));
@@ -1546,12 +1550,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getSpecialFormsSection() {
-		final DocSection section = new DocSection("Special Forms", id());
+		final DocSection section = new DocSection("Special Forms", "specialforms");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection generic = new DocSection("Forms");
+		final DocSection generic = new DocSection("Forms", id());
 		all.addSection(generic);
 
 		generic.addItem(getDocItem("def"));
@@ -1566,19 +1570,19 @@ public class DocGenerator {
 		generic.addItem(getDocItem("fn"));
 		generic.addItem(getDocItem("set!"));
 
-		final DocSection recur = new DocSection("Recursion");
+		final DocSection recur = new DocSection("Recursion", id());
 		all.addSection(recur);
 		recur.addItem(getDocItem("loop"));
 		recur.addItem(getDocItem("recur"));
 		recur.addItem(getDocItem("tail-pos", true, true));
 
-		final DocSection ex = new DocSection("Exception");
+		final DocSection ex = new DocSection("Exception", id());
 		all.addSection(ex);
 		ex.addItem(getDocItem("throw", true, true));
 		ex.addItem(getDocItem("try", true, true));
 		ex.addItem(getDocItem("try-with", true, true));
 
-		final DocSection profiling = new DocSection("Profiling");
+		final DocSection profiling = new DocSection("Profiling", id());
 		all.addSection(profiling);
 
 		profiling.addItem(getDocItem("dobench"));
@@ -1589,12 +1593,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getJavaInteropSection() {
-		final DocSection section = new DocSection("Java Interoperability", id());
+		final DocSection section = new DocSection("Java Interoperability", "javainterop");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 			
-		final DocSection java = new DocSection("Java");
+		final DocSection java = new DocSection("Java", id());
 		all.addSection(java);	
 		java.addItem(getDocItem("."));
 		java.addItem(getDocItem("import"));
@@ -1604,7 +1608,7 @@ public class DocGenerator {
 		java.addItem(getDocItem("cast"));
 		java.addItem(getDocItem("class"));
 		
-		final DocSection proxy = new DocSection("Proxify");
+		final DocSection proxy = new DocSection("Proxify", id());
 		all.addSection(proxy);	
 		proxy.addItem(getDocItem("proxify"));
 		proxy.addItem(getDocItem("as-runnable"));
@@ -1618,12 +1622,12 @@ public class DocGenerator {
 		proxy.addItem(getDocItem("as-biconsumer"));
 		proxy.addItem(getDocItem("as-binaryoperator"));
 
-		final DocSection test = new DocSection("Test");
+		final DocSection test = new DocSection("Test", id());
 		all.addSection(test);	
 		test.addItem(getDocItem("java-obj?"));
 		test.addItem(getDocItem("exists-class?"));
 
-		final DocSection support = new DocSection("Support");
+		final DocSection support = new DocSection("Support", id());
 		all.addSection(support);	
 		support.addItem(getDocItem("imports"));
 		support.addItem(getDocItem("supers"));
@@ -1631,7 +1635,7 @@ public class DocGenerator {
 		support.addItem(getDocItem("formal-type"));
 		support.addItem(getDocItem("stacktrace", false, false));
 
-		final DocSection clazz = new DocSection("Class");
+		final DocSection clazz = new DocSection("Class", id());
 		all.addSection(clazz);	
 		clazz.addItem(getDocItem("class"));
 		clazz.addItem(getDocItem("class-of"));
@@ -1644,12 +1648,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getMiscellaneousSection() {
-		final DocSection section = new DocSection("Miscellaneous", id());
+		final DocSection section = new DocSection("Miscellaneous", "miscellaneous");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 		
-		final DocSection json = new DocSection("JSON");
+		final DocSection json = new DocSection("JSON", "miscellaneous.json");
 		all.addSection(json);
 		json.addItem(getDocItem("json/write-str"));
 		json.addItem(getDocItem("json/read-str"));
@@ -1657,27 +1661,27 @@ public class DocGenerator {
 		json.addItem(getDocItem("json/slurp"));
 		json.addItem(getDocItem("json/pretty-print"));
 		
-		final DocSection pdf = new DocSection("PDF");
+		final DocSection pdf = new DocSection("PDF", "miscellaneous.pdf");
 		all.addSection(pdf);
 		pdf.addItem(getDocItem("pdf/render", false));
 		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
 		pdf.addItem(getDocItem("pdf/available?", false));
 		pdf.addItem(getDocItem("pdf/check-required-libs", false));
 		
-		final DocSection pdf_tools = new DocSection("PDF Tools");
+		final DocSection pdf_tools = new DocSection("PDF Tools", "miscellaneous.pdftools");
 		all.addSection(pdf_tools);
 		pdf_tools.addItem(getDocItem("pdf/merge", false));
 		pdf_tools.addItem(getDocItem("pdf/copy", false));
 		pdf_tools.addItem(getDocItem("pdf/pages"));
 		pdf_tools.addItem(getDocItem("pdf/watermark", false));
 
-		final DocSection csv = new DocSection("CSV");
+		final DocSection csv = new DocSection("CSV", "miscellaneous.csv");
 		all.addSection(csv);
 		csv.addItem(getDocItem("csv/read"));
 		csv.addItem(getDocItem("csv/write", false));
 		csv.addItem(getDocItem("csv/write-str"));
 		
-		final DocSection cidr = new DocSection("CIDR");
+		final DocSection cidr = new DocSection("CIDR", "miscellaneous.cidr");
 		all.addSection(cidr);
 		cidr.addItem(getDocItem("cidr/parse"));
 		cidr.addItem(getDocItem("cidr/in-range?"));
@@ -1687,7 +1691,7 @@ public class DocGenerator {
 		cidr.addItem(getDocItem("cidr/inet-addr-to-bytes"));
 		cidr.addItem(getDocItem("cidr/inet-addr-from-bytes"));
 		
-		final DocSection cidr_trie = new DocSection("CIDR Trie");
+		final DocSection cidr_trie = new DocSection("CIDR Trie", "miscellaneous.cidrtrie");
 		all.addSection(cidr_trie);
 		cidr_trie.addItem(getDocItem("cidr/trie"));
 		cidr_trie.addItem(getDocItem("cidr/size"));
@@ -1695,7 +1699,7 @@ public class DocGenerator {
 		cidr_trie.addItem(getDocItem("cidr/lookup"));
 		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
 		
-		final DocSection other = new DocSection("Other");
+		final DocSection other = new DocSection("Other", "miscellaneous.other");
 		all.addSection(other);
 		other.addItem(getDocItem("*version*"));
 		other.addItem(getDocItem("*newline*"));
@@ -1709,12 +1713,12 @@ public class DocGenerator {
 	}
 
 	private DocSection getModulesSection() {
-		final DocSection section = new DocSection("Extension Modules (selection)", id());
+		final DocSection section = new DocSection("Extension Modules (selection)", "modules");
 
-		final DocSection all = new DocSection("");
+		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection kira = new DocSection("Kira");
+		final DocSection kira = new DocSection("Kira", "modules.kira");
 		all.addSection(kira);
 		kira.addItem(new DocItem("(load-module :kira)", null));
 		kira.addItem(getDocItem("kira/eval"));
@@ -1723,7 +1727,7 @@ public class DocGenerator {
 		kira.addItem(getDocItem("kira/escape-html"));
 
 
-		final DocSection trace = new DocSection("Tracing");
+		final DocSection trace = new DocSection("Tracing", "modules.tracing");
 		all.addSection(trace);
 		trace.addItem(new DocItem("(load-module :trace)", null));
 		trace.addItem(getDocItem("trace/trace"));
@@ -1732,7 +1736,7 @@ public class DocGenerator {
 		trace.addItem(getDocItem("trace/trace-var"));
 		trace.addItem(getDocItem("trace/untrace-var"));
 		
-		final DocSection xml = new DocSection("XML");
+		final DocSection xml = new DocSection("XML", "modules.xml");
 		all.addSection(xml);
 		xml.addItem(new DocItem("(load-module :xml)", null));
 		xml.addItem(getDocItem("xml/parse-str"));
@@ -1741,7 +1745,7 @@ public class DocGenerator {
 		xml.addItem(getDocItem("xml/children"));
 		xml.addItem(getDocItem("xml/text"));
 		
-		final DocSection crypt = new DocSection("Cryptography");
+		final DocSection crypt = new DocSection("Cryptography", "modules.cryptography");
 		all.addSection(crypt);
 		crypt.addItem(new DocItem("(load-module :crypt)", null));
 		crypt.addItem(getDocItem("crypt/md5-hash"));
@@ -1751,14 +1755,14 @@ public class DocGenerator {
 		crypt.addItem(getDocItem("crypt/encrypt"));
 		crypt.addItem(getDocItem("crypt/decrypt"));
 		
-		final DocSection gradle = new DocSection("Gradle");
+		final DocSection gradle = new DocSection("Gradle", "modules.gradle");
 		all.addSection(gradle);
 		gradle.addItem(new DocItem("(load-module :gradle)", null));
 		gradle.addItem(getDocItem("gradle/with-home", false));
 		gradle.addItem(getDocItem("gradle/version", false));
 		gradle.addItem(getDocItem("gradle/task", false));
 		
-		final DocSection maven = new DocSection("Maven");
+		final DocSection maven = new DocSection("Maven", "modules.maven");
 		all.addSection(maven);
 		maven.addItem(new DocItem("(load-module :maven)", null));
 		maven.addItem(getDocItem("maven/download", false));
@@ -1993,7 +1997,36 @@ public class DocGenerator {
 		return idMap.computeIfAbsent(name, n -> String.valueOf(gen.getAndIncrement()));
 	}
 	
+	private final void validateUniqueSectionsId(
+			final List<DocSection> left,
+			final List<DocSection> right
+	) {
+		final Set<String> ids = new HashSet<>();
+		
+		left.forEach(s -> validateUniqueSectionId(s, ids));
+		right.forEach(s -> validateUniqueSectionId(s, ids));	
+	}
+
+	private final void validateUniqueSectionId(
+			final DocSection section,
+			final Set<String> ids
+	) {
+		final String id = section.getId();
+		if (id != null) {
+			if (ids.contains(section.getId())) {
+				throw new RuntimeException(
+						String.format(
+								"Non unique section id %s on section %s",
+								id, section.getTitle()));
+			}
+			ids.add(id);
+		}
+		
+		// recursively validate children
+		section.getSections().forEach(s -> validateUniqueSectionId(s, ids));
+	}
 	
+
 	
 	private final Map<String,String> idMap = new HashMap<>();
 	

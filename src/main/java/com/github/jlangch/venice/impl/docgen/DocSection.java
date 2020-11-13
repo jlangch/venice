@@ -27,10 +27,6 @@ import java.util.List;
 
 public class DocSection {
 	
-	public DocSection(final String title) {
-		this(title, null);
-	}
-	
 	public DocSection(final String title, final String id) {
 		this.title = title;
 		this.id = id;
