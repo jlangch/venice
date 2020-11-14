@@ -47,6 +47,12 @@ public class DocSection {
 		}
 	}
 	
+	public void addLiteralIem(final String name, final String text) {
+		final DocSection s = new DocSection(name, null);
+		addSection(s);
+		s.addItem(new DocItem(text, null));
+	}
+	
 	public List<DocSection> getSections() {
 		return sections;
 	}

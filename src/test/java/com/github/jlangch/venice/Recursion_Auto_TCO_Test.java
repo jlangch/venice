@@ -25,17 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.VeniceInterpreter;
-
 
 public class Recursion_Auto_TCO_Test {
 
 	@Test
 	public void test_recursion_multi_arity() {
-		if (!VeniceInterpreter.supportsAutoTCO()) {
-			return;
-		}
-		
 		final String script = 
 				"(do                                                 \n"
 				+ "  (defn factorial                                 \n"
@@ -53,10 +47,6 @@ public class Recursion_Auto_TCO_Test {
 
 	@Test
 	public void test_recursion_local_function() {
-		if (!VeniceInterpreter.supportsAutoTCO()) {
-			return;
-		}
-		
 		final String script = 
 				"(do                                               \n"
 				+ "  (defn factorial [n]                           \n"
@@ -74,10 +64,6 @@ public class Recursion_Auto_TCO_Test {
 
 	@Test
 	public void test_recursion_2nd_function() {
-		if (!VeniceInterpreter.supportsAutoTCO()) {
-			return;
-		}
-		
 		final String script = 
 				"(do                                        \n"
 				+ "  (defn factorial [n] (factorial* n 1))  \n"
@@ -96,10 +82,6 @@ public class Recursion_Auto_TCO_Test {
 
 	@Test
 	public void test_recursion_deep_multi_arity() {
-		if (!VeniceInterpreter.supportsAutoTCO()) {
-			return;
-		}
-		
 		final Venice venice = new Venice();
 		
 		final String script = 
@@ -117,10 +99,6 @@ public class Recursion_Auto_TCO_Test {
 
 	@Test
 	public void test_recursion_no_tail_pos() {
-		if (!VeniceInterpreter.supportsAutoTCO()) {
-			return;
-		}
-		
 		final String script = 
 				"(do                                           \n"
 				+ "  (defn factorial [n] (factorial* n 1))     \n"

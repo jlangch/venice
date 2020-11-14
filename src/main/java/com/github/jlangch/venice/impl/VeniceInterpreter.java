@@ -599,8 +599,7 @@ public class VeniceInterpreter implements Serializable  {
 						final CallStack callStack = ThreadLocalMap.getCallStack();
 
 						// Automatic TCO (tail call optimization)
-						if (supportsAutoTCO()
-								&& tailPosition
+						if (tailPosition
 								&& !fn.isNative()  // native functions do not have an AST body
 								&& !callStack.isEmpty() 
 								&& fnName.equals(callStack.peek().getFnName())
@@ -2221,10 +2220,6 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private void specialFormCallValidation(final String name) {
 		JavaInterop.getInterceptor().validateVeniceFunction(name);
-	}
-
-	public static boolean supportsAutoTCO() {	
-		return true;  // Currently automatic TCO is disabled
 	}
 
 	

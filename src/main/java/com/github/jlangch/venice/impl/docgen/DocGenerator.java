@@ -131,7 +131,6 @@ public class DocGenerator {
 		return Arrays.asList(
 				getPrimitivesSection(),
 				getByteBufSection(),
-				getTimeSection(),
 				getRegexSection(),
 				getTransducersSection(),
 				getFunctionsSection(),
@@ -140,6 +139,7 @@ public class DocGenerator {
 				getTypesSection(),
 				getNamespaceSection(),
 				getAppSection(),
+				getJavaInteropSection(),
 				getModulesSection());
 	}
 	
@@ -150,8 +150,8 @@ public class DocGenerator {
 				getArraysSection(),
 				getConcurrencySection(),
 				getSystemSection(),
+				getTimeSection(),
 				getIOSection(),
-				getJavaInteropSection(),
 				getMiscellaneousSection());
 	}
 
@@ -176,19 +176,17 @@ public class DocGenerator {
 		final DocSection lit = new DocSection("Literals", "primitives.literals");
 		section.addSection(lit);
 		
-		final DocSection literals = new DocSection("Literals", id());
-		lit.addSection(literals);
+		lit.addLiteralIem("Nil",        "nil");
+		lit.addLiteralIem("Boolean",    "true, false");
+		lit.addLiteralIem("Integer",    "150I, 1_000_000I, 0x1FFI");
+		lit.addLiteralIem("Long",       "1500, 1_000_000, 0x00A055FF");
+		lit.addLiteralIem("Double",     "3.569, 2.0E+10");
+		lit.addLiteralIem("BigDecimal", "6.897M, 2.345E+10M");
+		lit.addLiteralIem("BigInteger", "1000N, 1_000_000N");
+		lit.addLiteralIem("String",     "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"");
+		lit.addLiteralIem("",           "\"\"\"{ \"age\": 42 }\"\"\"");
 
-		literals.addItem(new DocItem("Nil: nil", null));
-		literals.addItem(new DocItem("Boolean: true, false", null));
-		literals.addItem(new DocItem("Integer: 150I, 1_000_000I, 0x1FFI", null));
-		literals.addItem(new DocItem("Long: 1500, 1_000_000, 0x00A055FF", null));
-		literals.addItem(new DocItem("Double: 3.569, 2.0E+10", null));
-		literals.addItem(new DocItem("BigDecimal: 6.897M, 2.345E+10M", null));
-		literals.addItem(new DocItem("BigInteger: 1000N, 1_000_000N", null));
-		literals.addItem(new DocItem("String: \"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", null) );
-		literals.addItem(new DocItem("String: \"\"\"{ \"age\": 42 }\"\"\"", null) );
-
+		
 		final DocSection numbers = new DocSection("Numbers", "primitives.numbers");
 		section.addSection(numbers);
 
