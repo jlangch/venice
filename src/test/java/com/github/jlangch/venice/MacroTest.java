@@ -661,6 +661,44 @@ public class MacroTest {
 
 		assertEquals(Long.valueOf(-1L), venice.eval("(-<> 5 (+ <> 3) (/ 2 <>) (- <> 1))"));
 	}
+	
+	@Test
+	public void test_thread_some_first() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+			1L, 
+			venice.eval(
+					"(some-> {:y 3 :x 5} \n" +
+					"        :y          \n" +
+					"        (- 2))        "));
+
+		assertEquals(
+			null, 
+			venice.eval(
+					"(some-> {:y 3 :x 5} \n" +
+					"        :z          \n" +
+					"        (- 2))        "));
+	}
+	
+	@Test
+	public void test_thread_some_last() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+			-1L, 
+			venice.eval(
+					"(some->> {:y 3 :x 5} \n" +
+					"         :y          \n" +
+					"         (- 2))        "));
+
+		assertEquals(
+			null, 
+			venice.eval(
+					"(some->> {:y 3 :x 5} \n" +
+					"         :z          \n" +
+					"         (- 2))        "));
+	}
 
 	@Test
 	public void test_macro_multi_arity() {
