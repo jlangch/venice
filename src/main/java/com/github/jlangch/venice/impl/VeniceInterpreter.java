@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1161,9 +1160,7 @@ public class VeniceInterpreter implements Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity(".:", ast.rest(), 1);
 			final List<VncVal> args = new ArrayList<>();
-	 		final Iterator<VncVal> iter = ast.rest().iterator();
-	 		while (iter.hasNext()) {
-	 			final VncVal v = iter.next();
+			for(VncVal v : ast.rest()) {
 				args.add(evaluate(v, env));
 			}
 			return DefTypeForm.createType(args, env);
@@ -1865,9 +1862,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncList getTryBody(final VncList ast) {
 		final List<VncVal> body = new ArrayList<>();
- 		final Iterator<VncVal> iter = ast.rest().iterator();
- 		while (iter.hasNext()) {
- 			final VncVal e = iter.next();
+ 		for(VncVal e : ast.rest()) {
 			if (Types.isVncList(e)) {
 				final VncVal first = ((VncList)e).first();
 				if (Types.isVncSymbol(first)) {
@@ -1887,9 +1882,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncList blocks, 
 			final Throwable th
 	) {
- 		final Iterator<VncVal> iter = blocks.iterator();
- 		while (iter.hasNext()) {
- 			final VncVal b = iter.next();
+		for(VncVal b : blocks) {
 			if (Types.isVncList(b)) {
 				final VncList block = ((VncList)b);
 				final VncVal first = block.first();
@@ -1917,9 +1910,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncList findFirstFinallyBlock(final VncList blocks) {
- 		final Iterator<VncVal> iter = blocks.iterator();
- 		while (iter.hasNext()) {
- 			final VncVal b = iter.next();
+		for(VncVal b : blocks) {
 			if (Types.isVncList(b)) {
 				final VncList block = ((VncList)b);
 				final VncVal first = block.first();
@@ -2037,9 +2028,7 @@ public class VeniceInterpreter implements Serializable  {
 			private void validateFnPreconditions(final Env env) {
 				if (preConditions != null && !preConditions.isEmpty()) {
 			 		final Env local = new Env(env);	
-			 		final Iterator<VncVal> iter = preConditions.iterator();
-			 		while (iter.hasNext()) {
-			 			final VncVal v = iter.next();
+			 		for(VncVal v : preConditions) {
 						if (!isFnConditionTrue(evaluate(v, local))) {
 							try (WithCallStack cs = new WithCallStack(new CallFrame(name, v.getMeta()))) {
 								throw new AssertionException(String.format(

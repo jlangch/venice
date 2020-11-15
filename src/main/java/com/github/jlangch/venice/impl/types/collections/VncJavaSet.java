@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,6 +37,7 @@ import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.EmptyIterator;
 
 
 public class VncJavaSet extends VncSet implements IVncJavaObject {
@@ -161,6 +163,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		return value.contains(val.convertToJavaObject());
 	}
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return isEmpty() ? EmptyIterator.empty() : new MappingIterator(value.iterator());
+    }
+
 	@Override
 	public Set<VncVal> getSet() { 
 		return Collections.unmodifiableSet(getVncValueSet()); 
@@ -258,6 +265,30 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 				.stream()
 				.map(v -> JavaInteropUtil.convertToVncVal(v))
 				.collect(Collectors.toSet());
+	}
+
+	
+	
+	private static class MappingIterator implements Iterator<VncVal> {
+
+		public MappingIterator(final Iterator<Object> iter) {
+			this.iter = iter;
+		}
+		
+	    @Override
+	    public boolean hasNext() { return iter.hasNext(); }
+
+	    @Override
+	    public VncVal next() { 
+	    	return JavaInteropUtil.convertToVncVal(iter.next());
+	    }
+
+	    @Override
+	    public String toString() {
+	        return "MappingIterator()";
+	    }
+	    
+	    private final Iterator<Object> iter;
 	}
 
 	

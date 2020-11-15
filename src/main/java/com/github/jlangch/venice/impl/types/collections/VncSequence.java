@@ -35,7 +35,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 
 
-public abstract class VncSequence extends VncCollection {
+public abstract class VncSequence extends VncCollection implements Iterable<VncVal> {
 
 	public VncSequence(VncVal meta) {
 		super(meta);

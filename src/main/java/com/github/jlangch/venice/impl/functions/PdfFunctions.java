@@ -293,13 +293,11 @@ public class PdfFunctions {
 				
 				sandboxFunctionCallValidation();
 
-				final List<VncVal> pdfs = args.getList();
-
-				if (pdfs.isEmpty()) {
+				if (args.isEmpty()) {
 					throw new VncException("pdf/merge: A PDF list must not be empty");
 				}
-				else if (pdfs.size() == 1) {
-					return pdfs.get(0);
+				else if (args.size() == 1) {
+					return args.first();
 				}
 				else {
 					try {
@@ -308,7 +306,8 @@ public class PdfFunctions {
 				        final PdfCopy copy = new PdfCopy(document, os);
 				
 				        document.open();
-				        for (VncVal val : pdfs){
+				        
+				 		for (VncVal val : args) {
 				        	if (val != Nil) {				        	
 					        	final ByteBuffer pdf = Coerce.toVncByteBuffer(val).getValue();
 					        	
@@ -327,7 +326,7 @@ public class PdfFunctions {
 					}
 					catch(Exception ex) {
 						throw new VncException(
-								String.format("pdf/merge: Failed to merge %d PDFs", pdfs.size()),
+								String.format("pdf/merge: Failed to merge %d PDFs", args.size()),
 								ex);
 					}
 				}
@@ -365,8 +364,8 @@ public class PdfFunctions {
 				final ByteBuffer pdf = Coerce.toVncByteBuffer(args.first()).getValue();
 
 				final List<List<Integer>> pages = new ArrayList<>();
-				
-				for(VncVal p : args.rest().getList()) {
+
+		 		for (VncVal p : args.rest()) {
 					final String spec = Coerce.toVncKeyword(p).getValue();
 					if (spec.matches("^[0-9]+$")) {
 						pages.add(Arrays.asList(Integer.parseInt(spec)));

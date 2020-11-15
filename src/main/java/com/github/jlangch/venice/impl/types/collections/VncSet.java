@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public abstract class VncSet extends VncCollection implements IVncFunction {
+public abstract class VncSet extends VncCollection implements IVncFunction, Iterable<VncVal> {
 
 	public VncSet(VncVal meta) {
 		super(meta);
@@ -98,6 +99,8 @@ public abstract class VncSet extends VncCollection implements IVncFunction {
 	public abstract Set<VncVal> getSet();
 	
 	public abstract List<VncVal> getList();
+
+    public abstract Iterator<VncVal> iterator();
 
 	@Override
 	public Object convertToJavaObject() {
