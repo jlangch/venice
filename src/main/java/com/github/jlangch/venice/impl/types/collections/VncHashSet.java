@@ -120,7 +120,7 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncHashSet addAll(final VncSet val) {
-		return new VncHashSet(value.addAll(val.getSet()), getMeta());
+		return new VncHashSet(value.addAll(val), getMeta());
 	}
 	
 	@Override
@@ -135,7 +135,7 @@ public class VncHashSet extends VncSet {
 
 	@Override
 	public VncHashSet removeAll(final VncSet val) {
-		return new VncHashSet(value.removeAll(val.getSet()), getMeta());
+		return new VncHashSet(value.removeAll(val), getMeta());
 	}
 
 	@Override
@@ -165,12 +165,12 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList(), getMeta());
+		return new VncList(value.toVector(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getList(), getMeta());
+		return new VncVector(value.toVector(), getMeta());
 	}
 	
 	@Override

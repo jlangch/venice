@@ -116,13 +116,26 @@ public class VncMutableSet extends VncSet {
 
 	@Override
 	public VncMutableSet addAll(final VncSet val) {
-		value.addAll(val.getSet());
+		if (Types.isVncMutableSet(val)) {
+			value.addAll(((VncMutableSet)val).value);
+		}
+		else {
+			val.forEach(v -> add(v));
+		}
 		return this;
 	}
 	
 	@Override
 	public VncMutableSet addAll(final VncSequence val) {
-		value.addAll(val.getList());
+		if (Types.isVncMutableList(val)) {
+			value.addAll(((VncMutableList)val).getList());
+		}
+		else if (Types.isVncMutableVector(val)) {
+			value.addAll(((VncMutableVector)val).getList());
+		}
+		else {
+			val.forEach(v -> add(v));
+		}
 		return this;
 	}
 
@@ -134,13 +147,26 @@ public class VncMutableSet extends VncSet {
 
 	@Override
 	public VncMutableSet removeAll(final VncSet val) {
-		value.removeAll(val.getSet());
+		if (Types.isVncMutableSet(val)) {
+			value.removeAll(((VncMutableSet)val).value);
+		}
+		else {
+			val.forEach(v -> remove(v));
+		}
 		return this;
 	}
 
 	@Override
 	public VncMutableSet removeAll(final VncSequence val) {
-		value.removeAll(val.getList());
+		if (Types.isVncMutableList(val)) {
+			value.removeAll(((VncMutableList)val).getList());
+		}
+		else if (Types.isVncMutableVector(val)) {
+			value.removeAll(((VncMutableVector)val).getList());
+		}
+		else {
+			val.forEach(v -> remove(v));
+		}
 		return this;
 	}
 
@@ -166,12 +192,12 @@ public class VncMutableSet extends VncSet {
 
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList(), getMeta());
+		return new VncList(getSet(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getList(), getMeta());
+		return new VncVector(getSet(), getMeta());
 	}
 
 	@Override

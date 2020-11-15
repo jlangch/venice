@@ -112,7 +112,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 			value.addAll(((VncJavaSet)val).value);
 		}
 		else {
-			val.getList().forEach(v -> add(v));
+			val.forEach(v -> add(v));
 		}
 		return this;
 	}
@@ -124,7 +124,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 			value.addAll((List<Object>)((VncJavaList)val).getDelegate());
 		}
 		else {
-			val.getList().forEach(v -> add(v));
+			val.forEach(v -> add(v));
 		}
 		return this;
 	}
@@ -141,7 +141,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 			value.removeAll(((VncJavaSet)val).value);
 		}
 		else {
-			val.getList().forEach(v -> remove(v));
+			val.forEach(v -> remove(v));
 		}
 		return this;
 	}
@@ -153,7 +153,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 			value.removeAll((List<Object>)((VncJavaList)val).getDelegate());
 		}
 		else {
-			val.getList().forEach(v -> remove(v));
+			val.forEach(v -> remove(v));
 		}
 		return this;
 	}
@@ -291,6 +291,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	    private final Iterator<Object> iter;
 	}
 
+	
 	
 	private static final long serialVersionUID = -1848883965231344442L;
 

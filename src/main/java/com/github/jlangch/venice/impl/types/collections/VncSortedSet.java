@@ -120,12 +120,12 @@ public class VncSortedSet extends VncSet {
 	
 	@Override
 	public VncSortedSet addAll(final VncSet val) {
-		return new VncSortedSet(value.addAll(val.getSet()), getMeta());
+		return new VncSortedSet(value.addAll(val), getMeta());
 	}
 	
 	@Override
 	public VncSortedSet addAll(final VncSequence val) {
-		return new VncSortedSet(value.addAll(val.getList()), getMeta());
+		return new VncSortedSet(value.addAll(val), getMeta());
 	}
 
 	@Override
@@ -135,12 +135,12 @@ public class VncSortedSet extends VncSet {
 
 	@Override
 	public VncSortedSet removeAll(final VncSet val) {
-		return new VncSortedSet(value.removeAll(val.getSet()), getMeta());
+		return new VncSortedSet(value.removeAll(val), getMeta());
 	}
 
 	@Override
 	public VncSortedSet removeAll(final VncSequence val) {
-		return new VncSortedSet(value.removeAll(val.getList()), getMeta());
+		return new VncSortedSet(value.removeAll(val), getMeta());
 	}
 	
 	@Override
@@ -165,12 +165,12 @@ public class VncSortedSet extends VncSet {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList(), getMeta());
+		return new VncList(value.toVector(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getList(), getMeta());
+		return new VncVector(value.toVector(), getMeta());
 	}
 	
 	@Override
