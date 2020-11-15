@@ -67,38 +67,22 @@ public class VncVector extends VncSequence implements IVncFunction {
 			value = io.vavr.collection.Vector.ofAll(vals);
 		}
 	}
-	
 	public static VncVector of(final VncVal... mvs) {
-		switch (mvs.length) {
-			case 0:	return VncTinyVector.empty();
-			case 1:	return new VncTinyVector(mvs[0], null);
-			case 2:	return new VncTinyVector(mvs[0], mvs[1], null);
-			case 3:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], null);
-			case 4:	return new VncTinyVector(mvs[0], mvs[1], mvs[2], mvs[3], null);
-			default: return new VncVector(io.vavr.collection.Vector.of(mvs), null);
-		}
+		return mvs.length <= VncTinyVector.MAX_ELEMENTS
+				? VncTinyVector.of(mvs)
+				: new VncVector(io.vavr.collection.Vector.of(mvs), null);
 	}
-	
+
 	public static VncVector ofList(final List<? extends VncVal> list) {
-		switch (list.size()) {
-			case 0:	return new VncTinyVector(null);
-			case 1:	return new VncTinyVector(list.get(0), null);
-			case 2:	return new VncTinyVector(list.get(0), list.get(1), null);
-			case 3:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), null);
-			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), null);
-			default: return new VncVector(list, null);
-		}
+		return list.size() <= VncTinyVector.MAX_ELEMENTS
+				? VncTinyVector.of(list.toArray(new VncVal[0]))
+				: new VncVector(list, null);
 	}
-	
+
 	public static VncVector ofList(final List<? extends VncVal> list, final VncVal meta) {
-		switch (list.size()) {
-			case 0:	return new VncTinyVector(meta);
-			case 1:	return new VncTinyVector(list.get(0), meta);
-			case 2:	return new VncTinyVector(list.get(0), list.get(1), meta);
-			case 3:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), meta);
-			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), meta);
-			default: return new VncVector(list, meta);
-		}
+		return list.size() <= VncTinyVector.MAX_ELEMENTS
+				? VncTinyVector.of(list.toArray(new VncVal[0])).withMeta(meta)
+				: new VncVector(list, meta);
 	}
 
 	public static VncVector ofColl(final Collection<? extends VncVal> vals) {
@@ -132,14 +116,9 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector withVariadicValues(final VncVal... replaceVals) {
-		switch (replaceVals.length) {
-			case 0:	return new VncTinyVector(getMeta());
-			case 1:	return new VncTinyVector(replaceVals[0], getMeta());
-			case 2:	return new VncTinyVector(replaceVals[0], replaceVals[1], getMeta());
-			case 3:	return new VncTinyVector(replaceVals[0], replaceVals[1], replaceVals[2], getMeta());
-			case 4:	return new VncTinyVector(replaceVals[0], replaceVals[1], replaceVals[2], replaceVals[3], getMeta());
-			default: return new VncVector(io.vavr.collection.Vector.of(replaceVals), getMeta());
-		}
+		return replaceVals.length <= VncTinyList.MAX_ELEMENTS
+				? VncTinyVector.of(replaceVals).withMeta(getMeta())
+				: new VncVector(io.vavr.collection.Vector.of(replaceVals), getMeta());
 	}
 	
 	@Override

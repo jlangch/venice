@@ -63,36 +63,6 @@ public class VncTinyList extends VncList {
 		super(meta);
 		values = new VncVal[0];
 	}
-	
-	public VncTinyList(final VncVal first, final VncVal meta) {
-		super(meta);
-		values = new VncVal[1];
-		values[0] = first;
-	}
-
-	public VncTinyList(final VncVal first, final VncVal second, final VncVal meta) {
-		super(meta);
-		values = new VncVal[2];
-		values[0] = first;
-		values[1] = second;
-	}
-
-	public VncTinyList(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
-		super(meta);
-		values = new VncVal[3];
-		values[0] = first;
-		values[1] = second;
-		values[2] = third;
-	}
-
-	public VncTinyList(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
-		super(meta);
-		values = new VncVal[4];
-		values[0] = first;
-		values[1] = second;
-		values[2] = third;
-		values[3] = fourth;
-	}
 
 	private VncTinyList(final VncVal[] vals, final VncVal meta) {
 		super(meta);

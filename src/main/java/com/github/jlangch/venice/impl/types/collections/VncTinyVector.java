@@ -80,36 +80,6 @@ public class VncTinyVector extends VncVector {
 		values = new VncVal[0];
 	}
 	
-	public VncTinyVector(final VncVal first, final VncVal meta) {
-		super(meta);
-		values = new VncVal[1];
-		values[0] = first;
-	}
-
-	public VncTinyVector(final VncVal first, final VncVal second, final VncVal meta) {
-		super(meta);
-		values = new VncVal[2];
-		values[0] = first;
-		values[1] = second;
-	}
-
-	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
-		super(meta);
-		values = new VncVal[3];
-		values[0] = first;
-		values[1] = second;
-		values[2] = third;
-	}
-
-	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
-		super(meta);
-		values = new VncVal[4];
-		values[0] = first;
-		values[1] = second;
-		values[2] = third;
-		values[3] = fourth;
-	}
-
 	private VncTinyVector(final VncVal[] vals, final VncVal meta) {
 		super(meta);
 		if (vals.length <= MAX_ELEMENTS) {

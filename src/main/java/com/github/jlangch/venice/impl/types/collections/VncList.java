@@ -68,36 +68,21 @@ public class VncList extends VncSequence {
 	
 	
 	public static VncList of(final VncVal... mvs) {
-		switch (mvs.length) {
-			case 0:	return VncTinyList.empty();
-			case 1:	return new VncTinyList(mvs[0], null);
-			case 2:	return new VncTinyList(mvs[0], mvs[1], null);
-			case 3:	return new VncTinyList(mvs[0], mvs[1], mvs[2], null);
-			case 4:	return new VncTinyList(mvs[0], mvs[1], mvs[2], mvs[3], null);
-			default: return new VncList(io.vavr.collection.Vector.of(mvs), null);
-		}
+		return mvs.length <= VncTinyList.MAX_ELEMENTS
+				? VncTinyList.of(mvs)
+				: new VncList(io.vavr.collection.Vector.of(mvs), null);
 	}
 	
 	public static VncList ofList(final List<? extends VncVal> list) {
-		switch (list.size()) {
-			case 0:	return new VncTinyList(null);
-			case 1:	return new VncTinyList(list.get(0), null);
-			case 2:	return new VncTinyList(list.get(0), list.get(1), null);
-			case 3:	return new VncTinyList(list.get(0), list.get(1), list.get(2), null);
-			case 4:	return new VncTinyList(list.get(0), list.get(1), list.get(2), list.get(3), null);
-			default: return new VncList(list, null);
-		}
+		return list.size() <= VncTinyList.MAX_ELEMENTS
+				? VncTinyList.of(list.toArray(new VncVal[0]))
+				: new VncList(list, null);
 	}
-	
+
 	public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
-		switch (list.size()) {
-			case 0:	return new VncTinyList(meta);
-			case 1:	return new VncTinyList(list.get(0), meta);
-			case 2:	return new VncTinyList(list.get(0), list.get(1), meta);
-			case 3:	return new VncTinyList(list.get(0), list.get(1), list.get(2), meta);
-			case 4:	return new VncTinyList(list.get(0), list.get(1), list.get(2), list.get(3), meta);
-			default: return new VncList(list, meta);
-		}
+		return list.size() <= VncTinyList.MAX_ELEMENTS
+				? VncTinyList.of(list.toArray(new VncVal[0])).withMeta(meta)
+				: new VncList(list, meta);
 	}
 
 	public static VncList ofColl(final Collection<? extends VncVal> vals) {
@@ -124,14 +109,9 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
-		switch (replaceVals.length) {
-			case 0:	return new VncTinyList(getMeta());
-			case 1:	return new VncTinyList(replaceVals[0], getMeta());
-			case 2:	return new VncTinyList(replaceVals[0], replaceVals[1], getMeta());
-			case 3:	return new VncTinyList(replaceVals[0], replaceVals[1], replaceVals[2], getMeta());
-			case 4:	return new VncTinyList(replaceVals[0], replaceVals[1], replaceVals[2], replaceVals[3], getMeta());
-			default: return new VncList(io.vavr.collection.Vector.of(replaceVals), getMeta());
-		}
+		return replaceVals.length <= VncTinyList.MAX_ELEMENTS
+				? VncTinyList.of(replaceVals).withMeta(getMeta())
+				: new VncList(io.vavr.collection.Vector.of(replaceVals), getMeta());
 	}
 	
 	@Override
