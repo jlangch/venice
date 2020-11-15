@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,11 +36,8 @@ import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.functions.FunctionsUtil;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -78,84 +77,60 @@ public class VncTinyVector extends VncVector {
 	
 	public VncTinyVector(final VncVal meta) {
 		super(meta);
-		this.len = 0;
-		this.first = Constants.Nil;
-		this.second = Constants.Nil;
-		this.third = Constants.Nil;
-		this.fourth = Constants.Nil;
+		values = new VncVal[0];
 	}
 	
 	public VncTinyVector(final VncVal first, final VncVal meta) {
 		super(meta);
-		this.len = 1;
-		this.first = first;
-		this.second = Constants.Nil;
-		this.third = Constants.Nil;
-		this.fourth = Constants.Nil;
+		values = new VncVal[1];
+		values[0] = first;
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal meta) {
 		super(meta);
-		this.len = 2;
-		this.first = first;
-		this.second = second;
-		this.third = Constants.Nil;
-		this.fourth = Constants.Nil;
+		values = new VncVal[2];
+		values[0] = first;
+		values[1] = second;
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal meta) {
 		super(meta);
-		this.len = 3;
-		this.first = first;
-		this.second = second;
-		this.third = third;
-		this.fourth = Constants.Nil;
+		values = new VncVal[3];
+		values[0] = first;
+		values[1] = second;
+		values[2] = third;
 	}
 
 	public VncTinyVector(final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
 		super(meta);
-		this.len = 4;
-		this.first = first;
-		this.second = second;
-		this.third = third;
-		this.fourth = fourth;
+		values = new VncVal[4];
+		values[0] = first;
+		values[1] = second;
+		values[2] = third;
+		values[3] = fourth;
 	}
 
-	public VncTinyVector(final int len, final VncVal first, final VncVal second, final VncVal third, final VncVal fourth, final VncVal meta) {
+	private VncTinyVector(final VncVal[] vals, final VncVal meta) {
 		super(meta);
-		this.len = len;
-		this.first = first;
-		this.second = second;
-		this.third = third;
-		this.fourth = fourth;
+		if (vals.length <= MAX_ELEMENTS) {
+			values = new VncVal[vals.length];
+			System.arraycopy(vals, 0, values, 0, vals.length);
+		}
+		else {
+			throw new VncException(String.format(
+						"A VncTinyVector is limited to %d elements", 
+						MAX_ELEMENTS));
+		}
 	}
 
 	
-	@Override
-	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("nth", args, 1);
-		
-		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
+	public static VncVector of(final VncVal... mvs) {
+		return mvs.length <= MAX_ELEMENTS ? new VncTinyVector(mvs, Nil) : VncVector.of(mvs);
 	}
 	
 	@Override
 	public VncVector emptyWithMeta() {
 		return new VncTinyVector(getMeta());
-	}
-	
-	@Override
-	public VncVector withValues(final List<? extends VncVal> replaceVals) {
-		return VncVector.ofList(replaceVals, getMeta());
-	}
-
-	@Override
-	public VncVector withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncVector.ofList(replaceVals, meta);
-	}
-
-	@Override
-	public VncVector withMeta(final VncVal meta) {
-		return new VncTinyVector(len, first, second, third, fourth, meta);
 	}
 	
 	@Override
@@ -171,6 +146,21 @@ public class VncTinyVector extends VncVector {
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
+	}
+	
+	@Override
+	public VncVector withValues(final List<? extends VncVal> replaceVals) {
+		return VncVector.ofList(replaceVals, getMeta());
+	}
+
+	@Override
+	public VncVector withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
+		return VncVector.ofList(replaceVals, meta);
+	}
+
+	@Override
+	public VncVector withMeta(final VncVal meta) {
+		return new VncTinyVector(values, meta);
 	}
 
     @Override
@@ -190,157 +180,100 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector filter(final Predicate<? super VncVal> predicate) {
-		final ArrayList<VncVal> list = new ArrayList<>(len);		
-		if (len > 0) {
-			if (predicate.test(first)) list.add(first);
-			if (len > 1) {
-				if (predicate.test(second)) list.add(second);
-				if (len > 2) {
-					if (predicate.test(third)) list.add(third);
-					if (len > 3) {
-						if (predicate.test(fourth)) list.add(fourth);
-					}
-				}
+		final VncVal[] filtered = new VncVal[values.length];
+		int len = 0;
+		
+		for(int ii=0; ii<values.length; ii++) {
+			if (predicate.test(values[ii])) {
+				filtered[len++] = values[ii];
 			}
 		}
 		
-		return VncVector.ofList(list, getMeta()); 
+		if (len == 0) {
+			return emptyWithMeta();
+		}
+		else {
+			final VncVal[] copy = new VncVal[len];
+			System.arraycopy(filtered, 0, copy, 0, len);
+			return new VncTinyVector(copy, getMeta());
+		}
 	}
 
 	@Override
 	public VncVector map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		final ArrayList<VncVal> list = new ArrayList<>(len);		
-		if (len > 0) {
-			list.add(mapper.apply(first));
-			if (len > 1) {
-				list.add(mapper.apply(second));
-				if (len > 2) {
-					list.add(mapper.apply(third));
-					if (len > 3) {
-						list.add(mapper.apply(fourth));
-					}
-				}
-			}
+		final VncVal[] mapped = new VncVal[values.length];
+		for(int ii=0; ii<values.length; ii++) {
+			mapped[ii] = mapper.apply(values[ii]);
 		}
-		
-		return VncVector.ofList(list, getMeta()); 
+		return new VncTinyVector(mapped, getMeta()); 
 	}
 
 	@Override
-	public List<VncVal> getList() { 
-		final ArrayList<VncVal> list = new ArrayList<>(len);
-		if (len > 0) {
-			list.add(first);
-			if (len > 1) {
-				list.add(second);
-				if (len > 2) {
-					list.add(third);
-					if (len > 3) list.add(fourth);
-				}
-			}
-		}
-		return list;
+	public List<VncVal> getList() {
+		return Arrays.asList(values);
 	}
 
 	@Override
 	public int size() {
-		return len;
+		return values.length;
 	}
 	
 	@Override
 	public boolean isEmpty() {
-		return len == 0;
+		return values.length == 0;
 	}
 
 	@Override
 	public VncVal nth(final int idx) {
-		if (idx < 0 || idx >= len) {
+		if (idx < 0 || idx >= values.length) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a vector of size %d. %s", 
+						"nth: index %d out of range for a list of size %d. %s", 
 						idx, 
-						len,
-						isEmpty() ? "" : ErrorMessage.buildErrLocation(first)));
+						values.length,
+						isEmpty() ? "" : ErrorMessage.buildErrLocation(values[0])));
 		}
 
-		switch(idx) {
-			case 0:	return first;
-			case 1:	return second;
-			case 2:	return third;
-			case 3:	return fourth;
-			default: throw new IllegalStateException("Length out of range");
-		}
+		return values[idx];
 	}
 
 	@Override
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		if (idx < 0 || idx >= len) {
-			return defaultVal;
-		}
-		else {
-			switch(idx) {
-				case 0:	return first;
-				case 1:	return second;
-				case 2:	return third;
-				case 3:	return fourth;
-				default: return defaultVal;
-			}
-		}
+		return idx < 0 || idx >= values.length ?  defaultVal : values[idx];
 	}
 
 	@Override
 	public VncVal first() {
-		return first;
+		return values.length > 0 ? values[0] : Nil;
 	}
 
 	@Override
 	public VncVal second() {
-		return second;
+		return values.length > 1 ? values[1] : Nil;
 	}
 
 	@Override
 	public VncVal third() {
-		return third;
+		return values.length > 2 ? values[2] : Nil;
 	}
 
 	@Override
 	public VncVal fourth() {
-		return fourth;
+		return values.length > 3 ? values[3] : Nil;
 	}
 
 	@Override
 	public VncVal last() {
-		switch(len) {
-			case 0:	return Constants.Nil;
-			case 1:	return first;
-			case 2:	return second;
-			case 3:	return third;
-			case 4:	return fourth;
-			default: throw new IllegalStateException("Length out of range");
-		}
+		return values.length == 0 ?  Nil : values[values.length-1];
 	}
 	
 	@Override
 	public VncVector rest() {
-		switch(len) {
-			case 0:	return this;
-			case 1:	return new VncTinyVector(getMeta());
-			case 2:	return new VncTinyVector(second, getMeta());
-			case 3:	return new VncTinyVector(second, third, getMeta());
-			case 4:	return new VncTinyVector(second, third, fourth, getMeta());
-			default: throw new IllegalStateException("Length out of range");
-		}
+		return slice(1, values.length);
 	}
 	
 	@Override
 	public VncVector butlast() {
-		switch(len) {
-			case 0:	return this;
-			case 1:	return new VncTinyVector(getMeta());
-			case 2:	return new VncTinyVector(first, getMeta());
-			case 3:	return new VncTinyVector(first, second, getMeta());
-			case 4:	return new VncTinyVector(first, second, third, getMeta());
-			default: throw new IllegalStateException("Length out of range");
-		}
+		return slice(0, values.length-1);
 	}
 
 	@Override
@@ -350,15 +283,17 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector dropWhile(final Predicate<? super VncVal> predicate) {
-		final List<VncVal> list = getList();
-		for(int i=0; i<list.size(); i++) {
-			final boolean drop = predicate.test(list.get(i));
-			if (!drop) {
-				return VncVector.ofList(list.subList(i, list.size()), getMeta());
+		int drop = 0;
+		for(int ii=0; ii<values.length; ii++) {
+			if (predicate.test(values[ii])) {
+				drop++;
+			}
+			else {
+				break;
 			}
 		}
 		
-		return new VncTinyVector(getMeta());
+		return slice(drop);
 	}
 	
 	@Override
@@ -368,115 +303,150 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector takeWhile(final Predicate<? super VncVal> predicate) {
-		final List<VncVal> list = getList();
-		for(int i=0; i<list.size(); i++) {
-			final boolean take = predicate.test(list.get(i));
-			if (!take) {
-				return VncVector.ofList(list.subList(0, i), getMeta());
+		int take = 0;
+		for(int ii=0; ii<values.length; ii++) {
+			if (predicate.test(values[ii])) {
+				take++;
+			}
+			else {
+				break;
 			}
 		}
 		
-		return this;
+		return slice(0, take);
 	}
 
 	@Override
 	public VncVector slice(final int start, final int end) {
-		if (start == 0 && end >= len) {
+		if (start < 0 || start >= values.length) {
+			return VncVector.empty();
+		}
+		else if (end <= start) {
+			return VncVector.empty();
+		}
+		else if (start == 0 && end >= values.length) {
 			return this;
 		}
-		else if (start >= len) {
-			return EMPTY;
-		}
 		else {
-			return VncVector.ofList(getList().subList(start, Math.min(end, len)), getMeta());
+			final int len = (end > values.length ? values.length : end) - start;
+			final VncVal[] copy = new VncVal[len];
+			System.arraycopy(values, start, copy, 0, len);
+			return new VncTinyVector(copy, getMeta());
 		}
 	}
 	
 	@Override
 	public VncVector slice(final int start) {
-		return slice(start, len);
+		return slice(start, values.length);
 	}
 	
+	@Override
+	public VncList toVncList() {
+		return VncList.of(values).withMeta(getMeta()); 
+	}
+
 	@Override
 	public VncVector toVncVector() {
 		return this;
 	}
 
-	@Override
-	public VncList toVncList() {
-		switch (len) {
-			case 0:	return new VncTinyList(getMeta());
-			case 1: return VncTinyList.of(first).withMeta(getMeta()); 
-			case 2:	return VncTinyList.of(first, second).withMeta(getMeta()); 
-			case 3:	return VncTinyList.of(first, second, third).withMeta(getMeta());
-			case 4:	return VncTinyList.of(first, second, third, fourth).withMeta(getMeta());
-			default: throw new IllegalStateException("Vector length out of range");
-		}
-	}
-
 	
 	@Override
 	public VncVector addAtStart(final VncVal val) {
-		switch (len) {
+		switch (values.length) {
 			case 0:	return new VncTinyVector(val, getMeta()); 
-			case 1: return new VncTinyVector(val, first, getMeta()); 
-			case 2:	return new VncTinyVector(val, first, second, getMeta()); 
-			case 3:	return new VncTinyVector(val, first, second, third, getMeta());
-			case 4:	return VncVector.of(val, first, second, third, fourth).withMeta(getMeta());
-			default: throw new IllegalStateException("Vector length out of range");
+			case 1: return new VncTinyVector(val, values[0], getMeta()); 
+			case 2:	return new VncTinyVector(val, values[0], values[1], getMeta()); 
+			case 3:	return new VncTinyVector(val, values[0], values[1], values[2], getMeta()); 
+			case 4:	return VncVector.of(val, values[0], values[1], values[2], values[3]).withMeta(getMeta());
+			default: throw new IllegalStateException("VncTinyVector length out of range");
 		}
 	}
 	
 	@Override
 	public VncVector addAllAtStart(final VncSequence list) {
+		if (!(list instanceof VncLazySeq)) {  // lazy-seq do not have a size
+			final int otherLen = list.size();
+			final int thisLen = size();
+			if (otherLen + thisLen <= MAX_ELEMENTS) {
+				final VncVal[] copy = new VncVal[otherLen + thisLen];
+				for(int ii=0; ii<otherLen; ii++) {
+					copy[otherLen-1-ii] = list.nth(ii); // reverse order
+				}
+				System.arraycopy(values, 0, copy, otherLen, thisLen);
+				return new VncTinyVector(copy, getMeta());
+			}
+		}
+		
 		final List<VncVal> vals = new ArrayList<>(list.getList());
 		Collections.reverse(vals);
-		vals.addAll(getList());
-
+		vals.addAll(getList());	
 		return VncVector.ofList(vals, getMeta());
 	}
 	
 	@Override
 	public VncVector addAtEnd(final VncVal val) {
-		switch (len) {
+		switch (values.length) {
 			case 0:	return new VncTinyVector(val, getMeta()); 
-			case 1: return new VncTinyVector(first, val, getMeta()); 
-			case 2:	return new VncTinyVector(first, second, val, getMeta()); 
-			case 3:	return new VncTinyVector(first, second, third, val, getMeta()).withMeta(getMeta());
-			case 4:	return VncVector.of(first, second, third, fourth, val).withMeta(getMeta());
-			default: throw new IllegalStateException("Vector length out of range");
+			case 1: return new VncTinyVector(values[0], val, getMeta()); 
+			case 2:	return new VncTinyVector(values[0], values[1], val, getMeta()); 
+			case 3:	return new VncTinyVector(values[0], values[1], values[2], val, getMeta()); 
+			case 4:	return VncVector.of(values[0], values[1], values[2], values[3], val).withMeta(getMeta());
+			default: throw new IllegalStateException("VncTinyVector length out of range");
 		}
 	}
 	
 	@Override
 	public VncVector addAllAtEnd(final VncSequence list) {
-		final List<VncVal> vals = getList();
-		vals.addAll(list.getList());
-		
+		if (!(list instanceof VncLazySeq)) {  // lazy-seq do not have a size
+			final int otherLen = list.size();
+			final int thisLen = size();
+			if (otherLen + thisLen <= MAX_ELEMENTS) {
+				final VncVal[] copy = new VncVal[otherLen + thisLen];
+				System.arraycopy(values, 0, copy, 0, thisLen);
+				for(int ii=0; ii<otherLen; ii++) {
+					copy[thisLen+ii] = list.nth(ii);
+				}
+				return new VncTinyVector(copy, getMeta());
+			}
+		}
+
+		final List<VncVal> vals = new ArrayList<>(getList());
+		vals.addAll(list.getList());		
 		return VncVector.ofList(vals, getMeta());
 	}
 	
 	@Override
 	public VncVector setAt(final int idx, final VncVal val) {
-		final List<VncVal> vals = getList();
-		vals.set(idx, val);
+		if (idx<0 || idx >= values.length) {
+			throw new VncException(String.format(
+					"VncTinyVector index out of bounds at %d", idx)); 
+		}
 		
-		return VncVector.ofList(vals, getMeta());
+		final VncVal[] copy = new VncVal[values.length];
+		System.arraycopy(values, 0, copy, 0, values.length);
+		copy[idx] = val;
+		return new VncTinyVector(copy, getMeta());
 	}
 	
 	@Override
 	public VncVector removeAt(final int idx) {
-		if (idx == 0) {
-			return rest();
+		if (idx<0 || idx >= values.length) {
+			throw new VncException(String.format(
+					"VncTinyVector index out of bounds at %d", idx)); 
 		}
-		else if (idx == (len-1)) {
+		
+		if (idx == 0) {
+			return values.length == 1 ? VncVector.empty() : rest();
+		}
+		else if (idx == values.length-1) {
 			return butlast();
 		}
 		else {
-			final List<VncVal> vals = getList();
-			vals.remove(idx);
-			
-			return VncVector.ofList(vals, getMeta());
+			final VncVal[] copy = new VncVal[values.length-1];
+			System.arraycopy(values, 0, copy, 0, idx);
+			System.arraycopy(values, idx+1, copy, idx, values.length-idx-1);
+			return new VncTinyVector(copy, getMeta());
 		}
 	}
 
@@ -489,7 +459,7 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
+		if (o == Nil) {
 			return 1;
 		}
 		else if (Types.isVncVector(o)) {
@@ -514,16 +484,11 @@ public class VncTinyVector extends VncVector {
 	}
 
 
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + len;
-		result = prime * result + ((first == null)  ? 0 : first.hashCode());
-		result = prime * result + ((second == null) ? 0 : second.hashCode());
-		result = prime * result + ((third == null)  ? 0 : third.hashCode());
-		result = prime * result + ((fourth == null) ? 0 : fourth.hashCode());
+		int result = super.hashCode();
+		result = prime * result + Arrays.hashCode(values);
 		return result;
 	}
 
@@ -531,30 +496,12 @@ public class VncTinyVector extends VncVector {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
+		if (!super.equals(obj))
+			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		VncTinyVector other = (VncTinyVector) obj;
-		if (len != other.len)
-			return false;
-		if (first == null) {
-			if (other.first != null)
-				return false;
-		} else if (!first.equals(other.first))
-			return false;
-		if (second == null) {
-			if (other.second != null)
-				return false;
-		} else if (!second.equals(other.second))
-			return false;
-		if (third == null) {
-			if (other.third != null)
-				return false;
-		} else if (!third.equals(other.third))
-			return false;
-		if (fourth == null) {
-			if (other.fourth != null)
-				return false;
-		} else if (!fourth.equals(other.fourth))
+		if (!Arrays.equals(values, other.values))
 			return false;
 		return true;
 	}
@@ -568,6 +515,15 @@ public class VncTinyVector extends VncVector {
 		return "[" + Printer.join(getList(), " ", print_readably) + "]";
 	}
 
+	public void arraycopy(
+		final int srcPos,
+		final VncVal[] dest, 
+		final int destPos,
+		final int length
+	) {
+		System.arraycopy(values, srcPos, dest, destPos, length);    	
+    }
+	
 	
 	private static class MappingIterator implements Iterator<VncVal> {
 
@@ -577,7 +533,7 @@ public class VncTinyVector extends VncVector {
 		
 	    @Override
 	    public boolean hasNext() { 
-	    	return index < value.len; 
+	    	return index < value.size(); 
 	    }
 
 	    @Override
@@ -599,12 +555,8 @@ public class VncTinyVector extends VncVector {
 	public static final VncKeyword TYPE = new VncKeyword(":core/vector");
 	public static final VncTinyVector EMPTY = new VncTinyVector();
 	public static final int MAX_ELEMENTS = 4;
-
+	
     private static final long serialVersionUID = -1848883965231344442L;
 
-    private final int len;
-	private final VncVal first;
-	private final VncVal second;
-	private final VncVal third;
-	private final VncVal fourth;
+  	private final VncVal[] values;
 }
