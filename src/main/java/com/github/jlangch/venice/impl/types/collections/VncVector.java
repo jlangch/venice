@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -98,6 +99,22 @@ public class VncVector extends VncSequence implements IVncFunction {
 			case 4:	return new VncTinyVector(list.get(0), list.get(1), list.get(2), list.get(3), meta);
 			default: return new VncVector(list, meta);
 		}
+	}
+
+	public static VncVector ofColl(final Collection<? extends VncVal> vals) {
+		return new VncVector(vals, Constants.Nil);
+	}
+
+	public static VncVector ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
+		return new VncVector(vals, meta);
+	}
+
+	public static VncVector ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
+		return new VncVector(io.vavr.collection.Vector.ofAll(iter), meta);
+	}
+
+	public static VncVector ofAll(final Stream<? extends VncVal> stream, final VncVal meta) {
+		return new VncVector(io.vavr.collection.Vector.ofAll(stream), meta);
 	}
 		
 

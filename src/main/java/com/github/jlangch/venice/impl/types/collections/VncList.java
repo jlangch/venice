@@ -104,6 +104,18 @@ public class VncList extends VncSequence {
 		return new VncList(vals, Constants.Nil);
 	}
 
+	public static VncList ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
+		return new VncList(vals, meta);
+	}
+
+	public static VncList ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
+		return new VncList(io.vavr.collection.Vector.ofAll(iter), meta);
+	}
+
+	public static VncList ofAll(final Stream<? extends VncVal> stream, final VncVal meta) {
+		return new VncList(io.vavr.collection.Vector.ofAll(stream), meta);
+	}
+
 	
 	@Override
 	public VncList emptyWithMeta() {
