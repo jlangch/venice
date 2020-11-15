@@ -27,7 +27,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1365,8 +1364,9 @@ public class TransducerFunctions {
 
 	private static void flatten(final VncVal value, final List<VncVal> result) {
 		if (Types.isVncSequence(value)) {
-			final Iterator<VncVal> iter = ((VncSequence)value).iterator();
-			while(iter.hasNext()) flatten(iter.next(), result);
+			for(VncVal v : ((VncSequence)value)) {
+				flatten(v, result);
+			}
 		}
 		else {
 			result.add(value);
