@@ -23,11 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.github.jlangch.venice.ArityException;
-import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
@@ -57,12 +53,6 @@ public class FunctionsUtil {
 	}
 
 	public static VncList removeNilValues(final VncList list) {
-		return VncList.ofList(removeNilValues(list.getList()));
-	}
-
-	public static List<VncVal> removeNilValues(final List<VncVal> items) {
-		return items.stream()
-					.filter(v -> v != Nil)
-					.collect(Collectors.toList());
+		return list.filter(v -> v != Nil);
 	}
 }

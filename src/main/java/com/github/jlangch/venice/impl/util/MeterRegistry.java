@@ -65,8 +65,7 @@ public class MeterRegistry implements Serializable {
 	
 	public void resetAllBut(final VncSequence records) {
 		final Map<String,ElapsedTime> keep = 
-				records.getList()
-					   .stream()
+				records.stream()
 					   .map(r -> data.get(Coerce.toVncString(r).getValue()))
 					   .filter(t -> t != null)
 					   .collect(Collectors.toMap(ElapsedTime::getName, Function.identity()));

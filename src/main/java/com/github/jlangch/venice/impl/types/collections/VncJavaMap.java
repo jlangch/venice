@@ -164,10 +164,12 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncJavaMap assoc(final VncSequence mvs) {
-		for (int i=0; i<mvs.getList().size(); i+=2) {
+		VncSequence kv = mvs;
+		while(!kv.isEmpty()) {
 			value.put(
-				mvs.nth(i).convertToJavaObject(), 
-				mvs.nth(i).convertToJavaObject());
+					kv.first().convertToJavaObject(), 
+					kv.second().convertToJavaObject());
+			kv = kv.drop(2);
 		}
 		return this;
 	}
@@ -182,8 +184,8 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncJavaMap dissoc(final VncSequence keys) {
-		for (int i=0; i<keys.getList().size(); i++) {
-			value.remove(keys.nth(i).convertToJavaObject());
+		for (VncVal key : keys) {
+			value.remove(key.convertToJavaObject());
 		}
 		return this;
 	}

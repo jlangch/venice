@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
@@ -382,7 +383,6 @@ public class ArrayFunctions {
 				}
 				else {
 					final List<Integer> dimensions = args.slice(1)
-														 .getList()
 														 .stream()
 														 .map(v -> Numeric.toInteger(v).getValue())
 														 .collect(Collectors.toList());
@@ -430,12 +430,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final Object[] arr = new Object[list.size()];
+					final Object[] arr = new Object[seq.size()];
 				
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						arr[ii++] = v.convertToJavaObject();
 					}
 
@@ -477,12 +477,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final String[] arr = new String[list.size()];
+					final String[] arr = new String[seq.size()];
 					
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						if (!Types.isVncString(v)) {
 							throw new VncException(String.format(
 									"The value at pos %d in the collection is not a string",
@@ -529,12 +529,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final byte[] arr = new byte[list.size()];
+					final byte[] arr = new byte[seq.size()];
 					
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						if (v == Nil || !Types.isVncNumber(v)) {
 							throw new VncException(String.format(
 									"The value at pos %d in the collection is not a number",
@@ -582,12 +582,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final int[] arr = new int[list.size()];
+					final int[] arr = new int[seq.size()];
 					
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						if (v == Nil || !Types.isVncNumber(v)) {
 							throw new VncException(String.format(
 									"The value at pos %d in the collection is not a number",
@@ -635,12 +635,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final long[] arr = new long[list.size()];
+					final long[] arr = new long[seq.size()];
 					
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						if (v == Nil || !Types.isVncNumber(v)) {
 							throw new VncException(String.format(
 									"The value at pos %d in the collection is not a number",
@@ -688,12 +688,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final float[] arr = new float[list.size()];
+					final float[] arr = new float[seq.size()];
 					
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						if (v == Nil || !Types.isVncNumber(v)) {
 							throw new VncException(String.format(
 									"The value at pos %d in the collection is not a number",
@@ -741,12 +741,12 @@ public class ArrayFunctions {
 					return new VncJavaObject(arr);
 				}
 				else {
-					final List<VncVal> list = Coerce.toVncSequence(args.first()).getList();
+					final VncSequence seq = Coerce.toVncSequence(args.first());
 					
-					final double[] arr = new double[list.size()];
+					final double[] arr = new double[seq.size()];
 					
 					int ii=0;
-					for(VncVal v : list) {
+					for(VncVal v : seq) {
 						if (v == Nil || !Types.isVncNumber(v)) {
 							throw new VncException(String.format(
 									"The value at pos %d in the collection is not a number",

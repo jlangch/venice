@@ -1950,8 +1950,7 @@ public class DocGenerator {
 
 	private List<String> toStringList(final VncList list) {
 		try {
-			return list.getList()
-					   .stream()
+			return list.stream()
 					   .map(s -> ((VncString)s).getValue())
 					   .collect(Collectors.toList());
 		}

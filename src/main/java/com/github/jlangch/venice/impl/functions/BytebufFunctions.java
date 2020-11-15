@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -119,16 +118,17 @@ public class BytebufFunctions {
 					return arg;
 				}
 				else if (Types.isVncSequence(arg)) {
-					if (!((VncSequence)arg).getList().stream().allMatch(v -> Types.isVncLong(v))) {
+					if (!((VncSequence)arg).stream().allMatch(v -> Types.isVncLong(v))) {
 						throw new VncException(String.format(
 								"Function 'bytebuf' a list as argument must contains long values"));
 					}
 
-					final List<VncVal> list = ((VncSequence)arg).getList();
+					final VncSequence seq = (VncSequence)arg;
 
-					final byte[] buf = new byte[list.size()];
-					for(int ii=0; ii<list.size(); ii++) {
-						buf[ii] = (byte)((VncLong)list.get(ii)).getValue().longValue();
+					final byte[] buf = new byte[seq.size()];
+					int ii = 0;
+					for(VncVal v : seq) {
+						buf[ii++] = (byte)((VncLong)v).getValue().longValue();
 					}
 
 					return new VncByteBuffer(ByteBuffer.wrap(buf));

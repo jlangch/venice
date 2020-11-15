@@ -75,7 +75,7 @@ public class MathFunctions {
 					case 2: return Numeric.calc(MathOp.ADD, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.ADD, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.ADD, val, v); }
 						return val;
 				}
 			}
@@ -128,7 +128,7 @@ public class MathFunctions {
 						return Numeric.calc(MathOp.SUB, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.SUB, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.SUB, val, v); }
 						return val;
 				}
 			}
@@ -160,7 +160,7 @@ public class MathFunctions {
 					case 2: return Numeric.calc(MathOp.MUL, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.MUL, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.MUL, val, v); }
 						return val;
 				}
 			}
@@ -214,7 +214,7 @@ public class MathFunctions {
 						return Numeric.calc(MathOp.DIV, args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest().getList()) { val = Numeric.calc(MathOp.DIV, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.DIV, val, v); }
 						return val;
 				}
 			}
@@ -384,7 +384,7 @@ public class MathFunctions {
 				}
 
 				VncVal max = args.first();
-				for(VncVal op : args.rest().getList()) {
+				for(VncVal op : args.rest()) {
 					if (Types.isVncNumber(op)) {
 						max = max == Nil
 								? op
@@ -424,7 +424,7 @@ public class MathFunctions {
 				}
 
 				VncVal min = args.first();
-				for(VncVal op : args.rest().getList()) {
+				for(VncVal op : args.rest()) {
 					if (Types.isVncNumber(op)) {
 						min = min == Nil
 								? op
@@ -969,7 +969,7 @@ public class MathFunctions {
 					final VncVal average = mean.apply(data);
 
 					VncVal deltaSum = new VncDouble(0.0);
-					for(VncVal v : data.getList()) {
+					for(VncVal v : data) {
 						deltaSum = Numeric.calc(
 										MathOp.ADD,
 										deltaSum,

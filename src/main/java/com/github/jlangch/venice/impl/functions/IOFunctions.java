@@ -132,9 +132,8 @@ public class IOFunctions {
 											args.first(),
 											"Function 'io/file' does not allow %s as parent");
 
-					final List<VncVal> children = args.rest().getList();
 					File file = parent;
-					for(VncVal child : children) {
+					for(VncVal child : args.rest()) {
 						file = new File(file, Coerce.toVncString(child).getValue());
 					}
 
@@ -527,7 +526,7 @@ public class IOFunctions {
 
 			
 				final Set<WatchEvent.Kind<?>> events = new HashSet<>();
-				for(VncVal v : args.slice(3).getList()) {
+				for(VncVal v : args.slice(3)) {
 					final VncKeyword mode = Coerce.toVncKeyword(v);
 					switch(mode.getSimpleName()) {
 						case "created":

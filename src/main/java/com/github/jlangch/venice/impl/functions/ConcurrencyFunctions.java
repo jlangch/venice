@@ -952,8 +952,7 @@ public class ConcurrencyFunctions {
 
 				sandboxFunctionCallValidation();
 
-				final List<Agent> agents = args.getList()
-											   .stream()
+				final List<Agent> agents = args.stream()
 											   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())
 											   .collect(Collectors.toList());
 				
@@ -996,7 +995,6 @@ public class ConcurrencyFunctions {
 
 				final long timeoutMillis = Coerce.toVncLong(args.first()).getValue();
 				final List<Agent> agents = args.rest()
-											   .getList()
 											   .stream()
 											   .map(a -> (Agent)Coerce.toVncJavaObject(a).getDelegate())
 											   .collect(Collectors.toList());
@@ -1521,7 +1519,7 @@ public class ConcurrencyFunctions {
 
 				sandboxFunctionCallValidation();
 	
-				for(VncVal v : args.getList()) {
+				for(VncVal v : args) {
 					final Future<?> future = Coerce.toVncJavaObject(v, Future.class);
 					
 					try {

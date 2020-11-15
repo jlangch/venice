@@ -148,11 +148,11 @@ public class VncQueue extends VncCollection {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(toVncList().getList(), " ", true) + ")";
+		return "(" + Printer.join(toVncList().getJavaList(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(toVncList().getList(), " ", print_readably) + ")";
+		return "(" + Printer.join(toVncList().getJavaList(), " ", print_readably) + ")";
 	}
 
 	

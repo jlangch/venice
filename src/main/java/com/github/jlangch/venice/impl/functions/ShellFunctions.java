@@ -321,7 +321,6 @@ public class ShellFunctions {
 
 	private static String[] toStringArray(final VncList list) {
 		return list
-				.getList()
 				.stream()
 				.map(it -> CoreFunctions.name.apply(VncList.of(it)))
 				.map(it -> ((VncString)it).getValue())

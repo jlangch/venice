@@ -68,7 +68,7 @@ public class DefTypeForm {
 		}
 		
 		final List<VncCustomTypeFieldDef> fieldDefs = new ArrayList<>();
-		final List<VncVal> fieldItems = fields.getList();
+		final List<VncVal> fieldItems = fields.getJavaList();
 		for(int ii=0; ii<fieldItems.size()/2; ii++) {		
 			fieldDefs.add(
 				new VncCustomTypeFieldDef(
@@ -162,7 +162,7 @@ public class DefTypeForm {
 		final Set<VncVal> choiceTypes = new HashSet<>();
 		final Set<VncVal> choiceValues = new HashSet<>();
 		
-		for (VncVal v : choiceVals.getList()) {
+		for (VncVal v : choiceVals) {
 			if (Types.isVncKeyword(v)) {
 				final VncKeyword k = (VncKeyword)v;		
 				

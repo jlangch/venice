@@ -142,7 +142,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return stream().collect(Collectors.toList());
 	}
 
@@ -253,12 +253,12 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getList(), getMeta());
+		return new VncList(getJavaList(), getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getList(), getMeta());
+		return new VncVector(getJavaList(), getMeta());
 	}
 	
 	@Override
@@ -269,7 +269,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncJavaList addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = list.getList();
+		final List<VncVal> items = list.getJavaList();
 		for(int ii=0; ii<items.size(); ii++) {
 			value.add(0, items.get(ii).convertToJavaObject());
 		}
@@ -284,7 +284,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncJavaList addAllAtEnd(final VncSequence list) {
-		final List<VncVal> items = list.getList();
+		final List<VncVal> items = list.getJavaList();
 		for(int ii=0; ii<items.size(); ii++) {
 			value.add(items.get(ii).convertToJavaObject());
 		}
@@ -344,11 +344,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(getList(), " ", true) + ")";
+		return "(" + Printer.join(getJavaList(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(getList(), " ", print_readably) + ")";
+		return "(" + Printer.join(getJavaList(), " ", print_readably) + ")";
 	}
 
 	

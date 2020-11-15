@@ -201,11 +201,13 @@ public class VncSortedMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
-		io.vavr.collection.TreeMap<VncVal,VncVal> tmp = value;
-		for (int i=0; i<mvs.getList().size(); i+=2) {
-			tmp = tmp.put(mvs.nth(i), mvs.nth(i+1));
+		io.vavr.collection.TreeMap<VncVal,VncVal> map = value;
+		VncSequence kv = mvs;
+		while(!kv.isEmpty()) {
+			map = map.put(kv.first(), kv.second());
+			kv = kv.drop(2);
 		}
-		return new VncSortedMap(tmp, getMeta());
+		return new VncSortedMap(map, getMeta());
 	}
 
 	@Override
@@ -218,7 +220,7 @@ public class VncSortedMap extends VncMap {
 	@Override
 	public VncSortedMap dissoc(final VncSequence keys) {
 		return new VncSortedMap(
-					value.removeAll(keys.getList()),
+					value.removeAll(keys),
 					getMeta());
 	}
 	
@@ -295,7 +297,7 @@ public class VncSortedMap extends VncMap {
 	@Override
 	public String toString(final boolean print_readably) {
 		final List<VncVal> list = value
-									.map(e -> VncList.of(e._1, e._2).getList())
+									.map(e -> VncList.of(e._1, e._2).getJavaList())
 									.collect(Collectors.toList())
 									.stream()
 									.flatMap(l -> l.stream())

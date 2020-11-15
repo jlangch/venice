@@ -157,7 +157,7 @@ public class VncTinyList extends VncList {
 	}
 
 	@Override
-	public List<VncVal> getList() {
+	public List<VncVal> getJavaList() {
 		return Arrays.asList(values);
 	}
 
@@ -216,12 +216,26 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList rest() {
-		return slice(1, values.length);
+		if (values.length < 2) {
+			return emptyWithMeta();
+		}
+		else {
+			final VncVal[] copy = new VncVal[values.length-1];
+			System.arraycopy(values, 1, copy, 0, values.length-1);
+			return new VncTinyList(copy, getMeta());
+		}
 	}
 	
 	@Override
 	public VncList butlast() {
-		return slice(0, values.length-1);
+		if (values.length < 2) {
+			return emptyWithMeta();
+		}
+		else {
+			final VncVal[] copy = new VncVal[values.length-1];
+			System.arraycopy(values, 0, copy, 0, values.length-1);
+			return new VncTinyList(copy, getMeta());
+		}
 	}
 
 	@Override
@@ -317,9 +331,9 @@ public class VncTinyList extends VncList {
 			}
 		}
 		
-		final List<VncVal> vals = new ArrayList<>(list.getList());
+		final List<VncVal> vals = new ArrayList<>(list.getJavaList());
 		Collections.reverse(vals);
-		vals.addAll(getList());	
+		vals.addAll(getJavaList());	
 		return VncList.ofList(vals, getMeta());
 	}
 	
@@ -351,8 +365,8 @@ public class VncTinyList extends VncList {
 			}
 		}
 		
-		final List<VncVal> vals = new ArrayList<>(getList());
-		vals.addAll(list.getList());		
+		final List<VncVal> vals = new ArrayList<>(getJavaList());
+		vals.addAll(list.getJavaList());		
 		return VncList.ofList(vals, getMeta());
 	}
 	
@@ -448,11 +462,11 @@ public class VncTinyList extends VncList {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(getList(), " ", true) + ")";
+		return "(" + Printer.join(getJavaList(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(getList(), " ", print_readably) + ")";
+		return "(" + Printer.join(getJavaList(), " ", print_readably) + ")";
 	}
 	
 	

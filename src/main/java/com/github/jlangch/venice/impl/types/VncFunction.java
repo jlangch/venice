@@ -80,7 +80,7 @@ public abstract class VncFunction
 		int fixedArgs = 0;
 		boolean variadic = false;
 		if (params != null) {
-			for(VncVal p : params.getList()) {
+			for(VncVal p : params) {
 				if (isElisionSymbol(p)) {
 					variadic = true;
 					break;

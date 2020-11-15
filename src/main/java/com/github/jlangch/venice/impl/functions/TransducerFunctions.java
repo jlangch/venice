@@ -891,7 +891,7 @@ public class TransducerFunctions {
 
 					final List<VncVal> items = new ArrayList<>();
 
-					for(VncVal val : coerceToSequence(args.first()).getList()) {
+					for(VncVal val : coerceToSequence(args.first())) {
 						if (!val.equals(seen)) {
 							items.add(val);
 							seen = val;
@@ -1018,13 +1018,10 @@ public class TransducerFunctions {
 						return VncList.empty();
 					}
 
-					return ((VncSequence)args.first()).withValues(
-														Coerce
-															.toVncSequence(args.first())
-															.getList()
-															.stream()
-															.distinct()
-															.collect(Collectors.toList()));
+					final VncSequence seq = Coerce.toVncSequence(args.first());
+					return seq.withValues(seq.stream()
+											 .distinct()
+											 .collect(Collectors.toList()));
 				}
 			}
 
@@ -1162,22 +1159,22 @@ public class TransducerFunctions {
 						return Nil;
 					}
 					else if (Types.isVncList(coll)) {
-						return reverseList(((VncList)coll).getList());
+						return reverseList(((VncList)coll).getJavaList());
 					}
 					else if (Types.isVncMutableList(coll)) {
-						return reverseMutableList(((VncMutableList)coll).getList());
+						return reverseMutableList(((VncMutableList)coll).getJavaList());
 					}
 					else if (Types.isVncVector(coll)) {
-						return reverseVector(((VncVector)coll).getList());
+						return reverseVector(((VncVector)coll).getJavaList());
 					}
 					else if (Types.isVncSet(coll)) {
 						return reverseList(((VncSet)coll).getJavaList());
 					}
 					else if (Types.isVncMap(coll)) {
-						return reverseList(((VncMap)coll).toVncList().getList());
+						return reverseList(((VncMap)coll).toVncList().getJavaList());
 					}
 					else if (Types.isVncString(coll)) {
-						return reverseList(((VncString)coll).toVncList().getList());
+						return reverseList(((VncString)coll).toVncList().getJavaList());
 					}
 					else {
 						throw new VncException(

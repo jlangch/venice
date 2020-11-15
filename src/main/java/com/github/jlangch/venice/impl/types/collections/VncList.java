@@ -170,7 +170,7 @@ public class VncList extends VncSequence {
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return value.asJava(); // return an immutable view on top of Vector<VncVal>
 	}
 
@@ -286,7 +286,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = list.getList();
+		final List<VncVal> items = list.getJavaList();
 		Collections.reverse(items);
 		return new VncList(value.prependAll(items), getMeta());
 	}
@@ -298,7 +298,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList addAllAtEnd(final VncSequence list) {
-		return new VncList(value.appendAll(list.getList()), getMeta());
+		return new VncList(value.appendAll(list), getMeta());
 	}
 	
 	@Override
@@ -323,8 +323,7 @@ public class VncList extends VncSequence {
 
 	@Override
 	public Object convertToJavaObject() {
-		return getList()
-				.stream()
+		return stream()
 				.map(v -> v.convertToJavaObject())
 				.collect(Collectors.toList());
 	}

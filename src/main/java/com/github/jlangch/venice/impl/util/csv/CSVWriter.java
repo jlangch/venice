@@ -66,7 +66,7 @@ public class CSVWriter {
 	public void write(final Writer writer, final VncSequence data) {
 		try {
 			boolean first = true;
-			for(VncVal record : data.getList()) {
+			for(VncVal record : data) {
 				if (!first) {
 					writer.write(newline);
 				}
@@ -103,7 +103,7 @@ public class CSVWriter {
 
 	private void writeRecord(final Writer writer, VncSequence record) throws IOException {
 		boolean first = true;
-		for(VncVal v : record.getList()) {
+		for(VncVal v : record) {
 			if (!first) {
 				writer.write(separator);
 			}

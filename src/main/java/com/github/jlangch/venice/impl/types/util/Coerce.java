@@ -367,7 +367,7 @@ public class Coerce {
 			return (VncMutableList)val;
 		}
 		else if (Types.isVncSequence(val)) {
-			return new VncMutableList(((VncSequence)val).getList());
+			return new VncMutableList(((VncSequence)val).getJavaList());
 		}
 		else {
 			throw new VncException(String.format(
@@ -382,7 +382,7 @@ public class Coerce {
 			return (VncMutableVector)val;
 		}
 		else if (Types.isVncSequence(val)) {
-			return new VncMutableVector(((VncSequence)val).getList());
+			return new VncMutableVector(((VncSequence)val).getJavaList());
 		}
 		else {
 			throw new VncException(String.format(

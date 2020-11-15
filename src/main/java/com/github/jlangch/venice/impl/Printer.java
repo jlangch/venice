@@ -49,6 +49,6 @@ public class Printer {
 			final String delim, 
 			final boolean print_readably
 	) {
-		return join(args.getList(), delim, print_readably);
+		return join(args.getJavaList(), delim, print_readably);
 	}
 }

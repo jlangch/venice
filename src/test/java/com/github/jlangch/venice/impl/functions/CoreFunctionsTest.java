@@ -2772,7 +2772,7 @@ public class CoreFunctionsTest {
 		assertEquals("abc", venice.eval("(nfirst \"abc\" 4)"));
 
 		// with lazy sequences
-		assertEquals("(1 2 3 4)", venice.eval("(str (nfirst (lazy-seq 1 #(+ % 1)) 4))"));
+		assertEquals("(1 2 3 4)", venice.eval("(str (doall (nfirst (lazy-seq 1 #(+ % 1)) 4)))"));
 
 		// with java lists
 		assertEquals(

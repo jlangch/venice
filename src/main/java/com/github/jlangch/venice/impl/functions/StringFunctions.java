@@ -676,7 +676,6 @@ public class StringFunctions {
 				return new VncString(
 							coll.size() > 0
 								? coll
-									.getList()
 									.stream()
 									.map(v -> Types.isVncString(v) ? ((VncString)v).getValue() : v.toString())
 									.collect(Collectors.joining(delim.getValue()))
@@ -1966,7 +1965,6 @@ public class StringFunctions {
 
 	private static List<Object> toJavaObjects(final VncList list) {
 		return list
-				.getList()
 				.stream()
 				.map(v -> v.convertToJavaObject())
 				.collect(Collectors.toList());

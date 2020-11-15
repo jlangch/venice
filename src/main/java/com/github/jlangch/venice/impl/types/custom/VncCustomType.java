@@ -176,12 +176,14 @@ public class VncCustomType extends VncMap {
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
-		VncMap tmp = values;
-		for (int i=0; i<mvs.getList().size(); i+=2) {
-			tmp = tmp.assoc(mvs.nth(i), mvs.nth(i+1));
+		VncMap map = values;
+		VncSequence kv = mvs;
+		while(!kv.isEmpty()) {
+			map = map.assoc(kv.first(), kv.second());
+			kv = kv.drop(2);
 		}
 		
-		return DefTypeForm.createCustomType(typeDef, tmp);
+		return DefTypeForm.createCustomType(typeDef, map);
 	}
 
 	@Override

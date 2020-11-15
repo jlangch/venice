@@ -180,8 +180,10 @@ public class VncMutableMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs)));
 		}	
 
-		for (int i=0; i<mvs.getList().size(); i+=2) {
-			value.put(mvs.nth(i), mvs.nth(i+1));
+		VncSequence kv = mvs;
+		while(!kv.isEmpty()) {
+			value.put(kv.first(), kv.second());
+			kv = kv.drop(2);
 		}
 		return this;
 	}
@@ -196,8 +198,8 @@ public class VncMutableMap extends VncMap {
 
 	@Override
 	public VncMutableMap dissoc(final VncSequence keys) {
-		for (int i=0; i<keys.getList().size(); i++) {
-			value.remove(keys.nth(i));
+		for (VncVal key : keys) {
+			value.remove(key);
 		}
 		return this;
 	}
@@ -287,7 +289,7 @@ public class VncMutableMap extends VncMap {
 		final List<VncVal> list = value
 									.entrySet()
 									.stream()
-									.map(e -> VncList.of(e.getKey(), e.getValue()).getList())
+									.map(e -> VncList.of(e.getKey(), e.getValue()).getJavaList())
 									.flatMap(l -> l.stream())
 									.collect(Collectors.toList());
 

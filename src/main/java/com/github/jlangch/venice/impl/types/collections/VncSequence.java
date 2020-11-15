@@ -68,7 +68,7 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 
-	public abstract List<VncVal> getList();
+	public abstract List<VncVal> getJavaList();
 	
 	public abstract VncVal nth(int idx);
 

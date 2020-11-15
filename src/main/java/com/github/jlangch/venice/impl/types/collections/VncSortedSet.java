@@ -71,7 +71,7 @@ public class VncSortedSet extends VncSet {
 	}
 	
 	public static VncSortedSet ofAll(final VncSequence val) {
-		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val.getList()));
+		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
 	}
 	
 	public static VncSortedSet of(final VncVal... mvs) {

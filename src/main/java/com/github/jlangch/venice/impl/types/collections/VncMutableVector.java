@@ -151,7 +151,7 @@ public class VncMutableVector extends VncSequence {
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return value; 
 	}
 
@@ -276,13 +276,13 @@ public class VncMutableVector extends VncSequence {
 	@Override
 	public VncMutableVector addAllAtStart(final VncSequence list) {
 		if (Types.isVncMutableList(list)) {
-			value.addAll(0, ((VncMutableList)list).getList());
+			value.addAll(0, ((VncMutableList)list).getJavaList());
 		}
 		else if (Types.isVncMutableVector(list)) {
-			value.addAll(0, ((VncMutableVector)list).getList());
+			value.addAll(0, ((VncMutableVector)list).getJavaList());
 		}
 		else {
-			value.addAll(0, list.getList());
+			value.addAll(0, list.getJavaList());
 		}
 		return this;
 	}
@@ -296,13 +296,13 @@ public class VncMutableVector extends VncSequence {
 	@Override
 	public VncMutableVector addAllAtEnd(final VncSequence list) {
 		if (Types.isVncMutableList(list)) {
-			value.addAll(((VncMutableList)list).getList());
+			value.addAll(((VncMutableList)list).getJavaList());
 		}
 		else if (Types.isVncMutableVector(list)) {
-			value.addAll(((VncMutableVector)list).getList());
+			value.addAll(((VncMutableVector)list).getJavaList());
 		}
 		else {
-			value.addAll(list.getList());
+			value.addAll(list.getJavaList());
 		}
 		return this;
 	}
@@ -331,8 +331,7 @@ public class VncMutableVector extends VncSequence {
 
 	@Override
 	public Object convertToJavaObject() {
-		return getList()
-				.stream()
+		return stream()
 				.map(v -> v.convertToJavaObject())
 				.collect(Collectors.toList());
 	}

@@ -275,7 +275,6 @@ public class ZipFunctions {
 					Zipper.zipRemove(
 							file,
 							args.slice(1)
-								.getList()
 								.stream()
 								.map(e -> Coerce.toVncString(e).getValue())
 								.collect(Collectors.toList()));

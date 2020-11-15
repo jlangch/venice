@@ -294,7 +294,7 @@ public class Destructuring {
 		final List<Var> local_bindings = new ArrayList<>();
 
 
-		final List<VncVal> symbols = sortAssociativeNames(symVals.keys().getList());
+		final List<VncVal> symbols = sortAssociativeNames(symVals.keys());
 
 		for(int ii = 0; ii<symbols.size(); ii++) {
 			final VncVal symValName = symbols.get(ii);
@@ -302,7 +302,7 @@ public class Destructuring {
 			if (symValName.equals(KEYWORD_KEYS)) {
 				final VncVal symbol = symVals.get(KEYWORD_KEYS);
 				if (Types.isVncVector(symbol)) {
-					for(VncVal sym : ((VncVector)symbol).getList()) {
+					for(VncVal sym : ((VncVector)symbol)) {
 						final VncSymbol s = (VncSymbol)sym;
 						final VncVal v = bindVals.get(new VncKeyword(s.getName()));
 						local_bindings.add(new Var(s, v));								
@@ -319,7 +319,7 @@ public class Destructuring {
 			else if (symValName.equals(KEYWORD_SYMS)) {
 				final VncVal symbol = symVals.get(KEYWORD_SYMS);
 				if (Types.isVncVector(symbol)) {
-					for(VncVal sym : ((VncVector)symbol).getList()) {
+					for(VncVal sym : ((VncVector)symbol)) {
 						final VncSymbol s = (VncSymbol)sym;
 						final VncVal v = bindVals.get(s);
 						local_bindings.add(new Var(s, v));								
@@ -336,7 +336,7 @@ public class Destructuring {
 			else if (symValName.equals(KEYWORD_STRS)) {
 				final VncVal symbol = symVals.get(KEYWORD_STRS);
 				if (Types.isVncVector(symbol)) {
-					for(VncVal sym : ((VncVector)symbol).getList()) {
+					for(VncVal sym : ((VncVector)symbol)) {
 						final VncSymbol s = (VncSymbol)sym;
 						final VncVal v = bindVals.get(new VncString(s.getName()));
 						local_bindings.add(new Var(s, v));								
@@ -417,7 +417,7 @@ public class Destructuring {
 		return Types.isVncKeyword(val) && ((VncKeyword)val).equals(KEYWORD_AS);
 	}	
 
-	private static List<VncVal> sortAssociativeNames(final List<VncVal> names) {
+	private static List<VncVal> sortAssociativeNames(final VncList names) {
 		final List<VncVal> sorted = new ArrayList<>();
 		
 		for(VncVal n : names) {

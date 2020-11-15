@@ -104,16 +104,18 @@ public class VncThreadLocal extends VncVal {
 		return this;
 	}
 
-	public VncThreadLocal assoc(final VncList lst) {
-		for (int i=0; i<lst.getList().size(); i+=2) {
-			set(Coerce.toVncKeyword(lst.nth(i)), lst.nth(i+1));
+	public VncThreadLocal assoc(final VncList mvs) {
+		VncList kv = mvs;
+		while(!kv.isEmpty()) {
+			set(Coerce.toVncKeyword(kv.first()), kv.second());
+			kv = kv.drop(2);
 		}
 		return this;
 	}
 
 	public VncThreadLocal dissoc(final VncList lst) {
-		for (int i=0; i<lst.getList().size(); i++) {
-			remove(Coerce.toVncKeyword(lst.nth(i)));
+		for (VncVal v : lst) {
+			remove(Coerce.toVncKeyword(v));
 		}
 		return this;
 	}

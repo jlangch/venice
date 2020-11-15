@@ -43,7 +43,6 @@ public class Doc {
 			final StringBuilder sb =  new StringBuilder();
 						
 			sb.append(argsList
-						.getList()
 						.stream()
 						.map(s -> toString(s))
 						.collect(Collectors.joining(", ")));
@@ -55,7 +54,6 @@ public class Doc {
 				sb.append("\n\n");
 				sb.append("EXAMPLES:\n");
 				sb.append(examples
-							.getList()
 							.stream()
 							.map(s -> toString(s))
 							.map(e -> indent(e, "   "))
@@ -66,7 +64,6 @@ public class Doc {
 				sb.append("\n\n");
 				sb.append("SEE ALSO:\n   ");
 				sb.append(seeAlso
-							.getList()
 							.stream()
 							.map(s -> toString(s))
 							.collect(Collectors.joining(", ")));

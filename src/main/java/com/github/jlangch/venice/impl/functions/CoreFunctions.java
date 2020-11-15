@@ -735,7 +735,6 @@ public class CoreFunctions {
 					if (args.size() == 1) {
 						return ((VncMultiArityFunction)fn)
 									.getFunctions()
-									.getList()
 									.stream()
 									.map(f -> ((VncFunction)f).getBody())
 									.findFirst()
@@ -745,7 +744,6 @@ public class CoreFunctions {
 						final int arity = Coerce.toVncLong(args.second()).getIntValue();
 						return ((VncMultiArityFunction)fn)
 									.getFunctions()
-									.getList()
 									.stream()
 									.map(f -> (VncFunction)f)
 									.filter(f -> f.getFixedArgsCount() == arity)
@@ -791,8 +789,7 @@ public class CoreFunctions {
 				return args.isEmpty()
 						? VncString.empty()
 						: new VncString(
-								args.getList()
-									.stream()
+								args.stream()
 									.map(v -> Printer.pr_str(v, true))
 									.collect(Collectors.joining(" ")));
 			}
@@ -819,7 +816,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				final StringBuilder sb = new StringBuilder();
-				for(VncVal v : args.getList()) {
+				for(VncVal v : args) {
 					if (v != Nil) {
 						sb.append(Printer.pr_str(v, false));
 					}
@@ -943,7 +940,7 @@ public class CoreFunctions {
 				}
 				else {
 					final VncVal first = args.first();
-					for(VncVal v : args.rest().getList()) {
+					for(VncVal v : args.rest()) {
 						if (!Types._equal_strict_Q(first, v)) return False;
 					}
 					return True;
@@ -974,7 +971,7 @@ public class CoreFunctions {
 				}
 				else {
 					final VncVal first = args.first();
-					for(VncVal v : args.rest().getList()) {
+					for(VncVal v : args.rest()) {
 						if (!Types._equal_Q(first, v)) return False;
 					}
 					return True;
@@ -1604,7 +1601,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return VncList.ofList(args.getList());
+				return VncList.ofList(args.getJavaList());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1640,7 +1637,7 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (args.last() == Nil) {
-					return VncList.ofList(args.slice(0, args.size()-1).getList());
+					return VncList.ofList(args.slice(0, args.size()-1).getJavaList());
 				}
 				else if (!Types.isVncSequence(args.last())) {
 					throw new VncException(String.format(
@@ -1695,7 +1692,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return new VncMutableList(args.getList());
+				return new VncMutableList(args.getJavaList());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1739,7 +1736,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return VncVector.ofList(args.getList());
+				return VncVector.ofList(args.getJavaList());  // FIXME: simpler
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1794,8 +1791,8 @@ public class CoreFunctions {
 
 				return VncVector.ofList(
 								to == null
-									? vec.getList().subList(from.getValue().intValue(), vec.size())
-									: vec.getList().subList(from.getValue().intValue(), to.getValue().intValue()));
+									? vec.getJavaList().subList(from.getValue().intValue(), vec.size())
+									: vec.getJavaList().subList(from.getValue().intValue(), to.getValue().intValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1828,7 +1825,7 @@ public class CoreFunctions {
 
 					final List<VncVal> vals = new ArrayList<>();
 
-					for(VncVal v : seq.getList()) {
+					for(VncVal v : seq) {
 						final VncVal r = map.get(v);
 						vals.add(r == Nil ? v : r);
 					}
@@ -1896,13 +1893,13 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (Types.isVncList(coll)) {
-					return shuffleList(((VncList)coll).getList());
+					return shuffleList(((VncList)coll).getJavaList());
 				}
 				else if (Types.isVncVector(coll)) {
-					return shuffleVector(((VncVector)coll).getList());
+					return shuffleVector(((VncVector)coll).getJavaList());
 				}
 				else if (Types.isVncString(coll)) {
-					return shuffleList(((VncString)coll).toVncList().getList());
+					return shuffleList(((VncString)coll).toVncList().getJavaList());
 				}
 				else {
 					throw new VncException(
@@ -1933,7 +1930,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return new VncMutableVector(args.getList());
+				return new VncMutableVector(args.getJavaList());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2364,8 +2361,7 @@ public class CoreFunctions {
 				assertMinArity(args, 1);
 
 				final List<IVncFunction> functions =
-						args.getList()
-							.stream()
+						args.stream()
 							.map(v -> Coerce.toIVncFunction(v))
 							.collect(Collectors.toList());
 
@@ -3758,16 +3754,14 @@ public class CoreFunctions {
 					return VncVector.of(VncList.empty(), VncList.empty());
 				}
 
-				final List<VncVal> items = Coerce.toVncSequence(args.second()).getList();
+				final VncSequence seq = Coerce.toVncSequence(args.second());
 				final int n = Math.min(
-								items.size(),
+								seq.size(),
 								Math.max(
 									0,
 									Coerce.toVncLong(args.first()).getValue().intValue()));
 
-				return VncVector.of(
-						VncList.ofList(items.subList(0, n)),
-						VncList.ofList(items.subList(n, items.size())));
+				return VncVector.of(seq.slice(0, n).toVncList(), seq.slice(n).toVncList());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -3796,7 +3790,7 @@ public class CoreFunctions {
 				final IVncFunction pred = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
 
-				final List<VncVal> items = coll.getList();
+				final List<VncVal> items = coll.getJavaList();
 				int splitPos = items.size();
 
 				// find splitPos
@@ -3922,7 +3916,7 @@ public class CoreFunctions {
 				else if (Types.isVncMap(to)) {
 					if (Types.isVncSequence(from)) {
 						VncMap toMap = (VncMap)to;
-						for(VncVal it : ((VncSequence)from).getList()) {
+						for(VncVal it : ((VncSequence)from)) {
 							if (Types.isVncSequence(it)) {
 								toMap = ((VncMap)toMap).assoc(((VncSequence)it).toVncList());
 							}
@@ -4066,7 +4060,6 @@ public class CoreFunctions {
 
 					return VncBoolean.of(
 								coll.toVncList()
-								   .getList()
 								   .stream()
 								   .allMatch(v -> { 
 									   final VncVal r = pred.apply(VncList.of(v));
@@ -4138,7 +4131,6 @@ public class CoreFunctions {
 
 					return VncBoolean.of(
 								coll.toVncList()
-								   .getList()
 								   .stream()
 								   .anyMatch(v -> { 
 									   final VncVal r = pred.apply(VncList.of(v));
@@ -4254,14 +4246,13 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				final List<VncFunction> predicates = args.getList()
-														 .stream()
+				final List<VncFunction> predicates = args.stream()
 														 .map(p -> Coerce.toVncFunction(p))
 														 .collect(Collectors.toList());
 				
 				return new VncFunction(createAnonymousFuncName("every-pred:wrapped")) {
 					public VncVal apply(final VncList args) {
-						for(VncVal arg : args.getList()) {
+						for(VncVal arg : args) {
 							for(VncFunction pred : predicates) {
 								final VncVal res = pred.apply(VncList.of(arg));
 								if (VncBoolean.isFalse(res)) {
@@ -4306,14 +4297,13 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				final List<VncFunction> predicates = args.getList()
-														 .stream()
+				final List<VncFunction> predicates = args.stream()
 														 .map(p -> Coerce.toVncFunction(p))
 														 .collect(Collectors.toList());
 				
 				return new VncFunction(createAnonymousFuncName("any-pred:wrapped")) {
 					public VncVal apply(final VncList args) {
-						for(VncVal arg : args.getList()) {
+						for(VncVal arg : args) {
 							for(VncFunction pred : predicates) {
 								final VncVal res = pred.apply(VncList.of(arg));
 								if (VncBoolean.isTrue(res)) {
@@ -4634,7 +4624,7 @@ public class CoreFunctions {
 					}
 					else if (Types.isVncMap(coll)) {
 						VncMap map = (VncMap)coll;
-						for(VncVal v : args.rest().getList()) {
+						for(VncVal v : args.rest()) {
 							if (Types.isVncSequence(v) && ((VncSequence)v).size() == 2) {
 								map = map.assoc(
 											VncList.of(
@@ -4765,7 +4755,7 @@ public class CoreFunctions {
 					}
 					else if (Types.isVncMutableMap(coll)) {
 						VncMutableMap map = (VncMutableMap)coll;
-						for(VncVal v : args.rest().getList()) {
+						for(VncVal v : args.rest()) {
 							if (Types.isVncSequence(v) && ((VncSequence)v).size() == 2) {
 								map = map.assoc(
 											VncList.of(
@@ -4820,7 +4810,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				final List<VncVal> result = new ArrayList<>();
 
-				args.getList().forEach(val -> {
+				args.forEach(val -> {
 					if (val == Nil) {
 						// skip
 					}
@@ -4831,13 +4821,13 @@ public class CoreFunctions {
 						}
 					}
 					else if (Types.isVncSequence(val)) {
-						result.addAll(((VncSequence)val).getList());
+						result.addAll(((VncSequence)val).getJavaList());
 					}
 					else if (Types.isVncSet(val)) {
 						result.addAll(((VncSet)val).getJavaList());
 					}
 					else if (Types.isVncMap(val)) {
-						result.addAll(((VncMap)val).toVncList().getList());
+						result.addAll(((VncMap)val).toVncList().getJavaList());
 					}
 					else {
 						throw new VncException(String.format(
@@ -5306,27 +5296,21 @@ public class CoreFunctions {
 				else if (Types.isVncVector(coll)) {
 					final VncVector vec = (VncVector)coll;
 					n = Math.max(0, Math.min(vec.size(), n));
-					return vec.isEmpty()
-							? VncVector.empty()
-							: VncVector.ofList(vec.getList().subList(0, n));
+					return vec.slice(0, n);
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncSequence list = (VncSequence)args.first();
 					n = Math.max(0, Math.min(list.size(), n));
-					return list.isEmpty()
-							? VncList.empty()
-							: VncList.ofList(list.getList().subList(0, n));
+					return list.slice(0, n);
 				}
 				else if (Types.isVncLazySeq(coll)) {
 					final VncLazySeq list = (VncLazySeq)args.first();
-					return VncList.ofList(list.getList().subList(0, n));
+					return list.slice(0, n);
 				}
 				else if (Types.isVncMutableList(coll)) {
 					final VncMutableList list = (VncMutableList)args.first();
 					n = Math.max(0, Math.min(list.size(), n));
-					return list.isEmpty()
-							? new VncMutableList()
-							: new VncMutableList(list.getList().subList(0, n));
+					return list.slice(0, n);
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();
@@ -5375,23 +5359,17 @@ public class CoreFunctions {
 				else if (Types.isVncVector(coll)) {
 					final VncVector vec = (VncVector)coll;
 					n = Math.max(0, Math.min(vec.size(), n));
-					return vec.isEmpty()
-							? VncVector.empty()
-							: VncVector.ofList(vec.getList().subList(vec.size()-n, vec.size()));
+					return vec.slice(vec.size()-n);
 				}
 				else if (Types.isVncList(coll) || Types.isVncJavaList(coll)) {
 					final VncSequence list = (VncSequence)args.first();
 					n = Math.max(0, Math.min(list.size(),n));
-					return list.isEmpty()
-							? VncList.empty()
-							: VncList.ofList(list.getList().subList(list.size()-n, list.size()));
+					return list.slice(list.size()-n);
 				}
 				else if (Types.isVncMutableList(coll)) {
 					final VncMutableList list = (VncMutableList)args.first();
 					n = Math.max(0, Math.min(list.size(),n));
-					return list.isEmpty()
-							? new VncMutableList()
-							: new VncMutableList(list.getList().subList(list.size()-n, list.size()));
+					return list.slice(list.size()-n);
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();
@@ -5985,7 +5963,7 @@ public class CoreFunctions {
 
 				VncMap map = new VncOrderedMap();
 
-				for(VncVal v : coll.getList()) {
+				for(VncVal v : coll) {
 					final VncVal key = VncFunction.applyWithMeter(fn, VncList.of(v), meterRegistry);
 					final VncSequence val = Coerce.toVncSequence(map.getMap().get(key));
 					if (val == null) {
@@ -6024,7 +6002,7 @@ public class CoreFunctions {
 
 				final Map<VncVal,VncLong> map = new HashMap<>();
 
-				for(VncVal v : coll.getList()) {
+				for(VncVal v : coll) {
 					VncLong count = map.get(v);
 					if (count == null) {
 						map.put(v, new VncLong(1L));
@@ -6093,8 +6071,7 @@ public class CoreFunctions {
 				assertMinArity(args, 0);
 
 				final List<IVncFunction> fns =
-						args.getList()
-							.stream()
+						args.stream()
 							.map(v -> Coerce.toIVncFunction(v))
 							.collect(Collectors.toList());
 
@@ -6516,7 +6493,7 @@ public class CoreFunctions {
 					return map;
 				}
 				else {
-					for(VncVal key : map.keys().getList()) {
+					for(VncVal key : map.keys()) {
 						final VncVal r = filterFn.apply(VncList.of(key));
 						if (r == Nil || VncBoolean.isFalse(r)) {
 							map = map.dissoc(key);
@@ -6605,10 +6582,10 @@ public class CoreFunctions {
 				List<VncVal> coll;
 
 				if (Types.isVncSequence(args.last())) {
-					coll = Coerce.toVncSequence(args.last()).getList();
+					coll = Coerce.toVncSequence(args.last()).getJavaList();
 				}
 				else if (Types.isVncMap(args.last())) {
-					coll = Coerce.toVncMap(args.last()).toVncList().getList();
+					coll = Coerce.toVncMap(args.last()).toVncList().getJavaList();
 				}
 				else {
 					throw new VncException(String.format(
@@ -7291,7 +7268,6 @@ public class CoreFunctions {
 		if (Types.isVncVector(coll)) {
 			return VncVector.ofList(
 					((VncVector)coll)
-						.getList()
 						.stream()
 						.sorted(c)
 						.collect(Collectors.toList()));
@@ -7299,7 +7275,6 @@ public class CoreFunctions {
 		else if (Types.isVncSequence(coll)) {
 			return VncList.ofList(
 					((VncSequence)coll)
-						.getList()
 						.stream()
 						.sorted(c)
 						.collect(Collectors.toList()));
@@ -7315,7 +7290,6 @@ public class CoreFunctions {
 			return VncList.ofList(
 					 ((VncMap)coll)
 					 	.toVncList()
-						.getList()
 						.stream()
 						.sorted(c)
 						.collect(Collectors.toList()));

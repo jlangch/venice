@@ -170,7 +170,7 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return value.asJava(); // return an immutable view on top of Stream<VncVal>
 	}
 
