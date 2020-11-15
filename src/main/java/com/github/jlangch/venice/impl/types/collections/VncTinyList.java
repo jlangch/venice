@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
@@ -465,18 +466,9 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public Object convertToJavaObject() {
-		final ArrayList<Object> list = new ArrayList<>(len);
-		if (len > 0) {
-			list.add(first.convertToJavaObject());
-			if (len > 1) {
-				list.add(second.convertToJavaObject());
-				if (len > 2) {
-					list.add(third.convertToJavaObject());
-					if (len > 3) list.add(fourth.convertToJavaObject());
-				}
-			}
-		}
-		return list;
+		return stream()
+				.map(v -> v.convertToJavaObject())
+				.collect(Collectors.toList());
 	}
 	
 	@Override
