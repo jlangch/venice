@@ -122,17 +122,16 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 
     public abstract Iterator<VncVal> iterator();
 
+	public abstract Stream<VncVal> stream();
+
 	public abstract void forEach(Consumer<? super VncVal> action);
 
 	public abstract VncSequence filter(Predicate<? super VncVal> predicate);
 
 	public abstract VncSequence map(Function<? super VncVal, ? extends VncVal> mapper);
 
-	public  Stream<VncVal> stream() {
-		return getList().stream();
-	}
-
-
+	
+	
 	public static final VncKeyword TYPE = new VncKeyword(":core/sequence");
 
 	private static final long serialVersionUID = -1848883965231344442L;

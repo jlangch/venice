@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -38,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
 /**
@@ -158,6 +160,11 @@ public class VncTinyList extends VncList {
     public Iterator<VncVal> iterator() {
         return isEmpty() ? EmptyIterator.empty() : new MappingIterator(this);
     }
+
+    @Override
+	public Stream<VncVal> stream() {
+		return StreamUtil.stream(iterator());
+	}
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {

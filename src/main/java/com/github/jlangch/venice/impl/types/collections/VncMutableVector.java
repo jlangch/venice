@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -120,6 +121,11 @@ public class VncMutableVector extends VncSequence {
     public Iterator<VncVal> iterator() {
         return isEmpty() ? EmptyIterator.empty() : value.iterator();
     }
+
+    @Override
+	public Stream<VncVal> stream() {
+		return value.stream();
+	}
 
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {

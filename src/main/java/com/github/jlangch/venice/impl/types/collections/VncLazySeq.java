@@ -149,6 +149,11 @@ public class VncLazySeq extends VncSequence {
         return isEmpty() ? EmptyIterator.empty() : value.iterator();
     }
 
+    @Override
+	public java.util.stream.Stream<VncVal> stream() {
+		return value.toJavaStream();
+	}
+
 	@Override
 	public void forEach(Consumer<? super VncVal> action) {
 		value.forEach(v -> action.accept(v));
