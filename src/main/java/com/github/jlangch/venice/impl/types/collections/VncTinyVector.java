@@ -110,11 +110,16 @@ public class VncTinyVector extends VncVector {
 		values[3] = fourth;
 	}
 
-	private VncTinyVector(final VncVal[] vals, final VncVal meta) {
+	private VncTinyVector(final VncVal[] vals, final boolean copy, final VncVal meta) {
 		super(meta);
 		if (vals.length <= MAX_ELEMENTS) {
-			values = new VncVal[vals.length];
-			System.arraycopy(vals, 0, values, 0, vals.length);
+			if (copy) {
+				values = new VncVal[vals.length];
+				System.arraycopy(vals, 0, values, 0, vals.length);
+			}
+			else {
+				values = vals;
+			}
 		}
 		else {
 			throw new VncException(String.format(
@@ -125,7 +130,7 @@ public class VncTinyVector extends VncVector {
 
 	
 	public static VncVector of(final VncVal... mvs) {
-		return mvs.length <= MAX_ELEMENTS ? new VncTinyVector(mvs, Nil) : VncVector.of(mvs);
+		return mvs.length <= MAX_ELEMENTS ? new VncTinyVector(mvs, true, Nil) : VncVector.of(mvs);
 	}
 	
 	@Override
@@ -160,7 +165,7 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVector withMeta(final VncVal meta) {
-		return new VncTinyVector(values, meta);
+		return new VncTinyVector(values, true, meta);
 	}
 
     @Override
@@ -195,7 +200,7 @@ public class VncTinyVector extends VncVector {
 		else {
 			final VncVal[] copy = new VncVal[len];
 			System.arraycopy(filtered, 0, copy, 0, len);
-			return new VncTinyVector(copy, getMeta());
+			return new VncTinyVector(copy, false, getMeta());
 		}
 	}
 
@@ -205,7 +210,7 @@ public class VncTinyVector extends VncVector {
 		for(int ii=0; ii<values.length; ii++) {
 			mapped[ii] = mapper.apply(values[ii]);
 		}
-		return new VncTinyVector(mapped, getMeta()); 
+		return new VncTinyVector(mapped, false, getMeta()); 
 	}
 
 	@Override
@@ -331,7 +336,7 @@ public class VncTinyVector extends VncVector {
 			final int len = (end > values.length ? values.length : end) - start;
 			final VncVal[] copy = new VncVal[len];
 			System.arraycopy(values, start, copy, 0, len);
-			return new VncTinyVector(copy, getMeta());
+			return new VncTinyVector(copy, false, getMeta());
 		}
 	}
 	
@@ -353,13 +358,14 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector addAtStart(final VncVal val) {
-		switch (values.length) {
-			case 0:	return new VncTinyVector(val, getMeta()); 
-			case 1: return new VncTinyVector(val, values[0], getMeta()); 
-			case 2:	return new VncTinyVector(val, values[0], values[1], getMeta()); 
-			case 3:	return new VncTinyVector(val, values[0], values[1], values[2], getMeta()); 
-			case 4:	return VncVector.of(val, values[0], values[1], values[2], values[3]).withMeta(getMeta());
-			default: throw new IllegalStateException("VncTinyVector length out of range");
+		if (values.length < MAX_ELEMENTS) {
+			final VncVal[] copy = new VncVal[values.length + 1];
+			System.arraycopy(values, 0, copy, 1, values.length);
+			copy[0] = val;
+			return new VncTinyVector(copy, false, getMeta());
+		}
+		else {
+			return VncVector.of(val, values[0], values[1], values[2], values[3]).withMeta(getMeta());
 		}
 	}
 	
@@ -374,7 +380,7 @@ public class VncTinyVector extends VncVector {
 					copy[otherLen-1-ii] = list.nth(ii); // reverse order
 				}
 				System.arraycopy(values, 0, copy, otherLen, thisLen);
-				return new VncTinyVector(copy, getMeta());
+				return new VncTinyVector(copy, false, getMeta());
 			}
 		}
 		
@@ -386,13 +392,14 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector addAtEnd(final VncVal val) {
-		switch (values.length) {
-			case 0:	return new VncTinyVector(val, getMeta()); 
-			case 1: return new VncTinyVector(values[0], val, getMeta()); 
-			case 2:	return new VncTinyVector(values[0], values[1], val, getMeta()); 
-			case 3:	return new VncTinyVector(values[0], values[1], values[2], val, getMeta()); 
-			case 4:	return VncVector.of(values[0], values[1], values[2], values[3], val).withMeta(getMeta());
-			default: throw new IllegalStateException("VncTinyVector length out of range");
+		if (values.length < MAX_ELEMENTS) {
+			final VncVal[] copy = new VncVal[values.length + 1];
+			System.arraycopy(values, 0, copy, 0, values.length);
+			copy[values.length] = val;
+			return new VncTinyVector(copy, false, getMeta());
+		}
+		else {
+			return VncVector.of(values[0], values[1], values[2], values[3], val).withMeta(getMeta());
 		}
 	}
 	
@@ -407,7 +414,7 @@ public class VncTinyVector extends VncVector {
 				for(int ii=0; ii<otherLen; ii++) {
 					copy[thisLen+ii] = list.nth(ii);
 				}
-				return new VncTinyVector(copy, getMeta());
+				return new VncTinyVector(copy, false, getMeta());
 			}
 		}
 
@@ -426,7 +433,7 @@ public class VncTinyVector extends VncVector {
 		final VncVal[] copy = new VncVal[values.length];
 		System.arraycopy(values, 0, copy, 0, values.length);
 		copy[idx] = val;
-		return new VncTinyVector(copy, getMeta());
+		return new VncTinyVector(copy, false, getMeta());
 	}
 	
 	@Override
@@ -446,7 +453,7 @@ public class VncTinyVector extends VncVector {
 			final VncVal[] copy = new VncVal[values.length-1];
 			System.arraycopy(values, 0, copy, 0, idx);
 			System.arraycopy(values, idx+1, copy, idx, values.length-idx-1);
-			return new VncTinyVector(copy, getMeta());
+			return new VncTinyVector(copy, false, getMeta());
 		}
 	}
 
