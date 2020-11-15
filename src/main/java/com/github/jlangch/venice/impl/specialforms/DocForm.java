@@ -182,11 +182,11 @@ public class DocForm {
 			sb.append(String.format("Custom choice type :%s\n", type.getValue()));
 			if (!types.isEmpty()) {
 				sb.append("Types: \n");
-				typeDef.typesOnly().getList().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+				typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
 			}
 			if (!values.isEmpty()) {
 				sb.append("Values: \n");
-				typeDef.valuesOnly().getList().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+				typeDef.valuesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
 			}
 			
 			return new VncString(sb.toString());

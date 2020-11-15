@@ -1978,7 +1978,7 @@ public class TimeFunctions {
 			dates.addAll(((VncSequence)args.first()).getList());
 		}
 		else if (Types.isVncHashSet(args.first())) {
-			dates.addAll(((VncHashSet)args.first()).getList());
+			dates.addAll(((VncHashSet)args.first()).getJavaList());
 		}
 		else {
 			throw new VncException(String.format(

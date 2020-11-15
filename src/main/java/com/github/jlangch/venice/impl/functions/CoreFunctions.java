@@ -1840,7 +1840,7 @@ public class CoreFunctions {
 
 					final List<VncVal> vals = new ArrayList<>();
 
-					for(VncVal v : set.getList()) {
+					for(VncVal v : set) {
 						final VncVal r = map.get(v);
 						vals.add(r == Nil ? v : r);
 					}
@@ -2248,10 +2248,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
+				Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getJavaSet());
 
 				for(int ii=1; ii<args.size(); ii++) {
-					set.removeAll(Coerce.toVncSet(args.nth(ii)).getSet());
+					set.removeAll(Coerce.toVncSet(args.nth(ii)).getJavaSet());
 				}
 
 				return VncHashSet.ofAll(set);
@@ -2277,10 +2277,10 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				assertMinArity(args, 1);
 
-				final Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getSet());
+				final Set<VncVal> set = new HashSet<>(Coerce.toVncSet(args.first()).getJavaSet());
 
 				for(int ii=1; ii<args.size(); ii++) {
-					set.addAll(Coerce.toVncSet(args.nth(ii)).getSet());
+					set.addAll(Coerce.toVncSet(args.nth(ii)).getJavaSet());
 				}
 
 				return VncHashSet.ofAll(set);
@@ -2308,13 +2308,13 @@ public class CoreFunctions {
 
 				final Set<VncVal> intersection = new HashSet<>();
 
-				final Set<VncVal> first = Coerce.toVncSet(args.first()).getSet();
+				final Set<VncVal> first = Coerce.toVncSet(args.first()).getJavaSet();
 
 				first.forEach(v -> {
 					boolean intersect = true;
 
 					for(int ii=1; ii<args.size(); ii++) {
-						if (!Coerce.toVncSet(args.nth(ii)).getSet().contains(v)) {
+						if (!Coerce.toVncSet(args.nth(ii)).getJavaSet().contains(v)) {
 							intersect = false;
 							break;
 						}
@@ -4208,15 +4208,15 @@ public class CoreFunctions {
 						return Nil;
 					}
 
-					List<VncVal> items;
+					Iterable<VncVal> items;
 					if (coll instanceof VncSequence) {
-						items = ((VncSequence)coll).getList();
+						items = ((VncSequence)coll);
 					}
 					else if (coll instanceof VncSet) {
-						items = ((VncSet)coll).getList();
+						items = ((VncSet)coll);
 					}
 					else {
-						items = coll.toVncList().getList();
+						items = coll.toVncList();
 					}
 
 					for(VncVal v : items) {
@@ -4834,7 +4834,7 @@ public class CoreFunctions {
 						result.addAll(((VncSequence)val).getList());
 					}
 					else if (Types.isVncSet(val)) {
-						result.addAll(((VncSet)val).getList());
+						result.addAll(((VncSet)val).getJavaList());
 					}
 					else if (Types.isVncMap(val)) {
 						result.addAll(((VncMap)val).toVncList().getList());
@@ -7307,7 +7307,6 @@ public class CoreFunctions {
 		else if (Types.isVncSet(coll)) {
 			return VncList.ofList(
 					((VncSet)coll)
-						.getList()
 						.stream()
 						.sorted(c)
 						.collect(Collectors.toList()));

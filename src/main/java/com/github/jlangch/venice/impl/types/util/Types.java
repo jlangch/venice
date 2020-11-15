@@ -473,7 +473,7 @@ public class Types {
 				if (((VncHashSet)a).size() != ((VncHashSet)b).size()) {
 					return false;
 				}
-				return ((VncHashSet)a).getList().stream().allMatch(v -> ((VncHashSet)b).contains(v));
+				return ((VncHashSet)a).stream().allMatch(v -> ((VncHashSet)b).contains(v));
 			} 
 			else if (a instanceof VncMap) {
 				if (((VncMap)a).getMap().size() != ((VncMap)b).getMap().size()) {

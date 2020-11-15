@@ -346,19 +346,19 @@ public class TransducerFunctions {
 					final VncFunction fn = Coerce.toVncFunction(args.first());
 					final VncVal coll = args.second();
 
-					List<VncVal> items;
+					Iterable<VncVal> items;
 					
 					if (Types.isVncSequence(coll)) {
-						items = ((VncSequence)coll).getList();
+						items = ((VncSequence)coll);
 					}
 					else if (Types.isVncSet(coll)) {
-						items = ((VncSet)coll).getList();
+						items = ((VncSet)coll);
 					}
 					else if (Types.isVncMap(coll)) {
-						items = ((VncMap)coll).toVncList().getList();
+						items = ((VncMap)coll).toVncList();
 					}
 					else if (Types.isVncString(coll)) {
-						items = ((VncString)coll).toVncList().getList();
+						items = ((VncString)coll).toVncList();
 					}
 					else {
 						throw new VncException(
@@ -1171,7 +1171,7 @@ public class TransducerFunctions {
 						return reverseVector(((VncVector)coll).getList());
 					}
 					else if (Types.isVncSet(coll)) {
-						return reverseList(((VncSet)coll).getList());
+						return reverseList(((VncSet)coll).getJavaList());
 					}
 					else if (Types.isVncMap(coll)) {
 						return reverseList(((VncMap)coll).toVncList().getList());

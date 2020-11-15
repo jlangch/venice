@@ -475,7 +475,7 @@ public class Coerce {
 			return (VncMutableSet)val;
 		}
 		else if (Types.isVncSet(val)) {
-			return new VncMutableSet(((VncSet)val).getSet());
+			return new VncMutableSet(((VncSet)val).getJavaSet());
 		}
 		else {
 			throw new VncException(String.format(

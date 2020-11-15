@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
@@ -38,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
+import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
 public class VncJavaSet extends VncSet implements IVncJavaObject {
@@ -168,13 +170,18 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
         return isEmpty() ? EmptyIterator.empty() : new MappingIterator(value.iterator());
     }
 
+    @Override
+	public Stream<VncVal> stream() {
+		return StreamUtil.stream(iterator());
+    }
+
 	@Override
-	public Set<VncVal> getSet() { 
+	public Set<VncVal> getJavaSet() { 
 		return Collections.unmodifiableSet(getVncValueSet()); 
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return Collections.unmodifiableList(getVncValueList()); 
 	}
 
@@ -254,17 +261,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	}
 
 	private List<VncVal> getVncValueList() {
-		return value
-				.stream()
-				.map(v -> JavaInteropUtil.convertToVncVal(v))
-				.collect(Collectors.toList());
+		return stream().collect(Collectors.toList());
 	}
 
 	private Set<VncVal> getVncValueSet() {
-		return value
-				.stream()
-				.map(v -> JavaInteropUtil.convertToVncVal(v))
-				.collect(Collectors.toSet());
+		return stream().collect(Collectors.toSet());
 	}
 
 	

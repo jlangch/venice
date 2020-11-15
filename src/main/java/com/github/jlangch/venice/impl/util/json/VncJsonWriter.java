@@ -303,7 +303,7 @@ public class VncJsonWriter {
 
 	private void write_VncSet(final String key, final VncSet val) {
 		array(key);
-		val.getSet().forEach(v -> write(null, v));
+		val.forEach(v -> write(null, v));
 		end();
 	}
 

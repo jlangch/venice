@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -180,24 +181,29 @@ public class VncMutableSet extends VncSet {
         return isEmpty() ? EmptyIterator.empty() : value.iterator();
     }
 
+    @Override
+	public Stream<VncVal> stream() {
+		return value.stream();
+	}
+
 	@Override
-	public Set<VncVal> getSet() { 
+	public Set<VncVal> getJavaSet() { 
 		return Collections.unmodifiableSet(value); 
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return Collections.unmodifiableList(new ArrayList<>(value)); 
 	}
 
 	@Override
 	public VncList toVncList() {
-		return new VncList(getSet(), getMeta());
+		return new VncList(getJavaSet(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getSet(), getMeta());
+		return new VncVector(getJavaSet(), getMeta());
 	}
 
 	@Override
@@ -261,7 +267,7 @@ public class VncMutableSet extends VncSet {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		return "#{" + Printer.join(getList(), " ", print_readably) + "}";
+		return "#{" + Printer.join(getJavaList(), " ", print_readably) + "}";
 	}
 
 

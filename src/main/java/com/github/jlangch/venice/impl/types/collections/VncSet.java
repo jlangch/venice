@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -96,16 +97,17 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 	
 	public abstract boolean contains(VncVal val);
 	
-	public abstract Set<VncVal> getSet();
+	public abstract Set<VncVal> getJavaSet();
 	
-	public abstract List<VncVal> getList();
+	public abstract List<VncVal> getJavaList();
 
     public abstract Iterator<VncVal> iterator();
 
+	public abstract Stream<VncVal> stream();
+
 	@Override
 	public Object convertToJavaObject() {
-		return getSet()
-				.stream()
+		return stream()
 				.map(v -> v.convertToJavaObject())
 				.collect(Collectors.toSet());
 	}

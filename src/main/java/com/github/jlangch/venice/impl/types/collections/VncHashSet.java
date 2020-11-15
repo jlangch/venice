@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -147,6 +148,11 @@ public class VncHashSet extends VncSet {
     public Iterator<VncVal> iterator() {
         return isEmpty() ? EmptyIterator.empty() : value.iterator();
     }
+
+    @Override
+	public Stream<VncVal> stream() {
+		return value.toJavaStream();
+	}
 	
 	@Override
 	public boolean contains(final VncVal val) {
@@ -154,12 +160,12 @@ public class VncHashSet extends VncSet {
 	}
 
 	@Override
-	public Set<VncVal> getSet() { 
+	public Set<VncVal> getJavaSet() { 
 		return Collections.unmodifiableSet(value.toJavaSet()); 
 	}
 
 	@Override
-	public List<VncVal> getList() { 
+	public List<VncVal> getJavaList() { 
 		return Collections.unmodifiableList(value.toJavaList()); 
 	}
 	
@@ -229,7 +235,7 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		return "#{" + Printer.join(getList(), " ", print_readably) + "}";
+		return "#{" + Printer.join(getJavaList(), " ", print_readably) + "}";
 	}
 
 	

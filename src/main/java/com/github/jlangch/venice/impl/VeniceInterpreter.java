@@ -684,7 +684,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncSet set = (VncSet)ast;
 			
 			final List<VncVal> vals = new ArrayList<>(set.size());
-			for(VncVal v: set.getList()) {
+			for(VncVal v: set) {
 				vals.add(evaluate(v, env));
 			}
 			return set.withValues(vals);
