@@ -136,20 +136,12 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncList filter(final Predicate<? super VncVal> predicate) {
-		return new VncList(
-					value.stream()
-						 .filter(predicate)
-						 .collect(Collectors.toList()), 
-					getMeta());
+		return VncList.ofAll(value.stream().filter(predicate), getMeta());
 	}
 
 	@Override
 	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		return new VncList(
-					value.stream()
-						 .map(mapper)
-						 .collect(Collectors.toList()), 
-					getMeta());
+		return VncList.ofAll(value.stream().map(mapper), getMeta());
 	}
 
 	@Override

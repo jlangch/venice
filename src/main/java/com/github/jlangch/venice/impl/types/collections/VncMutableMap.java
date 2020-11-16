@@ -207,23 +207,19 @@ public class VncMutableMap extends VncMap {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(
-						value
-							.entrySet()
-							.stream()
-							.map(e -> VncVector.of(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()),
+		return VncList.ofAll(
+						value.entrySet()
+							 .stream()
+							 .map(e -> VncVector.of(e.getKey(), e.getValue())),
 						getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(
-						value
-							.entrySet()
-							.stream()
-							.map(e -> VncVector.of(e.getKey(), e.getValue()))
-							.collect(Collectors.toList()),
+		return VncVector.ofAll(
+						value.entrySet()
+							 .stream()
+							 .map(e -> VncVector.of(e.getKey(), e.getValue())),
 						getMeta());
 	}
 	
@@ -290,7 +286,7 @@ public class VncMutableMap extends VncMap {
 		final Stream<VncVal> stream = value
 										.entrySet()
 										.stream()
-										.map(e -> VncList.of(e.getKey(), e.getValue()).getJavaList())
+										.map(e -> Arrays.asList(e.getKey(), e.getValue()))
 										.flatMap(l -> l.stream());
 
 		return "{" + Printer.join(stream, " ", print_readably) + "}";

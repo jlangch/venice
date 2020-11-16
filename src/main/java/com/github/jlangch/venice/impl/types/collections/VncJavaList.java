@@ -82,12 +82,12 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncList withValues(final List<? extends VncVal> vals) {
-		return new VncList(vals, getMeta());
+		return VncList.ofAll(stream(), getMeta());
 	}
 
 	@Override
 	public VncList withValues(final List<? extends VncVal> vals, final VncVal meta) {
-		return new VncList(vals, meta);
+		return VncList.ofAll(stream(), meta);
 	}
 
 	@Override
@@ -269,12 +269,12 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(getJavaList(), getMeta());
+		return VncList.ofAll(stream(), getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getJavaList(), getMeta());
+		return VncVector.ofAll(stream(), getMeta());
 	}
 	
 	@Override

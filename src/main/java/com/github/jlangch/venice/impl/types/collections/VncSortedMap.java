@@ -227,18 +227,12 @@ public class VncSortedMap extends VncMap {
 	
 	@Override
 	public VncList toVncList() {
-		return new VncList(
-						value.map(e -> VncVector.of(e._1, e._2))
-							 .collect(Collectors.toList()),
-						getMeta());
+		return VncList.ofAll(value.map(e -> VncVector.of(e._1, e._2)), getMeta());
 	}
 	
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(
-						value.map(e -> VncVector.of(e._1, e._2))
-							 .collect(Collectors.toList()),
-						getMeta());
+		return VncVector.ofAll(value.map(e -> VncVector.of(e._1, e._2)), getMeta());
 	}
 	
 	@Override

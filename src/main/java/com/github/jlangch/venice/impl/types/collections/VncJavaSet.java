@@ -187,12 +187,12 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	@Override
 	public VncList toVncList() {
-		return new VncList(getVncValueList(), getMeta());
+		return VncList.ofAll(stream(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getVncValueList(), getMeta());
+		return VncVector.ofAll(stream(), getMeta());
 	}
 
 	@Override

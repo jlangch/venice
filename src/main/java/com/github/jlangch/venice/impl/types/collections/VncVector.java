@@ -123,12 +123,12 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector withValues(final List<? extends VncVal> replaceVals) {
-		return new VncVector(replaceVals, getMeta());
+		return VncVector.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncVector withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncVector(replaceVals, meta);
+		return VncVector.ofList(replaceVals, meta);
 	}
 
 	@Override

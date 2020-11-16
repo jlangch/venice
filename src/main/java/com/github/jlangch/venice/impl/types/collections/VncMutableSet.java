@@ -198,12 +198,12 @@ public class VncMutableSet extends VncSet {
 
 	@Override
 	public VncList toVncList() {
-		return new VncList(getJavaSet(), getMeta());
+		return VncList.ofAll(stream(), getMeta());
 	}
 
 	@Override
 	public VncVector toVncVector() {
-		return new VncVector(getJavaSet(), getMeta());
+		return VncVector.ofAll(stream(), getMeta());
 	}
 
 	@Override

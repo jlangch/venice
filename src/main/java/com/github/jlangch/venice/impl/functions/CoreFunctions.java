@@ -3784,29 +3784,33 @@ public class CoreFunctions {
 				final IVncFunction pred = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
 
-				final List<VncVal> items = coll.getJavaList();
-				int splitPos = items.size();
+				int splitPos = coll.size();
 
 				// find splitPos
-				for(int ii=0; ii<items.size(); ii++) {
-					final VncVal val = coll.nth(ii);
-					final VncVal match = pred.apply(VncList.of(val));
+				int pos = 0;
+				for(VncVal v : coll) {
+					final VncVal match = pred.apply(VncList.of(v));
 					if (VncBoolean.isFalse(match) || match == Nil) {
-						splitPos = ii;
+						splitPos = pos;
 						break;
 					}
+					pos++;
 				}
 
 				if (splitPos == 0) {
-					return VncVector.of(VncList.empty(), VncList.ofList(items));
-				}
-				else if (splitPos < items.size()) {
 					return VncVector.of(
-								VncList.ofList(items.subList(0, splitPos)),
-								VncList.ofList(items.subList(splitPos, items.size())));
+							VncList.empty(), 
+							coll.toVncList());
+				}
+				else if (splitPos < coll.size()) {
+					return VncVector.of(
+							coll.slice(0, splitPos).toVncList(), 
+							coll.slice(splitPos).toVncList());
 				}
 				else {
-					return VncVector.of(VncList.ofList(items), VncList.empty());
+					return VncVector.of(
+							coll.toVncList(), 
+							VncList.empty());
 				}
 			}
 
@@ -4056,8 +4060,8 @@ public class CoreFunctions {
 
 					return VncBoolean.of(
 								coll.toVncList()
-								   .stream()
-								   .allMatch(v -> { 
+								    .stream()
+								    .allMatch(v -> { 
 									   final VncVal r = pred.apply(VncList.of(v));
 									   return r != Nil && !VncBoolean.isFalse(r); }));
 				}
@@ -4127,8 +4131,8 @@ public class CoreFunctions {
 
 					return VncBoolean.of(
 								coll.toVncList()
-								   .stream()
-								   .anyMatch(v -> { 
+								    .stream()
+								    .anyMatch(v -> { 
 									   final VncVal r = pred.apply(VncList.of(v));
 									   return r != Nil && !VncBoolean.isFalse(r); }));
 				}
