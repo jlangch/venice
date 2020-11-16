@@ -249,6 +249,13 @@ public class VncMutableList extends VncSequence {
 		Collections.reverse(seq);
 		return new VncMutableList(seq, getMeta());
 	}
+	
+	@Override 
+	public VncMutableList shuffle() {
+		final ArrayList<VncVal> seq = new ArrayList<>(value);
+		Collections.shuffle(seq);
+		return new VncMutableList(seq, getMeta());
+	}
 
 	@Override
 	public VncMutableList slice(final int start, final int end) {

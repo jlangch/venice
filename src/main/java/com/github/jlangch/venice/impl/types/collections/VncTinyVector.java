@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -377,6 +378,13 @@ public class VncTinyVector extends VncVector {
 			case 4:	return new VncTinyVector(4, fourth, third, second, first, getMeta());
 			default: throw new IllegalStateException("Length out of range");
 		}
+	}
+	
+	@Override 
+	public VncVector shuffle() {
+		final List<VncVal> list = getJavaList();
+		Collections.shuffle(list);
+		return VncTinyVector.ofAll(list, getMeta());
 	}
 
 	@Override

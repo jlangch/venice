@@ -29,10 +29,8 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1891,14 +1889,11 @@ public class CoreFunctions {
 				if (coll == Nil) {
 					return Nil;
 				}
-				else if (Types.isVncList(coll)) {
-					return shuffleList(((VncList)coll).getJavaList());
-				}
-				else if (Types.isVncVector(coll)) {
-					return shuffleVector(((VncVector)coll).getJavaList());
+				else if (Types.isVncSequence(coll)) {
+					return ((VncSequence)coll).shuffle();
 				}
 				else if (Types.isVncString(coll)) {
-					return shuffleList(((VncString)coll).toVncList().getJavaList());
+					return ((VncString)coll).toVncList().shuffle();
 				}
 				else {
 					throw new VncException(
@@ -4809,35 +4804,29 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				final List<VncVal> result = new ArrayList<>();
+				VncList result = VncList.empty();
 
-				args.forEach(val -> {
+				for(VncVal val : args) {
 					if (val == Nil) {
 						// skip
 					}
 					else if (Types.isVncString(val)) {
 						final String str = ((VncString)val).getValue();
 						for(char ch : str.toCharArray()) {
-							result.add(new VncString(String.valueOf(ch)));
+							result = result.addAtEnd(new VncString(String.valueOf(ch)));
 						}
 					}
-					else if (Types.isVncSequence(val)) {
-						result.addAll(((VncSequence)val).getJavaList());
-					}
-					else if (Types.isVncSet(val)) {
-						result.addAll(((VncSet)val).getJavaList());
-					}
-					else if (Types.isVncMap(val)) {
-						result.addAll(((VncMap)val).toVncList().getJavaList());
+					else if (Types.isVncCollection(val)) {
+						result = result.addAllAtEnd(((VncCollection)val).toVncList());
 					}
 					else {
 						throw new VncException(String.format(
 								"Invalid argument type %s while calling function 'concat'",
 								Types.getType(val)));
 					}
-				});
+				}
 
-				return VncList.ofList(result);
+				return result;
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7301,18 +7290,6 @@ public class CoreFunctions {
 					fnName, Types.getType(coll)));
 		}
 	}
-
-	private static VncList shuffleList(final List<VncVal> list) {
-		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.shuffle(copy, random);
-		return VncList.ofList(copy);
-	}
-
-	private static VncVector shuffleVector(final List<VncVal> list) {
-		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.shuffle(copy, random);
-		return VncVector.ofList(copy);
-	}
 	
 	private static boolean matchesRegex(VncVal text, VncVal regex) {
 		if (text instanceof VncString) {
@@ -7527,7 +7504,4 @@ public class CoreFunctions {
 				.add(highlight)
 
 				.toMap();
-
-
-	private static final SecureRandom random = new SecureRandom();
 }

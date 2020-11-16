@@ -227,6 +227,13 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		Collections.reverse(seq);
 		return new VncJavaList(seq, getMeta());
 	}
+	
+	@Override 
+	public VncJavaList shuffle() {
+		final ArrayList<Object> seq = new ArrayList<>(value);
+		Collections.shuffle(seq);
+		return new VncJavaList(seq, getMeta());
+	}
 
 	@Override
 	public VncList slice(final int start, final int end) {

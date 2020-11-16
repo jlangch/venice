@@ -277,6 +277,11 @@ public class VncVector extends VncSequence implements IVncFunction {
 	public VncVector reverse() {
 		return new VncVector(value.reverse(), getMeta());
 	}
+	
+	@Override 
+	public VncVector shuffle() {
+		return new VncVector(value.shuffle(), getMeta());
+	}
 
 	@Override
 	public VncVector slice(final int start, final int end) {
