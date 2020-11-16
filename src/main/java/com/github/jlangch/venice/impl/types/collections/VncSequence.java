@@ -112,13 +112,15 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 
 	public abstract VncSequence addAtStart(VncVal val) ;
 	
-	public abstract VncSequence addAllAtStart(VncSequence list, boolean reverseAdd);
+	public abstract VncSequence addAllAtStart(VncSequence seq, boolean reverseAdd);
 	
 	public abstract VncSequence addAtEnd(VncVal val);
 	
-	public abstract VncSequence addAllAtEnd(VncSequence list);
+	public abstract VncSequence addAllAtEnd(VncSequence seq);
 	
 	public abstract VncSequence removeAt(int idx);
+	
+	public abstract VncSequence reverse();
 
     public abstract Iterator<VncVal> iterator();
 

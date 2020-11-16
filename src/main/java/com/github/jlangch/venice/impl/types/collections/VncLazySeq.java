@@ -255,6 +255,11 @@ public class VncLazySeq extends VncSequence {
 	}
 
 	@Override
+	public VncLazySeq reverse() {
+		return new VncLazySeq(value.reverse(), getMeta());
+	}
+
+	@Override
 	public VncLazySeq slice(final int start, final int end) {
 		return new VncLazySeq(value.subSequence(start, end), getMeta());
 	}

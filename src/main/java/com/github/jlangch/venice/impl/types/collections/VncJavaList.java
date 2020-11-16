@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -221,6 +222,13 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
+	public VncJavaList reverse() {
+		final ArrayList<Object> seq = new ArrayList<>(value);
+		Collections.reverse(seq);
+		return new VncJavaList(seq, getMeta());
+	}
+
+	@Override
 	public VncList slice(final int start, final int end) {
 		if (start >= value.size()) {
 			return VncList.empty();
@@ -270,8 +278,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncJavaList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
-		final List<Object> items = list.getJavaList()
-									   .stream()
+		final List<Object> items = list.stream()
 									   .map(v -> v.convertToJavaObject())
 									   .collect(Collectors.toList());
 		

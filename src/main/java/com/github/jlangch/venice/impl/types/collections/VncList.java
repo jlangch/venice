@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -267,6 +266,11 @@ public class VncList extends VncSequence {
 	}
 
 	@Override
+	public VncList reverse() {
+		return new VncList(value.reverse(), getMeta());
+	}
+
+	@Override
 	public VncList slice(final int start, final int end) {
 		return new VncList(value.subSequence(start, Math.min(end, value.size())), getMeta());
 	}
@@ -295,9 +299,7 @@ public class VncList extends VncSequence {
 	@Override
 	public VncList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
 		if (reverseAdd) {
-			final List<VncVal> items = list.getJavaList();
-			Collections.reverse(items);
-			return new VncList(value.prependAll(items), getMeta());
+			return new VncList(value.prependAll(list.reverse()), getMeta());
 		}
 		else {
 			return new VncList(value.prependAll(list), getMeta());

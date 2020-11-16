@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -243,6 +244,13 @@ public class VncMutableVector extends VncSequence {
 	}
 
 	@Override
+	public VncMutableVector reverse() {
+		final ArrayList<VncVal> seq = new ArrayList<>(value);
+		Collections.reverse(seq);
+		return new VncMutableVector(seq, getMeta());
+	}
+
+	@Override
 	public VncMutableVector slice(final int start, final int end) {
 		if (start >= value.size()) {
 			return new VncMutableVector(getMeta());
@@ -276,13 +284,8 @@ public class VncMutableVector extends VncSequence {
 	
 	@Override
 	public VncMutableVector addAllAtStart(final VncSequence list, final boolean reverseAdd) {
-		final List<VncVal> items = list.getJavaList();
-
-		if (reverseAdd) {
-			Collections.reverse(items);
-		}
-		
-		value.addAll(0, items);
+		final VncSequence seq = reverseAdd ? list.reverse() : list;		
+		value.addAll(0, seq.getJavaList());
 		return this;
 	}
 	

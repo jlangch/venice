@@ -367,6 +367,18 @@ public class VncTinyVector extends VncVector {
 		
 		return this;
 	}
+	
+	@Override 
+	public VncVector reverse() {
+		switch(len) {
+			case 0:	return this;
+			case 1:	return new VncTinyVector(1, first, Nil,    Nil,   Nil,    getMeta());
+			case 2:	return new VncTinyVector(2, second, first, Nil,   Nil,    getMeta());
+			case 3:	return new VncTinyVector(3, third, second, first, Nil,    getMeta());
+			case 4:	return new VncTinyVector(4, fourth, third, second, first, getMeta());
+			default: throw new IllegalStateException("Length out of range");
+		}
+	}
 
 	@Override
 	public VncVector slice(final int start, final int end) {

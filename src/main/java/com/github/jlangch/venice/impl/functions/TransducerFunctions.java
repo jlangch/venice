@@ -49,7 +49,6 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -1158,23 +1157,14 @@ public class TransducerFunctions {
 					if (coll == Nil) {
 						return Nil;
 					}
-					else if (Types.isVncList(coll)) {
-						return reverseList(((VncList)coll).getJavaList());
+					else if (Types.isVncSequence(coll)) {
+						return ((VncSequence)coll).reverse();
 					}
-					else if (Types.isVncMutableList(coll)) {
-						return reverseMutableList(((VncMutableList)coll).getJavaList());
-					}
-					else if (Types.isVncVector(coll)) {
-						return reverseVector(((VncVector)coll).getJavaList());
-					}
-					else if (Types.isVncSet(coll)) {
-						return reverseList(((VncSet)coll).getJavaList());
-					}
-					else if (Types.isVncMap(coll)) {
-						return reverseList(((VncMap)coll).toVncList().getJavaList());
+					else if (Types.isVncCollection(coll)) {
+						return ((VncCollection)coll).toVncList().reverse();
 					}
 					else if (Types.isVncString(coll)) {
-						return reverseList(((VncString)coll).toVncList().getJavaList());
+						return ((VncString)coll).toVncList().reverse();
 					}
 					else {
 						throw new VncException(
@@ -1368,24 +1358,6 @@ public class TransducerFunctions {
 		else {
 			result.add(value);
 		}
-	}
-
-	private static VncList reverseList(final List<VncVal> list) {
-		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.reverse(copy);
-		return VncList.ofList(copy);
-	}
-
-	private static VncMutableList reverseMutableList(final List<VncVal> list) {
-		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.reverse(copy);
-		return new VncMutableList(copy);
-	}
-
-	private static VncVector reverseVector(final List<VncVal> list) {
-		final List<VncVal> copy = new ArrayList<>(list);
-		Collections.reverse(copy);
-		return VncVector.ofList(copy);
 	}
 
 	private static VncSequence coerceToSequence(final VncVal val) {

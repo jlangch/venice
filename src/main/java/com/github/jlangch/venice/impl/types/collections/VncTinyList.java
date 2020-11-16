@@ -340,6 +340,18 @@ public class VncTinyList extends VncList {
 		
 		return this;
 	}
+	
+	@Override 
+	public VncList reverse() {
+		switch(len) {
+			case 0:	return this;
+			case 1:	return new VncTinyList(1, first, Nil,    Nil,   Nil,    getMeta());
+			case 2:	return new VncTinyList(2, second, first, Nil,   Nil,    getMeta());
+			case 3:	return new VncTinyList(3, third, second, first, Nil,    getMeta());
+			case 4:	return new VncTinyList(4, fourth, third, second, first, getMeta());
+			default: throw new IllegalStateException("Length out of range");
+		}
+	}
 
 	@Override
 	public VncList slice(final int start, final int end) {
