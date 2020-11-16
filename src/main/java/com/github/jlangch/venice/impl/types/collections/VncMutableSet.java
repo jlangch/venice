@@ -121,7 +121,7 @@ public class VncMutableSet extends VncSet {
 			value.addAll(((VncMutableSet)val).value);
 		}
 		else {
-			val.forEach(v -> add(v));
+			val.forEach(v -> value.add(v));
 		}
 		return this;
 	}
@@ -135,7 +135,7 @@ public class VncMutableSet extends VncSet {
 			value.addAll(((VncMutableVector)val).getJavaList());
 		}
 		else {
-			val.forEach(v -> add(v));
+			val.forEach(v -> value.add(v));
 		}
 		return this;
 	}
@@ -152,7 +152,7 @@ public class VncMutableSet extends VncSet {
 			value.removeAll(((VncMutableSet)val).value);
 		}
 		else {
-			val.forEach(v -> remove(v));
+			val.forEach(v -> value.remove(v));
 		}
 		return this;
 	}
@@ -166,7 +166,7 @@ public class VncMutableSet extends VncSet {
 			value.removeAll(((VncMutableVector)val).getJavaList());
 		}
 		else {
-			val.forEach(v -> remove(v));
+			val.forEach(v -> value.remove(v));
 		}
 		return this;
 	}

@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -438,10 +437,8 @@ public class VncTinyList extends VncList {
 			}
 		}
 		
-		final List<VncVal> vals = new ArrayList<>(list.getJavaList());
-		Collections.reverse(vals);
-		vals.addAll(getJavaList());
-		return VncList.ofList(vals, getMeta());
+		final VncSequence seq = reverseAdd ? list.reverse() : list;
+		return VncList.ofAll(seq, getMeta()).addAllAtEnd(this);
 	}
 	
 	@Override
@@ -472,9 +469,7 @@ public class VncTinyList extends VncList {
 			}
 		}
 
-		final List<VncVal> vals = getJavaList();
-		vals.addAll(list.getJavaList());
-		return VncList.ofList(vals, getMeta());
+		return VncList.ofAll(this, getMeta()).addAllAtEnd(list);
 	}
 	
 	@Override

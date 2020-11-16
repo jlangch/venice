@@ -298,9 +298,8 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override
 	public VncJavaList addAllAtEnd(final VncSequence list) {
-		final List<VncVal> items = list.getJavaList();
-		for(int ii=0; ii<items.size(); ii++) {
-			value.add(items.get(ii).convertToJavaObject());
+		for(VncVal v : list) {
+			value.add(v.convertToJavaObject());
 		}
 		return this;
 	}

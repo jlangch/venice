@@ -28,6 +28,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.VncLong;
 
 
@@ -38,17 +39,19 @@ public class SequenceTest {
 		VncSequence add = VncList.of(new VncLong(1L), new VncLong(2L));
 
 		// not reversed
-		VncSequence seq = VncTinyVector.of(new VncLong(4L));
+		VncSequence seq = tiny_vector;
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(add.size() + tiny_vector.size(), seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
 
 		// reversed
-		seq = VncTinyVector.of(new VncLong(4L));
+		seq = tiny_vector;
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(add.size() + tiny_vector.size(), seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -59,17 +62,19 @@ public class SequenceTest {
 		VncSequence add = VncList.of(new VncLong(1L), new VncLong(2L));
 
 		// not reversed
-		VncSequence seq = VncTinyList.of(new VncLong(4L));
+		VncSequence seq = tiny_list;
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(add.size() + tiny_list.size(), seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
 
 		// reversed
-		seq = VncTinyList.of(new VncLong(4L));
+		seq = tiny_list;
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(add.size() + tiny_list.size(), seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -80,17 +85,19 @@ public class SequenceTest {
 		VncSequence add = VncList.of(new VncLong(1L), new VncLong(2L));
 
 		// not reversed
-		VncSequence seq = VncVector.of(new VncLong(4L));
+		VncSequence seq = tall_vector;
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(add.size() + tall_vector.size(), seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
 
 		// reversed
-		seq = VncVector.of(new VncLong(4L));
+		seq = tall_vector;
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(add.size() + tall_vector.size(), seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -101,17 +108,19 @@ public class SequenceTest {
 		VncSequence add = VncList.of(new VncLong(1L), new VncLong(2L));
 
 		// not reversed
-		VncSequence seq = VncList.of(new VncLong(4L));
+		VncSequence seq = tall_list;
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(add.size() + tall_list.size(), seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
 
 		// reversed
-		seq = VncList.of(new VncLong(4L));
+		seq = tall_list;
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(add.size() + tall_list.size(), seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -125,6 +134,7 @@ public class SequenceTest {
 		VncSequence seq = VncMutableVector.of(new VncLong(4L));
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(3, seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -133,6 +143,7 @@ public class SequenceTest {
 		seq = VncMutableVector.of(new VncLong(4L));
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(3, seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -146,6 +157,7 @@ public class SequenceTest {
 		VncSequence seq = VncMutableList.of(new VncLong(4L));
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(3, seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -154,6 +166,7 @@ public class SequenceTest {
 		seq = VncMutableList.of(new VncLong(4L));
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(3, seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -167,6 +180,7 @@ public class SequenceTest {
 		VncSequence seq = new VncJavaList(new ArrayList<>(Arrays.asList(4L)));
 		seq = seq.addAllAtStart(add, false);
 		
+		assertEquals(3, seq.size());
 		assertEquals(1L, seq.nth(0).convertToJavaObject());
 		assertEquals(2L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
@@ -175,8 +189,15 @@ public class SequenceTest {
 		seq = new VncJavaList(new ArrayList<>(Arrays.asList(4L)));
 		seq = seq.addAllAtStart(add, true);
 		
+		assertEquals(3, seq.size());
 		assertEquals(2L, seq.nth(0).convertToJavaObject());
 		assertEquals(1L, seq.nth(1).convertToJavaObject());
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
 	}
+	
+	
+	private static final VncSequence tiny_list   = VncList.of(new VncLong(4L));
+	private static final VncSequence tiny_vector = VncVector.of(new VncLong(4L));
+	private static final VncSequence tall_list   = (VncList)CoreFunctions.repeat.applyOf(new VncLong(10L), new VncLong(4L));
+	private static final VncSequence tall_vector = ((VncList)CoreFunctions.repeat.applyOf(new VncLong(10L), new VncLong(4L))).toVncVector();
 }

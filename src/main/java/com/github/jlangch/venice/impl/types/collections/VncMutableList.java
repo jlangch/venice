@@ -297,15 +297,7 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncMutableList addAllAtEnd(final VncSequence list) {
-		if (Types.isVncMutableList(list)) {
-			value.addAll(((VncMutableList)list).getJavaList());
-		}
-		else if (Types.isVncMutableVector(list)) {
-			value.addAll(((VncMutableVector)list).getJavaList());
-		}
-		else {
-			value.addAll(list.getJavaList());
-		}
+		value.addAll(list.getJavaList());
 		return this;
 	}
 	

@@ -298,12 +298,8 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public VncList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
-		if (reverseAdd) {
-			return new VncList(value.prependAll(list.reverse()), getMeta());
-		}
-		else {
-			return new VncList(value.prependAll(list), getMeta());
-		}
+		final VncSequence seq = reverseAdd ? list.reverse() : list;
+		return new VncList(value.prependAll(seq), getMeta());
 	}
 	
 	@Override

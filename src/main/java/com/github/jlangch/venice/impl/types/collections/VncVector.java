@@ -306,12 +306,8 @@ public class VncVector extends VncSequence implements IVncFunction {
 	
 	@Override
 	public VncVector addAllAtStart(final VncSequence list, final boolean reverseAdd) {
-		if (reverseAdd) {
-			return new VncVector(value.prependAll(list.reverse()), getMeta());
-		}
-		else {
-			return new VncVector(value.prependAll(list), getMeta());
-		}
+		final VncSequence seq = reverseAdd ? list.reverse() : list;
+		return new VncVector(value.prependAll(seq), getMeta());
 	}
 	
 	@Override
