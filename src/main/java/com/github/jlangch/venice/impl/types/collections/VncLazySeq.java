@@ -281,7 +281,7 @@ public class VncLazySeq extends VncSequence {
 	}
 	
 	@Override
-	public VncLazySeq addAllAtStart(final VncSequence list) {
+	public VncLazySeq addAllAtStart(final VncSequence list, final boolean reverseAdd) {
 		throw new VncException("Not supported for lazy sequences");
 	}
 	

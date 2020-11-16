@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -300,8 +301,15 @@ public class VncVector extends VncSequence implements IVncFunction {
 	}
 	
 	@Override
-	public VncVector addAllAtStart(final VncSequence list) {
-		return new VncVector(value.prependAll(list), getMeta());
+	public VncVector addAllAtStart(final VncSequence list, final boolean reverseAdd) {
+		if (reverseAdd) {
+			final List<VncVal> items = list.getJavaList();
+			Collections.reverse(items);
+			return new VncVector(value.prependAll(items), getMeta());
+		}
+		else {
+			return new VncVector(value.prependAll(list), getMeta());
+		}
 	}
 	
 	@Override

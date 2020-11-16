@@ -3905,10 +3905,12 @@ public class CoreFunctions {
 					return ((VncVector)to).addAllAtEnd(from.toVncList());
 				}
 				else if (Types.isVncList(to)) {
-					return ((VncList)to).addAllAtStart(from.toVncList());
+					// add reversed
+					return ((VncList)to).addAllAtStart(from.toVncList(), true);
 				}
 				else if (Types.isVncMutableList(to)) {
-					return ((VncMutableList)to).addAllAtStart(from.toVncList());
+					// add reversed
+					return ((VncMutableList)to).addAllAtStart(from.toVncList(), true);
 				}
 				else if (Types.isVncHashSet(to) || Types.isVncSortedSet(to)) {
 					return ((VncHashSet)to).addAll(from.toVncList());

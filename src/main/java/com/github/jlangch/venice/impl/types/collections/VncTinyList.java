@@ -402,7 +402,7 @@ public class VncTinyList extends VncList {
 	}
 	
 	@Override
-	public VncList addAllAtStart(final VncSequence list) {
+	public VncList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
 		if (!(list instanceof VncLazySeq)) { // no size() support
 			final int otherLen = list.size();
 			if (otherLen == 0) {
@@ -411,7 +411,12 @@ public class VncTinyList extends VncList {
 			
 			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
 				final VncVal[] vals = new VncVal[otherLen + len];
-				for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(otherLen-ii-1); // reverse
+				if (reverseAdd) {
+					for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(otherLen-ii-1);
+				}
+				else {
+					for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(ii);
+				}
 				for(int ii=0; ii<len; ii++) vals[ii+otherLen] = nth(ii);
 				return VncList.of(vals);
 			}

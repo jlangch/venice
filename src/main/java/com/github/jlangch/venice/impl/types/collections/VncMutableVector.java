@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -274,16 +275,14 @@ public class VncMutableVector extends VncSequence {
 	}
 	
 	@Override
-	public VncMutableVector addAllAtStart(final VncSequence list) {
-		if (Types.isVncMutableList(list)) {
-			value.addAll(0, ((VncMutableList)list).getJavaList());
+	public VncMutableVector addAllAtStart(final VncSequence list, final boolean reverseAdd) {
+		final List<VncVal> items = list.getJavaList();
+
+		if (reverseAdd) {
+			Collections.reverse(items);
 		}
-		else if (Types.isVncMutableVector(list)) {
-			value.addAll(0, ((VncMutableVector)list).getJavaList());
-		}
-		else {
-			value.addAll(0, list.getJavaList());
-		}
+		
+		value.addAll(0, items);
 		return this;
 	}
 	

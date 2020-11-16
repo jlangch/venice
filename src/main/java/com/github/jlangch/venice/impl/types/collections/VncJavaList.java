@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -268,11 +269,17 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
-	public VncJavaList addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = list.getJavaList();
-		for(int ii=0; ii<items.size(); ii++) {
-			value.add(0, items.get(ii).convertToJavaObject());
+	public VncJavaList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
+		final List<Object> items = list.getJavaList()
+									   .stream()
+									   .map(v -> v.convertToJavaObject())
+									   .collect(Collectors.toList());
+		
+		if (reverseAdd) {
+			Collections.reverse(items);
 		}
+		
+		value.addAll(0, items);
 		return this;
 	}
 	

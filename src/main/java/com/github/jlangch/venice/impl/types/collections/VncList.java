@@ -293,10 +293,15 @@ public class VncList extends VncSequence {
 	}
 	
 	@Override
-	public VncList addAllAtStart(final VncSequence list) {
-		final List<VncVal> items = list.getJavaList();
-		Collections.reverse(items);
-		return new VncList(value.prependAll(items), getMeta());
+	public VncList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
+		if (reverseAdd) {
+			final List<VncVal> items = list.getJavaList();
+			Collections.reverse(items);
+			return new VncList(value.prependAll(items), getMeta());
+		}
+		else {
+			return new VncList(value.prependAll(list), getMeta());
+		}
 	}
 	
 	@Override
