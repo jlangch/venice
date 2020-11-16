@@ -74,13 +74,13 @@ public class VncList extends VncSequence {
 	
 	public static VncList ofList(final List<? extends VncVal> list) {
 		return list.size() <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.of(list.toArray(new VncVal[0]))
+				? VncTinyList.ofArr(list.toArray(new VncVal[0]), null)
 				: new VncList(list, null);
 	}
 
 	public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
 		return list.size() <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.of(list.toArray(new VncVal[0])).withMeta(meta)
+				? VncTinyList.ofArr(list.toArray(new VncVal[0]), meta)
 				: new VncList(list, meta);
 	}
 
@@ -109,7 +109,7 @@ public class VncList extends VncSequence {
 	@Override
 	public VncList withVariadicValues(final VncVal... replaceVals) {
 		return replaceVals.length <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.of(replaceVals).withMeta(getMeta())
+				? VncTinyList.ofArr(replaceVals, getMeta())
 				: new VncList(io.vavr.collection.Vector.of(replaceVals), getMeta());
 	}
 	

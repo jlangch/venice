@@ -75,13 +75,13 @@ public class VncVector extends VncSequence implements IVncFunction {
 
 	public static VncVector ofList(final List<? extends VncVal> list) {
 		return list.size() <= VncTinyVector.MAX_ELEMENTS
-				? VncTinyVector.of(list.toArray(new VncVal[0]))
+				? VncTinyVector.ofArr(list.toArray(new VncVal[0]), null)
 				: new VncVector(list, null);
 	}
 
 	public static VncVector ofList(final List<? extends VncVal> list, final VncVal meta) {
 		return list.size() <= VncTinyVector.MAX_ELEMENTS
-				? VncTinyVector.of(list.toArray(new VncVal[0])).withMeta(meta)
+				? VncTinyVector.ofArr(list.toArray(new VncVal[0]), meta)
 				: new VncVector(list, meta);
 	}
 
@@ -117,7 +117,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 	@Override
 	public VncVector withVariadicValues(final VncVal... replaceVals) {
 		return replaceVals.length <= VncTinyList.MAX_ELEMENTS
-				? VncTinyVector.of(replaceVals).withMeta(getMeta())
+				? VncTinyVector.ofArr(replaceVals, getMeta())
 				: new VncVector(io.vavr.collection.Vector.of(replaceVals), getMeta());
 	}
 	

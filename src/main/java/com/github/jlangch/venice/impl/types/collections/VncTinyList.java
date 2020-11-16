@@ -88,6 +88,17 @@ public class VncTinyList extends VncList {
 		}
 	}
 	
+	public static VncTinyList ofArr(final VncVal[] mvs, final VncVal meta) {
+		switch (mvs.length) {
+			case 0:	return new VncTinyList(meta);
+			case 1:	return new VncTinyList(1, mvs[0], Nil,    Nil,    Nil,    meta);
+			case 2:	return new VncTinyList(2, mvs[0], mvs[1], Nil,    Nil,    meta);
+			case 3:	return new VncTinyList(3, mvs[0], mvs[1], mvs[2], Nil,    meta);
+			case 4:	return new VncTinyList(4, mvs[0], mvs[1], mvs[2], mvs[3], meta);
+			default: throw new IllegalStateException("Length out of range");
+		}
+	}
+	
 	@Override
 	public VncList emptyWithMeta() {
 		return new VncTinyList(getMeta());
@@ -96,14 +107,14 @@ public class VncTinyList extends VncList {
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals) {
 		return replaceVals.size() < MAX_ELEMENTS
-				? VncTinyList.of(replaceVals.toArray(new VncVal[0])).withMeta(getMeta())
+				? VncTinyList.ofArr(replaceVals.toArray(new VncVal[0]), getMeta())
 				: VncList.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
 		return replaceVals.size() < MAX_ELEMENTS
-				? VncTinyList.of(replaceVals.toArray(new VncVal[0])).withMeta(meta)
+				? VncTinyList.ofArr(replaceVals.toArray(new VncVal[0]),meta)
 				: VncList.ofList(replaceVals, meta);
 	}
 
@@ -372,7 +383,7 @@ public class VncTinyList extends VncList {
 			final int len_ = Math.min(end, len) - start;
 			final VncVal[] vals = new VncVal[len_];
 			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
-			return VncList.of(vals).withMeta(getMeta());
+			return VncTinyList.ofArr(vals, getMeta());
 		}
 	}
 	
@@ -391,7 +402,7 @@ public class VncTinyList extends VncList {
 			final int len_ = len - start;
 			final VncVal[] vals = new VncVal[len_];
 			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
-			return VncList.of(vals).withMeta(getMeta());
+			return VncTinyList.ofArr(vals, getMeta());
 		}
 	}
 	
@@ -506,7 +517,7 @@ public class VncTinyList extends VncList {
 			
 			for(int ii=0; ii<idx; ii++) vals[ii] = nth(ii);
 			for(int ii=idx+1; ii<len; ii++) vals[ii-1] = nth(ii);
-			return VncList.of(vals).withMeta(getMeta());
+			return VncTinyList.ofArr(vals, getMeta());
 		}
 	}
 
