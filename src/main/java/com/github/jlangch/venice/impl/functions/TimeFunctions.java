@@ -49,7 +49,6 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
-import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
@@ -1498,17 +1497,17 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				final List<VncVal> dates = toJavaList(args, "time/latest");
+				final VncSequence seq = Coerce.toVncSequence(args.first());
 
-				if (dates.isEmpty()) {
+				if (seq.isEmpty()) {
 					return Nil;
 				}
-				else if (dates.size() == 1) {
-					return dates.get(0);
+				else if (seq.size() == 1) {
+					return seq.first();
 				}
 				else {
-					VncVal latest = dates.get(0);
-					for(VncVal date : dates.subList(0, dates.size())) {
+					VncVal latest = seq.first();
+					for(VncVal date : seq.rest()) {
 						if (VncBoolean.isTrue(after_Q.apply(VncList.of(date, latest)))) {
 							latest = date;
 						}
@@ -1537,17 +1536,17 @@ public class TimeFunctions {
 			public VncVal apply(final VncList args) {
 				assertArity(args, 1);
 
-				final List<VncVal> dates = toJavaList(args, "time/earliest");
+				final VncSequence seq = Coerce.toVncSequence(args.first());
 
-				if (dates.isEmpty()) {
+				if (seq.isEmpty()) {
 					return Nil;
 				}
-				else if (dates.size() == 1) {
-					return dates.get(0);
+				else if (seq.size() == 1) {
+					return seq.first();
 				}
 				else {
-					VncVal latest = dates.get(0);
-					for(VncVal date : dates.subList(0, dates.size())) {
+					VncVal latest = seq.first();
+					for(VncVal date : seq.rest()) {
 						if (VncBoolean.isTrue(before_Q.apply(VncList.of(date, latest)))) {
 							latest = date;
 						}
@@ -1955,41 +1954,18 @@ public class TimeFunctions {
 
 	private static ChronoUnit toChronoUnit(final String unit) {
 		switch(unit) {
-			case "years": return ChronoUnit.YEARS;
-			case "month": return ChronoUnit.MONTHS;
-			case "weeks": return ChronoUnit.WEEKS;
-			case "days": return ChronoUnit.DAYS;
-			case "hours": return ChronoUnit.HOURS;
+			case "years":   return ChronoUnit.YEARS;
+			case "month":   return ChronoUnit.MONTHS;
+			case "weeks":   return ChronoUnit.WEEKS;
+			case "days":    return ChronoUnit.DAYS;
+			case "hours":   return ChronoUnit.HOURS;
 			case "minutes": return ChronoUnit.MINUTES;
 			case "seconds": return ChronoUnit.SECONDS;
-			case "millis": return ChronoUnit.MILLIS;
-			default: return null;
+			case "millis":  return ChronoUnit.MILLIS;
+			default:        return null;
 		}
 	}
 
-	private static List<VncVal> toJavaList(final VncList args, final String fnName) {
-		final List<VncVal> dates = new ArrayList<>();
-
-		if (args.first() == Nil) {
-			return dates;
-		}
-
-		if (Types.isVncSequence(args.first())) {
-			dates.addAll(((VncSequence)args.first()).getJavaList());
-		}
-		else if (Types.isVncHashSet(args.first())) {
-			dates.addAll(((VncHashSet)args.first()).getJavaList());
-		}
-		else {
-			throw new VncException(String.format(
-					"Function '%s' does not allow %s as parameter. %s",
-					fnName,
-					Types.getType(args.first()),
-					ErrorMessage.buildErrLocation(args)));
-		}
-
-		return dates;
-	}
 
 
 	///////////////////////////////////////////////////////////////////////////
