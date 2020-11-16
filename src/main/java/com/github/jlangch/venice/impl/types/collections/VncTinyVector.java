@@ -322,7 +322,15 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVector drop(final int n) {
-		return slice(n);
+		if (n <= 0) {
+			return this;
+		}
+		else if (n >= len) {
+			return EMPTY;
+		}
+		else {
+			return slice(n);
+		}
 	}
 	
 	@Override
@@ -358,20 +366,37 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVector slice(final int start, final int end) {
-		if (start == 0 && end >= len) {
-			return this;
+		if (start < 0) {
+			 throw new IllegalStateException("Vector index out of range");
 		}
-		else if (start >= len) {
+		else if (start >= len || end <= start) {
 			return EMPTY;
 		}
 		else {
-			return VncVector.ofList(getJavaList().subList(start, Math.min(end, len)), getMeta());
+			final int len_ = Math.min(end, len) - start;
+			final VncVal[] vals = new VncVal[len_];
+			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
+			return VncVector.of(vals).withMeta(getMeta());
 		}
 	}
 	
 	@Override
 	public VncVector slice(final int start) {
-		return slice(start, len);
+		if (start < 0) {
+			 throw new IllegalStateException("Vector index out of range");
+		}
+		else if (start >= len) {
+			return EMPTY;
+		}
+		else if (start == 0) {
+			return this;
+		}
+		else {
+			final int len_ = len - start;
+			final VncVal[] vals = new VncVal[len_];
+			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
+			return VncVector.of(vals).withMeta(getMeta());
+		}
 	}
 	
 	@Override
@@ -406,10 +431,23 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector addAllAtStart(final VncSequence list) {
+		if (!(list instanceof VncLazySeq)) { // no size() support
+			final int otherLen = list.size();
+			if (otherLen == 0) {
+				return this;
+			}
+			
+			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
+				final VncVal[] vals = new VncVal[otherLen + len];
+				for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(otherLen-ii-1); // reverse
+				for(int ii=0; ii<len; ii++) vals[ii+otherLen] = nth(ii);
+				return VncVector.of(vals);
+			}
+		}
+
 		final List<VncVal> vals = new ArrayList<>(list.getJavaList());
 		Collections.reverse(vals);
 		vals.addAll(getJavaList());
-
 		return VncVector.ofList(vals, getMeta());
 	}
 	
@@ -427,33 +465,52 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector addAllAtEnd(final VncSequence list) {
+		if (!(list instanceof VncLazySeq)) { // no size() support
+			final int otherLen = list.size();
+			if (otherLen == 0) {
+				return this;
+			}
+			
+			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
+				final VncVal[] vals = new VncVal[otherLen + len];
+				for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
+				for(int ii=0; ii<otherLen; ii++) vals[ii+len] = list.nth(ii);
+				return VncVector.of(vals);
+			}
+		}
+		
 		final List<VncVal> vals = getJavaList();
 		vals.addAll(list.getJavaList());
-		
 		return VncVector.ofList(vals, getMeta());
 	}
 	
 	@Override
 	public VncVector setAt(final int idx, final VncVal val) {
-		final List<VncVal> vals = getJavaList();
-		vals.set(idx, val);
-		
-		return VncVector.ofList(vals, getMeta());
+		if (idx < 0 || idx >= len) {
+			 throw new IllegalStateException("Vector index out of range");
+		}
+
+		final VncVal[] vals = new VncVal[len];
+		for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
+		vals[idx] = val;
+		return VncVector.of(vals);
 	}
 	
 	@Override
 	public VncVector removeAt(final int idx) {
-		if (idx == 0) {
-			return rest();
+		if (idx < 0 || idx >= len) {
+			 throw new IllegalStateException("Vector index out of range");
 		}
-		else if (idx == (len-1)) {
-			return butlast();
+		
+		if (len == 1) {
+			return emptyWithMeta();
 		}
 		else {
-			final List<VncVal> vals = getJavaList();
-			vals.remove(idx);
+			final VncVal[] vals = new VncVal[len-1];
 			
-			return VncVector.ofList(vals, getMeta());
+			for(int ii=0; ii<idx; ii++) vals[ii] = nth(ii);
+			for(int ii=idx+1; ii<len; ii++) vals[ii-1] = nth(ii);
+			return VncVector.of(vals).withMeta(getMeta());
 		}
 	}
 

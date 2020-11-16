@@ -240,7 +240,15 @@ public class VncList extends VncSequence {
 
 	@Override
 	public VncList drop(final int n) {
-		return value.isEmpty() ? this : new VncList(value.drop(n), getMeta());
+		if (n <= 0) {
+			return this;
+		}
+		else if (n >= value.size()) {
+			return VncTinyList.EMPTY;
+		}
+		else {
+			return value.isEmpty() ? this : new VncList(value.drop(n), getMeta());
+		}
 	}
 	
 	@Override

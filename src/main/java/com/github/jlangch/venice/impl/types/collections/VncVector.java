@@ -247,7 +247,15 @@ public class VncVector extends VncSequence implements IVncFunction {
 
 	@Override
 	public VncVector drop(final int n) {
-		return value.isEmpty() ? this : new VncVector(value.drop(n), getMeta());
+		if (n <= 0) {
+			return this;
+		}
+		else if (n >= value.size()) {
+			return VncTinyVector.EMPTY;
+		}
+		else {
+			return value.isEmpty() ? this : new VncVector(value.drop(n), getMeta());
+		}
 	}
 	
 	@Override

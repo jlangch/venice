@@ -295,7 +295,15 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncList drop(final int n) {
-		return slice(n);
+		if (n <= 0) {
+			return this;
+		}
+		else if (n >= len) {
+			return EMPTY;
+		}
+		else {
+			return slice(n);
+		}
 	}
 	
 	@Override
@@ -331,20 +339,37 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncList slice(final int start, final int end) {
-		if (start == 0 && end >= len) {
-			return this;
+		if (start < 0) {
+			 throw new IllegalStateException("List index out of range");
 		}
-		else if (start >= len) {
+		else if (start >= len || end <= start) {
 			return EMPTY;
 		}
 		else {
-			return VncList.ofList(getJavaList().subList(start, Math.min(end, len)), getMeta());
+			final int len_ = Math.min(end, len) - start;
+			final VncVal[] vals = new VncVal[len_];
+			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
+			return VncList.of(vals).withMeta(getMeta());
 		}
 	}
 	
 	@Override
 	public VncList slice(final int start) {
-		return slice(start, len);
+		if (start < 0) {
+			 throw new IllegalStateException("List index out of range");
+		}
+		else if (start >= len) {
+			return EMPTY;
+		}
+		else if (start == 0) {
+			return this;
+		}
+		else {
+			final int len_ = len - start;
+			final VncVal[] vals = new VncVal[len_];
+			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
+			return VncList.of(vals).withMeta(getMeta());
+		}
 	}
 	
 	@Override
@@ -378,10 +403,23 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList addAllAtStart(final VncSequence list) {
+		if (!(list instanceof VncLazySeq)) { // no size() support
+			final int otherLen = list.size();
+			if (otherLen == 0) {
+				return this;
+			}
+			
+			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
+				final VncVal[] vals = new VncVal[otherLen + len];
+				for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(otherLen-ii-1); // reverse
+				for(int ii=0; ii<len; ii++) vals[ii+otherLen] = nth(ii);
+				return VncList.of(vals);
+			}
+		}
+		
 		final List<VncVal> vals = new ArrayList<>(list.getJavaList());
 		Collections.reverse(vals);
 		vals.addAll(getJavaList());
-
 		return VncList.ofList(vals, getMeta());
 	}
 	
@@ -399,33 +437,52 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList addAllAtEnd(final VncSequence list) {
+		if (!(list instanceof VncLazySeq)) { // no size() support
+			final int otherLen = list.size();
+			if (otherLen == 0) {
+				return this;
+			}
+			
+			if (otherLen + len <= MAX_ELEMENTS) {
+				final VncVal[] vals = new VncVal[otherLen + len];
+				for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
+				for(int ii=0; ii<otherLen; ii++) vals[ii+len] = list.nth(ii);
+				return VncList.of(vals);
+			}
+		}
+
 		final List<VncVal> vals = getJavaList();
 		vals.addAll(list.getJavaList());
-		
 		return VncList.ofList(vals, getMeta());
 	}
 	
 	@Override
 	public VncList setAt(final int idx, final VncVal val) {
-		final List<VncVal> vals = getJavaList();
-		vals.set(idx, val);
-		
-		return VncList.ofList(vals, getMeta());
+		if (idx < 0 || idx >= len) {
+			 throw new IllegalStateException("List index out of range");
+		}
+
+		final VncVal[] vals = new VncVal[len];
+		for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
+		vals[idx] = val;
+		return VncList.of(vals);
 	}
 	
 	@Override
 	public VncList removeAt(final int idx) {
-		if (idx == 0) {
-			return rest();
+		if (idx < 0 || idx >= len) {
+			 throw new IllegalStateException("List index out of range");
 		}
-		else if (idx == (len-1)) {
-			return butlast();
+		
+		if (len == 1) {
+			return emptyWithMeta();
 		}
 		else {
-			final List<VncVal> vals = getJavaList();
-			vals.remove(idx);
+			final VncVal[] vals = new VncVal[len-1];
 			
-			return VncList.ofList(vals, getMeta());
+			for(int ii=0; ii<idx; ii++) vals[ii] = nth(ii);
+			for(int ii=idx+1; ii<len; ii++) vals[ii-1] = nth(ii);
+			return VncList.of(vals).withMeta(getMeta());
 		}
 	}
 
