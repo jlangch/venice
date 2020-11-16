@@ -6581,13 +6581,13 @@ public class CoreFunctions {
 				final boolean noInitValue = args.size() < 3;
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
 
-				List<VncVal> coll;
+				VncSequence seq;
 
 				if (Types.isVncSequence(args.last())) {
-					coll = Coerce.toVncSequence(args.last()).getJavaList();
+					seq = Coerce.toVncSequence(args.last());
 				}
 				else if (Types.isVncMap(args.last())) {
-					coll = Coerce.toVncMap(args.last()).toVncList().getJavaList();
+					seq = Coerce.toVncMap(args.last()).toVncList();
 				}
 				else {
 					throw new VncException(String.format(
@@ -6596,24 +6596,24 @@ public class CoreFunctions {
 				}
 
 				if (noInitValue) {
-					if (coll.isEmpty()) {
+					if (seq.isEmpty()) {
 						return reduceFn.apply(VncList.empty());
 					}
-					else if (coll.size() == 1) {
-						return coll.get(0);
+					else if (seq.size() == 1) {
+						return seq.first();
 					}
 					else {
-						return Reducer.reduce(reduceFn, coll.get(0), coll.subList(1, coll.size()));
+						return Reducer.reduce(reduceFn, seq.first(), seq.rest());
 					}
 				}
 				else {
 					final VncVal init = args.second();
 
-					if (coll.isEmpty()) {
+					if (seq.isEmpty()) {
 						return init;
 					}
 					else {
-						return Reducer.reduce(reduceFn, init, coll);
+						return Reducer.reduce(reduceFn, init, seq);
 					}
 				}
 			}

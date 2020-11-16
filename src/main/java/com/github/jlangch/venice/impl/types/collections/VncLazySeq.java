@@ -343,13 +343,13 @@ public class VncLazySeq extends VncSequence {
 	@Override 
 	public String toString() {
 		return value.hasDefiniteSize()
-				? "(" + Printer.join(value.toJavaList(), " ", true) + ")"
+				? "(" + Printer.join(this, " ", true) + ")"
 				: "(...)";
 	}
 	
 	public String toString(final boolean print_readably) {
 		return value.hasDefiniteSize()
-				? "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")"
+				? "(" + Printer.join(this, " ", print_readably) + ")"
 				: "(...)";
 	}
 

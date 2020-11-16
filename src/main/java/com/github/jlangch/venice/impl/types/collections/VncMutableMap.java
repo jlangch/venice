@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -286,14 +287,13 @@ public class VncMutableMap extends VncMap {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		final List<VncVal> list = value
-									.entrySet()
-									.stream()
-									.map(e -> VncList.of(e.getKey(), e.getValue()).getJavaList())
-									.flatMap(l -> l.stream())
-									.collect(Collectors.toList());
+		final Stream<VncVal> stream = value
+										.entrySet()
+										.stream()
+										.map(e -> VncList.of(e.getKey(), e.getValue()).getJavaList())
+										.flatMap(l -> l.stream());
 
-		return "{" + Printer.join(list, " ", print_readably) + "}";
+		return "{" + Printer.join(stream, " ", print_readably) + "}";
 	}
 		
 

@@ -28,13 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -307,14 +308,13 @@ public class VncHashMap extends VncMap {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		final List<VncVal> list = value
-									.map(e -> VncList.of(e._1, e._2).getJavaList())
-									.collect(Collectors.toList())
-									.stream()
-									.flatMap(l -> l.stream())
-									.collect(Collectors.toList());
+		final Stream<VncVal> stream = value
+										.map(e -> VncList.of(e._1, e._2).getJavaList())
+										.collect(Collectors.toList())
+										.stream()
+										.flatMap(l -> l.stream());
 
-		return "{" + Printer.join(list, " ", print_readably) + "}";
+		return "{" + Printer.join(stream, " ", print_readably) + "}";
 	}
 
 	public static class Builder {

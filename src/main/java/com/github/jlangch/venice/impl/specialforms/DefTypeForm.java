@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.specialforms;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,16 +69,17 @@ public class DefTypeForm {
 		}
 		
 		final List<VncCustomTypeFieldDef> fieldDefs = new ArrayList<>();
-		final List<VncVal> fieldItems = fields.getJavaList();
-		for(int ii=0; ii<fieldItems.size()/2; ii++) {		
+		final Iterator<VncVal> fieldIter = fields.iterator();
+		int fieldNr = 0;
+		while(fieldIter.hasNext()) {		
 			fieldDefs.add(
 				new VncCustomTypeFieldDef(
 					new VncKeyword(
-						Coerce.toVncSymbol(fieldItems.get(ii * 2)).getName()), 
+						Coerce.toVncSymbol(fieldIter.next()).getName()), 
 					qualifyBaseType(
-						Coerce.toVncKeyword(fieldItems.get(ii * 2 + 1)),
+						Coerce.toVncKeyword(fieldIter.next()),
 						env), 
-					new VncInteger(ii)));
+					new VncInteger(fieldNr++)));
 		}
 		
 

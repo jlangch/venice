@@ -122,12 +122,16 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVector withValues(final List<? extends VncVal> replaceVals) {
-		return VncVector.ofList(replaceVals, getMeta());
+		return replaceVals.size() < MAX_ELEMENTS
+				? VncTinyVector.of(replaceVals.toArray(new VncVal[0])).withMeta(getMeta())
+				: VncVector.ofList(replaceVals, getMeta());
 	}
 
 	@Override
 	public VncVector withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncVector.ofList(replaceVals, meta);
+		return replaceVals.size() < MAX_ELEMENTS
+				? VncTinyVector.of(replaceVals.toArray(new VncVal[0])).withMeta(meta)
+				: VncVector.ofList(replaceVals, meta);
 	}
 
 	@Override
@@ -600,11 +604,11 @@ public class VncTinyVector extends VncVector {
 
 	@Override 
 	public String toString() {
-		return "[" + Printer.join(getJavaList(), " ", true) + "]";
+		return "[" + Printer.join(this, " ", true) + "]";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "[" + Printer.join(getJavaList(), " ", print_readably) + "]";
+		return "[" + Printer.join(this, " ", print_readably) + "]";
 	}
 
 	

@@ -235,7 +235,7 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		return "#{" + Printer.join(getJavaList(), " ", print_readably) + "}";
+		return "#{" + Printer.join(toVncList(), " ", print_readably) + "}";
 	}
 
 	

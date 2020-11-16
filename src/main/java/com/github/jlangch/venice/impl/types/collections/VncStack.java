@@ -123,11 +123,11 @@ public class VncStack extends VncCollection {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(toVncList().getJavaList(), " ", true) + ")";
+		return "(" + Printer.join(toVncList(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(toVncList().getJavaList(), " ", print_readably) + ")";
+		return "(" + Printer.join(toVncList(), " ", print_readably) + ")";
 	}
 
 	

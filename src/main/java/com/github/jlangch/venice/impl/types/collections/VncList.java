@@ -384,11 +384,11 @@ public class VncList extends VncSequence {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(value.toJavaList(), " ", true) + ")";
+		return "(" + Printer.join(this, " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(value.toJavaList(), " ", print_readably) + ")";
+		return "(" + Printer.join(this, " ", print_readably) + ")";
 	}
 
 	public static VncList empty() {

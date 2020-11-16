@@ -284,7 +284,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 			list.add(JavaInteropUtil.convertToVncVal(e.getValue()));
 		});
 	
-		return "{" + Printer.join(list, " ", print_readably) + "}";
+		return "{" + Printer.join(list.stream(), " ", print_readably) + "}";
 	}
 	
 

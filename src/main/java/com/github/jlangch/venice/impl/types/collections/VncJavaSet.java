@@ -257,7 +257,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		return "#{" + Printer.join(getVncValueList(), " ", print_readably) + "}";
+		return "#{" + Printer.join(stream(), " ", print_readably) + "}";
 	}
 
 	private List<VncVal> getVncValueList() {

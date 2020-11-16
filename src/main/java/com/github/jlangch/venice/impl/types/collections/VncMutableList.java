@@ -378,11 +378,11 @@ public class VncMutableList extends VncSequence {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(value, " ", true) + ")";
+		return "(" + Printer.join(this, " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(value, " ", print_readably) + ")";
+		return "(" + Printer.join(this, " ", print_readably) + ")";
 	}
 
    

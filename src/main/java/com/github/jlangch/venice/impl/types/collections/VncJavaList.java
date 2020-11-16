@@ -351,11 +351,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(getJavaList(), " ", true) + ")";
+		return "(" + Printer.join(stream(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(getJavaList(), " ", print_readably) + ")";
+		return "(" + Printer.join(stream(), " ", print_readably) + ")";
 	}
 
 	

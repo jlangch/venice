@@ -21,23 +21,30 @@
  */
 package com.github.jlangch.venice.impl;
 
-import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 
 
 public class Printer {
 
 	public static String join(
-			final List<VncVal> values, 
+			final Stream<VncVal> values, 
 			final String delim, 
 			final boolean print_readably
 	) {
-		return values.stream()
-					 .map(v -> v.toString(print_readably))
+		return values.map(v -> v.toString(print_readably))
 					 .collect(Collectors.joining(delim));
+	}
+
+	public static String join(
+			final VncSequence values, 
+			final String delim, 
+			final boolean print_readably
+	) {
+		return join(values.stream(), delim, print_readably);
 	}
 
 	public static String pr_str(final VncVal val, final boolean print_readably) {
@@ -45,10 +52,10 @@ public class Printer {
 	}
 
 	public static String pr_str_args(
-			final VncList args,
+			final VncSequence args,
 			final String delim, 
 			final boolean print_readably
 	) {
-		return join(args.getJavaList(), delim, print_readably);
+		return join(args, delim, print_readably);
 	}
 }

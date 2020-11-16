@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
@@ -296,14 +297,13 @@ public class VncSortedMap extends VncMap {
 	
 	@Override
 	public String toString(final boolean print_readably) {
-		final List<VncVal> list = value
-									.map(e -> VncList.of(e._1, e._2).getJavaList())
-									.collect(Collectors.toList())
-									.stream()
-									.flatMap(l -> l.stream())
-									.collect(Collectors.toList());
+		final Stream<VncVal> stream = value
+										.map(e -> VncList.of(e._1, e._2).getJavaList())
+										.collect(Collectors.toList())
+										.stream()
+										.flatMap(l -> l.stream());
 
-		return "{" + Printer.join(list, " ", print_readably) + "}";
+		return "{" + Printer.join(stream, " ", print_readably) + "}";
 	}
 	
 
