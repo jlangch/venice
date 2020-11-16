@@ -298,7 +298,7 @@ public class VncSortedMap extends VncMap {
 	@Override
 	public String toString(final boolean print_readably) {
 		final Stream<VncVal> stream = value
-										.map(e -> VncList.of(e._1, e._2).getJavaList())
+										.map(e -> Arrays.asList(e._1, e._2))
 										.collect(Collectors.toList())
 										.stream()
 										.flatMap(l -> l.stream());

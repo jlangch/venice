@@ -1601,7 +1601,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return VncList.ofList(args.getJavaList());
+				return args;
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1637,7 +1637,7 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (args.last() == Nil) {
-					return VncList.ofList(args.slice(0, args.size()-1).getJavaList());
+					return args.butlast();
 				}
 				else if (!Types.isVncSequence(args.last())) {
 					throw new VncException(String.format(
@@ -1646,7 +1646,7 @@ public class CoreFunctions {
 				}
 				else {
 					return VncList.empty()
-								.addAllAtEnd(args.slice(0, args.size()-1))
+								.addAllAtEnd(args.butlast())
 								.addAllAtEnd((VncSequence)args.last());
 				}
 			}
@@ -1736,7 +1736,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return VncVector.ofList(args.getJavaList());  // FIXME: simpler
+				return args.toVncVector();
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1779,7 +1779,7 @@ public class CoreFunctions {
 						"(count vector)")
 					.examples(
 						"(subvec [1 2 3 4 5 6] 2)",
-						"(subvec [1 2 3 4 5 6] 4)")
+						"(subvec [1 2 3 4 5 6] 2 3)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1789,10 +1789,9 @@ public class CoreFunctions {
 				final VncLong from = Coerce.toVncLong(args.second());
 				final VncLong to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)) : null;
 
-				return VncVector.ofList(
-								to == null
-									? vec.getJavaList().subList(from.getValue().intValue(), vec.size())
-									: vec.getJavaList().subList(from.getValue().intValue(), to.getValue().intValue()));
+				return to == null
+						? vec.slice(from.getIntValue(), vec.size())
+						: vec.slice(from.getIntValue(), to.getIntValue());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
