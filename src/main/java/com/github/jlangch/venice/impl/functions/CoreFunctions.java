@@ -2528,7 +2528,8 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncHashMap(((VncMap)args.first()).getJavaMap());
+					final VncMap map = (VncMap)args.first();
+					return map instanceof VncHashMap ? map : new VncHashMap(map.getJavaMap());
 				}
 				else if (args.size() == 1 && Types.isVncJavaObject(args.first())) {
 					return ((VncJavaObject)args.first()).toVncMap();
@@ -2555,7 +2556,8 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncOrderedMap(((VncMap)args.first()).getJavaMap());
+					final VncMap map = (VncMap)args.first();
+					return map instanceof VncOrderedMap ? map : new VncOrderedMap(map.getJavaMap());
 				}
 				else {
 					return VncOrderedMap.ofAll(args);
@@ -2579,7 +2581,8 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncSortedMap(((VncMap)args.first()).getJavaMap());
+					final VncMap map = (VncMap)args.first();
+					return map instanceof VncSortedMap ? map : new VncSortedMap(map.getJavaMap());
 				}
 				else {
 					return VncSortedMap.ofAll(args);

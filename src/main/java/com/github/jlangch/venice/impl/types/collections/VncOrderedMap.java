@@ -176,9 +176,16 @@ public class VncOrderedMap extends VncMap {
 
 	@Override
 	public VncOrderedMap putAll(final VncMap map) {
-		return new VncOrderedMap(
-						value.merge(io.vavr.collection.LinkedHashMap.ofAll(map.getJavaMap())),
-						getMeta());
+		if (map instanceof VncOrderedMap) {
+			return new VncOrderedMap(
+					value.merge(((VncOrderedMap)map).value),
+					getMeta());
+		}
+		else {
+			return new VncOrderedMap(
+				value.merge(io.vavr.collection.LinkedHashMap.ofAll(map.getJavaMap())),
+				getMeta());
+		}
 	}
 	
 	@Override

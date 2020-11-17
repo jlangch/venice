@@ -184,9 +184,16 @@ public class VncHashMap extends VncMap {
 
 	@Override
 	public VncHashMap putAll(final VncMap map) {
-		return new VncHashMap(
-						value.merge(io.vavr.collection.HashMap.ofAll(map.getJavaMap())),
-						getMeta());
+		if (map instanceof VncHashMap) {
+			return new VncHashMap(
+					value.merge(((VncHashMap)map).value),
+					getMeta());
+		}
+		else {
+			return new VncHashMap(
+							value.merge(io.vavr.collection.HashMap.ofAll(map.getJavaMap())),
+							getMeta());
+		}
 	}
 	
 	@Override

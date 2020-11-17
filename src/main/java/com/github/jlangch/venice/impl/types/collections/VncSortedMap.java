@@ -174,9 +174,16 @@ public class VncSortedMap extends VncMap {
 
 	@Override
 	public VncSortedMap putAll(final VncMap map) {
-		return new VncSortedMap(
+		if (map instanceof VncSortedMap) {
+			return new VncSortedMap(
+					value.merge(((VncSortedMap)map).value),
+					getMeta());
+		}
+		else {
+			return new VncSortedMap(
 						value.merge(io.vavr.collection.TreeMap.ofAll(map.getJavaMap())),
 						getMeta());
+		}
 	}
 	
 	@Override
