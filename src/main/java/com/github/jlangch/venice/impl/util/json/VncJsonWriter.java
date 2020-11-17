@@ -323,7 +323,7 @@ public class VncJsonWriter {
 	private void write_VncMap(final String key, final VncMap val) {
 		object(key);
 
-		final Map<VncVal,VncVal> map = val.getMap();
+		final Map<VncVal,VncVal> map = val.getJavaMap();
 		for(Entry<VncVal,VncVal> e : map.entrySet()) {
 			final VncVal k = e.getKey();
 			final VncVal v = e.getValue();

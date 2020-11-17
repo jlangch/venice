@@ -82,8 +82,8 @@ public class MetaUtil {
 			return meta1;
 		}
 		else if (Types.isVncMap(meta1) && Types.isVncMap(meta2)) {
-			final Map<VncVal,VncVal> m = new HashMap<>(((VncMap)meta1).getMap());
-			m.putAll(((VncMap)meta2).getMap());						
+			final Map<VncVal,VncVal> m = new HashMap<>(((VncMap)meta1).getJavaMap());
+			m.putAll(((VncMap)meta2).getJavaMap());						
 			return new VncHashMap(m);
 		}
 		else {

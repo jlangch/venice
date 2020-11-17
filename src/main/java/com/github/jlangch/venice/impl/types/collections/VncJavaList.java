@@ -59,9 +59,28 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		this(val, null);
 	}
 
-	public VncJavaList(final List<Object> val, final VncVal meta) {
+	private VncJavaList(final List<Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		this.value = val;
+	}
+	
+	
+	public static VncJavaList of(final Object... vals) {
+		final List<Object> list = new ArrayList<>();
+		for(Object o : vals) list.add(o);
+		return new VncJavaList(list, Constants.Nil);
+	}
+	
+	public static VncJavaList ofAll(final Iterable<Object> iter) {
+		final List<Object> list = new ArrayList<>();
+		for(Object o : iter) list.add(o);
+		return new VncJavaList(list, null);
+	}
+	
+	public static VncJavaList ofAll(final Iterable<Object> iter, final VncVal meta) {
+		final List<Object> list = new ArrayList<>();
+		for(Object o : iter) list.add(o);
+		return new VncJavaList(list, meta);
 	}
 	
 	

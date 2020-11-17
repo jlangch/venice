@@ -55,10 +55,6 @@ public class VncMutableList extends VncSequence {
 		this(null, meta);
 	}
 
-	public VncMutableList(final Collection<? extends VncVal> vals) {
-		this(vals, null);
-	}
-
 	@SuppressWarnings("unchecked")
 	public VncMutableList(final Collection<? extends VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
@@ -72,7 +68,19 @@ public class VncMutableList extends VncSequence {
 			value = new CopyOnWriteArrayList<>(vals);
 		}
 	}
+
 	
+	public static VncMutableList ofAll(final Iterable<? extends VncVal> iter) {
+		final List<VncVal> list = new CopyOnWriteArrayList<>();
+		for(VncVal o : iter) list.add(o);
+		return new VncMutableList(list, null);
+	}	
+	
+	public static VncMutableList ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
+		final List<VncVal> list = new CopyOnWriteArrayList<>();
+		for(VncVal o : iter) list.add(o);
+		return new VncMutableList(list, meta);
+	}	
 	
 	public static VncMutableList of(final VncVal... mvs) {
 		return new VncMutableList(Arrays.asList(mvs), Constants.Nil);
@@ -283,8 +291,9 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncMutableList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
-		final VncSequence seq = reverseAdd ? list.reverse() : list;	
-		value.addAll(0, seq.getJavaList());
+		final List<VncVal> items = list.getJavaList();
+		if (reverseAdd) Collections.reverse(items);		
+		value.addAll(0, items);
 		return this;
 	}
 	
@@ -296,7 +305,7 @@ public class VncMutableList extends VncSequence {
 	
 	@Override
 	public VncMutableList addAllAtEnd(final VncSequence list) {
-		value.addAll(list.getJavaList());
+		for(VncVal v : list) value.add(v);
 		return this;
 	}
 	

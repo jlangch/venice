@@ -1631,7 +1631,7 @@ public class ConcurrencyFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncThreadLocal(((VncMap)args.first()).getMap());
+					return new VncThreadLocal(((VncMap)args.first()).getJavaMap());
 				}
 				else {
 					return new VncThreadLocal(args);

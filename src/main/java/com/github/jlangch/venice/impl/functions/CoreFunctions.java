@@ -1690,7 +1690,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return new VncMutableList(args.getJavaList());
+				return VncMutableList.ofAll(args, Nil);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1924,7 +1924,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				return new VncMutableVector(args.getJavaList());
+				return VncMutableVector.ofAll(args);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2159,7 +2159,7 @@ public class CoreFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					return VncMutableSet.ofAll(args);
+					return VncMutableSet.ofAll(args, Nil);
 				}
 
 				private static final long serialVersionUID = -1848883965231344442L;
@@ -2528,7 +2528,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncHashMap(((VncMap)args.first()).getMap());
+					return new VncHashMap(((VncMap)args.first()).getJavaMap());
 				}
 				else if (args.size() == 1 && Types.isVncJavaObject(args.first())) {
 					return ((VncJavaObject)args.first()).toVncMap();
@@ -2555,7 +2555,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncOrderedMap(((VncMap)args.first()).getMap());
+					return new VncOrderedMap(((VncMap)args.first()).getJavaMap());
 				}
 				else {
 					return VncOrderedMap.ofAll(args);
@@ -2579,7 +2579,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				if (args.size() == 1 && Types.isVncMap(args.first())) {
-					return new VncSortedMap(((VncMap)args.first()).getMap());
+					return new VncSortedMap(((VncMap)args.first()).getJavaMap());
 				}
 				else {
 					return VncSortedMap.ofAll(args);
@@ -2603,7 +2603,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				return args.size() == 1 && Types.isVncMap(args.first())
-						? new VncMutableMap(((VncMap)args.first()).getMap())
+						? new VncMutableMap(((VncMap)args.first()).getJavaMap())
 						: VncMutableMap.ofAll(args);
 			}
 
@@ -3589,7 +3589,7 @@ public class CoreFunctions {
 				assertArity(args, 1);
 
 				final VncMap mhm = Coerce.toVncMap(args.first());
-				return VncList.ofColl(mhm.getMap().values());
+				return VncList.ofColl(mhm.getJavaMap().values());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -5959,7 +5959,7 @@ public class CoreFunctions {
 
 				for(VncVal v : coll) {
 					final VncVal key = VncFunction.applyWithMeter(fn, VncList.of(v), meterRegistry);
-					final VncSequence val = Coerce.toVncSequence(map.getMap().get(key));
+					final VncSequence val = Coerce.toVncSequence(map.getJavaMap().get(key));
 					if (val == null) {
 						map = map.assoc(key, VncVector.of(v));
 					}
@@ -6693,7 +6693,7 @@ public class CoreFunctions {
 				}
 				else {
 					final Map<VncVal,VncVal> map = new HashMap<>();
-					maps.stream().forEach(v -> map.putAll(Coerce.toVncMap(v).getMap()));
+					maps.stream().forEach(v -> map.putAll(Coerce.toVncMap(v).getJavaMap()));
 					return new VncHashMap(map);
 				}
 			}

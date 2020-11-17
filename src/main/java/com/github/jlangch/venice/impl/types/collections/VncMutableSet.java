@@ -50,27 +50,25 @@ public class VncMutableSet extends VncSet {
 		this(null, meta);
 	}
 
-	public VncMutableSet(final Collection<? extends VncVal> val) {
-		this(val, null);
-	}
-
 	public VncMutableSet(final Collection<? extends VncVal> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (val != null) value.addAll(val);
 	}
 	
-
-	
-	public static VncMutableSet ofAll(final Collection<? extends VncVal> val) {
-		return new VncMutableSet(val);
+	public static VncMutableSet ofAll(final Iterable<? extends VncVal> iter) {
+		final Set<VncVal> set = ConcurrentHashMap.newKeySet();
+		for(VncVal o : iter) set.add(o);
+		return new VncMutableSet(set, null);
 	}
-	
-	public static VncMutableSet ofAll(final VncSequence val) {
-		return new VncMutableSet(val.getJavaList());
+
+	public static VncMutableSet ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
+		final Set<VncVal> set = ConcurrentHashMap.newKeySet();
+		for(VncVal o : iter) set.add(o);
+		return new VncMutableSet(set, meta);
 	}
 	
 	public static VncMutableSet of(final VncVal... mvs) {
-		return new VncMutableSet(Arrays.asList(mvs));
+		return new VncMutableSet(Arrays.asList(mvs), null);
 	}
 
 	
@@ -127,16 +125,8 @@ public class VncMutableSet extends VncSet {
 	}
 	
 	@Override
-	public VncMutableSet addAll(final VncSequence val) {
-		if (Types.isVncMutableList(val)) {
-			value.addAll(((VncMutableList)val).getJavaList());
-		}
-		else if (Types.isVncMutableVector(val)) {
-			value.addAll(((VncMutableVector)val).getJavaList());
-		}
-		else {
-			val.forEach(v -> value.add(v));
-		}
+	public VncMutableSet addAll(final VncSequence seq) {
+		for(VncVal v : seq) value.add(v);
 		return this;
 	}
 
@@ -158,16 +148,8 @@ public class VncMutableSet extends VncSet {
 	}
 
 	@Override
-	public VncMutableSet removeAll(final VncSequence val) {
-		if (Types.isVncMutableList(val)) {
-			value.removeAll(((VncMutableList)val).getJavaList());
-		}
-		else if (Types.isVncMutableVector(val)) {
-			value.removeAll(((VncMutableVector)val).getJavaList());
-		}
-		else {
-			val.forEach(v -> value.remove(v));
-		}
+	public VncMutableSet removeAll(final VncSequence seq) {
+		for(VncVal v : seq) value.remove(v);
 		return this;
 	}
 

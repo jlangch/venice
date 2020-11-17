@@ -476,14 +476,14 @@ public class Types {
 				return ((VncHashSet)a).stream().allMatch(v -> ((VncHashSet)b).contains(v));
 			} 
 			else if (a instanceof VncMap) {
-				if (((VncMap)a).getMap().size() != ((VncMap)b).getMap().size()) {
+				if (((VncMap)a).getJavaMap().size() != ((VncMap)b).getJavaMap().size()) {
 					return false;
 				}
 				final VncMap mhm = ((VncMap)a);
-				final Map<VncVal,VncVal> hm = mhm.getMap();
+				final Map<VncVal,VncVal> hm = mhm.getJavaMap();
 				for (VncVal k : hm.keySet()) {
-					final VncVal valA = ((VncMap)a).getMap().get(k);
-					final VncVal valB = ((VncMap)b).getMap().get(k);
+					final VncVal valA = ((VncMap)a).getJavaMap().get(k);
+					final VncVal valB = ((VncMap)b).getJavaMap().get(k);
 					if (valA == null && valB == null) {
 						return true;
 					}

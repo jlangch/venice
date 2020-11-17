@@ -92,7 +92,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 	
-	public abstract Map<VncVal,VncVal> getMap();
+	public abstract Map<VncVal,VncVal> getJavaMap();
 	
 	public abstract VncVal get(VncVal key);
 

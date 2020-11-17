@@ -23,9 +23,6 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
@@ -177,7 +174,7 @@ public class SequenceTest {
 		VncSequence add = VncList.of(new VncLong(1L), new VncLong(2L));
 
 		// not reversed
-		VncSequence seq = new VncJavaList(new ArrayList<>(Arrays.asList(4L)));
+		VncSequence seq = VncJavaList.of(4L);
 		seq = seq.addAllAtStart(add, false);
 		
 		assertEquals(3, seq.size());
@@ -186,7 +183,7 @@ public class SequenceTest {
 		assertEquals(4L, seq.nth(2).convertToJavaObject());
 
 		// reversed
-		seq = new VncJavaList(new ArrayList<>(Arrays.asList(4L)));
+		seq = VncJavaList.of(4L);
 		seq = seq.addAllAtStart(add, true);
 		
 		assertEquals(3, seq.size());

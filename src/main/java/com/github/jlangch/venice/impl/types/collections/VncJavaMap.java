@@ -104,7 +104,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public Map<VncVal,VncVal> getMap() {
+	public Map<VncVal,VncVal> getJavaMap() {
 		return value
 				.entrySet()
 				.stream()
@@ -137,7 +137,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	@Override
 	public List<VncMapEntry> entries() {
 		return Collections.unmodifiableList(
-					getMap()
+					getJavaMap()
 						.entrySet()
 						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
 						.collect(Collectors.toList()));
@@ -145,7 +145,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncJavaMap putAll(final VncMap map) {
-		getMap().entrySet().forEach(
+		getJavaMap().entrySet().forEach(
 				e -> value.put(
 					e.getKey().convertToJavaObject(), 
 					e.getValue().convertToJavaObject()));

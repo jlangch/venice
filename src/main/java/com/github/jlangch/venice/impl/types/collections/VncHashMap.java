@@ -155,7 +155,7 @@ public class VncHashMap extends VncMap {
 	}
 	
 	@Override
-	public Map<VncVal,VncVal> getMap() {
+	public Map<VncVal,VncVal> getJavaMap() {
 		return Collections.unmodifiableMap(value.toJavaMap());
 	}
 	
@@ -185,7 +185,7 @@ public class VncHashMap extends VncMap {
 	@Override
 	public VncHashMap putAll(final VncMap map) {
 		return new VncHashMap(
-						value.merge(io.vavr.collection.HashMap.ofAll(map.getMap())),
+						value.merge(io.vavr.collection.HashMap.ofAll(map.getJavaMap())),
 						getMeta());
 	}
 	

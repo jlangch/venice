@@ -209,7 +209,7 @@ public class VeniceInterpreter implements Serializable  {
 		final Env env = new Env(null);
 			
 		// loaded modules: preset with implicitly preloaded modules
-		final VncMutableSet loadedModules = new VncMutableSet(Modules.PRELOADED_MODULES);
+		final VncMutableSet loadedModules = VncMutableSet.ofAll(Modules.PRELOADED_MODULES);
 		
 		for(Map.Entry<VncVal,VncVal> e: Functions.functions.entrySet()) {
 			final VncSymbol sym = (VncSymbol)e.getKey();
@@ -673,7 +673,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncMap map = (VncMap)ast;
 			
 			final Map<VncVal,VncVal> vals = new HashMap<>(map.size());
-			for(Entry<VncVal,VncVal> e: map.getMap().entrySet()) {
+			for(Entry<VncVal,VncVal> e: map.getJavaMap().entrySet()) {
 				vals.put(
 					evaluate(e.getKey(), env), 
 					evaluate(e.getValue(), env));

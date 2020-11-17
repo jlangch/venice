@@ -117,8 +117,8 @@ public class VncCustomType extends VncMap {
 	}
 
 	@Override
-	public Map<VncVal,VncVal> getMap() {
-		return values.getMap();
+	public Map<VncVal,VncVal> getJavaMap() {
+		return values.getJavaMap();
 	}
 
 	@Override
@@ -133,13 +133,13 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncList keys() {
-		return VncList.ofList(new ArrayList<>(getMap().keySet()));
+		return VncList.ofList(new ArrayList<>(getJavaMap().keySet()));
 	}
 
 	@Override
 	public List<VncMapEntry> entries() {
 		return Collections.unmodifiableList(
-					getMap()
+					getJavaMap()
 						.entrySet()
 						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
 						.collect(Collectors.toList()));

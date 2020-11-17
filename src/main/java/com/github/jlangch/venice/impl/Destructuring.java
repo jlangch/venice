@@ -353,7 +353,7 @@ public class Destructuring {
 			else if (symValName.equals(KEYWORD_OR)) {
 				final VncVal symbol = symVals.get(KEYWORD_OR);
 				if (symbol != Nil && Types.isVncMap(symbol)) {
-					for(Map.Entry<VncVal,VncVal> e : ((VncMap)symbol).getMap().entrySet()) {
+					for(Map.Entry<VncVal,VncVal> e : ((VncMap)symbol).getJavaMap().entrySet()) {
 						final int bIdx = Var.getVarIndex((VncSymbol)e.getKey(), local_bindings);
 						if (bIdx == -1) {
 							local_bindings.add(new Var((VncSymbol)e.getKey(), e.getValue()));

@@ -124,7 +124,7 @@ public class VncMutableMap extends VncMap {
 	}
 
 	@Override
-	public Map<VncVal,VncVal> getMap() {
+	public Map<VncVal,VncVal> getJavaMap() {
 		return Collections.unmodifiableMap(value);
 	}
 	
@@ -155,7 +155,7 @@ public class VncMutableMap extends VncMap {
 
 	@Override
 	public VncMutableMap putAll(final VncMap map) {
-		value.putAll(map.getMap());
+		value.putAll(map.getJavaMap());
 		return this;
 	}
 

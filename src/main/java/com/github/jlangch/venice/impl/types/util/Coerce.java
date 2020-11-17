@@ -367,7 +367,7 @@ public class Coerce {
 			return (VncMutableList)val;
 		}
 		else if (Types.isVncSequence(val)) {
-			return new VncMutableList(((VncSequence)val).getJavaList());
+			return VncMutableList.ofAll((VncSequence)val, Constants.Nil);
 		}
 		else {
 			throw new VncException(String.format(
@@ -382,7 +382,7 @@ public class Coerce {
 			return (VncMutableVector)val;
 		}
 		else if (Types.isVncSequence(val)) {
-			return new VncMutableVector(((VncSequence)val).getJavaList());
+			return VncMutableVector.ofAll((VncSequence)val, Constants.Nil);
 		}
 		else {
 			throw new VncException(String.format(
@@ -409,7 +409,7 @@ public class Coerce {
 			return (VncHashMap)val;
 		}
 		else if (Types.isVncMap(val)) {
-			return new VncHashMap(((VncMap)val).getMap());
+			return new VncHashMap(((VncMap)val).getJavaMap());
 		}
 		else {
 			throw new VncException(String.format(
@@ -424,7 +424,7 @@ public class Coerce {
 			return (VncMutableMap)val;
 		}
 		else if (Types.isVncMap(val)) {
-			return new VncMutableMap(((VncMap)val).getMap());
+			return new VncMutableMap(((VncMap)val).getJavaMap());
 		}
 		else {
 			throw new VncException(String.format(
@@ -475,7 +475,7 @@ public class Coerce {
 			return (VncMutableSet)val;
 		}
 		else if (Types.isVncSet(val)) {
-			return new VncMutableSet(((VncSet)val).getJavaSet());
+			return VncMutableSet.ofAll((VncSet)val, Constants.Nil);
 		}
 		else {
 			throw new VncException(String.format(

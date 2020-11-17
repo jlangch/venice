@@ -146,13 +146,13 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override
-	public Map<VncVal,VncVal> getMap() {
-		return convertBean().getMap();
+	public Map<VncVal,VncVal> getJavaMap() {
+		return convertBean().getJavaMap();
 	}
 
 	@Override
 	public VncVal containsKey(final VncVal key) {
-		return VncBoolean.of(getMap().containsKey(key));
+		return VncBoolean.of(getJavaMap().containsKey(key));
 	}
 
 	@Override
@@ -162,13 +162,13 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncList keys() {
-		return VncList.ofList(new ArrayList<>(getMap().keySet()));
+		return VncList.ofList(new ArrayList<>(getJavaMap().keySet()));
 	}
 
 	@Override
 	public List<VncMapEntry> entries() {
 		return Collections.unmodifiableList(
-					getMap()
+					getJavaMap()
 						.entrySet()
 						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
 						.collect(Collectors.toList()));
@@ -210,7 +210,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	public VncMap toVncMap() {
-		return new VncHashMap(getMap());
+		return new VncHashMap(getJavaMap());
 	}
 
 	@Override

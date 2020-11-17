@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -56,9 +57,28 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 		this(val, null);
 	}
 
-	public VncJavaSet(final Set<Object> val, final VncVal meta) {
+	private VncJavaSet(final Set<Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		value = val;
+	}
+	
+	
+	public static VncJavaSet of(final Object... vals) {
+		final Set<Object> set = new HashSet<>();
+		for(Object o : vals) set.add(o);
+		return new VncJavaSet(set, Constants.Nil);
+	}
+	
+	public static VncJavaSet ofAll(final Iterable<Object> iter) {
+		final Set<Object> set = new HashSet<>();
+		for(Object o : iter) set.add(o);
+		return new VncJavaSet(set, null);
+	}
+	
+	public static VncJavaSet ofAll(final Iterable<Object> iter, final VncVal meta) {
+		final Set<Object> set = new HashSet<>();
+		for(Object o : iter) set.add(o);
+		return new VncJavaSet(set, meta);
 	}
 	
 	
