@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +57,9 @@ import com.lowagie.text.pdf.PdfReader;
 
 public class DocGenerator {
 
-	public DocGenerator() {
+	public DocGenerator(final boolean runExamples) {
+		this.runExamples = runExamples;
+		
 		this.preloadedModules
 			.addAll(Arrays.asList(
 						"app",    "xml",   "crypt",  "gradle", 
@@ -68,17 +71,29 @@ public class DocGenerator {
 								false, 
 								false, 
 								RunMode.DOCGEN)
-							.setStdoutPrintStream(null);
+							.setStdoutPrintStream(null)
+							.setStderrPrintStream(null);
 		
 		this.codeHighlighter = new DocHighlighter(DocColorTheme.getLightTheme());
 	}
 
 	public static void main(final String[] args) {
 		final String version = args.length > 0 ? args[0] : "0.0.0";
-		new DocGenerator().run(version);
+		new DocGenerator(true).run(version);
 
 //		System.out.println(
 //			CheatsheetRenderer.parseTemplate().replace("\\n", "\n"));
+	}
+	
+	public static List<DocSection> docInfo() {
+		return new DocGenerator(false).buildDocInfo();
+	}
+
+	private List<DocSection> buildDocInfo() {
+		final List<DocSection> sections = new ArrayList<>();
+		sections.addAll(getLeftSections());
+		sections.addAll(getRightSections());
+		return sections;
 	}
 	
 	private void run(final String version) {
@@ -1815,24 +1830,29 @@ public class DocGenerator {
 			final boolean run,
 			final boolean catchEx
 	) {
-		final Venice runner = new Venice();
-
-		try {
-			return examples
-						.stream()
-						.filter(e -> !StringUtil.isEmpty(e))
-						.map(e -> runExample(
-									runner, 
-									name, 
-									e, 
-									run, 
-									catchEx))
-						.collect(Collectors.toList());
+		if (runExamples) {
+			final Venice runner = new Venice();
+	
+			try {
+				return examples
+							.stream()
+							.filter(e -> !StringUtil.isEmpty(e))
+							.map(e -> runExample(
+										runner, 
+										name, 
+										e, 
+										run, 
+										catchEx))
+							.collect(Collectors.toList());
+			}
+			catch(RuntimeException ex) {
+				throw new RuntimeException(String.format(
+						"Failed to run examples for %s", name), 
+						ex);
+			}
 		}
-		catch(RuntimeException ex) {
-			throw new RuntimeException(String.format(
-					"Failed to run examples for %s", name), 
-					ex);
+		else {
+			return EMPTY_EXAMPLES;
 		}
 	}
 	
@@ -2024,6 +2044,8 @@ public class DocGenerator {
 	}
 	
 
+	private static final List<ExampleOutput> EMPTY_EXAMPLES = 
+			Collections.unmodifiableList(new ArrayList<>());
 	
 	private final Map<String,String> idMap = new HashMap<>();
 	
@@ -2033,5 +2055,6 @@ public class DocGenerator {
 
 	private final Map<String, DocItem> docItems = new HashMap<>();
 	private final Env env;
+	private final boolean runExamples;
 	private final DocHighlighter codeHighlighter;
 }
