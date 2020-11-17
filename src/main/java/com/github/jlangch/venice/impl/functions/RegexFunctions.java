@@ -105,7 +105,7 @@ public class RegexFunctions {
 				"regex/find?", 
 				VncFunction
 					.meta()
-					.arglists("(regex/find matcher)")		
+					.arglists("(regex/find? matcher)")		
 					.doc(
 						"Attempts to find the next subsequence that matches the pattern. " +
 						"If the match succeeds then more information can be obtained via " +
