@@ -297,7 +297,7 @@
 (defmacro
   ^{ :arglists '("(coalesce args*)")
      :doc """
-          Returns null if all of its arguments are null, otherwise it returns \
+          Returns nil if all of its arguments are nil, otherwise it returns \
           the first non nil argument. The arguments are evaluated lazy.
           """
      :examples '(
