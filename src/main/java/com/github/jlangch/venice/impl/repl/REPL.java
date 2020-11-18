@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -268,7 +269,7 @@ public class REPL {
 						}
 						else if (isExitCommand(cmd)) {
 							if (config.isClearCommandHistoryOnExit()) {
-								clearCommandHistory(terminal, history);
+								clearCommandHistory(history);
 							}
 							printer.println("interrupt", " good bye ");
 							Thread.sleep(1000);
@@ -387,11 +388,12 @@ public class REPL {
 				final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
 				handleEnvCommand(params, env);
 			}
-			else if (cmd.equals("clear-hist") || cmd.equals("clear-history")) {
-				clearCommandHistory(terminal, history);
+			else if (cmd.equals("hist")) {
+				handleHistoryCommand(new String[0], terminal, history);
 			}
-			else if (cmd.equals("hist") || cmd.equals("history")) {
-				handleHistoryCommand(terminal, history);
+			else if (cmd.startsWith("hist ")) {
+				final String[] params = StringUtil.trimToEmpty(cmd.substring(4)).split(" +");
+				handleHistoryCommand(params, terminal, history);
 			}
 			else if (cmd.equals("sandbox")) {
 				handleSandboxCommand(new String[0], terminal, env);
@@ -883,10 +885,7 @@ public class REPL {
 					&& System.getenv("GITPOD_REPO_ROOT") != null;
 	}
 
-	private void clearCommandHistory(
-			final Terminal terminal,
-			final History history
-	) {
+	private void clearCommandHistory(final History history) {
 		try {
 			printer.println("stdout", "Cleared REPL command history");
 			history.purge();
@@ -897,17 +896,39 @@ public class REPL {
 	}
 
 	private void handleHistoryCommand(
+			final String[] params,
 			final Terminal terminal,
 			final History history
 	) {
-		try {
-			printer.println("stdout", "History size: " + history.size());
-			history.load();
+		if (params.length == 0) {
+			printer.println("stdout", String.format(
+										"History: size: %d, first: %d, last: %d, index: %d",
+										history.size(), history.first(), 
+										history.last(), history.index()));
 		}
-		catch(IOException ex) {
-			printer.println("stderr", "Failed to reload history!");
-		}	
+		else if (params[0].equals("clear")) {
+			clearCommandHistory(history);	
+		}
+		else if (params[0].equals("load")) {
+			try {
+				history.load();
+			}
+			catch(IOException ex) {
+				printer.println("stderr", "Failed to reload REPL command history!");
+			}	
+		}
+		else if (params[0].equals("log")) {
+			final Logger logger = Logger.getLogger("org.jline");
+			logger.setLevel(Level.INFO);
+			for(Handler h : logger.getHandlers()) logger.removeHandler(h);
+			logger.addHandler(new ReplJLineLogHandler(printer));
+			printer.println("stdout", "Enabled REPL JLine logging");
+		}
+		else {
+			printer.println("error", "Invalid hist command");					
+		}
 	}
+	
 	
 	
 	public static enum SetupMode { Minimal, Extended };
@@ -945,7 +966,7 @@ public class REPL {
 			"  !java-ex     print Java exception\n" +	
 			"                 !java-ex\n" +	
 			"                 !java-ex {on/off}\n" +	
-			"  !clear-hist  clear the history\n" +	
+			"  !hist clear  clear the history\n" +	
 			"  !quit, !q    quit the REPL\n\n" +	
 			"Drag&Drop: \n" +	
 			"  Scripts can be dragged to the REPL. Upon pressing [return]\n" +	
