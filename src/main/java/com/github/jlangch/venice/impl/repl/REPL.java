@@ -185,10 +185,6 @@ public class REPL {
 		if (allowDynamicClassLoader) {
 			mainThread.setContextClassLoader(new DynamicClassLoader2());
 		}
-		env.setGlobal(new Var(
-						new VncSymbol("*repl-color-theme*"), 
-						new VncKeyword(config.getColorMode().name().toLowerCase()),
-						false));
 		
 		final ReplParser parser = new ReplParser(venice);
 		parser.setEscapeChars(new char[0]);  // leave the char escape handling to Venice
@@ -393,6 +389,9 @@ public class REPL {
 			}
 			else if (cmd.equals("clear-hist") || cmd.equals("clear-history")) {
 				clearCommandHistory(terminal, history);
+			}
+			else if (cmd.equals("hist") || cmd.equals("history")) {
+				handleHistoryCommand(terminal, history);
 			}
 			else if (cmd.equals("sandbox")) {
 				handleSandboxCommand(new String[0], terminal, env);
@@ -690,6 +689,10 @@ public class REPL {
 	) {
 		return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
 					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
+					 .setGlobal(new Var(
+								new VncSymbol("*repl-color-theme*"), 
+								new VncKeyword(config.getColorMode().name().toLowerCase()),
+								false))
 					 .setStdoutPrintStream(out)
 					 .setStderrPrintStream(err)
 					 .setStdinReader(in);
@@ -890,6 +893,19 @@ public class REPL {
 		}
 		catch(IOException ex) {
 			printer.println("stderr", "Failed to clear REPL command history!");
+		}	
+	}
+
+	private void handleHistoryCommand(
+			final Terminal terminal,
+			final History history
+	) {
+		try {
+			printer.println("stdout", "History size: " + history.size());
+			history.load();
+		}
+		catch(IOException ex) {
+			printer.println("stderr", "Failed to reload history!");
 		}	
 	}
 	
