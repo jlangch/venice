@@ -43,7 +43,7 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
-		throwArityEx(arity, fn.getQualifiedName());
+		throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity));
 	}
 
 	public static void assertArity(
@@ -61,7 +61,7 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
-		throwArityEx(arity, fnName);
+		throw new ArityException(formatArityExMsg(fnName, arity));
 	}
 	
 	public static void assertMinArity(
@@ -71,7 +71,7 @@ public class ArityExceptions {
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throwArityEx(arity, fn.getQualifiedName());
+			throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity));
 		}
 	}
 	
@@ -82,44 +82,44 @@ public class ArityExceptions {
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throwArityEx(arity, fnName);
+			throw new ArityException(formatArityExMsg(fnName, arity));
 		}
 	}
 
-	public static void throwArityEx(
-			final int arity,
-			final String fnName
+	
+	public static String formatArityExMsg(
+			final String fnName,
+			final int arity
 	) {
-		throw new ArityException(String.format(
+		return String.format(
 					"Wrong number of args (%d) passed to function %s", 
 					arity, 
-					fnName));
+					fnName);
 	}
-
-	public static void throwArityEx(
+	
+	public static String formatArityExMsg(
+			final String fnName,
 			final int arity, 
-			final int expectedArgs, 
-			final String fnName
+			final int expectedArgs
 	) {
-		throw new ArityException(String.format(
+		return String.format(
 					"Wrong number of args (%d) passed to function %s. Expected %d args!", 
 					arity, 
 					fnName, 
-					expectedArgs));
+					expectedArgs);
 	}
-
-
-	public static void throwVariadicArityEx(
-			final int arity,
+	
+	public static String formatVariadicArityExMsg(
 			final String fnName,
+			final int arity,
 			final int fixedArgsCount
 	) {
-		throw new ArityException(String.format(
+		return String.format(
 					"Wrong number of args (%d) passed to the variadic function %s that "
 						+ "requires at least %d args.", 
 					arity, 
 					fnName,
-					fixedArgsCount));
+					fixedArgsCount);
 	}
 
 }

@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.Version;
@@ -2025,16 +2026,21 @@ public class VeniceInterpreter implements Serializable  {
 				if (hasVariadicArgs()) {
 					if (args.size() < getFixedArgsCount()) {
 						try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
-							ArityExceptions.throwVariadicArityEx(
-									args.size(), 
-									getQualifiedName(),
-									getFixedArgsCount());
+							throw new ArityException(
+									ArityExceptions.formatVariadicArityExMsg(
+										getQualifiedName(),
+										args.size(), 
+										getFixedArgsCount()));
 						}
 					}
 				}
 				else if (args.size() != getFixedArgsCount()) {
 					try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
-						ArityExceptions.throwArityEx(args.size(), getFixedArgsCount(), getQualifiedName());
+						throw new ArityException(
+								ArityExceptions.formatArityExMsg(
+									getQualifiedName(),
+									args.size(), 
+									getFixedArgsCount()));
 					}
 				}
 
