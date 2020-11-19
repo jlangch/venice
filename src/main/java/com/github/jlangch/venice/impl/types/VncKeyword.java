@@ -25,11 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 
 public class VncKeyword extends VncString implements IVncFunction, INamespaceAware {
@@ -80,7 +80,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("keyword", args, 1, 2);
+		ArityExceptions.assertArity("keyword", args, 1, 2);
 		
 		final VncVal first = args.first();
 		

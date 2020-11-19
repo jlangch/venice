@@ -29,11 +29,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 
 public abstract class VncSet extends VncCollection implements IVncFunction, Iterable<VncVal> {
@@ -45,7 +45,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("set", args, 1, 2);
+		ArityExceptions.assertArity("set", args, 1, 2);
 		
 		final VncVal first = args.first();
 		

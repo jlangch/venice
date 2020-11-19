@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.csv.CSVReader;
 import com.github.jlangch.venice.impl.util.csv.CSVWriter;
 
@@ -73,7 +74,7 @@ public class CsvFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -154,7 +155,7 @@ public class CsvFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -215,7 +216,7 @@ public class CsvFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertMinArity(args, 1);
+					ArityExceptions.assertMinArity(this, args, 1);
 		
 					try {
 						final VncHashMap options = VncHashMap.ofAll(args.rest());

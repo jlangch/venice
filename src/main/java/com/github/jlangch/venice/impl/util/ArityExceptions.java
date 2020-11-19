@@ -22,10 +22,23 @@
 package com.github.jlangch.venice.impl.util;
 
 import com.github.jlangch.venice.ArityException;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class ArityExceptions {
+
+	public static void assertArity(
+			final VncFunction fn, 
+			final VncList args, 
+			final int... expectedArities
+	) {
+		final int arity = args.size();
+		for (int ii=0; ii<expectedArities.length; ii++) {
+			if (expectedArities[ii] == arity) return;
+		}
+		throwArityEx(arity, fn.getQualifiedName());
+	}
 
 	public static void assertArity(
 			final String fnName, 
@@ -37,6 +50,17 @@ public class ArityExceptions {
 			if (expectedArities[ii] == arity) return;
 		}
 		throwArityEx(arity, fnName);
+	}
+	
+	public static void assertMinArity(
+			final VncFunction fn, 
+			final VncList args, 
+			final int minArity
+	) {
+		final int arity = args.size();
+		if (arity < minArity) {
+			throwArityEx(arity, fn.getQualifiedName());
+		}
 	}
 	
 	public static void assertMinArity(

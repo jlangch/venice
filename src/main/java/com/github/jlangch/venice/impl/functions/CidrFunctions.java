@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.cidr.CIDR;
 import com.github.jlangch.venice.impl.util.cidr.collect.CidrTrie;
 
@@ -63,7 +64,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 	
 				final VncVal cidr = args.first();
 				if (Types.isVncJavaObject(cidr, CIDR.class)) {
@@ -94,7 +95,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 	
 				final VncVal ip = args.first();
 				final VncVal cidr_ = args.second();
@@ -156,7 +157,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 	
 				final VncVal arg = args.first();
 				if (Types.isVncJavaObject(arg, CIDR.class)) {
@@ -191,7 +192,7 @@ public class CidrFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertArity(args, 1);
+					ArityExceptions.assertArity(this, args, 1);
 		
 					final VncVal arg = args.first();
 					if (Types.isVncJavaObject(arg, CIDR.class)) {
@@ -235,7 +236,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 	
 				return new VncJavaObject(new CidrTrie<VncVal>());
 			}
@@ -260,7 +261,7 @@ public class CidrFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertArity(args, 1);
+					ArityExceptions.assertArity(this, args, 1);
 
 					@SuppressWarnings("unchecked")
 					final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(args.first(), CidrTrie.class);
@@ -291,7 +292,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 3);
+				ArityExceptions.assertArity(this, args, 3);
 	
 				@SuppressWarnings("unchecked")
 				final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(args.first(), CidrTrie.class);
@@ -326,7 +327,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 	
 				@SuppressWarnings("unchecked")
 				final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(args.first(), CidrTrie.class);
@@ -375,7 +376,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 3);
+				ArityExceptions.assertArity(this, args, 3);
 		
 				if (Types.isVncString(args.third())) {
 					final String ip = ((VncString)args.third()).getValue();
@@ -424,7 +425,7 @@ public class CidrFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
-					assertArity(args, 2);
+					ArityExceptions.assertArity(this, args, 2);
 		
 					@SuppressWarnings("unchecked")
 					final CidrTrie<VncVal> trie = Coerce.toVncJavaObject(args.first(), CidrTrie.class);
@@ -462,7 +463,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 	
 				final VncVal addr = args.first();
 				
@@ -494,7 +495,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 	
 				final VncVal addr = args.first();
 				
@@ -526,7 +527,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 	
 				final String ip = Coerce.toVncString(args.first()).getValue();
 				
@@ -557,7 +558,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal ip = args.first();
 
@@ -609,7 +610,7 @@ public class CidrFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 	
 				final VncList ints = Coerce.toVncList(args.first());
 				

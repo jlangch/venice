@@ -59,6 +59,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ReturnValue;
@@ -81,7 +82,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncString(Version.VERSION);
 			}
@@ -101,7 +102,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 				return new VncString(UUID.randomUUID().toString());
 			}
 
@@ -120,7 +121,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				return new VncLong(System.identityHashCode(args.first()));
 			}
 
@@ -139,7 +140,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncLong(System.currentTimeMillis());
 			}
@@ -160,7 +161,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncLong(System.nanoTime());
 			}
@@ -191,7 +192,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				final VncVal val = args.first();
 
@@ -249,7 +250,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				try {
 					final long sleep = Coerce.toVncLong(args.first()).getValue();
@@ -280,7 +281,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				if (javaMajorVersion() <= 8) {
 					return new VncString(
@@ -317,7 +318,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				try {
 					return new VncString(
@@ -342,7 +343,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				try {
 					return new VncString(
@@ -369,7 +370,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				sandboxFunctionCallValidation();
 				
@@ -395,7 +396,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncLong(Runtime.getRuntime().availableProcessors());
 			}
@@ -414,7 +415,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -468,7 +469,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				final CallStack stack = ThreadLocalMap.getCallStack();
 
@@ -501,7 +502,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncKeyword(Charset.defaultCharset().name());
 			}
@@ -520,7 +521,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				final String osName = System.getProperty("os.name");
 				if (osName.startsWith("Windows")) {
@@ -553,7 +554,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final String type = Coerce.toVncKeyword(args.first()).getValue();
 				final String osName = System.getProperty("os.name");
@@ -579,7 +580,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncString(System.getProperty("os.arch"));
 			}
@@ -598,7 +599,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncString(System.getProperty("os.name"));
 			}
@@ -617,7 +618,7 @@ public class SystemFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity(args, 0);
+					ArityExceptions.assertArity(this, args, 0);
 
 					return new VncString(System.getProperty("os.version"));
 				}
@@ -636,7 +637,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return VncBoolean.of(JavaInterop.isSandboxed());
 			}
@@ -655,7 +656,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				final IInterceptor interceptor = JavaInterop.getInterceptor();
 				 
@@ -683,7 +684,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncString key = Coerce.toVncString(
 										CoreFunctions.name.apply(
@@ -713,7 +714,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncString key = Coerce.toVncString(
 										CoreFunctions.name.apply(
@@ -746,7 +747,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncLong code = Coerce.toVncLong(args.first());
 				
@@ -769,7 +770,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				final String version = System.getProperty("java.version");
 				
@@ -790,7 +791,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncLong(javaMajorVersion());
 			}
@@ -809,7 +810,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return VncOrderedMap.of(
 						new VncKeyword("version"),
@@ -839,7 +840,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				try {
 					final String className = Coerce.toVncString(
@@ -875,7 +876,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 			    System.gc();		    
 			    final Runtime rt = Runtime.getRuntime();
@@ -906,7 +907,7 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncString url = Coerce.toVncString(args.first());
 				final ClassLoader cl = Thread.currentThread().getContextClassLoader();

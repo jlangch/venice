@@ -23,34 +23,10 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class FunctionsUtil {
-
-	public static void assertArity(
-			final String fnName, 
-			final VncList args, 
-			final int... expectedArities
-	) {
-		final int arity = args.size();
-		for (int ii=0; ii<expectedArities.length; ii++) {
-			if (expectedArities[ii] == arity) return;
-		}		
-		throw new ArityException(arity, fnName);
-	}
-	
-	public static void assertMinArity(
-			final String fnName, 
-			final VncList args, 
-			final int minArity
-	) {
-		final int arity = args.size();
-		if (arity < minArity) {
-			throw new ArityException(arity, fnName);
-		}
-	}
 
 	public static VncList removeNilValues(final VncList list) {
 		return list.filter(v -> v != Nil);

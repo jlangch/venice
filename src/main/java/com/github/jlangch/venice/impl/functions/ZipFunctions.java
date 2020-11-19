@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.io.Zipper;
 
 
@@ -93,7 +94,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -179,7 +180,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 3);
+				ArityExceptions.assertMinArity(this, args, 3);
 
 				sandboxFunctionCallValidation();
 
@@ -261,7 +262,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -303,7 +304,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -359,7 +360,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -419,7 +420,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -479,7 +480,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -541,7 +542,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -622,7 +623,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -714,7 +715,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -770,7 +771,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -828,7 +829,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -887,7 +888,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -947,7 +948,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -1007,7 +1008,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -1063,7 +1064,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -1104,7 +1105,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.isEmpty()) {
 					return False;
@@ -1158,7 +1159,7 @@ public class ZipFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.isEmpty()) {
 					return False;

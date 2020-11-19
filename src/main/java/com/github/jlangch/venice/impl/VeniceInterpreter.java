@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.Version;
@@ -81,6 +80,7 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
@@ -350,7 +350,7 @@ public class VeniceInterpreter implements Serializable  {
 						if (numArgs != 2 || numArgs != 3) {
 							// only create callstack when needed!
 							try (WithCallStack cs = new WithCallStack(new CallFrame("if", a0.getMeta()))) {
-								assertArity("if", args, 2, 3);
+								ArityExceptions.assertArity("if", args, 2, 3);
 							}
 						}
 						final VncVal cond = evaluate(args.first(), env);
@@ -365,7 +365,7 @@ public class VeniceInterpreter implements Serializable  {
 						if (args.isEmpty()) {
 							// only create callstack when needed!
 							try (WithCallStack cs = new WithCallStack(new CallFrame("let", a0.getMeta()))) {
-								assertMinArity("let", args, 1);					
+								ArityExceptions.assertMinArity("let", args, 1);					
 							}
 						}
 						env = new Env(env);  // let introduces a new environment
@@ -389,7 +389,7 @@ public class VeniceInterpreter implements Serializable  {
 					if (args.size() != 1) {
 						// only create callstack when needed!
 						try (WithCallStack cs = new WithCallStack(new CallFrame("quasiquote", a0.getMeta()))) {
-							assertArity("quasiquote", args, 1);
+							ArityExceptions.assertArity("quasiquote", args, 1);
 						}
 					}
 					orig_ast = quasiquote(args.first());
@@ -399,7 +399,7 @@ public class VeniceInterpreter implements Serializable  {
 					if (args.size() != 1) {
 						// only create callstack when needed!
 						try (WithCallStack cs = new WithCallStack(new CallFrame("quote", a0.getMeta()))) {
-							assertArity("quote", args, 1);
+							ArityExceptions.assertArity("quote", args, 1);
 						}
 					}
 					return args.first();
@@ -408,7 +408,7 @@ public class VeniceInterpreter implements Serializable  {
 						if (args.size() < 2) {
 							// only create callstack when needed!
 							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
-								assertMinArity("loop", args, 2);
+								ArityExceptions.assertMinArity("loop", args, 2);
 							}
 						}
 						recursionPoint = null;
@@ -832,7 +832,7 @@ public class VeniceInterpreter implements Serializable  {
 			final AtomicInteger expandedMacrosCounter
 	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("macroexpand", args, 1);
+			ArityExceptions.assertArity("macroexpand", args, 1);
 			final VncVal ast = evaluate(args.first(), env);
 			return macroexpand(ast, env, expandedMacrosCounter);
 		}		
@@ -1000,7 +1000,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal defmacro_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("defmacro", args, 2);
+			ArityExceptions.assertMinArity("defmacro", args, 2);
 			return defmacro_(args, env);
 		}
 	}
@@ -1091,7 +1091,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal def_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("def", args, 1, 2);
+			ArityExceptions.assertArity("def", args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
@@ -1107,7 +1107,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal defonce_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("defonce", args, 1, 2);
+			ArityExceptions.assertArity("defonce", args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
@@ -1123,7 +1123,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal def_dynamic_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("def-dynamic", args, 1, 2);
+			ArityExceptions.assertArity("def-dynamic", args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
@@ -1139,7 +1139,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal deftype_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("deftype", args, 2, 3);
+			ArityExceptions.assertArity("deftype", args, 2, 3);
 			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
 			final VncVector fields = Coerce.toVncVector(args.second());
 			final VncFunction validationFn = args.size() == 3
@@ -1152,7 +1152,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal deftypeQ_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("deftype?", args, 1);
+			ArityExceptions.assertArity("deftype?", args, 1);
 			final VncVal type = evaluate(args.first(), env);
 			return VncBoolean.of(DefTypeForm.isCustomType(type, env));
 		}
@@ -1160,7 +1160,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal deftype_of_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("deftype-of", args, 2);
+			ArityExceptions.assertMinArity("deftype-of", args, 2);
 			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
 			final VncKeyword baseType = Coerce.toVncKeyword(evaluate(args.second(), env));
 			final VncFunction validationFn = args.size() == 3
@@ -1178,7 +1178,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal deftype_or_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("deftype-or", args, 2);
+			ArityExceptions.assertMinArity("deftype-or", args, 2);
 			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
 			final VncList choiceVals = args.rest();
 
@@ -1188,7 +1188,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal deftype_create_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity(".:", args, 1);
+			ArityExceptions.assertMinArity(".:", args, 1);
 			final List<VncVal> evaluatedArgs = new ArrayList<>();
 			for(VncVal v : args) {
 				evaluatedArgs.add(evaluate(v, env));
@@ -1199,7 +1199,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal defmulti_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("defmulti", args, 2);
+			ArityExceptions.assertArity("defmulti", args, 2);
 			final VncSymbol name =  validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
@@ -1227,7 +1227,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal defmethod_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("defmethod", args, 2);
+			ArityExceptions.assertMinArity("defmethod", args, 2);
 			final VncSymbol multiFnName = qualifySymbolWithCurrNS(
 											Coerce.toVncSymbol(args.first()));
 			final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
@@ -1263,7 +1263,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal ns_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns");
-			assertArity("ns", args, 1);
+			ArityExceptions.assertArity("ns", args, 1);
 
 			final VncVal name = args.first();
 			final VncSymbol ns = Types.isVncSymbol(name)
@@ -1290,7 +1290,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal ns_remove_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-remove");
-			assertArity("ns-remove", args, 1);
+			ArityExceptions.assertArity("ns-remove", args, 1);
 
 			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
@@ -1308,7 +1308,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal ns_unmap_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-unmap");
-			assertArity("ns-unmap", args, 1);
+			ArityExceptions.assertArity("ns-unmap", args, 2);
 
 			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
@@ -1326,7 +1326,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal ns_list_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-list");
-			assertArity("ns-list", args, 1);
+			ArityExceptions.assertArity("ns-list", args, 1);
 
 			final VncSymbol ns = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
@@ -1348,7 +1348,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal import_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("import", args, 0);
+			ArityExceptions.assertMinArity("import", args, 0);
 			args.forEach(i -> Namespaces
 								.getCurrentNamespace()
 								.getJavaImports()
@@ -1378,7 +1378,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal namespace_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("namespace", args, 1);
+			ArityExceptions.assertArity("namespace", args, 1);
 			final VncVal val = evaluate(args.first(), env);
 			if (val instanceof INamespaceAware) {
 				return new VncString(((INamespaceAware)val).getNamespace());
@@ -1393,7 +1393,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal resolve_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("resolve", args, 1);
+			ArityExceptions.assertArity("resolve", args, 1);
 			specialFormCallValidation("resolve");
 			return env.getOrNil(Coerce.toVncSymbol(evaluate(args.first(), env)));
 		}
@@ -1401,7 +1401,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal var_get_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-get", args, 1);
+			ArityExceptions.assertArity("var-get", args, 1);
 			specialFormCallValidation("var-get");
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
@@ -1412,7 +1412,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal var_ns_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-ns", args, 1);
+			ArityExceptions.assertArity("var-ns", args, 1);
 			specialFormCallValidation("var-ns");
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
@@ -1424,7 +1424,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal var_name_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-name", args, 1);
+			ArityExceptions.assertArity("var-name", args, 1);
 			specialFormCallValidation("var-name");
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
@@ -1435,7 +1435,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal var_localQ_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-local?", args, 1);
+			ArityExceptions.assertArity("var-local?", args, 1);
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluate(args.first(), env));
@@ -1445,7 +1445,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal var_thread_localQ_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-thread-local?", args, 1);
+			ArityExceptions.assertArity("var-thread-local?", args, 1);
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluate(args.first(), env));
@@ -1455,7 +1455,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal var_globalQ_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-global?", args, 1);
+			ArityExceptions.assertArity("var-global?", args, 1);
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluate(args.first(), env));
@@ -1465,7 +1465,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal setBANG_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("set!", args, 2);
+			ArityExceptions.assertArity("set!", args, 2);
 			specialFormCallValidation("set!");
 	
 			final VncSymbol sym = Types.isVncSymbol(args.first())
@@ -1495,7 +1495,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal inspect_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("inspect", args, 1);
+			ArityExceptions.assertArity("inspect", args, 1);
 			specialFormCallValidation("inspect");
 			final VncSymbol sym = Coerce.toVncSymbol(evaluate(args.first(), env));
 			return Inspector.inspect(env.get(sym));
@@ -1516,7 +1516,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private VncVal doc_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("doc", args, 1);
+			ArityExceptions.assertArity("doc", args, 1);
 			final VncString doc = DocForm.doc(args.first(), env);
 			evaluate(VncList.of(new VncSymbol("println"), doc), env);
 			return Nil;
@@ -1525,7 +1525,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private VncVal print_highlight_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("print-highlight", args, 1);
+			ArityExceptions.assertArity("print-highlight", args, 1);
 			final VncString form = DocForm.highlight(Coerce.toVncString(args.first()), env);
 			evaluate(VncList.of(new VncSymbol("println"), form), env);
 			return Nil;
@@ -1547,7 +1547,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal eval_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("eval", args, 0);
+			ArityExceptions.assertMinArity("eval", args, 0);
 			specialFormCallValidation("eval");
 			final Namespace ns = Namespaces.getCurrentNamespace();
 			try {
@@ -1561,7 +1561,7 @@ public class VeniceInterpreter implements Serializable  {
 	
 	private VncVal dorun_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("dorun", args, 2);
+			ArityExceptions.assertArity("dorun", args, 2);
 			
 			final long count = Coerce.toVncLong(args.first()).getValue();
 			if (count <= 0) return Nil;
@@ -1590,7 +1590,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal dobench_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("dobench", args, 2);
+			ArityExceptions.assertArity("dobench", args, 2);
 			
 			try {
 				final long count = Coerce.toVncLong(args.first()).getValue();
@@ -1621,7 +1621,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal locking_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("locking", args, 2);
+			ArityExceptions.assertMinArity("locking", args, 2);
 			
 			final VncVal mutex = evaluate(args.first(), env);
 	
@@ -1656,7 +1656,7 @@ public class VeniceInterpreter implements Serializable  {
 		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
 
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("fn", args, 1);
+			ArityExceptions.assertMinArity("fn", args, 1);
 	
 			VncSymbol name;
 			int argPos;
@@ -1744,7 +1744,7 @@ public class VeniceInterpreter implements Serializable  {
 		// See:  - https://smartbear.com/learn/code-profiling/fundamentals-of-performance-profiling/
 		//       - https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("prof", args, 1, 2, 3);
+			ArityExceptions.assertArity("prof", args, 1, 2, 3);
 
 			if (Types.isVncKeyword(args.first())) {
 				final VncKeyword cmd = (VncKeyword)args.first();
@@ -2025,19 +2025,16 @@ public class VeniceInterpreter implements Serializable  {
 				if (hasVariadicArgs()) {
 					if (args.size() < getFixedArgsCount()) {
 						try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
-							throw new ArityException(String.format(
-									"Wrong number of args (%d) passed to the variadic function %s that "
-										+ "requires at least %d args (%s).", 
+							ArityExceptions.throwVariadicArityEx(
 									args.size(), 
 									getQualifiedName(),
-									getFixedArgsCount(),
-									getParams().toString(true)));
+									getFixedArgsCount());
 						}
 					}
 				}
 				else if (args.size() != getFixedArgsCount()) {
 					try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
-						throw new ArityException(args.size(), getFixedArgsCount(), getQualifiedName());
+						ArityExceptions.throwArityEx(args.size(), getFixedArgsCount(), getQualifiedName());
 					}
 				}
 
@@ -2261,20 +2258,6 @@ public class VeniceInterpreter implements Serializable  {
 		return sym;
 	}
 	
-	private void assertArity(final String name, final VncList args, final int... expectedArities) {
-		final int arity = args.size();
-		for (int ii=0; ii<expectedArities.length; ii++) {
-			if (expectedArities[ii] == arity) return;
-		}		
-		throw new ArityException(arity, name);
-	}
-	
-	private void assertMinArity(final String name, final VncList args, final int minArity) {
-		final int arity = args.size();
-		if (arity < minArity) {
-			throw new ArityException(arity, name);
-		}
-	}
 	
 	private void specialFormCallValidation(final String name) {
 		JavaInterop.getInterceptor().validateVeniceFunction(name);

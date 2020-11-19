@@ -83,6 +83,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
@@ -119,7 +120,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				if (args.size() == 1) {
 					return new VncJavaObject(
@@ -155,7 +156,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -182,7 +183,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -205,7 +206,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				try {
 					final File f = convertToFile(
@@ -233,7 +234,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -256,7 +257,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -280,7 +281,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -308,7 +309,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final File f = convertToFile(
 									args.first(),
@@ -332,7 +333,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), File.class));
 			}
@@ -351,7 +352,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -378,7 +379,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -405,7 +406,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -430,7 +431,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -455,7 +456,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -480,7 +481,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final File f = convertToFile(
 									args.first(),
@@ -510,7 +511,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 3);
+				ArityExceptions.assertMinArity(this, args, 3);
 
 				sandboxFunctionCallValidation();
 
@@ -605,7 +606,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3, 4);
+				ArityExceptions.assertArity(this, args, 2, 3, 4);
 
 				sandboxFunctionCallValidation();
 
@@ -714,7 +715,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -746,7 +747,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 0);
+				ArityExceptions.assertMinArity(this, args, 0);
 
 				sandboxFunctionCallValidation();
 
@@ -783,7 +784,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -829,7 +830,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -873,7 +874,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -923,7 +924,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -971,7 +972,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -1018,7 +1019,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -1103,7 +1104,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -1143,7 +1144,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -1178,7 +1179,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -1212,7 +1213,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 				
 				sandboxFunctionCallValidation();
 
@@ -1232,7 +1233,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 				
 				sandboxFunctionCallValidation();
 
@@ -1252,7 +1253,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				sandboxFunctionCallValidation();
 
@@ -1276,7 +1277,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -1350,7 +1351,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -1441,7 +1442,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -1521,7 +1522,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -1637,7 +1638,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0, 1);
+				ArityExceptions.assertArity(this, args, 0, 1);
 
 				final String sUrl = args.isEmpty()
 										? "http://www.google.com"
@@ -1671,7 +1672,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -1727,7 +1728,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -1785,7 +1786,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -1843,7 +1844,7 @@ public class IOFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertMinArity(args, 1);
+					ArityExceptions.assertMinArity(this, args, 1);
 					
 					sandboxFunctionCallValidation();
 
@@ -1882,7 +1883,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
@@ -1919,7 +1920,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				try {
 					final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
@@ -1956,7 +1957,7 @@ public class IOFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity(args, 1, 2);
+					ArityExceptions.assertArity(this, args, 1, 2);
 
 					 if (Types.isVncJavaObject(args.first())) {
 						final Object delegate = ((VncJavaObject)args.first()).getDelegate();
@@ -2008,7 +2009,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				if (Types.isVncString(args.first())) {
 					return new VncJavaObject(
@@ -2060,7 +2061,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				if (Types.isVncJavaObject(args.first())) {
 					final Object delegate = ((VncJavaObject)args.first()).getDelegate();
@@ -2105,7 +2106,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				final VncVal file = args.first();
 
@@ -2151,7 +2152,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 				
 				sandboxFunctionCallValidation();
 
@@ -2179,7 +2180,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -2210,7 +2211,7 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				try {
-					assertArity(args, 1);
+					ArityExceptions.assertArity(this, args, 1);
 					
 					sandboxFunctionCallValidation();
 
@@ -2261,7 +2262,7 @@ public class IOFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				try {
-					assertArity(args, 1);
+					ArityExceptions.assertArity(this, args, 1);
 
 					final VncVal name = args.first();
 
@@ -2299,7 +2300,7 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncString(Charset.defaultCharset().name());
 			}

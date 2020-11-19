@@ -36,12 +36,12 @@ import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StreamUtil;
@@ -121,7 +121,7 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("nth", args, 1);
+		ArityExceptions.assertArity("nth", args, 1);
 		
 		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
 	}

@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -63,7 +64,7 @@ public class ScheduleFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
-				assertArity(args, 3);
+				ArityExceptions.assertArity(this, args, 3);
 	
 				sandboxFunctionCallValidation();
 
@@ -129,7 +130,7 @@ public class ScheduleFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
-				assertArity(args, 4);
+				ArityExceptions.assertArity(this, args, 4);
 
 				sandboxFunctionCallValidation();
 

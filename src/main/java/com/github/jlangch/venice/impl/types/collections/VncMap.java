@@ -26,13 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.functions.FunctionsUtil;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 
 public abstract class VncMap extends VncCollection implements IVncFunction {
@@ -51,7 +51,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		FunctionsUtil.assertArity("map", args, 1, 2);
+		ArityExceptions.assertArity("map", args, 1, 2);
 		
 		final VncVal first = args.first();
 		

@@ -55,6 +55,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
@@ -107,7 +108,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertMinArity(args, 2);
+			ArityExceptions.assertMinArity(this, args, 2);
 			sandboxFunctionCallValidation();
 
 			return JavaInteropUtil.applyJavaAccess(
@@ -149,7 +150,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 2);
+			ArityExceptions.assertArity(this, args, 2);
 			sandboxFunctionCallValidation();
 
 			final Class<?> clazz = JavaInteropUtil.toClass(
@@ -190,7 +191,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 2);
+			ArityExceptions.assertArity(this, args, 2);
 
 			if (args.second() == Constants.Nil) {
 				return Constants.Nil;
@@ -235,7 +236,7 @@ public class JavaInteropFunctions {
 
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 
 			if (Types.isVncJavaObject(args.first())) {
 				final VncJavaObject obj = (VncJavaObject)args.first();
@@ -269,7 +270,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 					
 			return new VncJavaObject(
@@ -298,7 +299,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 				
 			if (Types.isVncJavaObject(args.first())) {
@@ -328,7 +329,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 				
 			if (Types.isVncJavaObject(args.first(), Class.class)) {
@@ -370,7 +371,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 				
 			final VncKeyword cl = Coerce.toVncKeyword(args.first());
@@ -411,7 +412,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 0, 1);
+			ArityExceptions.assertArity(this, args, 0, 1);
 			sandboxFunctionCallValidation();
 				
 			if (args.size() == 0) {
@@ -469,7 +470,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 
 			if (Types.isVncJavaObject(args.first(), Class.class)) {
@@ -505,7 +506,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 
 			if (Types.isVncJavaObject(args.first())) {
@@ -547,7 +548,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 					
 			try {
@@ -578,7 +579,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 					
 			final Class<?> clazz = JavaInteropUtil.toClass(
@@ -613,7 +614,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			final Class<?> clazz = JavaInteropUtil.toClass(
@@ -647,7 +648,7 @@ public class JavaInteropFunctions {
 	
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 				
 			final Class<?> clazz = JavaInteropUtil.toClass(
@@ -741,7 +742,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			return VncBoolean.of(Types.isVncJavaObject(args.first()));
@@ -763,7 +764,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			if (Types.isVncJavaObject(args.first(), Enumeration.class)) {
@@ -798,7 +799,7 @@ public class JavaInteropFunctions {
 			
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			if (Types.isVncJavaObject(args.first(), Iterator.class)) {
@@ -832,7 +833,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			final VncVal arg = args.first();
@@ -858,7 +859,7 @@ public class JavaInteropFunctions {
 		
 		@Override
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			final VncVal arg = args.first();
@@ -886,7 +887,7 @@ public class JavaInteropFunctions {
 		@Override
 		@SuppressWarnings("unchecked")
 		public VncVal apply(final VncList args) {
-			assertArity(args, 1);
+			ArityExceptions.assertArity(this, args, 1);
 			sandboxFunctionCallValidation();
 			
 			if (Types.isVncJavaObject(args.first(), java.util.Optional.class)) {

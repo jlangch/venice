@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
@@ -60,7 +61,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 3);
+				ArityExceptions.assertArity(this, args, 3);
 
 				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 				final VncInteger idx = Numeric.toInteger(args.second());
@@ -113,7 +114,7 @@ public class ArrayFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
-					assertArity(args, 2);
+					ArityExceptions.assertArity(this, args, 2);
 
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 					final VncInteger idx = Numeric.toInteger(args.second());
@@ -149,7 +150,7 @@ public class ArrayFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
-					assertArity(args, 1);
+					ArityExceptions.assertArity(this, args, 1);
 
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 	
@@ -178,7 +179,7 @@ public class ArrayFunctions {
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {			
-					assertArity(args, 3);
+					ArityExceptions.assertArity(this, args, 3);
 	
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
 					final int start = Coerce.toVncLong(args.second()).getIntValue();
@@ -218,7 +219,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 	
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncJavaObject oArr = Coerce.toVncJavaObject(args.second());
@@ -311,7 +312,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 5);
+				ArityExceptions.assertArity(this, args, 5);
 	
 				final VncJavaObject joSrc = Coerce.toVncJavaObject(args.nth(0));
 				final int srcPos = Coerce.toVncLong(args.nth(1)).getIntValue();
@@ -368,7 +369,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				final String className = Coerce.toVncKeyword(args.first()).getValue();
 				
@@ -418,7 +419,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -465,7 +466,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -517,7 +518,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -570,7 +571,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -623,7 +624,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -676,7 +677,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				
@@ -729,7 +730,7 @@ public class ArrayFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {			
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncVal arg = args.first();
 				

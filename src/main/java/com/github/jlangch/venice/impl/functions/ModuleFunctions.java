@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -62,7 +63,7 @@ public class ModuleFunctions {
 		) {	
 			@Override
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -99,7 +100,7 @@ public class ModuleFunctions {
 		) {
 			@Override
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -138,7 +139,7 @@ public class ModuleFunctions {
 		) {
 			@Override
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 				
@@ -188,7 +189,7 @@ public class ModuleFunctions {
 		) {
 			@Override
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 				

@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.HexFormatter;
 import com.github.jlangch.venice.impl.util.HexUtil;
 import com.github.jlangch.venice.impl.util.LoremIpsum;
@@ -80,7 +81,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return True;
@@ -107,7 +108,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal s = args.first();
 
@@ -137,7 +138,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil || args.second() == Nil) {
 					return False;
@@ -163,7 +164,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil || args.second() == Nil) {
 					return False;
@@ -191,7 +192,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil || args.second() == Nil) {
 					return False;
@@ -234,7 +235,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final VncVal v1 = args.first();
 				final VncVal v2 = args.second();
@@ -267,7 +268,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -296,7 +297,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -323,7 +324,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				final String text = Coerce.toVncString(args.first()).getValue();
 				final String searchString = Coerce.toVncString(args.second()).getValue();
@@ -356,7 +357,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -394,7 +395,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 3);
+				ArityExceptions.assertMinArity(this, args, 3);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -449,7 +450,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 3);
+				ArityExceptions.assertMinArity(this, args, 3);
 
 				if (args.first() == Nil || args.second() == Nil || args.third() == Nil) {
 					return args.first();
@@ -501,7 +502,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 3);
+				ArityExceptions.assertMinArity(this, args, 3);
 
 
 				if (args.first() == Nil || args.second() == Nil || args.third() == Nil) {
@@ -532,7 +533,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -568,7 +569,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				if (args.size() == 1) {
 					if (args.first() == Nil) {
@@ -621,7 +622,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				if (args.size() == 1) {
 					if (args.first() == Nil) {
@@ -668,7 +669,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final VncSequence coll = Coerce.toVncSequence(args.last());
 				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.first()) : VncString.empty();
@@ -700,7 +701,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				final VncString string = Coerce.toVncString(args.first());
 				final VncLong from = Coerce.toVncLong(args.second());
@@ -732,7 +733,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final String string = Coerce.toVncString(args.first()).getValue();
 				final int pos = Coerce.toVncLong(args.second()).getIntValue();
@@ -774,7 +775,7 @@ public class StringFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertArity(args, 1);
+					ArityExceptions.assertArity(this, args, 1);
 
 					if (args.first() == Nil) {
 						return VncList.empty();
@@ -807,7 +808,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil) {
 					return VncList.empty();
@@ -839,7 +840,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return args.first() == Nil
 						? VncList.empty()
@@ -867,7 +868,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -899,7 +900,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -924,7 +925,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -987,7 +988,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				final String s = Coerce.toVncString(args.first()).getValue();
 				final String start = Coerce.toVncString(args.second()).getValue();
@@ -1014,7 +1015,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				final String s = Coerce.toVncString(args.first()).getValue();
 				final String start = Coerce.toVncString(args.second()).getValue();
@@ -1041,7 +1042,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final String s = Coerce.toVncString(args.first()).getValue();
 
@@ -1065,7 +1066,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1096,7 +1097,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return False;
@@ -1132,7 +1133,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 3, 4);
+				ArityExceptions.assertArity(this, args, 3, 4);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1201,7 +1202,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 3, 4);
+				ArityExceptions.assertArity(this, args, 3, 4);
 
 				final String text = args.first() == Nil
 										? ""
@@ -1253,7 +1254,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1281,7 +1282,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1307,7 +1308,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1333,7 +1334,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1359,7 +1360,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1395,7 +1396,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal v = args.first();
 
@@ -1434,7 +1435,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal v = args.first();
 
@@ -1473,7 +1474,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal v = args.first();
 
@@ -1512,7 +1513,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal v = args.first();
 
@@ -1549,7 +1550,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal v = args.first();
 
@@ -1588,7 +1589,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal v = args.first();
 
@@ -1629,7 +1630,7 @@ public class StringFunctions {
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					assertMinArity(args, 0);
+					ArityExceptions.assertMinArity(this, args, 0);
 
 					final VncHashMap options = VncHashMap.ofAll(args);
 
@@ -1671,7 +1672,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1709,7 +1710,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1740,7 +1741,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				if (args.first() == Nil) {
 					return Nil;
@@ -1777,7 +1778,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {
@@ -1803,7 +1804,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {
@@ -1829,7 +1830,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				try {
 					final VncVal arg = args.first();
@@ -1860,7 +1861,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				try {
 					final VncVal arg = args.first();
@@ -1891,7 +1892,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {
@@ -1917,7 +1918,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {
@@ -1948,7 +1949,7 @@ public class StringFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (arg == Nil) {

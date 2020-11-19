@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -97,7 +98,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -157,7 +158,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				sandboxFunctionCallValidation();
 
@@ -220,7 +221,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 				
 				// com.github.librepdf:openpdf:xxx
 				if (ReflectionAccessor.classExists("com.lowagie.text.Anchor")
@@ -259,7 +260,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0);
+				ArityExceptions.assertArity(this, args, 0);
 				
 				try {
 					pdf_check_required_libs.apply(VncList.empty());
@@ -289,7 +290,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 				
 				sandboxFunctionCallValidation();
 
@@ -357,7 +358,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -439,7 +440,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 
@@ -481,7 +482,7 @@ public class PdfFunctions {
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				assertMinArity(args, 1);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				sandboxFunctionCallValidation();
 

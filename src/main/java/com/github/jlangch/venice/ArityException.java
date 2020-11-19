@@ -28,21 +28,6 @@ package com.github.jlangch.venice;
  */
 public class ArityException extends VncException {
 
-	public ArityException(final int arity, final String fnName) {
-		super(String.format(
-				"Wrong number of args (%d) passed to function %s", 
-				arity, 
-				fnName));
-	}
-
-	public ArityException(final int arity, final int expectedArgs, final String fnName) {
-		super(String.format(
-				"Wrong number of args (%d) passed to function %s. Expected %d args!", 
-				arity, 
-				fnName, 
-				expectedArgs));
-	}
-
 	public ArityException(final String message) {
 		super(message);
 	}

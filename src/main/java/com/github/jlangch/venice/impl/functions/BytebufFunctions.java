@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 
 public class BytebufFunctions {
@@ -67,7 +68,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return VncBoolean.of(Types.isVncByteBuffer(args.first()));
 			}
@@ -86,7 +87,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0, 1);
+				ArityExceptions.assertArity(this, args, 0, 1);
 
 				if (args.isEmpty()) {
 					return new VncByteBuffer(ByteBuffer.wrap(new byte[0]));
@@ -153,7 +154,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final int length = Coerce.toVncLong(args.first()).getValue().intValue();
 
@@ -174,7 +175,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 
@@ -195,7 +196,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 
@@ -216,7 +217,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final String s = Coerce.toVncString(args.first()).getValue();
 
@@ -246,7 +247,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 
@@ -276,7 +277,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 				final AtomicLong idx = new AtomicLong(0L);
@@ -318,7 +319,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2, 3);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				final byte[] buf = Coerce.toVncByteBuffer(args.first()).getBytes();
 				final VncLong from = Coerce.toVncLong(args.second());
@@ -357,7 +358,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 4);
+				ArityExceptions.assertArity(this, args, 4);
 
 				final ByteBuffer dst = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final ByteBuffer src = Coerce.toVncByteBuffer(args.nth(1)).getValue();
@@ -395,7 +396,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				
@@ -433,7 +434,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				
@@ -471,7 +472,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				
@@ -509,7 +510,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				
@@ -547,7 +548,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1, 2);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				
@@ -580,7 +581,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				
@@ -620,7 +621,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final VncLong val = Coerce.toVncLong(args.nth(1));
@@ -648,7 +649,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final VncInteger val = Coerce.toVncInteger(args.nth(1));
@@ -676,7 +677,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final VncDouble val = Coerce.toVncDouble(args.nth(1));
@@ -704,7 +705,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final VncDouble val = Coerce.toVncDouble(args.nth(1));
@@ -729,7 +730,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 
@@ -755,7 +756,7 @@ public class BytebufFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final ByteBuffer buf = Coerce.toVncByteBuffer(args.nth(0)).getValue();
 				final VncLong pos = Coerce.toVncLong(args.nth(1));

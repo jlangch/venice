@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
@@ -47,6 +46,7 @@ import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 
 public class MathFunctions {
@@ -103,7 +103,8 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0:
-						throw new ArityException(0, "-");
+						ArityExceptions.assertMinArity(this, args, 1);
+						return Nil;
 					case 1:
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
@@ -189,7 +190,8 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				switch(args.size()) {
 					case 0:
-						throw new ArityException(0, "/");
+						ArityExceptions.assertMinArity(this, args, 1);
+						return Nil;
 					case 1:
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
@@ -236,7 +238,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final VncVal n = args.first();
 				final VncVal d = args.second();
@@ -292,7 +294,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
@@ -335,7 +337,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 				if (Types.isVncLong(arg)) {
@@ -459,7 +461,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 
@@ -509,7 +511,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 
@@ -556,7 +558,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 
@@ -600,7 +602,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 
@@ -648,7 +650,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
 
@@ -696,7 +698,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return Numeric.square(args.first());
 			}
@@ -720,7 +722,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return Numeric.sqrt(args.first());
 			}
@@ -742,7 +744,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.sin(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -764,7 +766,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.cos(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -786,7 +788,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.tan(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -808,7 +810,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.toRadians(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -830,7 +832,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.toDegrees(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -852,7 +854,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.log(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -874,7 +876,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.log10(Numeric.toDouble(args.first()).getValue()));
 			}
@@ -896,7 +898,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				return new VncDouble(Math.pow(
 										Numeric.toDouble(args.first()).getValue(),
@@ -957,7 +959,7 @@ public class MathFunctions {
 		    // see: https://www.calculator.net/standard-deviation-calculator.html
 
 			public VncVal apply(final VncList args) {
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final boolean sample = "sample".equals(Coerce.toVncKeyword(args.first()).getValue());
 				final VncList data = Coerce.toVncList(args.second());
@@ -1006,7 +1008,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncList data = Coerce.toVncList(args.first());
 
@@ -1038,7 +1040,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncList list = Coerce.toVncList(args.first());
 
@@ -1076,7 +1078,7 @@ public class MathFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				// see: http://en.wikipedia.org/wiki/Quantile
-				assertArity(args, 2);
+				ArityExceptions.assertArity(this, args, 2);
 
 				final double q = Coerce.toVncDouble(args.first()).getValue();
 				final VncList list = Coerce.toVncList(args.second());
@@ -1137,7 +1139,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0, 1);
+				ArityExceptions.assertArity(this, args, 0, 1);
 
 				if (args.isEmpty()) {
 					return new VncLong(Math.abs(random.nextLong()));
@@ -1174,7 +1176,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0, 1);
+				ArityExceptions.assertArity(this, args, 0, 1);
 
 				if (args.isEmpty()) {
 					return new VncDouble(random.nextDouble());
@@ -1214,7 +1216,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0, 2);
+				ArityExceptions.assertArity(this, args, 0, 2);
 
 				if (args.isEmpty()) {
 					return new VncDouble(random.nextGaussian());
@@ -1245,7 +1247,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
@@ -1289,7 +1291,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
@@ -1333,7 +1335,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
@@ -1375,7 +1377,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
@@ -1408,7 +1410,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
@@ -1443,7 +1445,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 4);
+				ArityExceptions.assertArity(this, args, 4);
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
@@ -1473,7 +1475,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 4);
+				ArityExceptions.assertArity(this, args, 4);
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
@@ -1501,7 +1503,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 4);
+				ArityExceptions.assertArity(this, args, 4);
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
@@ -1529,7 +1531,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 4);
+				ArityExceptions.assertArity(this, args, 4);
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
@@ -1561,7 +1563,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 3);
+				ArityExceptions.assertArity(this, args, 3);
 
 				final VncVal arg = args.first();
 				final VncLong scale = Coerce.toVncLong(args.second());
@@ -1609,7 +1611,7 @@ public class MathFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				assertArity(args, 0, 1, 2, 3);
+				ArityExceptions.assertArity(this, args, 0, 1, 2, 3);
 
 				VncVal start = null;
 				VncVal end = null;
