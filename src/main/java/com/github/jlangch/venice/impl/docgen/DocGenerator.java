@@ -1058,7 +1058,7 @@ public class DocGenerator {
 
 		final DocSection assert_ = new DocSection("Assert", id());
 		all.addSection(assert_);
-		assert_.addItem(getDocItem("assert"));
+		assert_.addItem(getDocItem("assert", true, true));
 
 		final DocSection util = new DocSection("Util", id());
 		all.addSection(util);

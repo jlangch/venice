@@ -1163,12 +1163,15 @@ public class SpecialFormsDoc {
 					.arglists("(ns-remove ns)")
 					.doc("Removes the mappings for all symbols from the namespace.")
 					.examples(
-						"(do                     \n" + 
-						"  (ns xxx)              \n" + 
-						"  (def foo 1)           \n" + 
-						"  (def goo 1)           \n" + 
-						"  (ns-remove xxx)       \n" + 
-						"  (ns-remove *ns*))       ")
+						"(do                                    \n" + 
+						"  (ns xxx)                             \n" + 
+						"  (def xoo 1)                          \n" + 
+						"  (ns yyy)                             \n" + 
+						"  (def yoo 1)                          \n" + 
+						"  (ns-remove xxx)                      \n" + 
+						"  (ns-remove *ns*)                     \n" +
+						"  (println \"ns xxx:\" (ns-list xxx))  \n" + 
+						"  (println \"ns yyy:\" (ns-list yyy)))   ")
 					.seeAlso("ns", "ns-unmap", "ns-list", "namespace", "var-ns")
 					.build()
 		) {

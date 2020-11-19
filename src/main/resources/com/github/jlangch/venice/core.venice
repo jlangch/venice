@@ -39,8 +39,15 @@
 
 
 (defmacro
-  ^{ :arglists '("(assert expr)" "(assert expr message)")
-     :doc "Evaluates expr and throws an exception if it does not evaluate to logical true." }
+  ^{ :arglists '(
+          "(assert expr)" "(assert expr message)")
+     :doc """
+          Evaluates expr and throws an :com.github.jlangch.venice.AssertionException \
+          exception if it does not evaluate to logical true.
+          """
+     :examples '(
+          "(assert (= 3 (+ 1 2)))"
+          "(assert (= 4 (+ 1 2)))" ) }
 
   assert
 
