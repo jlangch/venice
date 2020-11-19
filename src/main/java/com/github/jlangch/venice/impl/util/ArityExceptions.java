@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import java.util.stream.Collectors;
+
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -43,7 +45,7 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
-		throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity));
+		throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity, fn.getArgLists()));
 	}
 
 	public static void assertArity(
@@ -71,7 +73,7 @@ public class ArityExceptions {
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity));
+			throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity, fn.getArgLists()));
 		}
 	}
 	
@@ -91,22 +93,41 @@ public class ArityExceptions {
 			final String fnName,
 			final int arity
 	) {
-		return String.format(
-					"Wrong number of args (%d) passed to function %s", 
-					arity, 
-					fnName);
+		return formatArityExMsg(fnName, arity, VncList.empty());
 	}
-	
+
+	public static String formatArityExMsg(
+			final String fnName,
+			final int arity,
+			final VncList argList
+	) {
+		return String.format(
+					"Wrong number of args (%d) passed to function %s.%s", 
+					arity, 
+					fnName,
+					formatArgList(argList));
+	}
+
 	public static String formatArityExMsg(
 			final String fnName,
 			final int arity, 
 			final int expectedArgs
 	) {
+		return formatArityExMsg(fnName, arity, expectedArgs, VncList.empty());
+	}
+
+	public static String formatArityExMsg(
+			final String fnName,
+			final int arity, 
+			final int expectedArgs,
+			final VncList argList
+	) {
 		return String.format(
-					"Wrong number of args (%d) passed to function %s. Expected %d args!", 
+					"Wrong number of args (%d) passed to function %s. Expected %d args.%s", 
 					arity, 
 					fnName, 
-					expectedArgs);
+					expectedArgs,
+					formatArgList(argList));
 	}
 	
 	public static String formatVariadicArityExMsg(
@@ -114,12 +135,35 @@ public class ArityExceptions {
 			final int arity,
 			final int fixedArgsCount
 	) {
+		return formatVariadicArityExMsg(fnName, arity, fixedArgsCount, VncList.empty());
+	}
+	
+	public static String formatVariadicArityExMsg(
+			final String fnName,
+			final int arity,
+			final int fixedArgsCount,
+			final VncList argList
+	) {
 		return String.format(
 					"Wrong number of args (%d) passed to the variadic function %s that "
 						+ "requires at least %d args.", 
 					arity, 
 					fnName,
-					fixedArgsCount);
+					fixedArgsCount,
+					formatArgList(argList));
 	}
 
+	private static String formatArgList(final VncList argList) {
+		if (argList.isEmpty()) {
+			return "";
+		}
+		else {
+			return String.format(
+					"\n\n[Arg List]\n%s\n", 
+					argList
+						.stream()
+						.map(it -> "    " + it.toString())
+						.collect(Collectors.joining("\n")));
+		}
+	}
 }

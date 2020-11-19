@@ -800,15 +800,17 @@ public class VeniceInterpreter implements Serializable  {
 			
 			expandedMacros++; 
 
-			if (meterRegistry.enabled) {
-				final long nanosRun = System.nanoTime();
-				
-				ast_ = macro.apply(macroArgs);
-				
-				meterRegistry.record(macro.getQualifiedName() + "[m]", System.nanoTime() - nanosRun);
-			}
-			else {
-				ast_ = macro.apply(macroArgs);
+			try (WithCallStack cs = new WithCallStack(new CallFrame(macro.getQualifiedName(), a0.getMeta()))) {
+				if (meterRegistry.enabled) {
+					final long nanosRun = System.nanoTime();
+					
+					ast_ = macro.apply(macroArgs);
+					
+					meterRegistry.record(macro.getQualifiedName() + "[m]", System.nanoTime() - nanosRun);
+				}
+				else {
+					ast_ = macro.apply(macroArgs);
+				}
 			}
 		}
 	 
@@ -2025,23 +2027,21 @@ public class VeniceInterpreter implements Serializable  {
 			public VncVal apply(final VncList args) {
 				if (hasVariadicArgs()) {
 					if (args.size() < getFixedArgsCount()) {
-						try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
 							throw new ArityException(
 									ArityExceptions.formatVariadicArityExMsg(
 										getQualifiedName(),
 										args.size(), 
-										getFixedArgsCount()));
-						}
+										getFixedArgsCount(),
+										getArgLists()));
 					}
 				}
 				else if (args.size() != getFixedArgsCount()) {
-					try (WithCallStack cs = new WithCallStack(new CallFrame(name, params.getMeta()))) {
 						throw new ArityException(
 								ArityExceptions.formatArityExMsg(
 									getQualifiedName(),
 									args.size(), 
-									getFixedArgsCount()));
-					}
+									getFixedArgsCount(),
+									getArgLists()));
 				}
 
 				
