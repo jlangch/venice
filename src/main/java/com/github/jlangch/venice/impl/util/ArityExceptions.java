@@ -25,7 +25,7 @@ import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class Arities {
+public class ArityExceptions {
 
 	public static void assertArity(
 			final String fnName, 
@@ -73,7 +73,7 @@ public class Arities {
 	}
 
 
-	public static void hrowVariadicArityEx(
+	public static void throwVariadicArityEx(
 			final int arity,
 			final String fnName,
 			final int fixedArgsCount

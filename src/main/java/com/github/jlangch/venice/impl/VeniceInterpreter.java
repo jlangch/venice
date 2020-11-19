@@ -333,32 +333,45 @@ public class VeniceInterpreter implements Serializable  {
 
 			final VncVal a0 = ast.first();		
 			final String a0sym = (a0 instanceof VncSymbol) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
+			final VncList args = ast.rest();		
 
 			// special form dispatcher
 			switch (a0sym) {
-				case "do": {
-						final VncList expressions = ast.rest();
+				case "do": { // (do expr*)
+						final VncList expressions = args;
 						evaluate_values(expressions.butlast(), env);
 						orig_ast = expressions.last();
 						tailPosition = true;
 					}
 					break;
 
-				case "if": {
-						// (if cond expr-true expr-false*)
-						final VncVal cond = evaluate(ast.second(), env);
+				case "if": { // (if cond expr-true expr-false*)
+						final int numArgs = args.size();
+						if (numArgs != 2 || numArgs != 3) {
+							// only create callstack when needed!
+							try (WithCallStack cs = new WithCallStack(new CallFrame("if", a0.getMeta()))) {
+								assertArity("if", args, 2, 3);
+							}
+						}
+						final VncVal cond = evaluate(args.first(), env);
 						orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
-										? ast.fourth()   // eval false slot form (nil if not available)
-										: ast.third();   // eval true slot form
+										? args.third()   // eval false slot form (nil if not available)
+										: args.second(); // eval true slot form
 						tailPosition = true;
 					}
 					break;
 
 				case "let": { // (let [bindings*] exprs*)
+						if (args.isEmpty()) {
+							// only create callstack when needed!
+							try (WithCallStack cs = new WithCallStack(new CallFrame("let", a0.getMeta()))) {
+								assertMinArity("let", args, 1);					
+							}
+						}
 						env = new Env(env);  // let introduces a new environment
 
-						final VncVector bindings = Coerce.toVncVector(ast.second());
-						final VncList expressions = ast.slice(2);
+						final VncVector bindings = Coerce.toVncVector(args.first());
+						final VncList expressions = args.rest();
 
 						for(int i=0; i<bindings.size(); i+=2) {
 							final VncVal sym = bindings.nth(i);
@@ -372,12 +385,37 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 
+				case "quasiquote": // (quasiquote form)
+					if (args.size() != 1) {
+						// only create callstack when needed!
+						try (WithCallStack cs = new WithCallStack(new CallFrame("quasiquote", a0.getMeta()))) {
+							assertArity("quasiquote", args, 1);
+						}
+					}
+					orig_ast = quasiquote(args.first());
+					break;
+
+				case "quote": // (quote form)
+					if (args.size() != 1) {
+						// only create callstack when needed!
+						try (WithCallStack cs = new WithCallStack(new CallFrame("quote", a0.getMeta()))) {
+							assertArity("quote", args, 1);
+						}
+					}
+					return args.first();
+
 				case "loop": { // (loop [bindings*] exprs*)
+						if (args.size() < 2) {
+							// only create callstack when needed!
+							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
+								assertMinArity("loop", args, 2);
+							}
+						}
 						recursionPoint = null;
 						env = new Env(env);
 
-						final VncVector bindings = Coerce.toVncVector(ast.second());
-						final VncList expressions = ast.slice(2);
+						final VncVector bindings = Coerce.toVncVector(args.first());
+						final VncList expressions = args.rest();
 
 						final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
 						for(int i=0; i<bindings.size(); i+=2) {
@@ -403,6 +441,7 @@ public class VeniceInterpreter implements Serializable  {
 					break;
 
 				case "recur":  { // (recur exprs*)
+						// Note: (recur) is valid, it's used by the while macro
 						if (recursionPoint == null) {
 							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
 								throw new NotInTailPositionException(
@@ -410,7 +449,7 @@ public class VeniceInterpreter implements Serializable  {
 							}
 						}
 
-						env = buildRecursionEnv(ast, env, recursionPoint);
+						env = buildRecursionEnv(args, env, recursionPoint);
 						
 						final VncList expressions = recursionPoint.getLoopExpressions();
 						if (expressions.size() > 1) {
@@ -421,165 +460,154 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 
-				case "quasiquote":
-					orig_ast = quasiquote(ast.second());
-					break;
+				case "fn": // (fn name? [params*] condition-map? expr*)
+					return fn_(new CallFrame("fn", a0.getMeta()), args, env);
 
-				case "quote":
-					return ast.second();
-
-				case "fn":
-					// (fn name? [params*] condition-map? expr*)
-					return fn_(ast, env);
-
-				case "eval":
-					return eval_(new CallFrame("eval", a0.getMeta()), ast, env);
+				case "eval": // (eval expr*)
+					return eval_(new CallFrame("eval", a0.getMeta()), args, env);
 
 				case "def":  // (def name value)
-					return def_(new CallFrame("def", a0.getMeta()), ast, env);
+					return def_(new CallFrame("def", a0.getMeta()), args, env);
 
 				case "defonce": // (defonce name value)
-					return defonce_(new CallFrame("defonce", a0.getMeta()), ast, env);
+					return defonce_(new CallFrame("defonce", a0.getMeta()), args, env);
 
 				case "def-dynamic": // (def-dynamic name value)
-					return def_dynamic_(new CallFrame("def-dynamic", a0.getMeta()), ast, env);
+					return def_dynamic_(new CallFrame("def-dynamic", a0.getMeta()), args, env);
 
 				case "defmacro":
-					return defmacro_(new CallFrame("defmacro", a0.getMeta()), ast, env);
+					return defmacro_(new CallFrame("defmacro", a0.getMeta()), args, env);
 
 				case "deftype": // (deftype type fields validationFn*)
-					return deftype_(new CallFrame("deftype", a0.getMeta()), ast, env);
+					return deftype_(new CallFrame("deftype", a0.getMeta()), args, env);
 
 				case "deftype?": // (deftype? type)
-					return deftypeQ_(new CallFrame("deftype?", a0.getMeta()), ast, env);
+					return deftypeQ_(new CallFrame("deftype?", a0.getMeta()), args, env);
 
 				case "deftype-of": // (deftype-of type base-type validationFn*)
-					return deftype_of_(new CallFrame("deftype-of", a0.getMeta()), ast, env);
+					return deftype_of_(new CallFrame("deftype-of", a0.getMeta()), args, env);
 
 				case "deftype-or":  // (deftype-or type vals*)
-					return deftype_or_(new CallFrame("deftype-or", a0.getMeta()), ast, env);
+					return deftype_or_(new CallFrame("deftype-or", a0.getMeta()), args, env);
 
 				case ".:": // (.: type args*)
-					return deftype_create_(new CallFrame(".:", a0.getMeta()), ast, env);
+					return deftype_create_(new CallFrame(".:", a0.getMeta()), args, env);
 
 				case "defmulti":  // (defmulti name dispatch-fn)
-					return defmulti_(new CallFrame("defmulti", a0.getMeta()), ast, env);
+					return defmulti_(new CallFrame("defmulti", a0.getMeta()), args, env);
 
 				case "defmethod": // (defmethod multifn-name dispatch-val & fn-tail)
-					return defmethod_(new CallFrame("defmethod", a0.getMeta()), ast, env);
+					return defmethod_(new CallFrame("defmethod", a0.getMeta()), args, env, ast.getMeta());
 
 				case "ns": // (ns alpha)
-					return ns_(new CallFrame("ns", a0.getMeta()), ast, env);
+					return ns_(new CallFrame("ns", a0.getMeta()), args, env);
 
 				case "ns-remove": // (ns-remove ns)
-					return ns_remove_(new CallFrame("ns-remove", a0.getMeta()), ast, env);
+					return ns_remove_(new CallFrame("ns-remove", a0.getMeta()), args, env);
 
 				case "ns-unmap": // (ns-unmap ns sym)
-					return ns_unmap_(new CallFrame("ns-unmap", a0.getMeta()), ast, env);
+					return ns_unmap_(new CallFrame("ns-unmap", a0.getMeta()), args, env);
 
 				case "ns-list": // (ns-list ns)
-					return ns_list_(new CallFrame("ns-list", a0.getMeta()), ast, env);
+					return ns_list_(new CallFrame("ns-list", a0.getMeta()), args, env);
 
 				case "import":
-					return import_(new CallFrame("import", a0.getMeta()), ast, env);
+					return import_(new CallFrame("import", a0.getMeta()), args, env);
 
 				case "imports":
-					return imports_(new CallFrame("imports", a0.getMeta()), ast, env);
+					return imports_(new CallFrame("imports", a0.getMeta()), args, env);
 
 				case "namespace": // (namespace x)
-					return namespace_(new CallFrame("namespace", a0.getMeta()), ast, env);
+					return namespace_(new CallFrame("namespace", a0.getMeta()), args, env);
 
 				case "resolve": // (resolve sym)
-					return resolve_(new CallFrame("resolve", a0.getMeta()), ast, env);
+					return resolve_(new CallFrame("resolve", a0.getMeta()), args, env);
 				
 				case "var-get": // (var-get v)
-					return var_get_(new CallFrame("var-get", a0.getMeta()), ast, env);
+					return var_get_(new CallFrame("var-get", a0.getMeta()), args, env);
 
 				case "var-ns": // (var-ns v)
-					return var_ns_(new CallFrame("var-ns", a0.getMeta()), ast, env);
+					return var_ns_(new CallFrame("var-ns", a0.getMeta()), args, env);
 
 				case "var-name": // (var-name v)
-					return var_name_(new CallFrame("var-name", a0.getMeta()), ast, env);
+					return var_name_(new CallFrame("var-name", a0.getMeta()), args, env);
 
 				case "var-local?": // (var-local? v)
-					return var_localQ_(new CallFrame("var-local?", a0.getMeta()), ast, env);
+					return var_localQ_(new CallFrame("var-local?", a0.getMeta()), args, env);
 
 				case "var-thread-local?": // (var-thread-local? v)
-					return var_thread_localQ_(new CallFrame("var-thread-local?", a0.getMeta()), ast, env);
+					return var_thread_localQ_(new CallFrame("var-thread-local?", a0.getMeta()), args, env);
 
 				case "var-global?": // (var-global? v)
-					return var_globalQ_(new CallFrame("var-global?", a0.getMeta()), ast, env);
+					return var_globalQ_(new CallFrame("var-global?", a0.getMeta()), args, env);
 
 				case "set!": // (set! name expr)
-					return setBANG_(new CallFrame("set!", a0.getMeta()), ast, env);
+					return setBANG_(new CallFrame("set!", a0.getMeta()), args, env);
 				
 				case "inspect": // (inspect sym)
-					return inspect_(new CallFrame("inspect", a0.getMeta()), ast, env);
+					return inspect_(new CallFrame("inspect", a0.getMeta()), args, env);
 
-				case "macroexpand": 
+				case "macroexpand": // (macroexpand form)
 					return macroexpand(
-							new CallFrame("macroexpand", a0.getMeta()), 
-							evaluate(ast.second(), env), 
-							env, 
-							null);
+							new CallFrame("macroexpand", a0.getMeta()), args, env, null);
 
-				case "macroexpand-all*": 
+				case "macroexpand-all*":  // (macroexpand-all* form)
 					// Note: This special form is exposed through the public Venice function 
 					//       'core/macroexpand-all' in the 'core' module.
 					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
 					return macroexpand_all(
 								new CallFrame("macroexpand-all*", a0.getMeta()), 
-								evaluate(ast.second(), env), 
+								evaluate(args.first(), env), 
 								env);
 
 				case "macroexpand-info": 
-					return macroexpand_info_(new CallFrame("macroexpand-info", a0.getMeta()), ast, env);
+					return macroexpand_info_(new CallFrame("macroexpand-info", a0.getMeta()), args, env);
 
 				case "doc": // (doc sym)
-					return doc_(new CallFrame("doc", a0.getMeta()), ast, env);
+					return doc_(new CallFrame("doc", a0.getMeta()), args, env);
 
 				case "print-highlight": // (print-highlight form)
-					return print_highlight_(new CallFrame("print-highlight", a0.getMeta()), ast, env);
+					return print_highlight_(new CallFrame("print-highlight", a0.getMeta()), args, env);
 
 				case "modules": // (modules )
-					return modules_(new CallFrame("modules", a0.getMeta()), ast, env);
+					return modules_(new CallFrame("modules", a0.getMeta()), args, env);
 
 				case "binding":  // (binding [bindings*] exprs*)
-					return binding_(ast, new Env(env));
+					return binding_(args, new Env(env));
 
 				case "bound?": // (bound? sym)
-					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(ast.second(), env))));
+					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
 
 				case "global-vars-count": // (global-vars-count)
 					return new VncLong(env.globalsCount());
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_(new CallFrame("try", a0.getMeta()), ast, new Env(env));
+					return try_(new CallFrame("try", a0.getMeta()), args, new Env(env));
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_with_(new CallFrame("try-with", a0.getMeta()), ast, new Env(env));
+					return try_with_(new CallFrame("try-with", a0.getMeta()), args, new Env(env));
 
 				case "locking":
-					return locking_(new CallFrame("locking", a0.getMeta()), ast, env);
+					return locking_(new CallFrame("locking", a0.getMeta()), args, env);
 
 				case "dorun":
 					specialFormCallValidation("dorun");
-					return dorun_(new CallFrame("dorun", a0.getMeta()), ast, env);
+					return dorun_(new CallFrame("dorun", a0.getMeta()), args, env);
 
 				case "dobench":
 					specialFormCallValidation("dobench");
-					return dobench_(new CallFrame("dobench", a0.getMeta()), ast, env);
+					return dobench_(new CallFrame("dobench", a0.getMeta()), args, env);
 
 				case "prof":
 					specialFormCallValidation("prof");
-					return prof_(new CallFrame("prof", a0.getMeta()), ast, env);
+					return prof_(new CallFrame("prof", a0.getMeta()), args, env);
 				
 				case "tail-pos": 
-					return tail_pos_check(tailPosition, new CallFrame("tail-pos", a0.getMeta()), ast, env);
+					return tail_pos_check(tailPosition, new CallFrame("tail-pos", a0.getMeta()), args, env);
 
 				default:
-					final VncVal elFirst = evaluate(ast.first(), env);
-					final VncList fnArgs = (VncList)evaluate_sequence_values(ast.rest(), env);
+					final VncVal elFirst = evaluate(a0, env);
+					final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 					if (elFirst instanceof VncFunction) {
 						final VncFunction fn = (VncFunction)elFirst;
 
@@ -799,11 +827,13 @@ public class VeniceInterpreter implements Serializable  {
 
 	private VncVal macroexpand(
 			final CallFrame callframe, 
-			final VncVal ast, 
+			final VncList args, 
 			final Env env,
 			final AtomicInteger expandedMacrosCounter
 	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("macroexpand", args, 1);
+			final VncVal ast = evaluate(args.first(), env);
 			return macroexpand(ast, env, expandedMacrosCounter);
 		}		
 	}
@@ -967,12 +997,19 @@ public class VeniceInterpreter implements Serializable  {
 			return VncList.of(new VncSymbol("quote"), ast);
 		}
 	}
+
+	private VncVal defmacro_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("defmacro", args, 2);
+			return defmacro_(args, env);
+		}
+	}
 	
-	private VncFunction defmacro_(final VncList ast, final Env env) {
-		int argPos = 1;
+	private VncFunction defmacro_(final VncList args, final Env env) {
+		int argPos = 0;
 		
 		final VncSymbol macroName = qualifySymbolWithCurrNS(
-										evaluateSymbolMetaData(ast.nth(argPos++), env));
+										evaluateSymbolMetaData(args.nth(argPos++), env));
 		VncVal meta = macroName.getMeta();
 		
 		if (MetaUtil.isPrivate(meta)) {
@@ -982,7 +1019,7 @@ public class VeniceInterpreter implements Serializable  {
 					macroName.getName()));
 		}
 		
-		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
+		final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
 					
 		String name = macroName.getName();
 		String ns = macroName.getNamespace();
@@ -1007,7 +1044,7 @@ public class VeniceInterpreter implements Serializable  {
 			argPos++;
 			final VncVector params = (VncVector)paramsOrSig;
 
-			final VncList body = ast.slice(argPos);
+			final VncList body = args.slice(argPos);
 	
 			final VncFunction macroFn = buildFunction(
 											macroName_.getName(), 
@@ -1026,7 +1063,7 @@ public class VeniceInterpreter implements Serializable  {
 
 			final List<VncFunction> fns = new ArrayList<>();
 
-			ast.slice(argPos).forEach(s -> {
+			args.slice(argPos).forEach(s -> {
 				int pos = 0;
 				
 				final VncList fnSig = Coerce.toVncList(s);
@@ -1052,15 +1089,15 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal def_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal def_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("def", ast.rest(), 1, 2);
+			assertArity("def", args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env)),
+												evaluateSymbolMetaData(args.first(), env)),
 										"def");
 			
-			final VncVal val = ast.third();
+			final VncVal val = args.second();
 			
 			final VncVal res = evaluate(val, env).withMeta(name.getMeta());
 			env.setGlobal(new Var(name, res, true));
@@ -1068,15 +1105,15 @@ public class VeniceInterpreter implements Serializable  {
 		}				
 	}
 
-	private VncVal defonce_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal defonce_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("defonce", ast.rest(), 1, 2);
+			assertArity("defonce", args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env)),
+												evaluateSymbolMetaData(args.first(), env)),
 										"defonce");
 							
-			final VncVal val = ast.third();
+			final VncVal val = args.second();
 
 			final VncVal res = evaluate(val, env).withMeta(name.getMeta());
 			env.setGlobal(new Var(name, res, false));
@@ -1084,15 +1121,15 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal def_dynamic_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal def_dynamic_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("def-dynamic", ast.rest(), 1, 2);
+			assertArity("def-dynamic", args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env)),
+												evaluateSymbolMetaData(args.first(), env)),
 										"def-dynamic");
 			
-			final VncVal val = ast.third();
+			final VncVal val = args.second();
 			
 			final VncVal res = evaluate(val, env).withMeta(name.getMeta());
 			env.setGlobalDynamic(name, res);
@@ -1100,41 +1137,34 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal defmacro_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal deftype_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("defmacro", ast.rest(), 2);
-			return defmacro_(ast, env);
-		}
-	}
-
-	private VncVal deftype_(final CallFrame callframe, final VncList ast, final Env env) {
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("deftype", ast.rest(), 2, 3);
-			final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
-			final VncVector fields = Coerce.toVncVector(ast.third());
-			final VncFunction validationFn = ast.size() == 4
-												? Coerce.toVncFunction(evaluate(ast.fourth(), env))
+			assertArity("deftype", args, 2, 3);
+			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
+			final VncVector fields = Coerce.toVncVector(args.second());
+			final VncFunction validationFn = args.size() == 3
+												? Coerce.toVncFunction(evaluate(args.third(), env))
 												: null;
 
 			return DefTypeForm.defineCustomType(type, fields, validationFn, this::RE, env);
 		}
 	}
 
-	private VncVal deftypeQ_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal deftypeQ_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("deftype?", ast.rest(), 1);
-			final VncVal type = evaluate(ast.second(), env);
+			assertArity("deftype?", args, 1);
+			final VncVal type = evaluate(args.first(), env);
 			return VncBoolean.of(DefTypeForm.isCustomType(type, env));
 		}
 	}
 
-	private VncVal deftype_of_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal deftype_of_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("deftype-of", ast.rest(), 2);
-			final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
-			final VncKeyword baseType = Coerce.toVncKeyword(evaluate(ast.third(), env));
-			final VncFunction validationFn = ast.size() == 4
-												? Coerce.toVncFunction(evaluate(ast.fourth(), env))
+			assertMinArity("deftype-of", args, 2);
+			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
+			final VncKeyword baseType = Coerce.toVncKeyword(evaluate(args.second(), env));
+			final VncFunction validationFn = args.size() == 3
+												? Coerce.toVncFunction(evaluate(args.third(), env))
 												: null;
 			return DefTypeForm.defineCustomWrapperType(
 						type, 
@@ -1146,45 +1176,46 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal deftype_or_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal deftype_or_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("deftype-or", ast.rest(), 2);
-			final VncKeyword type = Coerce.toVncKeyword(evaluate(ast.second(), env));
-			final VncList choiceVals = ast.slice(2);
+			assertMinArity("deftype-or", args, 2);
+			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
+			final VncList choiceVals = args.rest();
 
 			return DefTypeForm.defineCustomChoiceType(type, choiceVals, this::RE, env);
 		}
 	}
 
-	private VncVal deftype_create_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal deftype_create_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity(".:", ast.rest(), 1);
-			final List<VncVal> args = new ArrayList<>();
-			for(VncVal v : ast.rest()) {
-				args.add(evaluate(v, env));
+			assertMinArity(".:", args, 1);
+			final List<VncVal> evaluatedArgs = new ArrayList<>();
+			for(VncVal v : args) {
+				evaluatedArgs.add(evaluate(v, env));
 			}
-			return DefTypeForm.createType(args, env);
+			return DefTypeForm.createType(evaluatedArgs, env);
 		}
 	}
 
-	private VncVal defmulti_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal defmulti_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("defmulti", ast.rest(), 2);
+			assertArity("defmulti", args, 2);
 			final VncSymbol name =  validateSymbolWithCurrNS(
 										qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(ast.second(), env)),
+												evaluateSymbolMetaData(args.first(), env)),
 										"defmulti");
 			
 			IVncFunction dispatchFn;
 			
-			if (Types.isVncKeyword(ast.third())) {
-				dispatchFn = (VncKeyword)ast.third();
+			if (Types.isVncKeyword(args.second())) {
+				dispatchFn = (VncKeyword)args.second();
 			}
-			else if (Types.isVncSymbol(ast.third())) {
-				dispatchFn = Coerce.toVncFunction(env.get((VncSymbol)ast.third()));
+			else if (Types.isVncSymbol(args.second())) {
+				dispatchFn = Coerce.toVncFunction(env.get((VncSymbol)args.second()));
 			}
 			else {
-				dispatchFn = fn_(Coerce.toVncList(ast.third()), env);
+				final VncList fnAst = Coerce.toVncList(args.second());
+				dispatchFn = fn_(callframe, fnAst.rest(), env);
 			}
 
 			final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
@@ -1194,10 +1225,11 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal defmethod_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal defmethod_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("defmethod", args, 2);
 			final VncSymbol multiFnName = qualifySymbolWithCurrNS(
-											Coerce.toVncSymbol(ast.second()));
+											Coerce.toVncSymbol(args.first()));
 			final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 			if (multiFnVal == null) {
 				throw new VncException(String.format(
@@ -1205,17 +1237,17 @@ public class VeniceInterpreter implements Serializable  {
 							multiFnName.getName())); 
 			}
 			final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
-			final VncVal dispatchVal = ast.third();
+			final VncVal dispatchVal = args.second();
 			
-			final VncVector params = Coerce.toVncVector(ast.fourth());
+			final VncVector params = Coerce.toVncVector(args.third());
 			if (params.size() != multiFn.getParams().size()) {
 				throw new VncException(String.format(
 						"A method definition for the multifunction '%s' must have %d parameters", 
 						multiFnName.getName(),
 						multiFn.getParams().size()));
 			}
-			final VncVector preConditions = getFnPreconditions(ast.nth(4), env);
-			final VncList body = ast.slice(preConditions == null ? 4 : 5);
+			final VncVector preConditions = getFnPreconditions(args.nth(3), env);
+			final VncList body = args.slice(preConditions == null ? 3 : 4);
 			final VncFunction fn = buildFunction(
 										multiFnName.getName(),
 										params,
@@ -1224,15 +1256,16 @@ public class VeniceInterpreter implements Serializable  {
 										false,
 										env);
 
-			return multiFn.addFn(dispatchVal, fn.withMeta(ast.getMeta()));
+			return multiFn.addFn(dispatchVal, fn.withMeta(meta));
 		}
 	}
 
-	private VncVal ns_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal ns_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns");
+			assertArity("ns", args, 1);
 
-			final VncVal name = ast.second();
+			final VncVal name = args.first();
 			final VncSymbol ns = Types.isVncSymbol(name)
 									? (VncSymbol)name
 									: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluate(name, env)));
@@ -1254,11 +1287,12 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private VncVal ns_remove_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal ns_remove_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-remove");
+			assertArity("ns-remove", args, 1);
 
-			final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
+			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 				// prevent Venice's system namespaces from being altered
 				throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
@@ -1271,30 +1305,32 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
-	private VncVal ns_unmap_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal ns_unmap_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-unmap");
+			assertArity("ns-unmap", args, 1);
 
-			final VncSymbol ns = Namespaces.lookupNS(ast.second(), env);
+			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 				// prevent Venice's system namespaces from being altered
 				throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
 			}
 			else {
-				final VncSymbol sym = Coerce.toVncSymbol(ast.third()).withNamespace(ns);
+				final VncSymbol sym = Coerce.toVncSymbol(args.second()).withNamespace(ns);
 				env.removeGlobalSymbol(sym);
 				return Nil;
 			}
 		}
 	}
 	
-	private VncVal ns_list_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal ns_list_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-list");
+			assertArity("ns-list", args, 1);
 
-			final VncSymbol ns = Types.isVncSymbol(ast.second())
-									? (VncSymbol)ast.second()
-									: Coerce.toVncSymbol(evaluate(ast.second(), env));
+			final VncSymbol ns = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
 
 			final String nsName = ((VncSymbol)ns).getName();
 			
@@ -1310,23 +1346,24 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal import_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal import_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			ast.rest().forEach(i -> Namespaces
-										.getCurrentNamespace()
-										.getJavaImports()
-										.add(Coerce.toVncString(i).getValue()));
+			assertMinArity("import", args, 0);
+			args.forEach(i -> Namespaces
+								.getCurrentNamespace()
+								.getJavaImports()
+								.add(Coerce.toVncString(i).getValue()));
 			return Nil;
 		}
 	}
 
-	private VncVal imports_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal imports_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			if (ast.size() == 1) {
+			if (args.isEmpty()) {
 				return Namespaces.getCurrentNamespace().getJavaImportsAsVncList();
 			}
 			else {
-				final VncSymbol ns = Coerce.toVncSymbol(ast.second());
+				final VncSymbol ns = Coerce.toVncSymbol(args.first());
 				final Namespace namespace = nsRegistry.get(ns);
 				if (namespace != null) {
 					return namespace.getJavaImportsAsVncList();
@@ -1339,13 +1376,14 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal namespace_(final CallFrame callframe, final VncList ast, final Env env) {
-		final VncVal val = evaluate(ast.second(), env);
-		if (val instanceof INamespaceAware) {
-			return new VncString(((INamespaceAware)val).getNamespace());
-		}
-		else {
-			try (WithCallStack cs = new WithCallStack(callframe)) {
+	private VncVal namespace_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("namespace", args, 1);
+			final VncVal val = evaluate(args.first(), env);
+			if (val instanceof INamespaceAware) {
+				return new VncString(((INamespaceAware)val).getNamespace());
+			}
+			else {
 				throw new VncException(String.format(
 						"The type '%s' does not support namespaces!",
 						Types.getType(val)));
@@ -1353,79 +1391,101 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal resolve_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("resolve");
-		return env.getOrNil(Coerce.toVncSymbol(evaluate(ast.second(), env)));
+	private VncVal resolve_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("resolve", args, 1);
+			specialFormCallValidation("resolve");
+			return env.getOrNil(Coerce.toVncSymbol(evaluate(args.first(), env)));
+		}
 	}
 
-	private VncVal var_get_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("var-get");
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		return env.getOrNil(sym);
+	private VncVal var_get_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("var-get", args, 1);
+			specialFormCallValidation("var-get");
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			return env.getOrNil(sym);
+		}
 	}
 
-	private VncVal var_ns_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("var-ns");
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		final String ns = env.getNamespace(sym);
-		return ns == null ? Nil : new VncString(ns);
+	private VncVal var_ns_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("var-ns", args, 1);
+			specialFormCallValidation("var-ns");
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			final String ns = env.getNamespace(sym);
+			return ns == null ? Nil : new VncString(ns);
+		}
 	}
 
-	private VncVal var_name_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("var-name");
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		return new VncString(sym.getName());
+	private VncVal var_name_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("var-name", args, 1);
+			specialFormCallValidation("var-name");
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			return new VncString(sym.getName());
+		}
 	}
 
-	private VncVal var_localQ_(final CallFrame callframe, final VncList ast, final Env env) {
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		return VncBoolean.of(env.isLocal(sym));
+	private VncVal var_localQ_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("var-local?", args, 1);
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			return VncBoolean.of(env.isLocal(sym));
+		}
 	}
 
-	private VncVal var_thread_localQ_(final CallFrame callframe, final VncList ast, final Env env) {
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		return VncBoolean.of(env.isThreadLocal(sym));
+	private VncVal var_thread_localQ_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("var-thread-local?", args, 1);
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			return VncBoolean.of(env.isThreadLocal(sym));
+		}
 	}
 
-	private VncVal var_globalQ_(final CallFrame callframe, final VncList ast, final Env env) {
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		return VncBoolean.of(env.isGlobal(sym));
+	private VncVal var_globalQ_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("var-global?", args, 1);
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			return VncBoolean.of(env.isGlobal(sym));
+		}
 	}
 
-	private VncVal setBANG_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("set!");
-
-		final VncSymbol sym = Types.isVncSymbol(ast.second())
-								? (VncSymbol)ast.second()
-								: Coerce.toVncSymbol(evaluate(ast.second(), env));
-		final Var globVar = env.getGlobalVarOrNull(sym);
-		if (globVar != null) {
-			final VncVal expr = ast.third();
-			final VncVal val = evaluate(expr, env);
-			
-			if (globVar instanceof DynamicVar) {
-				env.popGlobalDynamic(globVar.getName());
-				env.pushGlobalDynamic(globVar.getName(), val);
+	private VncVal setBANG_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("set!", args, 2);
+			specialFormCallValidation("set!");
+	
+			final VncSymbol sym = Types.isVncSymbol(args.first())
+									? (VncSymbol)args.first()
+									: Coerce.toVncSymbol(evaluate(args.first(), env));
+			final Var globVar = env.getGlobalVarOrNull(sym);
+			if (globVar != null) {
+				final VncVal expr = args.second();
+				final VncVal val = evaluate(expr, env);
+				
+				if (globVar instanceof DynamicVar) {
+					env.popGlobalDynamic(globVar.getName());
+					env.pushGlobalDynamic(globVar.getName(), val);
+				}
+				else {
+					env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
+				}
+				return val;
 			}
 			else {
-				env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
-			}
-			return val;
-		}
-		else {
-			try (WithCallStack cs = new WithCallStack(callframe)) {
 				throw new VncException(String.format(
 							"The global or thread-local var '%s' does not exist!", 
 							sym.getName()));
@@ -1433,39 +1493,46 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal inspect_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("inspect");
-		final VncSymbol sym = Coerce.toVncSymbol(evaluate(ast.second(), env));
-		return Inspector.inspect(env.get(sym));
+	private VncVal inspect_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("inspect", args, 1);
+			specialFormCallValidation("inspect");
+			final VncSymbol sym = Coerce.toVncSymbol(evaluate(args.first(), env));
+			return Inspector.inspect(env.get(sym));
+		}
 	}
 
-	private VncVal macroexpand_info_(final CallFrame callframe, final VncList ast, final Env env) {
-		return VncHashMap.of(
-				new VncKeyword("macroexpand-count"),
-				new VncLong(macroExpandCount.get()),
-				new VncKeyword("macroexpand-all-count"),
-				new VncLong(macroExpandAllCount.get()),
-				new VncKeyword("macroexpand-all-count-effective"),
-				new VncLong(macroExpandAllCountEffective.get()));
+	private VncVal macroexpand_info_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			return VncHashMap.of(
+					new VncKeyword("macroexpand-count"),
+					new VncLong(macroExpandCount.get()),
+					new VncKeyword("macroexpand-all-count"),
+					new VncLong(macroExpandAllCount.get()),
+					new VncKeyword("macroexpand-all-count-effective"),
+					new VncLong(macroExpandAllCountEffective.get()));
+		}
 	}
 	
-	private VncVal doc_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal doc_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			final VncString doc = DocForm.doc(ast.second(), env);
+			assertArity("doc", args, 1);
+			final VncString doc = DocForm.doc(args.first(), env);
 			evaluate(VncList.of(new VncSymbol("println"), doc), env);
 			return Nil;
 		}
 	}
 	
-	private VncVal print_highlight_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal print_highlight_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			final VncString form = DocForm.highlight(Coerce.toVncString(ast.second()), env);
+			assertArity("print-highlight", args, 1);
+			final VncString form = DocForm.highlight(Coerce.toVncString(args.first()), env);
 			evaluate(VncList.of(new VncSymbol("println"), form), env);
 			return Nil;
 		}
 	}
 
-	private VncVal modules_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal modules_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			return VncList.ofList(
 						Modules
@@ -1478,27 +1545,28 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal eval_(final CallFrame callframe, final VncList ast, final Env env) {
-		specialFormCallValidation("eval");
-		final Namespace ns = Namespaces.getCurrentNamespace();
-		try {
-			return evaluate(Coerce.toVncSequence(evaluate_values(ast.rest(), env)).last(), env);
-		}
-		finally {
-			Namespaces.setCurrentNamespace(ns);
+	private VncVal eval_(final CallFrame callframe, final VncList args, final Env env) {
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("eval", args, 0);
+			specialFormCallValidation("eval");
+			final Namespace ns = Namespaces.getCurrentNamespace();
+			try {
+				return evaluate(Coerce.toVncSequence(evaluate_values(args, env)).last(), env);
+			}
+			finally {
+				Namespaces.setCurrentNamespace(ns);
+			}
 		}
 	}
 	
-	private VncVal dorun_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal dorun_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			if (ast.size() != 3) {
-				throw new VncException("dorun requires two arguments a count and an expression to run");
-			}
+			assertArity("dorun", args, 2);
 			
-			final long count = Coerce.toVncLong(ast.second()).getValue();
+			final long count = Coerce.toVncLong(args.first()).getValue();
 			if (count <= 0) return Nil;
 			
-			final VncVal expr = ast.third();
+			final VncVal expr = args.second();
 	
 			try {
 				final VncVal first = evaluate(expr, env);
@@ -1520,15 +1588,13 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal dobench_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal dobench_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			if (ast.size() != 3) {
-				throw new VncException("dobench requires two arguments a count and an expression to run");
-			}
+			assertArity("dobench", args, 2);
 			
 			try {
-				final long count = Coerce.toVncLong(ast.second()).getValue();
-				final VncVal expr = ast.third();
+				final long count = Coerce.toVncLong(args.first()).getValue();
+				final VncVal expr = args.second();
 				
 				final List<VncVal> elapsed = new ArrayList<>();
 				for(int ii=0; ii<count; ii++) {
@@ -1553,16 +1619,14 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal locking_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal locking_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			if (ast.size() < 3) {
-				throw new VncException("locking requires a lockee and one or more expressions to run");
-			}
+			assertMinArity("locking", args, 2);
 			
-			final VncVal mutex = evaluate(ast.second(), env);
+			final VncVal mutex = evaluate(args.first(), env);
 	
 			synchronized(mutex) {
-				return evaluateBody(ast.slice(2), env, true);
+				return evaluateBody(args.rest(), env, true);
 			}
 		}
 	}
@@ -1570,11 +1634,11 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal tail_pos_check(
 			final boolean inTailPosition, 
 			final CallFrame callframe, 
-			final VncList ast, 
+			final VncList args, 
 			final Env env
 	) {
 		if (!inTailPosition) {
-			final VncString name = Coerce.toVncString(ast.nthOrDefault(1, VncString.empty()));
+			final VncString name = Coerce.toVncString(args.nthOrDefault(0, VncString.empty()));
 			try (WithCallStack cs = new WithCallStack(callframe)) {
 				throw new NotInTailPositionException(
 						name.isEmpty() 
@@ -1587,86 +1651,90 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncFunction fn_(final VncList ast, final Env env) {
+	private VncFunction fn_(final CallFrame callframe, final VncList args, final Env env) {
 		// single arity:  (fn name? [params*] condition-map? expr*)
 		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
 
-		VncSymbol name;
-		int argPos;
-		
-		if (Types.isVncSymbol(ast.second())) {
-			argPos = 2;
-			name = (VncSymbol)ast.second();
-		}
-		else {
-			argPos = 1;
-			name = new VncSymbol(VncFunction.createAnonymousFuncName());
-		}
-
-		final VncSymbol fnName = qualifySymbolWithCurrNS(name);
-		ReservedSymbols.validateNotReservedSymbol(fnName);
-
-		final VncSequence paramsOrSig = Coerce.toVncSequence(ast.nth(argPos));
-		if (Types.isVncVector(paramsOrSig)) {
-			// single arity:
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("fn", args, 1);
+	
+			VncSymbol name;
+			int argPos;
 			
-			argPos++;
-			final VncVector params = (VncVector)paramsOrSig;
-			
-			final VncVector preCon = getFnPreconditions(ast.nthOrDefault(argPos, null), env);
-			if (preCon != null) argPos++;
-			
-			final VncList body = ast.slice(argPos);
-			
-//			if (macroexpand) {
-//				return buildFunction(
-//						fnName.getName(), 
-//						params, 
-//						(VncList)macroexpand_all(body, env), 
-//						preCon == null ? null : (VncVector)macroexpand_all(preCon, env), 
-//						false, 
-//						env);
-//			}
-//			else {
-				return buildFunction(fnName.getName(), params, body, preCon, false, env);
-//			}		
-		}
-		else {
-			// multi arity:
-
-			final List<VncFunction> fns = new ArrayList<>();
-			
-			ast.slice(argPos).forEach(s -> {
-				int pos = 0;
+			if (Types.isVncSymbol(args.first())) {
+				argPos = 1;
+				name = (VncSymbol)args.first();
+			}
+			else {
+				argPos = 0;
+				name = new VncSymbol(VncFunction.createAnonymousFuncName());
+			}
+	
+			final VncSymbol fnName = qualifySymbolWithCurrNS(name);
+			ReservedSymbols.validateNotReservedSymbol(fnName);
+	
+			final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
+			if (Types.isVncVector(paramsOrSig)) {
+				// single arity:
 				
-				final VncList sig = Coerce.toVncList(s);
+				argPos++;
+				final VncVector params = (VncVector)paramsOrSig;
 				
-				final VncVector params = Coerce.toVncVector(sig.nth(pos++));
+				final VncVector preCon = getFnPreconditions(args.nthOrDefault(argPos, null), env);
+				if (preCon != null) argPos++;
 				
-				final VncVector preCon = getFnPreconditions(sig.nth(pos), env);
-				if (preCon != null) pos++;
+				final VncList body = args.slice(argPos);
 				
-				final VncList body = sig.slice(pos);
+	//			if (macroexpand) {
+	//				return buildFunction(
+	//						fnName.getName(), 
+	//						params, 
+	//						(VncList)macroexpand_all(body, env), 
+	//						preCon == null ? null : (VncVector)macroexpand_all(preCon, env), 
+	//						false, 
+	//						env);
+	//			}
+	//			else {
+					return buildFunction(fnName.getName(), params, body, preCon, false, env);
+	//			}		
+			}
+			else {
+				// multi arity:
+	
+				final List<VncFunction> fns = new ArrayList<>();
 				
-//				if (macroexpand) {
-//					fns.add(buildFunction(
-//							fnName.getName(), 
-//							params, 
-//							(VncList)macroexpand_all(body, env), 
-//							preCon == null ? null : (VncVector)macroexpand_all(preCon, env), 
-//							false, 
-//							env));
-//				}
-//				else {
-					fns.add(buildFunction(fnName.getName(), params, body, preCon, false, env));
-//				}
-			});
-			
-			return new VncMultiArityFunction(fnName.getName(), fns, false);
+				args.slice(argPos).forEach(s -> {
+					int pos = 0;
+					
+					final VncList sig = Coerce.toVncList(s);
+					
+					final VncVector params = Coerce.toVncVector(sig.nth(pos++));
+					
+					final VncVector preCon = getFnPreconditions(sig.nth(pos), env);
+					if (preCon != null) pos++;
+					
+					final VncList body = sig.slice(pos);
+					
+	//				if (macroexpand) {
+	//					fns.add(buildFunction(
+	//							fnName.getName(), 
+	//							params, 
+	//							(VncList)macroexpand_all(body, env), 
+	//							preCon == null ? null : (VncVector)macroexpand_all(preCon, env), 
+	//							false, 
+	//							env));
+	//				}
+	//				else {
+						fns.add(buildFunction(fnName.getName(), params, body, preCon, false, env));
+	//				}
+				});
+				
+				return new VncMultiArityFunction(fnName.getName(), fns, false);
+			}
 		}
 	}
 
-	private VncVal prof_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal prof_(final CallFrame callframe, final VncList args, final Env env) {
 		// Note on profiling recursive functions: 
 		// For recursive functions the profiler reports the 'time with children
 		// for the particular recursive function resulting in much higher measured 
@@ -1676,8 +1744,10 @@ public class VeniceInterpreter implements Serializable  {
 		// See:  - https://smartbear.com/learn/code-profiling/fundamentals-of-performance-profiling/
 		//       - https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			if (Types.isVncKeyword(ast.second())) {
-				final VncKeyword cmd = (VncKeyword)ast.second();
+			assertArity("prof", args, 1, 2, 3);
+
+			if (Types.isVncKeyword(args.first())) {
+				final VncKeyword cmd = (VncKeyword)args.first();
 				switch(cmd.getValue()) {
 					case "on":
 					case "enable":
@@ -1697,15 +1767,15 @@ public class VeniceInterpreter implements Serializable  {
 						return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
 						
 					case "clear-all-but":
-						meterRegistry.resetAllBut(Coerce.toVncSequence(ast.third())); 
+						meterRegistry.resetAllBut(Coerce.toVncSequence(args.second())); 
 						return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
 						
 					case "data":
 						return meterRegistry.getVncTimerData();
 						
 					case "data-formatted":
-						final VncVal opt1 = ast.third();
-						final VncVal opt2 = ast.fourth();
+						final VncVal opt1 = args.second();
+						final VncVal opt2 = args.third();
 						
 						String title = "Metrics";
 						if (Types.isVncString(opt1) && !Types.isVncKeyword(opt1)) title = ((VncString)opt1).getValue();
@@ -1726,9 +1796,9 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal binding_(final VncList ast, final Env env) {
-		final VncSequence bindings = Coerce.toVncSequence(ast.second());
-		final VncList expressions = ast.slice(2);
+	private VncVal binding_(final VncList args, final Env env) {
+		final VncSequence bindings = Coerce.toVncSequence(args.first());
+		final VncList expressions = args.rest();
 	
 		final List<Var> vars = new ArrayList<>();
 		for(int i=0; i<bindings.size(); i+=2) {
@@ -1749,15 +1819,15 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal try_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal try_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			VncVal result = Nil;
 
 			try {
-				result = evaluateBody(getTryBody(ast), env, true);
+				result = evaluateBody(getTryBody(args), env, true);
 			} 
 			catch (Throwable th) {
-				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ast, th);
+				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(args, th);
 				if (catchBlock == null) {
 					throw th;
 				}
@@ -1767,7 +1837,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 			}
 			finally {
-				final VncList finallyBlock = findFirstFinallyBlock(ast);
+				final VncList finallyBlock = findFirstFinallyBlock(args);
 				if (finallyBlock != null) {
 					evaluateBody(finallyBlock, env, false);
 				}
@@ -1777,9 +1847,9 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal try_with_(final CallFrame callframe, final VncList ast, final Env env) {
+	private VncVal try_with_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			final VncSequence bindings = Coerce.toVncSequence(ast.second());
+			final VncSequence bindings = Coerce.toVncSequence(args.first());
 			final List<Var> boundResources = new ArrayList<>();
 			
 			for(int i=0; i<bindings.size(); i+=2) {
@@ -1803,10 +1873,10 @@ public class VeniceInterpreter implements Serializable  {
 			VncVal result = Nil;
 			try {
 				try {
-					result = evaluateBody(getTryBody(ast), env, true);
+					result = evaluateBody(getTryBody(args), env, true);
 				} 
 				catch (Throwable th) {
-					final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ast, th);
+					final CatchBlock catchBlock = findCatchBlockMatchingThrowable(args, th);
 					if (catchBlock == null) {
 						throw th;
 					}
@@ -1817,7 +1887,7 @@ public class VeniceInterpreter implements Serializable  {
 				}
 				finally {
 					// finally is only for side effects
-					final VncList finallyBlock = findFirstFinallyBlock(ast);
+					final VncList finallyBlock = findFirstFinallyBlock(args);
 					if (finallyBlock != null) {
 						evaluateBody(finallyBlock, env, false);
 					}
@@ -1860,9 +1930,9 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncList getTryBody(final VncList ast) {
+	private VncList getTryBody(final VncList args) {
 		final List<VncVal> body = new ArrayList<>();
- 		for(VncVal e : ast.rest()) {
+ 		for(VncVal e : args) {
 			if (Types.isVncList(e)) {
 				final VncVal first = ((VncList)e).first();
 				if (Types.isVncSymbol(first)) {
@@ -2044,30 +2114,30 @@ public class VeniceInterpreter implements Serializable  {
 		};
 	}
 	
-	private Env buildRecursionEnv(final VncList ast, final Env env, final RecursionPoint recursionPoint) {
+	private Env buildRecursionEnv(final VncList args, final Env env, final RecursionPoint recursionPoint) {
 		final Env recur_env = recursionPoint.getLoopEnv();
 		
 		// denormalize for best performance (short loops are performance critical)
-		switch(ast.size()) {
+		switch(args.size()) {
+			case 0:
+				break;
 			case 1:
+				// [1][2] calculate and bind the single new value
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(args.first(), env)));
 				break;
 			case 2:
-				// [1][2] calculate and bind the single new value
-				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(ast.second(), env)));
-				break;
-			case 3:
 				// [1] calculate the new values
-				final VncVal v1 = evaluate(ast.second(), env);
-				final VncVal v2 = evaluate(ast.third(), env);
+				final VncVal v1 = evaluate(args.first(), env);
+				final VncVal v2 = evaluate(args.second(), env);
 				// [2] bind the new values
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
 				break;
-			case 4:
+			case 3:
 				// [1] calculate the new values
-				final VncVal v1_ = evaluate(ast.second(), env);
-				final VncVal v2_ = evaluate(ast.third(), env);
-				final VncVal v3_ = evaluate(ast.fourth(), env);
+				final VncVal v1_ = evaluate(args.first(), env);
+				final VncVal v2_ = evaluate(args.second(), env);
+				final VncVal v3_ = evaluate(args.third(), env);
 				// [2] bind the new values
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1_));
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2_));
@@ -2075,10 +2145,9 @@ public class VeniceInterpreter implements Serializable  {
 				break;
 			default:
 				// [1] calculate new values
-				final VncList values = ast.rest();
-				final VncVal[] newValues = new VncVal[values.size()];
-				for(int kk=0; kk<values.size(); kk++) {
-					newValues[kk++] = evaluate(values.nth(kk), env);
+				final VncVal[] newValues = new VncVal[args.size()];
+				for(int kk=0; kk<args.size(); kk++) {
+					newValues[kk++] = evaluate(args.nth(kk), env);
 				}
 				
 				// [2] bind the new values

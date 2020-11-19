@@ -18,6 +18,7 @@ and this project adheres to
 - cross references to cheatsheet
 - syntax highlighting for cheatsheet examples
 - `shell/processes-info` to list the process info of all running processes
+- arity check for passed arguments for all special forms
 
 ### Fixed
 
