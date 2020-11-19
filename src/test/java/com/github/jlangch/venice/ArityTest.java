@@ -60,6 +60,21 @@ public class ArityTest {
 	}
 
 	@Test
+	public void test_macro_form_arity_ex_2() {
+		final Venice venice = new Venice();
+
+		try {
+			venice.eval("(while)");
+			
+			fail("Expected ArityException");
+		}
+		catch(ArityException ex) {
+			final String msg = ex.getMessage();
+			assertTrue(msg.startsWith("Wrong number of args (0) passed to the variadic macro while that requires at least 1 args."));
+		}
+	}
+
+	@Test
 	public void test_function_form_arity_ex() {
 		final Venice venice = new Venice();
 

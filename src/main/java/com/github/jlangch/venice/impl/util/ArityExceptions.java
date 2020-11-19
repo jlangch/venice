@@ -121,15 +121,6 @@ public class ArityExceptions {
 			final String fnName,
 			final FnType fnType,
 			final int arity, 
-			final int expectedArgs
-	) {
-		return formatArityExMsg(fnName, fnType, arity, expectedArgs, VncList.empty());
-	}
-
-	public static String formatArityExMsg(
-			final String fnName,
-			final FnType fnType,
-			final int arity, 
 			final int expectedArgs,
 			final VncList argList
 	) {
@@ -141,16 +132,7 @@ public class ArityExceptions {
 					expectedArgs,
 					formatArgList(argList));
 	}
-	
-	public static String formatVariadicArityExMsg(
-			final String fnName,
-			final FnType fnType,
-			final int arity,
-			final int fixedArgsCount
-	) {
-		return formatVariadicArityExMsg(fnName, fnType, arity, fixedArgsCount, VncList.empty());
-	}
-	
+		
 	public static String formatVariadicArityExMsg(
 			final String fnName,
 			final FnType fnType,
@@ -160,7 +142,7 @@ public class ArityExceptions {
 	) {
 		return String.format(
 					"Wrong number of args (%d) passed to the variadic %s %s that "
-						+ "requires at least %d args.", 
+						+ "requires at least %d args.%s", 
 					arity, 
 					toString(fnType),
 					fnName,
@@ -168,18 +150,16 @@ public class ArityExceptions {
 					formatArgList(argList));
 	}
 
+	
 	private static String formatArgList(final VncList argList) {
-		if (argList.isEmpty()) {
-			return "";
-		}
-		else {
-			return String.format(
+		return argList.isEmpty()
+				? ""
+				: String.format(
 					"\n\n[Arg List]\n%s", 
 					argList
 						.stream()
 						.map(it -> "    " + it.toString())
 						.collect(Collectors.joining("\n")));
-		}
 	}
 
 	private static FnType toFnType(final VncFunction fn) {
