@@ -34,8 +34,14 @@ public class ArityExceptions {
 			final int... expectedArities
 	) {
 		final int arity = args.size();
-		for (int ii=0; ii<expectedArities.length; ii++) {
-			if (expectedArities[ii] == arity) return;
+		if (expectedArities.length == 1) {
+			// optimization for single arity case
+			if (arity == expectedArities[0]) return;
+		}
+		else {
+			for (int a : expectedArities) {
+				if (a == arity) return;
+			}
 		}
 		throwArityEx(arity, fn.getQualifiedName());
 	}
@@ -46,8 +52,14 @@ public class ArityExceptions {
 			final int... expectedArities
 	) {
 		final int arity = args.size();
-		for (int ii=0; ii<expectedArities.length; ii++) {
-			if (expectedArities[ii] == arity) return;
+		if (expectedArities.length == 1) {
+			// optimization for single arity case
+			if (arity == expectedArities[0]) return;
+		}
+		else {
+			for (int a : expectedArities) {
+				if (a == arity) return;
+			}
 		}
 		throwArityEx(arity, fnName);
 	}
