@@ -1167,8 +1167,8 @@ public class SpecialFormsDoc {
 						"  (ns xxx)              \n" + 
 						"  (def foo 1)           \n" + 
 						"  (def goo 1)           \n" + 
-						"  (ns-remove xxx foo)   \n" + 
-						"  (ns-remove *ns* foo))   ")
+						"  (ns-remove xxx)       \n" + 
+						"  (ns-remove *ns*))       ")
 					.seeAlso("ns", "ns-unmap", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
