@@ -1008,6 +1008,11 @@ public class DocGenerator {
 		create.addItem(getDocItem("macroexpand"));
 		create.addItem(getDocItem("macroexpand-all"));
 
+		final DocSection quote = new DocSection("Quoting", id());
+		all.addSection(quote);
+		quote.addItem(getDocItem("quote"));
+		quote.addItem(getDocItem("quasiquote"));
+
 		final DocSection branch = new DocSection("Branch", id());
 		all.addSection(branch);
 		branch.addItem(getDocItem("and"));

@@ -702,6 +702,62 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction quote = 
+		new SpecialFormsDocFunction(
+				"quote",
+				VncFunction
+					.meta()
+					.arglists("(quote form)")
+					.doc(
+						"There are two equivalent ways to quote a form either with " +
+						"quote or with '. They prevent the quoted form from being " +
+						"evaluated.\n\n" +
+						"Regular quotes work recursively with any kind of forms and " +
+						"types: strings, maps, lists, vectors...")
+					.examples(
+						"(quote (1 2 3))",
+						"(quote (+ 1 2))",
+						"'(1 2 3)",
+						"'(+ 1 2)",
+						"'(a (b (c d (+ 1 2))))")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction quasiquote = 
+		new SpecialFormsDocFunction(
+				"quasiquote",
+				VncFunction
+					.meta()
+					.arglists("(quasiquote form)")
+					.doc(
+						"Quasi quotes also called syntax quotes (a backquote) supress " +
+						"evaluation of the form that follows it and all the nested forms." +
+						"\n\n" +
+						"unquote:\n" +
+						"It is possible to unquote part of the form that is quoted with `~`. " +
+						"Unquoting allows you to evaluate parts of the syntax quoted expression." +
+						"\n\n" +
+						"unquote-splicing:\n" +
+						"Unquote evaluates to a collection of values and inserts the " +
+						"collection into the quoted form. But sometimes you want to " +
+						"unquote a list and insert its elements (not the list) inside " +
+						"the quoted form. This is where `~@` (unquote-splicing) comes " +
+						"to rescue.")
+					.examples(
+						"(quasiquote (16 17 (inc 17)))",
+						"`(16 17 (inc 17))",
+						"`(16 17 ~(inc 17))",
+						"`(16 17 ~(map inc [16 17]))",
+						"`(16 17 ~@(map inc [16 17]))",
+						"`(1 2 ~@#{1 2 3})",
+						"`(1 2 ~@{:a 1 :b 2 :c 3})")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction do_ = 
 		new SpecialFormsDocFunction(
 				"do",
@@ -1334,6 +1390,8 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("binding"),			binding)
 					.put(new VncSymbol("bound?"),			bound_Q)
 					.put(new VncSymbol("set!"),				set_BANG)
+					.put(new VncSymbol("quote"),			quote)
+					.put(new VncSymbol("quasiquote"),		quasiquote)
 					.put(new VncSymbol("do"),				do_)
 					.put(new VncSymbol("if"),				if_)
 					.put(new VncSymbol("let"),				let)
