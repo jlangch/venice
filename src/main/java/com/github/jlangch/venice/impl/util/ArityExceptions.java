@@ -45,11 +45,14 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
-		throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity, fn.getArgLists()));
+		throw new ArityException(
+					formatArityExMsg(
+						fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
 	}
 
 	public static void assertArity(
 			final String fnName, 
+			final FnType fnType,
 			final VncList args, 
 			final int... expectedArities
 	) {
@@ -63,7 +66,7 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
-		throw new ArityException(formatArityExMsg(fnName, arity));
+		throw new ArityException(formatArityExMsg(fnName, fnType, arity));
 	}
 	
 	public static void assertMinArity(
@@ -73,58 +76,67 @@ public class ArityExceptions {
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throw new ArityException(formatArityExMsg(fn.getQualifiedName(), arity, fn.getArgLists()));
+			throw new ArityException(
+						formatArityExMsg(
+							fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
 		}
 	}
 	
 	public static void assertMinArity(
 			final String fnName, 
+			final FnType fnType,
 			final VncList args, 
 			final int minArity
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throw new ArityException(formatArityExMsg(fnName, arity));
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity));
 		}
 	}
 
 	
 	public static String formatArityExMsg(
 			final String fnName,
+			final FnType fnType,
 			final int arity
 	) {
-		return formatArityExMsg(fnName, arity, VncList.empty());
+		return formatArityExMsg(fnName, fnType, arity, VncList.empty());
 	}
 
 	public static String formatArityExMsg(
 			final String fnName,
+			final FnType fnType,
 			final int arity,
 			final VncList argList
 	) {
 		return String.format(
-					"Wrong number of args (%d) passed to function %s.%s", 
+					"Wrong number of args (%d) passed to %s %s.%s", 
 					arity, 
+					toString(fnType),
 					fnName,
 					formatArgList(argList));
 	}
 
 	public static String formatArityExMsg(
 			final String fnName,
+			final FnType fnType,
 			final int arity, 
 			final int expectedArgs
 	) {
-		return formatArityExMsg(fnName, arity, expectedArgs, VncList.empty());
+		return formatArityExMsg(fnName, fnType, arity, expectedArgs, VncList.empty());
 	}
 
 	public static String formatArityExMsg(
 			final String fnName,
+			final FnType fnType,
 			final int arity, 
 			final int expectedArgs,
 			final VncList argList
 	) {
 		return String.format(
-					"Wrong number of args (%d) passed to function %s. Expected %d args.%s", 
+					"Wrong number of args (%d) passed to %s %s. Expected %d args.%s", 
 					arity, 
+					toString(fnType),
 					fnName, 
 					expectedArgs,
 					formatArgList(argList));
@@ -132,22 +144,25 @@ public class ArityExceptions {
 	
 	public static String formatVariadicArityExMsg(
 			final String fnName,
+			final FnType fnType,
 			final int arity,
 			final int fixedArgsCount
 	) {
-		return formatVariadicArityExMsg(fnName, arity, fixedArgsCount, VncList.empty());
+		return formatVariadicArityExMsg(fnName, fnType, arity, fixedArgsCount, VncList.empty());
 	}
 	
 	public static String formatVariadicArityExMsg(
 			final String fnName,
+			final FnType fnType,
 			final int arity,
 			final int fixedArgsCount,
 			final VncList argList
 	) {
 		return String.format(
-					"Wrong number of args (%d) passed to the variadic function %s that "
+					"Wrong number of args (%d) passed to the variadic %s %s that "
 						+ "requires at least %d args.", 
 					arity, 
+					toString(fnType),
 					fnName,
 					fixedArgsCount,
 					formatArgList(argList));
@@ -159,11 +174,29 @@ public class ArityExceptions {
 		}
 		else {
 			return String.format(
-					"\n\n[Arg List]\n%s\n", 
+					"\n\n[Arg List]\n%s", 
 					argList
 						.stream()
 						.map(it -> "    " + it.toString())
 						.collect(Collectors.joining("\n")));
 		}
 	}
+
+	private static FnType toFnType(final VncFunction fn) {
+		return fn.isMacro() ? FnType.Macro : FnType.Function;
+	}
+
+	private static String toString(final FnType fnType) {
+		final FnType type = fnType == null ? FnType.Function : fnType;
+		
+		switch(type) {
+			case Function:    return "function";
+			case Macro:       return "macro";
+			case SpecialForm: return "special form";
+			default:          return "function";
+		}
+	}
+	
+	
+	public static enum FnType { Function, Macro, SpecialForm };
 }

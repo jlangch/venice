@@ -80,7 +80,7 @@ public class VncException extends RuntimeException {
 	}
 
 	public String getCallStackAsString(final String indent) {
-		return "[Callstack]\n"
+		return "\n[Callstack]\n"
 			   + callstack
 					.callstack()
 					.stream()

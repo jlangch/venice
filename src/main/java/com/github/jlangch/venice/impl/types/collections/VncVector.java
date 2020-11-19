@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
 public class VncVector extends VncSequence implements IVncFunction {
@@ -104,7 +105,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("nth", args, 1);
+		ArityExceptions.assertArity("nth", FnType.Function, args, 1);
 		
 		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
 	}

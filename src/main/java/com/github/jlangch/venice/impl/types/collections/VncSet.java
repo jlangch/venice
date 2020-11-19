@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
 public abstract class VncSet extends VncCollection implements IVncFunction, Iterable<VncVal> {
@@ -45,7 +46,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("set", args, 1, 2);
+		ArityExceptions.assertArity("set", FnType.Function, args, 1, 2);
 		
 		final VncVal first = args.first();
 		

@@ -127,7 +127,7 @@ public class CoreFunctions {
 						"(do                                                     \n" +
 						"   (try                                                 \n" +
 						"      (throw [100 {:a 3}])                              \n" +
-						"      (catch :ValueException ex (:value ex))             \n" +
+						"      (catch :ValueException ex (:value ex))            \n" +
 						"      (finally (println \"#finally\"))))                  ",
 
 						"(do                                                     \n" +

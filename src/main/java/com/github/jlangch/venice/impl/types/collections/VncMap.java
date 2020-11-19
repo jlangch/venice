@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
 public abstract class VncMap extends VncCollection implements IVncFunction {
@@ -51,7 +52,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("map", args, 1, 2);
+		ArityExceptions.assertArity("map", FnType.Function, args, 1, 2);
 		
 		final VncVal first = args.first();
 		

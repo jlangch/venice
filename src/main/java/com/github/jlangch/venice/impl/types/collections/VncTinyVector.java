@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StreamUtil;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 //	Benchmark                       Mode  Cnt  Score   Error  Units
 //	VncTinyVectorBenchmark.append   avgt    3  9.900 ± 0.762  ns/op
@@ -121,7 +122,7 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("nth", args, 1);
+		ArityExceptions.assertArity("nth", FnType.Function, args, 1);
 		
 		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
 	}
