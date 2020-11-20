@@ -7,7 +7,7 @@
 * [Applying Functions](#applying-functions)
 * [Locals and Closures](#locals-and-closures)
 * [Functions with preconditions](#functions-with-preconditions)
-* [Collections and Keywords as functions](#maps-sets-and-keywords-as-functions)
+* [Collections and Keywords as functions](#collections-and-keywords-as-functions)
 * [Function resolved from a string](#function-resolved-from-a-string)
 * [Partial Functions](#partial-functions)
 * [Function Composition](#function-composition)
