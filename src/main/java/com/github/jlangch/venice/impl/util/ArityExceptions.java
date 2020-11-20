@@ -24,7 +24,9 @@ package com.github.jlangch.venice.impl.util;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
+import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
@@ -66,7 +68,14 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
-		throw new ArityException(formatArityExMsg(fnName, fnType, arity));
+		
+		if (fnType == FnType.SpecialForm) {
+			final VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(fnName));
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity, fn.getArgLists()));
+		}
+		else {
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity));
+		}
 	}
 	
 	public static void assertMinArity(
@@ -90,7 +99,13 @@ public class ArityExceptions {
 	) {
 		final int arity = args.size();
 		if (arity < minArity) {
-			throw new ArityException(formatArityExMsg(fnName, fnType, arity));
+			if (fnType == FnType.SpecialForm) {
+				final VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(fnName));
+				throw new ArityException(formatArityExMsg(fnName, fnType, arity, fn.getArgLists()));
+			}
+			else {
+				throw new ArityException(formatArityExMsg(fnName, fnType, arity));
+			}
 		}
 	}
 
@@ -125,11 +140,12 @@ public class ArityExceptions {
 			final VncList argList
 	) {
 		return String.format(
-					"Wrong number of args (%d) passed to %s %s. Expected %d args.%s", 
+					"Wrong number of args (%d) passed to %s %s. Expected %d arg%s.%s", 
 					arity, 
 					toString(fnType),
 					fnName, 
 					expectedArgs,
+					expectedArgs == 1 ? "" : "s",
 					formatArgList(argList));
 	}
 		
@@ -142,11 +158,12 @@ public class ArityExceptions {
 	) {
 		return String.format(
 					"Wrong number of args (%d) passed to the variadic %s %s that "
-						+ "requires at least %d args.%s", 
+						+ "requires at least %d arg%s.%s", 
 					arity, 
 					toString(fnType),
 					fnName,
 					fixedArgsCount,
+					fixedArgsCount == 1 ? "" : "s",
 					formatArgList(argList));
 	}
 
@@ -173,10 +190,11 @@ public class ArityExceptions {
 			case Function:    return "function";
 			case Macro:       return "macro";
 			case SpecialForm: return "special form";
+			case Collection:  return "collection function";
 			default:          return "function";
 		}
 	}
 	
 	
-	public static enum FnType { Function, Macro, SpecialForm };
+	public static enum FnType { Function, Macro, SpecialForm, Collection };
 }

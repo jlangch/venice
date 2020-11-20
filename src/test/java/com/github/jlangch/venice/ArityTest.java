@@ -70,7 +70,7 @@ public class ArityTest {
 		}
 		catch(ArityException ex) {
 			final String msg = ex.getMessage();
-			assertTrue(msg.startsWith("Wrong number of args (0) passed to the variadic macro while that requires at least 1 args."));
+			assertTrue(msg.startsWith("Wrong number of args (0) passed to the variadic macro while that requires at least 1 arg."));
 		}
 	}
 

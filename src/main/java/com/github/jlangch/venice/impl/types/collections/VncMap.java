@@ -52,7 +52,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("map", FnType.Function, args, 1, 2);
+		ArityExceptions.assertArity("map", FnType.Collection, args, 1, 2);
 		
 		final VncVal first = args.first();
 		

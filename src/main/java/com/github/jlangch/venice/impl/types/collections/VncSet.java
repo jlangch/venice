@@ -46,7 +46,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("set", FnType.Function, args, 1, 2);
+		ArityExceptions.assertArity("set", FnType.Collection, args, 1, 2);
 		
 		final VncVal first = args.first();
 		

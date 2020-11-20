@@ -839,9 +839,13 @@ public class SpecialFormsDoc {
 				"if",
 				VncFunction
 					.meta()
-					.arglists("(if test true-expr false-expr)")
-					.doc("Evaluates test.")
-					.examples("(if (< 10 20) \"yes\" \"no\")")
+					.arglists("(if test then else)", "(if test then)")
+					.doc("Evaluates test. If logical true, evaluates and returns then expression, " +
+						 "otherwise else expression, if supplied, else nil.")
+					.examples(
+						"(if (< 10 20) \"yes\" \"no\")",
+						"(if true \"yes\")",
+						"(if false \"yes\")")
 					.seeAlso("if-not", "when")
 					.build()
 		) {

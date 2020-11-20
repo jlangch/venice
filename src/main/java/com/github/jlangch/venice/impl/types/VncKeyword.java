@@ -81,7 +81,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("keyword", FnType.Function, args, 1, 2);
+		ArityExceptions.assertArity("keyword", FnType.Collection, args, 1, 2);
 		
 		final VncVal first = args.first();
 		

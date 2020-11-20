@@ -262,15 +262,16 @@
 
 (defmacro
   ^{ :arglists '(
-          "(if-not then)",
-          "(if-not then else)")
+          "(if-not test then else)",
+          "(if-not test then)")
      :doc """
-          Evaluates test. If logical false, evaluates and returns then expr, \
-          otherwise else expr, if supplied, else nil.
+          Evaluates test. If logical false, evaluates and returns then \
+          expression, otherwise else expression, if supplied, else nil.
           """
      :examples '(
           "(if-not (== 1 2) 100 0)",
-          "(if-not (== 1 2) 100)")
+          "(if-not false 100)",
+          "(if-not true 100)")
      :see-also '("if" "when-not")  }
 
   if-not
