@@ -673,7 +673,9 @@ public class VeniceInterpreter implements Serializable  {
 					else if (elFirst instanceof IVncFunction) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						return ((IVncFunction)elFirst).apply(fnArgs);
+						try (WithCallStack cs = new WithCallStack(new CallFrame(elFirst.getType().toString(), a0.getMeta()))) {
+							return ((IVncFunction)elFirst).apply(fnArgs);
+						}
 					}
 					else {
 						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, a0.getMeta()))) {
