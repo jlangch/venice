@@ -37,13 +37,14 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
-import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
 public class VncVector extends VncSequence implements IVncFunction {
@@ -105,9 +106,21 @@ public class VncVector extends VncSequence implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("vector", FnType.Collection, args, 1);
-		
-		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
+		ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
+
+		if (args.size() == 1) {
+			return nth(Coerce.toVncLong(args.first()).getValue().intValue());
+		}
+		else {
+			return nthOrDefault(Coerce.toVncLong(args.first()).getValue().intValue(), args.second());
+		}
+	}
+
+	@Override
+	public VncList getArgLists() { 
+		return VncList.of(
+				new VncString("(vec index)"),
+				new VncString("(vec index default-val)"));
 	}
 	
 	@Override

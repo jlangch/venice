@@ -25,9 +25,14 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 public class ArityExceptions {
@@ -47,9 +52,58 @@ public class ArityExceptions {
 				if (a == arity) return;
 			}
 		}
+		
 		throw new ArityException(
 					formatArityExMsg(
 						fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
+	}
+
+	public static void assertArity(
+			final IVncFunction fn, 
+			final FnType fnType,
+			final VncList args, 
+			final int... expectedArities
+	) {
+		final int arity = args.size();
+		if (expectedArities.length == 1) {
+			// optimization for single arity case
+			if (arity == expectedArities[0]) return;
+		}
+		else {
+			for (int a : expectedArities) {
+				if (a == arity) return;
+			}
+		}
+		
+		// handle arity exception
+		if (fn instanceof VncFunction) {
+			throw new ArityException(
+						formatArityExMsg(
+							((VncFunction)fn).getQualifiedName(), 
+							toFnType((VncFunction)fn), 
+							arity,
+							fn.getArgLists()));
+		}
+		else if (fn instanceof VncKeyword) {
+			throw new ArityException(
+					formatArityExMsg(fn.toString(), fnType, arity, fn.getArgLists()));
+		}
+		else if (fn instanceof VncMap) {
+			throw new ArityException(
+					formatArityExMsg("map", fnType, arity, fn.getArgLists()));
+		}
+		else if (fn instanceof VncSet) {
+			throw new ArityException(
+					formatArityExMsg("set", fnType, arity, fn.getArgLists()));
+		}
+		else if (fn instanceof VncVector) {
+			throw new ArityException(
+					formatArityExMsg("vector", fnType, arity, fn.getArgLists()));
+		}
+		else {
+			throw new ArityException(
+					formatArityExMsg("unnamed", fnType, arity, fn.getArgLists()));
+		}
 	}
 
 	public static void assertArity(
@@ -69,6 +123,7 @@ public class ArityExceptions {
 			}
 		}
 		
+		// handle arity exception
 		if (fnType == FnType.SpecialForm) {
 			final VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(fnName));
 			throw new ArityException(formatArityExMsg(fnName, fnType, arity, fn.getArgLists()));
@@ -190,11 +245,12 @@ public class ArityExceptions {
 			case Function:    return "function";
 			case Macro:       return "macro";
 			case SpecialForm: return "special form";
-			case Collection:  return "collection function";
+			case Collection:  return "collection (as function)";
+			case Keyword:     return "keyword (as function)";
 			default:          return "function";
 		}
 	}
 	
 	
-	public static enum FnType { Function, Macro, SpecialForm, Collection };
+	public static enum FnType { Function, Macro, SpecialForm, Collection, Keyword };
 }

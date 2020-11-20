@@ -81,7 +81,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("keyword", FnType.Collection, args, 1, 2);
+		ArityExceptions.assertArity(this, FnType.Keyword, args, 1, 2);
 		
 		final VncVal first = args.first();
 		
@@ -119,7 +119,13 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		}
 	}
 	
-	
+	@Override
+	public VncList getArgLists() { 
+		return VncList.of(
+				new VncString("(keyword map)"),
+				new VncString("(keyword map default-val)"));
+	}
+
 	@Override
 	public VncKeyword withMeta(final VncVal meta) {
 		return new VncKeyword(this, meta);

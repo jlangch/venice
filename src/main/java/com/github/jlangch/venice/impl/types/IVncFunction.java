@@ -40,4 +40,6 @@ public interface IVncFunction {
 		return false;
 	}
 
+	VncList getArgLists();
+
 }

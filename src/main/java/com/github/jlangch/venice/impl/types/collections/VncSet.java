@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
@@ -46,7 +47,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("set", FnType.Collection, args, 1, 2);
+		ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
 		
 		final VncVal first = args.first();
 		
@@ -56,6 +57,13 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 		else {
 			return contains(first) ? first : args.second();
 		}
+	}
+
+	@Override
+	public VncList getArgLists() { 
+		return VncList.of(
+				new VncString("(set val)"),
+				new VncString("(set val default-val)"));
 	}
 	
 	@Override

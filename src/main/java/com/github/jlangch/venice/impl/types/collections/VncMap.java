@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -52,7 +53,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity("map", FnType.Collection, args, 1, 2);
+		ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
 		
 		final VncVal first = args.first();
 		
@@ -67,6 +68,12 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 		}
 	}
 
+	@Override
+	public VncList getArgLists() { 
+		return VncList.of(
+				new VncString("(map key)"),
+				new VncString("(map key default-val)"));
+	}
 	
 	@Override
 	public abstract VncMap emptyWithMeta();

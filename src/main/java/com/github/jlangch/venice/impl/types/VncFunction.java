@@ -173,6 +173,7 @@ public abstract class VncFunction
 		return namespace != null;
 	}
 
+	@Override
 	public VncList getArgLists() { 
 		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncList.empty());
 	}
