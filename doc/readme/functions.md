@@ -161,43 +161,64 @@ created.
 ```
 
 
-## Maps, Sets, and Keywords as functions
+## Vector, Maps, Sets, and Keywords as functions
 
-Maps, sets, and keywords are functions too.
+Vectors, maps, sets, and keywords are functions too.
+
+
+**Vectors**
 
 ```clojure
 (do
-   ; instead of (get {:a 1 :b 2} :b)
-   ; maps work as functions
+   ([1 2 3] 1) ; -> 2
+   
+   ;; with default
+   ([1 2 3] 5 10) ; -> 10
+)
+```
+
+**Maps**
+
+```clojure
+(do
+   ;; instead of (get {:a 1 :b 2} :b)
    ({:a 1 :b 2} :b)  ; -> 2
    ({:a 1 :b 2} :c)  ; -> nil
    
-   ; maps as functions with default
+   ;; with default
    ({:a 1 :b 2} :c 9)  ; -> 9
-   
-   
-   ; sets work as functions
+
+   ;; accessing nested maps
+   (let [m {:a {:b {:c 3}}}]
+      (-> m :a :b :c))  ; -> 3
+)
+```
+
+**Sets**
+
+```clojure
+(do
    (#{:a :b} :b)  ; -> :b
    (#{:a :b} :c)  ; -> nil
    
-   ; sets as functions with default
+   ;; with default
    (#{:a :b} :c 9)  ; -> 9
- 
- 
-   ; keywords as functions
+
+)
+```
+
+**Keywords**
+
+```clojure
+(do
    (:b {:a 1 :b 2})  ; -> 2
    (:c {:a 1 :b 2})  ; -> nil
    (:b #{:a :b})  ; -> :b
    (:c #{:a :b})  ; -> nil
  
-   ; keywords as functions with defaults
+   ;; with defaults
    (:c {:a 1 :b 2} 9)  ; -> 9
    (:c #{:a :b} 9)  ; -> 9
- 
-    
-   ; accessing nested maps
-   (let [m {:a {:b {:c 3}}}]
-      (-> m :a :b :c))  ; -> 3
 )
 ```
 

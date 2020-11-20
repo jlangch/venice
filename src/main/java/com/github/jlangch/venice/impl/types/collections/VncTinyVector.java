@@ -122,9 +122,14 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity(this, FnType.Collection, args, 1);
-		
-		return nth(Coerce.toVncLong(args.first()).getValue().intValue());
+		ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
+
+		if (args.size() == 1) {
+			return nth(Coerce.toVncLong(args.first()).getValue().intValue());
+		}
+		else {
+			return nthOrDefault(Coerce.toVncLong(args.first()).getValue().intValue(), args.second());
+		}
 	}
 	
 	@Override
