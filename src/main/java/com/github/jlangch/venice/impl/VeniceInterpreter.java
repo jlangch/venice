@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -62,6 +63,7 @@ import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
@@ -82,12 +84,12 @@ import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
-import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -375,14 +377,25 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
 
-						for(int i=0; i<bindings.size(); i+=2) {
-							final VncVal sym = bindings.nth(i);
-							final VncVal val = evaluate(bindings.nth(i+1), env);
+						final Iterator<VncVal> bindingsIter = bindings.iterator();
+						while(bindingsIter.hasNext()) {
+							final VncVal sym = bindingsIter.next();
+							if (!bindingsIter.hasNext()) {
+								try (WithCallStack cs = new WithCallStack(new CallFrame("let", a0.getMeta()))) {
+									throw new VncException("Unbalanced let bindings!");					
+								}
+							}
+							final VncVal val = evaluate(bindingsIter.next(), env);
 							env.addLocalVars(Destructuring.destructure(sym, val));
 						}
-
-						evaluate_values(expressions.butlast(), env);
-						orig_ast = expressions.last();
+						
+						if (expressions.size() == 1) {
+							orig_ast = expressions.first();
+						}
+						else {
+							evaluate_values(expressions.butlast(), env);
+							orig_ast = expressions.last();
+						}
 						tailPosition = true;
 					}
 					break;
@@ -419,10 +432,17 @@ public class VeniceInterpreter implements Serializable  {
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
 
+						if (bindings.size() % 2 != 0) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
+								throw new VncException("Unbalanced loop bindings!");					
+							}
+						}
+
 						final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
-						for(int i=0; i<bindings.size(); i+=2) {
-							final VncSymbol sym = Coerce.toVncSymbol(bindings.nth(i));
-							final VncVal val = evaluate(bindings.nth(i+1), env);
+						final Iterator<VncVal> bindingsIter = bindings.iterator();
+						while(bindingsIter.hasNext()) {
+							final VncSymbol sym = Coerce.toVncSymbol(bindingsIter.next());
+							final VncVal val = evaluate(bindingsIter.next(), env);
 
 							env.setLocal(new Var(sym, val));
 							bindingNames.add(sym);
@@ -430,15 +450,14 @@ public class VeniceInterpreter implements Serializable  {
 
 						recursionPoint = new RecursionPoint(bindingNames, expressions, env);
 
-						// optimization for small loops
 						if (expressions.size() == 1) {
 							orig_ast = expressions.first();
 						}
 						else {
 							evaluate_values(expressions.butlast(), env);
 							orig_ast = expressions.last();
-							tailPosition = true;
 						}
+						tailPosition = true;
 					}
 					break;
 
@@ -454,10 +473,13 @@ public class VeniceInterpreter implements Serializable  {
 						env = buildRecursionEnv(args, env, recursionPoint);
 						
 						final VncList expressions = recursionPoint.getLoopExpressions();
-						if (expressions.size() > 1) {
-							evaluate_values(expressions.butlast(), env);
+						if (expressions.size() == 1) {
+							orig_ast = expressions.first();
 						}
-						orig_ast = expressions.last();
+						else {
+							evaluate_values(expressions.butlast(), env);
+							orig_ast = expressions.last();
+						}
 						tailPosition = true;
 					}
 					break;
@@ -1582,8 +1604,12 @@ public class VeniceInterpreter implements Serializable  {
 	
 					checkInterrupted("dorun");
 	
-					// store value to a mutable place to prevent JIT from optimizing too much
-					ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
+					// Store value to a mutable place to prevent JIT from optimizing 
+					// too much. Wrap the result so a VncStack can be used as result
+					// too (VncStack is a special value in ThreadLocalMap)
+					ThreadLocalMap.set(
+							new VncKeyword("*benchmark-val*"), 
+							new VncJust(result));
 				}
 				
 				return first;
@@ -1613,8 +1639,12 @@ public class VeniceInterpreter implements Serializable  {
 	
 					checkInterrupted("dobench");
 	
-					// store value to a mutable place to prevent JIT from optimizing too much
-					ThreadLocalMap.set(new VncKeyword("*benchmark-val*"), result);
+					// Store value to a mutable place to prevent JIT from optimizing 
+					// too much. Wrap the result so a VncStack can be used as result
+					// too (VncStack is a special value in ThreadLocalMap)
+					ThreadLocalMap.set(
+							new VncKeyword("*benchmark-val*"), 
+							new VncJust(result));
 				}
 				
 				return VncList.ofList(elapsed);
@@ -2131,31 +2161,21 @@ public class VeniceInterpreter implements Serializable  {
 				break;
 			case 1:
 				// [1][2] calculate and bind the single new value
-				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(args.first(), env)));
+				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(args.first(), env, false)));
 				break;
 			case 2:
 				// [1] calculate the new values
-				final VncVal v1 = evaluate(args.first(), env);
-				final VncVal v2 = evaluate(args.second(), env);
+				final VncVal v1 = evaluate(args.first(), env, false);
+				final VncVal v2 = evaluate(args.second(), env, false);
 				// [2] bind the new values
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
 				break;
-			case 3:
-				// [1] calculate the new values
-				final VncVal v1_ = evaluate(args.first(), env);
-				final VncVal v2_ = evaluate(args.second(), env);
-				final VncVal v3_ = evaluate(args.third(), env);
-				// [2] bind the new values
-				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1_));
-				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2_));
-				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(2), v3_));
-				break;
 			default:
 				// [1] calculate new values
 				final VncVal[] newValues = new VncVal[args.size()];
-				for(int kk=0; kk<args.size(); kk++) {
-					newValues[kk++] = evaluate(args.nth(kk), env);
+				for(int ii=0; ii<args.size(); ii++) {
+					newValues[ii] = evaluate(args.nth(ii), env, false);
 				}
 				
 				// [2] bind the new values

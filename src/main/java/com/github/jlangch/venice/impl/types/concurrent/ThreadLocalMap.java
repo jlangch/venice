@@ -31,7 +31,6 @@ import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.util.CallStack;
 
@@ -73,21 +72,17 @@ public class ThreadLocalMap {
 	
 	public static void set(final VncKeyword key, final VncVal val) {
 		if (key != null) {
-			final VncVal v = get().values.get(key);
+			final ThreadLocalMap tmap = get();
+			final VncVal v = tmap.values.get(key);
 			if (v == null) {
-				get().values.put(key, val == null ? Nil : val);
+				tmap.values.put(key, val == null ? Nil : val);
 			}
 			else if (v instanceof VncStack) {
 				((VncStack) v).clear();
 				((VncStack)v).push(val == null ? Nil : val);
 			}
-			else if (val instanceof VncMutableMap) {
-				throw new VncException(String.format(
-						"VncMutableMap is not permitted for thread-local values",
-						key.getValue()));
-			}
 			else {
-				get().values.put(key, val);
+				tmap.values.put(key, val);
 			}
 		}
 	}

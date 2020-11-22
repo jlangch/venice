@@ -32,15 +32,18 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class VncInteger extends VncNumber {
 
 	public VncInteger(final Integer v) { 
-		this(v, null, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = v; 
 	}
 	
 	public VncInteger(final Long v) { 
-		this(v.intValue(), null, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = v.intValue(); 
 	}
 	
 	public VncInteger(final Integer v, final VncVal meta) { 
-		this(v, null, meta);
+		super(null, meta);
+		value = v; 
 	}
 
 	public VncInteger(

@@ -30,6 +30,10 @@
 [Reflection](https://www.sitepoint.com/reflection-vs-encapsulation-in-the-java-module-system/)
 
 
+## Performance
+
+[Clojure / Java Performance](http://www.diva-portal.org/smash/get/diva2:1424342/FULLTEXT01.pdf)
+
 
 ## Debugger
 

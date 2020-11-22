@@ -32,23 +32,28 @@ import com.github.jlangch.venice.impl.types.util.Types;
 public class VncDouble extends VncNumber {
 
 	public VncDouble(final Double v) { 
-		this(v, null, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = v; 
 	}
 	
 	public VncDouble(final Float v) { 
-		this(v.doubleValue(), null, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = v.doubleValue(); 
 	}
 
 	public VncDouble(final Long v) { 
-		this(v.doubleValue(), null, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = v.doubleValue(); 
 	}
 
 	public VncDouble(final Integer v) { 
-		this(v.doubleValue(), null, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = v.doubleValue(); 
 	}
 	
 	public VncDouble(final Double v, final VncVal meta) { 
-		this(v, null, meta);
+		super(null, meta);
+		value = v; 
 	}
 
 	public VncDouble(

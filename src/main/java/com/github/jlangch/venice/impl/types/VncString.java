@@ -35,11 +35,13 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class VncString extends VncVal {
 	
 	public VncString(final String v) { 
-		this(v, Constants.Nil); 
+		super(null, Constants.Nil);
+		value = (v == null) ? "" : v; 
 	}
 
 	public VncString(final String v, final VncVal meta) { 
-		this(v, null, meta);
+		super(null, meta);
+		value = (v == null) ? "" : v; 
 	}
 
 	public VncString(
@@ -51,10 +53,10 @@ public class VncString extends VncVal {
 		value = (v == null) ? "" : v; 
 	}
 
+	
 	public String getValue() { 
 		return value; 
 	}
-	
 	
 	@Override
 	public VncString withMeta(final VncVal meta) {
