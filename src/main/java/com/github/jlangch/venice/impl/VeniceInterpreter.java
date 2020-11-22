@@ -305,11 +305,6 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncVal evaluate(final VncVal ast_, final Env env_, final boolean inTailPosition) {
-		if (!(ast_ instanceof VncList)) {
-			// not an s-expr
-			return evaluate_values(ast_, env_);
-		}
-
 		RecursionPoint recursionPoint = null;
 		boolean tailPosition = inTailPosition;
 
@@ -629,11 +624,15 @@ public class VeniceInterpreter implements Serializable  {
 				case "tail-pos": 
 					return tail_pos_check(tailPosition, new CallFrame("tail-pos", a0.getMeta()), args, env);
 
-				default:
-					final VncVal elFirst = evaluate(a0, env);
-					final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
-					if (elFirst instanceof VncFunction) {
-						final VncFunction fn = (VncFunction)elFirst;
+				default: {
+					// (+ 1 2) or ((resolve '+) 1 2)
+					final VncVal fn0 = a0 instanceof VncSymbol 
+												? env.get((VncSymbol)a0)
+												: evaluate(a0, env);
+					
+					if (fn0 instanceof VncFunction) {
+						final VncFunction fn = (VncFunction)fn0;
+						final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 
 						final String fnName = fn.getQualifiedName();
 
@@ -692,11 +691,12 @@ public class VeniceInterpreter implements Serializable  {
 							}
 						}
 					}
-					else if (elFirst instanceof IVncFunction) {
+					else if (fn0 instanceof IVncFunction) {
 						// 1)  keyword as function to access maps: (:a {:a 100})
 						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
-						try (WithCallStack cs = new WithCallStack(new CallFrame(elFirst.getType().toString(), a0.getMeta()))) {
-							return ((IVncFunction)elFirst).apply(fnArgs);
+						try (WithCallStack cs = new WithCallStack(new CallFrame(fn0.getType().toString(), a0.getMeta()))) {
+							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
+							return ((IVncFunction)fn0).apply(fnArgs);
 						}
 					}
 					else {
@@ -705,10 +705,11 @@ public class VeniceInterpreter implements Serializable  {
 									"Expected a function or keyword/set/map/vector as "
 										+ "s-expression symbol value but got a value "
 										+ "of type '%s'!", 
-									Types.getType(elFirst)));
+									Types.getType(fn0)));
 						}
 					}
-					break;
+				}
+				break;
 			}
 		}
 	}
