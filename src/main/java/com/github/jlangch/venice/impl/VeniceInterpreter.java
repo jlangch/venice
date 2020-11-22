@@ -597,7 +597,7 @@ public class VeniceInterpreter implements Serializable  {
 					return modules_(new CallFrame("modules", a0.getMeta()), args, env);
 
 				case "binding":  // (binding [bindings*] exprs*)
-					return binding_(args, new Env(env));
+					return binding_(args, new Env(env), a0.getMeta());
 
 				case "bound?": // (bound? sym)
 					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
@@ -1832,10 +1832,16 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
-	private VncVal binding_(final VncList args, final Env env) {
+	private VncVal binding_(final VncList args, final Env env, final VncVal meta) {
 		final VncSequence bindings = Coerce.toVncSequence(args.first());
 		final VncList expressions = args.rest();
-	
+
+		if (bindings.size() % 2 != 0) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame("bindings", meta))) {
+				throw new VncException("Unbalanced bindings!");					
+			}
+		}
+
 		final List<Var> vars = new ArrayList<>();
 		for(int i=0; i<bindings.size(); i+=2) {
 			final VncVal sym = bindings.nth(i);
