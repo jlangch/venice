@@ -382,7 +382,7 @@ public class VeniceInterpreter implements Serializable  {
 							final VncVal sym = bindingsIter.next();
 							if (!bindingsIter.hasNext()) {
 								try (WithCallStack cs = new WithCallStack(new CallFrame("let", a0.getMeta()))) {
-									throw new VncException("Unbalanced let bindings!");					
+									throw new VncException("let requires an even number of forms in the binding vector!");					
 								}
 							}
 							final VncVal val = evaluate(bindingsIter.next(), env);
@@ -434,7 +434,7 @@ public class VeniceInterpreter implements Serializable  {
 
 						if (bindings.size() % 2 != 0) {
 							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
-								throw new VncException("Unbalanced loop bindings!");					
+								throw new VncException("loop requires an even number of forms in the binding vector!");					
 							}
 						}
 
@@ -1838,7 +1838,7 @@ public class VeniceInterpreter implements Serializable  {
 
 		if (bindings.size() % 2 != 0) {
 			try (WithCallStack cs = new WithCallStack(new CallFrame("bindings", meta))) {
-				throw new VncException("Unbalanced bindings!");					
+				throw new VncException("bindings requires an even number of forms in the binding vector!");					
 			}
 		}
 

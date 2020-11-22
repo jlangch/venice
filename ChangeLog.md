@@ -26,7 +26,8 @@ and this project adheres to
 - word wrap with function names in PDF cheatsheet
 - `shell/process-info` to handle Java Optional type better
 - callstack for macro arity exception
-- bindings in `let`, `recur`, and `bindings` to throw an exception if unbalanced
+- `let`, `recur`, and `bindings` to throw an exception if the binding vector 
+  does not have an even number of forms
 
 
 
