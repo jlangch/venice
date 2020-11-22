@@ -318,14 +318,7 @@ public class VeniceInterpreter implements Serializable  {
 				return evaluate_values(orig_ast, env);
 			}
 
-			// expand macros
-			final VncVal expanded = macroexpand(orig_ast, env, null);
-			if (!(expanded instanceof VncList)) {
-				// not an s-expr
-				return evaluate_values(expanded, env);
-			}
-
-			final VncList ast = (VncList)expanded;
+			final VncList ast = (VncList)orig_ast;
 			if (ast.isEmpty()) { 
 				return ast; 
 			}
@@ -334,7 +327,7 @@ public class VeniceInterpreter implements Serializable  {
 			final String a0sym = (a0 instanceof VncSymbol) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
 			final VncList args = ast.rest();		
 
-			// special form dispatcher
+			// special form / function dispatcher
 			switch (a0sym) {
 				case "do": { // (do expr*)
 						final VncList expressions = args;
@@ -624,13 +617,22 @@ public class VeniceInterpreter implements Serializable  {
 				case "tail-pos": 
 					return tail_pos_check(tailPosition, new CallFrame("tail-pos", a0.getMeta()), args, env);
 
-				default: {
-					// (+ 1 2) or ((resolve '+) 1 2)
-					final VncVal fn0 = a0 instanceof VncSymbol 
-												? env.get((VncSymbol)a0)
-												: evaluate(a0, env);
-					
-					if (fn0 instanceof VncFunction) {
+				default: { // functions, macros, collections/keywords as functions
+					final VncVal fn0 = a0 instanceof VncSymbol
+											? env.get((VncSymbol)a0)  // (+ 1 2)
+											: evaluate(a0, env);      // ((resolve '+) 1 2)
+										
+					if (fn0 instanceof VncFunction && ((VncFunction)fn0).isMacro()) {
+						final VncVal expandedAst = macroexpand(ast, env, null);
+						if (expandedAst instanceof VncList) {					
+							orig_ast = expandedAst;
+							continue;
+						}
+						else {
+							return evaluate_values(expandedAst, env); // not an s-expr
+						}
+					}				
+					else if (fn0 instanceof VncFunction) {
 						final VncFunction fn = (VncFunction)fn0;
 						final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 
