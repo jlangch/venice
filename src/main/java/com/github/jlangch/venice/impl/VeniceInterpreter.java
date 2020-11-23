@@ -461,7 +461,7 @@ public class VeniceInterpreter implements Serializable  {
 						}
 						if (args.size() != recursionPoint.getLoopBindingNamesCount()) {
 							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
-								throw new NotInTailPositionException(String.format(
+								throw new VncException(String.format(
 										"The recur args (%d) do not match the loop args (%d) !",
 										args.size(), recursionPoint.getLoopBindingNamesCount()));
 							}
