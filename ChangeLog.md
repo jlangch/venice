@@ -24,7 +24,7 @@ and this project adheres to
 ### Fixed
 
 - word wrap with function names in PDF cheatsheet
-- `shell/process-info` to handle Java Optional type better
+- `shell/process-info` to handle Java Optional in lieu of the caller
 - callstack for macro arity exception
 - `let`, `recur`, and `bindings` to throw an exception if the binding vector 
   does not have an even number of forms
@@ -38,7 +38,7 @@ and this project adheres to
 - function `partition-by`
 - macro `doseq`
 - arity check for passed arguments to functions. Throws an ArityException if the 
-  args do not match the function's parameter number.
+  args do not match the function's parameter count.
 - automatic TCO, that was an experimental feature since version 1.9.3
 - improvements to the 'kira' template extension module. With the availability of 
   `doseq` the module could be simplified. 'kira/emit' has been removed and 

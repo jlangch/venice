@@ -28,7 +28,7 @@
 (defmacro
   ^{ :arglists '("(comment & body)")
      :doc "Ignores body, yields nil"
-     :examples (list
+     :examples '(
           """
           (comment
             (println 1)
@@ -147,7 +147,7 @@
           of the corresponding expr and doesn't evaluate any of the other tests \
           or exprs. (cond) returns nil.
           """
-     :examples (list
+     :examples '(
           """
           (let [n 5]
             (cond
@@ -185,7 +185,7 @@
           expression is provided and no clause matches, a VncException \
           is thrown.
           """
-     :examples (list
+     :examples '(
           """
           (condp some [1 2 3 4]
              #{0 6 7} :>> inc
@@ -230,7 +230,7 @@
           Takes an expression and a set of clauses. Each clause takes the form \
           of test-constant result-expr
           """
-     :examples (list
+     :examples '(
           """
           (case (+ 1 9)
             10  :ten
@@ -328,7 +328,7 @@
           If test is true, evaluates then with binding-form bound to the value \
           of test, if not, yields else
           """
-     :examples (list
+     :examples '(
           """
           (if-let [value (* 100 2)]
             (str "The expression is true. value=" value)
@@ -356,7 +356,7 @@
           If test is true, evaluates the body expressions with binding-form \
           bound to the value of test, if not, yields nil
           """
-     :examples (list
+     :examples '(
           """
           (when-let [value (* 100 2)]
             (str "The expression is true. value=" value))
@@ -395,7 +395,7 @@
           Repeatedly executes body while test expression is true. Presumes some \
           side-effect will cause test to become false/nil. Returns nil.
           """
-     :examples (list
+     :examples '(
           """
           (do
             (def a (atom 5))
@@ -419,7 +419,7 @@
           of x supplied at the front of the given arguments. The forms are \
           evaluated in order. Returns x.
           """
-     :examples (list
+     :examples '(
           """
           (doto (. :java.util.HashMap :new)
                 (. :put :a 1)
@@ -442,7 +442,7 @@
           If there are more forms, inserts the first form as the second item in \
           second form, etc.
           """
-     :examples (list
+     :examples '(
           """
           (-> 5 (+ 3) (/ 2) (- 1))
           """
@@ -478,7 +478,7 @@
           are more forms, inserts the first form as the last item in second \
           form, etc.
           """
-     :examples (list
+     :examples '(
           "(->> 5 (+ 3) (/ 32) (- 1))"
           """
           (->> [ {:a 1 :b 2} {:a 3 :b 4} {:a 5 :b 6} {:a 7 :b 8} ]
@@ -526,7 +526,7 @@
           already. If there are more forms, inserts the first form at position \
           of the <> symbol in second form, etc.
           """
-     :examples (list
+     :examples '(
           """
           (-<> 5
                (+ <> 3)
@@ -550,7 +550,7 @@
           successive form, returning the result of the last form. This allows a \
           value to thread into any argument position.
           """
-     :examples (list
+     :examples '(
           """
           ; allows to use arbitrary positioning of the argument
           (as-> [:foo :bar] v
@@ -591,7 +591,7 @@
              (cond-> m
                 (some-pred? q)   (assoc :key :value))
           """
-     :examples (list
+     :examples '(
           """
           (cond-> 1        ; we start with 1
             true inc       ; the condition is true so (inc 1) => 2
@@ -621,7 +621,7 @@
           threading does not short circuit after the first true test \
           expression.
           """
-     :examples (list
+     :examples '(
           """
           (cond->> 1       ; we start with 1
             true inc       ; the condition is true so (inc 1) => 2
@@ -648,7 +648,7 @@
           When expr is not nil, threads it into the first form (via ->), \
           and when that result is not nil, through the next etc.
           """
-     :examples (list
+     :examples '(
           """
           (some-> {:y 3 :x 5}
                   :y
@@ -679,7 +679,7 @@
           When expr is not nil, threads it into the first form (via ->>), \
           and when that result is not nil, through the next etc.
           """
-     :examples (list
+     :examples '(
           """
           (some->> {:y 3 :x 5}
                    :y
@@ -797,7 +797,7 @@
 
           After a test run metrics data can be obtained with (prof :data-formatted)
           """
-     :examples (list
+     :examples '(
           """
           (do
             (perf (+ 120 200) 12000 1000)
@@ -824,7 +824,7 @@
 (defmacro
   ^{ :arglists '("(load-string s)")
      :doc "Sequentially read and evaluate the set of forms contained in the string."
-     :examples (list
+     :examples '(
           """
           (do
             (load-string "(def x 1)")
@@ -898,7 +898,7 @@
           classpath file. The function is restricted to classpath files with \
           the extension '.venice'.
           """
-     :examples (list
+     :examples '(
           """
           (do
             (load-classpath-file "com/github/jlangch/venice/test.venice")
@@ -1379,7 +1379,7 @@
           calculations it has the opposite effect and can slow it down \
           actually!
           """
-     :examples (list
+     :examples '(
           """
           (do
             (def fibonacci
@@ -1416,7 +1416,18 @@
           Note that if you want to return a fn as a final value, you must \
           wrap it in some data structure and unpack it after trampoline \
           returns.
-          """ }
+          """
+     :examples '(
+          """
+          (do
+            (defn factorial
+              ([n] #(factorial n 1N))
+              ([n acc] (if (< n 2)
+                       acc
+                       #(factorial (dec n) (* acc n)))))
+
+            (trampoline (factorial 20)))
+          """ ) }
 
   trampoline
 
@@ -1491,7 +1502,7 @@
           Performs a depth-first, post-order traversal of form. Calls f on \
           each sub-form, uses f's return value in place of the original.
           """
-     :examples (list
+     :examples '(
           """
           (postwalk (fn [x] (println "Walked:" (pr-str x)) x)
                     '(1 2 {:a 1 :b 2}))
@@ -1509,7 +1520,7 @@
           Performs a depth-last, pre-order traversal of form. Calls f on \
           each sub-form, uses f's return value in place of the original.
           """
-     :examples (list
+     :examples '(
           """
           (prewalk (fn [x] (println "Walked:" (pr-str x)) x)
                    '(1 2 {:a 1 :b 2}))
@@ -1524,7 +1535,7 @@
 (defn
   ^{ :arglists '("(macroexpand-all form)")
      :doc "Recursively expands all macros in the form."
-     :examples (list
+     :examples '(
           "(macroexpand-all '(and true true))",
           "(macroexpand-all '(and true (or true false) true))"
           "(macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0)))" )
