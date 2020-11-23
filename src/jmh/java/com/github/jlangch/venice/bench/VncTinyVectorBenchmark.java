@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.bench;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -38,6 +40,8 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncTinyVector;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+
+import io.vavr.collection.Vector;
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -87,7 +91,31 @@ public class VncTinyVectorBenchmark {
 	public Object drop_1() {
 		return vector.removeAt(0);
 	}
+	
+	@Benchmark
+	public Object map() {
+		return vector.map(v -> new VncLong(((VncLong)v).getValue() + 1));
+	}
+	
+	@Benchmark
+	public Object map_for_1() {
+		Vector<VncLong> tmp = Vector.empty();
+		for(VncVal v : vector) {
+			tmp = tmp.append(new VncLong(((VncLong)v).getValue() + 1));
+		}
+		return tmp;
+	}
+	
+	@Benchmark
+	public Object map_for_2() {
+		List<VncLong> tmp = new ArrayList<>(vector.size());
+		for(VncVal v : vector) {
+			tmp.add(new VncLong(((VncLong)v).getValue() + 1));
+		}
+		return Vector.ofAll(tmp);
+	}
 
+	
 	
 	private final VncVal val = new VncLong(0L);
 	

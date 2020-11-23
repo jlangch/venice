@@ -25,7 +25,9 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public interface IVncFunction {
-	 
+
+	VncList getArgLists();
+
 	VncVal apply(VncList args);
 	
 	default boolean isAnonymous() { 
@@ -39,7 +41,5 @@ public interface IVncFunction {
 	default boolean isNative() {
 		return false;
 	}
-
-	VncList getArgLists();
 
 }

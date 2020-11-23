@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.bench;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -83,6 +85,29 @@ public class VavrVectorBenchmark {
 	@Benchmark
 	public Object drop_1() {
 		return vector.drop(1);
+	}
+	
+	@Benchmark
+	public Object map() {
+		return vector.map(v -> v + 1);
+	}
+	
+	@Benchmark
+	public Object map_for_1() {
+		Vector<Integer> tmp = Vector.empty();
+		for(Integer i : vector) {
+			tmp = tmp.append(i + 1);
+		}
+		return tmp;
+	}
+	
+	@Benchmark
+	public Object map_for_2() {
+		List<Integer> tmp = new ArrayList<>(vector.size());
+		for(Integer i : vector) {
+			tmp.add(i + 1);
+		}
+		return Vector.ofAll(tmp);
 	}
 	
 	

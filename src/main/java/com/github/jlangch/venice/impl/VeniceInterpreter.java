@@ -622,7 +622,8 @@ public class VeniceInterpreter implements Serializable  {
 											? env.get((VncSymbol)a0)  // (+ 1 2)
 											: evaluate(a0, env);      // ((resolve '+) 1 2)
 										
-					if (fn0 instanceof VncFunction && ((VncFunction)fn0).isMacro()) {
+					if (fn0 instanceof VncFunction && ((VncFunction)fn0).isMacro()) { 
+						// macro
 						final VncVal expandedAst = macroexpand(ast, env, null);
 						if (expandedAst instanceof VncList) {					
 							orig_ast = expandedAst;
@@ -633,9 +634,9 @@ public class VeniceInterpreter implements Serializable  {
 						}
 					}				
 					else if (fn0 instanceof VncFunction) {
+						// function
 						final VncFunction fn = (VncFunction)fn0;
 						final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
-
 						final String fnName = fn.getQualifiedName();
 
 						final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
@@ -662,14 +663,10 @@ public class VeniceInterpreter implements Serializable  {
 							final VncList body = (VncList)f.getBody();
 							evaluate_values(body.butlast(), env);
 							orig_ast = body.last();
-							
-							//System.out.println(String.format("[%d] (tco) %s", callStack.size(), fnName));
 						}
 						else {
-							// System.out.println(String.format("[%d] (stack) %s", callStack.size(), fnName));
-
 							// invoke function with a new call frame
-							// Note: the overhead with callstack and interrupt check is ~150ns
+							// the overhead with callstack and interrupt check is ~150ns
 							try {
 								callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
 								return fn.apply(fnArgs);
@@ -694,11 +691,11 @@ public class VeniceInterpreter implements Serializable  {
 						}
 					}
 					else if (fn0 instanceof IVncFunction) {
-						// 1)  keyword as function to access maps: (:a {:a 100})
-						// 2)  a map as function to deliver its value for a key: ({:a 100} :a)
+						// collection/keyword as function
 						try (WithCallStack cs = new WithCallStack(new CallFrame(fn0.getType().toString(), a0.getMeta()))) {
+							final IVncFunction fn = (IVncFunction)fn0;
 							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
-							return ((IVncFunction)fn0).apply(fnArgs);
+							return fn.apply(fnArgs);
 						}
 					}
 					else {
@@ -774,11 +771,7 @@ public class VeniceInterpreter implements Serializable  {
 							evaluate(seq.third(), env),
 							evaluate(seq.fourth(), env));
 			default:
-				final List<VncVal> vals = new ArrayList<>(seq.size());
-				for(int ii=0; ii<seq.size(); ii++) {
-					vals.add(evaluate(seq.nth(ii), env));
-		 		}
-				return seq.withValues(vals);
+				return seq.map(v -> evaluate(v, env));
 		}
 	}
 
