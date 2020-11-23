@@ -83,7 +83,7 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 	abstract public Object convertToJavaObject();
 
 	public VncVal getMeta() {
-		// getMeta() can be redefined. Functions do that to manage meta data themselves.
+		// getMeta() can be redefined. Some data types do that to manage meta data themselves.
 		return meta == null ? Nil : meta; 
 	}
 	
