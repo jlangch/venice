@@ -339,17 +339,19 @@ public class VeniceInterpreter implements Serializable  {
 
 				case "if": { // (if cond expr-true expr-false*)
 						final int numArgs = args.size();
-						if (numArgs != 2 || numArgs != 3) {
+						if (numArgs == 2 || numArgs == 3) {
+							final VncVal cond = evaluate(args.first(), env);
+							orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
+											? args.third()   // eval false slot form (nil if not available)
+											: args.second(); // eval true slot form
+							tailPosition = true;
+						}
+						else {
 							// only create callstack when needed!
 							try (WithCallStack cs = new WithCallStack(new CallFrame("if", a0.getMeta()))) {
 								ArityExceptions.assertArity("if", FnType.SpecialForm, args, 2, 3);
 							}
 						}
-						final VncVal cond = evaluate(args.first(), env);
-						orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
-										? args.third()   // eval false slot form (nil if not available)
-										: args.second(); // eval true slot form
-						tailPosition = true;
 					}
 					break;
 
