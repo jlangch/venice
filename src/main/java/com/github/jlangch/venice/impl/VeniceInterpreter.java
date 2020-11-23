@@ -459,7 +459,14 @@ public class VeniceInterpreter implements Serializable  {
 										"The recur expression is not in tail position!");
 							}
 						}
-
+						if (args.size() != recursionPoint.getLoopBindingNamesCount()) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
+								throw new NotInTailPositionException(String.format(
+										"The recur args (%d) do not match the loop args (%d) !",
+										args.size(), recursionPoint.getLoopBindingNamesCount()));
+							}
+						}
+				
 						env = buildRecursionEnv(args, env, recursionPoint);
 						
 						final VncList expressions = recursionPoint.getLoopExpressions();
@@ -2159,8 +2166,10 @@ public class VeniceInterpreter implements Serializable  {
 	private Env buildRecursionEnv(final VncList args, final Env env, final RecursionPoint recursionPoint) {
 		final Env recur_env = recursionPoint.getLoopEnv();
 		
+		final int argCount = args.size();
+		
 		// denormalize for best performance (short loops are performance critical)
-		switch(args.size()) {
+		switch(argCount) {
 			case 0:
 				break;
 			case 1:
@@ -2177,13 +2186,13 @@ public class VeniceInterpreter implements Serializable  {
 				break;
 			default:
 				// [1] calculate new values
-				final VncVal[] newValues = new VncVal[args.size()];
-				for(int ii=0; ii<args.size(); ii++) {
+				final VncVal[] newValues = new VncVal[argCount];
+				for(int ii=0; ii<argCount; ii++) {
 					newValues[ii] = evaluate(args.nth(ii), env, false);
 				}
 				
 				// [2] bind the new values
-				for(int ii=0; ii<recursionPoint.getLoopBindingNamesCount(); ii++) {
+				for(int ii=0; ii<argCount; ii++) {
 					recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(ii), newValues[ii]));
 				}
 				break;
