@@ -188,20 +188,20 @@ total and average time for the function's calls:
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
-user/_test  [       1]:    12,97 s             
-user/sum    [     100]:    12,97 s    129,70 ms
-+           [10000000]:   638,12 ms       63 ns
-inc         [10000000]:   612,97 ms       61 ns
-<           [10000100]:   535,07 ms       53 ns
+user/_test  [       1]:  7968.68 ms            
+user/sum    [     100]:  7967.66 ms    79.68 ms
++           [10000000]:   659.78 ms       65 ns
+<           [10000100]:   557.23 ms       55 ns
+inc         [10000000]:   554.08 ms       55 ns
 -----------------------------------------------
 ```
 
 Analysis loop-recur performance:
 
-* `(sum 100000)` takes 143.7ms
-* the functions `inc` and `<` take 100'000 * 173ns = 17.3ms
-* the loop-recur overhead is (134.8ms - 17.3ms) / 100'000 = 1.2µs
-* every loop-recur iteration takes 1.2µs to process the `if` logic, initiate a new 
+* `(sum 100000)` takes 79.7ms
+* the functions `<`, `inc` and `+` take 100'000 * 175ns = 17.5ms
+* the loop-recur overhead is (79.7ms - 17.5ms) / 100'000 = 622ns
+* every loop-recur iteration takes 620ns to process the `if` logic, initiate a new 
   iteration, and setup the local environment with the loop variables.
 
 
@@ -230,29 +230,29 @@ Metrics:
 ----------------------------------------------
 Metrics: fibonacci
 ----------------------------------------------
-macroexpand  [ 34800]:   228.45 ms     6.56 us
-user/_test   [     1]:   197.93 ms            
-user/fib     [   100]:   197.78 ms     1.98 ms
-cond[m]      [ 14900]:    96.25 ms     6.46 us
-case[m]      [  5000]:    83.27 ms    16.65 us
-when[m]      [ 14900]:    39.77 ms     2.67 us
-mapcat       [  5000]:    28.65 ms     5.73 us
-cons         [164500]:    12.11 ms       73 ns
-concat       [ 19900]:     4.55 ms      228 ns
-rest         [ 44700]:     3.45 ms       77 ns
-partition    [  5000]:     1.90 ms      379 ns
-first        [ 14900]:     1.52 ms      102 ns
-list         [ 14900]:     1.37 ms       91 ns
-not-empty?   [ 14900]:     1.31 ms       88 ns
-second       [ 14900]:   950.98 us       63 ns
-==           [ 10000]:   862.88 us       86 ns
-odd?         [ 10000]:   852.88 us       85 ns
-count        [ 10000]:   807.81 us       80 ns
-gensym       [  5000]:   708.94 us      141 ns
-+            [  4900]:   578.20 us      118 ns
-last         [  5000]:   564.23 us      112 ns
-butlast      [  5000]:   517.84 us      103 ns
-dec          [  4900]:   368.96 us       75 ns
+macroexpand  [ 34800]:   165.50 ms     4.76 us
+user/_test   [     1]:   149.26 ms            
+user/fib     [   100]:   149.16 ms     1.49 ms
+cond[m]      [ 14900]:    68.70 ms     4.61 us
+case[m]      [  5000]:    62.22 ms    12.44 us
+when[m]      [ 14900]:    25.90 ms     1.74 us
+mapcat       [  5000]:    18.82 ms     3.76 us
+cons         [164500]:    11.59 ms       70 ns
+concat       [ 19900]:     5.44 ms      273 ns
+rest         [ 44700]:     3.22 ms       72 ns
+partition    [  5000]:     2.03 ms      406 ns
+first        [ 14900]:     1.23 ms       82 ns
+not-empty?   [ 14900]:     1.10 ms       73 ns
+second       [ 14900]:   892.99 us       59 ns
+list         [ 14900]:   837.29 us       56 ns
+odd?         [ 10000]:   760.59 us       76 ns
+==           [ 10000]:   712.49 us       71 ns
+gensym       [  5000]:   709.53 us      141 ns
+count        [ 10000]:   653.92 us       65 ns
++            [  4900]:   577.24 us      117 ns
+butlast      [  5000]:   532.42 us      106 ns
+last         [  5000]:   518.53 us      103 ns
+dec          [  4900]:   492.42 us      100 ns
 ----------------------------------------------
 ```
 
@@ -262,13 +262,12 @@ Metrics with upfront macro expansion:
 --------------------------------------------
 Metrics: fibonacci
 --------------------------------------------
-user/_test  [    1]:    14.51 ms            
-user/fib    [  100]:    14.41 ms   144.11 us
-==          [10000]:   977.34 us       97 ns
-+           [ 4900]:   727.36 us      148 ns
-dec         [ 4900]:   473.84 us       96 ns
+user/_test  [    1]:    10.57 ms            
+user/fib    [  100]:    10.43 ms   104.33 us
+==          [10000]:   930.48 us       93 ns
++           [ 4900]:   603.90 us      123 ns
+dec         [ 4900]:   404.78 us       82 ns
 --------------------------------------------
-
 ```
 
 
@@ -278,8 +277,6 @@ The profiler runs the sum function 5000 times as warm-up followed by 100 times t
 
 ```clojure
 (do
-   (load-module :math)
-     
    (defn fib [x]
       (loop [n x, a 0N, b 1N]
         (if (zero? n)
@@ -298,12 +295,12 @@ Metrics:
 -------------------------------------------
 Metrics: fib
 -------------------------------------------
-user/_test  [   1]:    10.96 ms            
-user/fib    [ 100]:    10.87 ms   108.69 us
-+           [4900]:   560.98 us      114 ns
-dec         [4900]:   476.27 us       97 ns
-zero?       [5000]:   425.86 us       85 ns
-=           [5000]:   406.24 us       81 ns
+user/_test  [   1]:     8.99 ms            
+user/fib    [ 100]:     8.93 ms    89.33 us
++           [4900]:   613.33 us      125 ns
+dec         [4900]:   479.36 us       97 ns
+zero?       [5000]:   412.55 us       82 ns
+=           [5000]:   401.40 us       80 ns
 -------------------------------------------
 ```
 
