@@ -81,5 +81,6 @@ Cheat Sheet: [HTML](https://cdn.rawgit.com/jlangch/venice/425e52d/cheatsheet.htm
 * [Multi-File Apps](doc/readme/multi-file-app.md)
 * [Development Tools](doc/readme/dev-tools.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
+* [Performance comparison Venice - Clojure - Java](doc/readme/performance.md)
 * [3rd Party Libs](doc/readme/3rdparty-lic.md)
 

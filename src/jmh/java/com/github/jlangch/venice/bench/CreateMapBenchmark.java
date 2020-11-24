@@ -63,7 +63,11 @@ public class CreateMapBenchmark {
 	public CreateMapBenchmark() {
 	}
 	
-	/**     
+	/** 
+	    [VENICE]
+	     
+	    (load-module :benchmark)
+	       
 	 	(defn create−mutable-map [size] 
 		  (loop [m (mutable-map), i size]
 		    (if (zero? i)
@@ -77,8 +81,19 @@ public class CreateMapBenchmark {
 		      (recur (assoc m i (* 2 i)) (dec i)))))
 
 
- 		 (do (time (dorun 1000 (create−mutable-map 2000))) nil)
-		 (reduce + (dobench 1000 (create−mutable-map 2000)))
+        (bench/benchmark (create−mutable-map 2000) 1000 1000)
+        
+ 		(do (time (dorun 1000 (create−mutable-map 2000))) nil)
+		(reduce + (dobench 1000 (create−mutable-map 2000)))
+		
+		
+		[CLOJURE]
+		
+		(require '[criterium.core :as criterium])
+		
+		(time (dotimes [_ 1e6] (reduce + (map #(/ % 100.0) (range 100)))))
+		
+		(criterium/quick-bench (reduce + (map #(/ % 100.0) (range 100))))
     */
 
 	@Benchmark

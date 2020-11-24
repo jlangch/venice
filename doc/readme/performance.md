@@ -1,0 +1,172 @@
+# Performance comparison
+
+
+Quantifying the absolute performance of a language is an impossible task. This 
+section instead attempts to give an idea of what performance differences to 
+expect when choosing between the three languages. This is done by comparing
+execution times of several small example programs implemented in the three 
+languages *Java*, *Clojure*, and *Venice*.
+
+While *Clojure* forms are always compiled before being executed even when run 
+from the REPL, *Venice* is always interpreted, so interpreted *Venice* is
+compared against compiled *Clojure* and *Java* code.
+
+
+## Hardware and Software used
+
+**Hardware**: 2017 MacBook Pro, Mac OSX 11.0.1, Core i7 2.8 GHz
+
+**Java**: OpenJDK 64-Bit Server VM 1.8.0_275-b01
+
+**Venice**: 1.9.5
+
+**Clojure**: 1.10.1
+
+
+
+## Measuring performance
+
+On Java [JMH](https://github.com/openjdk/jmh) (Java Microbenchmark Harness) is used
+to measure the performance of the sample programs. [Criterium 0.4.6](https://github.com/hugoduncan/criterium) 
+drives the Clojure benchmark, and on Venice the *benchmark* module is used.
+
+**JMH configuration annotations**
+
+```text
+@Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
+@Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
+@Fork(1)
+@BenchmarkMode (Mode.AverageTime)
+@OutputTimeUnit (TimeUnit.NANOSECONDS)
+@State (Scope.Benchmark)
+@Threads (1)
+```
+
+**Java VM options:** 
+
+```text
+-server  -Xmx6G
+```
+
+**Leiningen config**
+
+~/.lein/profiles.clj:
+
+```text
+{:user {:dependencies [[criterium "0.4.1"]]
+        :jvm-opts ["-Xmx6G" "-server"] }}
+```
+
+
+## Sample programs
+
+### Map creation
+
+**Java**
+
+```java
+@Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
+@Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
+@Fork(1)
+@BenchmarkMode (Mode.AverageTime)
+@OutputTimeUnit (TimeUnit.NANOSECONDS)
+@State (Scope.Benchmark)
+@Threads (1)
+public class CreateMap_Benchmark {
+    @Benchmark
+    public Object create_mutable_map() {
+        final ConcurrentHashMap<Long,Long> map = new ConcurrentHashMap<>();
+        for(long ii=0; ii<2000; ii++) {
+            map.put(Long.valueOf(ii), Long.valueOf(ii*2));
+        }
+        return map;
+    }
+
+    @Benchmark
+    public Object create_persistent_map() {
+        io.vavr.collection.HashMap<Long,Long> map = io.vavr.collection.HashMap.empty();
+        for(long ii=0; ii<2000; ii++) {
+            map = map.put(Long.valueOf(ii), Long.valueOf(ii*2));
+        }
+        return map;
+    }
+}
+```
+
+**Clojure**
+
+```clojure
+(require '[criterium.core :as criterium])
+
+(defn create−persistent-map [size] 
+  (loop [m {}, i size]
+     (if (zero? i)
+         m
+         (recur (assoc m i (* 2 i)) (dec i)))))
+         
+(criterium/quick-bench (create−persistent-map 2000))
+```
+
+**Venice**
+
+```clojure
+(do
+  (load-module :benchmark)
+  
+  (defn create−persistent-map [size] 
+    (loop [m (hash-map), i size]
+       (if (zero? i)
+           m
+           (recur (assoc m i (* 2 i)) (dec i)))))
+         
+  (bench/benchmark (create−persistent-map 2000) 1000 500))
+```
+
+### Results
+
+**Java**
+
+```text
+// Java Benchmark                Mode  Cnt  Score        Error        Units
+// ------------------------------------------------------------------------
+// create_mutable_map            avgt    3  126'334.710  ± 16018.747  ns/op
+// create_persistent_map         avgt    3  129'435.875  ± 24465.158  ns/op
+```
+
+**Clojure**
+
+```text
+WARNING: Final GC required 18.03001544260917 % of runtime
+Evaluation count : 750 in 6 samples of 125 calls.
+             Execution time mean : 808.485571 µs
+    Execution time std-deviation : 6.572947 µs
+   Execution time lower quantile : 802.515968 µs ( 2.5%)
+   Execution time upper quantile : 816.447943 µs (97.5%)
+                   Overhead used : 8.172397 ns
+```
+
+**Venice**
+
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples :     500
+          Execution time mean :   1.747 ms
+ Execution time std-deviation : 132.233 us
+Execution time lower quartile :   1.677 ms (25%)
+Execution time upper quartile :   1.826 ms (75%)
+Execution time lower quantile :   1.649 ms (2.5%)
+Execution time upper quantile :   2.163 ms (97.5%)
+                     Outliers :       7
+```
+
+### Summary
+
+| Benchmark               |  Java |  Clojure |  Venice |
+| :---                    |  ---: |     ---: |    ---: |
+| map creation            | 126us |    808us |  1747us |
+
+
+
