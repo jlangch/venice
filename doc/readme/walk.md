@@ -38,25 +38,6 @@ each sub-form, uses f's return value in place of the original.
 ```
 
 
-## Macro expansion
-
-`(macroexpand-all form)`
-
-Recursively expands all macros in a form. It's implemented on top of `prewalk`.
-
-*Examples:*
-
-```clojure
-(do
-  (macroexpand-all '(and true true))
-
-  (macroexpand-all '(and true (or true false) true))
-
-  (macroexpand-all '(let [n 5] (cond (< n 0) -1 (> n 0) 1 :else 0))))
-```
-
-
-
 ## Examples: Walk & Replace forms
 
 
