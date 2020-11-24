@@ -20,7 +20,7 @@ and this project adheres to
 - `shell/processes-info` to list the process info of all running processes
 - arity check for passed arguments for all special forms
 - callstack for map/set/vector used as function
-- added improvements to the interpreter that makes it up to 40% faster
+- added optimizations to the interpreter that makes it up to 40% faster
 
 ### Fixed
 
