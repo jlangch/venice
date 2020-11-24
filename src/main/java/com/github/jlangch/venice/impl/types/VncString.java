@@ -105,7 +105,7 @@ public class VncString extends VncVal {
 		return new VncString(String.valueOf(value.charAt(idx)));
 	}
 
-	public VncVal nthOrDefault(final int idx, final VncString defaultVal) {
+	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
 		return (idx < 0 || idx >= value.length()) ? defaultVal : nth(idx);
 	}
 
@@ -125,6 +125,14 @@ public class VncString extends VncVal {
 		final List<VncVal> list = new ArrayList<>();
 		for(char c : value.toCharArray()) {
 			list.add(new VncString(String.valueOf(c)));
+		}
+		return VncList.ofList(list);
+	}
+	
+	public VncList toVncCharList() {
+		final List<VncVal> list = new ArrayList<>();
+		for(char c : value.toCharArray()) {
+			list.add(new VncChar(c));
 		}
 		return VncList.ofList(list);
 	}
@@ -148,11 +156,11 @@ public class VncString extends VncVal {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (Types.isVncChar(o)) {
-			return getValue().compareTo(((VncChar)o).getValue().toString());
-		}
 		else if (Types.isVncString(o)) {
 			return getValue().compareTo(((VncString)o).getValue());
+		}
+		else if (Types.isVncChar(o)) {
+			return getValue().compareTo(((VncChar)o).getValue().toString());
 		}
 
 		return super.compareTo(o);

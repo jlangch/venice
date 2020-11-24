@@ -305,11 +305,11 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncVal evaluate(final VncVal ast_, final Env env_, final boolean inTailPosition) {
-		RecursionPoint recursionPoint = null;
-		boolean tailPosition = inTailPosition;
-
 		VncVal orig_ast = ast_;
 		Env env = env_;
+
+		RecursionPoint recursionPoint = null;
+		boolean tailPosition = inTailPosition;
 
 		while (true) {
 			//System.out.println("EVAL: " + printer._pr_str(orig_ast, true));
@@ -518,7 +518,7 @@ public class VeniceInterpreter implements Serializable  {
 					return defmulti_(new CallFrame("defmulti", a0.getMeta()), args, env);
 
 				case "defmethod": // (defmethod multifn-name dispatch-val & fn-tail)
-					return defmethod_(new CallFrame("defmethod", a0.getMeta()), args, env, ast.getMeta());
+					return defmethod_(new CallFrame("defmethod", a0.getMeta()), args, env, a0.getMeta());
 
 				case "ns": // (ns alpha)
 					return ns_(new CallFrame("ns", a0.getMeta()), args, env);
@@ -875,9 +875,10 @@ public class VeniceInterpreter implements Serializable  {
 	 * Expands recursively all macros in the form.
 	 * 
 	 * <p>An approach with <code>core/prewalk</code> does not work, because
-	 * this function does not apply namespaces (remember macros are always 
-	 * executed in the namespace of the caller as opposed to functions that
-	 * are executed in the namespace they are defined in).
+	 * this function does not apply namespaces definitions (ns x).
+	 * Remember that macros are always executed in the namespace of the caller 
+	 * as opposed to functions that are executed in the namespace they are 
+	 * defined in.
 	 * 
 	 * <p>With <code>core/prewalk</code> we cannot execute <code>(ns x)</code>
 	 * because the functions involved like <code>core/walk</code> and 
@@ -980,6 +981,7 @@ public class VeniceInterpreter implements Serializable  {
 			};
 	
 			
+			// remember the original namespace
 			final Namespace original_ns = Namespaces.getCurrentNamespace();
 			try {
 				final VncVal expanded = prewalk.applyOf(handler, form);

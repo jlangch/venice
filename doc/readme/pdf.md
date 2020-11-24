@@ -499,14 +499,14 @@ may look like:
 
 ```text
 Length     Date/Time        Name
----------  ---------------- -----------------------------
-        0  2019-07-01 13:20 fonts/
-   211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
-   213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
-   212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
-   224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
-   212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
-   217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
+-------  ---------------- -----------------------------
+      0  2019-07-01 13:20 fonts/
+ 211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
+ 213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
+ 212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
+ 224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
+ 212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
+ 217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
 ```
 
 A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub 
@@ -533,8 +533,6 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
                    (throw (. :VncException :new
                              "Font classpath resource '~{r}' not found!"))))))
 
-
-  (def text (str/lorem-ipsum :paragraphs 1))
 
   ; define the template
   (def template

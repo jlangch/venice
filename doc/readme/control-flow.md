@@ -153,6 +153,26 @@ Returns nil.
 ```
 
 
+## doseq
+
+`(doseq seq-exprs & body)`
+
+`doseq` repeatedly executes body (presumably for side-effects) with bindings and filtering 
+as provided by "list-comp". Does not retain the head of the sequence. Returns nil.
+
+```clojure
+(doseq [x (range 10)] (print x))
+```
+
+```clojure
+(doseq [x (seq "abc") y [0 1 2]] (print (pr-str [x y])))
+```
+
+```clojure
+(doseq [x (range 10) :when (odd? x)] (print (* x 2)))
+```
+
+
 ## docoll
 
 `(docoll f coll)`
