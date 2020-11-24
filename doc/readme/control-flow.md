@@ -161,15 +161,21 @@ List comprehensions take a vector of one or more binding-form or collection-expr
 each followed by zero or more modifiers, and yields a collection of evaluations of expr.
 
 ```clojure
-(list-comp [x (range 10)] x)
+(list-comp [x (range 5)] x) 
+
+;; => (0 1 2 3 4)
 ```
 
 ```clojure
-(list-comp [x (seq "abc") y [0 1 2]] [x y])
+(list-comp [x (seq "abc") y [0 1]] [x y])
+
+;; => (["a" 0] ["a" 1] ["b" 0] ["b" 1] ["c" 0] ["c" 1])
 ```
 
 ```clojure
 (list-comp [x (range 10) :when (odd? x)] (* x 2))
+
+;; => (2 6 10 14 18)
 ```
 
 
@@ -182,14 +188,23 @@ as provided by "list-comp". Does not retain the head of the sequence. Returns ni
 
 ```clojure
 (doseq [x (range 10)] (print x))
+
+;; 0123456789
+;; => nil
 ```
 
 ```clojure
 (doseq [x (seq "abc") y [0 1 2]] (print (pr-str [x y])))
+
+;; ["a" 0]["a" 1]["b" 0]["b" 1]["c" 0]["c" 1]
+;; => nil
 ```
 
 ```clojure
-(doseq [x (range 10) :when (odd? x)] (print (* x 2)))
+(doseq [x (range 10) :when (odd? x)] (print (* x 2) " "))
+
+;; 2  6  10  14  18
+;; => nil
 ```
 
 
