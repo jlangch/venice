@@ -35,6 +35,21 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
+// Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
+//
+// Java Benchmark                Mode  Cnt  Score        Error        Units
+// ------------------------------------------------------------------------
+// create_mutable_map            avgt    3  126'334.710  ± 16018.747  ns/op
+// create_persistent_map         avgt    3  129'435.875  ± 24465.158  ns/op
+//
+//
+// Venice Benchmark              Mode  Cnt  Score        Error        Units
+// -----------------------------------------------------------------------
+// create-mutable-map                       1'560'000                 ns/op
+// create-persistent-map                    1'640'000                 ns/op
+//
+// => Java is 12x faster than Venice
+
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
@@ -48,22 +63,38 @@ public class CreateMapBenchmark {
 	public CreateMapBenchmark() {
 	}
 	
-	/*  
-	 	(defn create−map [size] 
+	/**     
+	 	(defn create−mutable-map [size] 
 		  (loop [m (mutable-map), i size]
 		    (if (zero? i)
 		      m
 		      (recur (assoc! m i (* 2 i)) (dec i)))))
-		      
-		 venice> (perf (create−map 2000) 1000 1000)
-         venice> (println (prof :data-formatted))
+
+	 	(defn create−persistent-map [size] 
+		  (loop [m (hash-map), i size]
+		    (if (zero? i)
+		      m
+		      (recur (assoc m i (* 2 i)) (dec i)))))
+
+
+ 		 (do (time (dorun 1000 (create−mutable-map 2000))) nil)
+		 (reduce + (dobench 1000 (create−mutable-map 2000)))
     */
 
 	@Benchmark
-	public Object create_map() {
+	public Object create_mutable_map() {
 		final ConcurrentHashMap<Long,Long> map = new ConcurrentHashMap<>();
 		for(long ii=0; ii<2000; ii++) {
 			map.put(Long.valueOf(ii), Long.valueOf(ii*2));
+		}
+		return map;
+	}
+
+	@Benchmark
+	public Object create_persistent_map() {
+		io.vavr.collection.HashMap<Long,Long> map = io.vavr.collection.HashMap.empty();
+		for(long ii=0; ii<2000; ii++) {
+			map = map.put(Long.valueOf(ii), Long.valueOf(ii*2));
 		}
 		return map;
 	}

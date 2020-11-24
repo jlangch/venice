@@ -204,6 +204,18 @@ Analysis loop-recur performance:
 * every loop-recur iteration takes 620ns to process the `if` logic, initiate a new 
   iteration, and setup the local environment with the loop variables.
 
+**Profiler overhead**
+
+To compare what the profiler costs
+
+```text
+(time (dorun 100 (sum 100000)))
+
+;; Elapsed time: 5.21 s
+```
+
+The profiler adds an overhead of 50% to collect the profile data.
+
 
 
 ### Example: profiling fibonacci (case macro)
