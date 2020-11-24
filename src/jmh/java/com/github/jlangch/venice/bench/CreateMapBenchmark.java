@@ -55,7 +55,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
 @Fork(1)
 @BenchmarkMode (Mode.AverageTime)
-@OutputTimeUnit (TimeUnit.NANOSECONDS)
+@OutputTimeUnit (TimeUnit.MICROSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
 public class CreateMapBenchmark {

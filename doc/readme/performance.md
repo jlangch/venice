@@ -30,18 +30,6 @@ On Java [JMH](https://github.com/openjdk/jmh) (Java Microbenchmark Harness) is u
 to measure the performance of the sample programs. [Criterium 0.4.6](https://github.com/hugoduncan/criterium) 
 drives the Clojure benchmark, and on Venice the *benchmark* module is used.
 
-**JMH configuration annotations**
-
-```text
-@Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
-@Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
-@Fork(1)
-@BenchmarkMode (Mode.AverageTime)
-@OutputTimeUnit (TimeUnit.NANOSECONDS)
-@State (Scope.Benchmark)
-@Threads (1)
-```
-
 **Java VM options:** 
 
 ```text
@@ -69,7 +57,7 @@ drives the Clojure benchmark, and on Venice the *benchmark* module is used.
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
 @Fork(1)
 @BenchmarkMode (Mode.AverageTime)
-@OutputTimeUnit (TimeUnit.NANOSECONDS)
+@OutputTimeUnit (TimeUnit.MICROSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
 public class CreateMap_Benchmark {
@@ -127,10 +115,10 @@ public class CreateMap_Benchmark {
 **Java**
 
 ```text
-// Java Benchmark                Mode  Cnt  Score        Error        Units
-// ------------------------------------------------------------------------
-// create_mutable_map            avgt    3  126'334.710  ± 16018.747  ns/op
-// create_persistent_map         avgt    3  129'435.875  ± 24465.158  ns/op
+Java Benchmark                Mode  Cnt  Score    Error    Units
+-----------------------------------------------------------------
+create_mutable_map            avgt    3  126.334  ± 16.018  µs/op
+create_persistent_map         avgt    3  129.435  ± 24.465  µs/op
 ```
 
 **Clojure**
@@ -154,7 +142,7 @@ Sampling...
 Analyzing...
                       Samples :     500
           Execution time mean :   1.747 ms
- Execution time std-deviation : 132.233 us
+ Execution time std-deviation : 132.233 µs
 Execution time lower quartile :   1.677 ms (25%)
 Execution time upper quartile :   1.826 ms (75%)
 Execution time lower quantile :   1.649 ms (2.5%)
@@ -166,7 +154,7 @@ Execution time upper quantile :   2.163 ms (97.5%)
 
 | Benchmark               |  Java |  Clojure |  Venice |
 | :---                    |  ---: |     ---: |    ---: |
-| map creation            | 126us |    808us |  1747us |
+| map creation            | 126µs |    808µs |  1747µs |
 
 
 
