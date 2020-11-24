@@ -153,6 +153,26 @@ Returns nil.
 ```
 
 
+## list-comp
+
+`(list-comp seq-exprs & body-expr)`
+
+List comprehensions take a vector of one or more binding-form or collection-expr pairs, 
+each followed by zero or more modifiers, and yields a collection of evaluations of expr.
+
+```clojure
+(list-comp [x (range 10)] x)
+```
+
+```clojure
+(list-comp [x (seq "abc") y [0 1 2]] [x y])
+```
+
+```clojure
+(list-comp [x (range 10) :when (odd? x)] (* x 2))
+```
+
+
 ## doseq
 
 `(doseq seq-exprs & body)`
