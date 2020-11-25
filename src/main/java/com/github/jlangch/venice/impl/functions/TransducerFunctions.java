@@ -80,15 +80,15 @@ public class TransducerFunctions {
 						"(do                                       \n" +
 						"  (def xform (map #(+ % 1)))              \n" +
 						"  (transduce xform + [1 2 3 4]))            ",
-						
+
 						"(do                                       \n" +
 						"  (def xform (map #(+ % 1)))              \n" +
 						"  (transduce xform conj [1 2 3 4]))         ",
-						
+
 						"(do                                       \n" +
 						"  (def xform (comp (drop 2) (take 3)))    \n" +
 						"  (transduce xform conj [1 2 3 4 5 6]))     ",
-						
+
 						"(do                                       \n" +
 						"  (def xform (comp                        \n" +
 						"              (map #(* % 10))             \n" +
@@ -200,20 +200,18 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("map:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										return rf.apply(VncList.of(result, fn.apply(VncList.of(input))));
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+											return rf.apply(VncList.of(result, fn.apply(VncList.of(input))));
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -236,7 +234,7 @@ public class TransducerFunctions {
 						// optimized mapper for a single collection
 						final VncSequence seq = coerceToSequence(lists.first())
 													.map(v -> VncFunction.applyWithMeter(
-																fn, 
+																fn,
 																VncList.of(v),
 																meterRegistry));
 						return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
@@ -246,29 +244,29 @@ public class TransducerFunctions {
 						for(int ii=0; ii<lists.size(); ii++) {
 							seqs[ii] = coerceToSequence(lists.nth(ii));
 						}
-						
+
 						// mapper with multiple collections
 						boolean hasMore = true;
 						while(hasMore) {
 							final List<VncVal> fnArgs = new ArrayList<>();
-	
+
 							for(int ii=0; ii<seqs.length; ii++) {
-								VncSequence s = seqs[ii];							
+								VncSequence s = seqs[ii];
 								if (s.isEmpty()) {
 									hasMore = false;
 									break;
 								}
-								
+
 								fnArgs.add(s.first());
 								seqs[ii] = s.rest();
 							}
-	
+
 							if (hasMore) {
 								final VncVal val = VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry);
 								result.add(val);
 							}
 						}
-	
+
 						return VncList.ofList(result);
 					}
 				}
@@ -314,24 +312,23 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("map-indexed:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-			
-										return rf.apply(VncList.of(
-															result, 
-															fn.apply(VncList.of(
-																		new VncLong(idx.getAndIncrement()), 
-																		input))));
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+	
+											return rf.apply(VncList.of(
+																result,
+																fn.apply(VncList.of(
+																			new VncLong(idx.getAndIncrement()),
+																			input))));
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -347,7 +344,7 @@ public class TransducerFunctions {
 					final VncVal coll = args.second();
 
 					Iterable<VncVal> items;
-					
+
 					if (Types.isVncSequence(coll)) {
 						items = ((VncSequence)coll);
 					}
@@ -365,11 +362,11 @@ public class TransducerFunctions {
 								"Function 'map-indexed' requires a list, vector, set, " +
 								"map, or string as coll argument.");
 					}
-					
+
 
 					final List<VncVal> list = new ArrayList<>();
 					int index = 0;
-					
+
 					for(VncVal v : items) {
 						list.add(VncFunction.applyWithMeter(fn, VncList.of(new VncLong(index++), v), meterRegistry));
 					}
@@ -412,23 +409,21 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("filter:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										final VncVal cond = predicate.apply(VncList.of(input));
-										return (!VncBoolean.isFalse(cond) && cond != Nil)
-													? rf.apply(VncList.of(result, input))
-													: result;
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+											final VncVal cond = predicate.apply(VncList.of(input));
+											return (!VncBoolean.isFalse(cond) && cond != Nil)
+														? rf.apply(VncList.of(result, input))
+														: result;
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -443,7 +438,7 @@ public class TransducerFunctions {
 					final VncSequence seq = coerceToSequence(args.second())
 												.filter(v -> {
 														final VncVal keep = VncFunction.applyWithMeter(
-																				predicate, 
+																				predicate,
 																				VncList.of(v),
 																				meterRegistry);
 														return !VncBoolean.isFalse(keep) && keep != Nil;
@@ -483,25 +478,21 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("drop:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										if (nn.getAndDecrement() > 0) {
-											return result;
-										}
-										else {
-											return rf.apply(VncList.of(result, input));
-										}
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+	
+											return nn.getAndDecrement() > 0 
+													? result
+													: rf.apply(VncList.of(result, input));
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -554,32 +545,31 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("drop-while:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
 
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										if (take.get()) {
-											return rf.apply(VncList.of(result, input));
-										}
-										else {
-											final VncVal drop = predicate.apply(VncList.of(input));
-											if (VncBoolean.isTrue(drop)) {
-												return result;
-											}
-											else {
-												take.set(true);
+											if (take.get()) {
 												return rf.apply(VncList.of(result, input));
 											}
-										}
+											else {
+												final VncVal drop = predicate.apply(VncList.of(input));
+												if (VncBoolean.isTrue(drop)) {
+													return result;
+												}
+												else {
+													take.set(true);
+													return rf.apply(VncList.of(result, input));
+												}
+											}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -592,10 +582,10 @@ public class TransducerFunctions {
 				}
 				else {
 					final VncSequence coll = coerceToSequence(args.second());
-				
+
 					return coll.dropWhile(v -> {
 								final VncVal dropItem = VncFunction.applyWithMeter(
-															predicate, 
+															predicate,
 															VncList.of(v),
 															meterRegistry);
 								return !VncBoolean.isFalse(dropItem) && dropItem != Nil;
@@ -637,25 +627,21 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("take:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										if (nn.getAndDecrement() > 0) {
-											return rf.apply(VncList.of(result, input));
-										}
-										else {
-											return Reduced.reduced(result);
-										}
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+	
+											return nn.getAndDecrement() > 0
+													? rf.apply(VncList.of(result, input))
+													: Reduced.reduced(result);
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -708,26 +694,25 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("take-while:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										final VncVal take = predicate.apply(VncList.of(input));
-										if (VncBoolean.isTrue(take)) {
-											return rf.apply(VncList.of(result, input));
-										}
-										else {
-											return Reduced.reduced(result);
-										}
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+	
+											final VncVal take = predicate.apply(VncList.of(input));
+											if (VncBoolean.isTrue(take)) {
+												return rf.apply(VncList.of(result, input));
+											}
+											else {
+												return Reduced.reduced(result);
+											}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -741,10 +726,10 @@ public class TransducerFunctions {
 				}
 				else {
 					final VncSequence coll = coerceToSequence(args.second());
-					
+
 					return coll.takeWhile(v -> {
 								final VncVal takeItem = VncFunction.applyWithMeter(
-															predicate, 
+															predicate,
 															VncList.of(v),
 															meterRegistry);
 								return !VncBoolean.isFalse(takeItem) && takeItem != Nil;
@@ -787,21 +772,20 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("keep:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
 
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										final VncVal val = fn.apply(VncList.of(input));
-										return val == Nil || VncBoolean.isFalse(val) ? result : rf.apply(VncList.of(result, input));
+											final VncVal val = fn.apply(VncList.of(input));
+											return val == Nil || VncBoolean.isFalse(val) ? result : rf.apply(VncList.of(result, input));
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -852,26 +836,25 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("dedupe:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
 
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										if (!input.equals(seen.get())) {
-											seen.set(input);
-											return rf.apply(VncList.of(result, input));
-										}
-										else {
-											return result;
-										}
+											if (!input.equals(seen.get())) {
+												seen.set(input);
+												return rf.apply(VncList.of(result, input));
+											}
+											else {
+												return result;
+											}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -943,7 +926,7 @@ public class TransducerFunctions {
 					final VncSequence seq = coerceToSequence(args.second())
 												.filter(v -> {
 														final VncVal keep = VncFunction.applyWithMeter(
-																				predicate, 
+																				predicate,
 																				VncList.of(v),
 																				meterRegistry);
 														return VncBoolean.isFalse(keep) || keep == Nil;
@@ -983,26 +966,25 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("distinct:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										if (seen.contains(input)) {
-											return result;
-										}
-										else {
-											seen.add(input);
-											return rf.apply(VncList.of(result, input));
-										}
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1:
+											return rf.apply(VncList.of(args.first()));
+										case 2:
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+	
+											if (seen.contains(input)) {
+												return result;
+											}
+											else {
+												seen.add(input);
+												return rf.apply(VncList.of(result, input));
+											}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -1059,25 +1041,27 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("sorted:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										VncVal result = args.first();
-										final VncVal sortedList = CoreFunctions.sort.apply(VncList.of(compfn, VncList.ofList(list)));
-
-										result = CoreFunctions.reduce.apply(VncList.of(rf, result, sortedList));
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										list.add(input);
-										return result;
-									}
+										switch (args.size()) {
+											case 0:
+												return rf.apply(VncList.empty());
+											case 1: {
+												VncVal result = args.first();
+												final VncVal sortedList = CoreFunctions.sort.apply(VncList.of(compfn, VncList.ofList(list)));
+		
+												result = CoreFunctions.reduce.apply(VncList.of(rf, result, sortedList));
+												return rf.apply(VncList.of(result));
+											}
+											case 2: {
+												final VncVal result = args.first();
+												final VncVal input = args.second();
+		
+												list.add(input);
+												return result;
+											}
+											default:
+												ArityExceptions.assertArity(this, args, 0, 1, 2);
+												return Nil;
+										}
 								}
 
 								private static final long serialVersionUID = -1L;
@@ -1124,24 +1108,26 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("reverse:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1: {
+											VncVal result = args.first();
+											Collections.reverse(list);
 
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										VncVal result = args.first();
-										Collections.reverse(list);
+											result = CoreFunctions.reduce.apply(VncList.of(rf, result, VncList.ofList(list)));
+											return rf.apply(VncList.of(result));
+										}
+										case 2: {
+											final VncVal result = args.first();
+											final VncVal input = args.second();
 
-										result = CoreFunctions.reduce.apply(VncList.of(rf, result, VncList.ofList(list)));
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										final VncVal result = args.first();
-										final VncVal input = args.second();
-
-										list.add(input);
-										return result;
+											list.add(input);
+											return result;
+										}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -1209,28 +1195,30 @@ public class TransducerFunctions {
 
 							return new VncFunction(createAnonymousFuncName("flatten:transducer")) {
 								public VncVal apply(final VncList args) {
-									ArityExceptions.assertArity(this, args, 1, 2, 3);
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1: {
+											final VncVal result = args.first();
+											return rf.apply(VncList.of(result));
+										}
+										case 2: {
+											VncVal result = args.first();
+											final VncVal input = args.second();
 
-									if (args.size() == 0) {
-										return rf.apply(VncList.empty());
-									}
-									else if (args.size() == 1) {
-										final VncVal result = args.first();
-										return rf.apply(VncList.of(result));
-									}
-									else {
-										VncVal result = args.first();
-										final VncVal input = args.second();
-
-										if (Types.isVncCollection(input)) {
-											for(VncVal v : flatten(Coerce.toVncCollection(input))) {
-												result = rf.apply(VncList.of(result, v));
+											if (Types.isVncCollection(input)) {
+												for(VncVal v : flatten(Coerce.toVncCollection(input))) {
+													result = rf.apply(VncList.of(result, v));
+												}
+												return result;
 											}
-											return result;
+											else {
+												return rf.apply(VncList.of(result, input));
+											}
 										}
-										else {
-											return rf.apply(VncList.of(result, input));
-										}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
 									}
 								}
 
@@ -1293,41 +1281,43 @@ public class TransducerFunctions {
 
 						return new VncFunction(createAnonymousFuncName("halt-when:transducer")) {
 							public VncVal apply(final VncList args) {
-								ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-								if (args.size() == 0) {
-									return rf.apply(VncList.empty());
-								}
-								else if (args.size() == 1) {
-									final VncVal result = args.first();
-
-									if (Types.isVncMap(result) && VncBoolean.isTrue(((VncMap)result).containsKey(HALT))) {
-										return ((VncMap)result).get(HALT);
+								switch (args.size()) {
+									case 0:
+										return rf.apply(VncList.empty());
+									case 1: {
+										final VncVal result = args.first();
+	
+										if (Types.isVncMap(result) && VncBoolean.isTrue(((VncMap)result).containsKey(HALT))) {
+											return ((VncMap)result).get(HALT);
+										}
+										else if (no_halt_return_fn != null) {
+											return no_halt_return_fn.apply(VncList.of(result));
+										}
+										else {
+											return rf.apply(VncList.of(result));
+										}
 									}
-									else if (no_halt_return_fn != null) {
-										return no_halt_return_fn.apply(VncList.of(result));
+									case 2: {
+										final VncVal result = args.first();
+										final VncVal input = args.second();
+	
+										final VncVal cond = predicate.apply(VncList.of(input));
+										if (!VncBoolean.isFalse(cond) && cond != Nil) {
+											final VncVal haltVal = halt_return_fn != null
+																	? halt_return_fn.apply(
+																			VncList.of(
+																				rf.apply(VncList.of(result)),
+																				input))
+																	: input;
+											return Reduced.reduced(VncHashMap.of(HALT, haltVal));
+										}
+										else {
+											return rf.apply(VncList.of(result, input));
+										}
 									}
-									else {
-										return rf.apply(VncList.of(result));
-									}
-								}
-								else {
-									final VncVal result = args.first();
-									final VncVal input = args.second();
-
-									final VncVal cond = predicate.apply(VncList.of(input));
-									if (!VncBoolean.isFalse(cond) && cond != Nil) {
-										final VncVal haltVal = halt_return_fn != null
-																? halt_return_fn.apply(
-																		VncList.of(
-																			rf.apply(VncList.of(result)),
-																			input))
-																: input;
-										return Reduced.reduced(VncHashMap.of(HALT, haltVal));
-									}
-									else {
-										return rf.apply(VncList.of(result, input));
-									}
+									default:
+										ArityExceptions.assertArity(this, args, 0, 1, 2);
+										return Nil;
 								}
 							}
 
@@ -1375,9 +1365,9 @@ public class TransducerFunctions {
 			return Coerce.toVncSequence(val);
 		}
 	}
-	
-	
-	
+
+
+
 	public static final VncKeyword HALT = new VncKeyword("@halt");
 	private static final VncKeyword NONE = new VncKeyword("@none");
 

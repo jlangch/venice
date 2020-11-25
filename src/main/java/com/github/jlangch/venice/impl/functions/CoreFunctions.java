@@ -6068,23 +6068,27 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 0);
 
-				final List<IVncFunction> fns =
-						args.stream()
-							.map(v -> Coerce.toIVncFunction(v))
-							.collect(Collectors.toList());
-
+				final int len = args.size();
+				
 				// the functions are applied right to left
+				final IVncFunction[] fns = new IVncFunction[len];
+				for(int ii=0; ii<len; ii++) {
+					fns[len-1-ii] = Coerce.toIVncFunction(args.nth(ii));
+				}
+					
 				return new VncFunction(createAnonymousFuncName("comp")) {
 					public VncVal apply(final VncList args) {
-						VncVal result = args.first();
-
+						if (len == 0) {
+							return args.first();
+						}
+						
 						VncList args_ = args;
-						for(int ii=fns.size()-1; ii>=0; ii--) {
-							result = fns.get(ii).apply(args_);
+						for(int ii=0; ii<len-1; ii++) {
+							VncVal result = fns[ii].apply(args_);
 							args_ = VncList.of(result);
 						}
 
-						return result;
+						return fns[len-1].apply(args_);
 					}
 
 					private static final long serialVersionUID = -1L;

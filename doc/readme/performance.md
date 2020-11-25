@@ -243,13 +243,13 @@ GC...
 Sampling...
 Analyzing...
                       Samples :     500
-          Execution time mean : 715.646 µs
- Execution time std-deviation :  29.592 µs
-Execution time lower quartile : 708.568 µs (25%)
-Execution time upper quartile : 736.071 µs (75%)
-Execution time lower quantile : 674.100 µs (2.5%)
-Execution time upper quantile :   1.036 ms (97.5%)
-                     Outliers :      53
+          Execution time mean : 701.954 µs
+ Execution time std-deviation :  41.779 µs
+Execution time lower quartile : 698.038 µs (25%)
+Execution time upper quartile : 742.992 µs (75%)
+Execution time lower quantile : 662.792 µs (2.5%)
+Execution time upper quantile :   1.007 ms (97.5%)
+                     Outliers :      35
 ```
 
 ## Benchmark Summary
