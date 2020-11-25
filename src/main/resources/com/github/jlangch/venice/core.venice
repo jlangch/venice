@@ -1238,17 +1238,6 @@
          ([x y] (not (f x y)))
          ([x y & zs] (not (apply f x y zs)))))
 
-(defn
-  ^{ :arglists '("(identity x)")
-     :doc "Returns its argument."
-     :examples '(
-          "(identity 4)"
-          "(filter identity [1 2 3 nil 4 false true 1234])") }
-
-  identity
-
-  [x] x)
-
 
 (defn
   ^{ :arglists '("(rf-first)")

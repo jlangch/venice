@@ -22,8 +22,10 @@
 package com.github.jlangch.venice.impl.util.transducer;
 
 import com.github.jlangch.venice.impl.types.IVncFunction;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 
 public class Reducer {
@@ -31,12 +33,17 @@ public class Reducer {
 	public static VncVal reduce(
 			final IVncFunction reduceFn, 
 			final VncVal init, 
-			final Iterable<VncVal> coll
+			final Iterable<VncVal> coll,
+			final MeterRegistry meterRegistry
 	) {
 		VncVal value = init;
 		
 		for(VncVal v : coll) {
-			value = reduceFn.apply(VncList.of(value, v));
+			value = VncFunction.applyWithMeter(
+							reduceFn, 
+							VncList.of(value, v), 
+							meterRegistry);
+			
 			if (Reduced.isReduced(value)) {
 				return Reduced.unreduced(value);
 			}

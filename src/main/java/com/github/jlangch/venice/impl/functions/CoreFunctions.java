@@ -6068,27 +6068,34 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 0);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final int len = args.size();
-				
-				// the functions are applied right to left
-				final IVncFunction[] fns = new IVncFunction[len];
-				for(int ii=0; ii<len; ii++) {
-					fns[len-1-ii] = Coerce.toIVncFunction(args.nth(ii));
+
+				final IVncFunction[] fns = new IVncFunction[len == 0 ? 1 : len];
+
+				if (len == 0) {
+					fns[0] = identity;
 				}
-					
+				else {
+					// the functions are applied right to left
+					for(int ii=0; ii<len; ii++) {
+						fns[len-1-ii] = Coerce.toIVncFunction(args.nth(ii));
+					}
+				}
+				
 				return new VncFunction(createAnonymousFuncName("comp")) {
 					public VncVal apply(final VncList args) {
-						if (len == 0) {
-							return args.first();
-						}
-						
 						VncList args_ = args;
-						for(int ii=0; ii<len-1; ii++) {
-							VncVal result = fns[ii].apply(args_);
+						for(int ii=0; ii<fns.length-1; ii++) {
+							VncVal result = VncFunction.applyWithMeter(
+												fns[ii],
+												args_,
+												meterRegistry);
 							args_ = VncList.of(result);
 						}
 
-						return fns[len-1].apply(args_);
+						return VncFunction.applyWithMeter(fns[fns.length-1], args_, meterRegistry);
 					}
 
 					private static final long serialVersionUID = -1L;
@@ -6578,6 +6585,8 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2, 3);
 
+				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
+
 				final boolean noInitValue = args.size() < 3;
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
 				final VncVal coll = noInitValue ? args.second() : args.third();
@@ -6604,7 +6613,7 @@ public class CoreFunctions {
 						return seq.first();
 					}
 					else {
-						return Reducer.reduce(reduceFn, seq.first(), seq.rest());
+						return Reducer.reduce(reduceFn, seq.first(), seq.rest(), meterRegistry);
 					}
 				}
 				else {
@@ -6614,7 +6623,7 @@ public class CoreFunctions {
 						return init;
 					}
 					else {
-						return Reducer.reduce(reduceFn, init, seq);
+						return Reducer.reduce(reduceFn, init, seq, meterRegistry);
 					}
 				}
 			}
@@ -6991,7 +7000,33 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction identity =
+		new VncFunction(
+				"identity",
+				VncFunction
+					.meta()
+					.arglists("(identity x)")
+					.doc("Returns its argument.")
+					.examples(
+						"(identity 4)", 
+						"(filter identity [1 2 3 nil 4 false true 1234])")
+					.build()
+		) {
+			public VncVector getParams() { 
+				return VncVector.of(new VncSymbol("x")); 
+			}
+			
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
 
+				return args.first();
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
+		
 
 	///////////////////////////////////////////////////////////////////////////
 	// Meta functions
@@ -7058,8 +7093,9 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-
-
+		
+		
+		
 
 	///////////////////////////////////////////////////////////////////////////
 	// Utilities
@@ -7509,6 +7545,7 @@ public class CoreFunctions {
 				.add(with_meta)
 				.add(vary_meta)
 
+				.add(identity)
 				.add(gensym)
 				.add(name)
 				.add(type)
