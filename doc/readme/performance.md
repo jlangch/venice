@@ -150,11 +150,114 @@ Execution time upper quantile :   2.163 ms (97.5%)
                      Outliers :       7
 ```
 
-### Summary
+
+### Filter-Map-Reduce
+
+**Java**
+
+```java
+@Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
+@Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
+@Fork(1)
+@BenchmarkMode (Mode.AverageTime)
+@OutputTimeUnit (TimeUnit.MICROSECONDS)
+@State (Scope.Benchmark)
+@Threads (1)
+public class JavaFilterMapReduceBenchmark {
+
+    public JavaFilterMapReduceBenchmark() {
+        list = new ArrayList<>(2000);
+        for(long ii=0; ii<2000; ii++) {
+            list.add(Long.valueOf(ii));
+        }
+    }
+
+    @Benchmark
+    public Object filter_map_reduce() {
+        return list.stream()
+                   .filter(v -> v % 2L == 0L)
+                   .map(v -> v * 10L)
+                   .reduce(0L, (sum, v) -> sum + v);
+    }
+
+    private final List<Long> list;
+}
+```
+
+**Clojure**
+
+```clojure
+(require '[criterium.core :as criterium])
+
+(def data (doall (range 2000)))
+
+(def xform (comp
+             (filter #(even? %))
+             (map #(* 10 %))))
+         
+(criterium/quick-bench (transduce xform + 0 data))
+```
+
+**Venice**
+
+```clojure
+(do
+  (load-module :benchmark)
+  
+  (def data (range 2000))
+
+  (def xform (comp
+               (filter #(even? %))
+               (map #(* 10 %))))
+                        
+  (bench/benchmark (transduce xform + 0 data) 1000 500))
+```
+
+### Results
+
+**Java**
+
+```text
+Java Benchmark     Mode  Cnt   Score   Error  Units
+---------------------------------------------------
+filter_map_reduce  avgt    3  13.831 ± 0.662  us/op
+```
+
+**Clojure**
+
+```text
+WARNING: Final GC required 11.646503780833351 % of runtime
+Evaluation count : 5490 in 6 samples of 915 calls.
+             Execution time mean : 108.718647 µs
+    Execution time std-deviation : 1.446998 µs
+   Execution time lower quantile : 106.694702 µs ( 2.5%)
+   Execution time upper quantile : 110.302163 µs (97.5%)
+                   Overhead used : 8.543009 ns
+```
+
+**Venice**
+
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples :     500
+          Execution time mean : 715.646 µs
+ Execution time std-deviation :  29.592 µs
+Execution time lower quartile : 708.568 µs (25%)
+Execution time upper quartile : 736.071 µs (75%)
+Execution time lower quantile : 674.100 µs (2.5%)
+Execution time upper quantile :   1.036 ms (97.5%)
+                     Outliers :      53
+```
+
+## Benchmark Summary
 
 | Benchmark               |  Java |  Clojure |  Venice |
 | :---                    |  ---: |     ---: |    ---: |
 | map creation            | 126µs |    808µs |  1747µs |
+| filter-map-reduce       |  13µs |    108µs |   715µs |
 
 
 

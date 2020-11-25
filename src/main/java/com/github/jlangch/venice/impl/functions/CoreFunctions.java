@@ -6576,14 +6576,15 @@ public class CoreFunctions {
 
 				final boolean noInitValue = args.size() < 3;
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
+				final VncVal coll = noInitValue ? args.second() : args.third();
 
 				VncSequence seq;
 
-				if (Types.isVncSequence(args.last())) {
-					seq = Coerce.toVncSequence(args.last());
+				if (Types.isVncSequence(coll)) {
+					seq = (VncSequence)coll;
 				}
-				else if (Types.isVncMap(args.last())) {
-					seq = Coerce.toVncMap(args.last()).toVncList();
+				else if (Types.isVncMap(coll)) {
+					seq = ((VncMap)coll).toVncList();
 				}
 				else {
 					throw new VncException(String.format(

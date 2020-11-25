@@ -58,9 +58,9 @@ import org.openjdk.jmh.annotations.Warmup;
 @OutputTimeUnit (TimeUnit.MICROSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class CreateMapBenchmark {
+public class JavaCreateMapBenchmark {
 	
-	public CreateMapBenchmark() {
+	public JavaCreateMapBenchmark() {
 	}
 	
 	/** 

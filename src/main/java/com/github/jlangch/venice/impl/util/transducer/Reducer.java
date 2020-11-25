@@ -21,12 +21,9 @@
  */
 package com.github.jlangch.venice.impl.util.transducer;
 
-import java.util.List;
-
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncSequence;
 
 
 public class Reducer {
@@ -34,24 +31,7 @@ public class Reducer {
 	public static VncVal reduce(
 			final IVncFunction reduceFn, 
 			final VncVal init, 
-			final List<VncVal> coll
-	) {
-		VncVal value = init;
-		
-		for(int ii=0; ii<coll.size(); ii++) {
-			value = reduceFn.apply(VncList.of(value, coll.get(ii)));
-			if (Reduced.isReduced(value)) {
-				return Reduced.unreduced(value);
-			}
-		}
-		
-		return value;
-	}
-
-	public static VncVal reduce(
-			final IVncFunction reduceFn, 
-			final VncVal init, 
-			final VncSequence coll
+			final Iterable<VncVal> coll
 	) {
 		VncVal value = init;
 		
