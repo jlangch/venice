@@ -477,7 +477,7 @@ public class TimeFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 0, 1, 2, 3, 4, 6, 7, 8);
+				ArityExceptions.assertArities(this, args, 0, 1, 2, 3, 4, 6, 7, 8);
 
 				ZoneId zoneId = null;
 				VncList argList = args;

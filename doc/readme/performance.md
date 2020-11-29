@@ -243,13 +243,13 @@ GC...
 Sampling...
 Analyzing...
                       Samples :     500
-          Execution time mean : 701.954 µs
- Execution time std-deviation :  41.779 µs
-Execution time lower quartile : 698.038 µs (25%)
-Execution time upper quartile : 742.992 µs (75%)
-Execution time lower quantile : 662.792 µs (2.5%)
-Execution time upper quantile :   1.007 ms (97.5%)
-                     Outliers :      35
+          Execution time mean : 682.614 µs
+ Execution time std-deviation :  52.560 µs
+Execution time lower quartile : 677.359 µs (25%)
+Execution time upper quartile : 750.307 µs (75%)
+Execution time lower quantile : 674.422 µs (2.5%)
+Execution time upper quantile : 978.749 µs (97.5%)
+                     Outliers :      15
 ```
 
 ## Benchmark Summary
@@ -257,7 +257,7 @@ Execution time upper quantile :   1.007 ms (97.5%)
 | Benchmark               |  Java |  Clojure |  Venice |
 | :---                    |  ---: |     ---: |    ---: |
 | map creation            | 126µs |    808µs |  1747µs |
-| filter-map-reduce       |  13µs |    108µs |   715µs |
+| filter-map-reduce       |  13µs |    108µs |   682µs |
 
 
 

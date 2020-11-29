@@ -40,6 +40,101 @@ public class ArityExceptions {
 	public static void assertArity(
 			final VncFunction fn, 
 			final VncList args, 
+			final int expectedArity
+	) {
+		final int arity = args.size();
+		if (expectedArity != arity) {
+			throw new ArityException(
+						formatArityExMsg(
+							fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
+		}
+	}
+
+	public static void assertArity(
+			final VncFunction fn, 
+			final VncList args, 
+			final int expectedArity1,
+			final int expectedArity2
+	) {
+		final int arity = args.size();
+		if (expectedArity1 == arity || expectedArity2 == arity) {
+			return;
+		}
+		
+		throw new ArityException(
+					formatArityExMsg(
+						fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
+	}
+
+	public static void assertArity(
+			final VncFunction fn, 
+			final VncList args, 
+			final int expectedArity1,
+			final int expectedArity2,
+			final int expectedArity3
+	) {
+		final int arity = args.size();
+		if (expectedArity1 == arity
+				|| expectedArity2 == arity 
+				|| expectedArity3 == arity
+		) {
+			return;
+		}
+		
+		throw new ArityException(
+				formatArityExMsg(
+					fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
+	}
+
+	public static void assertArity(
+			final VncFunction fn, 
+			final VncList args, 
+			final int expectedArity1,
+			final int expectedArity2,
+			final int expectedArity3,
+			final int expectedArity4
+	) {
+		final int arity = args.size();
+		if (expectedArity1 == arity
+				|| expectedArity2 == arity 
+				|| expectedArity3 == arity
+				|| expectedArity4 == arity
+		) {
+			return;
+		}
+		
+		throw new ArityException(
+				formatArityExMsg(
+					fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
+	}
+
+	public static void assertArity(
+			final VncFunction fn, 
+			final VncList args, 
+			final int expectedArity1,
+			final int expectedArity2,
+			final int expectedArity3,
+			final int expectedArity4,
+			final int expectedArity5
+	) {
+		final int arity = args.size();
+		if (expectedArity1 == arity
+				|| expectedArity2 == arity 
+				|| expectedArity3 == arity
+				|| expectedArity4 == arity
+				|| expectedArity5 == arity
+		) {
+			return;
+		}
+		
+		throw new ArityException(
+				formatArityExMsg(
+					fn.getQualifiedName(), toFnType(fn), arity, fn.getArgLists()));
+	}
+
+	public static void assertArities(
+			final VncFunction fn, 
+			final VncList args, 
 			final int... expectedArities
 	) {
 		final int arity = args.size();
@@ -62,17 +157,12 @@ public class ArityExceptions {
 			final IVncFunction fn, 
 			final FnType fnType,
 			final VncList args, 
-			final int... expectedArities
+			final int expectedArity1, 
+			final int expectedArity2
 	) {
 		final int arity = args.size();
-		if (expectedArities.length == 1) {
-			// optimization for single arity case
-			if (arity == expectedArities[0]) return;
-		}
-		else {
-			for (int a : expectedArities) {
-				if (a == arity) return;
-			}
+		if (expectedArity1 == arity ||  expectedArity2 == arity) {
+			return;
 		}
 		
 		// handle arity exception
@@ -110,17 +200,56 @@ public class ArityExceptions {
 			final String fnName, 
 			final FnType fnType,
 			final VncList args, 
-			final int... expectedArities
+			final int expectedArity1
 	) {
 		final int arity = args.size();
-		if (expectedArities.length == 1) {
-			// optimization for single arity case
-			if (arity == expectedArities[0]) return;
+		if (expectedArity1 == arity) {
+			return;
+		}
+		
+		// handle arity exception
+		if (fnType == FnType.SpecialForm) {
+			final VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(fnName));
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity, fn.getArgLists()));
 		}
 		else {
-			for (int a : expectedArities) {
-				if (a == arity) return;
-			}
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity));
+		}
+	}
+
+	public static void assertArity(
+			final String fnName, 
+			final FnType fnType,
+			final VncList args, 
+			final int expectedArity1, 
+			final int expectedArity2
+	) {
+		final int arity = args.size();
+		if (expectedArity1 == arity ||  expectedArity2 == arity) {
+			return;
+		}
+		
+		// handle arity exception
+		if (fnType == FnType.SpecialForm) {
+			final VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(fnName));
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity, fn.getArgLists()));
+		}
+		else {
+			throw new ArityException(formatArityExMsg(fnName, fnType, arity));
+		}
+	}
+
+	public static void assertArity(
+			final String fnName, 
+			final FnType fnType,
+			final VncList args, 
+			final int expectedArity1, 
+			final int expectedArity2, 
+			final int expectedArity3
+	) {
+		final int arity = args.size();
+		if (expectedArity1 == arity ||  expectedArity2 == arity ||  expectedArity3 == arity) {
+			return;
 		}
 		
 		// handle arity exception
