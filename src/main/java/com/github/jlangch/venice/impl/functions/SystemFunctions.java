@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -197,7 +198,7 @@ public class SystemFunctions {
 				final VncVal val = args.first();
 
 				if (Types.isVncLong(val) || Types.isVncInteger(val)) {
-					final long time = Numeric.toLong(val).getValue();
+					final long time = VncLong.of(val).getValue();
 
 					if (time < 1_000) {
 						return new VncString(String.format("%d ns", time));
@@ -208,7 +209,7 @@ public class SystemFunctions {
 				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
 											.getIntValue();
 
-				final double time = Numeric.toDouble(val).getValue();
+				final double time = VncDouble.of(val).getValue();
 
 				String unit = "s";
 				double scale = 1_000_000_000.0D;

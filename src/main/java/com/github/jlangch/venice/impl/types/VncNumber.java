@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
@@ -38,5 +41,13 @@ public abstract class VncNumber extends VncVal {
 	}
 	
 
+	public abstract Integer toJavaInteger();
+	public abstract Long toJavaLong();
+	public abstract Double toJavaDouble();
+	public abstract BigInteger toJavaBigInteger();
+	public abstract BigDecimal toJavaBigDecimal();
+	public abstract BigDecimal toJavaBigDecimal(final int scale);
+
+	
     private static final long serialVersionUID = -1848883965231344442L;
 }

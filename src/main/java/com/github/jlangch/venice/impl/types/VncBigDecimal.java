@@ -22,11 +22,12 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 
@@ -57,8 +58,18 @@ public class VncBigDecimal extends VncNumber {
 		super(wrappingTypeDef, meta);
 		value = v; 
 	}
-
 	
+	
+	public static VncBigDecimal of(final VncVal v) { 
+		if (Types.isVncNumber(v)) {
+			return new VncBigDecimal(((VncNumber)v).toJavaBigDecimal());
+		}
+		else {
+			throw new VncException(String.format(
+					"Cannot convert value of type %s to decimal", 
+					Types.getType(v)));
+		}
+	}
 	@Override
 	public VncBigDecimal withMeta(final VncVal meta) {
 		return new VncBigDecimal(value, getWrappingTypeDef(), meta);
@@ -104,22 +115,52 @@ public class VncBigDecimal extends VncNumber {
 		return value;
 	}
 
+	@Override
+	public Integer toJavaInteger() {
+		return value.intValue(); 
+	}
+	
+	@Override
+	public Long toJavaLong() {
+		return value.longValue(); 
+	}
+	
+	@Override
+	public Double toJavaDouble() {
+		return value.doubleValue();
+	}
+	
+	@Override
+	public BigInteger toJavaBigInteger() {
+		return value.toBigInteger();
+	}
+	
+	@Override
+	public BigDecimal toJavaBigDecimal() {
+		return value;
+	}
+	
+	@Override
+	public BigDecimal toJavaBigDecimal(final int scale) {
+		return value.setScale(scale);
+	}
+
 	@Override 
 	public int compareTo(final VncVal o) {
 		if (Types.isVncBigDecimal(o)) {
 			return value.compareTo(((VncBigDecimal)o).getValue());
 		}
 		else if (Types.isVncInteger(o)) {
-			return value.compareTo(Numeric.intToDecimal((VncInteger)o).getValue());
+			return value.compareTo(((VncInteger)o).toJavaBigDecimal());
 		}
 		else if (Types.isVncDouble(o)) {
-			return value.compareTo(Numeric.doubleToDecimal((VncDouble)o).getValue());
+			return value.compareTo(((VncDouble)o).toJavaBigDecimal());
 		}
 		else if (Types.isVncLong(o)) {
-			return value.compareTo(Numeric.longToDecimal((VncLong)o).getValue());
+			return value.compareTo(((VncLong)o).toJavaBigDecimal());
 		}
 		else if (Types.isVncBigInteger(o)) {
-			return value.compareTo(Numeric.bigintToDecimal((VncBigInteger)o).getValue());
+			return value.compareTo(((VncBigInteger)o).toJavaBigDecimal());
 		}
 		else if (o == Constants.Nil) {
 			return 1;

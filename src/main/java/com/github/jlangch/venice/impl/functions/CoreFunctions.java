@@ -1283,16 +1283,16 @@ public class CoreFunctions {
 					return arg;
 				}
 				else if (Types.isVncInteger(arg)) {
-					return Numeric.intToLong((VncInteger)arg);
+					return new VncLong(((VncInteger)arg).toJavaLong());
 				}
 				else if (Types.isVncDouble(arg)) {
-					return Numeric.doubleToLong((VncDouble)arg);
+					return new VncLong(((VncDouble)arg).toJavaLong());
 				}
 				else if (Types.isVncBigDecimal(arg)) {
-					return Numeric.decimalToLong((VncBigDecimal)arg);
+					return new VncLong(((VncBigDecimal)arg).toJavaLong());
 				}
 				else if (Types.isVncBigInteger(arg)) {
-					return Numeric.bigintToLong((VncBigInteger)arg);
+					return new VncLong(((VncBigInteger)arg).toJavaLong());
 				}
 				else if (Types.isVncChar(arg)) {
 					return new VncLong((int)((VncChar)arg).getValue().charValue());				
@@ -1357,16 +1357,16 @@ public class CoreFunctions {
 				return arg;
 			}
 			else if (Types.isVncLong(arg)) {
-				return Numeric.longToInt((VncLong)arg);
+				return new VncInteger(((VncLong)arg).toJavaInteger());
 			}
 			else if (Types.isVncDouble(arg)) {
-				return Numeric.doubleToInt((VncDouble)arg);
+				return new VncInteger(((VncDouble)arg).toJavaInteger());
 			}
 			else if (Types.isVncBigDecimal(arg)) {
-				return Numeric.decimalToInt((VncBigDecimal)arg);
+				return new VncInteger(((VncBigDecimal)arg).toJavaInteger());
 			}
 			else if (Types.isVncBigInteger(arg)) {
-				return Numeric.bigintToInt((VncBigInteger)arg);
+				return new VncInteger(((VncBigInteger)arg).toJavaInteger());
 			}
 			else if (Types.isVncChar(arg)) {
 				return new VncInteger((int)((VncChar)arg).getValue().charValue());				
@@ -1427,19 +1427,19 @@ public class CoreFunctions {
 					return new VncDouble(1.0D);
 				}
 				else if (Types.isVncInteger(arg)) {
-					return Numeric.intToDouble((VncInteger)arg);
+					return new VncDouble(((VncInteger)arg).toJavaDouble());
 				}
 				else if (Types.isVncLong(arg)) {
-					return Numeric.longToDouble((VncLong)arg);
+					return new VncDouble(((VncLong)arg).toJavaDouble());
 				}
 				else if (Types.isVncDouble(arg)) {
 					return arg;
 				}
 				else if (Types.isVncBigDecimal(arg)) {
-					return Numeric.decimalToDouble((VncBigDecimal)arg);
+					return new VncDouble(((VncBigDecimal)arg).toJavaDouble());
 				}
 				else if (Types.isVncBigInteger(arg)) {
-					return Numeric.bigintToDouble((VncBigInteger)arg);
+					return new VncDouble(((VncBigInteger)arg).toJavaDouble());
 				}
 				else if (Types.isVncString(arg)) {
 					final String s = ((VncString)arg).getValue();
@@ -1514,7 +1514,7 @@ public class CoreFunctions {
 						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 					}
 					else if (Types.isVncNumber(arg)) {
-						final BigDecimal dec = Numeric.toDecimal(arg).getValue();
+						final BigDecimal dec = VncBigDecimal.of(arg).getValue();
 						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
 					}
 					else if (Types.isVncJavaObject(arg, BigDecimal.class)) {
@@ -1569,7 +1569,7 @@ public class CoreFunctions {
 						return new VncBigInteger(new BigInteger(((VncString)arg).getValue()));
 					}
 					else if (Types.isVncNumber(arg)) {
-						return Numeric.toBigint(arg);
+						return VncBigInteger.of(arg);
 					}
 					else if (Types.isVncJavaObject(arg, BigInteger.class)) {
 						return new VncBigInteger((BigInteger)((VncJavaObject)arg).getDelegate());

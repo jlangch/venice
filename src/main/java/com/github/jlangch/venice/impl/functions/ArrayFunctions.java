@@ -64,7 +64,7 @@ public class ArrayFunctions {
 				ArityExceptions.assertArity(this, args, 3);
 
 				final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-				final VncInteger idx = Numeric.toInteger(args.second());
+				final VncInteger idx = VncInteger.of(args.second());
 				final VncVal val = args.third();
 
 				final Object delegate = jo.getDelegate();
@@ -82,16 +82,16 @@ public class ArrayFunctions {
 					Array.set(delegate, idx.getValue(), Coerce.toVncString(val).getValue());
 				}
 				else if (componentType == int.class) {
-					Array.setInt(delegate, idx.getValue(), Numeric.toInteger(val).getValue());
+					Array.setInt(delegate, idx.getValue(), VncInteger.of(val).getValue());
 				}
 				else if (componentType == long.class) {
-					Array.setLong(delegate, idx.getValue(), Numeric.toLong(val).getValue());
+					Array.setLong(delegate, idx.getValue(), VncLong.of(val).getValue());
 				}
 				else if (componentType == float.class) {
-					Array.setFloat(delegate, idx.getValue(), Numeric.toDouble(val).getValue().floatValue());
+					Array.setFloat(delegate, idx.getValue(), VncDouble.of(val).getValue().floatValue());
 				}
 				else if (componentType == double.class) {
-					Array.setDouble(delegate, idx.getValue(), Numeric.toDouble(val).getValue());
+					Array.setDouble(delegate, idx.getValue(), VncDouble.of(val).getValue());
 				}
 				else {
 					Array.set(delegate, idx.getValue(), val.convertToJavaObject());
@@ -117,7 +117,7 @@ public class ArrayFunctions {
 					ArityExceptions.assertArity(this, args, 2);
 
 					final VncJavaObject jo = Coerce.toVncJavaObject(args.first());
-					final VncInteger idx = Numeric.toInteger(args.second());
+					final VncInteger idx = VncInteger.of(args.second());
 
 					final Object delegate = jo.getDelegate();
 					
@@ -378,14 +378,14 @@ public class ArrayFunctions {
 				}
 				
 				if (args.size() == 2) {
-					final int len = Numeric.toInteger(args.second()).getValue();
+					final int len = VncInteger.of(args.second()).getValue();
 
 					return new VncJavaObject(Array.newInstance(classForName(className), len));
 				}
 				else {
 					final List<Integer> dimensions = args.slice(1)
 														 .stream()
-														 .map(v -> Numeric.toInteger(v).getValue())
+														 .map(v -> VncInteger.of(v).getValue())
 														 .collect(Collectors.toList());
 					
 					final int[] dim = new int[dimensions.size()];
@@ -525,7 +525,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final byte[] arr = new byte[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Numeric.toLong(args.second()).getValue().byteValue());
+						Arrays.fill(arr, VncLong.of(args.second()).getValue().byteValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -541,7 +541,7 @@ public class ArrayFunctions {
 									"The value at pos %d in the collection is not a number",
 									ii));
 						}
-						arr[ii++] = Numeric.toLong(v).getValue().byteValue();
+						arr[ii++] = VncLong.of(v).getValue().byteValue();
 					}
 					
 					return new VncJavaObject(arr);
@@ -578,7 +578,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final int[] arr = new int[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Numeric.toInteger(args.second()).getValue());
+						Arrays.fill(arr, VncInteger.of(args.second()).getValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -594,7 +594,7 @@ public class ArrayFunctions {
 									"The value at pos %d in the collection is not a number",
 									ii));
 						}
-						arr[ii++] = Numeric.toInteger(v).getValue().intValue();
+						arr[ii++] = VncInteger.of(v).getValue().intValue();
 					}
 					
 					return new VncJavaObject(arr);
@@ -631,7 +631,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final long[] arr = new long[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Numeric.toLong(args.second()).getValue());
+						Arrays.fill(arr, VncLong.of(args.second()).getValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -647,7 +647,7 @@ public class ArrayFunctions {
 									"The value at pos %d in the collection is not a number",
 									ii));
 						}
-						arr[ii++] = Numeric.toLong(v).getValue().longValue();
+						arr[ii++] = VncLong.of(v).getValue().longValue();
 					}
 					
 					return new VncJavaObject(arr);
@@ -684,7 +684,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final float[] arr = new float[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Numeric.toDouble(args.second()).getValue().floatValue());
+						Arrays.fill(arr, VncDouble.of(args.second()).getValue().floatValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -700,7 +700,7 @@ public class ArrayFunctions {
 									"The value at pos %d in the collection is not a number",
 									ii));
 						}
-						arr[ii++] = Numeric.toDouble(v).getValue().floatValue();
+						arr[ii++] = VncDouble.of(v).getValue().floatValue();
 					}
 					
 					return new VncJavaObject(arr);
@@ -737,7 +737,7 @@ public class ArrayFunctions {
 				if (Types.isVncLong(arg)) {
 					final double[] arr = new double[((VncLong)arg).getIntValue()];
 					if (args.size() == 2) {
-						Arrays.fill(arr, Numeric.toDouble(args.second()).getValue());
+						Arrays.fill(arr, VncDouble.of(args.second()).getValue());
 					}
 					return new VncJavaObject(arr);
 				}
@@ -753,7 +753,7 @@ public class ArrayFunctions {
 									"The value at pos %d in the collection is not a number",
 									ii));
 						}
-						arr[ii++] = Numeric.toDouble(v).getValue().doubleValue();
+						arr[ii++] = VncDouble.of(v).getValue().doubleValue();
 					}
 					
 					return new VncJavaObject(arr);

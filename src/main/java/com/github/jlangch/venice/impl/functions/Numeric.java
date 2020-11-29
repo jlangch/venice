@@ -39,360 +39,522 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 /**
  * Numeric operations
- * 
- * <p>type conversion between int, long, double, and decimal 
- * 
- * <p>mixed precision math for types int, long, double, and decimal with for +, -, *, /
  */
 public class Numeric {
-
 	
-	// conversion ------------------------------------------------------------
-	
-	public static VncInteger toInteger(final VncVal val) {
-		if (Types.isVncInteger(val)) {
-			return (VncInteger)val;
-		}
-		else if (Types.isVncLong(val)) {
-			return longToInt((VncLong)val);
-		}
-		else if (Types.isVncDouble(val)) {
-			return doubleToInt((VncDouble)val);
-		}
-		else if (Types.isVncBigDecimal(val)) {
-			return decimalToInt((VncBigDecimal)val);
-		}
-		else if (Types.isVncBigInteger(val)) {
-			return bigintToInt((VncBigInteger)val);
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot convert value of type %s to long", 
-					Types.getType(val)));
-		}
-	}
-	
-	public static VncLong toLong(final VncVal val) {
-		if (Types.isVncLong(val)) {
-			return (VncLong)val;
-		}
-		else if (Types.isVncInteger(val)) {
-			return intToLong((VncInteger)val);
-		}
-		else if (Types.isVncDouble(val)) {
-			return doubleToLong((VncDouble)val);
-		}
-		else if (Types.isVncBigDecimal(val)) {
-			return decimalToLong((VncBigDecimal)val);
-		}
-		else if (Types.isVncBigInteger(val)) {
-			return bigintToLong((VncBigInteger)val);
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot convert value of type %s to long", 
-					Types.getType(val)));
-		}
-	}
-	
-	public static VncDouble toDouble(final VncVal val) {
-		if (Types.isVncLong(val)) {
-			return longToDouble((VncLong)val);
-		}
-		else if (Types.isVncInteger(val)) {
-			return intToDouble((VncInteger)val);
-		}
-		else if (Types.isVncDouble(val)) {
-			return (VncDouble)val;
-		}
-		else if (Types.isVncBigDecimal(val)) {
-			return decimalToDouble((VncBigDecimal)val);
-		}
-		else if (Types.isVncBigInteger(val)) {
-			return bigintToDouble((VncBigInteger)val);
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot convert value of type %s to double", 
-					Types.getType(val)));
-		}
-	}
-
-	public static VncBigDecimal toDecimal(final VncVal val) {
-		if (Types.isVncLong(val)) {
-			return longToDecimal((VncLong)val);
-		}
-		else if (Types.isVncInteger(val)) {
-			return intToDecimal((VncInteger)val);
-		}
-		else if (Types.isVncDouble(val)) {
-			return doubleToDecimal((VncDouble)val);
-		}
-		else if (Types.isVncBigDecimal(val)) {
-			return (VncBigDecimal)val;
-		}
-		else if (Types.isVncBigInteger(val)) {
-			return bigintToDecimal((VncBigInteger)val);
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot convert value of type %s to decimal", 
-					Types.getType(val)));
-		}
-	}
-
-	public static VncBigInteger toBigint(final VncVal val) {
-		if (Types.isVncLong(val)) {
-			return longToBigint((VncLong)val);
-		}
-		else if (Types.isVncInteger(val)) {
-			return intToBigint((VncInteger)val);
-		}
-		else if (Types.isVncDouble(val)) {
-			return doubleToBigint((VncDouble)val);
-		}
-		else if (Types.isVncBigDecimal(val)) {
-			return decimalToBigint((VncBigDecimal)val);
-		}
-		else if (Types.isVncBigInteger(val)) {
-			return (VncBigInteger)val;
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot convert value of type %s to big integer", 
-					Types.getType(val)));
-		}
-	}
-
-	
-	// integer ---------------------------------------------------------------
-	
-	public static VncLong intToLong(final VncInteger val) {
-		return new VncLong(val.getValue());
-	}
-
-	public static VncDouble intToDouble(final VncInteger val) {
-		return new VncDouble(val.getValue().doubleValue());
-	}
-
-	public static VncBigDecimal intToDecimal(final VncInteger val) {
-		return new VncBigDecimal(new BigDecimal(val.getValue()));
-	}
-
-	public static VncBigDecimal intToDecimal(final VncInteger val, final int scale) {
-		return new VncBigDecimal(new BigDecimal(val.getValue()).setScale(scale));
-	}
-	
-	public static VncBigInteger intToBigint(final VncInteger val) {
-		return new VncBigInteger(val.getValue());
-	}
-
-	
-	// long ---------------------------------------------------------------
-	
-	public static VncInteger longToInt(final VncLong val) {
-		return new VncInteger(val.getValue());
-	}
-	
-	public static VncDouble longToDouble(final VncLong val) {
-		return new VncDouble(val.getValue().doubleValue());
-	}
-
-	public static VncBigDecimal longToDecimal(final VncLong val) {
-		return new VncBigDecimal(new BigDecimal(val.getValue()));
-	}
-
-	public static VncBigDecimal longToDecimal(final VncLong val, final int scale) {
-		return new VncBigDecimal(new BigDecimal(val.getValue()).setScale(scale));
-	}
-	
-	public static VncBigInteger longToBigint(final VncLong val) {
-		return new VncBigInteger(val.getValue());
-	}
-
-	
-	// double ---------------------------------------------------------------
-	
-	public static VncInteger doubleToInt(final VncDouble val) {
-		return new VncInteger(val.getValue().intValue());
-	}
-
-	public static VncLong doubleToLong(final VncDouble val) {
-		return new VncLong(val.getValue().longValue());
-	}
-
-	public static VncBigDecimal doubleToDecimal(final VncDouble val) {
-		return new VncBigDecimal(new BigDecimal(val.getValue()));
-	}
-	
-	public static VncBigInteger doubleToBigint(final VncDouble val) {
-		return new VncBigInteger(val.getValue());
-	}
-
-	
-	// big-decimal -----------------------------------------------------------
-	
-	public static VncInteger decimalToInt(final VncBigDecimal val) {
-		return new VncInteger(val.getValue().intValue());
-	}
-
-	public static VncLong decimalToLong(final VncBigDecimal val) {
-		return new VncLong(val.getValue().longValue());
-	}
-
-	public static VncDouble decimalToDouble(final VncBigDecimal val) {
-		return new VncDouble(val.getValue().doubleValue());
-	}
-
-	public static VncBigInteger decimalToBigint(final VncBigDecimal val) {
-		return new VncBigInteger(val.getValue().toBigInteger());
-	}
-
-	
-	// big-integer -----------------------------------------------------------
-	
-	public static VncInteger bigintToInt(final VncBigInteger val) {
-		return new VncInteger(val.getValue().intValue());
-	}
-
-	public static VncLong bigintToLong(final VncBigInteger val) {
-		return new VncLong(val.getValue().longValue());
-	}
-
-	public static VncDouble bigintToDouble(final VncBigInteger val) {
-		return new VncDouble(val.getValue().doubleValue());
-	}
-
-	public static VncBigDecimal bigintToDecimal(final VncBigInteger val) {
-		return new VncBigDecimal(new BigDecimal(val.getValue()));
-	}
-
-	
-	// operations ------------------------------------------------------------
-	
-	public static VncVal calc(final MathOp op, final VncVal op1, final VncVal op2) {
+	public static VncVal add(final VncVal op1, final VncVal op2) {
 		try {
 			if (Types.isVncLong(op1)) {
 				if (Types.isVncLong(op2)) {
-					return calcLong(op, ((VncLong)op1).getValue(), ((VncLong)op2).getValue());
+					return new VncLong(((VncLong)op1).toJavaLong() + ((VncLong)op2).toJavaLong());
 				}
 				else if (Types.isVncInteger(op2)) {
-					return calcLong(op, ((VncLong)op1).getValue(), ((VncInteger)op2).getLongValue());
+					return new VncLong(((VncLong)op1).toJavaLong() + ((VncInteger)op2).toJavaLong());
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcDouble(op, longToDouble((VncLong)op1).getValue(), ((VncDouble)op2).getValue());
+					return new VncDouble(((VncLong)op1).toJavaDouble() + ((VncDouble)op2).toJavaDouble());
 				}
 				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, longToDecimal((VncLong)op1).getValue(), ((VncBigDecimal)op2).getValue());
+					return new VncBigDecimal(((VncLong)op1).toJavaBigDecimal().add(((VncBigDecimal)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncBigInteger(op2)) {
-					return calcBigInt(op, longToBigint((VncLong)op1).getValue(), ((VncBigInteger)op2).getValue());
+					return new VncBigInteger(((VncLong)op1).toJavaBigInteger().add(((VncBigInteger)op2).toJavaBigInteger()));
 				}
 			}
 			else if (Types.isVncDouble(op1)) {
 				if (Types.isVncDouble(op2)) {
-					return calcDouble(op, ((VncDouble)op1).getValue(), ((VncDouble)op2).getValue());
+					return new VncDouble(((VncDouble)op1).toJavaDouble() + ((VncDouble)op2).toJavaDouble());
 				}
 				else if (Types.isVncLong(op2)) {
-					return calcDouble(op, ((VncDouble)op1).getValue(), longToDouble((VncLong)op2).getValue());
+					return new VncDouble(((VncDouble)op1).toJavaDouble() + ((VncLong)op2).toJavaDouble());
 				}
 				else if (Types.isVncInteger(op2)) {
-					return calcDouble(op, ((VncDouble)op1).getValue(), intToDouble((VncInteger)op2).getValue());
+					return new VncDouble(((VncDouble)op1).toJavaDouble() + ((VncInteger)op2).toJavaDouble());
 				}
 				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, doubleToDecimal((VncDouble)op1).getValue(), ((VncBigDecimal)op2).getValue());
+					return new VncBigDecimal(((VncDouble)op1).toJavaBigDecimal().add(((VncBigDecimal)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncBigInteger(op2)) {
-					return calcDecimal(op, doubleToDecimal((VncDouble)op1).getValue(), bigintToDecimal((VncBigInteger)op2).getValue());
+					return new VncBigDecimal(((VncDouble)op1).toJavaBigDecimal().add(((VncBigInteger)op2).toJavaBigDecimal()));
 				}
 			}
 			else if (Types.isVncBigDecimal(op1)) {
 				if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, ((VncBigDecimal)op1).getValue(), ((VncBigDecimal)op2).getValue());
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().add(((VncBigDecimal)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncLong(op2)) {
-					return calcDecimal(op, ((VncBigDecimal)op1).getValue(), longToDecimal((VncLong)op2).getValue());
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().add(((VncLong)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncInteger(op2)) {
-					return calcDecimal(op, ((VncBigDecimal)op1).getValue(), intToDecimal((VncInteger)op2).getValue());
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().add(((VncInteger)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcDecimal(op, ((VncBigDecimal)op1).getValue(), doubleToDecimal((VncDouble)op2).getValue());
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().add(((VncDouble)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncBigInteger(op2)) {
-					return calcDecimal(op, ((VncBigDecimal)op1).getValue(), bigintToDecimal((VncBigInteger)op2).getValue());
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().add(((VncBigInteger)op2).toJavaBigDecimal()));
 				}
 			}
 			else if (Types.isVncBigInteger(op1)) {
 				if (Types.isVncBigInteger(op2)) {
-					return calcBigInt(op, ((VncBigInteger)op1).getValue(), ((VncBigInteger)op2).getValue());
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().add(((VncBigInteger)op2).toJavaBigInteger()));
 				}
 				else if (Types.isVncLong(op2)) {
-					return calcBigInt(op, ((VncBigInteger)op1).getValue(), longToBigint((VncLong)op2).getValue());
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().add(((VncLong)op2).toJavaBigInteger()));
 				}
 				else if (Types.isVncInteger(op2)) {
-					return calcBigInt(op, ((VncBigInteger)op1).getValue(), intToBigint((VncInteger)op2).getValue());
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().add(((VncInteger)op2).toJavaBigInteger()));
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcDecimal(op, bigintToDecimal((VncBigInteger)op1).getValue(), doubleToDecimal((VncDouble)op2).getValue());
+					return new VncBigDecimal(((VncBigInteger)op1).toJavaBigDecimal().add(((VncDouble)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, bigintToDecimal((VncBigInteger)op1).getValue(), ((VncBigDecimal)op2).getValue());
+					return new VncBigDecimal(((VncBigInteger)op1).toJavaBigDecimal().add(((VncBigDecimal)op2).toJavaBigDecimal()));
 				}
 			}
 			else if (Types.isVncInteger(op1)) {
 				if (Types.isVncInteger(op2)) {
-					return calcInteger(op, ((VncInteger)op1).getValue(), ((VncInteger)op2).getValue());
+					return new VncInteger(((VncInteger)op1).toJavaInteger() + ((VncInteger)op2).toJavaInteger());
 				}
 				else if (Types.isVncLong(op2)) {
-					return calcLong(op, ((VncInteger)op1).getLongValue(), ((VncLong)op2).getValue());
+					return new VncLong(((VncInteger)op1).toJavaLong() + ((VncLong)op2).toJavaLong());
 				}
 				else if (Types.isVncDouble(op2)) {
-					return calcDouble(op, intToDouble((VncInteger)op1).getValue(), ((VncDouble)op2).getValue());
+					return new VncDouble(((VncInteger)op1).toJavaDouble() + ((VncDouble)op2).toJavaDouble());
 				}
 				else if (Types.isVncBigDecimal(op2)) {
-					return calcDecimal(op, intToDecimal((VncInteger)op1).getValue(), ((VncBigDecimal)op2).getValue());
+					return new VncBigDecimal(((VncInteger)op1).toJavaBigDecimal().add(((VncBigDecimal)op2).toJavaBigDecimal()));
 				}
 				else if (Types.isVncBigInteger(op2)) {
-					return calcBigInt(op, intToBigint((VncInteger)op1).getValue(), ((VncBigInteger)op2).getValue());
+					return new VncBigInteger(((VncInteger)op1).toJavaBigInteger().add(((VncBigInteger)op2).toJavaBigInteger()));
 				}
 			}
 			
 			// error: bad numeric types - check add the end to minimize the type checks
-			validateNumericTypes(op, op1, op2);
+			validateNumericTypes("+", op1, op2);
 		}
 		catch (ArithmeticException ex) {
-			throw new VncException(ex.getMessage(), ex);
+			throw new VncException(ex.getMessage());
+		}
+		
+		throw new RuntimeException("Unexpected outcome");
+	}
+
+	public static VncVal sub(final VncVal op1, final VncVal op2) {
+		try {
+			if (Types.isVncLong(op1)) {
+				if (Types.isVncLong(op2)) {
+					return new VncLong(((VncLong)op1).toJavaLong() - ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncLong(((VncLong)op1).toJavaLong() - ((VncInteger)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncDouble(((VncLong)op1).toJavaDouble() - ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncLong)op1).toJavaBigDecimal().subtract(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigInteger(((VncLong)op1).toJavaBigInteger().subtract(((VncBigInteger)op2).toJavaBigInteger()));
+				}
+			}
+			else if (Types.isVncDouble(op1)) {
+				if (Types.isVncDouble(op2)) {
+					return new VncDouble(((VncDouble)op1).toJavaDouble() - ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncDouble(((VncDouble)op1).toJavaDouble() - ((VncLong)op2).toJavaDouble());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncDouble(((VncDouble)op1).toJavaDouble() - ((VncInteger)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncDouble)op1).toJavaBigDecimal().subtract(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigDecimal(((VncDouble)op1).toJavaBigDecimal().subtract(((VncBigInteger)op2).toJavaBigDecimal()));
+				}
+			}
+			else if (Types.isVncBigDecimal(op1)) {
+				if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().subtract(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().subtract(((VncLong)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().subtract(((VncInteger)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().subtract(((VncDouble)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().subtract(((VncBigInteger)op2).toJavaBigDecimal()));
+				}
+			}
+			else if (Types.isVncBigInteger(op1)) {
+				if (Types.isVncBigInteger(op2)) {
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().subtract(((VncBigInteger)op2).toJavaBigInteger()));
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().subtract(((VncLong)op2).toJavaBigInteger()));
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().subtract(((VncInteger)op2).toJavaBigInteger()));
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncBigDecimal(((VncBigInteger)op1).toJavaBigDecimal().subtract(((VncDouble)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncBigInteger)op1).toJavaBigDecimal().subtract(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+			}
+			else if (Types.isVncInteger(op1)) {
+				if (Types.isVncInteger(op2)) {
+					return new VncInteger(((VncInteger)op1).toJavaInteger() - ((VncInteger)op2).toJavaInteger());
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncLong(((VncInteger)op1).toJavaLong() - ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncDouble(((VncInteger)op1).toJavaDouble() - ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncInteger)op1).toJavaBigDecimal().subtract(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigInteger(((VncInteger)op1).toJavaBigInteger().subtract(((VncBigInteger)op2).toJavaBigInteger()));
+				}
+			}
+			
+			// error: bad numeric types - check add the end to minimize the type checks
+			validateNumericTypes("-", op1, op2);
+		}
+		catch (ArithmeticException ex) {
+			throw new VncException(ex.getMessage());
+		}
+		
+		throw new RuntimeException("Unexpected outcome");
+	}
+	public static VncVal mul(final VncVal op1, final VncVal op2) {
+		try {
+			if (Types.isVncLong(op1)) {
+				if (Types.isVncLong(op2)) {
+					return new VncLong(((VncLong)op1).toJavaLong() * ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncLong(((VncLong)op1).toJavaLong() * ((VncInteger)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncDouble(((VncLong)op1).toJavaDouble() * ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncLong)op1).toJavaBigDecimal().multiply(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigInteger(((VncLong)op1).toJavaBigInteger().multiply(((VncBigInteger)op2).toJavaBigInteger()));
+				}
+			}
+			else if (Types.isVncDouble(op1)) {
+				if (Types.isVncDouble(op2)) {
+					return new VncDouble(((VncDouble)op1).toJavaDouble() * ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncDouble(((VncDouble)op1).toJavaDouble() * ((VncLong)op2).toJavaDouble());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncDouble(((VncDouble)op1).toJavaDouble() * ((VncInteger)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncDouble)op1).toJavaBigDecimal().multiply(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigDecimal(((VncDouble)op1).toJavaBigDecimal().multiply(((VncBigInteger)op2).toJavaBigDecimal()));
+				}
+			}
+			else if (Types.isVncBigDecimal(op1)) {
+				if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().multiply(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().multiply(((VncLong)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().multiply(((VncInteger)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().multiply(((VncDouble)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigDecimal(((VncBigDecimal)op1).toJavaBigDecimal().multiply(((VncBigInteger)op2).toJavaBigDecimal()));
+				}
+			}
+			else if (Types.isVncBigInteger(op1)) {
+				if (Types.isVncBigInteger(op2)) {
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().multiply(((VncBigInteger)op2).toJavaBigInteger()));
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().multiply(((VncLong)op2).toJavaBigInteger()));
+				}
+				else if (Types.isVncInteger(op2)) {
+					return new VncBigInteger(((VncBigInteger)op1).toJavaBigInteger().multiply(((VncInteger)op2).toJavaBigInteger()));
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncBigDecimal(((VncBigInteger)op1).toJavaBigDecimal().multiply(((VncDouble)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncBigInteger)op1).toJavaBigDecimal().multiply(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+			}
+			else if (Types.isVncInteger(op1)) {
+				if (Types.isVncInteger(op2)) {
+					return new VncInteger(((VncInteger)op1).toJavaInteger() * ((VncInteger)op2).toJavaInteger());
+				}
+				else if (Types.isVncLong(op2)) {
+					return new VncLong(((VncInteger)op1).toJavaLong() * ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return new VncDouble(((VncInteger)op1).toJavaDouble() * ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return new VncBigDecimal(((VncInteger)op1).toJavaBigDecimal().multiply(((VncBigDecimal)op2).toJavaBigDecimal()));
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return new VncBigInteger(((VncInteger)op1).toJavaBigInteger().multiply(((VncBigInteger)op2).toJavaBigInteger()));
+				}
+			}
+			
+			// error: bad numeric types - check add the end to minimize the type checks
+			validateNumericTypes("*", op1, op2);
+		}
+		catch (ArithmeticException ex) {
+			throw new VncException(ex.getMessage());
+		}
+		
+		throw new RuntimeException("Unexpected outcome");
+	}
+	public static VncVal div(final VncVal op1, final VncVal op2) {
+		try {
+			if (Types.isVncLong(op1)) {
+				if (Types.isVncLong(op2)) {
+					return div(((VncLong)op1).toJavaLong(), ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return div(((VncLong)op1).toJavaLong(), ((VncInteger)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return div(((VncLong)op1).toJavaDouble(), ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return div(((VncLong)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return div(((VncLong)op1).toJavaBigInteger(), ((VncBigInteger)op2).toJavaBigInteger());
+				}
+			}
+			else if (Types.isVncDouble(op1)) {
+				if (Types.isVncDouble(op2)) {
+					return div(((VncDouble)op1).toJavaDouble(), ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncLong(op2)) {
+					return div(((VncDouble)op1).toJavaDouble(), ((VncLong)op2).toJavaDouble());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return div(((VncDouble)op1).toJavaDouble(), ((VncInteger)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return div(((VncDouble)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return div(((VncDouble)op1).toJavaBigDecimal(), ((VncBigInteger)op2).toJavaBigDecimal());
+				}
+			}
+			else if (Types.isVncBigDecimal(op1)) {
+				if (Types.isVncBigDecimal(op2)) {
+					return div(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncLong(op2)) {
+					return div(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncLong)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return div(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncInteger)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return div(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncDouble)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return div(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncBigInteger)op2).toJavaBigDecimal());
+				}
+			}
+			else if (Types.isVncBigInteger(op1)) {
+				if (Types.isVncBigInteger(op2)) {
+					return div(((VncBigInteger)op1).toJavaBigInteger(), ((VncBigInteger)op2).toJavaBigInteger());
+				}
+				else if (Types.isVncLong(op2)) {
+					return div(((VncBigInteger)op1).toJavaBigInteger(), ((VncLong)op2).toJavaBigInteger());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return div(((VncBigInteger)op1).toJavaBigInteger(), ((VncInteger)op2).toJavaBigInteger());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return div(((VncBigInteger)op1).toJavaBigDecimal(), ((VncDouble)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return div(((VncBigInteger)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+			}
+			else if (Types.isVncInteger(op1)) {
+				if (Types.isVncInteger(op2)) {
+					return div(((VncInteger)op1).toJavaInteger(), ((VncInteger)op2).toJavaInteger());
+				}
+				else if (Types.isVncLong(op2)) {
+					return div(((VncInteger)op1).toJavaLong(), ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return div(((VncInteger)op1).toJavaDouble(), ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return div(((VncInteger)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return div(((VncInteger)op1).toJavaBigInteger(), ((VncBigInteger)op2).toJavaBigInteger());
+				}
+			}
+			
+			// error: bad numeric types - check add the end to minimize the type checks
+			validateNumericTypes("/", op1, op2);
+		}
+		catch (ArithmeticException ex) {
+			throw new VncException(ex.getMessage());
 		}
 		
 		throw new RuntimeException("Unexpected outcome");
 	}
 	
+	public static VncBoolean equ(final VncVal op1, final VncVal op2) {
+		try {
+			if (Types.isVncLong(op1)) {
+				if (Types.isVncLong(op2)) {
+					return equ(((VncLong)op1).toJavaLong(), ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return equ(((VncLong)op1).toJavaLong(), ((VncInteger)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return equ(((VncLong)op1).toJavaDouble(), ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return equ(((VncLong)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return equ(((VncLong)op1).toJavaBigInteger(), ((VncBigInteger)op2).toJavaBigInteger());
+				}
+			}
+			else if (Types.isVncDouble(op1)) {
+				if (Types.isVncDouble(op2)) {
+					return equ(((VncDouble)op1).toJavaDouble(), ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncLong(op2)) {
+					return equ(((VncDouble)op1).toJavaDouble(), ((VncLong)op2).toJavaDouble());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return equ(((VncDouble)op1).toJavaDouble(), ((VncInteger)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return equ(((VncDouble)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return equ(((VncDouble)op1).toJavaBigDecimal(), ((VncBigInteger)op2).toJavaBigDecimal());
+				}
+			}
+			else if (Types.isVncBigDecimal(op1)) {
+				if (Types.isVncBigDecimal(op2)) {
+					return equ(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncLong(op2)) {
+					return equ(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncLong)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return equ(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncInteger)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return equ(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncDouble)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return equ(((VncBigDecimal)op1).toJavaBigDecimal(), ((VncBigInteger)op2).toJavaBigDecimal());
+				}
+			}
+			else if (Types.isVncBigInteger(op1)) {
+				if (Types.isVncBigInteger(op2)) {
+					return equ(((VncBigInteger)op1).toJavaBigInteger(), ((VncBigInteger)op2).toJavaBigInteger());
+				}
+				else if (Types.isVncLong(op2)) {
+					return equ(((VncBigInteger)op1).toJavaBigInteger(), ((VncLong)op2).toJavaBigInteger());
+				}
+				else if (Types.isVncInteger(op2)) {
+					return equ(((VncBigInteger)op1).toJavaBigInteger(), ((VncInteger)op2).toJavaBigInteger());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return equ(((VncBigInteger)op1).toJavaBigDecimal(), ((VncDouble)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return equ(((VncBigInteger)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+			}
+			else if (Types.isVncInteger(op1)) {
+				if (Types.isVncInteger(op2)) {
+					return equ(((VncInteger)op1).toJavaInteger(), ((VncInteger)op2).toJavaInteger());
+				}
+				else if (Types.isVncLong(op2)) {
+					return equ(((VncInteger)op1).toJavaLong(), ((VncLong)op2).toJavaLong());
+				}
+				else if (Types.isVncDouble(op2)) {
+					return equ(((VncInteger)op1).toJavaDouble(), ((VncDouble)op2).toJavaDouble());
+				}
+				else if (Types.isVncBigDecimal(op2)) {
+					return equ(((VncInteger)op1).toJavaBigDecimal(), ((VncBigDecimal)op2).toJavaBigDecimal());
+				}
+				else if (Types.isVncBigInteger(op2)) {
+					return equ(((VncInteger)op1).toJavaBigInteger(), ((VncBigInteger)op2).toJavaBigInteger());
+				}
+			}
+			
+			// error: bad numeric types - check add the end to minimize the type checks
+			validateNumericTypes("==", op1, op2);
+		}
+		catch (ArithmeticException ex) {
+			throw new VncException(ex.getMessage());
+		}
+		
+		throw new RuntimeException("Unexpected outcome");
+	}
+
 	public static VncVal square(final VncVal val) {
-		return calc(MathOp.MUL, val, val);
+		return mul(val, val);
 	}
 	
 	public static VncVal sqrt(final VncVal val) {
 		if (Types.isVncLong(val)) {
-			return new VncDouble(Math.sqrt(((VncLong)val).getValue().doubleValue()));
+			return new VncDouble(Math.sqrt(((VncLong)val).toJavaDouble()));
 		}
 		else if (Types.isVncInteger(val)) {
-			return new VncDouble(Math.sqrt(((VncInteger)val).getValue().doubleValue()));
+			return new VncDouble(Math.sqrt(((VncInteger)val).toJavaDouble()));
 		}
 		else if (Types.isVncDouble(val)) {
-			return new VncDouble(Math.sqrt(((VncDouble)val).getValue()));
+			return new VncDouble(Math.sqrt(((VncDouble)val).toJavaDouble()));
 		}
 		else if (Types.isVncBigDecimal(val)) {
 			return new VncBigDecimal(
 						new BigDecimal(
 								Math.sqrt(
-									Coerce.toVncBigDecimal(val).getValue().doubleValue())));
+									Coerce.toVncBigDecimal(val).toJavaDouble())));
 		}
 		else if (Types.isVncBigInteger(val)) {
 			return new VncBigDecimal(
 						new BigDecimal(
 								Math.sqrt(
-									Coerce.toVncBigInteger(val).getValue().doubleValue())));
+									Coerce.toVncBigInteger(val).toJavaDouble())));
 		}
 		else {
 			throw new VncException(String.format(
@@ -401,73 +563,62 @@ public class Numeric {
 		}
 	}
 	
-	private static VncVal calcInteger(final MathOp op, final Integer op1, final Integer op2) {
-		switch(op) {
-			case EQU: return VncBoolean.of(op1.compareTo(op2) == 0);
-			case ADD: return new VncInteger(op1 + op2);
-			case SUB: return new VncInteger(op1 - op2);
-			case MUL: return new VncInteger(op1 * op2);
-			case DIV: return new VncInteger(op1 / op2);
-			default: throw new RuntimeException("Invalid integer math operation '" + op + "'");
-		}
+	
+		
+	private static VncVal div(final Integer op1, final Integer op2) {
+		return new VncInteger(op1 / op2);
 	}
 	
-	private static VncVal calcLong(final MathOp op, final Long op1, final Long op2) {
-		switch(op) {
-			case EQU: return VncBoolean.of(op1.compareTo(op2) == 0);
-			case ADD: return new VncLong(op1 + op2);
-			case SUB: return new VncLong(op1 - op2);
-			case MUL: return new VncLong(op1 * op2);
-			case DIV: return new VncLong(op1 / op2);
-			default: throw new RuntimeException("Invalid integer math operation '" + op + "'");
-		}
+	private static VncVal div(final Long op1, final Long op2) {
+		return new VncLong(op1 / op2);
 	}
-
-	private static VncVal calcDouble(final MathOp op, final Double op1, final Double op2) {
-		switch(op) {
-			case EQU: return VncBoolean.of(op1.compareTo(op2) == 0);
-			case ADD: return new VncDouble(op1 + op2);
-			case SUB: return new VncDouble(op1 - op2);
-			case MUL: return new VncDouble(op1 * op2);
-			case DIV: return new VncDouble(op1 / op2);
-			default: throw new RuntimeException("Invalid double math operation '" + op + "'");
-		}
+	
+	private static VncVal div(final Double op1, final Double op2) {
+		return new VncDouble(op1 / op2);
 	}
-
-	private static VncVal calcDecimal(final MathOp op, final BigDecimal op1, final BigDecimal op2) {
-		switch(op) {
-			case EQU: return VncBoolean.of(op1.compareTo(op2) == 0);
-			case ADD: return new VncBigDecimal(op1.add(op2));
-			case SUB: return new VncBigDecimal(op1.subtract(op2));
-			case MUL: return new VncBigDecimal(op1.multiply(op2));
-			case DIV: return new VncBigDecimal(op1.divide(op2, 16, RoundingMode.HALF_UP));
-			default: throw new RuntimeException("Invalid big decimal math operation '" + op + "'");
-		}
+	
+	private static VncVal div(final BigDecimal op1, final BigDecimal op2) {
+		return new VncBigDecimal(op1.divide(op2, 16, RoundingMode.HALF_UP));
 	}
-
-	private static VncVal calcBigInt(final MathOp op, final BigInteger op1, final BigInteger op2) {
-		switch(op) {
-			case EQU: return VncBoolean.of(op1.compareTo(op2) == 0);
-			case ADD: return new VncBigInteger(op1.add(op2));
-			case SUB: return new VncBigInteger(op1.subtract(op2));
-			case MUL: return new VncBigInteger(op1.multiply(op2));
-			case DIV: return new VncBigInteger(op1.divide(op2));
-			default: throw new RuntimeException("Invalid big integer math operation '" + op + "'");
-		}
+	
+	private static VncVal div(final BigInteger op1, final BigInteger op2) {
+		return new VncBigInteger(op1.divide(op2));
 	}
-
-	private static void validateNumericTypes(final MathOp op, final VncVal op1, final VncVal op2) {
+	
+	
+	private static VncBoolean equ(final Integer op1, final Integer op2) {
+		return VncBoolean.of(op1.equals(op2));
+	}
+	
+	private static VncBoolean equ(final Long op1, final Long op2) {
+		return VncBoolean.of(op1.equals(op2));
+	}
+	
+	private static VncBoolean equ(final Double op1, final Double op2) {
+		return VncBoolean.of(op1.equals(op2));
+	}
+	
+	private static VncBoolean equ(final BigDecimal op1, final BigDecimal op2) {
+		return VncBoolean.of(op1.compareTo(op2) == 0);
+	}
+	
+	private static VncBoolean equ(final BigInteger op1, final BigInteger op2) {
+		return VncBoolean.of(op1.compareTo(op2) == 0);
+	}
+	
+	
+	private static void validateNumericTypes(final String op, final VncVal op1, final VncVal op2) {
 		if (!Types.isVncNumber(op1)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 1 (%s) is not a numeric type", 
-					op.getFnName(),
+					op,
 					Types.getType(op1)));
 		}
 
 		if (!Types.isVncNumber(op2)) {
 			throw new VncException(String.format(
 					"Function '%s' operand 2 (%s) is not a numeric type", 
-					op.getFnName(),
+					op,
 					Types.getType(op2)));
 		}
 	}

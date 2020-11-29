@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -72,10 +73,10 @@ public class MathFunctions {
 				switch(args.size()) {
 					case 0: return new VncLong(0);
 					case 1: return validateNumber("+", args.first());
-					case 2: return Numeric.calc(MathOp.ADD, args.first(), args.second());
+					case 2: return Numeric.add(args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.ADD, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.add(val, v); }
 						return val;
 				}
 			}
@@ -126,10 +127,10 @@ public class MathFunctions {
 							return validateNumber("-", first);
 						}
 					case 2:
-						return Numeric.calc(MathOp.SUB, args.first(), args.second());
+						return Numeric.sub(args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.SUB, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.sub(val, v); }
 						return val;
 				}
 			}
@@ -158,10 +159,10 @@ public class MathFunctions {
 				switch(args.size()) {
 					case 0: return new VncLong(1);
 					case 1: return validateNumber("*", args.first());
-					case 2: return Numeric.calc(MathOp.MUL, args.first(), args.second());
+					case 2: return Numeric.mul(args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.MUL, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.mul(val, v); }
 						return val;
 				}
 			}
@@ -195,28 +196,28 @@ public class MathFunctions {
 					case 1:
 						final VncVal first = args.first();
 						if (Types.isVncLong(first)) {
-							return Numeric.calc(MathOp.DIV, new VncLong(1L), first);
+							return Numeric.div(new VncLong(1L), first);
 						}
 						else if (Types.isVncInteger(first)) {
-							return Numeric.calc(MathOp.DIV, new VncInteger(1), first);
+							return Numeric.div(new VncInteger(1), first);
 						}
 						else if (Types.isVncDouble(first)) {
-							return Numeric.calc(MathOp.DIV, new VncDouble(1D), first);
+							return Numeric.div(new VncDouble(1D), first);
 						}
 						else if (Types.isVncBigDecimal(first)) {
-							return Numeric.calc(MathOp.DIV, new VncBigDecimal(BigDecimal.ONE), first);
+							return Numeric.div(new VncBigDecimal(BigDecimal.ONE), first);
 						}
 						else if (Types.isVncBigInteger(first)) {
-							return Numeric.calc(MathOp.DIV, new VncBigInteger(BigInteger.ONE), first);
+							return Numeric.div(new VncBigInteger(BigInteger.ONE), first);
 						}
 						else {
 							return validateNumber("/", first);
 						}
 					case 2:
-						return Numeric.calc(MathOp.DIV, args.first(), args.second());
+						return Numeric.div(args.first(), args.second());
 					default:
 						VncVal val = args.first();
-						for(VncVal v : args.rest()) { val = Numeric.calc(MathOp.DIV, val, v); }
+						for(VncVal v : args.rest()) { val = Numeric.div(val, v); }
 						return val;
 				}
 			}
@@ -746,7 +747,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.sin(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.sin(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -768,7 +769,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.cos(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.cos(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -790,7 +791,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.tan(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.tan(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -812,7 +813,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.toRadians(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.toRadians(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -834,7 +835,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.toDegrees(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.toDegrees(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -856,7 +857,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.log(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.log(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -878,7 +879,7 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				return new VncDouble(Math.log10(Numeric.toDouble(args.first()).getValue()));
+				return new VncDouble(Math.log10(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -901,8 +902,8 @@ public class MathFunctions {
 				ArityExceptions.assertArity(this, args, 2);
 
 				return new VncDouble(Math.pow(
-										Numeric.toDouble(args.first()).getValue(),
-										Numeric.toDouble(args.second()).getValue()));
+										VncDouble.of(args.first()).getValue(),
+										VncDouble.of(args.second()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -932,7 +933,7 @@ public class MathFunctions {
 												? new VncBigDecimal(args.size())
 												: new VncDouble(args.size());
 
-					return Numeric.calc(MathOp.DIV, sum, divisor);
+					return Numeric.div(sum, divisor);
 				}
 			}
 
@@ -972,17 +973,14 @@ public class MathFunctions {
 
 					VncVal deltaSum = new VncDouble(0.0);
 					for(VncVal v : data) {
-						deltaSum = Numeric.calc(
-										MathOp.ADD,
+						deltaSum = Numeric.add(
 										deltaSum,
-										Numeric.square(
-											Numeric.calc(MathOp.SUB, v, average)));
+										Numeric.square(Numeric.sub(v, average)));
 					}
 
-					return Numeric.toDouble(
+					return VncDouble.of(
 								Numeric.sqrt(
-										Numeric.calc(
-											MathOp.DIV,
+										Numeric.div(
 											deltaSum,
 											new VncDouble(sample ? data.size() -1 : data.size()))));
 				}
@@ -1108,9 +1106,9 @@ public class MathFunctions {
 						final int idx = (int)f;
 						final double p = x - f;
 
-						final double res = (p * toDouble(data.nth(idx + 1)))
+						final double res = (p * VncDouble.of(data.nth(idx + 1)).getValue())
 											+
-									       ((1.0D - p) * toDouble(data.nth(idx)));
+									       ((1.0D - p) * VncDouble.of(data.nth(idx)).getValue());
 
 						return new VncDouble(res);
 					}
@@ -1683,7 +1681,7 @@ public class MathFunctions {
 		};
 
 
-	private static VncVal validateNumber(final String fnName, final VncVal val) {
+	private static VncNumber validateNumber(final String fnName, final VncVal val) {
 		if (!Types.isVncNumber(val)) {
 			throw new VncException(String.format(
 					"%s: Not a number. Got a %s",
@@ -1691,7 +1689,7 @@ public class MathFunctions {
 					Types.getType(val)));
 		}
 
-		return val;
+		return (VncNumber)val;
 	}
 
 	private static boolean isOdd(final int val) {
@@ -1726,24 +1724,20 @@ public class MathFunctions {
 		else {
 			if (isOdd(sortedData.size())) {
 				final VncVal median = sortedData.nth(sortedData.size() / 2);
-				return Types.isVncBigDecimal(median) || Types.isVncBigInteger(median) ? median : Numeric.toDouble(median);
+				return Types.isVncBigDecimal(median) || Types.isVncBigInteger(median) ? median : VncDouble.of(median);
 			}
 			else {
 				final VncVal lowerMedian = sortedData.nth(sortedData.size() / 2 - 1);
 				final VncVal upperMedian = sortedData.nth(sortedData.size() / 2);
-				final VncVal sum = Numeric.calc(MathOp.ADD, lowerMedian, upperMedian);
+				final VncVal sum = Numeric.add(lowerMedian, upperMedian);
 
 				final VncVal divisor = Types.isVncBigDecimal(sum) || Types.isVncBigInteger(sum)
 											? new VncBigDecimal(2L)
 											: new VncDouble(2.0D);
 
-				return Numeric.calc(MathOp.DIV, sum, divisor);
+				return Numeric.div(sum, divisor);
 			}
 		}
-	}
-
-	private static double toDouble(final VncVal val) {
-		return Numeric.toDouble(val).getValue().doubleValue();
 	}
 
 
