@@ -631,69 +631,70 @@ public class VeniceInterpreter implements Serializable  {
 											? env.get((VncSymbol)a0)  // (+ 1 2)
 											: evaluate(a0, env);      // ((resolve '+) 1 2)
 										
-					if (fn0 instanceof VncFunction && ((VncFunction)fn0).isMacro()) { 
-						// macro
-						final VncVal expandedAst = macroexpand(ast, env, null);
-						if (expandedAst instanceof VncList) {					
-							orig_ast = expandedAst;
-							continue;
-						}
-						else {
-							return evaluate_values(expandedAst, env); // not an s-expr
-						}
-					}				
-					else if (fn0 instanceof VncFunction) {
-						// function
+					if (fn0 instanceof VncFunction) { 
 						final VncFunction fn = (VncFunction)fn0;
-						final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
-						final String fnName = fn.getQualifiedName();
-
-						final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
-
-						// validate function call allowed by sandbox
-						if (checkSandbox) {
-							interceptor.validateVeniceFunction(fnName);	
-							interceptor.validateMaxExecutionTime();
-						}
-
-						checkInterrupted(fnName);
-
-						final CallStack callStack = ThreadLocalMap.getCallStack();
-
-						// Automatic TCO (tail call optimization)
-						if (tailPosition
-								&& !fn.isNative()  // native functions do not have an AST body
-								&& !callStack.isEmpty() 
-								&& fnName.equals(callStack.peek().getFnName())
-						) {
-							// fn may be a normal function, a multi-arity, or a multi-method function							
-							final VncFunction f = fn.getFunctionForArgs(fnArgs);
-							env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
-							final VncList body = (VncList)f.getBody();
-							evaluate_values(body.butlast(), env);
-							orig_ast = body.last();
-						}
-						else {
-							// invoke function with a new call frame
-							// the overhead with callstack and interrupt check is ~150ns
-							try {
-								callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
-								return fn.apply(fnArgs);
+						if (fn.isMacro()) { 
+							// macro
+							final VncVal expandedAst = macroexpand(ast, env, null);
+							if (expandedAst instanceof VncList) {					
+								orig_ast = expandedAst;
+								continue;
 							}
-							finally {
-								callStack.pop();
-								checkInterrupted(fnName);
-								if (checkSandbox) {
-									interceptor.validateMaxExecutionTime();
+							else {
+								return evaluate_values(expandedAst, env); // not an s-expr
+							}
+						} 
+						else { 
+							// function
+							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
+							final String fnName = fn.getQualifiedName();
+	
+							final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
+	
+							// validate function call allowed by sandbox
+							if (checkSandbox) {
+								interceptor.validateVeniceFunction(fnName);	
+								interceptor.validateMaxExecutionTime();
+							}
+	
+							checkInterrupted(fnName);
+	
+							final CallStack callStack = ThreadLocalMap.getCallStack();
+	
+							// Automatic TCO (tail call optimization)
+							if (tailPosition
+									&& !fn.isNative()  // native functions do not have an AST body
+									&& !callStack.isEmpty() 
+									&& fnName.equals(callStack.peek().getFnName())
+							) {
+								// fn may be a normal function, a multi-arity, or a multi-method function							
+								final VncFunction f = fn.getFunctionForArgs(fnArgs);
+								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
+								final VncList body = (VncList)f.getBody();
+								evaluate_values(body.butlast(), env);
+								orig_ast = body.last();
+							}
+							else {
+								// invoke function with a new call frame
+								try {
+									callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
+									return fn.apply(fnArgs);
 								}
-								if (meterRegistry.enabled) {
-									final long elapsed = System.nanoTime() - nanos;
-									if (fn instanceof VncMultiArityFunction) {
-										final VncFunction f = fn.getFunctionForArgs(fnArgs);
-										meterRegistry.record(fn.getQualifiedName() + "[" + f.getParams().size() + "]", elapsed);
+								finally {
+									callStack.pop();
+									checkInterrupted(fnName);
+									if (checkSandbox) {
+										interceptor.validateMaxExecutionTime();
 									}
-									else {
-										meterRegistry.record(fn.getQualifiedName(), elapsed);
+									if (meterRegistry.enabled) {
+										final long elapsed = System.nanoTime() - nanos;
+										if (fn instanceof VncMultiArityFunction) {
+											final VncFunction f = fn.getFunctionForArgs(fnArgs);
+											meterRegistry.record(fn.getQualifiedName() + "[" + f.getParams().size() + "]", elapsed);
+										}
+										else {
+											meterRegistry.record(fn.getQualifiedName(), elapsed);
+										}
 									}
 								}
 							}

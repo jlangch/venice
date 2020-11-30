@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class CallStack {
 		this.queue = new ArrayDeque<>(32);
 	}
 	
-	private CallStack(ArrayDeque<CallFrame> queue) {
+	private CallStack(final ArrayDeque<CallFrame> queue) {
 		this.queue = queue;
 	}
 	
@@ -114,12 +115,11 @@ public class CallStack {
      * @return a list of stringified call frames in this call stack
      */
 	public List<String> toList() {
-		final String[] stack = new String[queue.size()];	
-		int ii=0;
-		for(CallFrame f : queue.toArray(new CallFrame[queue.size()])) {
-			stack[ii++] = f.toString();
+		final List<String> list = new ArrayList<>(queue.size());	
+		for(CallFrame f : queue) {
+			list.add(f.toString());
 		}
-		return Arrays.asList(stack);
+		return list;
 	}
 
     /**
@@ -145,7 +145,4 @@ public class CallStack {
 	// A call stack is used only as a thread local variable. So it does
 	// not face concurrent usage. ArrayDeque is the fastest Deque available.
 	private final ArrayDeque<CallFrame> queue;
-
-	//private final ArrayListStack<CallFrame> queue = new ArrayListStack<>(20);
-	//private final ConcurrentLinkedDeque<CallFrame> queue = new ConcurrentLinkedDeque<>();
 }

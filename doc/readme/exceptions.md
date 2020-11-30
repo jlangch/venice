@@ -74,11 +74,12 @@ Venice generates user friendly stack traces
    
 =>
 Exception in thread "main" VncException: / by zero
-    at: / (script: line 4, col 19)
-    at: fn3 (script: line 3, col 19)
-    at: fn2 (script: line 2, col 19)
-    at: fn1 (script: line 5, col 5)
-Caused by: java.lang.ArithmeticException: / by zero
+
+[Callstack]
+    at: / (user: line 4, col 19)
+    at: user/fn3 (user: line 3, col 19)
+    at: user/fn2 (user: line 2, col 19)
+    at: user/fn1 (user: line 5, col 5)
 ```
 
 
