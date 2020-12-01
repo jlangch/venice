@@ -117,6 +117,7 @@ public class IOFunctions {
 						"(io/file \"/temp\" \"test\" \"test.txt\")",
 						"(io/file (io/file \"/temp\") \"test\" \"test.txt\")",
 						"(io/file (. :java.io.File :new \"/temp/test.txt\"))")
+					.seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute-path", "io/file-canonical-path")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -153,6 +154,7 @@ public class IOFunctions {
 					.arglists("(io/file-size f)")
 					.doc("Returns the size of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-size \"/bin/sh\")")
+					.seeAlso("io/file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -180,6 +182,7 @@ public class IOFunctions {
 					.arglists("(io/file-path f)")
 					.doc("Returns the path of the file f as a string. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
+					.seeAlso("io/file-absolute-path", "io/file-canonical-path", "io/file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -203,6 +206,7 @@ public class IOFunctions {
 					.arglists("(io/file-canonical-path f)")
 					.doc("Returns the canonical path of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-canonical-path (io/file \"/tmp/test/../x.txt\"))")
+					.seeAlso("io/file-path", "io/file-absolute-path", "io/file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -231,6 +235,7 @@ public class IOFunctions {
 					.arglists("(io/file-absolute-path f)")
 					.doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-absolute-path (io/file \"/tmp/test/x.txt\"))")
+					.seeAlso("io/file-path", "io/file-canonical-path", "io/file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -254,6 +259,7 @@ public class IOFunctions {
 					.arglists("(io/file-parent f)")
 					.doc("Returns the parent file of the file f. f must be a file or a string (file path).")
 					.examples("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))")
+					.seeAlso("io/file-name", "io/file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -278,6 +284,7 @@ public class IOFunctions {
 					.arglists("(io/file-name f)")
 					.doc("Returns the name of the file f as a string. f must be a file or a string (file path).")
 					.examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
+					.seeAlso("io/file-parent", "io/file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -349,6 +356,7 @@ public class IOFunctions {
 					.arglists("(io/exists-file? f)")
 					.doc("Returns true if the file f exists. f must be a file or a string (file path).")
 					.examples("(io/exists-file? \"/temp/test.txt\")")
+					.seeAlso("io/exists-dir?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -376,6 +384,7 @@ public class IOFunctions {
 						"Returns true if the file f exists and is a directory. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/exists-dir? (io/file \"/temp\"))")
+					.seeAlso("io/exists-file?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -403,6 +412,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and can be read. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-read? \"/temp/test.txt\")")
+					.seeAlso("io/file-can-write?", "io/file-can-execute?", "io/file-hidden?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -428,6 +438,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and can be written. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-write? \"/temp/test.txt\")")
+					.seeAlso("io/file-can-read?", "io/file-can-execute?", "io/file-hidden?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -453,6 +464,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and can be executed. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-execute? \"/temp/test.txt\")")
+					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-hidden?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -478,6 +490,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and is hidden. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-hidden? \"/temp/test.txt\")")
+					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -508,6 +521,7 @@ public class IOFunctions {
 						"Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
 					.examples(
 						"(io/await-for 10 :seconds \"/tmp/data.json\" :created)")
+					.seeAlso("io/watch-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -603,6 +617,7 @@ public class IOFunctions {
 						"  (let [w (io/watch-dir \"/tmp\" #(log (str %1 \" \" %2)))]   \n" +
 					    "    (sleep 30 :seconds)                                       \n" +
 						"    (io/close-watcher w)))                                      ")
+					.seeAlso("io/await-for")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -712,6 +727,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/close-watcher watcher)")		
 					.doc("Closes a watcher created from 'io/watch-dir'.")
+					.seeAlso("io/watch-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -744,6 +760,7 @@ public class IOFunctions {
 						"Deletes one or multiple files. Silently skips delete if the file " +
 						"does not exist. If f is a directory the directory must be empty. " +
 						"f must be a file or a string (file path)")
+					.seeAlso("io/delete-file-tree", "io/delete-file-on-exit", "io/copy-file", "io/move-file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -781,6 +798,7 @@ public class IOFunctions {
 					.doc(
 						"Deletes a file or a directory with all its content. Silently skips delete if " +
 						"the file or directory does not exist. f must be a file or a string (file path)")
+					.seeAlso("io/delete-file", "io/delete-file-on-exit")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -827,6 +845,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/delete-file-on-exit f)")
 					.doc("Deletes a file f on JVM exit. f must be a file or a string (file path).")
+					.seeAlso("io/delete-file", "io/delete-file-tree")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -871,6 +890,7 @@ public class IOFunctions {
 						"gets a java.io.File as argument. Returns files as java.io.File.\n\n" +
 						"(io/list-files \"/tmp\") \n" +
 						"(io/list-files \"/tmp\" #(io/file-ext? % \".log\"))")
+					.seeAlso("io/list-file-tree", "io/list-files-glob")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -921,6 +941,7 @@ public class IOFunctions {
 						"Returns files as java.io.File.\n\n" +
 						"(io/list-file-tree \"/tmp\") \n" +
 						"(io/list-file-tree \"/tmp\" #(io/file-ext? % \".log\"))")
+					.seeAlso("io/list-files", "io/list-files-glob")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -969,6 +990,7 @@ public class IOFunctions {
 					    "dir must be a file or a string (file path). " +
 					    "Returns files as java.io.File.\n\n" +
 						"(io/list-files-glob \".\" \"sample*.txt\".")
+					.seeAlso("io/list-files", "io/list-file-tree")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1016,6 +1038,7 @@ public class IOFunctions {
 						"a string (file path), or an OutputStream.\n\n" +
 						"Options: \n" +
 						"  :replace true/false - e.g if true replace an aexistiong file, defaults to false")
+					.seeAlso("io/move-file", "io/delete-file", "io/copy-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1101,6 +1124,7 @@ public class IOFunctions {
 					.doc(
 						"Moves source to target. Returns nil or throws IOException. " +
 						"Source and target must be a file or a string (file path).")
+					.seeAlso("io/copy-file", "io/delete-file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1141,6 +1165,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/mkdir dir)")
 					.doc("Creates the directory. dir must be a file or a string (file path).")
+					.seeAlso("io/mkdirs")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1176,6 +1201,7 @@ public class IOFunctions {
 					.doc(
 						"Creates the directory including any necessary but nonexistent " +
 						"parent directories. dir must be a file or a string (file path).")
+					.seeAlso("io/mkdir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1210,6 +1236,7 @@ public class IOFunctions {
 					.arglists("(io/tmp-dir)")
 					.doc("Returns the tmp dir as a java.io.File.")
 					.examples("(io/tmp-dir )")
+					.seeAlso("io/user-dir", "io/user-home-dir", "io/temp-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1230,6 +1257,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/user-dir)")
 					.doc("Returns the user dir (current working dir) as a java.io.File.")
+					.seeAlso("io/tmp-dir", "io/user-home-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1250,6 +1278,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/user-home-dir)")
 					.doc("Returns the user's home dir as a java.io.File.")
+					.seeAlso("io/user-dir", "io/tmp-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1274,6 +1303,7 @@ public class IOFunctions {
 						"a Java InputStream, or a Java Reader. \n\n" +
 						"Options: \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1348,6 +1378,7 @@ public class IOFunctions {
 						"Options: \n" +
 						"  :binary true/false - e.g :binary true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+					.seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1439,6 +1470,7 @@ public class IOFunctions {
 						"Options: \n" +
 						"  :append true/false - e.g :append true, defaults to false \n" +
 						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+					.seeAlso("io/spit-stream", "io/slurp", "io/slurp-lines")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1669,6 +1701,7 @@ public class IOFunctions {
 					.doc(
 						"Copies input stream to an output stream. Returns nil or throws IOException. " +
 						"Input and output must be a java.io.InputStream and java.io.OutputStream.")
+					.seeAlso("io/copy-file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1725,6 +1758,7 @@ public class IOFunctions {
 						"        (try-with [is (. :FileInputStream :new file)] \n" +
 						"           (io/slurp-stream is :binary false))) \n" +
 						")")
+					.seeAlso("io/slurp", "io/slurp-lines", "io/spit")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1783,6 +1817,7 @@ public class IOFunctions {
 						"        (try-with [os (. :FileOutputStream :new file)] \n" +
 						"           (io/spit-stream os \"123456789\" :flush true))) \n" +
 						")")
+					.seeAlso("io/spit")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1880,6 +1915,7 @@ public class IOFunctions {
 						"      (. wr :write \"line 2\")                              \n" +
 						"      (. wr :flush)                                         \n" +
 						"      (. os :toByteArray)))                                   ")
+					.seeAlso("io/wrap-os-with-print-writer")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1917,6 +1953,7 @@ public class IOFunctions {
 						"      (. wr :println \"line 2\")                         \n" +
 						"      (. wr :flush)                                      \n" +
 						"      (. os :toByteArray)))                                ")
+					.seeAlso("io/wrap-os-with-buffered-writer")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1954,6 +1991,7 @@ public class IOFunctions {
 							"         rd (io/wrap-is-with-buffered-reader is :utf-8)]                     \n" +
 							"      (println (. rd :readLine))                                             \n" +
 							"      (println (. rd :readLine))))                                             ")
+						.seeAlso("io/buffered-reader")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -2006,6 +2044,7 @@ public class IOFunctions {
 						"   (let [rd (io/buffered-reader \"1\\n2\\n3\\n4\")]                          \n" +
 						"      (println (. rd :readLine))                                             \n" +
 						"      (println (. rd :readLine))))                                             ")
+					.seeAlso("io/buffered-writer")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2058,6 +2097,7 @@ public class IOFunctions {
 						"Creates a BufferedWriter from an OutputStream os with optional " +
 						"encoding (defaults to :utf-8) or from a Writer.")
 					.examples()
+					.seeAlso("io/buffered-reader")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2149,6 +2189,7 @@ public class IOFunctions {
 						"        (io/spit file \"123456789\" :append true) \n" +
 						"        (io/slurp file :binary false :remove true)) \n" +
 						")")
+					.seeAlso("io/temp-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2177,6 +2218,7 @@ public class IOFunctions {
 					.arglists("(io/temp-dir prefix)")
 					.doc("Creates a temp directory with prefix.")
 					.examples("(io/temp-dir \"test-\")")
+					.seeAlso("io/tmp-dir", "io/temp-file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

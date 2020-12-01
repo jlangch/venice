@@ -87,11 +87,37 @@ public class DocForm {
 	
 	private static VncString docForSymbol(final VncSymbol sym, final Env env) {
 		VncVal docVal = SpecialFormsDoc.ns.get(sym); // special form?
-		if (docVal == null) {
-			docVal = env.get(sym); // var?
+		if (docVal != null) {
+			return Doc.getDoc(docVal);
 		}
-		
-		return Doc.getDoc(docVal);
+		else {
+			try {
+				docVal = env.get(sym);
+				return Doc.getDoc(docVal);
+			}
+			catch(VncException ex) {
+				final String simpleName = sym.getSimpleName();
+				
+				final List<String> candidates = 
+					env.getAllGlobalFunctionSymbols()
+					   .stream()
+					   .filter(s -> s.getSimpleName().equals(simpleName))
+					   .limit(5)
+					   .map(s -> "   " + s.getQualifiedName())
+					   .collect(Collectors.toList());
+				
+				if (candidates.isEmpty()) {
+					throw ex;
+				}
+				else {
+					return new VncString(
+							String.format("Symbol '%s' not found.\n\n", sym.getQualifiedName())
+							+ "Did you mean?\n"
+							+ String.join("\n", candidates)
+							+ "\n");
+				}
+			}
+		}
 	}
 
 	private static VncString docForKeyword(final VncKeyword keyword, final Env env) {

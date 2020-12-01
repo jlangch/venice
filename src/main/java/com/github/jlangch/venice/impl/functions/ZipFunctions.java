@@ -91,6 +91,7 @@ public class ZipFunctions {
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
 						"             \"z/\" nil)                                         \n" +
 						"     (io/spit \"test.zip\"))                                       ")
+					.seeAlso("io/unzip", "io/gzip", "io/spit", "io/zip-list", "io/zip-list-entry-names", "io/zip-file", "io/zip-append", "io/zip-remove")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -177,6 +178,7 @@ public class ZipFunctions {
 						"    (io/zip-append \"test.zip\" \"b.txt\" data \"x/c.txt\" data)    \n" +
 						"    ; add an empty directory                                        \n" +
 						"    (io/zip-append \"test.zip\" \"x/y/\" nil))                        ")
+					.seeAlso("io/zip-file", "io/zip-remove")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -259,6 +261,7 @@ public class ZipFunctions {
 						"; remove directory from zip \n" +
 						"(io/zip-remove \"test.zip\" \"x/y/\")"
 						)
+					.seeAlso("io/zip-file", "io/zip-append")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -301,6 +304,7 @@ public class ZipFunctions {
 						"a file, a string (file path) or an InputStream.")
 					.examples(
 						"(io/zip-size (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)))")
+					.seeAlso("io/zip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -357,6 +361,7 @@ public class ZipFunctions {
 					.examples(
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
 						"    (io/unzip \"a.txt\"))")
+					.seeAlso("io/zip", "io/zip?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -417,6 +422,7 @@ public class ZipFunctions {
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)) \n" +
 						"    (io/unzip-first))")
+					.seeAlso("io/unzip-to-dir", "io/unzip-nth", "io/unzip-all", "io/zip", "io/zip?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -477,6 +483,7 @@ public class ZipFunctions {
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-nth 1))")
+					.seeAlso("io/unzip-to-dir", "io/unzip-first", "io/unzip-all", "io/zip", "io/zip?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -539,6 +546,7 @@ public class ZipFunctions {
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-all))")
+					.seeAlso("io/unzip-to-dir", "io/unzip-nth", "io/unzip-first", "io/zip", "io/zip?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -620,6 +628,7 @@ public class ZipFunctions {
 						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))  \n" +
 						"             \"test.zip\" \n" +
 						"             \"test-dir\")")
+					.seeAlso("io/zip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -712,7 +721,8 @@ public class ZipFunctions {
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
 						"(io/zip-list \"test-file.zip\" :verbose true)")
-					.build()
+					.seeAlso("io/zip-list-entry-names", "io/zip", "io/unzip")
+				.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 1);
@@ -768,6 +778,7 @@ public class ZipFunctions {
 						"Returns a list of the zip's entry names.")
 					.examples(
 						"(io/zip-list-entry-names \"test-file.zip\")")
+					.seeAlso("io/zip-list", "io/zip", "io/unzip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -826,6 +837,7 @@ public class ZipFunctions {
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
 						"    (io/unzip-to-dir \".\")")
+					.seeAlso("io/unzip", "io/unzip-nth", "io/unzip-first", "io/unzip-all", "io/zip", "io/zip?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -885,6 +897,7 @@ public class ZipFunctions {
 						"     (io/spit \"a.gz\"))    ",
 
 						"(io/gzip (bytebuf-from-string \"abcdef\" :utf-8))")
+					.seeAlso("io/gzip?", "io/ungzip", "io/zip", "io/spit")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -945,6 +958,7 @@ public class ZipFunctions {
 						"      (-> (. os :toByteArray)                       \n" +
 						"          (io/ungzip)                               \n" +
 						"          (bytebuf-to-string :utf-8))))               ")
+					.seeAlso("io/gzip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1005,6 +1019,7 @@ public class ZipFunctions {
 						"(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
 						"    (io/gzip) \n" +
 						"    (io/ungzip))")
+					.seeAlso("io/gzip", "io/gzip?", "io/ungzip-to-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1061,6 +1076,7 @@ public class ZipFunctions {
 							"    (io/gzip) \n" +
 							"    (io/ungzip-to-stream) \n" +
 							"    (io/slurp-stream :binary false :encoding :utf-8))")
+					.seeAlso("io/gzip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1102,6 +1118,7 @@ public class ZipFunctions {
 					.examples(
 						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) " +
 						"    (io/zip?))")
+					.seeAlso("io/zip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1156,6 +1173,7 @@ public class ZipFunctions {
 					.examples(
 						"(-> (io/gzip (bytebuf-from-string \"abc\" :utf-8)) " +
 						"    (io/gzip?))")
+					.seeAlso("io/gzip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
