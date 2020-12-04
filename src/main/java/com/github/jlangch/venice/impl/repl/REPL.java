@@ -343,9 +343,9 @@ public class REPL {
 				.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 				.variable(LineReader.INDENTATION, 2)
                 .variable(LineReader.LIST_MAX, 100)
-				.variable(LineReader.HISTORY_SIZE, 20)
+//				.variable(LineReader.HISTORY_SIZE, 20)
 				.variable(LineReader.HISTORY_FILE, HISTORY_FILE)
-				.variable(LineReader.HISTORY_FILE_SIZE, 25)
+//				.variable(LineReader.HISTORY_FILE_SIZE, 25)
 				.build();
 	}
 	
