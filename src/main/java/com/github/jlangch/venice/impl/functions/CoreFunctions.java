@@ -146,6 +146,8 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0, 1);
+
 				if (args.isEmpty()) {
 					throw new ValueException("throw", Constants.Nil);
 				}
@@ -185,6 +187,7 @@ public class CoreFunctions {
 						"(nil? nil)",
 						"(nil? 0)",
 						"(nil? false)")
+					.seeAlso("some?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -210,6 +213,7 @@ public class CoreFunctions {
 						"(some? false)",
 						"(some? [])",
 						"(some? {})")
+					.seeAlso("nil?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -234,6 +238,7 @@ public class CoreFunctions {
 						"(true? nil)",
 						"(true? 0)",
 						"(true? (== 1 1))")
+					.seeAlso("false?", "not")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -258,6 +263,7 @@ public class CoreFunctions {
 						"(false? nil)",
 						"(false? 0)",
 						"(false? (== 1 2))")
+					.seeAlso("true?", "not")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

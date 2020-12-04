@@ -419,6 +419,12 @@ public class DocGenerator {
 		final DocSection other = new DocSection("Other", "primitives.other");
 		section.addSection(other);
 
+		final DocSection nil = new DocSection("Nil", id());
+		other.addSection(nil);
+		nil.addItem(getDocItem("nil?"));
+		nil.addItem(getDocItem("some?"));
+		
+
 		final DocSection keywords = new DocSection("Keywords", id());
 		other.addSection(keywords);
 		keywords.addItem(new DocItem(":a :blue", null));
@@ -972,6 +978,8 @@ public class DocGenerator {
 		time.addItem(getDocItem("current-time-millis"));
 		time.addItem(getDocItem("nano-time"));
 		time.addItem(getDocItem("format-nano-time"));
+		time.addItem(getDocItem("format-micro-time"));
+		time.addItem(getDocItem("format-milli-time"));
 
 		final DocSection util = new DocSection("Other", id());
 		all.addSection(util);

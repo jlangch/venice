@@ -138,6 +138,7 @@ public class SystemFunctions {
 					.arglists("(current-time-millis)")
 					.doc("Returns the current time in milliseconds.")
 					.examples("(current-time-millis)")
+					.seeAlso("nano-time")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -159,12 +160,126 @@ public class SystemFunctions {
 						"Returns the current value of the running Java Virtual Machine's " +
 						"high-resolution time source, in nanoseconds.")
 					.examples("(nano-time)")
+					.seeAlso("current-time-millis")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
 				return new VncLong(System.nanoTime());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction format_milli_time =
+		new VncFunction(
+				"format-milli-time",
+				VncFunction
+					.meta()
+					.arglists(
+						"(format-milli-time time)",
+						"(format-milli-time time & options)")
+					.doc(
+						"Formats a time given in milliseconds as long or double. \n\n" +
+						"Options: \n" +
+						"  :precision p - e.g :precision 4 (defaults to 3)")
+					.examples(
+						"(format-milli-time 203)",
+						"(format-milli-time 20389.0 :precision 2)",
+						"(format-milli-time 20389 :precision 2)",
+						"(format-milli-time 20389 :precision 0)")
+					.seeAlso("format-micro-time", "format-nano-time")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final VncVal val = args.first();
+
+				if (Types.isVncLong(val) || Types.isVncInteger(val)) {
+					final long time = VncLong.of(val).getValue();
+
+					if (time < 1_000) {
+						return new VncString(String.format("%d ms", time));
+					}
+				}
+
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
+											.getIntValue();
+
+				final double time = VncDouble.of(val).getValue();
+
+				String unit = "s";
+				double scale = 1_000.0D;
+
+				if (time < 1_000.0D) {
+					unit = "ms";
+					scale = 1.0D;
+				}
+
+				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction format_micro_time =
+		new VncFunction(
+				"format-micro-time",
+				VncFunction
+					.meta()
+					.arglists(
+						"(format-micro-time time)",
+						"(format-micro-time time & options)")
+					.doc(
+						"Formats a time given in microseconds as long or double. \n\n" +
+						"Options: \n" +
+						"  :precision p - e.g :precision 4 (defaults to 3)")
+					.examples(
+						"(format-micro-time 203)",
+						"(format-micro-time 20389.0 :precision 2)",
+						"(format-micro-time 20389 :precision 2)",
+						"(format-micro-time 20389 :precision 0)",
+						"(format-micro-time 20386766)",
+						"(format-micro-time 20386766 :precision 2)",
+						"(format-micro-time 20386766 :precision 6)")
+					.seeAlso("format-milli-time", "format-nano-time")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final VncVal val = args.first();
+
+				if (Types.isVncLong(val) || Types.isVncInteger(val)) {
+					final long time = VncLong.of(val).getValue();
+
+					if (time < 1_000) {
+						return new VncString(String.format("%d µs", time));
+					}
+				}
+
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final int precision = Coerce.toVncLong(options.get(new VncKeyword("precision"), new VncLong(3)))
+											.getIntValue();
+
+				final double time = VncDouble.of(val).getValue();
+
+				String unit = "s";
+				double scale = 1_000_000.0D;
+
+				if (time < 1_000.0D) {
+					unit = "µs";
+					scale = 1.0D;
+				}
+				else if (time < 1_000_000.0D) {
+					unit = "ms";
+					scale = 1_000_000.0D;
+				}
+
+				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -190,6 +305,7 @@ public class SystemFunctions {
 						"(format-nano-time 203867669)",
 						"(format-nano-time 20386766988 :precision 2)",
 						"(format-nano-time 20386766988 :precision 6)")
+					.seeAlso("format-milli-time", "format-micro-time")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -316,6 +432,7 @@ public class SystemFunctions {
 					.arglists("(host-name)")
 					.doc("Returns this host's name.")
 					.examples("(host-name)")
+					.seeAlso("host-addr")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -341,6 +458,7 @@ public class SystemFunctions {
 					.arglists("(host-address)")
 					.doc("Returns this host's ip address.")
 					.examples("(host-address)")
+					.seeAlso("host-name")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -458,7 +576,7 @@ public class SystemFunctions {
 				"callstack",
 				VncFunction
 					.meta()
-					.arglists("(callstack )")
+					.arglists("(callstack)")
 					.doc("Returns the current callstack.")
 					.examples(
 						"(do                             \n" +
@@ -519,6 +637,7 @@ public class SystemFunctions {
 					.arglists("(os-type)")
 					.doc("Returns the OS type")
 					.examples("(os-type)")
+					.seeAlso("os-type?", "os-arch", "os-name", "os-version")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -552,6 +671,7 @@ public class SystemFunctions {
 						"Returns true if the OS id of the type otherwise false. Type is one " +
 						"of :windows, :mac-osx, or :linux")
 					.examples("(os-type? :mac-osx)", "(os-type? :windows)")
+					.seeAlso("os-type", "os-arch", "os-name", "os-version")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -578,6 +698,7 @@ public class SystemFunctions {
 					.arglists("(os-arch)")
 					.doc("Returns the OS architecture")
 					.examples("(os-arch)")
+					.seeAlso("os-type", "os-type?", "os-name", "os-version")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -597,6 +718,7 @@ public class SystemFunctions {
 					.arglists("(os-name)")
 					.doc("Returns the OS name")
 					.examples("(os-name)")
+					.seeAlso("os-type", "os-type?", "os-arch", "os-version")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -616,6 +738,7 @@ public class SystemFunctions {
 						.arglists("(os-version)")
 						.doc("Returns the OS version")
 						.examples("(os-version)")
+						.seeAlso("os-type", "os-type?", "os-arch", "os-name")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -973,6 +1096,8 @@ public class SystemFunctions {
 					.add(current_time_millis)
 					.add(nano_time)
 					.add(format_nano_time)
+					.add(format_micro_time)
+					.add(format_milli_time)
 					.add(pid)
 					.add(host_name)
 					.add(host_address)
