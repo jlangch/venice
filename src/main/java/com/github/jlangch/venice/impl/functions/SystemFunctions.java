@@ -432,7 +432,7 @@ public class SystemFunctions {
 					.arglists("(host-name)")
 					.doc("Returns this host's name.")
 					.examples("(host-name)")
-					.seeAlso("host-addr")
+					.seeAlso("host-address")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
