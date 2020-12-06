@@ -79,7 +79,7 @@ public class SystemFunctions {
 					.meta()
 					.arglists("(version)")
 					.doc("Returns the version.")
-					.examples("(version )")
+					.examples("(version)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -99,7 +99,7 @@ public class SystemFunctions {
 					.meta()
 					.arglists("(uuid)")
 					.doc("Generates a UUID.")
-					.examples("(uuid )")
+					.examples("(uuid)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -201,7 +201,7 @@ public class SystemFunctions {
 					final long time = VncLong.of(val).getValue();
 
 					if (time < 1_000) {
-						return new VncString(String.format("%d ms", time));
+						return new VncString(String.format("%dms", time));
 					}
 				}
 
@@ -219,7 +219,7 @@ public class SystemFunctions {
 					scale = 1.0D;
 				}
 
-				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
+				return new VncString(String.format("%." + precision + "f" + unit, time / scale));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -257,7 +257,7 @@ public class SystemFunctions {
 					final long time = VncLong.of(val).getValue();
 
 					if (time < 1_000) {
-						return new VncString(String.format("%d µs", time));
+						return new VncString(String.format("%dµs", time));
 					}
 				}
 
@@ -279,7 +279,7 @@ public class SystemFunctions {
 					scale = 1_000_000.0D;
 				}
 
-				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
+				return new VncString(String.format("%." + precision + "f" + unit, time / scale));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -317,7 +317,7 @@ public class SystemFunctions {
 					final long time = VncLong.of(val).getValue();
 
 					if (time < 1_000) {
-						return new VncString(String.format("%d ns", time));
+						return new VncString(String.format("%dns", time));
 					}
 				}
 
@@ -343,7 +343,7 @@ public class SystemFunctions {
 					scale = 1_000_000.0D;
 				}
 
-				return new VncString(String.format("%." + precision + "f " + unit, time / scale));
+				return new VncString(String.format("%." + precision + "f" + unit, time / scale));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -755,9 +755,10 @@ public class SystemFunctions {
 				"sandboxed?",
 				VncFunction
 					.meta()
-					.arglists("(sandboxed? )")
+					.arglists("(sandboxed?)")
 					.doc("Returns true if there is a sandbox otherwise false")
-					.examples("(sandboxed? )")
+					.examples("(sandboxed?)")
+					.seeAlso("sandbox-type")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -774,9 +775,10 @@ public class SystemFunctions {
 				"sandbox-type",
 				VncFunction
 					.meta()
-					.arglists("(sandbox-type )")
+					.arglists("(sandbox-type)")
 					.doc("Returns the sandbox type")
-					.examples("(sandbox-type )")
+					.examples("(sandbox-type)")
+					.seeAlso("sandboxed?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -805,6 +807,7 @@ public class SystemFunctions {
 						"(system-prop :os.name)",
 						"(system-prop :foo.org \"abc\")",
 						"(system-prop \"os.name\")")
+					.seeAlso("system-env")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -835,6 +838,7 @@ public class SystemFunctions {
 					.examples(
 						"(system-env :SHELL)",
 						"(system-env :FOO \"test\")")
+					.seeAlso("system-prop")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -891,6 +895,7 @@ public class SystemFunctions {
 					.arglists("(java-version)")
 					.doc("Returns the Java VM version (1.8.0_252, 11.0.7, ...")
 					.examples("(java-version)")
+					.seeAlso("java-major-version", "java-version-info")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -912,6 +917,7 @@ public class SystemFunctions {
 					.arglists("(java-major-version)")
 					.doc("Returns the Java major version (8, 9, 11, ...).")
 					.examples("(java-major-version)")
+					.seeAlso("java-version", "java-version-info")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -931,6 +937,7 @@ public class SystemFunctions {
 					.arglists("(java-version-info)")
 					.doc("Returns the Java VM version info.")
 					.examples("(java-version-info)")
+					.seeAlso("java-version", "java-major-version")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -951,8 +958,7 @@ public class SystemFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
-		
+	
 	public static VncFunction java_source_location =
 		new VncFunction(
 				"java-source-location",
@@ -987,16 +993,16 @@ public class SystemFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
 
-	public static VncFunction used_memory =
+	public static VncFunction total_memory =
 		new VncFunction(
-				"used-memory",
+				"total-memory",
 				VncFunction
 					.meta()
-					.arglists("(used-memory)")
-					.doc("Returns the memory used by the Java VM memory.")
-					.examples("(used-memory)")
+					.arglists("(total-memory)")
+					.doc("Returns the total amount of memor in the the Java VM.")
+					.examples("(total-memory)")
+					.seeAlso("used-memory")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1011,7 +1017,30 @@ public class SystemFunctions {
 			
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-		
+
+	public static VncFunction used_memory =
+		new VncFunction(
+				"used-memory",
+				VncFunction
+					.meta()
+					.arglists("(used-memory)")
+					.doc("Returns the memory used by the Java VM memory.")
+					.examples("(used-memory)")
+					.seeAlso("total-memory")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+
+			    System.gc();		    
+			    final Runtime rt = Runtime.getRuntime();
+			    double usedMB = (rt.totalMemory() - rt.freeMemory()) / 1024.0D / 1024.0D;
+			    
+			    return new VncString(String.format("%.1fMB", usedMB));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction load_jar =
 		new VncFunction(
@@ -1121,6 +1150,7 @@ public class SystemFunctions {
 					.add(java_version_info)
 					.add(java_source_location)
 					.add(java_major_version)
+					.add(total_memory)
 					.add(used_memory)
 					.add(charset_default_encoding)
 					.add(load_jar)

@@ -38,14 +38,25 @@ public class Reducer {
 	) {
 		VncVal value = init;
 		
-		for(VncVal v : coll) {
-			value = VncFunction.applyWithMeter(
-							reduceFn, 
-							VncList.of(value, v), 
-							meterRegistry);
-			
-			if (Reduced.isReduced(value)) {
-				return Reduced.unreduced(value);
+		if (meterRegistry.enabled) {
+			for(VncVal v : coll) {
+				value = VncFunction.applyWithMeter(
+								reduceFn, 
+								VncList.of(value, v), 
+								meterRegistry);
+				
+				if (Reduced.isReduced(value)) {
+					return Reduced.unreduced(value);
+				}
+			}
+		}
+		else {
+			for(VncVal v : coll) {
+				value = reduceFn.apply(VncList.of(value, v));
+				
+				if (Reduced.isReduced(value)) {
+					return Reduced.unreduced(value);
+				}
 			}
 		}
 		

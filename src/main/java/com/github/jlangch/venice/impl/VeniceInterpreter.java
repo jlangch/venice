@@ -189,7 +189,6 @@ public class VeniceInterpreter implements Serializable  {
 		return EVAL(ast, env);
 	}
 
-	// print
 	public String PRINT(final VncVal exp) {
 		return Printer.pr_str(exp, true);
 	}
@@ -410,13 +409,13 @@ public class VeniceInterpreter implements Serializable  {
 					return args.first();
 
 				case "loop": { // (loop [bindings*] exprs*)
+						recursionPoint = null;
 						if (args.size() < 2) {
 							// only create callstack when needed!
 							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
 								ArityExceptions.assertMinArity("loop", FnType.SpecialForm, args, 2);
 							}
 						}
-						recursionPoint = null;
 						env = new Env(env);
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
@@ -480,6 +479,40 @@ public class VeniceInterpreter implements Serializable  {
 						tailPosition = true;
 					}
 					break;
+
+//				case "call-cc":  { // (call-cc f) CALL-WITH-CURRENT-CONTINUATION
+//						//  (do
+//						//    (println 1)
+//						//    (println (call-cc (fn cont []
+//						//                        (println 2)
+//						//                        (cont 3)
+//						//                        (println "???"))))
+//						//    (println 4))
+//						env = new Env(env);
+//								
+//						final VncFunction fn = Coerce.toVncFunction(evaluate(args.first(), env));
+//						final Continuation c = new Continuation(ast, env);
+//
+//						final VncFunction f = fn.getFunctionForArgs(VncList.empty());
+//						env.addLocalVars(Destructuring.destructure(f.getParams(), VncList.empty()));
+//						final VncList body = (VncList)f.getBody();
+//						evaluate_values(body.butlast(), env);
+//						orig_ast = body.last();
+//
+//						env.setLocal(
+//							new Var(new VncSymbol(f.getSimpleName()), 
+//							new VncFunction(f.getSimpleName()) {
+//								public VncVal apply(final VncList args) {
+//									return Nil;
+//								}
+//
+//								private static final long serialVersionUID = 1L;
+//							}));
+//						
+//						orig_ast = f.apply(VncList.empty());
+//						env = c.getEnv();
+//					}
+//					break;
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
 					return fn_(new CallFrame("fn", a0.getMeta()), args, env);

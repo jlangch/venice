@@ -951,6 +951,7 @@ public class DocGenerator {
 		all.addSection(venice);
 		venice.addItem(getDocItem("version"));
 		venice.addItem(getDocItem("sandboxed?"));
+		venice.addItem(getDocItem("sandbox-type"));
 
 		final DocSection system = new DocSection("System", id());
 		all.addSection(system);
@@ -991,6 +992,8 @@ public class DocGenerator {
 		util.addItem(getDocItem("cpus"));
 		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));
+		util.addItem(getDocItem("total-memory"));
+		util.addItem(getDocItem("used-memory"));
 
 		final DocSection shell = new DocSection("Shell", id());
 		all.addSection(shell);

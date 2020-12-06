@@ -15,6 +15,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- an issue with the REPL where the expression history stopped working
+
 
 
 ## [1.9.5] - 2020-12-01
