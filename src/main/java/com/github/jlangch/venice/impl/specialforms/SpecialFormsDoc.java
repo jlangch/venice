@@ -64,7 +64,7 @@ public class SpecialFormsDoc {
 				"modules",
 				VncFunction
 					.meta()
-					.arglists("(modules )")
+					.arglists("(modules)")
 					.doc("Lists the available modules")
 					.build()
 		) {
@@ -696,7 +696,7 @@ public class SpecialFormsDoc {
 					.doc("Returns true if the symbol is bound to a value else false")
 					.examples(
 						"(bound? 'test)",
-						"(let [test 100] (bound? 'test))" )
+						"(let [test 100] (bound? 'test))")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

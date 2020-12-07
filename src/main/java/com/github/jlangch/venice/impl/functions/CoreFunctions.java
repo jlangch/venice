@@ -787,7 +787,7 @@ public class CoreFunctions {
 						"With no args, returns the empty string. With one arg x, returns " +
 						"x.toString(). With more than one arg, returns the concatenation " +
 						"of the str values of the args with delimiter ' '.")
-					.examples("(pr-str )", "(pr-str 1 2 3)")
+					.examples("(pr-str)", "(pr-str 1 2 3)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -813,7 +813,7 @@ public class CoreFunctions {
 						"x.toString(). (str nil) returns the empty string. With more than " +
 						"one arg, returns the concatenation of the str values of the args.")
 					.examples(
-						"(str )",
+						"(str)",
 						"(str 1 2 3)",
 						"(str +)",
 						"(str [1 2 3])")
@@ -1149,7 +1149,7 @@ public class CoreFunctions {
 				final VncVal op2 = args.second();
 
 				if (Types.isVncNumber(op1)) {
-					return VncBoolean.of(op1.compareTo(op2) > 0 );
+					return VncBoolean.of(op1.compareTo(op2) > 0);
 				}
 				else if (Types.isVncString(op1)) {
 					if (!Types.isVncString(op2)) {
@@ -1602,7 +1602,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(list & items)")
 					.doc("Creates a new list containing the items.")
-					.examples("(list )", "(list 1 2 3)", "(list 1 2 3 [:a :b])")
+					.examples("(list)", "(list 1 2 3)", "(list 1 2 3 [:a :b])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1691,7 +1691,7 @@ public class CoreFunctions {
 					.arglists("(mutable-list & items)")
 					.doc("Creates a new mutable threadsafe list containing the items.")
 					.examples(
-						"(mutable-list )", 
+						"(mutable-list)", 
 						"(mutable-list 1 2 3)", 
 						"(mutable-list 1 2 3 [:a :b])")
 					.build()
@@ -1735,7 +1735,7 @@ public class CoreFunctions {
 					.arglists("(vector & items)")
 					.doc("Creates a new vector containing the items.")
 					.examples(
-						"(vector )",
+						"(vector)",
 						"(vector 1 2 3)",
 						"(vector 1 2 3 [:a :b])")
 					.build()
@@ -1925,7 +1925,7 @@ public class CoreFunctions {
 					.arglists("(mutable-vector & items)")
 					.doc("Creates a new mutable threadsafe vector containing the items.")
 					.examples(
-						"(mutable-vector )", 
+						"(mutable-vector)", 
 						"(mutable-vector 1 2 3)", 
 						"(mutable-vector 1 2 3 [:a :b])")
 					.build()
@@ -2123,7 +2123,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(set & items)")
 					.doc("Creates a new set containing the items.")
-					.examples("(set )", "(set nil)", "(set 1)", "(set 1 2 3)", "(set [1 2] 3)")
+					.examples("(set)", "(set nil)", "(set 1)", "(set 1 2 3)", "(set [1 2] 3)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2140,7 +2140,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(sorted-set & items)")
 					.doc("Creates a new sorted-set containing the items.")
-					.examples("(sorted-set )", "(sorted-set nil)", "(sorted-set 1)", "(sorted-set 6 2 4)", "(str (sorted-set [2 3] [1 2]))")
+					.examples("(sorted-set)", "(sorted-set nil)", "(sorted-set 1)", "(sorted-set 6 2 4)", "(str (sorted-set [2 3] [1 2]))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2158,7 +2158,7 @@ public class CoreFunctions {
 						.arglists("(mutable-set & items)")
 						.doc("Creates a new mutable set containing the items.")
 						.examples(
-							"(mutable-set )", 
+							"(mutable-set)", 
 							"(mutable-set nil)", 
 							"(mutable-set 1)", 
 							"(mutable-set 1 2 3)", 
@@ -2625,7 +2625,7 @@ public class CoreFunctions {
 				"stack",
 				VncFunction
 					.meta()
-					.arglists("(stack )")
+					.arglists("(stack)")
 					.doc("Creates a new mutable threadsafe stack.")
 					.examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
 					.seeAlso("peek", "pop!", "push!", "empty?", "count")
@@ -2645,7 +2645,7 @@ public class CoreFunctions {
 				"queue",
 				VncFunction
 					.meta()
-					.arglists("(queue )", "(queue 100)")
+					.arglists("(queue)", "(queue 100)")
 					.doc("Creates a new mutable threadsafe bounded or unbounded queue.")
 					.examples(
 						";unbounded queue   \n" +
@@ -3089,12 +3089,12 @@ public class CoreFunctions {
 					.examples(
 						"(do                                               \n" +
 						"  (def users [ {:name \"James\" :age 26}          \n" +
-						"               {:name \"John\" :age 43}] )        \n" +
+						"               {:name \"John\" :age 43}])         \n" +
 						"  (assoc-in users [1 :age] 44))                   ",
 						"(do                                               \n" +
 						"  (def users [ {:name \"James\" :age 26}          \n" +
-						"               {:name \"John\" :age 43}] )        \n" +
-						"  (assoc-in users [2] {:name \"Jack\" :age 19}) ) ")
+						"               {:name \"John\" :age 43}])         \n" +
+						"  (assoc-in users [2] {:name \"Jack\" :age 19}))  ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3135,11 +3135,11 @@ public class CoreFunctions {
 					.examples(
 						"(do                                               \n" +
 						"  (def users [ {:name \"James\" :age 26}          \n" +
-						"               {:name \"John\" :age 43} ] )       \n" +
+						"               {:name \"John\" :age 43} ])        \n" +
 						"  (dissoc-in users [1]))                            ",
 						"(do                                               \n" +
 						"  (def users [ {:name \"James\" :age 26}          \n" +
-						"               {:name \"John\" :age 43} ] )       \n" +
+						"               {:name \"John\" :age 43} ])        \n" +
 						"  (dissoc-in users [1 :age]))                       ")
 					.build()
 		) {
@@ -3178,7 +3178,7 @@ public class CoreFunctions {
 					.examples(
 						"(do                                               \n" +
 						"  (def users [ {:name \"James\" :age 26}          \n" +
-						"               {:name \"John\" :age 43} ] )       \n" +
+						"               {:name \"John\" :age 43} ])        \n" +
 						"  (update-in users [1 :age] inc))                   ",
 						"(update-in {:a 12} [:a] / 4)")
 					.build()
@@ -3840,8 +3840,8 @@ public class CoreFunctions {
 						"Returns a new coll consisting of to coll with all of the items of" +
 						"from coll conjoined.")
 					.examples(
-						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ] )",
-						"(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ] )",
+						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ])",
+						"(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ])",
 						"(into (sorted-map) [(map-entry :b 2) (map-entry :c 3) (map-entry :a 1)])",
 						"(into (sorted-map) {:b 2 :c 3 :a 1})",
 						"(into [] {1 2, 3 4})",
@@ -4246,7 +4246,7 @@ public class CoreFunctions {
 						"if all of its composing predicates return a logical true value against " +
 						"all of its arguments, else it returns false. Note that f is short-circuiting " +
 						"in that it will stop execution on the first argument that triggers a logical " +
-						"false result against the original predicates." )
+						"false result against the original predicates.")
 					.examples(
 						"((every-pred number?) 1)",
 						"((every-pred number?) 1 2)",
@@ -4297,7 +4297,7 @@ public class CoreFunctions {
 						"logical true value returned by one of its composing predicates against any " + 
 						"of its arguments, else it returns logical false. Note that f is short-circuiting " + 
 						"in that it will stop execution on the first argument that triggers a logical " +
-						"true result against the original predicates." )
+						"true result against the original predicates.")
 					.examples(
 						"((any-pred number?) 1)",
 						"((any-pred number?) 1 \"a\")",
@@ -4605,7 +4605,7 @@ public class CoreFunctions {
 						"(conj {:a 1 :b 2} [:c 3])",
 						"(conj {:a 1 :b 2} {:c 3})",
 						"(conj {:a 1 :b 2} (map-entry :c 3))",
-						"(conj )",
+						"(conj)",
 						"(conj 4)")
 					.seeAlso("cons", "into")
 					.build()
@@ -4740,7 +4740,7 @@ public class CoreFunctions {
 						"(conj! (mutable-map :a 1 :b 2) [:c 3])",
 						"(conj! (mutable-map :a 1 :b 2) {:c 3})",
 						"(conj! (mutable-map :a 1 :b 2) (map-entry :c 3))",
-						"(conj! )",
+						"(conj!)",
 						"(conj! 4)")
 					.build()
 		) {
@@ -5914,7 +5914,7 @@ public class CoreFunctions {
 						"  (def x [ {:foo 2 :bar 11} \n" + 
 						"           {:foo 1 :bar 99} \n" + 
 						"           {:foo 2 :bar 55} \n" + 
-						"           {:foo 1 :bar 77} ] )\n" +
+						"           {:foo 1 :bar 77} ])\n" +
 						"  (sort-by (juxt :foo :bar) x))")
 					.build()
 		) {
@@ -6658,7 +6658,7 @@ public class CoreFunctions {
 						"           {}                                \n" +
 						"           {:a {:col :red   :len 10}         \n" +
 						"            :b {:col :green :len 20}         \n" +
-						"            :c {:col :blue  :len 30} } )")
+						"            :c {:col :blue  :len 30} })")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7114,7 +7114,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(gensym)", "(gensym prefix)")
 					.doc("Generates a symbol.")
-					.examples("(gensym )", "(gensym \"prefix_\")")
+					.examples("(gensym)", "(gensym \"prefix_\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

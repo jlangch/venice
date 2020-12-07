@@ -447,7 +447,7 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(time/zoned-date-time )",
+						"(time/zoned-date-time)",
 						"(time/zoned-date-time year month day)",
 						"(time/zoned-date-time year month day hour minute second)",
 						"(time/zoned-date-time year month day hour minute second millis)",

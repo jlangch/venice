@@ -140,7 +140,7 @@ public class JavaInteropFunctions {
 						"   (def file-filter \n" +
 						"      (fn [dir name] (str/ends-with? name \".xxx\"))) \n" +
 						"\n" +
-						"   (let [dir (io/tmp-dir )] \n" +
+						"   (let [dir (io/tmp-dir)] \n" +
 						"      ;; create a dynamic proxy for the interface FilenameFilter\n" +
 						"      ;; and implement its function 'accept' by 'file-filter'\n" +
 						"      (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +

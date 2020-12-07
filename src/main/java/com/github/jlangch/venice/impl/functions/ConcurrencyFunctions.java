@@ -1013,7 +1013,7 @@ public class ConcurrencyFunctions {
 				"shutdown-agents", 
 				VncFunction
 					.meta()
-					.arglists("(shutdown-agents )")		
+					.arglists("(shutdown-agents)")		
 					.doc(
 						"Initiates a shutdown of the thread pools that back the agent " + 
 						"system. Running actions will complete, but no new actions will been " + 
@@ -1022,7 +1022,7 @@ public class ConcurrencyFunctions {
 						"(do                           \n" +
 						"   (def x1 (agent 100))       \n" +
 						"   (def x2 (agent 100))       \n" +
-						"   (shutdown-agents ))          ")
+						"   (shutdown-agents))          ")
 					.seeAlso("agent")
 					.build()
 		) {		
@@ -1050,9 +1050,9 @@ public class ConcurrencyFunctions {
 						"(do                           \n" +
 						"   (def x1 (agent 100))       \n" +
 						"   (def x2 (agent 100))       \n" +
-						"   (shutdown-agents )         \n" +
+						"   (shutdown-agents)          \n" +
 						"   (sleep 300)                \n" +
-						"   (shutdown-agents? ))         ")
+						"   (shutdown-agents?))          ")
 					.seeAlso("agent")
 					.build()
 		) {	
@@ -1070,7 +1070,7 @@ public class ConcurrencyFunctions {
 				"await-termination-agents", 
 				VncFunction
 					.meta()
-					.arglists("(shutdown-agents )")		
+					.arglists("(shutdown-agents)")		
 					.doc(
 						"Blocks until all actions have completed execution after a shutdown " +
 						"request, or the timeout occurs, or the current thread is " +
@@ -1110,7 +1110,7 @@ public class ConcurrencyFunctions {
 						"(do                                  \n" +
 						"   (def x1 (agent 100))              \n" +
 						"   (def x2 (agent 100))              \n" +
-						"   (shutdown-agents )                \n" +
+						"   (shutdown-agents)                 \n" +
 						"   (await-termination-agents 1000)   \n" +
 						"   (sleep 300)                       \n" +
 						"   (await-termination-agents?))       ")

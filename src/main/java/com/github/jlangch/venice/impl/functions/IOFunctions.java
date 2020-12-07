@@ -1235,7 +1235,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/tmp-dir)")
 					.doc("Returns the tmp dir as a java.io.File.")
-					.examples("(io/tmp-dir )")
+					.examples("(io/tmp-dir)")
 					.seeAlso("io/user-dir", "io/user-home-dir", "io/temp-dir")
 					.build()
 		) {

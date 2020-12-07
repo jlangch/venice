@@ -1732,7 +1732,7 @@ public class StringFunctions {
 					.doc(
 						"Formats a bytebuffer. \n\n" +
 						"Options \n" +
-						"  :prefix0x - prefix with 0x" )
+						"  :prefix0x - prefix with 0x")
 					.examples(
 						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) nil)",
 						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) \"\")",
@@ -1939,7 +1939,7 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/valid-email-addr? e)")
-					.doc("Returns true if e is a valid email address according to RFC5322, else returns false" )
+					.doc("Returns true if e is a valid email address according to RFC5322, else returns false")
 					.examples(
 						"(str/valid-email-addr? \"user@domain.com\")",
 						"(str/valid-email-addr? \"user@domain.co.in\")",

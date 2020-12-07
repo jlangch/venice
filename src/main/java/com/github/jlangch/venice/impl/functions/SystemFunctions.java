@@ -78,7 +78,7 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(version)")
-					.doc("Returns the version.")
+					.doc("Returns the Venice version.")
 					.examples("(version)")
 					.build()
 		) {
