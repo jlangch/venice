@@ -862,7 +862,7 @@ public class SpecialFormsDoc {
 						"Evaluates the expressions and binds the values to symbols in " +
 						"the new local context.")
 					.examples(
-						"(let [x 1] x))",
+						"(let [x 1] x)",
 						
 						";; destructured map                     \n" +
 						"(let [{:keys [width height title ]      \n" +
