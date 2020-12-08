@@ -140,6 +140,35 @@
                 font-weight: 500;
                 text-align: right;
             }
+            .toc {
+                margin: 0 0.5em 0.5em 0.5em;
+                padding: 0.5em 0.5em 0.5em;
+                background-color: #ebebeb;
+            }
+            .toc .title {
+                margin: 0.2em 0 0.4em 0;
+                line-height: 0.9em;
+                font-size: 2em;
+                color: #4165a2;
+                text-align: left;
+            }
+            .toc .refs {
+                white-space: pre-wrap;
+                font-family: 'Open Sans', sans-serif;
+                font-weight: 400;
+            }
+            .toc td.left .refs {
+                white-space: pre-wrap;
+                font-family: 'Open Sans', sans-serif;
+            }
+            .toc td.left {
+                vertical-align: top;
+                padding: 0.5em 0em 0.5em 0.5em;
+            }
+            .toc td.right {
+                vertical-align: top;
+                padding: 0.5em 0em 0.5em 0em;
+            }
             .column:first-child {
                 clear: both;
             }
@@ -184,7 +213,7 @@
                 white-space: pre-wrap;
                 font-family: 'Source Code Pro', sans-serif;
                 font-weight: 400;
-             }
+            }
             .alias {
                 display: inline-block;
             }
@@ -258,12 +287,36 @@
 
     <body>
         <div class="main">
-            <div class="title" id="top">
+            <div class="title">
                  <div class="title-left">
                    <span class="title-left-venice">Venice</span><span class="title-left-version">V ${= (kira/escape-xml version) }$</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
+            </div>
+
+            <div class="toc" id="top">
+                 <div class="title">Overview</div> 
+                 <table>
+                    <tbody>
+                        ${ (doseq [s1 toc] }$
+                        <tr>
+                            <td class="left">
+                              <div class="refs"><!-- prevent whitespaces
+                                 --><div class="alias"><a href="#${= (:id s1) }$">${= (kira/escape-xml (:title s1)) }$</a></div><!--
+                              --></div>
+                            </td>
+                            <td class="right">
+                              <div class="refs"><!-- prevent whitespaces
+                                 -->${ (doseq [{:keys [id title]} (:sections s1)] }$<!--
+                                 --><div class="alias"><a href="#${= id }$">${= (kira/escape-xml title) }$</a></div><!--
+                                  -->${ ) }$<!--
+                              --></div>
+                            </td>
+                        </tr>
+                        ${ ) }$
+                    </tbody>
+                 </table>
             </div>
             
             <div class="column">
@@ -324,7 +377,7 @@
 
             <div style="clear: both;"></div>
 
-            <div class="embedding" style="page-break-before: always;">
+            <div class="embedding" id="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
                
                ${ (doseq [s snippets] }$ 
