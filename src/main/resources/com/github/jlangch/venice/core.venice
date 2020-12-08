@@ -1107,6 +1107,7 @@
      :examples '(
           """(printf "%s: %d" "abc" 100)"""
           """(printf "line 1: %s%nline 2: %s%n" "123" "456")"""
+          """(printf "%d%%" 42)"""
           """(printf *out* "%s: %d" "abc" 100)"""
           """(printf *err* "%s: %d" "abc" 100)""" )
       :see-also '("print" "println" "newline") }

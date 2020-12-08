@@ -480,39 +480,18 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 
-//				case "call-cc":  { // (call-cc f) CALL-WITH-CURRENT-CONTINUATION
-//						//  (do
-//						//    (println 1)
-//						//    (println (call-cc (fn cont []
-//						//                        (println 2)
-//						//                        (cont 3)
-//						//                        (println "???"))))
-//						//    (println 4))
-//						env = new Env(env);
-//								
-//						final VncFunction fn = Coerce.toVncFunction(evaluate(args.first(), env));
-//						final Continuation c = new Continuation(ast, env);
-//
-//						final VncFunction f = fn.getFunctionForArgs(VncList.empty());
-//						env.addLocalVars(Destructuring.destructure(f.getParams(), VncList.empty()));
-//						final VncList body = (VncList)f.getBody();
-//						evaluate_values(body.butlast(), env);
-//						orig_ast = body.last();
-//
-//						env.setLocal(
-//							new Var(new VncSymbol(f.getSimpleName()), 
-//							new VncFunction(f.getSimpleName()) {
-//								public VncVal apply(final VncList args) {
-//									return Nil;
-//								}
-//
-//								private static final long serialVersionUID = 1L;
-//							}));
-//						
-//						orig_ast = f.apply(VncList.empty());
-//						env = c.getEnv();
-//					}
-//					break;
+				case "call-cc":  { // (call-cc f) call-with-current-continuation
+						//  (do
+						//    (println 1)
+						//    (println (call-cc (fn [cont]
+						//                        (println 2)
+						//                        (cont 3)
+						//                        (println "???"))))
+						//    (println 4))
+					
+						// Not implemented yet!
+					}
+					break;
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
 					return fn_(new CallFrame("fn", a0.getMeta()), args, env);

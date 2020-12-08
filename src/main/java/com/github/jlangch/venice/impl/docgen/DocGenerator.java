@@ -205,7 +205,7 @@ public class DocGenerator {
 		final DocSection numbers = new DocSection("Numbers", "primitives.numbers");
 		section.addSection(numbers);
 
-		final DocSection arithmetic = new DocSection("Arithmetic", id());
+		final DocSection arithmetic = new DocSection("Arithmetic", "primitives.arithmetic");
 		numbers.addSection(arithmetic);
 		arithmetic.addItem(getDocItem("+"));
 		arithmetic.addItem(getDocItem("-"));
@@ -227,7 +227,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
 
-		final DocSection convert = new DocSection("Convert", id());
+		final DocSection convert = new DocSection("Convert", "primitives.convert");
 		numbers.addSection(convert);
 		convert.addItem(getDocItem("int"));
 		convert.addItem(getDocItem("long"));
@@ -235,7 +235,7 @@ public class DocGenerator {
 		convert.addItem(getDocItem("decimal"));
 		convert.addItem(getDocItem("bigint"));
 
-		final DocSection compare = new DocSection("Compare", id());
+		final DocSection compare = new DocSection("Compare", "primitives.compare");
 		numbers.addSection(compare);
 		compare.addItem(getDocItem("=="));
 		compare.addItem(getDocItem("="));
@@ -245,7 +245,7 @@ public class DocGenerator {
 		compare.addItem(getDocItem(">="));
 		compare.addItem(getDocItem("compare"));
 
-		final DocSection test = new DocSection("Test", id());
+		final DocSection test = new DocSection("Test", "primitives.test");
 		numbers.addSection(test);
 		test.addItem(getDocItem("zero?"));
 		test.addItem(getDocItem("pos?"));
@@ -258,13 +258,13 @@ public class DocGenerator {
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
 
-		final DocSection random = new DocSection("Random", id());
+		final DocSection random = new DocSection("Random", "primitives.random");
 		numbers.addSection(random);
 		random.addItem(getDocItem("rand-long"));
 		random.addItem(getDocItem("rand-double"));
 		random.addItem(getDocItem("rand-gaussian"));
 		
-		final DocSection trigonometry = new DocSection("Trigonometry", id());
+		final DocSection trigonometry = new DocSection("Trigonometry", "primitives.trigonometry");
 		numbers.addSection(trigonometry);
 		trigonometry.addItem(getDocItem("to-radians"));
 		trigonometry.addItem(getDocItem("to-degrees"));
@@ -272,7 +272,7 @@ public class DocGenerator {
 		trigonometry.addItem(getDocItem("cos"));
 		trigonometry.addItem(getDocItem("tan"));
 		
-		final DocSection statistics = new DocSection("Statistics", id());
+		final DocSection statistics = new DocSection("Statistics", "primitives.statistics");
 		numbers.addSection(statistics);
 		statistics.addItem(getDocItem("mean"));
 		statistics.addItem(getDocItem("median"));
@@ -280,7 +280,7 @@ public class DocGenerator {
 		statistics.addItem(getDocItem("quantile"));
 		statistics.addItem(getDocItem("standard-deviation"));
 
-		final DocSection bigdecimal = new DocSection("BigDecimal", id());
+		final DocSection bigdecimal = new DocSection("BigDecimal", "primitives.bigdecimal");
 		numbers.addSection(bigdecimal);
 		bigdecimal.addItem(getDocItem("dec/add"));
 		bigdecimal.addItem(getDocItem("dec/sub"));
@@ -457,10 +457,10 @@ public class DocGenerator {
 		final DocSection section = new DocSection("Collections", "collections");
 
 
-		final DocSection collections = new DocSection("Collections", id());
+		final DocSection collections = new DocSection("Collections", "collections.collections");
 		section.addSection(collections);
 		
-		final DocSection generic = new DocSection("Generic", "collections.generic");
+		final DocSection generic = new DocSection("Generic", id());
 		collections.addSection(generic);
 		generic.addItem(getDocItem("count"));
 		generic.addItem(getDocItem("compare"));
@@ -482,7 +482,7 @@ public class DocGenerator {
 		generic.addItem(getDocItem("reverse"));
 		generic.addItem(getDocItem("shuffle"));
 
-		final DocSection coll_test = new DocSection("Tests", "collections.tests");
+		final DocSection coll_test = new DocSection("Tests", id());
 		collections.addSection(coll_test);
 		coll_test.addItem(getDocItem("empty?"));
 		coll_test.addItem(getDocItem("not-empty?"));
@@ -500,7 +500,7 @@ public class DocGenerator {
 		coll_test.addItem(getDocItem("mutable-map?"));
 		coll_test.addItem(getDocItem("bytebuf?"));
 
-		final DocSection coll_process = new DocSection("Process", "collections.process");
+		final DocSection coll_process = new DocSection("Process", id());
 		collections.addSection(coll_process);
 		coll_process.addItem(getDocItem("map"));
 		coll_process.addItem(getDocItem("map-indexed"));
@@ -1584,7 +1584,7 @@ public class DocGenerator {
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection generic = new DocSection("Forms", id());
+		final DocSection generic = new DocSection("Forms", "specialforms.forms");
 		all.addSection(generic);
 
 		generic.addItem(getDocItem("def"));
@@ -1599,19 +1599,19 @@ public class DocGenerator {
 		generic.addItem(getDocItem("fn"));
 		generic.addItem(getDocItem("set!"));
 
-		final DocSection recur = new DocSection("Recursion", id());
+		final DocSection recur = new DocSection("Recursion", "specialforms.recursion");
 		all.addSection(recur);
 		recur.addItem(getDocItem("loop"));
 		recur.addItem(getDocItem("recur"));
 		recur.addItem(getDocItem("tail-pos", true, true));
 
-		final DocSection ex = new DocSection("Exception", id());
+		final DocSection ex = new DocSection("Exception", "specialforms.exception");
 		all.addSection(ex);
 		ex.addItem(getDocItem("throw", true, true));
 		ex.addItem(getDocItem("try", true, true));
 		ex.addItem(getDocItem("try-with", true, true));
 
-		final DocSection profiling = new DocSection("Profiling", id());
+		final DocSection profiling = new DocSection("Profiling", "specialforms.profiling");
 		all.addSection(profiling);
 
 		profiling.addItem(getDocItem("dobench"));
@@ -1627,7 +1627,7 @@ public class DocGenerator {
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 			
-		final DocSection java = new DocSection("Java", id());
+		final DocSection java = new DocSection("Java", "javainterop.java");
 		all.addSection(java);	
 		java.addItem(getDocItem("."));
 		java.addItem(getDocItem("import"));
@@ -1637,7 +1637,7 @@ public class DocGenerator {
 		java.addItem(getDocItem("cast"));
 		java.addItem(getDocItem("class"));
 		
-		final DocSection proxy = new DocSection("Proxify", id());
+		final DocSection proxy = new DocSection("Proxify", "javainterop.proxify");
 		all.addSection(proxy);	
 		proxy.addItem(getDocItem("proxify"));
 		proxy.addItem(getDocItem("as-runnable"));
@@ -1651,12 +1651,12 @@ public class DocGenerator {
 		proxy.addItem(getDocItem("as-biconsumer"));
 		proxy.addItem(getDocItem("as-binaryoperator"));
 
-		final DocSection test = new DocSection("Test", id());
+		final DocSection test = new DocSection("Test", "javainterop.test");
 		all.addSection(test);	
 		test.addItem(getDocItem("java-obj?"));
 		test.addItem(getDocItem("exists-class?"));
 
-		final DocSection support = new DocSection("Support", id());
+		final DocSection support = new DocSection("Support", "javainterop.support");
 		all.addSection(support);	
 		support.addItem(getDocItem("imports"));
 		support.addItem(getDocItem("supers"));
@@ -1664,7 +1664,7 @@ public class DocGenerator {
 		support.addItem(getDocItem("formal-type"));
 		support.addItem(getDocItem("stacktrace", false, false));
 
-		final DocSection clazz = new DocSection("Class", id());
+		final DocSection clazz = new DocSection("Classes", "javainterop.classes");
 		all.addSection(clazz);	
 		clazz.addItem(getDocItem("class"));
 		clazz.addItem(getDocItem("class-of"));
