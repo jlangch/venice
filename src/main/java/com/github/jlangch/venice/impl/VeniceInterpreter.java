@@ -45,6 +45,8 @@ import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.continuation.Continuation;
+import com.github.jlangch.venice.impl.continuation.VncContinuationFunction;
 import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.ReservedSymbols;
@@ -480,16 +482,19 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 
-				case "call-cc":  { // (call-cc f) call-with-current-continuation
-						//  (do
-						//    (println 1)
-						//    (println (call-cc (fn [cont]
-						//                        (println 2)
-						//                        (cont 3)
-						//                        (println "???"))))
-						//    (println 4))
-					
-						// Not implemented yet!
+				case "call-cc":  { 	// (call-cc f) call-with-current-continuation					
+						final Continuation cont = new Continuation(env, ast);
+						
+						env = new Env(env);
+
+						final VncFunction fn = Coerce.toVncFunction(evaluate(args.first(), env));
+						final VncSymbol ccSym = Coerce.toVncSymbol(fn.getParams().first());
+						
+						env.setLocal(new Var(ccSym, new VncContinuationFunction(cont)));
+						
+						evaluate_values(fn.getBody(), env);
+						
+						orig_ast = Nil;
 					}
 					break;
 
