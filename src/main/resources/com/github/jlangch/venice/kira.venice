@@ -165,7 +165,7 @@
             (println (kira/eval "<div><%= (kira/escape-html date test/format) %></div>"
                                 { :date (time/local-date 2000 8 1) })))
           """ )
-     :see-also '("kira/escape-html") }
+     :see-also '("kira/escape-xml") }
 
   kira/escape-html
 
