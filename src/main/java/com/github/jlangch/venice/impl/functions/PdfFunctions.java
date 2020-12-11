@@ -89,8 +89,8 @@ public class PdfFunctions {
 						"  :base-url url        - a base url. E.g.: \"classpath:/\"\n" + 
 						"  :resources resmap    - a resource map for dynamic resources\n") 
 					.examples(
-						"(pdf/render xhtm :base-url \"classpath:/\")",							
-						"(pdf/render xhtm \n" +
+						"(pdf/render xhtml :base-url \"classpath:/\")",							
+						"(pdf/render xhtml \n" +
 						"            :base-url \"classpath:/\"\n" +
 						"            :resources {\"/chart_1.png\" (chart-create :2018) \n" +							
 						"                        \"/chart_2.png\" (chart-create :2019) })")
@@ -155,6 +155,7 @@ public class PdfFunctions {
 						"                  :font-size 64               \n" +
 						"                  :font-char-spacing 10.0 } ] \n" +
 						"   (pdf/watermark pdf watermark))                ")
+					.seeAlso("pdf/merge", "pdf/copy", "pdf/pages")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

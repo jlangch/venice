@@ -119,14 +119,21 @@
           Returns an XML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
-          An optional function f transforms the string before being escaped.
+          An optional function f transforms the value before being converted
+          to a string and XML escaped.
           """
      :examples '(
           """
           (do
+            (ns test)
             (load-module :kira)
-            (kira/eval "<formula><%= (kira/escape-xml formula) %></formula>"
-                      { :formula "x > 100" }))
+
+            (println (kira/eval "<formula><%= (kira/escape-xml formula) %></formula>"
+                                { :formula "x > 100" }))
+
+            (defn format [t] (time/format t "yyyy-MM-dd"))
+            (println (kira/eval "<date><%= (kira/escape-xml date test/format) %></date>"
+                                { :date (time/local-date 2000 8 1) })))
           """ )
      :see-also '("kira/escape-html") }
 
@@ -142,7 +149,8 @@
           Returns a HTML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
-          An optional function f transforms the string before being escaped.
+          An optional function f transforms the value before being converted
+          to a string and HTML escaped.
           """
      :examples '(
           """
@@ -150,9 +158,12 @@
             (ns test)
             (load-module :kira)
 
-            (defn format-ts [t] (time/format t "yyyy-MM-dd"))
-            (kira/eval "<birthdate><%= (kira/escape-xml birth-date) test/format-ts) %></birthdate>"
-                       { :birth-date (time/local-date 2000 8 1) }))
+            (println (kira/eval "<div><%= (kira/escape-html formula) %></div>"
+                                { :formula "x > 100" }))
+
+            (defn format [t] (time/format t "yyyy-MM-dd"))
+            (println (kira/eval "<div><%= (kira/escape-html date test/format) %></div>"
+                                { :date (time/local-date 2000 8 1) })))
           """ )
      :see-also '("kira/escape-html") }
 
@@ -192,7 +203,7 @@
   ^{ :arglists '(
           "(kira/eval source)"
           "(kira/eval source bindings)"
-          "(kira/eval source bindings delimiters)" )
+          "(kira/eval source delimiters bindings)" )
      :doc """
           Evaluate a template using the supplied bindings. The template source \
           may be a string, or an I/O source such as a File, Reader or \
@@ -201,21 +212,30 @@
      :examples '(
           """
           (do
+            (ns test)
             (load-module :kira)
 
             (println (kira/eval "Hello <%= name %>" { :name "Alice" }))
             (println (kira/eval "1 + 2 = <%= (+ 1 2) %>"))
-            (println (kira/eval "1 + 2 = <% (print (+ 1 2)) %>"))
+            (println (kira/eval "2 + 3 = <% (print (+ 2 3)) %>"))
+            (println (kira/eval "${=x}$ + ${=y}$ = ${= (+ x y) }$"
+                                ["${" "}$"]
+                                {:x 4 :y 5}))
+
             (println (kira/eval "margin: <%= (if large 100 10) %>"
                                 { :large false }))
             (println (kira/eval "fruits: <% (doseq [f fruits] %><%= f %> <% ) %>"
                                 { :fruits '("apple" "peach") }))
             (println (kira/eval "fruits: <% (doseq [f fruits] %><%= f %> <% ) %>"
                                 { :fruits '("apple" "peach") }))
+
             (println (kira/eval "when: <% (when large %>is large<% ) %>"
                                 { :large true }))
             (println (kira/eval "if: <% (if large (do %>100<% ) (do %>1<% )) %>"
-                                { :large true })))
+                                { :large true }))
+
+            (println (kira/eval "<div><%= (kira/escape-html formula) %></div>"
+                                { :formula "12 < 15" })))
           """ )
      :see-also '("kira/fn" "kira/escape-xml" "kira/escape-html") }
 
