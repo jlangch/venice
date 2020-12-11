@@ -15,6 +15,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- documentation for Kira templating
+
 
 
 ## [1.9.6] - 2020-12-06
