@@ -83,6 +83,12 @@ public class RestrictedBlacklistedFunctions {
 					// scheduler
 					"schedule-delay",
 					"schedule-at-fixed-rate",
+					
+					// thread-local
+					"thread-local",
+					"thread-local?",
+					"thread-local-map",
+					"thread-local-clear",
 
 					// I/O
 					"io/copy-file",
