@@ -1620,6 +1620,8 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local)")		
 					.doc("Creates a new thread-local accessor")
 					.examples(
+						"(assoc! (thread-local) :a 1)",
+						"(get (thread-local) :a 100)",
 						"(thread-local :a 1 :b 2)", 
 						"(thread-local { :a 1 :b 2 })",
 						"(do \n" +
@@ -1627,7 +1629,12 @@ public class ConcurrencyFunctions {
 						"   (assoc! (thread-local) :a 1 :b 2) \n" +
 						"   (dissoc! (thread-local) :a) \n" +
 						"   (get (thread-local) :b 100))")
-					.seeAlso("thread-local", "thread-local-clear", "assoc", "dissoc", "get")
+					.seeAlso(
+						"thread-local-clear", 
+						"thread-local-map", 
+						"assoc!", 
+						"dissoc!",
+						"get")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1653,6 +1660,7 @@ public class ConcurrencyFunctions {
 						"(do\n" +
 						"  (def x (thread-local))\n" +
 						"  (thread-local? x))")
+					.seeAlso("thread-local")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1672,7 +1680,7 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local-clear)")		
 					.doc("Removes all thread local vars")
 					.examples("(thread-local-clear)")
-					.seeAlso("thread-local", "dissoc")
+					.seeAlso("thread-local", "dissoc!")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1691,7 +1699,10 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(thread-local-map)")		
 					.doc("Returns a snaphost of the thread local vars as a map")
-					.examples("(do (thread-local :a 1 :b 2) (thread-local-map))")
+					.examples(
+						"(do \n" +
+						"  (thread-local :a 1 :b 2) \n" +
+						"  (thread-local-map))")
 					.seeAlso("thread-local", "get")
 					.build()
 		) {		
