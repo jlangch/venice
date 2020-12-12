@@ -1044,7 +1044,7 @@ public class IOFunctions {
 						"Source must be a file or a string (file path), dest must be a file, " +
 						"a string (file path), or an OutputStream.\n\n" +
 						"Options: \n" +
-						"  :replace true/false - e.g if true replace an aexistiong file, defaults to false")
+						"  :replace true/false - e.g if true replace an existing file, defaults to false")
 					.seeAlso("io/move-file", "io/delete-file", "io/copy-stream")
 					.build()
 		) {
