@@ -1394,9 +1394,9 @@ public class DocGenerator {
 
 		final DocSection file_list = new DocSection("file list", "io.filelist");
 		all.addSection(file_list);
-		file_list.addItem(getDocItem("io/list-files"));
-		file_list.addItem(getDocItem("io/list-files-glob"));
-		file_list.addItem(getDocItem("io/list-file-tree"));
+		file_list.addItem(getDocItem("io/list-files", false));
+		file_list.addItem(getDocItem("io/list-files-glob", false));
+		file_list.addItem(getDocItem("io/list-file-tree", false));
 
 		final DocSection file_test = new DocSection("file test", "io.filetest");
 		all.addSection(file_test);

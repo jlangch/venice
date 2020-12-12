@@ -760,7 +760,11 @@ public class IOFunctions {
 						"Deletes one or multiple files. Silently skips delete if the file " +
 						"does not exist. If f is a directory the directory must be empty. " +
 						"f must be a file or a string (file path)")
-					.seeAlso("io/delete-file-tree", "io/delete-file-on-exit", "io/copy-file", "io/move-file")
+					.seeAlso(
+						"io/delete-file-tree", 
+						"io/delete-file-on-exit", 
+						"io/copy-file", 
+						"io/move-file")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -887,8 +891,9 @@ public class IOFunctions {
 					.doc(
 						"Lists files in a directory. dir must be a file or a string (file path). " +
 						"filter-fn is an optional filter that filters the files found. The filter " +
-						"gets a java.io.File as argument. Returns files as java.io.File.\n\n" +
-						"(io/list-files \"/tmp\") \n" +
+						"gets a java.io.File as argument. Returns files as java.io.File")
+					.examples(
+						"(io/list-files \"/tmp\")",
 						"(io/list-files \"/tmp\" #(io/file-ext? % \".log\"))")
 					.seeAlso("io/list-file-tree", "io/list-files-glob")
 					.build()
@@ -938,8 +943,9 @@ public class IOFunctions {
 						"Lists all files in a directory tree. dir must be a file or a " +
 						"string (file path). filter-fn is an optional filter that filters " + 
 						"the files found. The filter gets a java.io.File as argument. " +
-						"Returns files as java.io.File.\n\n" +
-						"(io/list-file-tree \"/tmp\") \n" +
+						"Returns files as java.io.File")
+					.examples(
+						"(io/list-file-tree \"/tmp\")",
 						"(io/list-file-tree \"/tmp\" #(io/file-ext? % \".log\"))")
 					.seeAlso("io/list-files", "io/list-files-glob")
 					.build()
@@ -988,8 +994,9 @@ public class IOFunctions {
 					.doc(
 						"Lists all files in a directory that match the glob pattern. " +
 					    "dir must be a file or a string (file path). " +
-					    "Returns files as java.io.File.\n\n" +
-						"(io/list-files-glob \".\" \"sample*.txt\".")
+					    "Returns files as java.io.File")
+					.examples(
+						"(io/list-files-glob \".\" \"sample*.txt\")")
 					.seeAlso("io/list-files", "io/list-file-tree")
 					.build()
 		) {
