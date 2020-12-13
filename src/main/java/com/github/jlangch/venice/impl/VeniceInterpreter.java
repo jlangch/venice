@@ -297,15 +297,26 @@ public class VeniceInterpreter implements Serializable  {
 	 * @param env_ the env
 	 * @return the result
 	 */
-	private VncVal evaluate(final VncVal ast_, final Env env_) {
+	private VncVal evaluate(
+			final VncVal ast_, 
+			final Env env_
+	) {
 		return evaluate(ast_, env_, false);
 	}
 
-	private VncVal evaluateInTailPosition(final VncVal ast_, final Env env_) {
+	private VncVal evaluateInTailPosition(
+			final VncVal ast_, 
+			final Env env_, 
+			final Continuation cont
+	) {
 		return evaluate(ast_, env_, true);
 	}
 	
-	private VncVal evaluate(final VncVal ast_, final Env env_, final boolean inTailPosition) {
+	private VncVal evaluate(
+			final VncVal ast_, 
+			final Env env_, 
+			final boolean inTailPosition
+	) {
 		VncVal orig_ast = ast_;
 		Env env = env_;
 
@@ -332,7 +343,7 @@ public class VeniceInterpreter implements Serializable  {
 			switch (a0sym) {
 				case "do": { // (do expr*)
 						final VncList expressions = args;
-						evaluate_values(expressions.butlast(), env);
+						evaluate_sequence_values(expressions.butlast(), env);
 						orig_ast = expressions.last();
 						tailPosition = true;
 					}
@@ -384,7 +395,7 @@ public class VeniceInterpreter implements Serializable  {
 							orig_ast = expressions.first();
 						}
 						else {
-							evaluate_values(expressions.butlast(), env);
+							evaluate_sequence_values(expressions.butlast(), env);
 							orig_ast = expressions.last();
 						}
 						tailPosition = true;
@@ -445,7 +456,7 @@ public class VeniceInterpreter implements Serializable  {
 							orig_ast = expressions.first();
 						}
 						else {
-							evaluate_values(expressions.butlast(), env);
+							evaluate_sequence_values(expressions.butlast(), env);
 							orig_ast = expressions.last();
 						}
 						tailPosition = true;
@@ -475,7 +486,7 @@ public class VeniceInterpreter implements Serializable  {
 							orig_ast = expressions.first();
 						}
 						else {
-							evaluate_values(expressions.butlast(), env);
+							evaluate_sequence_values(expressions.butlast(), env);
 							orig_ast = expressions.last();
 						}
 						tailPosition = true;
@@ -487,12 +498,12 @@ public class VeniceInterpreter implements Serializable  {
 						
 						env = new Env(env);
 
-						final VncFunction fn = Coerce.toVncFunction(evaluate(args.first(), env));
-						final VncSymbol ccSym = Coerce.toVncSymbol(fn.getParams().first());
+						final VncFunction f = Coerce.toVncFunction(evaluate(args.first(), env));
+						final VncSymbol ccSym = Coerce.toVncSymbol(f.getParams().first());
 						
 						env.setLocal(new Var(ccSym, new VncContinuationFunction(cont)));
 						
-						evaluate_values(fn.getBody(), env);
+						evaluate_values(f.getBody(), env);
 						
 						orig_ast = Nil;
 					}
@@ -688,7 +699,7 @@ public class VeniceInterpreter implements Serializable  {
 								final VncFunction f = fn.getFunctionForArgs(fnArgs);
 								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 								final VncList body = (VncList)f.getBody();
-								evaluate_values(body.butlast(), env);
+								evaluate_sequence_values(body.butlast(), env);
 								orig_ast = body.last();
 							}
 							else {
@@ -1604,7 +1615,7 @@ public class VeniceInterpreter implements Serializable  {
 			specialFormCallValidation("eval");
 			final Namespace ns = Namespaces.getCurrentNamespace();
 			try {
-				return evaluate(Coerce.toVncSequence(evaluate_values(args, env)).last(), env);
+				return evaluate(Coerce.toVncSequence(evaluate_sequence_values(args, env)).last(), env);
 			}
 			finally {
 				Namespaces.setCurrentNamespace(ns);
@@ -2194,7 +2205,10 @@ public class VeniceInterpreter implements Serializable  {
 				break;
 			case 1:
 				// [1][2] calculate and bind the single new value
-				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), evaluate(args.first(), env, false)));
+				recur_env.setLocal(
+					new Var(
+						recursionPoint.getLoopBindingName(0), 
+						evaluate(args.first(), env, false)));
 				break;
 			case 2:
 				// [1] calculate the new values
@@ -2241,7 +2255,7 @@ public class VeniceInterpreter implements Serializable  {
 	private VncVal evaluateBody(final VncList body, final Env env, final boolean withTailPosition) {
 		evaluate_values(body.butlast(), env);
 		if (withTailPosition) {
-			return evaluateInTailPosition(body.last(), env);
+			return evaluateInTailPosition(body.last(), env, null);
 		}
 		else {
 			return evaluate(body.last(), env);

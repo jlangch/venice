@@ -2933,7 +2933,7 @@ public class CoreFunctions {
 						"When applied to a map, returns a new map of the same type, that " +
 						"contains the mapping of key(s) to val(s). " +
 						"When applied to a vector, returns a new vector that contains val " +
-						"at index. Note - index must be <= (count vector)." +
+						"at index. Note - index must be <= (count vector). " +
 						"When applied to a custom type, returns a new custom type with " +
 						"passed fields changed.")
 					.examples(
