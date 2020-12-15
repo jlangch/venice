@@ -22,20 +22,21 @@
 package com.github.jlangch.venice.impl.continuation;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class ContinuationException extends VncException {
 		
-	public ContinuationException(final Continuation cont) {
-		this.cont = cont;
+	public ContinuationException(final VncVal val) {
+		this.val = val;
 	}
 
-	public Continuation getContinuation() { 
-		return cont; 
+	public VncVal getVal() { 
+		return val; 
 	}
 	
 	
 	private static final long serialVersionUID = -7070216020647646364L;
 
-	private final Continuation cont;
+	private final VncVal val;
 }

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,7 +47,7 @@ import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.continuation.Continuation;
-import com.github.jlangch.venice.impl.continuation.VncContinuationFunction;
+import com.github.jlangch.venice.impl.continuation.ContinuationException;
 import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.ReservedSymbols;
@@ -301,7 +302,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncVal ast_, 
 			final Env env_
 	) {
-		return evaluate(ast_, env_, false);
+		return evaluate(ast_, env_, false, null);
 	}
 
 	private VncVal evaluateInTailPosition(
@@ -309,13 +310,14 @@ public class VeniceInterpreter implements Serializable  {
 			final Env env_, 
 			final Continuation cont
 	) {
-		return evaluate(ast_, env_, true);
+		return evaluate(ast_, env_, true, cont);
 	}
 	
 	private VncVal evaluate(
 			final VncVal ast_, 
 			final Env env_, 
-			final boolean inTailPosition
+			final boolean inTailPosition,
+			final Continuation cont
 	) {
 		VncVal orig_ast = ast_;
 		Env env = env_;
@@ -493,19 +495,42 @@ public class VeniceInterpreter implements Serializable  {
 					}
 					break;
 
-				case "call-cc":  { 	// (call-cc f) call-with-current-continuation					
-						final Continuation cont = new Continuation(env, ast);
-						
-						env = new Env(env);
+				case "call-cc":  { 	// (call-cc f) call-with-current-continuation
+						final VncKeyword ccID = new VncKeyword("call-cc@" + UUID.randomUUID().toString());
 
-						final VncFunction f = Coerce.toVncFunction(evaluate(args.first(), env));
-						final VncSymbol ccSym = Coerce.toVncSymbol(f.getParams().first());
-						
-						env.setLocal(new Var(ccSym, new VncContinuationFunction(cont)));
-						
-						evaluate_values(f.getBody(), env);
-						
-						orig_ast = Nil;
+						try {
+							ThreadLocalMap.set(ccID, new VncLong(0));
+							
+							env = new Env(env);
+	
+							final VncFunction f = Coerce.toVncFunction(evaluate(args.first(), env));
+							final VncSymbol ccSym = Coerce.toVncSymbol(f.getParams().first());
+							final Env ccEnv = env;
+							final Continuation ccCont = cont;
+							
+							final VncFunction ccFn = new VncFunction(ccSym.getName()) {
+								public VncVal apply(final VncList args) {
+									if (ThreadLocalMap.containsKey(ccID)) {
+										throw new ContinuationException(args.first());
+									}
+									else {
+										return evaluate(ccCont.getAst(), ccEnv);
+									}
+								}
+								private static final long serialVersionUID = -1L;
+							};
+							
+							env.setLocal(new Var(ccSym, ccFn));
+							try {
+								orig_ast = evaluateBody((VncList)f.getBody(), env, false);
+							}
+							catch(ContinuationException ex) {
+								orig_ast = ex.getVal();
+							}
+						}
+						finally {
+							ThreadLocalMap.remove(ccID);
+						}
 					}
 					break;
 
@@ -1889,7 +1914,7 @@ public class VeniceInterpreter implements Serializable  {
 		try {
 			vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
 			
-			evaluate_values(expressions.butlast(), env);
+			evaluate_sequence_values(expressions.butlast(), env);
 			return evaluate(expressions.last(), env);
 		}
 		finally {
@@ -2208,12 +2233,12 @@ public class VeniceInterpreter implements Serializable  {
 				recur_env.setLocal(
 					new Var(
 						recursionPoint.getLoopBindingName(0), 
-						evaluate(args.first(), env, false)));
+						evaluate(args.first(), env, false, null)));
 				break;
 			case 2:
 				// [1] calculate the new values
-				final VncVal v1 = evaluate(args.first(), env, false);
-				final VncVal v2 = evaluate(args.second(), env, false);
+				final VncVal v1 = evaluate(args.first(), env, false, null);
+				final VncVal v2 = evaluate(args.second(), env, false, null);
 				// [2] bind the new values
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
@@ -2222,7 +2247,7 @@ public class VeniceInterpreter implements Serializable  {
 				// [1] calculate new values
 				final VncVal[] newValues = new VncVal[argCount];
 				for(int ii=0; ii<argCount; ii++) {
-					newValues[ii] = evaluate(args.nth(ii), env, false);
+					newValues[ii] = evaluate(args.nth(ii), env, false, null);
 				}
 				
 				// [2] bind the new values

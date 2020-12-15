@@ -32,7 +32,6 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 // [1] (e1 (call-cc f))
 // [2] ((call-cc f) e2)
 //
-//     ;; (println (f))
 //     (do 
 //       (println 1)
 //       (println (call-cc (fn [cont]
@@ -41,15 +40,14 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 //                           (println "?"))))
 //       (println 4))
 //
-//     ;; (println (+ 100 (f)))
 //     (do
 //       (def counter (atom 0))
 //		 (def saved-cont (atom nil))
 //
-//       (println (+ 100 (call-cc (fn [cont]
-//                                  (reset! saved-cont cont)
-//                                  (cont 100)
-//                                  (println "?")))))
+//       (println (call-cc (fn [cont]
+//                           (reset! saved-cont cont)
+//                           (cont 100)
+//                           (println "?")))))
 //       (when (< @counter 3)
 //          (swap! counter inc)
 //          (println "$")
