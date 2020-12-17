@@ -56,7 +56,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 /**
  * Continuation
  * 
- * <p>See {@link <a href="https://courses.cs.washington.edu/courses/cse341/04wi/lectures/15-scheme-continuations.html">Scheme continuations</a>}.
+ * <p>See <a href="https://courses.cs.washington.edu/courses/cse341/04wi/lectures/15-scheme-continuations.html">Scheme continuations</a>.
  * 
  * <p>An expression's continuation is "the computation that will receive the 
  * result of that expression". For example, in the expression
