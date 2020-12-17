@@ -1305,7 +1305,9 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/length-of-year date)")
-					.doc("Returns the length of the year represented by this date.")
+					.doc(
+						"Returns the length of the year represented by this date. \n\n" +
+						"This returns the length of the year in days, either 365 or 366.")
 					.examples(
 						"(time/length-of-year (time/local-date 2000 1 1))",
 						"(time/length-of-year (time/local-date 2001 1 1))",
@@ -1344,7 +1346,10 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/length-of-month date)")
-					.doc("Returns the length of the month represented by this date.")
+					.doc(
+						"Returns the length of the month represented by this date.\n\n" +
+						"This returns the length of the month in days. " +
+						"For example, a date in January would return 31.")
 					.examples(
 						"(time/length-of-month (time/local-date 2000 2 1))",
 						"(time/length-of-month (time/local-date 2001 2 1))",
