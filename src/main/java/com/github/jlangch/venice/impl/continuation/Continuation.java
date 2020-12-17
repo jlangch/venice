@@ -53,6 +53,61 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 //          (println "$")
 //          (saved-cont @counter)))
 
+/**
+ * Continuation
+ * 
+ * <p>See {@link <a href="https://courses.cs.washington.edu/courses/cse341/04wi/lectures/15-scheme-continuations.html">Scheme continuations</a>}.
+ * 
+ * <p>An expression's continuation is "the computation that will receive the 
+ * result of that expression". For example, in the expression
+ * 
+ * <pre>(+ 4 (+ 1 2))</pre>
+ * 
+ * <p>the result of <code>(+ 1 2)</code> will be added to <code>4</code>. The 
+ * addition to <code>4</code> is that expression's continuation. If we wanted 
+ * to represent the continuation of <code>(+ 1 2)</code>, we might write:
+ * 
+ * <pre>(fn [v] (+ 4 v))</pre>
+ * 
+ * <p>That is, the continuation of <code>(+ 1 2)</code> takes a value, and adds 
+ * four to that value.
+ * 
+ * <p>Every expression has an implicit continuation. In Venice the current 
+ * continuation can be reified as a function by using the 
+ * built-in function <code>call-cc</code> (call-with-current-continuation).
+ * 
+ * <p><code>(call-cc expr)</code> does the following:
+ * <ol>
+ *   <li>Captures the current continuation.
+ *       </li>
+ *   <li>Constructs a function C that takes one argument, and applies the 
+ *       current continuation with that argument value.
+ *       </li>
+ *   <li>Passes this function as an argument to expr --- i.e., it invokes 
+ *       (expr C).
+ *       </li>
+ *   <li>Returns the result of evaluating (expr C), unless expr calls C, 
+ *       in which case the value that is passed to C is returned.
+ *       </li>
+ * </ol>
+ * 
+ * <p>Here is an example:
+ * 
+ * <pre>
+ * (+ 4 (call-cc (fn [cont] (cont (+ 1 2)))))
+ * </pre>
+ * 
+ * <p>This performs exactly the same computation as <code>(+ 4 (+ 1 2))</code>. 
+ * However, it uses  <code>call-cc</code> to capture the current continuation, 
+ * and then passes the result of evaluating <code>(+ 1 2)</code> directly to 
+ * that continuation. Another, roughly equivalent way of writing the above 
+ * is as follows:
+ * 
+ * <pre>
+ * (let [f (fn [cont] (cont (+ 1 2)))]
+ *   (f (fn [v] (+ 4 v))))
+ * </pre>
+ */
 public class Continuation {
 		
 	public Continuation(final Env env, final VncList ast) {

@@ -1199,7 +1199,7 @@ public class ConcurrencyFunctions {
 						"   (future task1)                              \n" +
 						"   (future task2)                              \n" +
 						"   @p)                                           ")
-					.seeAlso("deliver", "promise?", "realized?")
+					.seeAlso("deliver", "promise?", "realized?", "deref")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
