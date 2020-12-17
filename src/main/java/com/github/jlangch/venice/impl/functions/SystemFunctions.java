@@ -650,7 +650,7 @@ public class SystemFunctions {
 				else if (osName.startsWith("Mac OS X")) {
 					return new VncKeyword("mac-osx");
 				}
-				else if (osName.startsWith("LINUX")) {
+				else if (osName.startsWith("Linux")) {
 					return new VncKeyword("linux");
 				}
 				else {
@@ -682,7 +682,7 @@ public class SystemFunctions {
 				switch(type) {
 					case "windows": return VncBoolean.of(osName.startsWith("Windows"));
 					case "mac-osx": return VncBoolean.of(osName.startsWith("Mac OS X"));
-					case "linux":   return VncBoolean.of(osName.startsWith("LINUX"));
+					case "linux":   return VncBoolean.of(osName.startsWith("Linux"));
 					default:        return False;
 				}
 			}

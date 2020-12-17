@@ -13,11 +13,12 @@ and this project adheres to
 
 ### Added
 
-- ...
+- improvements to documentation
 
 ### Fixed
 
 - documentation for Kira templating
+- fixed functions `os-type` and `os-type?` for Linux operating systems
 
 
 
