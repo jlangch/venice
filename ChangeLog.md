@@ -20,6 +20,10 @@ and this project adheres to
 - documentation for Kira templating
 - fixed functions `os-type` and `os-type?` for Linux operating systems
 
+### Changed
+
+- JLine dependency to version 3.18.0
+
 
 
 ## [1.9.6] - 2020-12-06
