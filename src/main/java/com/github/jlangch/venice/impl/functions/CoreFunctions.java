@@ -5,7 +5,7 @@
  *      \/ \___|_| |_|_|\___\___|
  *
  *
- * Copyright 2017-2020 Venice
+ * Copyright 2017-2021 Venice
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -3522,6 +3522,7 @@ public class CoreFunctions {
 					.examples(
 						"(key (find {:a 1 :b 2} :b))",
 						"(key (first (entries {:a 1 :b 2 :c 3})))")
+					.seeAlso("map", "entries", "val", "keys")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3568,6 +3569,7 @@ public class CoreFunctions {
 					.examples(
 						"(val (find {:a 1 :b 2} :b))",
 						"(val (first (entries {:a 1 :b 2 :c 3})))")
+					.seeAlso("map", "entries", "key", "vals")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3613,6 +3615,7 @@ public class CoreFunctions {
 					.arglists("(entries m)")
 					.doc("Returns a collection of the map entries.")
 					.examples("(entries {:a 1 :b 2 :c 3})")
+					.seeAlso("map", "key", "val", "keys", "vals")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -6586,6 +6589,7 @@ public class CoreFunctions {
 						"((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)",
 						"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
 						"(reduce (fn [m c] (assoc m (first c) c)) {} [[:a 1] [:b 2] [:c 3]])")
+					.seeAlso("map", "filter")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

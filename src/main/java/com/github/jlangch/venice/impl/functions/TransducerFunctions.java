@@ -5,7 +5,7 @@
  *      \/ \___|_| |_|_|\___\___|
  *
  *
- * Copyright 2017-2020 Venice
+ * Copyright 2017-2021 Venice
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -179,7 +179,10 @@ public class TransducerFunctions {
 					.examples(
 						"(map inc [1 2 3 4])",
 						"(map + [1 2 3 4] [10 20 30 40])",
-						"(map list '(1 2 3 4) '(10 20 30 40))")
+						"(map list '(1 2 3 4) '(10 20 30 40))",
+						"(map (fn [e] [(key e) (inc (val e))]) {:a 1 :b 2})",
+						"(map inc #{1 2 3})")
+					.seeAlso("filter", "reduce")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -389,7 +392,10 @@ public class TransducerFunctions {
 						"(predicate item) returns logical true. " +
 						"Returns a transducer when no collection is provided.")
 					.examples(
-						"(filter even? [1 2 3 4 5 6 7])")
+						"(filter even? [1 2 3 4 5 6 7])",
+						"(filter #(even? (val %)) {:a 1 :b 2})",
+						"(filter even? #{1 2 3})")
+					.seeAlso("map", "reduce")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
