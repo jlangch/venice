@@ -994,7 +994,15 @@ public class IOFunctions {
 					.doc(
 						"Lists all files in a directory that match the glob pattern. " +
 					    "dir must be a file or a string (file path). " +
-					    "Returns files as java.io.File")
+					    "Returns files as java.io.File\n\n" +
+					    "Globbing patterns: \n" +
+					    "  *.txt        Matches a path that represents a file name ending in .txt\n" +
+					    "  *.*          Matches file names containing a dot\n" +
+					    "  *.{txt,xml}  Matches file names ending with .txt or .xml\n" +
+					    "  foo.?        Matches file names starting with foo. and a single character extension\n" +
+					    "  /home/*/*    Matches /home/gus/data on UNIX platforms\n" +
+					    "  /home/**     Matches /home/gus and /home/gus/data on UNIX platforms\n" +
+					    "  C:\\\\*        Matches C:\\foo and C:\\bar on the Windows platform (note that the backslash is escaped)\n")
 					.examples(
 						"(io/list-files-glob \".\" \"sample*.txt\")")
 					.seeAlso("io/list-files", "io/list-file-tree")

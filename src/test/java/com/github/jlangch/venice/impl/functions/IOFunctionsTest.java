@@ -31,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -182,10 +183,40 @@ public class IOFunctionsTest {
 			throw new RuntimeException(ex);
 		}
 		finally {			
-			Files.list(file1.getParentFile().toPath())
-				 .filter(f -> f.toFile().isFile())
-				 .filter(f -> f.toFile().getName().matches("spit.*[.]txt"))
-				 .forEach(f -> f.toFile().delete());
+			file1.delete();
+			file2.delete();
+		}
+	}
+	
+	@Test
+	public void test_io_list_files_glob() throws Exception{
+		final Venice venice = new Venice();
+
+		final File file1 = File.createTempFile("spit-", "-1.txt");
+		final File file2 = File.createTempFile("spit-", "-2.txt");
+		final File file3 = File.createTempFile("spit-", "-2.xml");
+
+		try {
+			venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file1));
+			venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file2));
+			venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file3));
+
+			final File dir = file1.getParentFile();
+
+			final Map<String,Object> params = Parameters.of("dir", dir);
+			
+			assertEquals(3L, venice.eval("(count (io/list-files-glob dir \"spit-*.*\"))", params));
+			assertEquals(2L, venice.eval("(count (io/list-files-glob dir \"spit-*.txt\"))", params));
+			assertEquals(1L, venice.eval("(count (io/list-files-glob dir \"spit-*.?ml\"))", params));
+			assertEquals(3L, venice.eval("(count (io/list-files-glob dir \"spit-*.{txt,xml}\"))", params));
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		finally {			
+			file1.delete();
+			file2.delete();
+			file3.delete();
 		}
 	}
 	

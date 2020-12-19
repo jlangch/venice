@@ -172,7 +172,7 @@ Example:
   
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
   
-  (println (kira/eval "<birthdate><%= (kira/escape-xml birth-date) test/format-ts) %></birthdate>" 
+  (println (kira/eval "<birthdate><%= (kira/escape-xml birth-date test/format-ts) %></birthdate>" 
                       { :birth-date (time/local-date 2000 8 1) })))
 ```
 
@@ -348,6 +348,7 @@ Example:
          font-size: <%= (if (== font :large) 36 12) %>px;
          line-height: 1.5em;
          font-weight: <%= weight %>;
+       }
        """)
 
   (def data { :font :large 
