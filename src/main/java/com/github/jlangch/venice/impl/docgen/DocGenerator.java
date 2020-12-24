@@ -1374,7 +1374,8 @@ public class DocGenerator {
 		file.addItem(getDocItem("io/file-absolute-path"));
 		file.addItem(getDocItem("io/file-canonical-path"));
 		file.addItem(getDocItem("io/file-ext?"));
-		file.addItem(getDocItem("io/file-size"));
+		file.addItem(getDocItem("io/file-size", false));
+		file.addItem(getDocItem("io/file-last-modified", false));
 
 		final DocSection file_dir = new DocSection("file dir", "io.filedir");
 		all.addSection(file_dir);

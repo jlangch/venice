@@ -489,6 +489,7 @@ public class CoreFunctions {
 					.examples(
 						"(char 65)", 
 						"(char \"A\")",
+						"(long (char \"A\"))",
 						"(str/join (map char [65 66 67 68]))")
 					.build()
 		) {

@@ -1593,6 +1593,15 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_highlight() {
+		final Venice venice = new Venice();
+
+		@SuppressWarnings("unchecked")
+		final List<Object> list = (List<Object>)venice.eval("(highlight \"(+ 10 20)\")");
+		assertEquals(7, list.size());
+	}	
+
+	@Test
 	public void test_identity() {
 		final Venice venice = new Venice();
 

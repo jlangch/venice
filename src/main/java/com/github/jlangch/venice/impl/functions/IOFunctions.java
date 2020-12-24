@@ -54,6 +54,8 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchService;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -112,11 +114,11 @@ public class IOFunctions {
 						"and one or multiple children. The path and parent may be a file or a string " +
 						"(file path), child and children must be strings.")
 					.examples(
-						"(io/file \"/temp/test.txt\")",
+						"(io/file \"/tmp/test.txt\")",
 						"(io/file \"/temp\" \"test.txt\")",
 						"(io/file \"/temp\" \"test\" \"test.txt\")",
 						"(io/file (io/file \"/temp\") \"test\" \"test.txt\")",
-						"(io/file (. :java.io.File :new \"/temp/test.txt\"))")
+						"(io/file (. :java.io.File :new \"/tmp/test.txt\"))")
 					.seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute-path", "io/file-canonical-path")
 					.build()
 		) {
@@ -153,7 +155,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/file-size f)")
 					.doc("Returns the size of the file f. f must be a file or a string (file path).")
-					.examples("(io/file-size \"/bin/sh\")")
+					.examples("(io/file-size \"/tmp/test.txt\")")
 					.seeAlso("io/file")
 					.build()
 		) {
@@ -336,7 +338,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/file? x)")
 					.doc("Returns true if x is a java.io.File.")
-					.examples("(io/file? (io/file \"/temp/test.txt\"))")
+					.examples("(io/file? (io/file \"/tmp/test.txt\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -355,7 +357,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/exists-file? f)")
 					.doc("Returns true if the file f exists. f must be a file or a string (file path).")
-					.examples("(io/exists-file? \"/temp/test.txt\")")
+					.examples("(io/exists-file? \"/tmp/test.txt\")")
 					.seeAlso("io/exists-dir?")
 					.build()
 		) {
@@ -411,7 +413,7 @@ public class IOFunctions {
 					.doc(
 						"Returns true if the file or directory f exists and can be read. " +
 						"f must be a file or a string (file path).")
-					.examples("(io/file-can-read? \"/temp/test.txt\")")
+					.examples("(io/file-can-read? \"/tmp/test.txt\")")
 					.seeAlso("io/file-can-write?", "io/file-can-execute?", "io/file-hidden?")
 					.build()
 		) {
@@ -437,7 +439,7 @@ public class IOFunctions {
 					.doc(
 						"Returns true if the file or directory f exists and can be written. " +
 						"f must be a file or a string (file path).")
-					.examples("(io/file-can-write? \"/temp/test.txt\")")
+					.examples("(io/file-can-write? \"/tmp/test.txt\")")
 					.seeAlso("io/file-can-read?", "io/file-can-execute?", "io/file-hidden?")
 					.build()
 		) {
@@ -463,7 +465,7 @@ public class IOFunctions {
 					.doc(
 						"Returns true if the file or directory f exists and can be executed. " +
 						"f must be a file or a string (file path).")
-					.examples("(io/file-can-execute? \"/temp/test.txt\")")
+					.examples("(io/file-can-execute? \"/tmp/test.txt\")")
 					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-hidden?")
 					.build()
 		) {
@@ -489,7 +491,7 @@ public class IOFunctions {
 					.doc(
 						"Returns true if the file or directory f exists and is hidden. " +
 						"f must be a file or a string (file path).")
-					.examples("(io/file-hidden? \"/temp/test.txt\")")
+					.examples("(io/file-hidden? \"/tmp/test.txt\")")
 					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
 					.build()
 		) {
@@ -501,6 +503,41 @@ public class IOFunctions {
 									"Function 'io/file-hidden?' does not allow %s as x");
 
 				return VncBoolean.of((f.isFile() || f.isDirectory()) && f.isHidden());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_last_modified =
+		new VncFunction(
+				"io/file-last-modified",
+				VncFunction
+					.meta()
+					.arglists("(io/file-last-modified f)")
+					.doc(
+						"Returns the last modification time (a Java LocalDateTime) of f or nil " +
+						"if f does not exist. f must be a file or a string (file path).")
+					.examples("(io/file-last-modified \"/tmp/test.txt\")")
+					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final File f = convertToFile(
+									args.first(),
+									"Function 'io/file-last-modified' does not allow %s as x");
+
+				if (f.exists()) {
+					final long millis = f.lastModified();
+					return new VncJavaObject(
+									Instant.ofEpochMilli(millis)
+										   .atZone(ZoneId.systemDefault())
+										   .toLocalDateTime());
+				}
+				else {
+					return Nil;
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -910,7 +947,9 @@ public class IOFunctions {
 				validateReadableDirectory(dir);
 
 				try {
-					final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
+					final VncFunction filterFn = args.size() == 2 
+													? Coerce.toVncFunction(args.second()) 
+													: null;
 
 					final List<VncVal> files = new ArrayList<>();
 					for(File f : dir.listFiles()) {
@@ -2451,6 +2490,7 @@ public class IOFunctions {
 					.add(io_file_name)
 					.add(io_file_ext_Q)
 					.add(io_file_size)
+					.add(io_file_last_modified)
 					.add(io_exists_file_Q)
 					.add(io_exists_dir_Q)
 					.add(io_file_can_read_Q)

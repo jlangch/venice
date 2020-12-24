@@ -14,6 +14,7 @@ and this project adheres to
 ### Added
 
 - improvements to documentation
+- function `io/file-last-modified`
 
 ### Fixed
 
