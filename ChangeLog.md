@@ -15,6 +15,8 @@ and this project adheres to
 
 - improvements to documentation
 - function `io/file-last-modified`
+- support for JavaDoc (opens a browser window displaying the javadoc 
+  for a Java class): `(java/javadoc :java.lang.String)`
 
 ### Fixed
 

@@ -1757,6 +1757,10 @@ public class DocGenerator {
 		clazz.addItem(getDocItem("class-version"));
 		clazz.addItem(getDocItem("classloader"));
 		clazz.addItem(getDocItem("classloader-of"));
+
+		final DocSection modules = new DocSection("Modules", "javainterop.modules");
+		all.addSection(modules);	
+		modules.addItem(getDocItem("module-name", false));
 		
 		return section;
 	}

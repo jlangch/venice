@@ -34,10 +34,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -231,18 +232,23 @@ public class JavaInteropUtil {
 	}
 	
 	public static Class<?> toClass(final VncVal val, final JavaImports javaImports) {
-		if (Types.isVncJavaObject(val, Class.class)) {
-			return (Class<?>)((VncJavaObject)val).getDelegate();
+		try {
+			if (Types.isVncJavaObject(val, Class.class)) {
+				return (Class<?>)((VncJavaObject)val).getDelegate();
+			}
+			else if (Types.isVncJavaObject(val)) {
+				return ((VncJavaObject)val).getDelegate().getClass();
+			}
+			else {
+				final String className = Types.isVncKeyword(val)
+											? Coerce.toVncKeyword(val).getValue()
+											: Coerce.toVncString(val).getValue();
+		
+				return ReflectionUtil.classForName(javaImports.resolveClassName(className));
+			}
 		}
-		else if (Types.isVncJavaObject(val)) {
-			return ((VncJavaObject)val).getDelegate().getClass();
-		}
-		else {
-			final String className = Types.isVncKeyword(val)
-										? Coerce.toVncKeyword(val).getValue()
-										: Coerce.toVncString(val).getValue();
-	
-			return ReflectionUtil.classForName(javaImports.resolveClassName(className));
+		catch(RuntimeException ex) {
+			throw new VncException(ex.getMessage(), ex);
 		}
 	}
 	

@@ -1101,7 +1101,7 @@ public class SystemFunctions {
 		}
 	}
 
-	private static long javaMajorVersion() {
+	public static long javaMajorVersion() {
 		String version = System.getProperty("java.version");
 		
 		if (version.startsWith("1.")) {

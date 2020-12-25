@@ -24,6 +24,55 @@
 
 (ns java)
 
+(load-module :shell)
+
+
+(defn javadoc-base-url []
+  ;; http://docs.oracle.com/javase/8/docs/api/java/lang/String.html
+  ;; https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html
+  (case (java-major-version)
+    8  "http://docs.oracle.com/javase/8/docs/api/%s"
+    9  "http://docs.oracle.com/javase/9/docs/api/%s"
+    10 "http://docs.oracle.com/javase/10/docs/api/%s"
+    11 "https://docs.oracle.com/en/java/javase/11/docs/api/%s/%s"
+    12 "https://docs.oracle.com/en/java/javase/12/docs/api/%s/%s"
+    13 "https://docs.oracle.com/en/java/javase/13/docs/api/%s/%s"
+    14 "https://docs.oracle.com/en/java/javase/14/docs/api/%s/%s"
+    15 "https://docs.oracle.com/en/java/javase/15/docs/api/%s/%s"
+    16 "https://docs.oracle.com/en/java/javase/16/docs/api/%s/%s"
+    "http://docs.oracle.com/javase/8/docs/api/%s"))
+
+
+(defn
+  ^{ :arglists '("(javadoc-url class)")
+     :doc "Returns the javadoc URL for a Java class."
+     :examples '("(java/javadoc-url (class :java.lang.String))") }
+
+  javadoc-url [class]
+
+  (let [major  (java-major-version)
+        url    (javadoc-base-url)
+        name   (str (str/replace-all (class-name class) "." "/") ".html")]
+    (cond
+         (< major 11) (str/format url name)
+         (< major 17) (str/format url (module-name class) name)
+         :else        (str/format url name))))
+
+
+(defn
+  ^{ :arglists '("(javadoc class-or-object)")
+     :doc "Opens a browser window displaying the javadoc for argument."
+     :examples '("(java/javadoc :java.lang.String)") }
+
+  javadoc [class-or-object]
+
+  (let [class (if (instance? :java.lang.Class class-or-object)
+                class-or-object
+                (class class-or-object))]
+      (if-let [url (javadoc-url class)]
+        (shell/open url)
+        (println "Could not find Javadoc for" c))))
+
 
 (defn
   ^{ :arglists '("(describe obj)")

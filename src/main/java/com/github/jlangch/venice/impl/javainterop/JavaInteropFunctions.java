@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
+import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.invokeInstanceMethod;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -59,6 +62,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
+import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
 public class JavaInteropFunctions {
@@ -340,6 +344,45 @@ public class JavaInteropFunctions {
 				throw new VncException(String.format(
 						"Function 'class-name' requires a Java class as argument", 
 						Types.getType(args.first())));
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaModuleNameFn extends AbstractJavaFn {
+		public JavaModuleNameFn() {
+			super(
+				"module-name", 
+				VncFunction
+					.meta()
+					.arglists("(module-name class)")
+					.doc("Returns the Java module name of a class.")
+					.examples("(module-name (class :java.util.ArrayList))")
+					.seeAlso("class", "class-name")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			ArityExceptions.assertArity(this, args, 1);
+			sandboxFunctionCallValidation();
+				
+			final long javaMajor = SystemFunctions.javaMajorVersion();
+			if (javaMajor < 11) {
+				throw new VncException(
+						"The function 'module-name' is available for Java 11+ only");
+			}
+			else {
+				final Class<?> clazz = JavaInteropUtil.toClass(
+											args.first(), 
+											Namespaces.getCurrentNamespace().getJavaImports());
+
+				ReturnValue ret = invokeInstanceMethod(clazz, null, "getModule", new Object[]{});
+				
+				ret = invokeInstanceMethod(ret.getValue(), null, "getName", new Object[]{});
+
+				return new VncString((String)ret.getValue());
 			}
 		}
 
@@ -1002,6 +1045,7 @@ public class JavaInteropFunctions {
 					.add(new JavaClassFn())
 					.add(new JavaClassOfFn())
 					.add(new JavaClassNameFn())
+					.add(new JavaModuleNameFn())
 					.add(new JavaClassVersionFn())
 					.add(new JavaClassLoaderFn())
 					.add(new JavaClassLoaderOfFn())
