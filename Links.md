@@ -56,11 +56,21 @@
 [Zulu Mission Control](https://www.azul.com/products/zulu-mission-control/)
 
 
-## Clojure socket REPL
+## Clojure
 
-[Clojure socket REPL](https://clojure.org/reference/repl_and_main)
+### Socket REPL
 
-[Clojure socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
+[Socket REPL](https://clojure.org/reference/repl_and_main)
+
+[Socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
+
+### STM
+
+[Clojure STM](https://clojure.org/reference/refs)
+
+[STM Implementation](https://soft.vub.ac.be/~tvcutsem/talks/presentations/STM-in-Clojure.pdf)
+
+[STM Implementation](https://github.com/tvcutsem/stm-in-clojure)
 
 
 ## GitHub Wiki

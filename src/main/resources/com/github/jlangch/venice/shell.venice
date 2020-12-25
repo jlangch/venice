@@ -20,9 +20,9 @@
 ;;;; limitations under the License.
 
 ;;;; Shell utilities
-;;;;                                               java      macos  unix windows
+;;;;                                                java     macos  unix windows
 ;;;;   (shell/open url)                              8+        x      x     x
-;;;;   (shell/open-macos-app name)                   8+        x
+;;;;   (shell/open-macos-app name)                   8+        x      -     -
 ;;;;   (shell/diff file1 file2)                      8+        x      x     x
 ;;;;   (shell/kill pid)                              9+        x      x     x
 ;;;;   (shell/kill-forcibly pid)                     9+        x      x     x
