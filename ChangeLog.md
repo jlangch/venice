@@ -9,7 +9,15 @@ and this project adheres to
 
 
 
-## [1.9.7] - 2020-12-27
+## [1.9.8] - 2021-01-xx
+
+### Added
+
+- improvements to documentation
+
+
+
+## [1.9.7] - 2020-12-26
 
 ### Added
 

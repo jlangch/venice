@@ -64,7 +64,7 @@
 //       - Update the ChangeLog for the release version
 //       - Generate cheatsheets: ./gradlew cheatsheet
 //       - Update files with release version: ./gradlew updateReleaseVersion
-//       - Commit the changes
+//       - Commit the changes with message "bumped to new version"
 //       - Update the Git commit Id in the cheatsheet URLs in 'README.md':
 //           ./gradlew updateReadMeCheatsheetRef
 //       - Commit the 'README.md' change
@@ -94,6 +94,7 @@
 //   [4] Open new development cycle
 //       - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
 //       - Add an empty ChangeLog entry for the new version
+//       - Commit with message "opened new dev cycle"
 //
 // -----------------------------------------------------------------------------
 // Gradle wrapper
