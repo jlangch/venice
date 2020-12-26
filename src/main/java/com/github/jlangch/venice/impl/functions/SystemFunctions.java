@@ -643,19 +643,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				final String osName = System.getProperty("os.name");
-				if (osName.startsWith("Windows")) {
-					return new VncKeyword("windows");
-				}
-				else if (osName.startsWith("Mac OS X")) {
-					return new VncKeyword("mac-osx");
-				}
-				else if (osName.startsWith("Linux")) {
-					return new VncKeyword("linux");
-				}
-				else {
-					return new VncKeyword("unknown");
-				}
+				return new VncKeyword(osType());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1111,7 +1099,22 @@ public class SystemFunctions {
 		return Long.parseLong(version.substring(0, version.indexOf(".")));
 	}
 	
-	
+	public static String osType() {
+		final String osName = System.getProperty("os.name");
+		if (osName.startsWith("Windows")) {
+			return "windows";
+		}
+		else if (osName.startsWith("Mac OS X")) {
+			return "mac-osx";
+		}
+		else if (osName.startsWith("Linux")) {
+			return "linux";
+		}
+		else {
+			return "unknown";
+		}
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions

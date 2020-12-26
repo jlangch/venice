@@ -96,11 +96,7 @@
 
   open [url]
 
-  (let [url (str url)]
-    (case (os-type)
-      :mac-osx (sh "/usr/bin/open" url)
-      :linux   (sh "/usr/bin/xdg-open" url)
-      :windows (sh "cmd" "/C" "start" url))))
+  (sh/open (str url)))
 
 
 (defn

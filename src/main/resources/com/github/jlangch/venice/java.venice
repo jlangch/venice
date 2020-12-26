@@ -24,8 +24,6 @@
 
 (ns java)
 
-(load-module :shell)
-
 
 (defn
   ^{ :arglists '("(javadoc-url class)")
@@ -61,7 +59,7 @@
                 class-or-object
                 (class class-or-object))]
       (if-let [url (javadoc-url class)]
-        (shell/open url)
+        (sh/open url)
         (println "Could not find Javadoc for" c))))
 
 

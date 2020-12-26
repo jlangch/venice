@@ -63,7 +63,8 @@ public class DocGenerator {
 		this.preloadedModules
 			.addAll(Arrays.asList(
 						"app",    "xml",   "crypt",  "gradle", 
-						"trace",  "ansi",  "maven",  "kira"));
+						"trace",  "ansi",  "maven",  "kira",
+						"java"));
 		
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -217,6 +218,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
 		extmod.addSection(new DocSection("Gradle", "modules.gradle"));
 		extmod.addSection(new DocSection("Maven", "modules.maven"));
+		extmod.addSection(new DocSection("Java", "modules.java"));
 		content.add(extmod);
 
 		final DocSection embed = new DocSection("Embedding", "embedding");
@@ -1082,6 +1084,7 @@ public class DocGenerator {
 		final DocSection shell = new DocSection("Shell", "system.shell");
 		all.addSection(shell);
 		shell.addItem(getDocItem("sh", false));
+		shell.addItem(getDocItem("sh/open", false));
 		shell.addItem(getDocItem("with-sh-dir", false));
 		shell.addItem(getDocItem("with-sh-env", false));
 		shell.addItem(getDocItem("with-sh-throw", false));
@@ -1886,6 +1889,11 @@ public class DocGenerator {
 		maven.addItem(getDocItem("maven/download", false));
 		maven.addItem(getDocItem("maven/get", false));
 		maven.addItem(getDocItem("maven/uri", false));
+		
+		final DocSection java = new DocSection("Java", "modules.java");
+		all.addSection(java);
+		java.addItem(new DocItem("(load-module :java)", null));
+		java.addItem(getDocItem("java/javadoc", false));
 
 		return section;
 	}

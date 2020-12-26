@@ -175,7 +175,53 @@ public class ShellFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
+	public static VncFunction sh_open =
+		new VncFunction(
+				"sh/open",
+				VncFunction
+					.meta()
+					.arglists("(sh/open)")
+					.doc("Opens a file or an url with the associated platform specific application.")
+					.examples(
+						"(sh/open \"sample.pdf\")",
+						"(sh/open \"https://github.com/jlangch/venice\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				switch(SystemFunctions.osType()) {
+					case "mac-osx":
+						sh.apply(VncList.of(
+									new VncString("/usr/bin/open"),
+									args.first()));
+						break;
+					
+					case "linux":
+						sh.apply(VncList.of(
+									new VncString("/usr/bin/xdg-open"), 
+									args.first()));
+						break;
+					
+					case "windows":
+						sh.apply(VncList.of(
+									new VncString("cmd"), 
+									new VncString("/C"),
+									new VncString("start"),
+									args.first()));
+						break;
+					
+					default:
+						throw new VncException("Unsupported OS");
+				}
+
+				return Nil;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 	
+			
 	///////////////////////////////////////////////////////////////////////////
 	// Util
 	///////////////////////////////////////////////////////////////////////////
@@ -482,5 +528,6 @@ public class ShellFunctions {
 			new VncHashMap
 					.Builder()
 					.add(sh)
+					.add(sh_open)
 					.toMap();	
 }

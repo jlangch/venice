@@ -54,6 +54,13 @@ Venice implicitly creates a builder function suffixed with a '.'
 (complex? (complex. 200 300))  ; => true
 ```
 
+Get the type 
+
+```clojure
+(type (complex. 200 300))  ; => :user/complex
+```
+
+
 Custom "AND" types are implemented in terms of maps, so all map functions
 can be applied:
 
@@ -153,6 +160,12 @@ Venice implicitly creates a builder function suffixed with a dot
 (string? (fruit. "apple"))  ; => true
 ```
 
+Get the type 
+
+```clojure
+(type (color. :blue))  ; => :user/color
+```
+
 
 
 
@@ -183,7 +196,8 @@ a string and has well defined constraints.
   (println (str/format "%s: length=%d" name (count name))))
 ```
 
-
+Venice implicitly creates a builder function suffixed with a dot
+ 
 ```clojure
 (do
   (deftype-of :email-address :string str/valid-email-addr?)
@@ -193,6 +207,17 @@ a string and has well defined constraints.
   (println email))
 ```
 
+... and a type check function 
+
+```clojure
+(email-address? (email-address. "foo@foo.org"))  ; => true
+```
+
+Get the type 
+
+```clojure
+(type (email-address. "foo@foo.org"))  ; => :user/email-address
+```
 
 
 ## Sample 'Payment' Domain Model
