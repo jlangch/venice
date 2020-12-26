@@ -9,14 +9,14 @@ and this project adheres to
 
 
 
-## [1.9.7] - 2021-01-01
+## [1.9.7] - 2020-12-27
 
 ### Added
 
 - improvements to documentation
 - function `io/file-last-modified`
-- support for JavaDoc (opens a browser window displaying the javadoc 
-  for a Java class): `(java/javadoc :java.lang.String)`
+- support for JavaDoc. Opens a browser window displaying the JavaDoc 
+  for a Java class. E.g: `(java/javadoc :java.lang.String)`
 
 ### Fixed
 

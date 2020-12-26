@@ -5,7 +5,7 @@
 
 ```groovy
 dependencies {
-    compile 'com.github.jlangch:venice:1.9.6'
+    compile 'com.github.jlangch:venice:1.9.7'
 }
 ```
 
@@ -16,7 +16,7 @@ dependencies {
     <dependency>
         <groupId>com.github.jlangch</groupId>
         <artifactId>venice</artifactId>
-        <version>1.9.6</version>
+        <version>1.9.7</version>
     </dependency>
 </dependencies>
 ```
