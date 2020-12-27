@@ -1513,7 +1513,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluate(args.first(), env));
-			return new VncString(sym.getName());
+			return new VncString(sym.getSimpleName());
 		}
 	}
 
