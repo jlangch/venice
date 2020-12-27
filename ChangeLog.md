@@ -15,6 +15,11 @@ and this project adheres to
 
 - improvements to documentation
 
+### Fixed
+
+- fixed functions `var-name` 
+- fixed :xchart module bar charts with multiple categories 
+
 
 
 ## [1.9.7] - 2020-12-26

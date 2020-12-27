@@ -31,9 +31,9 @@
 
 
 (defmacro
-  ^{ :arglists '("(qualified-name v)")
+  ^{ :arglists '( "(qualified-name v)" )
      :doc "Returns the qualified symbol name of a var"
-     :examples (list "(trace/qualified-name +)" ) }
+     :examples '( "(trace/qualified-name +)" ) }
 
   qualified-name [v] `(str (var-ns ~v) "/" (var-name ~v)))
 
@@ -61,18 +61,23 @@
 
 (defn
   ^{ :arglists '(
-        "(trace val)",
-        "(trace name val)")
+        "(trace val)"
+        "(trace name val)" )
      :doc
         """
         Sends name (optional) and value to the tracer function, then
         returns value. May be wrapped around any expression without
         affecting the result.
         """
-     :examples (list
+     :examples '(
         """(trace/trace (+ 1 2))"""
         """(trace/trace "add" (+ 1 2))"""
-        """(* 4 (trace/trace (+ 1 2)))""" ) }
+        """(* 4 (trace/trace (+ 1 2)))""" )
+     :see-also '(
+        "trace/trace-var"
+        "trace/untrace-var"
+        "trace/traced?"
+        "trace/traceable?" ) }
 
   trace
 
@@ -83,9 +88,14 @@
 
 
 (defmacro
-  ^{ :arglists '("(traced? v)")
+  ^{ :arglists '( "(traced? v)" )
      :doc "Returns true if the given var is currently traced, false otherwise"
-     :examples (list "(trace/traced? +)" ) }
+     :examples '( "(trace/traced? +)" )
+     :see-also '(
+        "trace/trace-var"
+        "trace/untrace-var"
+        "trace/traceable?"
+        "trace/trace" ) }
 
   traced? [v]
 
@@ -95,9 +105,14 @@
 
 
 (defmacro
-  ^{ :arglists '("(traceable? v)")
+  ^{ :arglists '( "(traceable? v)" )
      :doc "Returns true if the given var can be traced, false otherwise"
-     :examples (list "(trace/traceable? +)" ) }
+     :examples (list "(trace/traceable? +)" )
+     :see-also '(
+        "trace/trace-var"
+        "trace/untrace-var"
+        "trace/traced?"
+        "trace/trace" ) }
 
   traceable? [v]
 
@@ -107,9 +122,21 @@
 
 
 (defmacro
-  ^{ :arglists '("(trace-var v)")
+  ^{ :arglists '( "(trace-var v)" )
      :doc "Traces the var"
-     :examples (list "(trace/trace-var +)" ) }
+     :examples '(
+        """
+        (do
+          (load-module :trace)
+          
+          (trace/trace-var +)
+          (+ 1 2))
+        """ )
+     :see-also '(
+        "trace/untrace-var"
+        "trace/traced?"
+        "trace/traceable?"
+        "trace/trace" ) }
 
   trace-var [v]
 
@@ -124,9 +151,14 @@
 
 
 (defmacro
-  ^{ :arglists '("(trace-var v)")
+  ^{ :arglists '( "(untrace-var v)" )
      :doc "Untraces the var"
-     :examples (list "(trace/untrace-var +)" ) }
+     :examples '( "(trace/untrace-var +)" )
+     :see-also '(
+        "trace/trace-var"
+        "trace/traced?"
+        "trace/traceable?"
+        "trace/trace" ) }
 
   untrace-var [v]
 

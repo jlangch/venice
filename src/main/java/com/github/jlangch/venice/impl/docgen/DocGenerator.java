@@ -1051,6 +1051,14 @@ public class DocGenerator {
 		java.addItem(getDocItem("java-version"));
 		java.addItem(getDocItem("java-version-info"));
 		java.addItem(getDocItem("java-major-version"));
+		java.addItem(getDocItem("java-source-location", false));		
+		
+		final DocSection javaVM = new DocSection("Java VM", "system.java-vm");
+		all.addSection(javaVM);
+		javaVM.addItem(getDocItem("pid"));
+		javaVM.addItem(getDocItem("gc"));
+		javaVM.addItem(getDocItem("total-memory"));
+		javaVM.addItem(getDocItem("used-memory"));
 
 		final DocSection os = new DocSection("OS", "system.os");
 		all.addSection(os);
@@ -1068,26 +1076,28 @@ public class DocGenerator {
 		time.addItem(getDocItem("format-micro-time"));
 		time.addItem(getDocItem("format-milli-time"));
 
-		final DocSection util = new DocSection("Other", "system.other");
+		final DocSection host = new DocSection("Host", "system.host");
+		all.addSection(host);
+		host.addItem(getDocItem("host-name"));
+		host.addItem(getDocItem("host-address"));
+		host.addItem(getDocItem("cpus"));
+
+		final DocSection util = new DocSection("Util", "system.util");
 		all.addSection(util);
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
-		util.addItem(getDocItem("host-name"));
-		util.addItem(getDocItem("host-address"));
-		util.addItem(getDocItem("gc"));
-		util.addItem(getDocItem("cpus"));
-		util.addItem(getDocItem("pid"));
 		util.addItem(getDocItem("shutdown-hook"));
-		util.addItem(getDocItem("total-memory"));
-		util.addItem(getDocItem("used-memory"));
 
 		final DocSection shell = new DocSection("Shell", "system.shell");
 		all.addSection(shell);
 		shell.addItem(getDocItem("sh", false));
-		shell.addItem(getDocItem("sh/open", false));
 		shell.addItem(getDocItem("with-sh-dir", false));
 		shell.addItem(getDocItem("with-sh-env", false));
 		shell.addItem(getDocItem("with-sh-throw", false));
+
+		final DocSection tools = new DocSection("Shell Tools", "system.shell.tools");
+		all.addSection(tools);
+		tools.addItem(getDocItem("sh/open", false));
 				
 		return section;
 	}
