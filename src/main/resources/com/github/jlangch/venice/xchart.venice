@@ -27,6 +27,18 @@
 ;;;; See: https://hypirion.github.io/clj-xchart/examples
 
 
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;; Requires XChart 3.7.0+
+;;
+;; Previous versions don't work because of an incompatible XChart API change
+;; introduced with version 3.7.0
+;;
+;;  - Class org.knowm.xchart.style.Styler$CardinalPosition
+;;    (previous org.knowm.xchart.style.Styler$LegendPosition)
+;;  - Theme classes are in package org.knowm.xchart.style.theme
+;;    (previous package org.knowm.xchart.style)
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 (ns xchart)
 
 
@@ -50,14 +62,14 @@
 (import :org.knowm.xchart.style.CategoryStyler)
 (import :org.knowm.xchart.style.XYStyler)
 (import :org.knowm.xchart.style.AxesChartStyler)
-(import :org.knowm.xchart.style.Styler$LegendPosition)
+(import :org.knowm.xchart.style.Styler$CardinalPosition)
 (import :org.knowm.xchart.style.Styler$LegendLayout)
 (import :org.knowm.xchart.style.Styler$TextAlignment)
 (import :org.knowm.xchart.style.Styler$YAxisPosition)
 (import :org.knowm.xchart.style.PieStyler$AnnotationType)
-(import :org.knowm.xchart.style.GGPlot2Theme)
-(import :org.knowm.xchart.style.MatlabTheme)
-(import :org.knowm.xchart.style.XChartTheme)
+(import :org.knowm.xchart.style.theme.GGPlot2Theme)
+(import :org.knowm.xchart.style.theme.MatlabTheme)
+(import :org.knowm.xchart.style.theme.XChartTheme)
 
 (import :org.knowm.xchart.style.markers.Circle)
 (import :org.knowm.xchart.style.markers.Cross)
@@ -296,13 +308,13 @@
 
 
 (def xchart/legend-positions
-   { :inside-n   (. :Styler$LegendPosition :InsideN)
-     :inside-ne  (. :Styler$LegendPosition :InsideNE)
-     :inside-nw  (. :Styler$LegendPosition :InsideNW)
-     :inside-se  (. :Styler$LegendPosition :InsideSE)
-     :inside-sw  (. :Styler$LegendPosition :InsideSW)
-     :outside-e  (. :Styler$LegendPosition :OutsideE)
-     :outside-s  (. :Styler$LegendPosition :OutsideS) })
+   { :inside-n   (. :Styler$CardinalPosition :InsideN)
+     :inside-ne  (. :Styler$CardinalPosition :InsideNE)
+     :inside-nw  (. :Styler$CardinalPosition :InsideNW)
+     :inside-se  (. :Styler$CardinalPosition :InsideSE)
+     :inside-sw  (. :Styler$CardinalPosition :InsideSW)
+     :outside-e  (. :Styler$CardinalPosition :OutsideE)
+     :outside-s  (. :Styler$CardinalPosition :OutsideS) })
 
 
 (def xchart/legend-layout

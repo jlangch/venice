@@ -17,8 +17,14 @@ and this project adheres to
 
 ### Fixed
 
-- fixed functions `var-name` 
+- fixed function `var-name` for qualified vars
 - fixed :xchart module bar charts with multiple categories 
+
+### Changed
+
+- XChart dependency to version 3.7.0 (due to an incompatible API change in the 
+  XChart 3.7.0 Java library, Venice 1.9.8 does not work with earlier XChart 
+  versions!)
 
 
 

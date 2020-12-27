@@ -2,7 +2,7 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
-- org.knowm.xchart:xchart:3.6.1
+- org.knowm.xchart:xchart:3.7.0
 
 Examples:
 
@@ -13,6 +13,10 @@ Examples:
 - [Bar Chart](#bar-chart)
 - [Pie Chart](#pie-chart)
 - [Download Libraries](#download-required-3rd-party-libs)
+
+**Note:** Due to an incompatible API change in the XChart 3.7.0 Java library, 
+the Venice 1.9.8+ :xchart module does not work with XChart versions lower than 
+3.7.0!
 
 
 ## Line Chart
@@ -243,7 +247,7 @@ Examples:
          {"Series 1" (bubblify series1)
           "Series 2" (bubblify series2) }
          { :title "Bubble Chart"
-           :legend {:position :inside-sw}
+           :legend {:position :inside-se}
            :x-axis {:title "Series 2"}
            :y-axis {:title "Series 1"}
            :theme :xchart } )
@@ -302,6 +306,6 @@ Examples:
 (do
   (load-module :maven)
   
-  (maven/download "org.knowm.xchart:xchart:3.6.5"))
+  (maven/download "org.knowm.xchart:xchart:3.7.0"))
 ```
 
