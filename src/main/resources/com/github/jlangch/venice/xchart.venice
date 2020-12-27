@@ -655,8 +655,8 @@
             ;; Assuming keys are strings/vals
             (and (map? series-data)
                  (every? (comp not keyword?)
-                         (keys series-data))) {:x (keys series-data)
-                                               :y (vals series-data)}
+                         (keys series-data))) {:x (map first  (into [] series-data))
+                                               :y (map second (into [] series-data))}
             (sequential? series-data) {:x (first series-data)
                                        :y (second series-data)}))
 
