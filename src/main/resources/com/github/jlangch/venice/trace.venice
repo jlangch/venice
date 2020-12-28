@@ -149,6 +149,19 @@
 
           (trace/trace-var +)
           (+ 1 2))
+        """
+        """
+        (do
+          (load-module :trace)
+
+          (defn foo [x] (+ x 2))
+          (defn bar [x] (foo x))
+
+          (trace/trace-var +)
+          (trace/trace-var foo)
+          (trace/trace-var bar)
+
+          (bar 5))
         """ )
      :see-also '(
         "trace/untrace-var"

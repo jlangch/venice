@@ -14,6 +14,7 @@ and this project adheres to
 ### Added
 
 - improvements to documentation
+- function `trace/trace-str-limit`
 
 ### Fixed
 
@@ -23,7 +24,7 @@ and this project adheres to
 ### Changed
 
 - XChart dependency to version 3.7.0 (due to an incompatible API change in the 
-  XChart 3.7.0 Java library, Venice 1.9.8 does not work with earlier XChart 
+  XChart 3.7.0 Java library, Venice 1.9.8+ do not work with earlier XChart 
   versions!)
 
 

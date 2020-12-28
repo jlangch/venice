@@ -3547,8 +3547,18 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(keys map)")
-					.doc("Returns a collection of the map's keys.")
+					.doc(
+						"Returns a collection of the map's keys.\n\n" +
+						"Please note that the functions 'keys' and 'vals' applied " +
+						"to the same map are not guaranteed not return the keys and " +
+						"vals in the same order! \n" +
+						"To achieve this, keys and vals can calculated based on the " +
+						"map's entry list: \n" +
+						"   (let [e (entries {:a 1 :b 2 :c 3})]\n" +
+						"     (println (map key e))\n" +
+						"     (println (map val e)))")
 					.examples("(keys {:a 1 :b 2 :c 3})")
+					.seeAlso("vals", "entries", "map")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3594,8 +3604,18 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(vals map)")
-					.doc("Returns a collection of the map's values.")
+					.doc(
+						"Returns a collection of the map's values.\n\n" +
+						"Please note that the functions 'keys' and 'vals' applied " +
+						"to the same map are not guaranteed not return the keys and " +
+						"vals in the same order! \n" +
+						"To achieve this, keys and vals can calculated based on the " +
+						"map's entry list: \n" +
+						"   (let [e (entries {:a 1 :b 2 :c 3})]\n" +
+						"     (println (map key e))\n" +
+						"     (println (map val e)))")
 					.examples("(vals {:a 1 :b 2 :c 3})")
+					.seeAlso("keys", "entries", "map")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3615,7 +3635,11 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(entries m)")
 					.doc("Returns a collection of the map entries.")
-					.examples("(entries {:a 1 :b 2 :c 3})")
+					.examples(
+						"(entries {:a 1 :b 2 :c 3})",
+						"(let [e (entries {:a 1 :b 2 :c 3})]\n" +
+						"  (println (map key e))\n" +
+						"  (println (map val e)))")
 					.seeAlso("map", "key", "val", "keys", "vals")
 					.build()
 		) {
