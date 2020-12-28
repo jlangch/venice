@@ -777,9 +777,6 @@ public class DocGenerator {
 		map_access.addItem(getDocItem("get"));
 		map_access.addItem(getDocItem("keys"));
 		map_access.addItem(getDocItem("vals"));
-		map_access.addItem(getDocItem("key"));
-		map_access.addItem(getDocItem("val"));
-		map_access.addItem(getDocItem("entries"));
 
 		final DocSection map_modify = new DocSection("Modify", "collections.maps.modify");
 		maps.addSection(map_modify);
@@ -802,7 +799,15 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("map-invert"));
 		map_modify.addItem(getDocItem("map-keys"));
 		map_modify.addItem(getDocItem("map-vals"));
-		
+
+		final DocSection map_entries = new DocSection("Entries", "collections.maps.entries");
+		maps.addSection(map_entries);
+		map_entries.addItem(getDocItem("map-entry"));
+		map_entries.addItem(getDocItem("key"));
+		map_entries.addItem(getDocItem("val"));
+		map_entries.addItem(getDocItem("entries"));
+		map_entries.addItem(getDocItem("map-entry?"));
+
 		final DocSection map_nested = new DocSection("Nested", "collections.maps.nested");
 		maps.addSection(map_nested);
 		map_nested.addItem(getDocItem("get-in"));
@@ -818,7 +823,6 @@ public class DocGenerator {
 		map_test.addItem(getDocItem("ordered-map?"));
 		map_test.addItem(getDocItem("sorted-map?"));
 		map_test.addItem(getDocItem("mutable-map?"));
-		map_test.addItem(getDocItem("map-entry?"));
 		map_test.addItem(getDocItem("contains?"));
 		map_test.addItem(getDocItem("not-contains?"));
 
@@ -2019,7 +2023,9 @@ public class DocGenerator {
 							ps_out.getOutput(), ps_err.getOutput(), ex);
 				}
 				else {
-					throw ex;
+					throw new RuntimeException(
+							String.format("Failed to run example for '%s'", name), 
+							ex);
 				}
 			}
 		}

@@ -2682,7 +2682,12 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(map-entry key val)")
 					.doc("Creates a new map entry")
-					.examples("(map-entry :a 1)")
+					.examples(
+						"(map-entry :a 1)",
+						"(key (map-entry :a 1))",
+						"(val (map-entry :a 1))",
+						"(entries {:a 1 :b 2 :c 3})")
+					.seeAlso("map-entry?", "entries", "map", "key", "val")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2796,7 +2801,10 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(map-entry? m)")
 					.doc("Returns true if m is a map entry")
-					.examples("(map-entry? (first (entries {:a 1 :b 2})))")
+					.examples(
+						"(map-entry? (map-entry :a 1))",
+						"(map-entry? (first (entries {:a 1 :b 2})))")
+					.seeAlso("map-entry", "entries", "map")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3634,13 +3642,17 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(entries m)")
-					.doc("Returns a collection of the map entries.")
+					.doc("Returns a collection of the map's entries.")
 					.examples(
 						"(entries {:a 1 :b 2 :c 3})",
 						"(let [e (entries {:a 1 :b 2 :c 3})]\n" +
 						"  (println (map key e))\n" +
-						"  (println (map val e)))")
-					.seeAlso("map", "key", "val", "keys", "vals")
+						"  (println (map val e)))",
+						";; compare to 'into' \n" +
+						"(let [e (into [] {:a 1 :b 2 :c 3})]\n" +
+						"  (println (map first e))\n" +
+						"  (println (map second e)))")
+					.seeAlso("map", "key", "val", "keys", "vals", "map-entry")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
