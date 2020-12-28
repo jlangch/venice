@@ -245,6 +245,13 @@ java {
 }
 
 
+javadoc {
+  exclude "com/github/jlangch/venice/impl/**"
+  exclude "com/github/jlangch/venice/examples/**"
+  source = sourceSets.main.allJava
+}
+
+
 test {
     // prevent unit tests that check exceptions to fail intermittently
     jvmArgs '-XX:-OmitStackTraceInFastThrow'
