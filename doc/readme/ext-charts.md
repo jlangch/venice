@@ -183,7 +183,7 @@ the Venice 1.9.8+ :xchart module does not work with XChart versions lower than
 
          { :title "Area Chart"
            :render-style :area   ; :step-area
-           :legend {:position :inside-ne}
+           :legend {:position :outside-e}
            :x-axis { :title "X" :decimal-pattern "#0.#"}
            :y-axis { :title "Y" :decimal-pattern "#0.#"}
            :theme :xchart } )
