@@ -1866,6 +1866,7 @@ public class DocGenerator {
 		trace.addItem(getDocItem("trace/traceable?"));
 		trace.addItem(getDocItem("trace/trace-var"));
 		trace.addItem(getDocItem("trace/untrace-var"));
+		trace.addItem(getDocItem("trace/trace-str-limit"));
 		
 		final DocSection xml = new DocSection("XML", "modules.xml");
 		all.addSection(xml);

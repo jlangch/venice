@@ -61,6 +61,28 @@
 
 (defn
   ^{ :arglists '(
+        "(trace-str-limit)"
+        "(trace-str-limit n)" )
+     :doc
+        """
+        Manages the trace string limit for the current thread. \
+        Without argument returns the current limit. With argument \
+        sets the trace string length limit to n. The limit defaults to 80.
+        """
+     :examples '(
+        "(trace/trace-str-limit 120)" )
+     :see-also '(
+        "trace/trace-var"
+        "trace/trace" ) }
+
+  trace-str-limit
+
+  ([] *trace-str-limit*)
+  ([n] (set! *trace-str-limit* (max 1 n))))
+
+
+(defn
+  ^{ :arglists '(
         "(trace val)"
         "(trace name val)" )
      :doc
@@ -75,9 +97,7 @@
         """(* 4 (trace/trace (+ 1 2)))""" )
      :see-also '(
         "trace/trace-var"
-        "trace/untrace-var"
-        "trace/traced?"
-        "trace/traceable?" ) }
+        "trace/trace-str-limit" ) }
 
   trace
 
@@ -110,9 +130,7 @@
      :examples (list "(trace/traceable? +)" )
      :see-also '(
         "trace/trace-var"
-        "trace/untrace-var"
-        "trace/traced?"
-        "trace/trace" ) }
+        "trace/traced?" ) }
 
   traceable? [v]
 
@@ -128,7 +146,7 @@
         """
         (do
           (load-module :trace)
-          
+
           (trace/trace-var +)
           (+ 1 2))
         """ )
@@ -136,7 +154,8 @@
         "trace/untrace-var"
         "trace/traced?"
         "trace/traceable?"
-        "trace/trace" ) }
+        "trace/trace"
+        "trace/trace-str-limit" ) }
 
   trace-var [v]
 
@@ -156,9 +175,7 @@
      :examples '( "(trace/untrace-var +)" )
      :see-also '(
         "trace/trace-var"
-        "trace/traced?"
-        "trace/traceable?"
-        "trace/trace" ) }
+        "trace/traced?" ) }
 
   untrace-var [v]
 

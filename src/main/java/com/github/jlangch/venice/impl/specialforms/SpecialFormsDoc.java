@@ -949,7 +949,7 @@ public class SpecialFormsDoc {
 						"(try expr)",
 						"(try expr (catch exClass exSym expr))",
 						"(try expr (catch exClass exSym expr) (finally expr))")
-					.doc("Exception handling: try - catch -finally ")
+					.doc("Exception handling: try - catch - finally ")
 					.examples(
 						"(try (throw))",
 						
