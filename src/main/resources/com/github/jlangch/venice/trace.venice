@@ -87,8 +87,8 @@
         "(trace name val)" )
      :doc
         """
-        Sends name (optional) and value to the tracer function, then
-        returns value. May be wrapped around any expression without
+        Sends name (optional) and value to the tracer function, then \
+        returns value. May be wrapped around any expression without \
         affecting the result.
         """
      :examples '(

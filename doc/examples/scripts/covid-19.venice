@@ -29,7 +29,6 @@
 
 (do
   (load-module :xchart)
-  (load-module :shell)
 
   ;; https://www.worldometers.info/population/europe/
   (def country-config
@@ -68,7 +67,7 @@
 
   ;;; I/O functions ------------------------------------------------------------
 
-  (defn view [file] (shell/open file))
+  (defn view [file] (sh/open file))
 
   (defn save-chart [chart file dpi]
     (xchart/write-to-file chart :png dpi file))
@@ -92,7 +91,12 @@
   (defn normalize-population [p]
     (/ p (double population-norm)))
 
-  (defn extract-html-cases-section [html]
+  (defn parse-date [date]
+    ;; convert "Feb 02 to "2020 Feb 02" and parse it
+    (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
+
+
+  (defn extract-html-daily-cases-section [html]
     ;; extract the daily cases section from HTML page (javascript)
     (->> (str/split-lines html)
          (drop-while #(not (str/contains? % "'graph-cases-daily'" )))
@@ -100,12 +104,8 @@
          (rest)
          (butlast)))
 
-  (defn parse-date [date]
-    ;; convert "Feb 02 to "2020 Feb 02" and parse it
-    (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
-
   (defn extract-days [data]
-    ;;  categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]        },
+    ;;  categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]   },
     (as-> data <>
           (filter #(str/contains? % "categories: [") <>)
           (first <>)
@@ -113,8 +113,8 @@
           (map str/double-unquote <>)
           (map parse-date <>)))
 
-  (defn extract-cases [data]
-    ;; data: [null,0,0,0,0,0,1,3,4,...,215,186,143,121],
+  (defn extract-daily-cases [data]
+    ;; data: [null,0,0,0,0,0,1,3,4,...,215,186,143,121]   },
     (as-> data <>
           (filter #(str/contains? % "data: [") <>)
           (first <>)
@@ -124,7 +124,7 @@
 
   (defn parse-cases [country html-cases-section]
     (->> (map vector (extract-days html-cases-section)
-                     (extract-cases html-cases-section))
+                     (extract-daily-cases html-cases-section))
          (filter #(time/within? (first %) start-date end-date))))
 
   (defn process-sample [country population data]
@@ -146,7 +146,7 @@
         tuples)))
 
   (defn compute-country [country population html]
-    (->> (extract-html-cases-section html)
+    (->> (extract-html-daily-cases-section html)
          (parse-cases country)
          (reverse)
          (process country population)

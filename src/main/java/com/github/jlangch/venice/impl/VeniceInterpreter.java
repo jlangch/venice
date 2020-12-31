@@ -2117,7 +2117,7 @@ public class VeniceInterpreter implements Serializable  {
 		// PreCondition optimization
 		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
-		return new VncFunction(name, params, macro) {
+		return new VncFunction(name, params, macro, preConditions, Nil) {
 			@Override
 			public VncVal apply(final VncList args) {
 				if (hasVariadicArgs()) {

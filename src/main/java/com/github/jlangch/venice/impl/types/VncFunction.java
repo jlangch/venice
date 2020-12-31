@@ -43,30 +43,36 @@ public abstract class VncFunction
 	           INamespaceAware {
 
 	public VncFunction(final String name) {
-		this(name, null, false, Constants.Nil);
+		this(name, null, false, null, Constants.Nil);
 	}
 	
 	public VncFunction(final String name, final boolean macro) {
-		this(name, null, macro, Constants.Nil);
+		this(name, null, macro, null, Constants.Nil);
 	}
 	
 	public VncFunction(final String name, final VncVal meta) {
-		this(name, null, false, meta);
+		this(name, null, false, null, meta);
 	}
 
 	public VncFunction(final String name, final VncVector params) {
-		this(name, params, false, Constants.Nil);
+		this(name, params, false, null, Constants.Nil);
 	}
 
 	public VncFunction(final String name, final VncVector params, final boolean macro) {
-		this(name, params, macro, Constants.Nil);
+		this(name, params, macro, null, Constants.Nil);
 	}
 
 	public VncFunction(final String name, final VncVector params, final VncVal meta) {
-		this(name, params, false, Constants.Nil);
+		this(name, params, false, null, Constants.Nil);
 	}
 	
-	public VncFunction(final String name, final VncVector params, final boolean macro, final VncVal meta) {
+	public VncFunction(
+			final String name, 
+			final VncVector params, 
+			final boolean macro,
+			final VncVector preConditions, 
+			final VncVal meta
+	) {
 		super(Constants.Nil);
 
 		final int pos = name.indexOf("/");
@@ -93,6 +99,7 @@ public abstract class VncFunction
 		this.anonymous = isAnonymousFuncName(simpleName);
 		this.macro = macro;
 
+		this.preConditions = preConditions;
 		this.fnMeta.set(MetaUtil.setNamespace(meta, namespace));
 		this.fnPrivate = MetaUtil.isPrivate(meta);
 	}
@@ -200,6 +207,14 @@ public abstract class VncFunction
 
 	public VncVal getBody() { 
 		return Constants.Nil;
+	}
+
+	public VncVector getPreConditions() { 
+		return preConditions;
+	}
+	
+	public boolean hasPreConditions() {
+		return preConditions != null && !preConditions.isEmpty();
 	}
 
 	@Override
@@ -355,6 +370,8 @@ public abstract class VncFunction
 	private final int fixedArgsCount;
 	private final boolean variadicArgs;
 
+	private final VncVector preConditions;
+	
 	private final boolean anonymous;
 	private final boolean macro;
 

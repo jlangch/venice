@@ -62,9 +62,9 @@ public class DocGenerator {
 		
 		this.preloadedModules
 			.addAll(Arrays.asList(
-						"app",    "xml",   "crypt",  "gradle", 
-						"trace",  "ansi",  "maven",  "kira",
-						"java"));
+						"app",    "xml",    "crypt",  "gradle", 
+						"trace",  "ansi",   "maven",  "kira",
+						"java",   "semver", "hexdump"));
 		
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -219,6 +219,8 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Gradle", "modules.gradle"));
 		extmod.addSection(new DocSection("Maven", "modules.maven"));
 		extmod.addSection(new DocSection("Java", "modules.java"));
+		extmod.addSection(new DocSection("Semver", "modules.semver"));
+		extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
 		content.add(extmod);
 
 		final DocSection embed = new DocSection("Embedding", "embedding");
@@ -277,15 +279,17 @@ public class DocGenerator {
 		final DocSection lit = new DocSection("Literals", "primitives.literals");
 		section.addSection(lit);
 		
-		lit.addLiteralIem("Nil",        "nil");
-		lit.addLiteralIem("Boolean",    "true, false");
-		lit.addLiteralIem("Integer",    "150I, 1_000_000I, 0x1FFI");
-		lit.addLiteralIem("Long",       "1500, 1_000_000, 0x00A055FF");
-		lit.addLiteralIem("Double",     "3.569, 2.0E+10");
-		lit.addLiteralIem("BigDecimal", "6.897M, 2.345E+10M");
-		lit.addLiteralIem("BigInteger", "1000N, 1_000_000N");
-		lit.addLiteralIem("String",     "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"");
-		lit.addLiteralIem("",           "\"\"\"{ \"age\": 42 }\"\"\"");
+		lit.addLiteralIem("Nil",                  "nil");
+		lit.addLiteralIem("Boolean",              "true, false");
+		lit.addLiteralIem("Integer",              "150I, 1_000_000I, 0x1FFI");
+		lit.addLiteralIem("Long",                 "1500, 1_000_000, 0x00A055FF");
+		lit.addLiteralIem("Double",               "3.569, 2.0E+10");
+		lit.addLiteralIem("BigDecimal",           "6.897M, 2.345E+10M");
+		lit.addLiteralIem("BigInteger",           "1000N, 1_000_000N");
+		lit.addLiteralIem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"");
+		lit.addLiteralIem("",                     "\"\"\"{ \"age\": 42 }\"\"\"");
+		lit.addLiteralIem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"");
+		lit.addLiteralIem("",                     "\"~(inc x)\", \"\"\"~(inc x)\"\"\"");
 
 		
 		final DocSection numbers = new DocSection("Numbers", "primitives.numbers");
@@ -1909,6 +1913,23 @@ public class DocGenerator {
 		all.addSection(java);
 		java.addItem(new DocItem("(load-module :java)", null));
 		java.addItem(getDocItem("java/javadoc", false));
+		
+		final DocSection semver = new DocSection("Semver", "modules.semver");
+		all.addSection(semver);
+		semver.addItem(new DocItem("(load-module :semver)", null));
+		semver.addItem(getDocItem("semver/parse"));
+		semver.addItem(getDocItem("semver/valid?"));
+		semver.addItem(getDocItem("semver/valid-format?"));
+		semver.addItem(getDocItem("semver/version"));
+		semver.addItem(getDocItem("semver/cmp"));
+		semver.addItem(getDocItem("semver/newer?"));
+		semver.addItem(getDocItem("semver/older?"));
+		semver.addItem(getDocItem("semver/equal?"));
+		
+		final DocSection hexdump = new DocSection("Hexdump", "modules.hexdump");
+		all.addSection(hexdump);
+		hexdump.addItem(new DocItem("(load-module :hexdump)", null));
+		hexdump.addItem(getDocItem("hexdump/hexdump", false));
 
 		return section;
 	}
@@ -2036,7 +2057,7 @@ public class DocGenerator {
 	
 	private VncFunction findFunction(final String name) {
 		// Special forms
-		VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(name));
+		final VncFunction fn = (VncFunction)SpecialFormsDoc.ns.get(new VncSymbol(name));
 		if (fn != null) {
 			return fn;
 		}
@@ -2077,14 +2098,18 @@ public class DocGenerator {
 	private String getCrossRefDescr(final String descr) {
 		final int posLF = descr.indexOf('\n');
 		
+		// the crossref description text is built from the first line only
 		String s = (posLF == -1) ? descr.trim() : descr.substring(0, posLF).trim();
 
-		if (s.length() > 145) {
-			// do not cut in the middle of a word
-			final int spacePos = s.indexOf(' ', 135); 
+		// limit to at most CROSSREF_MAX_LEN chars
+		if (s.length() > CROSSREF_MAX_LEN) {
+			// do not cut in the middle of a word, cut at the first space in the last 15 
+			// characters of the description, if no space is found remove the last 5 chars
+			// to get space for "..." marker
+			final int spacePos = s.indexOf(' ', CROSSREF_MAX_LEN - 15); 
 			s = (spacePos != -1)
 				  ? s.substring(0, spacePos)
-				  : s.substring(0, 140).trim();
+				  : s.substring(0, CROSSREF_MAX_LEN - 5).trim();
 				  
 			if (!s.endsWith(".")) {
 				s = s + " ...";
@@ -2176,6 +2201,8 @@ public class DocGenerator {
 
 	private static final List<ExampleOutput> EMPTY_EXAMPLES = 
 			Collections.unmodifiableList(new ArrayList<>());
+	
+	private static final int CROSSREF_MAX_LEN = 145;
 	
 	private final Map<String,String> idMap = new HashMap<>();
 	

@@ -119,7 +119,7 @@
           Returns an XML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
-          An optional function f transforms the value before being converted
+          An optional function f transforms the value before being converted \
           to a string and XML escaped.
           """
      :examples '(
@@ -149,7 +149,7 @@
           Returns a HTML escaped string. If the passed data is not of \
           type string it will be converted first to a string using the \
           'str' function.
-          An optional function f transforms the value before being converted
+          An optional function f transforms the value before being converted \
           to a string and HTML escaped.
           """
      :examples '(

@@ -58,7 +58,7 @@
                   "$"))
 
 
-(defn
+(defn-
   ^{ :arglists '("(semver/parse-long s)")
      :doc """
           Attempt to parse s to a long, returning s if that fails or the parsed
@@ -74,9 +74,13 @@
 
 
 (defn
-  ^{ :arglists '("(semver/valid v)")
-     :doc "Checks if the supplied version map is valid or not"
-     :examples '("""(semver/valid? (semver/parse "1.2.3"))""") }
+  ^{ :arglists '("(semver/valid? v)")
+     :doc """
+          Checks if the supplied version map is valid regarding semantic \
+          versioning or not.
+          """
+     :examples '("""(semver/valid? (semver/parse "1.2.3"))""")
+     :see-also '( "semver/parse", "semver/valid?" ) }
   valid?
   [v]
   (and (map? v)
@@ -98,7 +102,8 @@
 (defn
   ^{ :arglists '("(semver/valid-format? s)")
      :doc "Checks the string 's' for semantic versioning formatting"
-     :examples '("""(semver/valid-format? "1.2.3")""") }
+     :examples '("""(semver/valid-format? "1.2.3")""")
+     :see-also '( "semver/parse", "semver/valid?" ) }
   valid-format?
   [s]
   (->> (regex/matcher pattern s)
@@ -107,8 +112,32 @@
 
 (defn
   ^{ :arglists '("(semver/parse s)")
-     :doc "Parses string 's' into a version map"
-     :examples '("""(semver/parse "1.2.3")""") }
+     :doc """
+          Parses string 's' into a semantic version map.
+
+          Semantic verioning format:
+             standard
+                version:        1.0.0
+                pre-release:    1.0.0-beta
+                meta data:      1.0.0-beta+001
+
+             with revision
+                version:        1.0.0.0
+                pre-release:    1.0.0.0-beta
+                meta data:      1.0.0.0-beta+001
+
+          E.g.: { :major 1, :minor 3, :patch 5 }
+                { :major 1, :minor 3, :patch 5 :pre-release "beta"}
+                { :major 1, :minor 3, :patch 5 :pre-release "beta"}
+                { :major 1, :minor 3, :patch 5 :pre-release "beta" :meta "001"}
+          """
+     :examples '(
+          """(semver/parse "1.2.3")"""
+          """(semver/parse "1.2.3-beta")"""
+          """(semver/parse "1.2.3-beta+001")""")
+     :see-also '(
+          "semver/version",
+          "semver/valid-format?" ) }
   parse
   [s]
   (let [[_ major minor patch revision pre-release meta] (regex/matches pattern s)]
@@ -123,11 +152,12 @@
 (defn
   ^{ :arglists '("(semver/version o)")
      :doc """
-          If 'o' is a valid version map, does nothing. Otherwise, we'll attempt
-          to parse 'o' and return a version map.
+          If 'o' is a valid version map, returns the map. Otherwise, it'll \
+          attempt to parse 'o' and return a version map.
           """
      :examples '(
-          """(semver/version "1.2.3")""") }
+          """(semver/version "1.2.3")""")
+     :see-also '( "semver/parse" ) }
   version
   [o]
   (if (and (map? o) (valid? o))
@@ -138,12 +168,16 @@
 (defn
   ^{ :arglists '("(semver/cmp a b)")
      :doc """
-          Compares versions a and b, returning -1 if a is older than b, 0 if
-          they're the same version, and 1 if a is newer than b
+          Compares versions a and b, returning -1 if a is older than b, 0 if \
+          they're the same version, and 1 if a is newer than b.
           """
      :examples '(
           """(semver/cmp "1.2.3" "1.5.4")"""
-          """(semver/cmp (semver/version "1.2.3") (semver/version "1.5.4"))""") }
+          """(semver/cmp (semver/version "1.2.3") (semver/version "1.5.4"))""")
+     :see-also '(
+          "semver/equal?",
+          "semver/newer?",
+          "semver/older?" ) }
   cmp
   [a b]
   (let [key-for-ident #(when %
@@ -165,7 +199,11 @@
      :doc "Is version a newer than version b?"
      :examples '(
           """(semver/newer? "1.5.4" "1.2.3")"""
-          """(semver/newer? (semver/version "1.5.4") (semver/version "1.2.3"))""") }
+          """(semver/newer? (semver/version "1.5.4") (semver/version "1.2.3"))""")
+     :see-also '(
+          "semver/older?",
+          "semver/equal?",
+          "semver/cmp" ) }
   newer?
   [a b]
   (pos? (cmp a b)))
@@ -176,7 +214,11 @@
      :doc "Is version a older than version b?"
      :examples '(
           """(semver/newer? "1.2.3" "1.5.4")"""
-          """(semver/newer? (semver/version "1.2.3") (semver/version "1.5.4"))""") }
+          """(semver/newer? (semver/version "1.2.3") (semver/version "1.5.4"))""")
+     :see-also '(
+          "semver/newer?",
+          "semver/equal?",
+          "semver/cmp" ) }
   older?
   [a b]
   (neg? (cmp a b)))
@@ -187,7 +229,11 @@
      :doc "Is version a the same as version b?"
      :examples '(
           """(semver/newer? "1.2.3" "1.2.3")"""
-          """(semver/newer? (semver/version "1.2.3") (semver/version "1.2.3"))""") }
+          """(semver/newer? (semver/version "1.2.3") (semver/version "1.2.3"))""")
+     :see-also '(
+          "semver/newer?",
+          "semver/older?",
+          "semver/cmp" ) }
   equal?
   [a b]
   (zero? (cmp a b)))
