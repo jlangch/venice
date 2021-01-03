@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -615,10 +617,12 @@ public class ZipFunctions {
 					.meta()
 					.arglists("(io/zip-file options* zip-file & files)")
 					.doc(
-						"Zips files. The zip-file my be a file, a string (file path) or " +
-						"an OutputStream. \n\n" +
+						"Zips files and directories recursively. Does not zip hidden " +
+						"files and does not follow symbolic links. The zip-file my be " +
+						"a file, a string (file path) or an OutputStream. \n\n" +
 						"Options: \n" +
-						"  :filter-fn fn - filters the files to be added to the zip.")
+						"  :filter-fn fn - a predicate function that filters the files \n" +
+						"                  to be added to the zip.")
 					.examples(
 						"; zip files\n" +
 						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
@@ -1231,6 +1235,14 @@ public class ZipFunctions {
 	}
 
 	private static void validateReadableFile(final File file) {
+		final Path p = file.toPath();
+		
+		if (Files.isSymbolicLink(p)) {
+			throw new VncException(String.format("'%s' is symbolic link not a file", file.getPath()));
+		}
+		if (file.isHidden()) {
+			throw new VncException(String.format("'%s' is a hidden file", file.getPath()));
+		}
 		if (!file.isFile()) {
 			throw new VncException(String.format("'%s' is not a file", file.getPath()));
 		}
@@ -1240,6 +1252,14 @@ public class ZipFunctions {
 	}
 
 	private static void validateReadableDirectory(final File file) {
+		final Path p = file.toPath();
+		
+		if (Files.isSymbolicLink(p)) {
+			throw new VncException(String.format("'%s' is symbolic link not a file", file.getPath()));
+		}
+		if (file.isHidden()) {
+			throw new VncException(String.format("'%s' is a hidden file", file.getPath()));
+		}
 		if (!file.isDirectory()) {
 			throw new VncException(String.format("'%s' is not a directory", file.getPath()));
 		}
@@ -1249,8 +1269,16 @@ public class ZipFunctions {
 	}
 
 	private static void validateReadableFileOrDirectory(final File file) {
-		if (!(file.isFile() || file.canRead())) {
-			throw new VncException(String.format("'%s' is not a file or a dierctory", file.getPath()));
+		final Path p = file.toPath();
+		
+		if (Files.isSymbolicLink(p)) {
+			throw new VncException(String.format("'%s' is symbolic link not a file", file.getPath()));
+		}
+		if (file.isHidden()) {
+			throw new VncException(String.format("'%s' is a hidden file", file.getPath()));
+		}
+		if (!(file.isFile() || file.isDirectory())) {
+			throw new VncException(String.format("'%s' is not a file or a directory", file.getPath()));
 		}
 		if (!file.canRead()) {
 			throw new VncException(String.format("'%s' has no read permission", file.getPath()));
