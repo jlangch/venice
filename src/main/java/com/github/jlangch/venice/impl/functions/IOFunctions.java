@@ -28,6 +28,7 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -1978,6 +1979,34 @@ public class IOFunctions {
 				private static final long serialVersionUID = -1848883965231344442L;
 			};
 
+	public static VncFunction io_bytebuf_in_stream =
+		new VncFunction(
+				"io/bytebuf-in-stream",
+				VncFunction
+					.meta()
+					.arglists("(io/bytebuf-in-stream)")
+					.doc("Returns a Java InputStream from a bytebuf.")
+					.examples(
+						"(io/bytebuf-in-stream (bytebuf [97 98 99]))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+	
+				final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+	
+				try {
+					return new VncJavaObject(new ByteArrayInputStream(buf.array()));
+				}
+				catch(Exception ex) {
+					throw new VncException(String.format(
+							"Failed to create a :java.io.InputStream from a bytebuf"));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_wrap_os_with_buffered_writer =
 		new VncFunction(
 				"io/wrap-os-with-buffered-writer",
@@ -2553,6 +2582,7 @@ public class IOFunctions {
 					.add(io_slurp_stream)
 					.add(io_spit_stream)
 					.add(io_uri_stream)
+					.add(io_bytebuf_in_stream)
 					.add(io_wrap_os_with_buffered_writer)
 					.add(io_wrap_os_with_print_writer)
 					.add(io_wrap_is_with_buffered_reader)

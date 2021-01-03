@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -486,7 +487,8 @@ public class Zipper {
 	public static void zipFileOrDir(
 			final File zip,
 			final List<File> sourceFileOrDirs, 
-			final FilenameFilter filter
+			final FilenameFilter filter,
+			final Function<File,InputStream> mapper
 	) {
 		if (zip == null) {
 			throw new IllegalArgumentException("A 'zip' must not be null");
@@ -496,7 +498,7 @@ public class Zipper {
 		}
 
 		try (FileOutputStream fos = new FileOutputStream(zip)) {
-			zipFileOrDir(fos, sourceFileOrDirs, filter);
+			zipFileOrDir(fos, sourceFileOrDirs, filter, mapper);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -506,7 +508,8 @@ public class Zipper {
 	public static void zipFileOrDir(
 			final OutputStream os, 
 			final List<File> sourceFileOrDirs, 
-			final FilenameFilter filter
+			final FilenameFilter filter,
+			final Function<File,InputStream> mapper
 	) {
 		if (os == null) {
 			throw new IllegalArgumentException("An 'os' must not be null");
@@ -519,10 +522,10 @@ public class Zipper {
 			try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
 				for(File f : sourceFileOrDirs) {
 					if (f.isDirectory()) {
-						zipFile(f, f.getName(), filter, zipOut);
+						zipFile(f, f.getName(), filter, mapper, zipOut);
 					}
 					else if (f.isFile()) {
-						zipFile(f, f.getName(), filter, zipOut);
+						zipFile(f, f.getName(), filter, mapper, zipOut);
 					}
 				}
 			}
@@ -775,6 +778,7 @@ public class Zipper {
 			final File fileToZip, 
 			final String fileName, 
 			final FilenameFilter filter, 
+			final Function<File,InputStream> mapper,
 			final ZipOutputStream zipOut
 	) throws IOException {
 		final Path path = fileToZip.toPath();		
@@ -795,16 +799,20 @@ public class Zipper {
 			
 			final File[] children = fileToZip.listFiles();
 			for (File childFile : children) {
-				zipFile(childFile, name + childFile.getName(), filter, zipOut);
+				zipFile(childFile, name + childFile.getName(), filter, mapper, zipOut);
 			}
 		}
 		else if (fileToZip.isFile()) {
 			if (filter == null || filter.accept(fileToZip.getParentFile(), fileToZip.getName())) {
-				try (FileInputStream fis = new FileInputStream(fileToZip)) {
+				final InputStream is = mapper != null 
+										? mapper.apply(fileToZip)
+										: new FileInputStream(fileToZip);
+				
+				try (InputStream is_ = is) {
 					final ZipEntry zipEntry = new ZipEntry(fileName);
 					zipEntry.setMethod(ZipEntry.DEFLATED);
 					zipOut.putNextEntry(zipEntry);		
-					IOStreamUtil.copy(new FileInputStream(fileToZip), zipOut);
+					IOStreamUtil.copy(is_, zipOut);
 					zipOut.closeEntry();
 				}
 			}
