@@ -48,7 +48,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.io.Zipper;
+import com.github.jlangch.venice.impl.util.io.zip.GZipper;
+import com.github.jlangch.venice.impl.util.io.zip.Zipper;
 
 
 public class ZipFunctions {
@@ -911,20 +912,20 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(f)) {
-						return new VncByteBuffer(Zipper.gzip(((VncByteBuffer)f).getBytes()));
+						return new VncByteBuffer(GZipper.gzip(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						return new VncByteBuffer(Zipper.gzip(file));
+						return new VncByteBuffer(GZipper.gzip(file));
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						return new VncByteBuffer(Zipper.gzip(file));
+						return new VncByteBuffer(GZipper.gzip(file));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						return new VncByteBuffer(Zipper.gzip((InputStream)((VncJavaObject)f).getDelegate()));
+						return new VncByteBuffer(GZipper.gzip((InputStream)((VncJavaObject)f).getDelegate()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -973,23 +974,23 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(f)) {
-						Zipper.gzip(((VncByteBuffer)f).getBytes(), os);
+						GZipper.gzip(((VncByteBuffer)f).getBytes(), os);
 						return Nil;
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						Zipper.gzip(file);
+						GZipper.gzip(file);
 						return Nil;
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						Zipper.gzip(file);
+						GZipper.gzip(file);
 						return Nil;
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						Zipper.gzip((InputStream)((VncJavaObject)f).getDelegate(), os);
+						GZipper.gzip((InputStream)((VncJavaObject)f).getDelegate(), os);
 						return Nil;
 					}
 					else {
@@ -1033,20 +1034,20 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(f)) {
-						return new VncByteBuffer(Zipper.ungzip(((VncByteBuffer)f).getBytes()));
+						return new VncByteBuffer(GZipper.ungzip(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						return new VncByteBuffer(Zipper.ungzip(file));
+						return new VncByteBuffer(GZipper.ungzip(file));
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						return new VncByteBuffer(Zipper.ungzip(file));
+						return new VncByteBuffer(GZipper.ungzip(file));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						return new VncByteBuffer(Zipper.ungzip((InputStream)((VncJavaObject)f).getDelegate()));
+						return new VncByteBuffer(GZipper.ungzip((InputStream)((VncJavaObject)f).getDelegate()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -1090,7 +1091,7 @@ public class ZipFunctions {
 						return Nil;
 					}
 					else if (Types.isVncByteBuffer(buf)) {
-						return new VncJavaObject(Zipper.ungzipToStream(((VncByteBuffer)buf).getBytes()));
+						return new VncJavaObject(GZipper.ungzipToStream(((VncByteBuffer)buf).getBytes()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -1187,20 +1188,20 @@ public class ZipFunctions {
 					final VncVal f = args.first();
 
 					if (Types.isVncByteBuffer(f)) {
-						return VncBoolean.of(Zipper.isGZipFile(((VncByteBuffer)f).getBytes()));
+						return VncBoolean.of(GZipper.isGZipFile(((VncByteBuffer)f).getBytes()));
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						return VncBoolean.of(Zipper.isGZipFile(file));
+						return VncBoolean.of(GZipper.isGZipFile(file));
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						return VncBoolean.of(Zipper.isGZipFile(file));
+						return VncBoolean.of(GZipper.isGZipFile(file));
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						return VncBoolean.of(Zipper.isGZipFile((InputStream)((VncJavaObject)f).getDelegate()));
+						return VncBoolean.of(GZipper.isGZipFile((InputStream)((VncJavaObject)f).getDelegate()));
 					}
 					else {
 						throw new VncException(String.format(

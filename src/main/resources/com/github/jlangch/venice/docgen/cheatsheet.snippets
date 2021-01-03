@@ -90,9 +90,9 @@ public class Example {
        
       // => OK (constructor & instance method)
       venice.eval(
-          "(doto (. :java.util.ArrayList :new)  " +
-          "      (. :add 1)                     " +
-          "      (. :add 2))                    ");
+          "(doto (. :java.util.ArrayList :new)  \n" +
+          "      (. :add 1)  \n" +
+          "      (. :add 2))  ");
       
       // => FAIL (invoking non whitelisted static method)
       venice.eval("(. :java.lang.System :exit 0)"); 

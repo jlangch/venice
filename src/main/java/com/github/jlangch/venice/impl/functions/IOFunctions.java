@@ -356,9 +356,9 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/exists-file? f)")
-					.doc("Returns true if the file f exists. f must be a file or a string (file path).")
+					.doc("Returns true if the file f exists and is a file. f must be a file or a string (file path).")
 					.examples("(io/exists-file? \"/tmp/test.txt\")")
-					.seeAlso("io/exists-dir?")
+					.seeAlso("io/exists-dir?", "io/file-symbolic-link?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -386,7 +386,7 @@ public class IOFunctions {
 						"Returns true if the file f exists and is a directory. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/exists-dir? (io/file \"/temp\"))")
-					.seeAlso("io/exists-file?")
+					.seeAlso("io/exists-file?", "io/file-symbolic-link?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -414,7 +414,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and can be read. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-read? \"/tmp/test.txt\")")
-					.seeAlso("io/file-can-write?", "io/file-can-execute?", "io/file-hidden?")
+					.seeAlso("io/file-can-write?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -440,7 +440,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and can be written. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-write? \"/tmp/test.txt\")")
-					.seeAlso("io/file-can-read?", "io/file-can-execute?", "io/file-hidden?")
+					.seeAlso("io/file-can-read?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -466,7 +466,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and can be executed. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-can-execute? \"/tmp/test.txt\")")
-					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-hidden?")
+					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-hidden?", "io/file-symbolic-link?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -492,7 +492,7 @@ public class IOFunctions {
 						"Returns true if the file or directory f exists and is hidden. " +
 						"f must be a file or a string (file path).")
 					.examples("(io/file-hidden? \"/tmp/test.txt\")")
-					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+					.seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?", "io/file-symbolic-link?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -503,6 +503,34 @@ public class IOFunctions {
 									"Function 'io/file-hidden?' does not allow %s as x");
 
 				return VncBoolean.of((f.isFile() || f.isDirectory()) && f.isHidden());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_symbolicl_link_Q =
+		new VncFunction(
+				"io/file-symbolic-link?",
+				VncFunction
+					.meta()
+					.arglists("(io/file-symbolic-link? f)")
+					.doc(
+						"Returns true if the file f exists and is a symbolic link. " +
+						"f must be a file or a string (file path).")
+					.examples("(io/file-symbolic-link? \"/tmp/test.txt\")")
+					.seeAlso("io/file-hidden?", "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final File f = convertToFile(
+									args.first(),
+									"Function 'io/symbolic-link?' does not allow %s as x");
+
+				final Path p = f.toPath();
+				
+				return VncBoolean.of(Files.isSymbolicLink(p));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2497,6 +2525,7 @@ public class IOFunctions {
 					.add(io_file_can_write_Q)
 					.add(io_file_can_execute_Q)
 					.add(io_file_hidden_Q)
+					.add(io_file_symbolicl_link_Q)
 					.add(io_await_for)	
 					.add(io_watch_dir)
 					.add(io_close_watcher)

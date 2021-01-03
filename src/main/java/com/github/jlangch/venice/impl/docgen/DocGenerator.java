@@ -1429,6 +1429,7 @@ public class DocGenerator {
 		file_test.addItem(getDocItem("io/file-can-write?", false));
 		file_test.addItem(getDocItem("io/file-can-execute?", false));
 		file_test.addItem(getDocItem("io/file-hidden?", false));
+		file_test.addItem(getDocItem("io/file-symbolic-link?", false));
 
 		final DocSection file_watch = new DocSection("file watch", "io.filewatch");
 		all.addSection(file_watch);

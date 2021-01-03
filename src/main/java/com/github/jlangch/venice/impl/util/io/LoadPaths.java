@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
