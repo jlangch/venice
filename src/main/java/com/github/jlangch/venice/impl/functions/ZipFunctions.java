@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -47,10 +48,13 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.io.zip.GZipper;
+import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttr;
+import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttrPrinter;
 import com.github.jlangch.venice.impl.util.io.zip.Zipper;
 
 
@@ -719,10 +723,12 @@ public class ZipFunctions {
 					.meta()
 					.arglists("(io/zip-list f & options)")
 					.doc(
-						"List the content of a the zip f. f may be a bytebuf, a file, " +
-						"a string (file path), or an InputStream. \n" +
+						"List the content of a the zip f and prints it to the current " +
+						"value of *out*. f may be a bytebuf, a file, " +
+						"a string (file path), or an InputStream. \n\n" +
 						"Options: \n" +
-						"  :verbose true/false - e.g :verbose true, defaults to false")
+						"  :verbose true/false - e.g :verbose true, defaults to false" +
+						"  :print true/false - e.g :print true, defaults to true")
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
 						"(io/zip-list \"test-file.zip\" :verbose true)")
@@ -731,7 +737,7 @@ public class ZipFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 1);
-
+						
 				sandboxFunctionCallValidation();
 
 				try {
@@ -740,22 +746,31 @@ public class ZipFunctions {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 
 					final boolean verbose = VncBoolean.isTrue(options.get(new VncKeyword("verbose")));
+					final boolean print = !VncBoolean.isFalse(options.get(new VncKeyword("print")));
+
+					// Use the current stdout
+					final PrintStream ps = ThreadLocalMap.getStdOut();
+					final ZipEntryAttrPrinter printer = print 
+															? new ZipEntryAttrPrinter(ps, verbose)
+															: ZipEntryAttrPrinter.nullPrinter();
+
+					final List<ZipEntryAttr> entryAttrs;
 
 					if (Types.isVncByteBuffer(f)) {
-						Zipper.listZip(((VncByteBuffer)f).getBytes(), System.out, verbose);
+						entryAttrs = Zipper.listZip(((VncByteBuffer)f).getBytes(), printer);
 					}
 					else if (Types.isVncJavaObject(f, File.class)) {
 						final File file = (File)((VncJavaObject)f).getDelegate();
 						validateReadableFile(file);
-						Zipper.listZip(file, System.out, verbose);
+						entryAttrs = Zipper.listZip(file, printer);
 					}
 					else if (Types.isVncString(f)) {
 						final File file = new File(Coerce.toVncString(f).getValue());
 						validateReadableFile(file);
-						Zipper.listZip(file, System.out, verbose);
+						entryAttrs = Zipper.listZip(file, printer);
 					}
 					else if (Types.isVncJavaObject(f, InputStream.class)) {
-						Zipper.listZip(Coerce.toVncJavaObject(f, InputStream.class), System.out, verbose);
+						entryAttrs = Zipper.listZip(Coerce.toVncJavaObject(f, InputStream.class), printer);
 					}
 					else {
 						throw new VncException(String.format(
@@ -763,7 +778,13 @@ public class ZipFunctions {
 								Types.getType(f)));
 					}
 
-					return Nil;
+					return print
+							? Nil
+							: VncList.ofColl(
+								entryAttrs
+									.stream()
+									.map(e -> e.toVncMap())
+									.collect(Collectors.toList()));
 				}
 				catch (Exception ex) {
 					throw new VncException(ex.getMessage(), ex);
@@ -1284,7 +1305,6 @@ public class ZipFunctions {
 			throw new VncException(String.format("'%s' has no read permission", file.getPath()));
 		}
 	}
-
 
 
 	///////////////////////////////////////////////////////////////////////////

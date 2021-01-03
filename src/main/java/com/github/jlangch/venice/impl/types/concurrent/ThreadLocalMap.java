@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.types.concurrent;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.PrintStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +34,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
 
 public class ThreadLocalMap {
@@ -222,6 +225,19 @@ public class ThreadLocalMap {
 	public static ThreadLocalMap get() {
 		return ThreadLocalMap.context.get();
 	}
+
+	public static PrintStream getStdOut() {
+		return Coerce.toVncJavaObject(peek(new VncKeyword(":*out*")), PrintStream.class);
+	}
+
+	public static PrintStream getStdErr() {
+		return Coerce.toVncJavaObject(peek(new VncKeyword(":*err*")), PrintStream.class);
+	}
+
+	public static Reader getStdIn() {
+		return Coerce.toVncJavaObject(peek(new VncKeyword(":*in*")), Reader.class);
+	}
+
 	
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
 		to.clear();

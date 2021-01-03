@@ -30,17 +30,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -537,44 +532,41 @@ public class Zipper {
 		}
 	}
 
-	public static void listZip(final byte[] binary, final PrintStream ps, final boolean verbose) {
+	public static List<ZipEntryAttr> listZip(final byte[] binary, final ZipEntryAttrPrinter printer) {
 		if (binary == null) {
 			throw new IllegalArgumentException("A 'binary' must not be null");
 		}
 
 		try (ByteArrayInputStream is = new ByteArrayInputStream(binary)) {
-			listZip(is, ps, verbose);
+			return listZip(is, printer);
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
 
-	public static void listZip(final File zip, final PrintStream ps, final boolean verbose) {
+	public static List<ZipEntryAttr> listZip(final File zip, final ZipEntryAttrPrinter printer) {
 		if (zip == null) {
 			throw new IllegalArgumentException("A 'zip' must not be null");
 		}
 
 		try (FileInputStream fis = new FileInputStream(zip)) {
-			listZip(fis, ps, verbose);
+			return listZip(fis, printer);
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
 	}
 
-	public static void listZip(final InputStream is, final PrintStream ps, final boolean verbose) {
+	public static List<ZipEntryAttr> listZip(final InputStream is, final ZipEntryAttrPrinter printer) {
 		if (is == null) {
 			throw new IllegalArgumentException("An 'is' must not be null");
 		}
 
+		final List<ZipEntryAttr> entryAttrs = new ArrayList<>();
+		
 		try {
-			printZipListLineHead(ps, verbose);
-			printZipListLineDelim(ps, verbose);
-
-			long totCount = 0L;
-			long totSize = 0L;
-			long totCompressedSize = 0L;
+			printer.start();
 			
 			final ZipInputStream zis = new ZipInputStream(is);
 			
@@ -586,27 +578,26 @@ public class Zipper {
 
 				// close the entry first to get the entry's data available
 				zis.closeEntry();
-
-				final long size = entry.isDirectory() ? 0 : entry.getSize();
-				final long compressedSize = entry.isDirectory() ? 0 : entry.getCompressedSize();
 				
-				totCount++;
-				totSize += Math.max(0, size);
-				totCompressedSize += Math.max(0, compressedSize);
-	
-		    	printZipListLine(
-		    			ps, verbose, size, entry.getMethod(), compressedSize, 
-		    			entry.getLastModifiedTime(), entry.getCrc(), entry.getName());
+				final ZipEntryAttr entryAttr = new ZipEntryAttr(
+														entry.getName(),
+														entry.isDirectory(),
+														entry.getMethod() == 0 ? "Stored" : "Defl:N",
+														entry.isDirectory() ? 0 : entry.getSize(),
+														entry.isDirectory() ? 0 : entry.getCompressedSize(),
+														entry.getLastModifiedTime(),
+														entry.getCrc());
+				
+				entryAttrs.add(entryAttr);
+
+				printer.print(entryAttr);
 			}
+			
 			zis.close();
 
-			printZipListLineDelim(ps, verbose);
-	    	
-			printZipListLine(
-	    			ps, verbose, 
-	    			totSize, null, totCompressedSize,
-	    			null, null, 
-	    			totCount == 1 ? "1 file" : String.format("%d files", totCount));
+			printer.end();
+			
+			return entryAttrs;
 		} 
 		catch (IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -867,70 +858,6 @@ public class Zipper {
 		}
     }
  
-    private static void printZipListLine(
-    		final PrintStream ps, 
-    		final boolean verbose,
-    		final long size, 
-    		final Integer method,
-    		final long compressedSize,
-    		final FileTime time,
-    		final Long crc,
-    		final String name
-    ) {
-		final String sCompression = String.valueOf(compressionPercentage(size, compressedSize)) + "%";
-
-		final String sMethod = method == null ? "" : (method == 0 ? "Stored" : "Defl:N");
-
-		final String sTime = time == null
-								? "-"
-								: LocalDateTime
-									.ofInstant(time.toInstant(), ZoneOffset.UTC)
-									.format(ziplist_formatter);
-
-		final String sCrc = crc == null ? "" : (crc == -1 ? "-" : String.format("%08X", crc & 0xFFFFFFFF));
-
-    	printZipListLine(
-    			ps, verbose, String.valueOf(size), sMethod, 
-    			String.valueOf(compressedSize), 
-    			sCompression, sTime, sCrc, name);
-    }
-
-    private static void printZipListLine(
-    		final PrintStream ps, 
-    		final boolean verbose,
-    		final String length, 
-    		final String method,
-    		final String size,
-    		final String compression,
-    		final String time,
-    		final String crc,
-    		final String name
-    ) {
-    	if (verbose) {
-        	ps.println(String.format(ziplist_format, length, method, size, compression, time, crc, name));
-    	}
-    	else {
-        	ps.println(String.format(ziplist_format_short, length, time, name));
-    	}
-    }
-
-    private static void printZipListLineHead(final PrintStream ps, final boolean verbose) {
-    	printZipListLine(
-    			ps, verbose, 
-    			"Length", "Method", "Size", "Cmpr", "Date/Time", "CRC-32", "Name");
-    }
-
-    private static void printZipListLineDelim(final PrintStream ps, final boolean verbose) {
-    	printZipListLine(
-    			ps, verbose, 
-    			"----------", "------", "----------", "----", "----------------", "--------", "----");
-    }
-    
-    private static long compressionPercentage(final long size, final long compressedSize) {
-    	return (size <= 0 || compressedSize <= 0)
-    				? 0L
-    				: ((size - compressedSize) * 100L + (size / 2L)) / size;
-    }
     
     private static void deletePath(Path p) {
 		try {
@@ -940,11 +867,7 @@ public class Zipper {
 			throw new RuntimeException(ex.getMessage(), ex);
 		}
     }
-
-    
-    private static final String ziplist_format = "%10s  %6s  %10s  %4s  %16s  %8s  %s";
-    private static final String ziplist_format_short = "%10s  %16s %s";
-	private static final DateTimeFormatter ziplist_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+ 
   
 	public static final int ZIP_HEADER = 0x504b0304;
 }
