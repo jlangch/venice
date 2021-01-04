@@ -1972,7 +1972,7 @@ public class DocGenerator {
 					id(name));
 		}
 		else {
-			throw new RuntimeException(String.format("Unknown function %s", name));
+			throw new RuntimeException(String.format("Unknown doc function %s", name));
 		}
 	}
 
@@ -2160,7 +2160,7 @@ public class DocGenerator {
 	}
 
 	private VncFunction getFunction(final String name) {
-		final VncVal val = env.get(new VncSymbol(name));
+		final VncVal val = env.getOrNil(new VncSymbol(name));
 		return Types.isVncFunction(val) ? (VncFunction)val : null;
 	}
 

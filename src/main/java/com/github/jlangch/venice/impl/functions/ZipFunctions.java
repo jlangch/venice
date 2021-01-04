@@ -739,7 +739,7 @@ public class ZipFunctions {
 						"or an InputStream. Returns nil in print mode otherwise returns " +
 						"a list with attributes for each zip file entry. \n\n" +
 						"Options: \n" +
-						"  :verbose true/false - print verbose output, defaults to false" +
+						"  :verbose true/false - print verbose output, defaults to false \n" +
 						"  :print true/false - print the entries to *out*, defaults to true")
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
@@ -1153,7 +1153,7 @@ public class ZipFunctions {
 						"Returns true if f is a zipped file. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream")
 					.examples(
-						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) " +
+						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
 						"    (io/zip?))")
 					.seeAlso("io/zip")
 					.build()

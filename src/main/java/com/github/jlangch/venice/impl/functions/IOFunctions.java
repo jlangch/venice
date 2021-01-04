@@ -316,7 +316,7 @@ public class IOFunctions {
 					.examples(
 						"(io/file-ext? \"/tmp/test/x.txt\" \"txt\")",
 						"(io/file-ext? (io/file \"/tmp/test/x.txt\") \".txt\")")
-					.seeAlso("(io/file-ext")
+					.seeAlso("io/file-ext")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -347,7 +347,7 @@ public class IOFunctions {
 						"(io/file-ext \"some.txt\")",
 						"(io/file-ext \"/tmp/test/some.txt\")",
 						"(io/file-ext \"/tmp/test/some\")")
-					.seeAlso("(io/file-ext?")
+					.seeAlso("io/file-ext?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
