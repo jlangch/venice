@@ -272,7 +272,7 @@
           "(if-not (== 1 2) 100 0)",
           "(if-not false 100)",
           "(if-not true 100)")
-     :see-also '("if" "when-not")  }
+     :see-also '("if" "if-let" "when" "when-not" "when-let")  }
 
   if-not
 
@@ -284,7 +284,7 @@
   ^{ :arglists '("(when test & body)")
      :doc "Evaluates test. If logical true, evaluates body in an implicit do."
      :examples '("(when (== 1 1) true)")
-     :see-also '("when-not" "if") }
+     :see-also '("when-not" "when-let" "if" "if-not" "if-let") }
 
   when [test & body]
 
@@ -295,7 +295,7 @@
   ^{ :arglists '("(when-not test & body)")
      :doc "Evaluates test. If logical false, evaluates body in an implicit do."
      :examples '("(when-not (== 1 2) true)")
-     :see-also '("when" "if-not") }
+     :see-also '("when" "when-let" "if" "if-not" "if-let") }
 
   when-not [test & body]
 
@@ -334,7 +334,7 @@
             (str "The expression is true. value=" value)
             (str "The expression is false."))
           """ )
-     :see-also '("when-let") }
+     :see-also '("when-let" "let") }
 
   if-let
 
@@ -361,7 +361,7 @@
           (when-let [value (* 100 2)]
             (str "The expression is true. value=" value))
           """ )
-     :see-also '("if-let") }
+     :see-also '("if-let" "let") }
 
   when-let [bindings & body]
 

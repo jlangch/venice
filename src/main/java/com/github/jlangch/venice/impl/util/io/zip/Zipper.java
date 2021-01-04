@@ -812,7 +812,7 @@ public class Zipper {
 		}
 		else if (fileToZip.isFile()) {
 			if (filter == null || filter.accept(fileToZip.getParentFile(), fileToZip.getName())) {
-				InputStream is = mapper.apply(fileToZip);
+				InputStream is = mapper == null ? null : mapper.apply(fileToZip);
 
 				ps.println("  adding: " + fileName + (is == null ? "" : "  (mapped)"));
 				

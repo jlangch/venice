@@ -846,7 +846,7 @@ public class SpecialFormsDoc {
 						"(if (< 10 20) \"yes\" \"no\")",
 						"(if true \"yes\")",
 						"(if false \"yes\")")
-					.seeAlso("if-not", "when")
+					.seeAlso("if-let", "if-not", "when", "when-not", "when-let")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -873,6 +873,7 @@ public class SpecialFormsDoc {
 						"     (println \"height: \" height)      \n" +
 						"     (println \"title: \" title)        \n" +
 						"     (println \"styles: \" styles))       ")
+					.seeAlso("if-let", "when-let")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
