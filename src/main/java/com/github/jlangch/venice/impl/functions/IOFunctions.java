@@ -316,6 +316,7 @@ public class IOFunctions {
 					.examples(
 						"(io/file-ext? \"/tmp/test/x.txt\" \"txt\")",
 						"(io/file-ext? (io/file \"/tmp/test/x.txt\") \".txt\")")
+					.seeAlso("(io/file-ext")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -327,6 +328,37 @@ public class IOFunctions {
 
 				final String ext = Coerce.toVncString(args.second()).getValue();
 				return VncBoolean.of(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_file_ext =
+		new VncFunction(
+				"io/file-ext",
+				VncFunction
+					.meta()
+					.arglists(
+						"(io/file-ext f)")
+					.doc(
+						"Returns the file extension of a file. " +
+						"f must be a file or a string (file path).")
+					.examples(
+						"(io/file-ext \"some.txt\")",
+						"(io/file-ext \"/tmp/test/some.txt\")",
+						"(io/file-ext \"/tmp/test/some\")")
+					.seeAlso("(io/file-ext?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final File f = convertToFile(
+									args.first(),
+									"Function 'io/file-ext' does not allow %s as f");
+
+				final String ext = FileUtil.getFileExt(f.getName());
+				return ext == null ? Nil : new VncString(ext);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2546,6 +2578,7 @@ public class IOFunctions {
 					.add(io_file_parent)
 					.add(io_file_name)
 					.add(io_file_ext_Q)
+					.add(io_file_ext)
 					.add(io_file_size)
 					.add(io_file_last_modified)
 					.add(io_exists_file_Q)

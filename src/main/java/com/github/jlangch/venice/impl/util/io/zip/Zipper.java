@@ -30,6 +30,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -488,7 +489,8 @@ public class Zipper {
 			final File zip,
 			final List<File> sourceFileOrDirs, 
 			final FilenameFilter filter,
-			final Function<File,InputStream> mapper
+			final Function<File,InputStream> mapper,
+			final PrintStream ps
 	) {
 		if (zip == null) {
 			throw new IllegalArgumentException("A 'zip' must not be null");
@@ -498,7 +500,7 @@ public class Zipper {
 		}
 
 		try (FileOutputStream fos = new FileOutputStream(zip)) {
-			zipFileOrDir(fos, sourceFileOrDirs, filter, mapper);
+			zipFileOrDir(fos, sourceFileOrDirs, filter, mapper, ps);
 		}
 		catch(IOException ex) {
 			throw new RuntimeException(ex.getMessage(), ex);
@@ -509,7 +511,8 @@ public class Zipper {
 			final OutputStream os, 
 			final List<File> sourceFileOrDirs, 
 			final FilenameFilter filter,
-			final Function<File,InputStream> mapper
+			final Function<File,InputStream> mapper,
+			final PrintStream ps
 	) {
 		if (os == null) {
 			throw new IllegalArgumentException("An 'os' must not be null");
@@ -520,12 +523,14 @@ public class Zipper {
 
 		try {
 			try (ZipOutputStream zipOut = new ZipOutputStream(os)) {
+				ps.println("Output:");
+
 				for(File f : sourceFileOrDirs) {
 					if (f.isDirectory()) {
-						zipFile(f, f.getName(), filter, mapper, zipOut);
+						zipFile(f, f.getName(), filter, mapper, ps, zipOut);
 					}
 					else if (f.isFile()) {
-						zipFile(f, f.getName(), filter, mapper, zipOut);
+						zipFile(f, f.getName(), filter, mapper, ps, zipOut);
 					}
 				}
 			}
@@ -779,6 +784,7 @@ public class Zipper {
 			final String fileName, 
 			final FilenameFilter filter, 
 			final Function<File,InputStream> mapper,
+			final PrintStream ps,
 			final ZipOutputStream zipOut
 	) throws IOException {
 		final Path path = fileToZip.toPath();		
@@ -790,6 +796,8 @@ public class Zipper {
 									? fileName
 									: fileName + "/";
 			
+			ps.println("  adding: " + name);
+			
 			final ZipEntry e = new ZipEntry(name);
 			e.setMethod(ZipEntry.STORED);
 			e.setSize(0);
@@ -799,15 +807,17 @@ public class Zipper {
 			
 			final File[] children = fileToZip.listFiles();
 			for (File childFile : children) {
-				zipFile(childFile, name + childFile.getName(), filter, mapper, zipOut);
+				zipFile(childFile, name + childFile.getName(), filter, mapper, ps, zipOut);
 			}
 		}
 		else if (fileToZip.isFile()) {
 			if (filter == null || filter.accept(fileToZip.getParentFile(), fileToZip.getName())) {
-				final InputStream is = mapper != null 
-										? mapper.apply(fileToZip)
-										: new FileInputStream(fileToZip);
+				InputStream is = mapper.apply(fileToZip);
+
+				ps.println("  adding: " + fileName + (is == null ? "" : "  (mapped)"));
 				
+				is = is == null ? new FileInputStream(fileToZip) : is;
+
 				try (InputStream is_ = is) {
 					final ZipEntry zipEntry = new ZipEntry(fileName);
 					zipEntry.setMethod(ZipEntry.DEFLATED);

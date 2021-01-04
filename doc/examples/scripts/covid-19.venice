@@ -91,10 +91,27 @@
   (defn normalize-population [p]
     (/ p (double population-norm)))
 
-  (defn parse-date [date]
+  (defn parse-date [year date]
     ;; convert "Feb 02 to "2020 Feb 02" and parse it
-    (time/local-date-parse (str "2020 " date) "yyyy MMM dd" :ENGLISH))
+    (time/local-date-parse (str year " " date) "yyyy MMM dd" :ENGLISH))
 
+  (defn parse-days [days]
+    ;; ("Feb 15","Feb 16",...,"Aug 28","Aug 29")
+    ;; map without year rollover:  (map #(parse-date 2020 %) days))
+    (loop [days days, year 2020, dates '()]
+      (if (empty? days)
+         dates
+         (let [day      (first days)
+               date     (parse-date year day)
+               rollover (and (= year 2020) (= (time/month date) 1))
+               date     (if rollover
+                          (parse-date 2021 day) ; year rollover to 2021
+                          date)]
+           (recur (rest days) (time/year date) (conj dates date))))))
+
+  (defn parse-daily-cases [cases]
+    ;; ("0","0",...,"215","186","143","1212)
+    (map long cases))
 
   (defn extract-html-daily-cases-section [html]
     ;; extract the daily cases section from HTML page (javascript)
@@ -105,26 +122,24 @@
          (butlast)))
 
   (defn extract-days [data]
-    ;;  categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]   },
+    ;;  """categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]   },"""
     (as-> data <>
           (filter #(str/contains? % "categories: [") <>)
           (first <>)
           (regex/find-all (regex/matcher """["][A-Za-z0-9 ]+["]""" <>))
-          (map str/double-unquote <>)
-          (map parse-date <>)))
+          (map str/double-unquote <>)))
 
   (defn extract-daily-cases [data]
-    ;; data: [null,0,0,0,0,0,1,3,4,...,215,186,143,121]   },
+    ;; """data: [null,0,0,0,0,0,1,3,4,...,215,186,143,121]   },"""
     (as-> data <>
           (filter #(str/contains? % "data: [") <>)
           (first <>)
           (str/replace-all <> "null" "0")
-          (regex/find-all (regex/matcher "\\d+" <>))
-          (map long <>)))
+          (regex/find-all (regex/matcher "\\d+" <>))))
 
   (defn parse-cases [country html-cases-section]
-    (->> (map vector (extract-days html-cases-section)
-                     (extract-daily-cases html-cases-section))
+    (->> (map vector (parse-days (extract-days html-cases-section))
+                     (parse-daily-cases (extract-daily-cases html-cases-section)))
          (filter #(time/within? (first %) start-date end-date))))
 
   (defn process-sample [country population data]

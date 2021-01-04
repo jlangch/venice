@@ -25,8 +25,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -59,6 +57,7 @@ import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttr;
 import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttrPrinter;
 import com.github.jlangch.venice.impl.util.io.zip.Zipper;
+import com.github.jlangch.venice.util.NullOutputStream;
 
 
 public class ZipFunctions {
@@ -628,22 +627,31 @@ public class ZipFunctions {
 						"files and does not follow symbolic links. The zip-file my be " +
 						"a file, a string (file path) or an OutputStream. \n\n" +
 						"Options: \n" +
-						"  :filter-fn fn - a predicate function that filters the files \n" +
-						"                  to be added to the zip. \n" +
-						"  :mapper-fn fn - a mapper function that can map the file content \n" +
-						"                  of a file before it gets zipped. Returns nil or \n" +
-						"                  a :java.io.InputStream. The real file is used \n" +
-						"                  when nil is returned.")
+						"  :filter-fn fn      - a predicate function that filters the files \n" +
+						"                       to be added to the zip. \n" +
+						"  :mapper-fn fn      - a mapper function that can map the file content \n" +
+						"                       of a file before it gets zipped. Returns nil or \n" +
+						"                       a :java.io.InputStream. The real file is used \n" +
+						"                       when nil is returned. \n" +
+						"  :silent true/false - if false prints the added entries to *out*, \n" +
+						"                       defaults to false")
 					.examples(
 						"; zip files\n" +
 						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
 
-						"; zip all files in a directory\n" +
+						"; zip all files from a directory\n" +
 						"(io/zip-file \"test.zip\" \"dir\")",
 
+						"; zip all files in from two directories\n" +
+						"(io/zip-file \"test.zip\" \"dirA\" \"dirB\")",
+
+						"; zip all files in from two directories and print the added entries\n" +
+						"(io/zip-file :silent false \"test.zip\" \"dirA\" \"dirB\")",
+
+						"; zip all *.txt files from a directory\n" +
 						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))  \n" +
 						"             \"test.zip\" \n" +
-						"             \"test-dir\")")
+						"             \"dir\")")
 					.seeAlso("io/zip")
 					.build()
 		) {
@@ -667,40 +675,41 @@ public class ZipFunctions {
 
 				// files
 				final VncList files = args.slice(ii);
+				final List<File> filesToZip = new ArrayList<>();
+				files.forEach(f -> {
+					final File file = convertToFile(f, "Function 'io/zip-file' does not allow %s as file");
+					validateReadableFileOrDirectory(file);
+					filesToZip.add(file);
+				});
 
-				// parse filter
+				// option: silent
+				final boolean silent = !VncBoolean.isFalse(options.get(new VncKeyword("silent")));
+
+				// option: file filter
 				final VncVal filterFnVal = options.get(new VncKeyword("filter-fn"));
 				final VncFunction filterFn = filterFnVal == Nil ? null : Coerce.toVncFunction(filterFnVal);
 				final FilenameFilter filter = buildFilenameFilterFunction(filterFn);
 
-				// parse mapper
+				// option: file mapper
 				final VncVal mapperFnVal = options.get(new VncKeyword("mapper-fn"));
 				final VncFunction mapperFn = mapperFnVal == Nil ? null : Coerce.toVncFunction(mapperFnVal);
 				final Function<File,InputStream> mapper = buildMapperFunction(mapperFn);
 
-				// parse files
-				final List<File> filesToZip = new ArrayList<>();
-				files.forEach(f -> {
-					final File file = convertToFile(
-											f, "Function 'io/zip-file' does not allow %s as file");
-
-					validateReadableFileOrDirectory(file);
-
-					filesToZip.add(file);
-				});
+				final PrintStream ps = silent ? new PrintStream(new NullOutputStream(), true)
+				                              : ThreadLocalMap.getStdOut();
 
 				try {
 					if (Types.isVncJavaObject(dest, File.class)) {
 						Zipper.zipFileOrDir(
-								Coerce.toVncJavaObject(dest, File.class), filesToZip, filter, mapper);
+								Coerce.toVncJavaObject(dest, File.class), filesToZip, filter, mapper, ps);
 					}
 					else if (Types.isVncString(dest)) {
 						Zipper.zipFileOrDir(
-								new File(Coerce.toVncString(dest).getValue()), filesToZip, filter, mapper);
+								new File(Coerce.toVncString(dest).getValue()), filesToZip, filter, mapper, ps);
 					}
 					else if (Types.isVncJavaObject(dest, OutputStream.class)) {
 						Zipper.zipFileOrDir(
-								Coerce.toVncJavaObject(dest, OutputStream.class), filesToZip, filter, mapper);
+								Coerce.toVncJavaObject(dest, OutputStream.class), filesToZip, filter, mapper, ps);
 					}
 					else {
 						throw new VncException(String.format(
@@ -726,11 +735,12 @@ public class ZipFunctions {
 					.arglists("(io/zip-list f & options)")
 					.doc(
 						"List the content of a the zip f and prints it to the current " +
-						"value of *out*. f may be a bytebuf, a file, " +
-						"a string (file path), or an InputStream. \n\n" +
+						"value of *out*. f may be a bytebuf, a file, a string (file path), " +
+						"or an InputStream. Returns nil in print mode otherwise returns " +
+						"a list with attributes for each zip file entry. \n\n" +
 						"Options: \n" +
-						"  :verbose true/false - e.g :verbose true, defaults to false" +
-						"  :print true/false - e.g :print true, defaults to true")
+						"  :verbose true/false - print verbose output, defaults to false" +
+						"  :print true/false - print the entries to *out*, defaults to true")
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
 						"(io/zip-list \"test-file.zip\" :verbose true)")
@@ -1327,18 +1337,11 @@ public class ZipFunctions {
 						public InputStream apply(File file) {
 							final VncVal ret = mapperFn.apply(VncList.of(new VncJavaObject(file)));
 							if (ret == Nil) {
-								try {
-									return new FileInputStream(file);
-								}
-								catch(FileNotFoundException ex) {
-									throw new VncException(String.format(
-											"Function 'io/zip-file' the file '%s' does not exist." +
-											file.getPath()));
-								}
+								return null;
 							}
 							else {
-								VncJavaObject jRet = Coerce.toVncJavaObject(ret);
-								Object jis = jRet.getDelegate();
+								final VncJavaObject jRet = Coerce.toVncJavaObject(ret);
+								final Object jis = jRet.getDelegate();
 								if (jis instanceof InputStream) {
 									return (InputStream)jis;
 								}
