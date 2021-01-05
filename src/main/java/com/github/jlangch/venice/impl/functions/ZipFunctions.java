@@ -634,7 +634,15 @@ public class ZipFunctions {
 						"                       a :java.io.InputStream. The real file is used \n" +
 						"                       when nil is returned. \n" +
 						"  :silent true/false - if false prints the added entries to *out*, \n" +
-						"                       defaults to false")
+						"                       defaults to false\n\n" +
+						"Example: \n" +
+						"  venice> (io/zip-file :silent false \"test.zip\" \"dirA\" \"dirB\")\n" +
+						"  Output:\n" +
+						"    adding: dirA/\n" +
+						"    adding: dirA/a1.png\n" +
+						"    adding: dirA/a2.png\n" +
+						"    adding: dirB/\n" +
+						"    adding: dirB/b1.png")
 					.examples(
 						"; zip files\n" +
 						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
@@ -732,7 +740,7 @@ public class ZipFunctions {
 				"io/zip-list",
 				VncFunction
 					.meta()
-					.arglists("(io/zip-list f & options)")
+					.arglists("(io/zip-list options* f)")
 					.doc(
 						"List the content of a the zip f and prints it to the current " +
 						"value of *out*. f may be a bytebuf, a file, a string (file path), " +
@@ -740,10 +748,35 @@ public class ZipFunctions {
 						"a list with attributes for each zip file entry. \n\n" +
 						"Options: \n" +
 						"  :verbose true/false - print verbose output, defaults to false \n" +
-						"  :print true/false - print the entries to *out*, defaults to true")
+						"  :print true/false - print the entries to *out*, defaults to true\n\n" +
+						"Example: \n" +
+						"  venice> (io/zip-list \"test.zip\")\n" +
+						"    Length         Date/Time Name\n" +
+						"  --------  ---------------- -------------\n" +
+						"         0  2021-01-05 10:32 dirA/\n" +
+						"    309977  2021-01-05 10:32 dirA/a1.png\n" +
+						"    309977  2021-01-05 10:32 dirA/a2.png\n" +
+						"         0  2021-01-05 10:32 dirB/\n" +
+						"    309977  2021-01-05 10:32 dirB/b1.png\n" +
+						"  --------  ---------------- -------------\n" +
+						"    929931                   5 files\n" +
+						"  => nil\n\n" +
+						"  venice> (io/zip-list :verbose true \"test.zip\")\n" +
+						"    Length  Method      Size  Cmpr         Date/Time    CRC-32  Name\n" +
+						"  --------  ------  --------  ----  ----------------  --------  -------------\n" +
+						"         0  Stored         0    0%  2021-01-05 10:32  00000000  dirA/\n" +
+						"    309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirA/a1.png\n" +
+						"    309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirA/a2.png\n" +
+						"         0  Stored         0    0%  2021-01-05 10:32  00000000  dirB/\n" +
+						"    309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirB/b1.png\n" +
+						"  --------  ------  --------  ----  ----------------  --------  -------------\n" +
+						"    929931    null    893073    4%                              5 files\n" +
+						"  => nil\n\n" +
+						"  venice> (io/zip-list :print false \"test.zip\")\n" +
+						"  => ({:size 0 :method \"Stored\" :name \"dirA/\" ...} ...)")
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
-						"(io/zip-list \"test-file.zip\" :verbose true)")
+						"(io/zip-list :verbose true \"test-file.zip\")")
 					.seeAlso("io/zip-list-entry-names", "io/zip", "io/unzip")
 				.build()
 		) {
@@ -753,9 +786,18 @@ public class ZipFunctions {
 				sandboxFunctionCallValidation();
 
 				try {
-					final VncVal f = args.first();
+					int ii = 0;
 
-					final VncHashMap options = VncHashMap.ofAll(args.rest());
+					// read options
+					VncHashMap options = new VncHashMap();
+					while (Types.isVncKeyword(args.nth(ii))) {
+						final VncVal optName = args.nth(ii++);
+						final VncVal optVal = args.nth(ii++);
+						options = options.assoc(optName, optVal);
+					}
+
+					// destination zip
+					final VncVal f = args.last();
 
 					final boolean verbose = VncBoolean.isTrue(options.get(new VncKeyword("verbose")));
 					final boolean print = !VncBoolean.isFalse(options.get(new VncKeyword("print")));

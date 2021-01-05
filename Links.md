@@ -19,6 +19,11 @@
 [My task… what’s wrong with your Gradle task?](https://blog.softwaremill.com/my-task-whats-wrong-with-your-gradle-task-82312100c595)
 
 
+### Gitpod
+
+[Gitpodifying — The Ultimate Guide](https://www.gitpod.io/blog/gitpodify/)
+
+
 ### Java 9 Modules
 
 [Java 8 with module info (1)](https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle)
