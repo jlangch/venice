@@ -14,7 +14,7 @@ and this project adheres to
 ### Added
 
 - improvements to documentation
-- protocol options for `io/zip-file` and `io/zip-list`
+- options for `io/zip-file` and `io/zip-list` to print progress to `*out*`
 - an optional *mapper* to `io/zip-file` to simplify the creation of
   anonymized archive files
 
