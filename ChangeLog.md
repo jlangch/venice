@@ -17,6 +17,7 @@ and this project adheres to
 - options for `io/zip-file` and `io/zip-list` to print progress to `*out*`
 - an optional *mapper* to `io/zip-file` to simplify the creation of
   anonymized archive files
+- function `ip-private?` to test for private IP addresses like 192.168.170.181
 
 ### Fixed
 

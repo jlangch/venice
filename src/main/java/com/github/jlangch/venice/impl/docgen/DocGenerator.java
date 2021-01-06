@@ -1088,6 +1088,7 @@ public class DocGenerator {
 		all.addSection(host);
 		host.addItem(getDocItem("host-name"));
 		host.addItem(getDocItem("host-address"));
+		host.addItem(getDocItem("ip-private?"));
 		host.addItem(getDocItem("cpus"));
 
 		final DocSection util = new DocSection("Util", "system.util");

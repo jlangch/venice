@@ -416,6 +416,7 @@ public class RegexFunctions {
 						"    (println (regex/find m))                   \n" +
 						"    (let [m (regex/reset m \"200\")]           \n" +
 						"      (println (regex/find m)))))" )
+					.seeAlso("regex/matcher")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

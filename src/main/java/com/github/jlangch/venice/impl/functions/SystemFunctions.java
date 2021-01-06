@@ -476,6 +476,38 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction ip_private_Q =
+		new VncFunction(
+				"ip-private?",
+				VncFunction
+					.meta()
+					.arglists("(ip-private? addr)")
+					.doc(
+						"Returns true if the IP address is private. \n\n" +
+						"IP addresses reserved for private networks: \n" +
+						"  192.168.0.0 - 192.168.255.255\n" +
+						"  172.16.0.0 - 172.31.255.255\n" +
+						"  10.0.0.0 - 10.255.255.255")
+					.examples("(ip-private? \"192.168.170.181\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				try {
+					return VncBoolean.of(
+						InetAddress
+							.getByName(Coerce.toVncString(args.first()).getValue())
+							.isSiteLocalAddress());
+				}
+				catch(Exception ex) {
+					throw new VncException("function ip-private? failed", ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction gc =
 		new VncFunction(
 				"gc",
@@ -1133,6 +1165,7 @@ public class SystemFunctions {
 					.add(pid)
 					.add(host_name)
 					.add(host_address)
+					.add(ip_private_Q)
 					.add(gc)
 					.add(cpus)
 					.add(shutdown_hook)
