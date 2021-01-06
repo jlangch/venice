@@ -58,6 +58,7 @@ public class RegexFunctions {
 						.arglists("(regex/pattern s)")		
 						.doc("Returns an instance of java.util.regex.Pattern.")
 						.examples("(regex/pattern \"[0-9]+\")")
+						.seeAlso("regex/matcher", "regex/matches")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
@@ -85,6 +86,9 @@ public class RegexFunctions {
 						"(regex/matcher \"[0-9]+\" \"100\")",
 						"(let [p (regex/pattern \"[0-9]+\")] \n" +
 						"   (regex/matcher p \"100\"))")
+					.seeAlso(
+						"regex/pattern", "regex/matches?", "regex/find?", "regex/matches?", 
+						"regex/reset", "regex/find", "regex/find-all")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -112,9 +116,20 @@ public class RegexFunctions {
 						"If the match succeeds then more information can be obtained via " +
 						"the regex/group function")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\")  \n" +
-						"      m (regex/matcher p \"100\")]  \n" +
-						"   (regex/find? m))")
+						"(let [m (regex/matcher \"[0-9]+\" \"100\")] \n" +
+						"  (regex/find? m))",
+						
+						"(let [m (regex/matcher \"[0-9]+\" \"xxx: 100\")] \n" +
+						"  (regex/find? m))",
+						
+						"(let [m (regex/matcher \"[0-9]+\" \"xxx: 100 200\")] \n" +
+						"  (when (regex/find? m) \n" +
+						"    (println (regex/group m 0))) \n" +
+						"  (when (regex/find? m) \n" +
+						"    (println (regex/group m 0))) \n" +
+						"  (when (regex/find? m) \n" +
+						"    (println (regex/group m 0))))")
+					.seeAlso("regex/group")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -135,24 +150,50 @@ public class RegexFunctions {
 					.meta()
 					.arglists("(regex/matches pattern str)")		
 					.doc(
-						"Returns the match, if any, of string to pattern, using " + 
-						"java.util.regex.Matcher.matches(). Returns a list with the " + 
-						"groups. \n\n" +
-						"Returns matching details as meta data and groups list and items: \n" +
-						"Group: \n" +
-						"   :start       start pos of the group\n" +
-						"   :end         end pos of the group\n" +
-						"   :group-count the number of elements in the group\n" +
-						"Group element: \n" +
-						"   :start       start pos of the element\n" +
-						"   :end         end pos of the element\n")
+						"Returns the matches, if any, for the matcher with the pattern of a " + 
+						"string, using java.util.regex.Matcher.matches(). \n" +
+						"If the matcher's pattern matches the entire region sequence returns a " +
+						"list with the entire region sequence and the matched groups otherwise " +
+						"returns an empty list. \n\n" +
+						"Returns matching info as meta data on the region and the groups: \n" +
+						"Region meta data: \n" +
+						"   :start       start pos of the overall group\n" +
+						"   :end         end pos of the overall group\n" +
+						"   :group-count the number of matched elements groups\n" +
+						"Group meta data: \n" +
+						"   :start       start pos of the element group\n" +
+						"   :end         end pos of the element group\n")
 					.examples(
+						";; Entire region sequence matched \n" +
 						"(regex/matches \"hello, (.*)\" \"hello, world\")",
-						
+
+						";; Entire region sequence not matched \n" +
+						"(regex/matches \"HEllo, (.*)\" \"hello, world\")",
+
+						";; Matching multiple groups\n" +
 						"(regex/matches \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\" \"672-345-456-212\")",
 						
+						";; Matching multiple groups\n" +
 						"(let [p (regex/pattern \"([0-9]+)-([0-9]+)\")]\n" +
-						"  (regex/matches p \"672-345\"))")
+						"  (regex/matches p \"672-345\"))",
+					
+						";; Access matcher's region meta info \n" +
+						"(let [pattern \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\" \n" +
+						"      matches (regex/matches pattern \"672-345-456-212\")] \n" +
+						"   (println \"meta info:\" (pr-str (meta matches))) \n" +
+						"   (println \"matches:  \" (pr-str matches)))",
+						
+						";; Access matcher's region meta info and the meta info of each group \n" +
+						"(let [pattern \"([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)\" \n" +
+						"      matches (regex/matches pattern \"672-345-456-212\")] \n" +
+						"  (println \"region info:   \" (pr-str (meta matches))) \n" +
+						"  (println \"group count:   \" (count matches) \"(region included)\") \n" +
+						"  (println \"group matches: \" (pr-str (nth matches 0)) (meta (nth matches 0))) \n" +
+						"  (println \"               \" (pr-str (nth matches 1)) (meta (nth matches 1))) \n" +
+						"  (println \"               \" (pr-str (nth matches 2)) (meta (nth matches 2))) \n" +
+						"  (println \"               \" (pr-str (nth matches 3)) (meta (nth matches 3))) \n" +
+						"  (println \"               \" (pr-str (nth matches 4)) (meta (nth matches 4))))")
+					.seeAlso("regex/pattern")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -205,7 +246,7 @@ public class RegexFunctions {
 					.examples(
 						"(let [p (regex/pattern \"[0-9]+\")  \n" +
 						"      m (regex/matcher p \"100\")]  \n" +
-						"   (regex/matches? m))")
+						"  (regex/matches? m))")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -225,14 +266,28 @@ public class RegexFunctions {
 				VncFunction
 					.meta()
 					.arglists("(regex/find matcher)")		
-					.doc("Returns the next regex match")
+					.doc(
+						"Returns the next regex match or nil if there is no further match.\n\n" +
+						"The returned group carries the group info as meta data: \n" +
+						"Group meta data: \n" +
+						"   :start    start pos of the group\n" +
+						"   :end      end pos of the group\n")
 					.examples(
 						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
-						"   (println (regex/find m))                               \n" +
-						"   (println (regex/find m))                               \n" +
-						"   (println (regex/find m))                               \n" +
-						"   (println (regex/find m))                               \n" +
-						"   (println (regex/find m)))                              \n")
+						"  (println (regex/find m)) \n" +
+						"  (println (regex/find m)) \n" +
+						"  (println (regex/find m)) \n" +
+						"  (println (regex/find m)) \n" +
+						"  (println (regex/find m)))",
+						
+						";; Access the group's meta info \n" +
+						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+						"  (loop [g (regex/find m)]              \n" +
+						"    (if (nil? g)                       \n" +
+						"      (println nil)                    \n" +
+						"      (do                              \n" +
+						"        (println g (pr-str (meta g)))  \n" +
+						"        (recur (regex/find m)))))) ")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -240,7 +295,11 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				if (m.find()) {
-					return new VncString(m.group());
+					final VncMap meta = VncHashMap.of(
+											new VncKeyword("start"), new VncLong(m.start()),
+											new VncKeyword("end"),   new VncLong(m.end()));
+
+					return new VncString(m.group(), meta);
 				}
 				else {
 					return Nil;
@@ -352,10 +411,11 @@ public class RegexFunctions {
 					.doc(
 						"Resets the matcher with a new string")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\")  \n" +
-						"      m1 (regex/matcher p \"100\")  \n" +
-						"      m2 (regex/reset m1 \"200\")]  \n" +
-						"   (regex/find? m2))                  ")
+						"(do  \n" +
+						"  (let [m (regex/matcher \"[0-9]+\" \"100\")]  \n" +
+						"    (println (regex/find m))                   \n" +
+						"    (let [m (regex/reset m \"200\")]           \n" +
+						"      (println (regex/find m)))))" )
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
