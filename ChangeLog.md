@@ -18,6 +18,11 @@ and this project adheres to
 - an optional *mapper* to `io/zip-file` to simplify the creation of
   anonymized archive files
 
+### Fixed
+
+- fixed the function `total-memory` to return the correct value for the total
+  memory available to the JVM
+
 
 
 ## [1.9.8] - 2021-01-01

@@ -100,7 +100,7 @@ public class ZipFunctions {
 						"(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)      \n" +
 						"             \"z/\" nil)                                         \n" +
 						"     (io/spit \"test.zip\"))                                       ")
-					.seeAlso("io/unzip", "io/gzip", "io/spit", "io/zip-list", "io/zip-list-entry-names", "io/zip-file", "io/zip-append", "io/zip-remove")
+					.seeAlso("io/zip-file", "io/unzip", "io/gzip", "io/spit", "io/zip-list", "io/zip-list-entry-names", "io/zip-append", "io/zip-remove")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -313,7 +313,7 @@ public class ZipFunctions {
 						"a file, a string (file path) or an InputStream.")
 					.examples(
 						"(io/zip-size (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)))")
-					.seeAlso("io/zip")
+					.seeAlso("io/zip-file","io/zip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -660,7 +660,7 @@ public class ZipFunctions {
 						"(io/zip-file :filter-fn (fn [dir name] (str/ends-with? name \".txt\"))  \n" +
 						"             \"test.zip\" \n" +
 						"             \"dir\")")
-					.seeAlso("io/zip")
+					.seeAlso("io/zip", "io/zip-list")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -777,7 +777,7 @@ public class ZipFunctions {
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
 						"(io/zip-list :verbose true \"test-file.zip\")")
-					.seeAlso("io/zip-list-entry-names", "io/zip", "io/unzip")
+					.seeAlso("io/zip-list-entry-names", "io/zip-file", "io/zip", "io/unzip")
 				.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1197,7 +1197,7 @@ public class ZipFunctions {
 					.examples(
 						"(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
 						"    (io/zip?))")
-					.seeAlso("io/zip")
+					.seeAlso("io/zip-file", "io/zip")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

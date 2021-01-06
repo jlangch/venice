@@ -998,9 +998,9 @@ public class SystemFunctions {
 
 			    System.gc();		    
 			    final Runtime rt = Runtime.getRuntime();
-			    double usedMB = (rt.totalMemory() - rt.freeMemory()) / 1024.0D / 1024.0D;
+			    double totalMB = rt.totalMemory() / 1024.0D / 1024.0D;
 			    
-			    return new VncString(String.format("%.1fMB", usedMB));
+			    return new VncString(String.format("%.1fMB", totalMB));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
