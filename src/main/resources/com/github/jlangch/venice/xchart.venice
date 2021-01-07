@@ -28,15 +28,28 @@
 
 
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; Requires XChart 3.7.0+
+;; XChart 3.7.0
 ;;
-;; Previous versions don't work because of an incompatible XChart API change
-;; introduced with version 3.7.0
+;; XChart 3.7.0 introduced incompatible changes
 ;;
 ;;  - Class org.knowm.xchart.style.Styler$CardinalPosition
 ;;    (previous org.knowm.xchart.style.Styler$LegendPosition)
 ;;  - Theme classes are in package org.knowm.xchart.style.theme
 ;;    (previous package org.knowm.xchart.style)
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;; Requires XChart 3.8.0
+;;
+;; XChart 3.8.0 introduced incompatible changes
+;;
+;; Previous versions don't work because of an incompatible XChart API change
+;; introduced with version 3.8.0
+;;
+;;  - Class org.knowm.xchart.style.Styler$LegendPosition
+;;    (previous org.knowm.xchart.style.Styler$CardinalPosition)
+;;  - Enum org.knowm.xchart.style.AxesChartStyler$TextAlignment
+;;    (previously in org.knowm.xchart.style.Styler$TextAlignment)
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 (ns xchart)
@@ -66,10 +79,10 @@
 (import :org.knowm.xchart.style.PieStyler)
 (import :org.knowm.xchart.style.RadarStyler)
 (import :org.knowm.xchart.style.XYStyler)
-(import :org.knowm.xchart.style.Styler$CardinalPosition)
+(import :org.knowm.xchart.style.Styler$LegendPosition)
 (import :org.knowm.xchart.style.Styler$LegendLayout)
-(import :org.knowm.xchart.style.Styler$TextAlignment)
 (import :org.knowm.xchart.style.Styler$YAxisPosition)
+(import :org.knowm.xchart.style.AxesChartStyler$TextAlignment)
 (import :org.knowm.xchart.style.PieStyler$AnnotationType)
 (import :org.knowm.xchart.style.theme.GGPlot2Theme)
 (import :org.knowm.xchart.style.theme.MatlabTheme)
@@ -306,19 +319,19 @@
 
 
 (def xchart/text-alignments
-   { :centre  (. :Styler$TextAlignment :Centre)
-     :left    (. :Styler$TextAlignment :Left)
-     :right   (. :Styler$TextAlignment :Right) })
+   { :centre  (. :AxesChartStyler$TextAlignment :Centre)
+     :left    (. :AxesChartStyler$TextAlignment :Left)
+     :right   (. :AxesChartStyler$TextAlignment :Right) })
 
 
 (def xchart/legend-positions
-   { :inside-n   (. :Styler$CardinalPosition :InsideN)
-     :inside-ne  (. :Styler$CardinalPosition :InsideNE)
-     :inside-nw  (. :Styler$CardinalPosition :InsideNW)
-     :inside-se  (. :Styler$CardinalPosition :InsideSE)
-     :inside-sw  (. :Styler$CardinalPosition :InsideSW)
-     :outside-e  (. :Styler$CardinalPosition :OutsideE)
-     :outside-s  (. :Styler$CardinalPosition :OutsideS) })
+   { :inside-n   (. :Styler$LegendPosition :InsideN)
+     :inside-ne  (. :Styler$LegendPosition :InsideNE)
+     :inside-nw  (. :Styler$LegendPosition :InsideNW)
+     :inside-se  (. :Styler$LegendPosition :InsideSE)
+     :inside-sw  (. :Styler$LegendPosition :InsideSW)
+     :outside-e  (. :Styler$LegendPosition :OutsideE)
+     :outside-s  (. :Styler$LegendPosition :OutsideS) })
 
 
 (def xchart/legend-layout

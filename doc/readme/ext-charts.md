@@ -2,7 +2,7 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
-- org.knowm.xchart:xchart:3.7.0
+- org.knowm.xchart:xchart:3.8.0
 
 Examples:
 
@@ -14,9 +14,9 @@ Examples:
 - [Pie Chart](#pie-chart)
 - [Download Libraries](#download-required-3rd-party-libs)
 
-**Note:** Due to an incompatible API change in the XChart 3.7.0 Java library, 
-the Venice 1.9.8+ :xchart module does not work with XChart versions lower than 
-3.7.0!
+**Note:** Due to an incompatible API change in the XChart 3.8.0 Java library, 
+the Venice 1.9.10+ :xchart module does not work with XChart versions lower than 
+3.8.0!
 
 
 ## Line Chart
@@ -306,6 +306,6 @@ the Venice 1.9.8+ :xchart module does not work with XChart versions lower than
 (do
   (load-module :maven)
   
-  (maven/download "org.knowm.xchart:xchart:3.7.0"))
+  (maven/download "org.knowm.xchart:xchart:3.8.0"))
 ```
 

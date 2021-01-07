@@ -11,10 +11,11 @@ and this project adheres to
 
 ## [1.9.10] - 2021-01-xx
 
-### Added
+### Changed
 
-- ...
-
+- XChart dependency to version 3.8.0 (due to an incompatible API change in the 
+  XChart 3.8.0 Java library, Venice 1.9.10+ does not work with earlier XChart 
+  versions!)
 
 
 ## [1.9.9] - 2021-01-07
@@ -55,7 +56,7 @@ and this project adheres to
 ### Changed
 
 - XChart dependency to version 3.7.0 (due to an incompatible API change in the 
-  XChart 3.7.0 Java library, Venice 1.9.8+ do not work with earlier XChart 
+  XChart 3.7.0 Java library, Venice 1.9.8+ does not work with earlier XChart 
   versions!)
 
 
