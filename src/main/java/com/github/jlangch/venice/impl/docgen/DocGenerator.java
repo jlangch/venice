@@ -936,16 +936,16 @@ public class DocGenerator {
 		all.addSection(general);
 		general.addItem(getDocItem("regex/pattern"));
 		general.addItem(getDocItem("regex/matcher"));
-		general.addItem(getDocItem("regex/find"));
-		general.addItem(getDocItem("regex/find-all"));
-		general.addItem(getDocItem("regex/find-group"));
-		general.addItem(getDocItem("regex/find-all-groups"));
 		general.addItem(getDocItem("regex/reset"));
-		general.addItem(getDocItem("regex/find?"));
-		general.addItem(getDocItem("regex/matches"));
 		general.addItem(getDocItem("regex/matches?"));
+		general.addItem(getDocItem("regex/matches"));
 		general.addItem(getDocItem("regex/group"));
 		general.addItem(getDocItem("regex/groupcount"));
+		general.addItem(getDocItem("regex/find?"));
+		general.addItem(getDocItem("regex/find"));
+		general.addItem(getDocItem("regex/find-all"));
+		general.addItem(getDocItem("regex/find+"));
+		general.addItem(getDocItem("regex/find-all+"));
 
 		return section;
 	}

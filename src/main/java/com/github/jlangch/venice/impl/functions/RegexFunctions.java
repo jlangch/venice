@@ -105,31 +105,22 @@ public class RegexFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction find_Q = 
+	public static VncFunction matches_Q = 
 		new VncFunction(
-				"regex/find?", 
+				"regex/matches?", 
 				VncFunction
 					.meta()
-					.arglists("(regex/find? matcher)")		
+					.arglists("(regex/matches? matcher)")		
 					.doc(
-						"Attempts to find the next subsequence that matches the pattern. " +
-						"If the match succeeds then more information can be obtained via " +
-						"the regex/group function")
+						"Attempts to match the entire region against the pattern. " +
+						"If the match succeeds then more information can be obtained " +
+						"via the regex/group function")
 					.examples(
-						"(let [m (regex/matcher \"[0-9]+\" \"100\")] \n" +
-						"  (regex/find? m))",
-						
-						"(let [m (regex/matcher \"[0-9]+\" \"xxx: 100\")] \n" +
-						"  (regex/find? m))",
-						
-						"(let [m (regex/matcher \"[0-9]+\" \"xxx: 100 200\")] \n" +
-						"  (when (regex/find? m) \n" +
-						"    (println (regex/group m 0))) \n" +
-						"  (when (regex/find? m) \n" +
-						"    (println (regex/group m 0))) \n" +
-						"  (when (regex/find? m) \n" +
-						"    (println (regex/group m 0))))")
-					.seeAlso("regex/group")
+						"(let [m (regex/matcher \"[0-9]+\" \"100\")]  \n" +
+						"  (regex/matches? m))",
+						"(let [m (regex/matcher \"[0-9]+\" \"value: 100\")]  \n" +
+						"  (regex/matches? m))")
+					.seeAlso("regex/matcher", "regex/matches")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -137,7 +128,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
-				return VncBoolean.of(m.find());
+				return VncBoolean.of(m.matches());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -233,20 +224,31 @@ public class RegexFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction matches_Q = 
+	public static VncFunction find_Q = 
 		new VncFunction(
-				"regex/matches?", 
+				"regex/find?", 
 				VncFunction
 					.meta()
-					.arglists("(regex/matches? matcher)")		
+					.arglists("(regex/find? matcher)")		
 					.doc(
-						"Attempts to match the entire region against the pattern. " +
-						"If the match succeeds then more information can be obtained " +
-						"via the regex/group function")
+						"Attempts to find the next subsequence that matches the pattern. " +
+						"If the match succeeds then more information can be obtained via " +
+						"the regex/group function")
 					.examples(
-						"(let [p (regex/pattern \"[0-9]+\")  \n" +
-						"      m (regex/matcher p \"100\")]  \n" +
-						"  (regex/matches? m))")
+						"(let [m (regex/matcher \"[0-9]+\" \"100\")] \n" +
+						"  (regex/find? m))",
+						
+						"(let [m (regex/matcher \"[0-9]+\" \"xxx: 100\")] \n" +
+						"  (regex/find? m))",
+						
+						"(let [m (regex/matcher \"[0-9]+\" \"xxx: 100 200\")] \n" +
+						"  (when (regex/find? m) \n" +
+						"    (println (regex/group m 0))) \n" +
+						"  (when (regex/find? m) \n" +
+						"    (println (regex/group m 0))) \n" +
+						"  (when (regex/find? m) \n" +
+						"    (println (regex/group m 0))))")
+					.seeAlso("regex/group", "regex/matches?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -254,7 +256,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 	
-				return VncBoolean.of(m.matches());
+				return VncBoolean.of(m.find());
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -267,27 +269,16 @@ public class RegexFunctions {
 					.meta()
 					.arglists("(regex/find matcher)")		
 					.doc(
-						"Returns the next regex match or nil if there is no further match.\n\n" +
-						"The returned group carries the group info as meta data: \n" +
-						"Group meta data: \n" +
-						"   :start    start pos of the group\n" +
-						"   :end      end pos of the group\n")
+						"Returns the next regex match or nil if there is no further match. \n\n" +
+						"To get the positional data for the matched group use 'regex/find+'.")
 					.examples(
 						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
-						"  (println (regex/find m)) \n" +
-						"  (println (regex/find m)) \n" +
-						"  (println (regex/find m)) \n" +
-						"  (println (regex/find m)) \n" +
-						"  (println (regex/find m)))",
-						
-						";; Access the group's meta info \n" +
-						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
-						"  (loop [g (regex/find m)]              \n" +
-						"    (if (nil? g)                       \n" +
-						"      (println nil)                    \n" +
-						"      (do                              \n" +
-						"        (println g (pr-str (meta g)))  \n" +
-						"        (recur (regex/find m)))))) ")
+						"  (println (regex/find m))  \n" +
+						"  (println (regex/find m))  \n" +
+						"  (println (regex/find m))  \n" +
+						"  (println (regex/find m))  \n" +
+						"  (println (regex/find m)))")
+					.seeAlso("regex/find-all", "regex/find+", "regex/matcher")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -295,11 +286,7 @@ public class RegexFunctions {
 	
 				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
 				if (m.find()) {
-					final VncMap meta = VncHashMap.of(
-											new VncKeyword("start"), new VncLong(m.start()),
-											new VncKeyword("end"),   new VncLong(m.end()));
-
-					return new VncString(m.group(), meta);
+					return new VncString(m.group());
 				}
 				else {
 					return Nil;
@@ -309,49 +296,23 @@ public class RegexFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction find_all = 
+	public static VncFunction find_plus = 
 		new VncFunction(
-				"regex/find-all", 
+				"regex/find+", 
 				VncFunction
 					.meta()
-					.arglists("(regex/find-all matcher)")		
-					.doc("Returns all regex matches")
-					.examples(
-						"(->> (regex/matcher \"\\\\d+\" \"672-345-456-3212\") \n" +
-						"     (regex/find-all))                                 ",
-						"(->> (regex/matcher \"([^\\\"]\\\\S*|\\\".+?\\\")\\\\s*\" \"1 2 \\\"3 4\\\" 5\") \n" +
-						"     (regex/find-all))                                 "
-						)
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
-	
-				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
-				final List<VncVal> matches = new ArrayList<>();
-				while (m.find()) {
-					matches.add(new VncString(m.group()));
-				}
-				return VncList.ofList(matches);
-			}
-	
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction find_group = 
-		new VncFunction(
-				"regex/find-group", 
-				VncFunction
-					.meta()
-					.arglists("(regex/find-group matcher)")		
-					.doc("Returns the next regex match and returns the group")
+					.arglists("(regex/find+ matcher)")		
+					.doc(
+						"Returns the next regex match and returns the group with " +
+						"its positional data.")
 					.examples(
 						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
-						"   (println (regex/find-group m))                         \n" +
-						"   (println (regex/find-group m))                         \n" +
-						"   (println (regex/find-group m))                         \n" +
-						"   (println (regex/find-group m))                         \n" +
-						"   (println (regex/find-group m)))                        \n")
+						"   (println (regex/find+ m))  \n" +
+						"   (println (regex/find+ m))  \n" +
+						"   (println (regex/find+ m))  \n" +
+						"   (println (regex/find+ m))  \n" +
+						"   (println (regex/find+ m))) \n")
+					.seeAlso("regex/find-all+", "regex/find", "regex/matcher")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -372,35 +333,70 @@ public class RegexFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-		public static VncFunction find_all_groups = 
-			new VncFunction(
-					"regex/find-all-groups", 
-					VncFunction
-						.meta()
-						.arglists("(regex/find-all-groups matcher)")		
-						.doc("Returns the all regex matches and returns the groups")
-						.examples(
-							"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
-							"  (regex/find-all-groups m))                              \n")
-						.build()
-			) {		
-				public VncVal apply(final VncList args) {
-					ArityExceptions.assertArity(this, args, 1);
-		
-					final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
-					final List<VncVal> groups = new ArrayList<>();
-					while (m.find()) {
-						groups.add(
-								VncHashMap.of(
-									new VncKeyword("start"), new VncLong(m.start()),
-									new VncKeyword("end"),  new VncLong(m.end()),
-									new VncKeyword("group"), new VncString(m.group())));
-					}
-					return VncList.ofList(groups);
+	public static VncFunction find_all = 
+		new VncFunction(
+				"regex/find-all", 
+				VncFunction
+					.meta()
+					.arglists("(regex/find-all matcher)")		
+					.doc(
+						"Returns all regex matches.\n\n" +
+						"To get the positional data for the matched groups use 'regex/find-all+'.")
+					.examples(
+						"(->> (regex/matcher \"\\\\d+\" \"672-345-456-3212\") \n" +
+						"     (regex/find-all))                                 ",
+						"(->> (regex/matcher \"([^\\\"]\\\\S*|\\\".+?\\\")\\\\s*\" \"1 2 \\\"3 4\\\" 5\") \n" +
+						"     (regex/find-all))                                 ")
+					.seeAlso("regex/find", "regex/find-all+", "regex/matcher")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+	
+				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();		
+				final List<VncVal> matches = new ArrayList<>();
+				while (m.find()) {
+					matches.add(new VncString(m.group()));
 				}
-		
-				private static final long serialVersionUID = -1848883965231344442L;
-			};
+				return VncList.ofList(matches);
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
+	public static VncFunction find_all_plus = 
+		new VncFunction(
+				"regex/find-all+", 
+				VncFunction
+					.meta()
+					.arglists("(regex/find-all+ matcher)")		
+					.doc(
+						"Returns the all regex matches and returns the groups " +
+						"with its positional data")
+					.examples(
+						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+						"  (regex/find-all+ m))  \n")
+					.seeAlso("regex/find+", "regex/find-all", "regex/matcher")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+	
+				final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+				final List<VncVal> groups = new ArrayList<>();
+				while (m.find()) {
+					groups.add(
+							VncHashMap.of(
+								new VncKeyword("start"), new VncLong(m.start()),
+								new VncKeyword("end"),  new VncLong(m.end()),
+								new VncKeyword("group"), new VncString(m.group())));
+				}
+				return VncList.ofList(groups);
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	public static VncFunction reset = 
 		new VncFunction(
@@ -503,8 +499,8 @@ public class RegexFunctions {
 					.add(matcher)
 					.add(find)
 					.add(find_all)
-					.add(find_group)
-					.add(find_all_groups)
+					.add(find_plus)
+					.add(find_all_plus)
 					.add(reset)
 					.add(find_Q)
 					.add(matches)
