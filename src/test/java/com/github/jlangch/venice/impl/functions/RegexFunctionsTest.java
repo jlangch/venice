@@ -177,7 +177,7 @@ public class RegexFunctionsTest {
 		final String script =
 				"(let [p (regex/pattern \"([0-9]+)(.*)\")  \n" +
 				"      m (regex/matcher p \"100abc\")]     \n" +
-				"   (regex/groupcount m))                    ";
+				"   (regex/count m))                         ";
 		
 		assertEquals(2L, venice.eval(script));
 	}

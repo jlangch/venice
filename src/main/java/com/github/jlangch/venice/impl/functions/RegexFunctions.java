@@ -58,7 +58,7 @@ public class RegexFunctions {
 						.arglists("(regex/pattern s)")		
 						.doc("Returns an instance of java.util.regex.Pattern.")
 						.examples("(regex/pattern \"[0-9]+\")")
-						.seeAlso("regex/matcher", "regex/matches")
+						.seeAlso("regex/matcher", "regex/matches", "regex/find", "regex/find-all")
 						.build()
 			) {		
 				public VncVal apply(final VncList args) {
@@ -87,8 +87,8 @@ public class RegexFunctions {
 						"(let [p (regex/pattern \"[0-9]+\")] \n" +
 						"   (regex/matcher p \"100\"))")
 					.seeAlso(
-						"regex/pattern", "regex/matches?", "regex/find?", "regex/matches?", 
-						"regex/reset", "regex/find", "regex/find-all")
+						"regex/pattern", "regex/matches?", "regex/find?", "regex/reset", 
+						"regex/matches", "regex/find", "regex/find-all")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -442,6 +442,7 @@ public class RegexFunctions {
 						"   (if (regex/matches? m)                     \n" +
 						"      [(regex/group m 1) (regex/group m 2)]   \n" +
 						"      []))                                      ")
+					.seeAlso("regex/matcher", "regex/matches?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -462,18 +463,19 @@ public class RegexFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
-	public static VncFunction groupcount = 
+	public static VncFunction count = 
 		new VncFunction(
-				"regex/groupcount", 
+				"regex/count", 
 				VncFunction
 					.meta()
-					.arglists("(regex/groupcount matcher)")		
+					.arglists("(regex/count matcher)")		
 					.doc(
 						"Returns the matcher's group count.")
 					.examples(
 						"(let [p (regex/pattern \"([0-9]+)(.*)\")  \n" +
 						"      m (regex/matcher p \"100abc\")]     \n" +
-						"   (regex/groupcount m))                    ")
+						"   (regex/count m))  ")
+					.seeAlso("regex/matcher")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -506,6 +508,6 @@ public class RegexFunctions {
 					.add(matches)
 					.add(matches_Q)
 					.add(group)
-					.add(groupcount)
+					.add(count)
 					.toMap();	
 }

@@ -940,7 +940,7 @@ public class DocGenerator {
 		general.addItem(getDocItem("regex/matches?"));
 		general.addItem(getDocItem("regex/matches"));
 		general.addItem(getDocItem("regex/group"));
-		general.addItem(getDocItem("regex/groupcount"));
+		general.addItem(getDocItem("regex/count"));
 		general.addItem(getDocItem("regex/find?"));
 		general.addItem(getDocItem("regex/find"));
 		general.addItem(getDocItem("regex/find-all"));

@@ -9,7 +9,7 @@ and this project adheres to
 
 
 
-## [1.9.9] - 2021-02-xx
+## [1.9.9] - 2021-01-07
 
 ### Added
 
@@ -23,6 +23,12 @@ and this project adheres to
 
 - fixed the function `total-memory` to return the correct value for the total
   memory available to the JVM
+
+### Changed
+
+- Refactored regex API regarding find functions returning positional group
+  information and improved doc. `find-group` renamed to `find+`, 
+  `find-all-groups` renamed to `find-all+`.
 
 
 
