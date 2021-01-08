@@ -1020,7 +1020,7 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(total-memory)")
-					.doc("Returns the total amount of memory in the the Java VM.")
+					.doc("Returns the total amount of memory available to the Java VM.")
 					.examples("(total-memory)")
 					.seeAlso("used-memory")
 					.build()
@@ -1044,7 +1044,7 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(used-memory)")
-					.doc("Returns the memory used by the Java VM memory.")
+					.doc("Returns the currently used memory by the Java VM.")
 					.examples("(used-memory)")
 					.seeAlso("total-memory")
 					.build()
