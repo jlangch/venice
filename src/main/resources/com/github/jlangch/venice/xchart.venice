@@ -55,6 +55,15 @@
 (ns xchart)
 
 
+(defn xchart/available? []
+  (some? (. :org.knowm.xchart.style.AxesChartStyler$TextAlignment :class)))
+
+
+;; ensure we have XChart 3.8.0+
+;; Xchart 3.8.0 introduced API incompatibilites to earlier versions
+(assert (xchart/available?) "Venice requires XChart 3.8.0+")
+
+
 (import :com.github.jlangch.venice.impl.util.xchart.XChartEncoder)
 
 (import :org.knowm.xchart.BubbleChart)
@@ -185,12 +194,6 @@
   (if (== (get-in m ks :not-found) :not-found)
     (assoc-in m ks v)
     m))
-
-
-(defn xchart/available? []
-      (some? (. :org.knowm.xchart.XChartPanel :class)))
-
-
 
 
 ;; ---------------------------------------------------------------------------
