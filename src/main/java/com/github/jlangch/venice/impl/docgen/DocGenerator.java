@@ -1933,7 +1933,7 @@ public class DocGenerator {
 		final DocSection hexdump = new DocSection("Hexdump", "modules.hexdump");
 		all.addSection(hexdump);
 		hexdump.addItem(new DocItem("(load-module :hexdump)", null));
-		hexdump.addItem(getDocItem("hexdump/hexdump", false));
+		hexdump.addItem(getDocItem("hexdump/dump", false));
 
 		return section;
 	}

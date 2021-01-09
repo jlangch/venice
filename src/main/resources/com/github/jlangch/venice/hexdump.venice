@@ -52,11 +52,11 @@
        (partition 16 16 (repeat " "))
        (map #(apply str %))))
 
-(defn hexdump-lines [s opts]
+(defn hex-lines [s opts]
   (cond
-    (string? s)     (hexdump-lines (io/slurp s :binary true) opts)
-    (io/file? s)    (hexdump-lines (io/slurp s :binary true) opts)
-    (bytebuf? s)    (hexdump-lines (bytebuf-to-list s) opts)
+    (string? s)     (hex-lines (io/slurp s :binary true) opts)
+    (io/file? s)    (hex-lines (io/slurp s :binary true) opts)
+    (bytebuf? s)    (hex-lines (bytebuf-to-list s) opts)
     (sequential? s) (let [{:keys [offset size] :or {offset 0 size :all}} opts
                           vals (if (= size :all) s (take size (drop offset s)))
                           parts-seq (map list
@@ -74,22 +74,31 @@
                               """))))
 
 (defn
-  ^{ :arglists '("(hexdump & opts)")
+  ^{ :arglists '("(dump & opts)")
      :doc """
           Prints a hexdump of the given argument to *out*. Optionally supply \
           byte offset (:offset, default: 0) and size (:size, default: :all) \
           arguments. Can create hexdump from a collection of values, a \
           bytebuf, a java.io.File, or a string representing a path to a file.
+
+          Example: (hexdump/dump (range 100))
+          00000000: 0001 0203 0405 0607 0809 0a0b 0c0d 0e0f  ................
+          00000010: 1011 1213 1415 1617 1819 1a1b 1c1d 1e1f  ................
+          00000020: 2021 2223 2425 2627 2829 2a2b 2c2d 2e2f   !\"#$%&'()*+,-./
+          00000030: 3031 3233 3435 3637 3839 3a3b 3c3d 3e3f  0123456789:;<=>?
+          00000040: 4041 4243 4445 4647 4849 4a4b 4c4d 4e4f  @ABCDEFGHIJKLMNO
+          00000050: 5051 5253 5455 5657 5859 5a5b 5c5d 5e5f  PQRSTUVWXYZ[\\]^_
+          00000060: 6061 6263                                `abc
           """
      :examples (list
-          "(hexdump/hexdump (range 1000))"
-          "(hexdump/hexdump (range 10000) :offset 9000 :size 256)"
-          """(hexdump/hexdump "./img.png")""",
-          """(hexdump/hexdump "./img.png" :offset 0 :size 64)""") }
+          "(hexdump/dump (range 1000))"
+          "(hexdump/dump (range 10000) :offset 9000 :size 256)"
+          """(hexdump/dump "./img.png")""",
+          """(hexdump/dump "./img.png" :offset 0 :size 64)""") }
 
-  hexdump [s & opts]
+  dump [s & opts]
 
   (let [options (apply hash-map opts)]
-    (->> (hexdump-lines s options)
+    (->> (hex-lines s options)
          (apply str)
          (println))))

@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.SymbolNotFoundException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -117,7 +118,9 @@ public class Env implements Serializable {
 		if (val != null) return val;
 
 		try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
-			throw new VncException(String.format("Symbol '%s' not found.", sym.getQualifiedName())); 
+			throw new SymbolNotFoundException(
+					String.format("Symbol '%s' not found.", sym.getQualifiedName()),
+					sym.getQualifiedName()); 
 		}
 	}
 

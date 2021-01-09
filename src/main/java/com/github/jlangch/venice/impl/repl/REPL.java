@@ -50,7 +50,9 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.SymbolNotFoundException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
@@ -317,6 +319,27 @@ public class REPL {
 			} 
 			catch (ContinueException ex) {
 				// ok, just continue
+			}
+			catch (SymbolNotFoundException ex) {
+				final VncSymbol sym = new VncSymbol(ex.getSymbol());
+				if (sym.hasNamespace()) {
+					final String ns = sym.getNamespace();
+					if (!Namespaces.isCoreNS(ns)) {
+						final boolean nsLoaded = env.getAllGlobalFunctionSymbols()
+												    .stream()
+												    .anyMatch(s -> ns.equals(s.getNamespace()));
+						   
+						if (!nsLoaded) {
+							printer.println("error", String.format(
+														"Symbol '%s' not found!\n"
+															+ "Have you loaded the module or file that "
+															+ "defines the namespace '%s'?\n\n",
+														sym,
+														sym.getNamespace()));
+						}
+					}
+				}
+				printer.printex("error", ex);
 			}
 			catch (Exception ex) {
 				printer.printex("error", ex);

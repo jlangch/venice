@@ -420,7 +420,7 @@ public class SemverModuleTest {
 				"                                                   \n" +
 				"   (semver/newer?                                  \n" +
 				"      (semver/version \"2.2.3\")                   \n" + 
-				"      (semver/version \"1.9.9\"))                  \n" + 
+				"      (semver/version \"1.9.0\"))                  \n" + 
 				") ";
 
 		assertTrue((Boolean)venice.eval(script));
@@ -559,7 +559,7 @@ public class SemverModuleTest {
 				"   (load-module :semver)                           \n" +
 				"                                                   \n" +
 				"   (semver/older?                                  \n" +
-				"      (semver/version \"1.9.9\")                   \n" + 
+				"      (semver/version \"1.9.0\")                   \n" + 
 				"      (semver/version \"2.2.3\"))                  \n" + 
 				") ";
 

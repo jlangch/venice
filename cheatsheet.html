@@ -274,7 +274,7 @@
         <div class="main">
             <div class="title">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.9</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.10</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -2841,7 +2841,7 @@
                                      --><!--
                                      --><div class="literal">(load-module :hexdump)</div><!--
                                      --><!-- 
-                                     --><div class="alias"><a href="#1400">hexdump/hexdump</a></div><!--
+                                     --><div class="alias"><a href="#1400">hexdump/dump</a></div><!--
                                      --><!--
                                      --><!--
                                   --></div>
@@ -5893,7 +5893,7 @@ If there are more forms, inserts the first form as the second item in second for
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.ZonedDateTime</span> <span style="color: #E9967A">:now</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T12:16:17.237+01:00[Europe/Zurich]
+=&gt; 2021-01-09T19:27:18.054+01:00[Europe/Zurich]
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.lang.Math</span> <span style="color: #E9967A">:min</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
@@ -9855,7 +9855,7 @@ Some Java VM implementations may use &apos;null&apos; to represent the  bootstra
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span>
-=&gt; function anonymous-9860a090-0354-4dc3-98ed-f2f8ae884bd8 {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-70454bc2-943f-4f34-ba81-f0b89b73ecd7 {visibility :public, ns &quot;core&quot;}
 
 <span style="color: #404040">(</span><span style="color: #4169E1">filter</span> <span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 3)</code>
@@ -10859,7 +10859,7 @@ Options:
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">current-time-millis</span><span style="color: #404040">)</span>
-=&gt; 1610018185037</code>
+=&gt; 1610216845728</code>
                     </div>
                     
                     
@@ -12407,11 +12407,11 @@ Options:
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                     
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (19 49 77 83)
+=&gt; (77 57 47 23)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (19 40 79 33)</code>
+=&gt; (31 50 8 4)</code>
                     </div>
                     
                     
@@ -12437,7 +12437,7 @@ Options:
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">10</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2690 623 426 260 231 217 218 221 213 214)</code>
+=&gt; (2185 727 570 287 252 279 253 276 248 247)</code>
                     </div>
                     
                     
@@ -14427,9 +14427,9 @@ Worker2</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker0
+<span style="color: #808080">Worker2
 Worker1
-Worker2</span>
+Worker0</span>
 =&gt; nil</code>
                     </div>
                     
@@ -14794,28 +14794,37 @@ Worker2</span>
                 
                 <div class="detail" id="1400">
                     <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>hexdump/hexdump</h1>
+                    <h1>hexdump/dump</h1>
                     
                     <div class="arglists">
                         <div class="arglist">
                            
-                           <code>(hexdump &amp; opts)</code>
+                           <code>(dump &amp; opts)</code>
                            
                         </div>
                     </div>
                     
                     <div class="descr">
-                        <code>Prints a hexdump of the given argument to *out*. Optionally supply byte offset (:offset, default: 0) and size (:size, default: :all) arguments. Can create hexdump from a collection of values, a bytebuf, a java.io.File, or a string representing a path to a file.</code>
+                        <code>Prints a hexdump of the given argument to *out*. Optionally supply byte offset (:offset, default: 0) and size (:size, default: :all) arguments. Can create hexdump from a collection of values, a bytebuf, a java.io.File, or a string representing a path to a file.
+
+Example: (hexdump/dump (range 100))
+00000000: 0001 0203 0405 0607 0809 0a0b 0c0d 0e0f  ................
+00000010: 1011 1213 1415 1617 1819 1a1b 1c1d 1e1f  ................
+00000020: 2021 2223 2425 2627 2829 2a2b 2c2d 2e2f   !&quot;#$%&amp;&apos;()*+,-./
+00000030: 3031 3233 3435 3637 3839 3a3b 3c3d 3e3f  0123456789:;&lt;=&gt;?
+00000040: 4041 4243 4445 4647 4849 4a4b 4c4d 4e4f  @ABCDEFGHIJKLMNO
+00000050: 5051 5253 5455 5657 5859 5a5b 5c5d 5e5f  PQRSTUVWXYZ[\]^_
+00000060: 6061 6263                                `abc</code>
                     </div>
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">hexdump/hexdump</span> <span style="color: #404040">(</span><span style="color: #4169E1">range</span> <span style="color: #E9967A">1000</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #4169E1">hexdump/dump</span> <span style="color: #404040">(</span><span style="color: #4169E1">range</span> <span style="color: #E9967A">1000</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
-<span style="color: #404040">(</span><span style="color: #4169E1">hexdump/hexdump</span> <span style="color: #404040">(</span><span style="color: #4169E1">range</span> <span style="color: #E9967A">10000</span><span style="color: #404040">)</span> <span style="color: #E9967A">:offset</span> <span style="color: #E9967A">9000</span> <span style="color: #E9967A">:size</span> <span style="color: #E9967A">256</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #4169E1">hexdump/dump</span> <span style="color: #404040">(</span><span style="color: #4169E1">range</span> <span style="color: #E9967A">10000</span><span style="color: #404040">)</span> <span style="color: #E9967A">:offset</span> <span style="color: #E9967A">9000</span> <span style="color: #E9967A">:size</span> <span style="color: #E9967A">256</span><span style="color: #404040">)</span>
 
-<span style="color: #404040">(</span><span style="color: #4169E1">hexdump/hexdump</span> <span style="color: #2E8B57">&quot;./img.png&quot;</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #4169E1">hexdump/dump</span> <span style="color: #2E8B57">&quot;./img.png&quot;</span><span style="color: #404040">)</span>
 
-<span style="color: #404040">(</span><span style="color: #4169E1">hexdump/hexdump</span> <span style="color: #2E8B57">&quot;./img.png&quot;</span> <span style="color: #E9967A">:offset</span> <span style="color: #E9967A">0</span> <span style="color: #E9967A">:size</span> <span style="color: #E9967A">64</span><span style="color: #404040">)</span></code>
+<span style="color: #404040">(</span><span style="color: #4169E1">hexdump/dump</span> <span style="color: #2E8B57">&quot;./img.png&quot;</span> <span style="color: #E9967A">:offset</span> <span style="color: #E9967A">0</span> <span style="color: #E9967A">:size</span> <span style="color: #E9967A">64</span><span style="color: #404040">)</span></code>
                     </div>
                     
                     
@@ -20014,7 +20023,7 @@ Hello Bob</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">rand-long</span><span style="color: #404040">)</span>                                       
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                                                   
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (6886428301149457884 4452191769865690109 458925310386418004 904014645691955005)
+=&gt; (5238918878604044616 3107066479694348697 2131860361700538166 8429146855706931076)
 
 <span style="color: #808080">; lazy sequence with a constant value                           </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">(</span><span style="color: #4169E1">constantly</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                                  
@@ -22218,7 +22227,7 @@ the result by calling (f val-in-result val-in-latter).</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>
-=&gt; 112431637726746</code>
+=&gt; 188368920697096</code>
                     </div>
                     
                     
@@ -24106,7 +24115,7 @@ After a test run metrics data can be obtained with (prof :data-formatted)</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">pid</span><span style="color: #404040">)</span>
-=&gt; &quot;30348&quot;</code>
+=&gt; &quot;47190&quot;</code>
                     </div>
                     
                     
@@ -25157,10 +25166,10 @@ This function is based on a cryptographically strong random number generator (RN
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span><span style="color: #404040">)</span>
-=&gt; 0.6488932502418854
+=&gt; 0.18544545490769215
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span> <span style="color: #E9967A">100.0</span><span style="color: #404040">)</span>
-=&gt; 25.086749877467994</code>
+=&gt; 60.241105333440025</code>
                     </div>
                     
                     
@@ -25189,10 +25198,10 @@ This function is based on a cryptographically strong random number generator (RN
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span><span style="color: #404040">)</span>
-=&gt; -0.4267307100652062
+=&gt; -0.4638852546928787
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span> <span style="color: #E9967A">0.0</span> <span style="color: #E9967A">5.0</span><span style="color: #404040">)</span>
-=&gt; -3.0335362231806275</code>
+=&gt; -0.6565143566586993</code>
                     </div>
                     
                     
@@ -25221,10 +25230,10 @@ This function is based on a cryptographically strong random number generator (RN
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span><span style="color: #404040">)</span>
-=&gt; 7575296404697604156
+=&gt; 7873558999440916009
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 27</code>
+=&gt; 8</code>
                     </div>
                     
                     
@@ -26421,12 +26430,12 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">5</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (0 6 3 6 8)
+=&gt; (10 2 2 2 6)
 
 <span style="color: #808080">;; compare with repeat, which only calls the &apos;rand-long&apos;</span>
 <span style="color: #808080">;; function once, repeating the value five times. </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">repeat</span> <span style="color: #E9967A">5</span> <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (10 10 10 10 10)</code>
+=&gt; (3 3 3 3 3)</code>
                     </div>
                     
                     
@@ -27975,13 +27984,13 @@ sh returns a map of
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (4 5 3 1 2 6)
+=&gt; (3 1 6 5 2 4)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-=&gt; [4 6 3 1 5 2]
+=&gt; [4 1 3 6 5 2]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #2E8B57">&quot;abcdef&quot;</span><span style="color: #404040">)</span>
-=&gt; (&quot;a&quot; &quot;b&quot; &quot;f&quot; &quot;d&quot; &quot;c&quot; &quot;e&quot;)</code>
+=&gt; (&quot;b&quot; &quot;e&quot; &quot;a&quot; &quot;c&quot; &quot;d&quot; &quot;f&quot;)</code>
                     </div>
                     
                     
@@ -31547,7 +31556,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">100</span> <span style="color: #E9967A">200</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 6.03µs</span>
+<span style="color: #808080">Elapsed time: 7.07µs</span>
 =&gt; 300</code>
                     </div>
                     
@@ -31643,7 +31652,7 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span>
-=&gt; Thu Jan 07 12:16:30 CET 2021</code>
+=&gt; Sat Jan 09 19:27:30 CET 2021</code>
                     </div>
                     
                     
@@ -31695,13 +31704,13 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7
+=&gt; 9
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7
+=&gt; 9
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7</code>
+=&gt; 9</code>
                     </div>
                     
                     
@@ -31727,13 +31736,13 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :THURSDAY
+=&gt; :SATURDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :THURSDAY
+=&gt; :SATURDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :THURSDAY</code>
+=&gt; :SATURDAY</code>
                     </div>
                     
                     
@@ -31759,13 +31768,13 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7
+=&gt; 9
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7
+=&gt; 9
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7</code>
+=&gt; 9</code>
                     </div>
                     
                     
@@ -31851,19 +31860,19 @@ Returns true if the current thread has been interrupted else false.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;07-01-2021&quot;
+=&gt; &quot;09-01-2021&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-01-07T12:16:30.838CET&quot;
+=&gt; &quot;2021-01-09T19:27:31.537CET&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-01-07T12:16:30.846+01:00&quot;
+=&gt; &quot;2021-01-09T19:27:31.544+01:00&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-01-07T12:16:30.852CET&quot;
+=&gt; &quot;2021-01-09T19:27:31.550CET&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-01-07T12:16:30.859+01:00&quot;</code>
+=&gt; &quot;2021-01-09T19:27:31.556+01:00&quot;</code>
                     </div>
                     
                     
@@ -31930,10 +31939,10 @@ Returns true if the current thread has been interrupted else false.</code>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 12
+=&gt; 19
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 12</code>
+=&gt; 19</code>
                     </div>
                     
                     
@@ -32130,7 +32139,7 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07
+=&gt; 2021-01-09
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01
@@ -32142,7 +32151,7 @@ This returns the length of the year in days, either 365 or 366.</code>
 =&gt; 2013-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07</code>
+=&gt; 2021-01-09</code>
                     </div>
                     
                     
@@ -32205,7 +32214,7 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T12:16:30.366
+=&gt; 2021-01-09T19:27:31.064
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00
@@ -32223,7 +32232,7 @@ This returns the length of the year in days, either 365 or 366.</code>
 =&gt; 2013-08-01T02:00
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T12:16:30.403</code>
+=&gt; 2021-01-09T19:27:31.102</code>
                     </div>
                     
                     
@@ -32330,13 +32339,13 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-01-05
+=&gt; 2021-01-07
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-01-05T12:16:30.971
+=&gt; 2021-01-07T19:27:31.669
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-01-05T12:16:30.977+01:00[Europe/Zurich]</code>
+=&gt; 2021-01-07T19:27:31.676+01:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -32365,10 +32374,10 @@ This returns the length of the year in days, either 365 or 366.</code>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 16
+=&gt; 27
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 16</code>
+=&gt; 27</code>
                     </div>
                     
                     
@@ -32510,13 +32519,13 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-01-09
+=&gt; 2021-01-11
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-01-09T12:16:30.953
+=&gt; 2021-01-11T19:27:31.650
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-01-09T12:16:30.959+01:00[Europe/Zurich]</code>
+=&gt; 2021-01-11T19:27:31.656+01:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -32545,10 +32554,10 @@ This returns the length of the year in days, either 365 or 366.</code>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 30
+=&gt; 31
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 30</code>
+=&gt; 31</code>
                     </div>
                     
                     
@@ -32574,7 +32583,7 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1609974000000</code>
+=&gt; 1610146800000</code>
                     </div>
                     
                     
@@ -32602,13 +32611,13 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T22:00:15.333
+=&gt; 2021-01-09T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T22:00:15.333
+=&gt; 2021-01-09T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T22:00:15.333+01:00[Europe/Zurich]</code>
+=&gt; 2021-01-09T22:00:15.333+01:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -32791,7 +32800,7 @@ This returns the length of the year in days, either 365 or 366.</code>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T12:16:30.428+01:00[Europe/Zurich]
+=&gt; 2021-01-09T19:27:31.128+01:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -32809,10 +32818,10 @@ This returns the length of the year in days, either 365 or 366.</code>
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T12:16:30.466+01:00[Europe/Zurich]
+=&gt; 2021-01-09T19:27:31.166+01:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T11:16:30.472Z[UTC]
+=&gt; 2021-01-09T18:27:31.175Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -32830,7 +32839,7 @@ This returns the length of the year in days, either 365 or 366.</code>
 =&gt; 2013-08-01T00:00Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-01-07T11:16:30.513Z[UTC]</code>
+=&gt; 2021-01-09T18:27:31.212Z[UTC]</code>
                     </div>
                     
                     
@@ -32976,12 +32985,12 @@ This returns the length of the year in days, either 365 or 366.</code>
                     </div>
                     
                     <div class="descr">
-                        <code>Returns the total amount of memory in the the Java VM.</code>
+                        <code>Returns the total amount of memory available to the Java VM.</code>
                     </div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">total-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;697.0MB&quot;</code>
+=&gt; &quot;696.5MB&quot;</code>
                     </div>
                     
                     
@@ -32990,7 +32999,7 @@ This returns the length of the year in days, either 365 or 366.</code>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1585">used−memory</a></div>
-                            <div class="descr">Returns the memory used by the Java VM memory.</div>
+                            <div class="descr">Returns the currently used memory by the Java VM.</div>
                         </div>
                         
                     </div>
@@ -33809,7 +33818,7 @@ Note that if you want to return a fn as a final value, you must wrap it in some 
                     </div>
                     
                     <div class="descr">
-                        <code>Returns the memory used by the Java VM memory.</code>
+                        <code>Returns the currently used memory by the Java VM.</code>
                     </div>
                     
                     <div class="examples">
@@ -33823,7 +33832,7 @@ Note that if you want to return a fn as a final value, you must wrap it in some 
                          
                         <div class="crossref">
                             <div class="name"><a href="#1586">total−memory</a></div>
-                            <div class="descr">Returns the total amount of memory in the the Java VM.</div>
+                            <div class="descr">Returns the total amount of memory available to the Java VM.</div>
                         </div>
                         
                     </div>
@@ -33850,7 +33859,7 @@ Note that if you want to return a fn as a final value, you must wrap it in some 
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">uuid</span><span style="color: #404040">)</span>
-=&gt; &quot;96add3eb-ccfe-409f-9deb-9a5e1ab34cf3&quot;</code>
+=&gt; &quot;65964ca2-440e-4eda-ba04-458426a31058&quot;</code>
                     </div>
                     
                     
