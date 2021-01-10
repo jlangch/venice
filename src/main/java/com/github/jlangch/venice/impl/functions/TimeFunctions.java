@@ -56,6 +56,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.TimeUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 
@@ -94,22 +95,13 @@ public class TimeFunctions {
 							return new VncJavaObject(new Date(((Date)date).getTime()));
 						}
 						else if (date instanceof LocalDate) {
-							return new VncJavaObject(new Date(
-														((LocalDate)date)
-															.atTime(0, 0, 0)
-															.atZone(ZoneId.systemDefault())
-															.toInstant()
-															.toEpochMilli()));
+							return new VncJavaObject(TimeUtil.convertLocalDateToDate((LocalDate)date));
 						}
 						else if (date instanceof LocalDateTime) {
-							return new VncJavaObject(new Date(
-														((LocalDateTime)date)
-															.atZone(ZoneId.systemDefault())
-															.toInstant()
-															.toEpochMilli()));
+							return new VncJavaObject(TimeUtil.convertLocalDateTimeToDate((LocalDateTime)date));
 						}
 						else if (date instanceof ZonedDateTime) {
-							return new VncJavaObject(new Date(((ZonedDateTime)date).toInstant().toEpochMilli()));
+							return new VncJavaObject(TimeUtil.convertZonedDateTimeToDate((ZonedDateTime)date));
 						}
 					}
 
