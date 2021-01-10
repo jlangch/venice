@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.excel;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -192,9 +193,7 @@ public class ExcelSheet {
 		setCellValue(getCellCreate(row, col), value, "string");
 	}
 
-	public void setBoolean(
-		final int row, final int col, final Boolean value, final String format
-	) {
+	public void setBoolean(final int row, final int col, final Boolean value, final String format) {
 		setCellValue(getCellCreate(row, col), value, format);
 	}
 	
@@ -202,9 +201,7 @@ public class ExcelSheet {
 		setCellValue(getCellCreate(row, col), value, "boolean");
 	}
 
-	public void setInteger(
-		final int row, final int col, final Integer value, final String format
-	) {
+	public void setInteger(final int row, final int col, final Integer value, final String format) {
 		setCellValue(getCellCreate(row, col), value, format);
 	}
 	
@@ -212,9 +209,7 @@ public class ExcelSheet {
 		setCellValue(getCellCreate(row, col), value, "integer");
 	}
 
-	public void setInteger(
-		final int row, final int col, final Long value, final String format
-	) {
+	public void setInteger(final int row, final int col, final Long value, final String format) {
 		setCellValue(getCellCreate(row, col), value, format);
 	}
 	
@@ -222,9 +217,7 @@ public class ExcelSheet {
 		setCellValue(getCellCreate(row, col), value, "integer");
 	}
 
-	public void setFloat(
-		final int row, final int col, final Float value, final String format
-	) {
+	public void setFloat(final int row, final int col, final Float value, final String format) {
 		setCellValue(getCellCreate(row, col), value, format);
 	}
 
@@ -232,9 +225,7 @@ public class ExcelSheet {
 		setCellValue(getCellCreate(row, col), value, "float");
 	}
 
-	public void setFloat(
-		final int row, final int col, final Double value, final String format
-	) {
+	public void setFloat(final int row, final int col, final Double value, final String format) {
 		setCellValue(getCellCreate(row, col), value, format);
 	}
 
@@ -294,6 +285,7 @@ public class ExcelSheet {
 			else if (value instanceof Float) setFloat(row, col, (Float)value, coalesce(format, "float"));
 			else if (value instanceof Double) setFloat(row, col, (Double)value, coalesce(format, "float"));
 			else if (value instanceof BigDecimal) setFloat(row, col, ((BigDecimal)value).doubleValue(), coalesce(format, "float"));
+			else if (value instanceof BigInteger) setInteger(row, col, ((BigInteger)value).longValue(), coalesce(format, "integer"));
 			else if (value instanceof LocalDate) setDate(row, col, (LocalDate)value, coalesce(format, "date"));
 			else if (value instanceof LocalDateTime) setDate(row, col, (LocalDateTime)value, coalesce(format, "datetime"));
 			else if (value instanceof ZonedDateTime) setDate(row, col, (ZonedDateTime)value, coalesce(format, "datetime"));
@@ -324,13 +316,13 @@ public class ExcelSheet {
 		sheet.addMergedRegion(CellRangeAddress.valueOf(ref));
 	}
 	
-	public void autoSizeColumn(final int col) {
-		sheet.autoSizeColumn(col);
-	}
-	
     public void setDisplayZeros(final boolean value) {
 		sheet.setDisplayZeros(value);
     }
+	
+	public void autoSizeColumn(final int col) {
+		sheet.autoSizeColumn(col);
+	}
 
 	public void autoSizeColumns() {
 		final int firstRow = sheet.getFirstRowNum();

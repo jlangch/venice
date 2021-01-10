@@ -47,6 +47,11 @@ public class ExcelColumnBuilder<T> {
 		this.width = width;
 		return this;
 	}
+	
+	public ExcelColumnBuilder<T> hidden(final boolean hide) {
+		this.hidden = hide;
+		return this;
+	}
 
 	public ExcelColumnBuilder<T> headerStyle(final String style) {
 		this.headerStyle = style;
@@ -55,11 +60,6 @@ public class ExcelColumnBuilder<T> {
 	
 	public ExcelColumnBuilder<T> bodyStyle(final String style) {
 		this.bodyStyle = style;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> hidden(final boolean hide) {
-		this.hidden = hide;
 		return this;
 	}
 	

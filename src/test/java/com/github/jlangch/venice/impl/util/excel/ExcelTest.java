@@ -25,12 +25,17 @@ package com.github.jlangch.venice.impl.util.excel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
+
+import com.github.jlangch.venice.impl.util.excel.ExcelSheetBuilder.GenericEntity;
 
 
 public class ExcelTest {
@@ -96,6 +101,30 @@ public class ExcelTest {
 			assertEquals(persons.get(ii).firstName, sheet.getString(ii+1, 0));		
 			assertEquals(persons.get(ii).lastName, sheet.getString(ii+1, 1));		
 			assertEquals(persons.get(ii).age.intValue(), sheet.getInteger(ii+1, 2).intValue());
+		}
+	}
+	
+	@Test
+	public void test_Builder_with_GenericEntity() {
+		final List<GenericEntity> persons = personMap();
+		
+		final Excel excel = ExcelBuilder
+								.createXlsx()
+								.withSheet("Persons", GenericEntity.class)
+									.withColumn("FirstName", "firstName")
+									.withColumn("LastName", "lastName")
+									.withColumn("Age", "age")
+									.renderData(persons)
+									.autoSizeColumns()
+									.end()
+								.toExcel();
+		
+		// verify data
+		final ExcelSheet sheet = excel.getSheet("Persons");
+		for(int ii=0; ii<persons.size(); ii++) {
+			assertEquals(persons.get(ii).get("firstName"), sheet.getString(ii+1, 0));		
+			assertEquals(persons.get(ii).get("lastName"), sheet.getString(ii+1, 1));		
+			assertEquals(persons.get(ii).get("age"), sheet.getInteger(ii+1, 2).intValue());
 		}
 	}
 
@@ -292,6 +321,36 @@ public class ExcelTest {
 				new Person("John", "Smith", 30),
 				new Person("John", "Ford",  40),
 				new Person("Sue",  "Ford",  34));
+	}
+	
+	private static List<GenericEntity> personMap() {
+		final List<GenericEntity> data = new ArrayList<>();
+		
+		Map<String,Object> entity = new HashMap<>();
+		entity.put("firstName", "John");
+		entity.put("lastName", "Doe");
+		entity.put("age", 28);
+		data.add(GenericEntity.of(entity));
+
+		entity = new HashMap<>();
+		entity.put("firstName", "John");
+		entity.put("lastName", "Smith");
+		entity.put("age", 30);
+		data.add(GenericEntity.of(entity));
+
+		entity = new HashMap<>();
+		entity.put("firstName", "John");
+		entity.put("lastName", "Ford");
+		entity.put("age", 40);
+		data.add(GenericEntity.of(entity));
+
+		entity = new HashMap<>();
+		entity.put("firstName", "Sue");
+		entity.put("lastName", "Ford");
+		entity.put("age", 34);
+		data.add(GenericEntity.of(entity));
+		
+		return data;
 	}
 
 

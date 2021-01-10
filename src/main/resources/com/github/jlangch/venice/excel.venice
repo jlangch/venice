@@ -1,0 +1,1026 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2021 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice Excel functions
+
+
+(ns excel)
+
+(import :com.github.jlangch.venice.impl.util.excel.ExcelBuilder)
+
+
+(def colors { :BLACK1                  0
+              :WHITE1                  1
+              :RED1                    2
+              :BRIGHT_GREEN1           3
+              :BLUE1                   4
+              :YELLOW1                 5
+              :PINK1                   6
+              :TURQUOISE1              7
+              :BLACK                   8
+              :WHITE                   9
+              :RED                    10
+              :BRIGHT_GREEN           11
+              :BLUE                   12
+              :YELLOW                 13
+              :PINK                   14
+              :TURQUOISE              15
+              :DARK_RED               16
+              :GREEN                  17
+              :DARK_BLUE              18
+              :DARK_YELLOW            19
+              :VIOLET                 20
+              :TEAL                   21
+              :GREY_25_PERCENT        22
+              :GREY_50_PERCENT        23
+              :CORNFLOWER_BLUE        24
+              :MAROON                 25
+              :LEMON_CHIFFON          26
+              :LIGHT_TURQUOISE1       27
+              :ORCHID                 28
+              :CORAL                  29
+              :ROYAL_BLUE             30
+              :LIGHT_CORNFLOWER_BLUE  31
+              :SKY_BLUE               40
+              :LIGHT_TURQUOISE        41
+              :LIGHT_GREEN            42
+              :LIGHT_YELLOW           43
+              :PALE_BLUE              44
+              :ROSE                   45
+              :LAVENDER               46
+              :TAN                    47
+              :LIGHT_BLUE             48
+              :AQUA                   49
+              :LIME                   50
+              :GOLD                   51
+              :LIGHT_ORANGE           52
+              :ORANGE                 53
+              :BLUE_GREY              54
+              :GREY_40_PERCENT        55
+              :DARK_TEAL              56
+              :SEA_GREEN              57
+              :DARK_GREEN             58
+              :OLIVE_GREEN            59
+              :BROWN                  60
+              :PLUM                   61
+              :INDIGO                 62
+              :GREY_80_PERCENT        63
+              :AUTOMATIC              64 } )
+
+
+
+;; -----------------------------------------------------------------------------
+;; ExcelBuilder
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(excel-builder type)")
+     :doc """
+          Creates a new Excel builder for the given type :xls or :xlsx. \
+          The type defaults to :xlsx. Returns the excel builder.
+          """
+     :examples '(
+          """
+          (-> (excel-builder :xls)
+                (with-sheet "Sheet 1")
+                  (end)
+              (write "sample.xls"))
+          """,
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '(
+        "with-sheet", "with-font", "with-cell-style",
+        "write-file", "write-stream", "write-bytebuf" )}
+
+  excel-builder [type]
+
+  (case type
+    :xls  (. :ExcelBuilder :createXls)
+    :xlsx (. :ExcelBuilder :createXlsx)
+    (throw (. :VncException :new
+              (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
+
+
+(defn
+  ^{ :arglists '("(with-sheet excel name)")
+     :doc "Returns a sheet builder to add a new named sheet."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (end)
+                (with-sheet "Sheet 2")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("excel-builder", "with-font", "with-cell-style")}
+
+  with-sheet [excel name]
+
+  (. excel :withSheet name))
+
+
+(defn
+  ^{ :arglists '("(with-font excel name)")
+     :doc "Returns a new font builder to define a new named font."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-font "header")
+                  (height 16)
+                  (bold)
+                  (color (:SKY_BLUE colors))
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("excel-builder", "with-sheet", "with-cell-style")}
+
+  with-font [excel name]
+
+  (. excel :withFont name))
+
+
+(defn
+  ^{ :arglists '("(with-cell-style excel name)")
+     :doc "Returns a new cell style builder to define a new named cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "right-align")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("excel-builder", "with-sheet", "with-font")}
+
+  with-cell-style [excel name]
+
+  (. excel :withCellStyle name))
+
+
+(defn
+  ^{ :arglists '("(write-file excel f)")
+     :doc "Writes the excel to a file."
+     :examples '(
+         """
+         (-> (excel-builder :xlsx)
+               (with-sheet "Sheet 1")
+                 (end)
+             (write "sample.xlsx"))
+         """ )
+     :see-also '("write-stream", "write-bytebuf")}
+
+  write-file [excel f]
+
+  (. excel :write (. :java.io.FileOutputStream :new)))
+
+
+(defn
+  ^{ :arglists '("(write-stream excel os)")
+     :doc "Writes the excel to a Java :OutputStream."
+     :examples '(
+         """
+         (-> (excel-builder :xlsx)
+               (with-sheet "Sheet 1")
+                 (end)
+             (write "sample.xlsx"))
+         """ )
+     :see-also '("write-file", "write-bytebuf")}
+
+  write-stream [excel os]
+
+  (. excel :write os))
+
+
+(defn
+  ^{ :arglists '("(write-bytebuf excel os)")
+     :doc "Writes the excel to a bytebuf. Returns the bytebuf."
+     :examples '(
+         """
+         (-> (excel-builder :xlsx)
+               (with-sheet "Sheet 1")
+                 (end)
+             (write "sample.xlsx"))
+         """ )
+     :see-also '("write-file", "write-stream")}
+
+  write-bytebuf [excel]
+
+  (. excel :writeToBytes))
+
+
+(defn
+  ^{ :arglists '("(end builder)")
+     :doc "Ends the current builder and returns the parent builder."
+     :examples '(
+         """
+         (-> (excel-builder :xlsx)
+               (with-font "header")
+                 (end)
+               (with-sheet "Sheet 1")
+                 (end)
+             (write "sample.xlsx"))
+         """ )
+     :see-also '("write-file", "write-stream")}
+
+  end [builder]
+
+  (. builder :end))
+
+
+;; -----------------------------------------------------------------------------
+;; ExcelSheetBuilder
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(no-header builder)")
+     :doc "Render the sheet without header row."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (no-header)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("no-header")}
+
+  no-header [builder]
+
+  (. builder :noHeader))
+
+
+(defn
+  ^{ :arglists '("(default-header-style builder style-name)")
+     :doc "Sets the default header style for the sheet header rows."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "header")
+                  (font-ref "bold")
+                  (end)
+                (with-sheet "Sheet 1")
+                  (default-header-style "header")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("no-header")}
+
+  default-header-style [builder style-name]
+
+  (. builder :defaultHeaderStyle style-name))
+
+
+(defn
+  ^{ :arglists '("(default-body-style builder style-name)")
+     :doc "Sets the default body style for the sheet body rows."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "body")
+                  (font-ref "italic")
+                  (end)
+                (with-sheet "Sheet 1")
+                  (default-body-style "body")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("no-header")}
+
+  default-body-style [builder style-name]
+
+  (. builder :defaultBodyStyle style-name))
+
+
+(defn
+  ^{ :arglists '("(default-footer-style builder style-name)")
+     :doc "Sets the default footer style for the sheet footer rows."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "footer")
+                  (font-ref "bold")
+                  (end)
+                (with-sheet "Sheet 1")
+                  (default-footer-style "footer")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("no-header")}
+
+  default-footer-style [builder style-name]
+
+  (. builder :defaultFooterStyle style-name))
+
+
+(defn
+  ^{ :arglists '("(default-column-width builder points)")
+     :doc "Sets the default column width for the sheet's columns."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (default-column-width "200")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("no-header")}
+
+  default-column-width [builder points]
+
+  (. builder :setColumnWidthInPoints points))
+
+
+(defn
+  ^{ :arglists '("(display-zeros builder enabled)")
+     :doc """
+          Set whether a cell should show 0 (zero) when containing zero value. \
+          When false, cells with zero value appear blank instead of showing \
+          the number zero.
+          """
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (display-zeros true)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("no-header")}
+
+  display-zeros [builder enabled]
+
+  (. builder :displayZeros enabled))
+
+
+(defn
+  ^{ :arglists '("(with-column builder column-name)")
+     :doc "Returns a column builder to add a new named column."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (end)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  with-column [builder column-name]
+
+  (. excel :withColumn column-name))
+
+
+(defn
+  ^{ :arglists '("(auto-size-columns builder)")
+     :doc "Auto size the width of all columns."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (auto-size-columns)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  auto-size-columns [builder]
+
+  (. excel :autoSizeColumns))
+
+
+(defn
+  ^{ :arglists '("(auto-size-column builder col)")
+     :doc "Auto size the width of column col (0..n)."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (auto-size-column 1)
+                  (auto-size-column 2)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  auto-size-column [builder col]
+
+  (. excel :autoSizeColumn co))
+
+
+(defn
+  ^{ :arglists '("(add-merged-region builder row-from row-to col-from col-to)")
+     :doc "Add a merged region."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (add-merged-region 4 6 0 12)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  add-merged-region [builder row-from row-to col-from col-to]
+
+  (. excel :addMergedRegion row-from row-to col-from col-to))
+
+
+(defn
+  ^{ :arglists '("(evaluate-all-formulas builder)")
+     :doc "Evaluate all formulas on the sheet."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (evaluate-all-formulas)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  evaluate-all-formulas [builder]
+
+  (. excel :evaluateAllFormulas))
+
+
+(defn
+  ^{ :arglists '("(skip-data-rows builder n)")
+     :doc "Skip n data rows."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (skip-data-rows 6)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  skip-data-rows [builder n]
+
+  (. excel :skipRows n))
+
+
+(defn
+  ^{ :arglists '("(render-data-items builder items)")
+     :doc "Render the passed data items"
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (render-data-items [{:name "smith"  :age 23}
+                                      {:name "miller" :age 29}])
+                  (end)
+              (write "sample.xlsx")))
+          """ ) }
+
+  render-data-items [builder items]
+
+  (. builder :renderData item))
+
+
+(defn
+  ^{ :arglists '("(render-data-item builder item)")
+     :doc "Render a single data item"
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (render-data-item {:name "smith"  :age 23})
+                  (end)
+              (write "sample.xlsx")))
+          """ ) }
+
+  render-data-item [builder item]
+
+  (. builder :renderData item))
+
+
+(defn
+  ^{ :arglists '("(value builder row col val)")
+     :doc "Set a value for a specific cell given by its row and col."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (value 2 0 "row 2, col 0")
+                  (value 2 1 "row 2, col 1")
+                  (value 2 2 "row 2, col 2")
+                  (end)
+              (write "sample.xlsx")))
+          """ ) }
+
+  (value [builder row col val]
+    (. builder :value row col val))
+
+  (value [builder row col val style-name]
+    (. builder :value row col val style-name)))
+
+
+(defn
+  ^{ :arglists '("(formula builder row col formula)")
+     :doc "Set a formula for a specific cell given by its row and col."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (formula 2 1 (str "$" (cell-address 2 0) " * 1.2"))
+                  (end)
+              (write "sample.xlsx")))
+          """ ) }
+
+  (formula [builder row col formula]
+    (. builder :formula row col formula))
+
+  (formula [builder row col formula style-name]
+    (. builder :formula row col formula style-name)))
+
+
+(defn
+  ^{ :arglists '("(sum-formula row-from row-to col-from col-to)")
+     :doc "Returns a sum formula"
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (formula 31 0 (sum-formula 0 30 0 0))
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  sum-formula [builder row-from row-to col-from col-to]
+
+  (. excel :sumFormula row-from row-to col-from col-to))
+
+
+(defn
+  ^{ :arglists '("(cell-address row col)")
+     :doc "Returns the cell address for a cell at row/col"
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (sum-builder 10 0)
+                    (end)
+                  (end)
+              (write "sample.xlsx"))
+          """ ) }
+
+  cell-address [builder row col]
+
+  (. excel :cellAddress crow col))
+
+
+
+;; -----------------------------------------------------------------------------
+;; ExcelFontBuilder
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(height builder points)")
+     :doc "Sets the font height in points."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-font "header")
+                  (height 16)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("bold", "italic", "color") }
+
+  height [builder points]
+
+  (. builder :heightInPoints points))
+
+
+(defn
+  ^{ :arglists '(
+          "(bold builder)")
+     :doc "Sets the font to bold."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-font "header")
+                  (bold)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("height", "italic", "color") }
+
+  bold [builder]
+
+  (. builder :bold))
+
+
+(defn
+  ^{ :arglists '(
+          "(italic builder)")
+     :doc "Sets the font to italic."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-font "header")
+                  (italic)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("height", "bold", "color") }
+
+  italic [builder]
+
+  (. builder :italic))
+
+
+(defn
+  ^{ :arglists '(
+          "(color builder col)")
+     :doc "Sets the font's color."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-font "header")
+                  (color (:SKY_BLUE colors))
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("height", "bold", "italic") }
+
+  color [builder col]
+
+  (. builder :color col))
+
+
+
+;; -----------------------------------------------------------------------------
+;; ExcelCellStyleBuilder
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(format builder f)")
+     :doc "Sets the format for a cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "float")
+                  (format "#.##")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '( "font-ref", "bg-color", "wrap-text", "h-align", "v-align") }
+
+  format [builder f]
+
+  (. builder :format f))
+
+
+(defn
+  ^{ :arglists '(
+          "(font-ref builder ref)")
+     :doc "Sets the font given by a font ref for a cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "header")
+                  (font-ref "bold")
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '( "format", "bg-color", "wrap-text", "h-align", "v-align") }
+
+  font-ref [builder ref]
+
+  (. builder :font ref))
+
+
+(defn
+  ^{ :arglists '(
+          "(bg-color builder col)")
+     :doc "Sets the background color for a cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "header")
+                  (bg-color (:SKY_BLUE colors))
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("format", "font-ref", "wrap-text", "h-align", "v-align") }
+
+  bg-color [builder col]
+
+  (. builder :bgColor col))
+
+
+(defn
+  ^{ :arglists '(
+          "(wrap-text builder wrap)")
+     :doc "If wrap is true enables text wrapping for a cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "float")
+                  (wrap-text true)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("format", "font-ref", "bg-color", "h-align", "v-align") }
+
+  wrap-text [builder wrap]
+
+  (. builder :wrap-text wrap))
+
+
+(defn
+  ^{ :arglists '(
+          "(h-align builder align)")
+     :doc "Sets the horizontal text alignment for a cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "float")
+                  (h-align :left)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("format", "font-ref", "bg-color", "wrap-text", "v-align") }
+
+  h-align [builder align]
+
+  (case align
+    :left     (. builder :hAlignLeft)
+    :center   (. builder :hAlignCenter)
+    :right    (. builder :hAlignRight)))
+
+
+(defn
+  ^{ :arglists '(
+          "(v-align builder align)")
+     :doc "Sets the vertical text alignment for a cell style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "float")
+                  (v-align true)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '("format", "font-ref", "bg-color", "wrap-text", "h-align") }
+
+  v-align [builder align]
+
+  (case align
+    :top      (. builder :vAlignTop)
+    :midddle  (. builder :vAlignMiddle)
+    :bottom   (. builder :hAlignBottom)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; ExcelColumnBuilder
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(col-width builder points)")
+     :doc "Sets the column width in points."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-width 64)
+                    (end)
+                  (end)
+              (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-hidden",
+          "col-header-style", "col-body-style", "col-footer-style",
+          "col-footer-text-value", "col-footer-numeric-value",
+          "col-footer-aggregated") }
+
+  col-width [builder points]
+
+  (. builder :widthInPoints points))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-hidden builder hide)")
+     :doc "If hide is true hides the column."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-hidden true)
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width",
+          "col-header-style", "col-body-style", "col-footer-style",
+          "col-footer-text-value", "col-footer-numeric-value",
+          "col-footer-aggregated") }
+
+  col-hidden [builder hide]
+
+  (. builder :hidden hide))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-header-style builder style-name)")
+     :doc "Sets the column header style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-header-style "left-aligned")
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width", "col-hidden",
+          "col-body-style", "col-footer-style",
+          "col-footer-text-value", "col-footer-numeric-value",
+          "col-footer-aggregated") }
+
+  col-header-style [builder style-name]
+
+  (. builder :headerStyle style-name))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-body-style builder style-name)")
+     :doc "Sets the column header style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-body-style "left-aligned")
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width", "col-hidden",
+          "col-header-style", "col-footer-style",
+          "col-footer-text-value", "col-footer-numeric-value",
+          "col-footer-aggregated") }
+
+  col-body-style [builder style-name]
+
+  (. builder :bodyStyle style-name))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-footer-style builder style-name)")
+     :doc "Sets the column footer style."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-footer-style "left-aligned")
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width", "col-hidden",
+          "col-header-style", "col-body-style",
+          "col-footer-text-value", "col-footer-numeric-value",
+          "col-footer-aggregated") }
+
+  col-footer-style [builder style-name]
+
+  (. builder :footerStyle style-name))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-footer-text-value builder text)")
+     :doc "Sets an explicit footer text value."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-footer-text-value "x-x-x-x-x")
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width", "col-hidden",
+          "col-header-style", "col-body-style", "col-footer-style",
+          "col-footer-numeric-value",
+          "col-footer-aggregated") }
+
+  col-footer-text-value [builder text]
+
+  (. builder :footerTextValue text))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-footer-numeric-value builder value)")
+     :doc "Sets an explicit footer numeric value."
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-footer-numeric-value 345.00)
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width", "col-hidden",
+          "col-header-style", "col-body-style", "col-footer-style",
+          "col-footer-text-value",
+          "col-footer-aggregated") }
+
+  col-footer-numeric-value [builder value]
+
+  (. builder :footerNumberValue value))
+
+
+(defn
+  ^{ :arglists '(
+          "(col-footer-aggregated builder mode)")
+     :doc """
+          Sets the aggregation for calculating the columns footer value.
+          The aggregation mode is one of :min, :max, :avg, or :sum
+          """
+     :examples '(
+          """
+          (-> (excel-builder :xlsx)
+                (with-cell-style "left-aligned")
+                  (h-align :left)
+                  (end)
+                (with-sheet "Sheet 1")
+                  (with-column "Last Name")
+                    (col-footer-aggregated :min)
+                    (end)
+                  (end)
+                (write "sample.xlsx"))
+          """ )
+     :see-also '(
+          "col-width", "col-hidden",
+          "col-header-style", "col-body-style", "col-footer-style",
+          "col-footer-text-value", "col-footer-numeric-value") }
+
+  col-footer-aggregated [builder mode]
+
+  (case mode
+    :min  (. builder :footerMin value)
+    :max  (. builder :footerMax value)
+    :avg  (. builder :footerAverage value)
+    :sum  (. builder :footerSum value)))
