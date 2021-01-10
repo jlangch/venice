@@ -25,6 +25,7 @@
 (ns excel)
 
 (import :com.github.jlangch.venice.impl.util.excel.ExcelBuilder)
+(import :com.github.jlangch.venice.impl.util.excel.EntityRecord)
 
 
 (def colors { :BLACK1                  0
@@ -493,7 +494,8 @@
 
   render-data-items [builder items]
 
-  (. builder :renderData item))
+  (->> (map (. :EntityRecord :of %) items)
+       (. builder :renderData))
 
 
 (defn
@@ -510,7 +512,7 @@
 
   render-data-item [builder item]
 
-  (. builder :renderData item))
+  (. builder :renderData (. :EntityRecord :of item)))
 
 
 (defn

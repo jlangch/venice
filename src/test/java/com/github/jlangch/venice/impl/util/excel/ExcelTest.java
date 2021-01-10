@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.util.excel.ExcelSheetBuilder.GenericEntity;
-
 
 public class ExcelTest {
 
@@ -106,11 +104,11 @@ public class ExcelTest {
 	
 	@Test
 	public void test_Builder_with_GenericEntity() {
-		final List<GenericEntity> persons = personMap();
+		final List<EntityRecord> persons = personMap();
 		
 		final Excel excel = ExcelBuilder
 								.createXlsx()
-								.withSheet("Persons", GenericEntity.class)
+								.withSheet("Persons", EntityRecord.class)
 									.withColumn("FirstName", "firstName")
 									.withColumn("LastName", "lastName")
 									.withColumn("Age", "age")
@@ -323,32 +321,32 @@ public class ExcelTest {
 				new Person("Sue",  "Ford",  34));
 	}
 	
-	private static List<GenericEntity> personMap() {
-		final List<GenericEntity> data = new ArrayList<>();
+	private static List<EntityRecord> personMap() {
+		final List<EntityRecord> data = new ArrayList<>();
 		
 		Map<String,Object> entity = new HashMap<>();
 		entity.put("firstName", "John");
 		entity.put("lastName", "Doe");
 		entity.put("age", 28);
-		data.add(GenericEntity.of(entity));
+		data.add(EntityRecord.of(entity));
 
 		entity = new HashMap<>();
 		entity.put("firstName", "John");
 		entity.put("lastName", "Smith");
 		entity.put("age", 30);
-		data.add(GenericEntity.of(entity));
+		data.add(EntityRecord.of(entity));
 
 		entity = new HashMap<>();
 		entity.put("firstName", "John");
 		entity.put("lastName", "Ford");
 		entity.put("age", 40);
-		data.add(GenericEntity.of(entity));
+		data.add(EntityRecord.of(entity));
 
 		entity = new HashMap<>();
 		entity.put("firstName", "Sue");
 		entity.put("lastName", "Ford");
 		entity.put("age", 34);
-		data.add(GenericEntity.of(entity));
+		data.add(EntityRecord.of(entity));
 		
 		return data;
 	}

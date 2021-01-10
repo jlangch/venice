@@ -22,9 +22,7 @@
 package com.github.jlangch.venice.impl.util.excel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -89,7 +87,7 @@ public class ExcelSheetBuilder<T> {
 			final String header,
 			final String fieldName
 	) {		
-		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((GenericEntity)e).get(fieldName), null, null, null, null, null, null));
+		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((EntityRecord)e).get(fieldName), null, null, null, null, null, null));
 		return this;
 	}
 
@@ -99,7 +97,7 @@ public class ExcelSheetBuilder<T> {
 			final String headerStyle,
 			final String bodyStyle
 	) {		
-		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((GenericEntity)e).get(fieldName), null, headerStyle, bodyStyle, null, null, null));
+		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((EntityRecord)e).get(fieldName), null, headerStyle, bodyStyle, null, null, null));
 		return this;
 	}
 	
@@ -333,28 +331,7 @@ public class ExcelSheetBuilder<T> {
 		}
 	}
 		
-	
-	public static class GenericEntity {
-		public GenericEntity() {
-		}
 		
-		public static GenericEntity of(final Map<String,Object> fields) {
-			final GenericEntity ge = new GenericEntity();
-			fields.forEach((k,v) -> ge.put(k, v));
-			return ge;
-		}
-		
-		public void put(final String fieldName, final Object fieldValue) {
-			fields.put(fieldName, fieldValue);
-		}
-	
-		public Object get(final String fieldName) {
-			return fields.get(fieldName);
-		}
-
-		final private Map<String,Object> fields = new HashMap<>();
-	}
-	
 	
 	public static final int DEFAULT_FONT_SIZE = XSSFFont.DEFAULT_FONT_SIZE;
 
