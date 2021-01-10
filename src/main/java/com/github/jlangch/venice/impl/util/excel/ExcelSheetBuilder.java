@@ -100,7 +100,11 @@ public class ExcelSheetBuilder<T> {
 		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((EntityRecord)e).get(fieldName), null, headerStyle, bodyStyle, null, null, null));
 		return this;
 	}
-	
+
+	public ExcelSheetBuilder<T> renderDataItems(final List<T> items) {
+		return renderData(items);
+	}
+
 	public ExcelSheetBuilder<T> renderData(final List<T> items) {	
 		int col = 0;
 		for(ExcelColumnDef<T> colDef : columnDefs) {

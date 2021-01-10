@@ -21,6 +21,12 @@
 
 ;;;; Venice Excel functions
 
+;;;; Required 3rd party libraries
+;;;;   org.apache.poi:poi:4.1.2
+;;;;   org.apache.poi:ooxml:4.1.2
+;;;;   org.apache.poi:ooxml-schemas:4.1.2
+;;;;   commons-codec:commons-codec:1.15
+;;;;   org.apache.xmlbeans:xmlbeans:3.1.0
 
 (ns excel)
 
@@ -95,21 +101,38 @@
 (defn
   ^{ :arglists '("(excel-builder type)")
      :doc """
-          Creates a new Excel builder for the given type :xls or :xlsx. \
-          The type defaults to :xlsx. Returns the excel builder.
+          Creates a new Excel builder for the given type :xls or :xlsx.
           """
      :examples '(
           """
-          (-> (excel-builder :xls)
-                (with-sheet "Sheet 1")
-                  (end)
-              (write "sample.xls"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xls)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                  (excel/write-file "sample.xls")))))
           """,
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                  (excel/write-file "sample.xlsx")))))
           """ )
      :see-also '(
         "with-sheet", "with-font", "with-cell-style",
@@ -125,7 +148,7 @@
 
 
 (defn
-  ^{ :arglists '("(with-sheet excel name)")
+  ^{ :arglists '("(with-sheet builder name)")
      :doc "Returns a sheet builder to add a new named sheet."
      :examples '(
           """
@@ -138,13 +161,13 @@
           """ )
      :see-also '("excel-builder", "with-font", "with-cell-style")}
 
-  with-sheet [excel name]
+  with-sheet [builder name]
 
-  (. excel :withSheet name))
+  (. builder :withSheet name (class :EntityRecord)))
 
 
 (defn
-  ^{ :arglists '("(with-font excel name)")
+  ^{ :arglists '("(with-font builder name)")
      :doc "Returns a new font builder to define a new named font."
      :examples '(
           """
@@ -158,13 +181,13 @@
           """ )
      :see-also '("excel-builder", "with-sheet", "with-cell-style")}
 
-  with-font [excel name]
+  with-font [builder name]
 
-  (. excel :withFont name))
+  (. builder :withFont name))
 
 
 (defn
-  ^{ :arglists '("(with-cell-style excel name)")
+  ^{ :arglists '("(with-cell-style builder name)")
      :doc "Returns a new cell style builder to define a new named cell style."
      :examples '(
           """
@@ -175,13 +198,13 @@
           """ )
      :see-also '("excel-builder", "with-sheet", "with-font")}
 
-  with-cell-style [excel name]
+  with-cell-style [builder name]
 
-  (. excel :withCellStyle name))
+  (. builder :withCellStyle name))
 
 
 (defn
-  ^{ :arglists '("(write-file excel f)")
+  ^{ :arglists '("(write-file builder f)")
      :doc "Writes the excel to a file."
      :examples '(
          """
@@ -192,13 +215,13 @@
          """ )
      :see-also '("write-stream", "write-bytebuf")}
 
-  write-file [excel f]
+  write-file [builder f]
 
-  (. excel :write (. :java.io.FileOutputStream :new)))
+  (. builder :write (. :java.io.FileOutputStream :new f)))
 
 
 (defn
-  ^{ :arglists '("(write-stream excel os)")
+  ^{ :arglists '("(write-stream builder os)")
      :doc "Writes the excel to a Java :OutputStream."
      :examples '(
          """
@@ -209,13 +232,13 @@
          """ )
      :see-also '("write-file", "write-bytebuf")}
 
-  write-stream [excel os]
+  write-stream [builder os]
 
-  (. excel :write os))
+  (. builder :write os))
 
 
 (defn
-  ^{ :arglists '("(write-bytebuf excel os)")
+  ^{ :arglists '("(write-bytebuf builder os)")
      :doc "Writes the excel to a bytebuf. Returns the bytebuf."
      :examples '(
          """
@@ -226,9 +249,9 @@
          """ )
      :see-also '("write-file", "write-stream")}
 
-  write-bytebuf [excel]
+  write-bytebuf [builder]
 
-  (. excel :writeToBytes))
+  (. builder :writeToBytes))
 
 
 (defn
@@ -376,21 +399,21 @@
 
 
 (defn
-  ^{ :arglists '("(with-column builder column-name)")
+  ^{ :arglists '("(with-column builder column-name field-name)")
      :doc "Returns a column builder to add a new named column."
      :examples '(
           """
           (-> (excel-builder :xlsx)
                 (with-sheet "Sheet 1")
-                  (with-column "Last Name")
+                  (with-column "Last Name" :firstName)
                     (end)
                   (end)
               (write "sample.xlsx"))
           """ ) }
 
-  with-column [builder column-name]
+  with-column [builder column-name field-name]
 
-  (. excel :withColumn column-name))
+  (. builder :withColumn column-name field-name))
 
 
 (defn
@@ -407,7 +430,7 @@
 
   auto-size-columns [builder]
 
-  (. excel :autoSizeColumns))
+  (. builder :autoSizeColumns))
 
 
 (defn
@@ -425,7 +448,7 @@
 
   auto-size-column [builder col]
 
-  (. excel :autoSizeColumn co))
+  (. builder :autoSizeColumn co))
 
 
 (defn
@@ -442,7 +465,7 @@
 
   add-merged-region [builder row-from row-to col-from col-to]
 
-  (. excel :addMergedRegion row-from row-to col-from col-to))
+  (. builder :addMergedRegion row-from row-to col-from col-to))
 
 
 (defn
@@ -459,7 +482,7 @@
 
   evaluate-all-formulas [builder]
 
-  (. excel :evaluateAllFormulas))
+  (. builder :evaluateAllFormulas))
 
 
 (defn
@@ -476,7 +499,7 @@
 
   skip-data-rows [builder n]
 
-  (. excel :skipRows n))
+  (. builder :skipRows n))
 
 
 (defn
@@ -494,8 +517,9 @@
 
   render-data-items [builder items]
 
-  (->> (map (. :EntityRecord :of %) items)
-       (. builder :renderData))
+  (let [data (map #(. :EntityRecord :of %) items)
+        list (into (. :java.util.ArrayList :new) data)]
+    (. builder :renderDataItems list)))
 
 
 (defn
@@ -529,10 +553,12 @@
               (write "sample.xlsx")))
           """ ) }
 
-  (value [builder row col val]
+  value
+
+  ([builder row col val]
     (. builder :value row col val))
 
-  (value [builder row col val style-name]
+  ([builder row col val style-name]
     (. builder :value row col val style-name)))
 
 
@@ -548,10 +574,12 @@
               (write "sample.xlsx")))
           """ ) }
 
-  (formula [builder row col formula]
+  formula
+
+  ([builder row col formula]
     (. builder :formula row col formula))
 
-  (formula [builder row col formula style-name]
+  ([builder row col formula style-name]
     (. builder :formula row col formula style-name)))
 
 
@@ -569,7 +597,7 @@
 
   sum-formula [builder row-from row-to col-from col-to]
 
-  (. excel :sumFormula row-from row-to col-from col-to))
+  (. builder :sumFormula row-from row-to col-from col-to))
 
 
 (defn
@@ -587,7 +615,7 @@
 
   cell-address [builder row col]
 
-  (. excel :cellAddress crow col))
+  (. builder :cellAddress crow col))
 
 
 
@@ -771,7 +799,11 @@
   (case align
     :left     (. builder :hAlignLeft)
     :center   (. builder :hAlignCenter)
-    :right    (. builder :hAlignRight)))
+    :right    (. builder :hAlignRight)
+    (throw    (. :VncException :new
+              (str "Invalid horizontal alignment "
+                   align
+                   ". Use :left, :center, or :right")))))
 
 
 (defn
@@ -793,7 +825,11 @@
   (case align
     :top      (. builder :vAlignTop)
     :midddle  (. builder :vAlignMiddle)
-    :bottom   (. builder :hAlignBottom)))
+    :bottom   (. builder :hAlignBottom)
+    (throw    (. :VncException :new
+              (str "Invalid vertical alignment "
+                   align
+                   ". Use :top, :middle, or :bottom")))))
 
 
 
@@ -1025,4 +1061,8 @@
     :min  (. builder :footerMin value)
     :max  (. builder :footerMax value)
     :avg  (. builder :footerAverage value)
-    :sum  (. builder :footerSum value)))
+    :sum  (. builder :footerSum value)
+    (throw (. :VncException :new
+              (str "Invalid aggregate mode "
+                   align
+                   ". Use :min, :max, :avg, or :sum")))))

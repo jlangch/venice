@@ -49,6 +49,7 @@ public class Modules {
 							"benchmark", 
 							"core", 
 							"crypt", 
+							"excel", 
 							"fam", 
 							"geoip", 
 							"gradle", 
