@@ -15,6 +15,10 @@ and this project adheres to
 
 - Excel builder
 
+### Changed
+
+- build to Gradle 6.8
+
 
 
 ## [1.9.10] - 2021-01-10
