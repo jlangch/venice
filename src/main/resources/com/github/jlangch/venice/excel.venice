@@ -26,6 +26,8 @@
 ;;;;   org.apache.poi:ooxml:4.1.2
 ;;;;   org.apache.poi:ooxml-schemas:4.1.2
 ;;;;   commons-codec:commons-codec:1.15
+;;;;   org.apache.commons:commons-collections4:4.4
+;;;;   org.apache.commons:commons-compress:1.20
 ;;;;   org.apache.xmlbeans:xmlbeans:3.1.0
 
 (ns excel)
@@ -117,7 +119,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xls")))))
+                  (excel/write-file "sample.xls"))))
           """,
           """
           (do
@@ -132,7 +134,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xlsx")))))
+                  (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
         "with-sheet", "with-font", "with-cell-style",

@@ -25,15 +25,14 @@ package com.github.jlangch.venice.impl.util.excel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
+
+import com.github.jlangch.venice.support.Person;
 
 
 public class ExcelTest {
@@ -96,9 +95,9 @@ public class ExcelTest {
 		// verify data
 		final ExcelSheet sheet = excel.getSheet("Persons");
 		for(int ii=0; ii<persons.size(); ii++) {
-			assertEquals(persons.get(ii).firstName, sheet.getString(ii+1, 0));		
-			assertEquals(persons.get(ii).lastName, sheet.getString(ii+1, 1));		
-			assertEquals(persons.get(ii).age.intValue(), sheet.getInteger(ii+1, 2).intValue());
+			assertEquals(persons.get(ii).getFirstName(), sheet.getString(ii+1, 0));		
+			assertEquals(persons.get(ii).getLastName(), sheet.getString(ii+1, 1));		
+			assertEquals(persons.get(ii).getAge().intValue(), sheet.getInteger(ii+1, 2).intValue());
 		}
 	}
 	
@@ -313,7 +312,7 @@ public class ExcelTest {
 	}
 
 	
-	private static List<Person> persons() {
+	private List<Person> persons() {
 		return Arrays.asList(
 				new Person("John", "Doe",   28),
 				new Person("John", "Smith", 30),
@@ -321,57 +320,8 @@ public class ExcelTest {
 				new Person("Sue",  "Ford",  34));
 	}
 	
-	private static List<EntityRecord> personMap() {
-		final List<EntityRecord> data = new ArrayList<>();
-		
-		Map<String,Object> entity = new HashMap<>();
-		entity.put("firstName", "John");
-		entity.put("lastName", "Doe");
-		entity.put("age", 28);
-		data.add(EntityRecord.of(entity));
-
-		entity = new HashMap<>();
-		entity.put("firstName", "John");
-		entity.put("lastName", "Smith");
-		entity.put("age", 30);
-		data.add(EntityRecord.of(entity));
-
-		entity = new HashMap<>();
-		entity.put("firstName", "John");
-		entity.put("lastName", "Ford");
-		entity.put("age", 40);
-		data.add(EntityRecord.of(entity));
-
-		entity = new HashMap<>();
-		entity.put("firstName", "Sue");
-		entity.put("lastName", "Ford");
-		entity.put("age", 34);
-		data.add(EntityRecord.of(entity));
-		
-		return data;
+	private List<EntityRecord> personMap() {
+		return persons().stream().map(p -> p.toEntityRecord()).collect(Collectors.toList());
 	}
 
-
-	@SuppressWarnings("unused")
-	private static class Person {
-		public Person(final String firstName, final String lastName) {
-			this(firstName, lastName, 0);
-		}
-	  
-		public Person(final String firstName, final String lastName, final Integer age) {
-			this.firstName = firstName;
-			this.lastName = lastName;
-			this.age = age;
-		}
-
-		public String getFirstName() { return firstName; }
-		public String getLastName() { return lastName; }
-		public Integer getAge() { return age; }
-		
-		public String toString() { return String.format("%s %s (%d)", firstName, lastName, age); }
-
-		private final String firstName;
-		private final String lastName;
-		private final Integer age;
-	}
 }
