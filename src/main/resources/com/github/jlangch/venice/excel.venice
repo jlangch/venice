@@ -137,8 +137,8 @@
                   (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
-        "with-sheet", "with-font", "with-cell-style",
-        "write-file", "write-stream", "write-bytebuf" )}
+        "excel/with-sheet", "excel/with-font", "excel/with-cell-style",
+        "excel/write-file", "excel/write-stream", "excel/write-bytebuf" )}
 
   excel-builder [type]
 
@@ -154,14 +154,36 @@
      :doc "Returns a sheet builder to add a new named sheet."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (end)
-                (with-sheet "Sheet 2")
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/with-sheet "Sheet 2")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                  (excel/write-file "sample.xlsx"))))
           """ )
-     :see-also '("excel-builder", "with-font", "with-cell-style")}
+     :see-also '(
+          "excel/with-column", "excel/render-data-items", "excel/render-data-item",
+          "excel/cell-value", "excel/cell-formula",
+          "excel/no-header", "excel/auto-size-columns", "excel/auto-size-column",
+          "excel/default-header-style", "excel/default-body-style",
+          "excel/default-footer-style",
+          "excel/default-column-width", "excel/display-zeros"
+          "excel/add-merged-region", "excel/evaluate-all-formulas",
+          "excel/skip-data-rows",
+          "excel/sum-formula", "excel/cell-address", "excel/end")}
 
   with-sheet [builder name]
 
@@ -173,15 +195,33 @@
      :doc "Returns a new font builder to define a new named font."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-font "header")
-                  (height 16)
-                  (bold)
-                  (color (:SKY_BLUE colors))
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-font "header")
+                      (excel/height 16)
+                      (excel/bold)
+                      (excel/color (:DARK_BLUE excel/colors))
+                      (excel/end)
+                    (excel/with-cell-style "header")
+                      (excel/font "header")
+                      (excel/end)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/default-header-style "header")
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                  (excel/write-file "sample.xlsx"))))
           """ )
-     :see-also '("excel-builder", "with-sheet", "with-cell-style")}
+     :see-also '(
+          "excel/height",
+          "excel/bold", "excel/italic", "excel/color",
+          "excel/end")}
 
   with-font [builder name]
 
@@ -193,12 +233,32 @@
      :doc "Returns a new cell style builder to define a new named cell style."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "right-align")
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-font "header")
+                      (excel/bold)
+                      (excel/end)
+                    (excel/with-cell-style "header")
+                      (excel/font "header")
+                      (excel/bg-color (:GREY_25_PERCENT excel/colors))
+                      (excel/end)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/default-header-style "header")
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                  (excel/write-file "sample.xlsx"))))
           """ )
-     :see-also '("excel-builder", "with-sheet", "with-font")}
+     :see-also '(
+         "excel/format", "excel/font", "excel/bg-color",
+         "excel/warp-text", "excel/h-align", "excel/v-align",
+         "excel/end")}
 
   with-cell-style [builder name]
 
@@ -210,12 +270,21 @@
      :doc "Writes the excel to a file."
      :examples '(
          """
-         (-> (excel-builder :xlsx)
-               (with-sheet "Sheet 1")
-                 (end)
-             (write "sample.xlsx"))
+         (do
+           (load-module :excel)
+           (let [data [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]]
+             (-> (excel/excel-builder :xlsx)
+                   (excel/with-sheet "Sheet 1")
+                     (excel/with-column "First Name" :first)
+                     (excel/with-column "Last Name" :last)
+                     (excel/with-column "Age" :age)
+                     (excel/render-data-items data)
+                     (excel/auto-size-columns)
+                     (excel/end)
+                 (excel/write-file "sample.xlsx"))))
          """ )
-     :see-also '("write-stream", "write-bytebuf")}
+     :see-also '("excel/write-stream", "excel/write-bytebuf")}
 
   write-file [builder f]
 
@@ -227,12 +296,22 @@
      :doc "Writes the excel to a Java :OutputStream."
      :examples '(
          """
-         (-> (excel-builder :xlsx)
-               (with-sheet "Sheet 1")
-                 (end)
-             (write "sample.xlsx"))
+         (do
+           (load-module :excel)
+           (let [os   (. :java.io.FileOutputStream :new "sample.xlsx")
+                 data [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]]
+             (-> (excel/excel-builder :xlsx)
+                   (excel/with-sheet "Sheet 1")
+                     (excel/with-column "First Name" :first)
+                     (excel/with-column "Last Name" :last)
+                     (excel/with-column "Age" :age)
+                     (excel/render-data-items data)
+                     (excel/auto-size-columns)
+                     (excel/end)
+                 (excel/write-stream os))))
          """ )
-     :see-also '("write-file", "write-bytebuf")}
+     :see-also '("excel/write-file", "excel/write-bytebuf")}
 
   write-stream [builder os]
 
@@ -244,12 +323,21 @@
      :doc "Writes the excel to a bytebuf. Returns the bytebuf."
      :examples '(
          """
-         (-> (excel-builder :xlsx)
-               (with-sheet "Sheet 1")
-                 (end)
-             (write "sample.xlsx"))
+         (do
+           (load-module :excel)
+           (let [data [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]]
+             (-> (excel/excel-builder :xlsx)
+                   (excel/with-sheet "Sheet 1")
+                     (excel/with-column "First Name" :first)
+                     (excel/with-column "Last Name" :last)
+                     (excel/with-column "Age" :age)
+                     (excel/render-data-items data)
+                     (excel/auto-size-columns)
+                     (excel/end)
+                 (excel/write-bytebuf))))
          """ )
-     :see-also '("write-file", "write-stream")}
+     :see-also '("excel/write-file", "excel/write-stream")}
 
   write-bytebuf [builder]
 
@@ -261,14 +349,22 @@
      :doc "Ends the current builder and returns the parent builder."
      :examples '(
          """
-         (-> (excel-builder :xlsx)
-               (with-font "header")
-                 (end)
-               (with-sheet "Sheet 1")
-                 (end)
-             (write "sample.xlsx"))
+         (do
+           (load-module :excel)
+           (let [data [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]]
+             (-> (excel/excel-builder :xlsx)
+                   (excel/with-sheet "Sheet 1")
+                     (excel/with-column "First Name" :first)
+                     (excel/with-column "Last Name" :last)
+                     (excel/render-data-items data)
+                     (excel/auto-size-columns)
+                     (excel/end)
+                 (excel/write-file "sample.xlsx"))))
          """ )
-     :see-also '("write-file", "write-stream")}
+     :see-also '(
+         "excel/with-sheet", "excel/with-font", "excel/with-cell-style",
+         "excel/with-column")}
 
   end [builder]
 
@@ -304,7 +400,7 @@
           """
           (-> (excel-builder :xlsx)
                 (with-cell-style "header")
-                  (font-ref "bold")
+                  (font "bold")
                   (end)
                 (with-sheet "Sheet 1")
                   (default-header-style "header")
@@ -325,7 +421,7 @@
           """
           (-> (excel-builder :xlsx)
                 (with-cell-style "body")
-                  (font-ref "italic")
+                  (font "italic")
                   (end)
                 (with-sheet "Sheet 1")
                   (default-body-style "body")
@@ -346,7 +442,7 @@
           """
           (-> (excel-builder :xlsx)
                 (with-cell-style "footer")
-                  (font-ref "bold")
+                  (font "bold")
                   (end)
                 (with-sheet "Sheet 1")
                   (default-footer-style "footer")
@@ -542,20 +638,20 @@
 
 
 (defn
-  ^{ :arglists '("(value builder row col val)")
+  ^{ :arglists '("(cell-value builder row col val)")
      :doc "Set a value for a specific cell given by its row and col."
      :examples '(
           """
           (-> (excel-builder :xlsx)
                 (with-sheet "Sheet 1")
-                  (value 2 0 "row 2, col 0")
-                  (value 2 1 "row 2, col 1")
-                  (value 2 2 "row 2, col 2")
+                  (cell-value 2 0 "row 2, col 0")
+                  (cell-value 2 1 "row 2, col 1")
+                  (cell-value 2 2 "row 2, col 2")
                   (end)
               (write "sample.xlsx")))
           """ ) }
 
-  value
+  cell-value
 
   ([builder row col val]
     (. builder :value row col val))
@@ -565,18 +661,18 @@
 
 
 (defn
-  ^{ :arglists '("(formula builder row col formula)")
+  ^{ :arglists '("(cell-formula builder row col formula)")
      :doc "Set a formula for a specific cell given by its row and col."
      :examples '(
           """
           (-> (excel-builder :xlsx)
                 (with-sheet "Sheet 1")
-                  (formula 2 1 (str "$" (cell-address 2 0) " * 1.2"))
+                  (cell-formula 2 1 (str "$" (cell-address 2 0) " * 1.2"))
                   (end)
               (write "sample.xlsx")))
           """ ) }
 
-  formula
+  cell-formula
 
   ([builder row col formula]
     (. builder :formula row col formula))
@@ -718,7 +814,7 @@
                   (end)
               (write "sample.xlsx"))
           """ )
-     :see-also '( "font-ref", "bg-color", "wrap-text", "h-align", "v-align") }
+     :see-also '( "font", "bg-color", "wrap-text", "h-align", "v-align") }
 
   format [builder f]
 
@@ -727,19 +823,19 @@
 
 (defn
   ^{ :arglists '(
-          "(font-ref builder ref)")
+          "(font builder ref)")
      :doc "Sets the font given by a font ref for a cell style."
      :examples '(
           """
           (-> (excel-builder :xlsx)
                 (with-cell-style "header")
-                  (font-ref "bold")
+                  (font "bold")
                   (end)
               (write "sample.xlsx"))
           """ )
      :see-also '( "format", "bg-color", "wrap-text", "h-align", "v-align") }
 
-  font-ref [builder ref]
+  font [builder ref]
 
   (. builder :font ref))
 
@@ -756,7 +852,7 @@
                   (end)
               (write "sample.xlsx"))
           """ )
-     :see-also '("format", "font-ref", "wrap-text", "h-align", "v-align") }
+     :see-also '("format", "font", "wrap-text", "h-align", "v-align") }
 
   bg-color [builder col]
 
@@ -775,7 +871,7 @@
                   (end)
               (write "sample.xlsx"))
           """ )
-     :see-also '("format", "font-ref", "bg-color", "h-align", "v-align") }
+     :see-also '("format", "font", "bg-color", "h-align", "v-align") }
 
   wrap-text [builder wrap]
 
@@ -794,7 +890,7 @@
                   (end)
               (write "sample.xlsx"))
           """ )
-     :see-also '("format", "font-ref", "bg-color", "wrap-text", "v-align") }
+     :see-also '("format", "font", "bg-color", "wrap-text", "v-align") }
 
   h-align [builder align]
 
@@ -820,7 +916,7 @@
                   (end)
               (write "sample.xlsx"))
           """ )
-     :see-also '("format", "font-ref", "bg-color", "wrap-text", "h-align") }
+     :see-also '("format", "font", "bg-color", "wrap-text", "h-align") }
 
   v-align [builder align]
 
