@@ -26,7 +26,9 @@ import java.util.Map;
 
 import com.github.jlangch.venice.impl.util.excel.EntityRecord;
 
+
 public class Person {
+	
 	public Person(final String firstName, final String lastName, final Integer age) {
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -39,13 +41,16 @@ public class Person {
 	
 	public EntityRecord toEntityRecord() {
 		final Map<String,Object> entity = new HashMap<>();
-		entity.put("firstName", "John");
-		entity.put("lastName", "Doe");
-		entity.put("age", 28);
+		entity.put("firstName", firstName);
+		entity.put("lastName", lastName);
+		entity.put("age", age);
 		return EntityRecord.of(entity);
 	}
 	
-	public String toString() { return String.format("%s %s (%d)", firstName, lastName, age); }
+	public String toString() { 
+		return String.format("%s %s (%d)", firstName, lastName, age); 
+	}
+	
 
 	private final String firstName;
 	private final String lastName;
