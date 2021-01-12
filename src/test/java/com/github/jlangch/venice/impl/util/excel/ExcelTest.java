@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.excel.EntityRecord;
+import com.github.jlangch.venice.excel.ExcelBuilder;
 import com.github.jlangch.venice.support.Person;
 
 
@@ -251,6 +253,8 @@ public class ExcelTest {
 	public void test_BuilderWithSumExplicit() {
 		final List<Person> persons = persons();
 		
+		final int footerRow1 = persons.size()+2;
+				
 		final Excel excel = ExcelBuilder
 								.createXlsx()
 								.withSheet("Persons", Person.class)
@@ -261,9 +265,11 @@ public class ExcelTest {
 									.withColumn("Age", Person::getAge)
 										.end()
 									.renderItems(persons)
-									.value(persons.size()+1, 0, "SUM age")
-									.withSum(persons.size()+1, 2)
-										.cellFrom(1, 2).cellTo(persons.size(), 2).end()
+									.value(footerRow1, 1, "SUM age")
+									.withSum(footerRow1, 3)
+										.cellFrom(2, 3)
+										.cellTo(footerRow1-1, 3)
+										.end()
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -331,7 +337,9 @@ public class ExcelTest {
 	@Test
 	public void test_BuilderWithSumWithStyles2() {
 		final List<Person> persons = persons();
-		
+
+		final int footerRow1 = persons.size()+2;
+
 		final Excel excel = ExcelBuilder
 								.createXlsx()
 								.withFont("bold")
@@ -361,9 +369,11 @@ public class ExcelTest {
 									.withColumn("Age", Person::getAge)
 										.end()
 									.renderItems(persons)
-									.value(persons.size()+1, 0, "SUM age", "sum-header")
-									.withSum(persons.size()+1, 2)
-										.cellFrom(1, 2).cellTo(persons.size(), 2).style("sum-result").end()
+									.value(footerRow1, 1, "SUM age", "sum-header")
+									.withSum(footerRow1, 3)
+										.cellFrom(2, 3)
+										.cellTo(footerRow1-1, 3)
+										.style("sum-result").end()
 									.autoSizeColumns()
 									.end()
 								.toExcel();

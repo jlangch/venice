@@ -19,9 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.excel;
+package com.github.jlangch.venice.excel;
 
 import org.apache.poi.ss.usermodel.IndexedColors;
+
+import com.github.jlangch.venice.impl.util.excel.Excel;
 
 
 public class ExcelFontBuilder {

@@ -24,7 +24,7 @@ package com.github.jlangch.venice.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.util.excel.EntityRecord;
+import com.github.jlangch.venice.excel.EntityRecord;
 
 
 public class Person {

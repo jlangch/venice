@@ -19,32 +19,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.excel;
+package com.github.jlangch.venice.excel;
 
+import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
 
 public class ExcelSumFormulaBuilder<T> {
 
 	public ExcelSumFormulaBuilder(
 			final ExcelSheetBuilder<T> parentBuilder,
 			final ExcelSheet sheet,
-			final int row,
-			final int col
+			final int row1,
+			final int col1
 	) {
 		this.parentBuilder = parentBuilder;
 		this.sheet = sheet;
-		this.row = row;
-		this.col = col;
+		this.row0 = row1-1;
+		this.col0 = col1-1;
 	}
 
-	public ExcelSumFormulaBuilder<T> cellFrom(final int row, final int col) {
-		this.rowFrom = row;
-		this.colFrom = col;
+	public ExcelSumFormulaBuilder<T> cellFrom(final int row1, final int col1) {
+		this.rowFrom0 = row1-1;
+		this.colFrom0 = col1-1;
 		return this;
 	}
 
-	public ExcelSumFormulaBuilder<T> cellTo(final int row, final int col) {
-		this.rowTo = row;
-		this.colTo = col;
+	public ExcelSumFormulaBuilder<T> cellTo(final int row1, final int col1) {
+		this.rowTo0 = row0-1;
+		this.colTo0 = col0-1;
 		return this;
 	}
 
@@ -56,10 +57,10 @@ public class ExcelSumFormulaBuilder<T> {
 	public ExcelSheetBuilder<T> end() {
 		final String formula = String.format(
 								"SUM(%s:%s)", 
-								sheet.getCellAddress(rowFrom, colFrom), 
-								sheet.getCellAddress(rowTo, colTo));
+								sheet.getCellAddress(rowFrom0, colFrom0), 
+								sheet.getCellAddress(rowTo0, colTo0));
 
-		sheet.setFormula(row, col, formula, style);
+		sheet.setFormula(row0, col0, formula, style);
 
 		return parentBuilder;
 	}
@@ -67,11 +68,11 @@ public class ExcelSumFormulaBuilder<T> {
 
 	private final ExcelSheetBuilder<T> parentBuilder;
 	private final ExcelSheet sheet;
-	private final int row;
-	private final int col;
-	private int rowFrom;
-	private int colFrom;
-	private int rowTo;
-	private int colTo;
+	private final int row0;
+	private final int col0;
+	private int rowFrom0;
+	private int colFrom0;
+	private int rowTo0;
+	private int colTo0;
 	private String style;
 }

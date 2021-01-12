@@ -32,12 +32,14 @@
 
 (ns excel)
 
-(import :com.github.jlangch.venice.impl.util.excel.ExcelBuilder)
-(import :com.github.jlangch.venice.impl.util.excel.ExcelSheetBuilder)
-(import :com.github.jlangch.venice.impl.util.excel.ExcelFontBuilder)
-(import :com.github.jlangch.venice.impl.util.excel.ExcelCellStyleBuilder)
-(import :com.github.jlangch.venice.impl.util.excel.ExcelColumnBuilder)
-(import :com.github.jlangch.venice.impl.util.excel.EntityRecord)
+(import :com.github.jlangch.venice.excel.ExcelReader)
+(import :com.github.jlangch.venice.excel.ExcelSheetReader)
+(import :com.github.jlangch.venice.excel.ExcelBuilder)
+(import :com.github.jlangch.venice.excel.ExcelSheetBuilder)
+(import :com.github.jlangch.venice.excel.ExcelFontBuilder)
+(import :com.github.jlangch.venice.excel.ExcelCellStyleBuilder)
+(import :com.github.jlangch.venice.excel.ExcelColumnBuilder)
+(import :com.github.jlangch.venice.excel.EntityRecord)
 (import :java.io.File)
 (import :java.io.OutputStream)
 (import :java.io.FileOutputStream)
@@ -635,7 +637,9 @@
 
 
 (defn
-  ^{ :arglists '("(with-column builder column-name field")
+  ^{ :arglists '(
+          "(with-column builder column-name field"
+          "(with-column builder column-name" )
      :doc "Returns a column builder to add a new named column."
      :examples '(
           """
@@ -656,13 +660,17 @@
                     (excel/write-file "sample.xlsx"))))
           """ ) }
 
-  with-column [builder column-name field]
+  with-column
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)
-          (string? column-name)
-          (keyword? field)] }
+  ([builder column-name]
+    { :pre [(instance-of? :ExcelSheetBuilder builder) (string? column-name)] }
+    (. builder :withColumn column-name))
 
-  (. builder :withColumn column-name (name field)))
+  ([builder column-name field]
+    { :pre [(instance-of? :ExcelSheetBuilder builder)
+            (string? column-name)
+            (keyword? field)] }
+    (. builder :withColumn column-name (name field))))
 
 
 (defn
@@ -697,7 +705,7 @@
 
 (defn
   ^{ :arglists '("(auto-size-column builder col)")
-     :doc "Auto size the width of column col (0..n)."
+     :doc "Auto size the width of column col (1..n)."
      :examples '(
           """
           (do
@@ -713,7 +721,7 @@
                       (excel/with-column "Age" :age)
                         (excel/end)
                       (excel/render-items data)
-                      (excel/auto-size-column 2)
+                      (excel/auto-size-column 3)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
           """ ) }
@@ -747,7 +755,7 @@
                         (excel/end)
                       (excel/no-header-row)
                       (excel/render-items data)
-                      (excel/merged-region 1 1 1 2)
+                      (excel/merged-region 2 2 2 3)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
           """ ) }
@@ -766,12 +774,28 @@
      :doc "Evaluate all formulas on the sheet."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (evaluate-all-formulas)
-                  (end)
-              (write "sample.xlsx"))
-          """ ) }
+          (do
+            (load-module :excel)
+            (let [data [ {:a 100 :b 200 }
+                         {:a 101 :b 201 }
+                         {:a 102 :b 202 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "A" :a)
+                        (excel/end)
+                      (excel/with-column "B" :b)
+                        (excel/end)
+                      (excel/with-column "C")
+                        (excel/end)
+                      (excel/no-header-row)
+                      (excel/render-items data)
+                      (excel/cell-formula 1 3 "SUM(A1,B1)")
+                      (excel/cell-formula 2 3 "SUM(A2,B2)")
+                      (excel/cell-formula 3 3 "SUM(A3,B3)")
+                      (excel/evaluate-all-formulas)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
+            """ ) }
 
   evaluate-all-formulas [builder]
 
@@ -873,11 +897,26 @@
      :doc "Set a formula for a specific cell given by its row and col."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (cell-formula 2 1 (str "$" (cell-address 2 0) " * 1.2"))
-                  (end)
-              (write "sample.xlsx")))
+          (do
+            (load-module :excel)
+            (let [data [ {:a 100 :b 200 }
+                         {:a 101 :b 201 }
+                         {:a 102 :b 202 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "A" :a)
+                        (excel/end)
+                      (excel/with-column "B" :b)
+                        (excel/end)
+                      (excel/with-column "C")
+                        (excel/end)
+                      (excel/no-header-row)
+                      (excel/render-items data)
+                      (excel/cell-formula 1 3 "SUM(A1,B1)")
+                      (excel/cell-formula 2 3 "SUM(A2,B2)")
+                      (excel/cell-formula 3 3 "SUM(A3,B3)")
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ ) }
 
   cell-formula
