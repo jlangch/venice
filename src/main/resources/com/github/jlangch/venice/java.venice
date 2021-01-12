@@ -55,7 +55,7 @@
 
   javadoc [class-or-object]
 
-  (let [class (if (instance? :java.lang.Class class-or-object)
+  (let [class (if (instance-of? :java.lang.Class class-or-object)
                 class-or-object
                 (class class-or-object))]
       (if-let [url (javadoc-url class)]

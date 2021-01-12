@@ -64,7 +64,7 @@ public class DocGenerator {
 			.addAll(Arrays.asList(
 						"app",    "xml",    "crypt",  "gradle", 
 						"trace",  "ansi",   "maven",  "kira",
-						"java",   "semver", "hexdump"));
+						"java",   "semver", "excel",  "hexdump"));
 		
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -221,6 +221,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Java", "modules.java"));
 		extmod.addSection(new DocSection("Semver", "modules.semver"));
 		extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
+		extmod.addSection(new DocSection("Excel", "modules.excel"));
 		content.add(extmod);
 
 		final DocSection embed = new DocSection("Embedding", "embedding");
@@ -1203,7 +1204,7 @@ public class DocGenerator {
 		all.addSection(test);		
 		test.addItem(getDocItem("type"));
 		test.addItem(getDocItem("supertype"));
-		test.addItem(getDocItem("instance?"));
+		test.addItem(getDocItem("instance-of?"));
 		test.addItem(getDocItem("deftype?"));
 
 		final DocSection define = new DocSection("Define", "types.define");
@@ -1934,6 +1935,11 @@ public class DocGenerator {
 		all.addSection(hexdump);
 		hexdump.addItem(new DocItem("(load-module :hexdump)", null));
 		hexdump.addItem(getDocItem("hexdump/dump", false));
+		
+		final DocSection excel = new DocSection("Excel", "modules.excel");
+		all.addSection(excel);
+		excel.addItem(new DocItem("(load-module :excel)", null));
+		excel.addItem(getDocItem("excel/excel-builder", false));
 
 		return section;
 	}

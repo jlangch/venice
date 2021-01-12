@@ -17,6 +17,7 @@ and this project adheres to
 
 ### Changed
 
+- function `instance?` to `instance-of?`
 - build to Gradle 6.8
 
 

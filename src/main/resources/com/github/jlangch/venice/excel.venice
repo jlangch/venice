@@ -33,7 +33,13 @@
 (ns excel)
 
 (import :com.github.jlangch.venice.impl.util.excel.ExcelBuilder)
+(import :com.github.jlangch.venice.impl.util.excel.ExcelSheetBuilder)
+(import :com.github.jlangch.venice.impl.util.excel.ExcelFontBuilder)
+(import :com.github.jlangch.venice.impl.util.excel.ExcelCellStyleBuilder)
+(import :com.github.jlangch.venice.impl.util.excel.ExcelColumnBuilder)
 (import :com.github.jlangch.venice.impl.util.excel.EntityRecord)
+(import :java.io.File)
+(import :java.io.OutputStream)
 
 
 (def colors { :BLACK1                  0
@@ -119,7 +125,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xls"))))
+                    (excel/write-file "sample.xls"))))
           """,
           """
           (do
@@ -134,7 +140,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xlsx"))))
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
         "excel/with-sheet", "excel/with-font", "excel/with-cell-style",
@@ -172,7 +178,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xlsx"))))
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
           "excel/with-column", "excel/render-data-items", "excel/render-data-item",
@@ -186,6 +192,8 @@
           "excel/sum-formula", "excel/cell-address", "excel/end")}
 
   with-sheet [builder name]
+
+  { :pre [(= (type builder) :ExcelBuilder) (= (type name) :core/string)] }
 
   (. builder :withSheet name (class :EntityRecord)))
 
@@ -216,7 +224,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xlsx"))))
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
           "excel/height",
@@ -224,6 +232,8 @@
           "excel/end")}
 
   with-font [builder name]
+
+  { :pre [(= (type builder) :ExcelBuilder) (= (type name) :core/string)] }
 
   (. builder :withFont name))
 
@@ -253,7 +263,7 @@
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
-                  (excel/write-file "sample.xlsx"))))
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
          "excel/format", "excel/font", "excel/bg-color",
@@ -261,6 +271,8 @@
          "excel/end")}
 
   with-cell-style [builder name]
+
+  { :pre [(= (type builder) :ExcelBuilder) (= (type name) :core/string)] }
 
   (. builder :withCellStyle name))
 
@@ -282,11 +294,13 @@
                      (excel/render-data-items data)
                      (excel/auto-size-columns)
                      (excel/end)
-                 (excel/write-file "sample.xlsx"))))
+                   (excel/write-file "sample.xlsx"))))
          """ )
      :see-also '("excel/write-stream", "excel/write-bytebuf")}
 
   write-file [builder f]
+
+  { :pre [(= (type builder) :ExcelBuilder) (#{:core/string :File} (type f)) ] }
 
   (. builder :write (. :java.io.FileOutputStream :new f)))
 
@@ -309,11 +323,14 @@
                      (excel/render-data-items data)
                      (excel/auto-size-columns)
                      (excel/end)
-                 (excel/write-stream os))))
+                   (excel/write-stream os))))
          """ )
      :see-also '("excel/write-file", "excel/write-bytebuf")}
 
   write-stream [builder os]
+
+  { :pre [(= (type builder) :ExcelBuilder)
+          (instance-of? :OutputStream (type name))] }
 
   (. builder :write os))
 
@@ -335,11 +352,13 @@
                      (excel/render-data-items data)
                      (excel/auto-size-columns)
                      (excel/end)
-                 (excel/write-bytebuf))))
+                   (excel/write-bytebuf))))
          """ )
      :see-also '("excel/write-file", "excel/write-stream")}
 
   write-bytebuf [builder]
+
+  { :pre [(= (type builder) :ExcelBuilder)] }
 
   (. builder :writeToBytes))
 
@@ -360,7 +379,7 @@
                      (excel/render-data-items data)
                      (excel/auto-size-columns)
                      (excel/end)
-                 (excel/write-file "sample.xlsx"))))
+                   (excel/write-file "sample.xlsx"))))
          """ )
      :see-also '(
          "excel/with-sheet", "excel/with-font", "excel/with-cell-style",
@@ -376,19 +395,30 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(no-header builder)")
+  ^{ :arglists '("(no-header-row builder)")
      :doc "Render the sheet without header row."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (no-header)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/no-header-row)
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ )
-     :see-also '("no-header")}
+     :see-also '("no-header-row")}
 
-  no-header [builder]
+  no-header-row [builder]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :noHeader))
 
@@ -398,18 +428,29 @@
      :doc "Sets the default header style for the sheet header rows."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "header")
-                  (font "bold")
-                  (end)
-                (with-sheet "Sheet 1")
-                  (default-header-style "header")
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-cell-style "header")
+                      (excel/bg-color (:GREY_25_PERCENT excel/colors))
+                      (excel/end)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/default-header-style "header")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '("no-header")}
 
   default-header-style [builder style-name]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :defaultHeaderStyle style-name))
 
@@ -419,18 +460,29 @@
      :doc "Sets the default body style for the sheet body rows."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "body")
-                  (font "italic")
-                  (end)
-                (with-sheet "Sheet 1")
-                  (default-body-style "body")
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-cell-style "body")
+                      (excel/bg-color (:CORNFLOWER_BLUE excel/colors))
+                      (excel/end)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/default-body-style "body")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '("no-header")}
 
   default-body-style [builder style-name]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :defaultBodyStyle style-name))
 
@@ -440,18 +492,31 @@
      :doc "Sets the default footer style for the sheet footer rows."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "footer")
-                  (font "bold")
-                  (end)
-                (with-sheet "Sheet 1")
-                  (default-footer-style "footer")
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-cell-style "footer")
+                      (excel/bg-color (:CORNFLOWER_BLUE excel/colors))
+                      (excel/end)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/default-footer-style "footer")
+                      (excel/with-column "First Name" :first)
+                      (excel/with-column "Last Name" :last)
+                      (excel/with-column "Age" :age)
+                        (excel/col-footer-aggregated :avg)
+                        (excel/end)
+                      (excel/render-data-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '("no-header")}
 
   default-footer-style [builder style-name]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :defaultFooterStyle style-name))
 
@@ -470,6 +535,8 @@
      :see-also '("no-header")}
 
   default-column-width [builder points]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :setColumnWidthInPoints points))
 
@@ -493,6 +560,8 @@
 
   display-zeros [builder enabled]
 
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+
   (. builder :displayZeros enabled))
 
 
@@ -511,6 +580,8 @@
 
   with-column [builder column-name field-name]
 
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+
   (. builder :withColumn column-name field-name))
 
 
@@ -527,6 +598,8 @@
           """ ) }
 
   auto-size-columns [builder]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :autoSizeColumns))
 
@@ -546,6 +619,8 @@
 
   auto-size-column [builder col]
 
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+
   (. builder :autoSizeColumn co))
 
 
@@ -562,6 +637,8 @@
           """ ) }
 
   add-merged-region [builder row-from row-to col-from col-to]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :addMergedRegion row-from row-to col-from col-to))
 
@@ -580,6 +657,8 @@
 
   evaluate-all-formulas [builder]
 
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+
   (. builder :evaluateAllFormulas))
 
 
@@ -596,6 +675,8 @@
           """ ) }
 
   skip-data-rows [builder n]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :skipRows n))
 
@@ -615,6 +696,8 @@
 
   render-data-items [builder items]
 
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+
   (let [data (map #(. :EntityRecord :of %) items)
         list (into (. :java.util.ArrayList :new) data)]
     (. builder :renderDataItems list)))
@@ -633,6 +716,8 @@
           """ ) }
 
   render-data-item [builder item]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :renderData (. :EntityRecord :of item)))
 
@@ -654,9 +739,11 @@
   cell-value
 
   ([builder row col val]
+    { :pre [(= (type builder) :ExcelSheetBuilder)] }
     (. builder :value row col val))
 
   ([builder row col val style-name]
+    { :pre [(= (type builder) :ExcelSheetBuilder)] }
     (. builder :value row col val style-name)))
 
 
@@ -675,9 +762,11 @@
   cell-formula
 
   ([builder row col formula]
+    { :pre [(= (type builder) :ExcelSheetBuilder)] }
     (. builder :formula row col formula))
 
   ([builder row col formula style-name]
+    { :pre [(= (type builder) :ExcelSheetBuilder)] }
     (. builder :formula row col formula style-name)))
 
 
@@ -694,6 +783,8 @@
           """ ) }
 
   sum-formula [builder row-from row-to col-from col-to]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :sumFormula row-from row-to col-from col-to))
 
@@ -712,6 +803,8 @@
           """ ) }
 
   cell-address [builder row col]
+
+  { :pre [(= (type builder) :ExcelSheetBuilder)] }
 
   (. builder :cellAddress crow col))
 
@@ -737,6 +830,8 @@
 
   height [builder points]
 
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
+
   (. builder :heightInPoints points))
 
 
@@ -755,6 +850,8 @@
      :see-also '("height", "italic", "color") }
 
   bold [builder]
+
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
 
   (. builder :bold))
 
@@ -775,6 +872,8 @@
 
   italic [builder]
 
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
+
   (. builder :italic))
 
 
@@ -793,6 +892,8 @@
      :see-also '("height", "bold", "italic") }
 
   color [builder col]
+
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
 
   (. builder :color col))
 
@@ -818,6 +919,8 @@
 
   format [builder f]
 
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
+
   (. builder :format f))
 
 
@@ -836,6 +939,8 @@
      :see-also '( "format", "bg-color", "wrap-text", "h-align", "v-align") }
 
   font [builder ref]
+
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
 
   (. builder :font ref))
 
@@ -856,6 +961,8 @@
 
   bg-color [builder col]
 
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
+
   (. builder :bgColor col))
 
 
@@ -874,6 +981,8 @@
      :see-also '("format", "font", "bg-color", "h-align", "v-align") }
 
   wrap-text [builder wrap]
+
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
 
   (. builder :wrap-text wrap))
 
@@ -894,6 +1003,8 @@
 
   h-align [builder align]
 
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
+
   (case align
     :left     (. builder :hAlignLeft)
     :center   (. builder :hAlignCenter)
@@ -901,7 +1012,7 @@
     (throw    (. :VncException :new
               (str "Invalid horizontal alignment "
                    align
-                   ". Use :left, :center, or :right")))))
+                   ". Use one of :left, :center, or :right")))))
 
 
 (defn
@@ -920,6 +1031,8 @@
 
   v-align [builder align]
 
+  { :pre [(= (type builder) :ExcelFontBuilder)] }
+
   (case align
     :top      (. builder :vAlignTop)
     :midddle  (. builder :vAlignMiddle)
@@ -927,7 +1040,7 @@
     (throw    (. :VncException :new
               (str "Invalid vertical alignment "
                    align
-                   ". Use :top, :middle, or :bottom")))))
+                   ". Use one of :top, :middle, or :bottom")))))
 
 
 
@@ -957,6 +1070,8 @@
 
   col-width [builder points]
 
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+
   (. builder :widthInPoints points))
 
 
@@ -984,6 +1099,8 @@
           "col-footer-aggregated") }
 
   col-hidden [builder hide]
+
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
 
   (. builder :hidden hide))
 
@@ -1013,6 +1130,8 @@
 
   col-header-style [builder style-name]
 
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+
   (. builder :headerStyle style-name))
 
 
@@ -1040,6 +1159,8 @@
           "col-footer-aggregated") }
 
   col-body-style [builder style-name]
+
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
 
   (. builder :bodyStyle style-name))
 
@@ -1069,6 +1190,8 @@
 
   col-footer-style [builder style-name]
 
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+
   (. builder :footerStyle style-name))
 
 
@@ -1097,6 +1220,8 @@
 
   col-footer-text-value [builder text]
 
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+
   (. builder :footerTextValue text))
 
 
@@ -1124,6 +1249,8 @@
           "col-footer-aggregated") }
 
   col-footer-numeric-value [builder value]
+
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
 
   (. builder :footerNumberValue value))
 
@@ -1155,12 +1282,14 @@
 
   col-footer-aggregated [builder mode]
 
+  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+
   (case mode
-    :min  (. builder :footerMin value)
-    :max  (. builder :footerMax value)
-    :avg  (. builder :footerAverage value)
-    :sum  (. builder :footerSum value)
+    :min  (. builder :footerMin)
+    :max  (. builder :footerMax)
+    :avg  (. builder :footerAverage)
+    :sum  (. builder :footerSum)
     (throw (. :VncException :new
               (str "Invalid aggregate mode "
                    align
-                   ". Use :min, :max, :avg, or :sum")))))
+                   ". Use one of :min, :max, :avg, or :sum")))))

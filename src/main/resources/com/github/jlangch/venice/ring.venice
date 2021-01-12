@@ -601,11 +601,11 @@
         (try-with [os output-stream]
           (io/spit-stream os body :flush true))
 
-    (instance? :java.io.InputStream body)
+    (instance-of? :java.io.InputStream body)
         (try-with [os output-stream]
           (io/copy-stream body os))
 
-    (instance? :java.io.File body)
+    (instance-of? :java.io.File body)
         (try-with [os output-stream]
           (io/copy-file body os))
 

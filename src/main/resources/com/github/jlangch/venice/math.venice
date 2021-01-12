@@ -61,7 +61,7 @@
 
    math/bigint? [x]
 
-   (instance? :java.math.BigInteger x))
+   (instance-of? :java.math.BigInteger x))
 
 
 (defn

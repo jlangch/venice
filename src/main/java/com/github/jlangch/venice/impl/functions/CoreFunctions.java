@@ -5600,16 +5600,16 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction instance_Q =
+	public static VncFunction instance_of_Q =
 			new VncFunction(
-					"instance?",
+					"instance-of?",
 					VncFunction
 						.meta()
-						.arglists("(instance? type x)")
+						.arglists("(instance-of? type x)")
 						.doc("Returns true if x is an instance of the given type")
 						.examples(
-							"(instance? :long 500)",
-							"(instance? :java.math.BigInteger 500)")
+							"(instance-of? :long 500)",
+							"(instance-of? :java.math.BigInteger 500)")
 						.seeAlso("type", "supertype")
 						.build()
 			) {
@@ -7238,7 +7238,7 @@ public class CoreFunctions {
 						"(type 5)",
 						"(type [1 2])",
 						"(type (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("supertype", "instance?")
+					.seeAlso("supertype", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7260,7 +7260,7 @@ public class CoreFunctions {
 						"(supertype 5)",
 						"(supertype [1 2])",
 						"(supertype (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("type", "instance?")
+					.seeAlso("type", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7597,7 +7597,7 @@ public class CoreFunctions {
 				.add(name)
 				.add(type)
 				.add(supertype)
-				.add(instance_Q)
+				.add(instance_of_Q)
 				.add(highlight)
 
 				.toMap();

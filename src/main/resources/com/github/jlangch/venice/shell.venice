@@ -177,7 +177,7 @@
 
   process-handle? [p]
 
-  (instance? :java.lang.ProcessHandle p))
+  (instance-of? :java.lang.ProcessHandle p))
 
 
 (defn
