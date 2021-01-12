@@ -62,13 +62,16 @@ public class ExcelTest {
 	}
 
 	@Test
-	public void test_Builder1() {
+	public void test_Builder_binary() {
 		final byte[] data = ExcelBuilder
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age", Person::getAge)
+										.end()
 									.renderData(persons())
 									.autoSizeColumns()
 									.end()
@@ -76,17 +79,33 @@ public class ExcelTest {
 		
 		assertNotNull(data);		
 	}
+
+	@Test
+	public void test_Builder_binary_2sheets() {
+		final byte[] data = ExcelBuilder
+								.createXlsx()
+								.withSheet("Persons 1", Person.class)
+									.end()
+								.withSheet("Persons 2", Person.class)
+									.end()
+								.writeToBytes();
+		
+		assertNotNull(data);		
+	}
 	
 	@Test
-	public void test_Builder2() {
+	public void test_Builder_excel() {
 		final List<Person> persons = persons();
 		
 		final Excel excel = ExcelBuilder
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age", Person::getAge)
+										.end()
 									.renderData(persons)
 									.autoSizeColumns()
 									.end()
@@ -109,8 +128,11 @@ public class ExcelTest {
 								.createXlsx()
 								.withSheet("Persons", EntityRecord.class)
 									.withColumn("FirstName", "firstName")
+										.end()
 									.withColumn("LastName", "lastName")
+										.end()
 									.withColumn("Age", "age")
+										.end()
 									.renderData(persons)
 									.autoSizeColumns()
 									.end()
@@ -133,7 +155,9 @@ public class ExcelTest {
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age")
 										.colMapper(Person::getAge)
 										.footerMin()
@@ -156,7 +180,9 @@ public class ExcelTest {
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age")
 										.colMapper(Person::getAge)
 										.footerMax()
@@ -179,7 +205,9 @@ public class ExcelTest {
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age")
 										.colMapper(Person::getAge)
 										.footerAverage()
@@ -202,7 +230,9 @@ public class ExcelTest {
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age")
 										.colMapper(Person::getAge)
 										.footerSum()
@@ -225,8 +255,11 @@ public class ExcelTest {
 								.createXlsx()
 								.withSheet("Persons", Person.class)
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age", Person::getAge)
+										.end()
 									.renderData(persons)
 									.value(persons.size()+1, 0, "SUM age")
 									.withSum(persons.size()+1, 2)
@@ -246,12 +279,27 @@ public class ExcelTest {
 		
 		final Excel excel = ExcelBuilder
 								.createXlsx()
-								.withFont("bold").bold().end()
-								.withFont("bold-blue").bold().color(IndexedColors.BLUE).end()
-								.withCellStyle("header").font("bold").bgColor(IndexedColors.GREY_25_PERCENT).end()
-								.withCellStyle("age").format("#,##0").end()
-								.withCellStyle("sum-header").font("bold").end()
-								.withCellStyle("sum-age").font("bold-blue").format("#,##0").end()
+								.withFont("bold")
+									.bold()
+									.end()
+								.withFont("bold-blue")
+									.bold()
+									.color(IndexedColors.BLUE)
+									.end()
+								.withCellStyle("header")
+									.font("bold")
+									.bgColor(IndexedColors.GREY_25_PERCENT)
+									.end()
+								.withCellStyle("age")
+									.format("#,##0")
+									.end()
+								.withCellStyle("sum-header")
+									.font("bold")
+									.end()
+								.withCellStyle("sum-age")
+									.font("bold-blue")
+									.format("#,##0")
+									.end()
 								.withSheet("Persons", Person.class)
 									.defaultHeaderStyle("header")
 									.withColumn("FirstName")
@@ -286,16 +334,32 @@ public class ExcelTest {
 		
 		final Excel excel = ExcelBuilder
 								.createXlsx()
-								.withFont("bold").bold().end()
-								.withFont("sum-bold").bold().color(IndexedColors.BLUE).end()
-								.withCellStyle("header").font("bold").bgColor(IndexedColors.GREY_25_PERCENT).end()
-								.withCellStyle("sum-header").font("bold").end()
-								.withCellStyle("sum-result").font("sum-bold").format("#,##0").end()
+								.withFont("bold")
+									.bold()
+									.end()
+								.withFont("sum-bold")
+									.bold()
+									.color(IndexedColors.BLUE)
+									.end()
+								.withCellStyle("header")
+									.font("bold")
+									.bgColor(IndexedColors.GREY_25_PERCENT)
+									.end()
+								.withCellStyle("sum-header")
+									.font("bold")
+									.end()
+								.withCellStyle("sum-result")
+									.font("sum-bold")
+									.format("#,##0")
+									.end()
 								.withSheet("Persons", Person.class)
 									.defaultHeaderStyle("header")
 									.withColumn("FirstName", Person::getFirstName)
+										.end()
 									.withColumn("LastName", Person::getLastName)
+										.end()
 									.withColumn("Age", Person::getAge)
+										.end()
 									.renderData(persons)
 									.value(persons.size()+1, 0, "SUM age", "sum-header")
 									.withSum(persons.size()+1, 2)

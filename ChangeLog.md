@@ -19,6 +19,7 @@ and this project adheres to
 
 - `supertype` for number types. Returns now e.g. ":core/number" for `(supertype 1)` 
   instead of ":core/val".
+- `instance-of` to support unqualified Java types that get resolved by import statements
 
 ### Changed
 

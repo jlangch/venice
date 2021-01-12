@@ -1610,7 +1610,7 @@ public class CoreFunctionsTest {
 	}	
 
 	@Test
-	public void test_instance_Q() {
+	public void test_instance_of_Q() {
 		final Venice venice = new Venice();
 
 		assertTrue((Boolean)venice.eval("(instance-of? :core/nil nil)"));
@@ -1675,6 +1675,17 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(instance-of? :java.util.HashSet   (. :java.util.HashSet :new))"));
 		assertTrue((Boolean)venice.eval("(instance-of? :java.util.Map       (. :java.util.HashMap :new))"));
 		assertTrue((Boolean)venice.eval("(instance-of? :java.util.HashMap   (. :java.util.HashMap :new))"));
+
+		// Java Interop		
+		assertTrue((Boolean)venice.eval(
+				"(do                                         \n" +
+				"  (import :java.util.List)                  \n" +
+				"  (import :java.util.ArrayList)             \n" +
+				"  (instance-of? :List (. :ArrayList :new)))   "));
+		assertTrue((Boolean)venice.eval(
+				"(do                                              \n" +
+				"  (import :java.util.ArrayList)                  \n" +
+				"  (instance-of? :ArrayList (. :ArrayList :new)))   "));
 
 		// Custom Types	
 		assertTrue((Boolean)venice.eval(

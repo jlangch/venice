@@ -5616,14 +5616,23 @@ public class CoreFunctions {
 				public VncVal apply(final VncList args) {
 					ArityExceptions.assertArity(this, args, 2);
 
-					final VncKeyword type = Coerce.toVncKeyword(args.first());					
-					final VncKeyword qualifiedType = type.hasNamespace() 
-														? type 
-														: type.withNamespace(Namespaces.NS_CORE);
+					final VncKeyword type = Coerce.toVncKeyword(args.first());
+					if (type.hasNamespace()) {
+						// Qualified Venice or Java type
+						return VncBoolean.of(Types.isInstanceOf(type, args.second()));
+					}
+					else {
+						// Unqualified type
 
-					final VncVal x = args.second();
-
-					return VncBoolean.of(Types.isInstanceOf(qualifiedType, x));
+						// Try Venice core type first: long -> :core/long
+						final VncKeyword qualifiedType = type.withNamespace(Namespaces.NS_CORE);
+						if (Types.isInstanceOf(qualifiedType, args.second())) {
+							return VncBoolean.True;
+						}
+						
+						// Try unqualified Java type:  :ArrayList
+						return VncBoolean.of(Types.isInstanceOf(type, args.second()));
+					}
 				}
 
 				private static final long serialVersionUID = -1848883965231344442L;

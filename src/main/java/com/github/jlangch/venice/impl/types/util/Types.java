@@ -26,7 +26,9 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.List;
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.functions.Numeric;
+import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
@@ -363,20 +365,26 @@ public class Types {
 						final VncKeyword wrappingType = val.getWrappingTypeDef().getType();
 						return type.equals(wrappingType);
 					}
-					else if (Types.isVncJavaObject(val)) {
-						return Class.forName(clazz)
+					
+					// lookup imports
+					final Class<?> javaClazz = JavaInteropUtil.toClass(
+												type, 
+												Namespaces.getCurrentNamespace().getJavaImports());
+
+					if (Types.isVncJavaObject(val)) {
+						return Class.forName(javaClazz.getName())
 									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else if (Types.isVncJavaSet(val)) {
-						return Class.forName(clazz)
+						return Class.forName(javaClazz.getName())
 									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else if (Types.isVncJavaList(val)) {
-						return Class.forName(clazz)
+						return Class.forName(javaClazz.getName())
 									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else if (Types.isVncJavaMap(val)) {
-						return Class.forName(clazz)
+						return Class.forName(javaClazz.getName())
 									.isAssignableFrom(((IVncJavaObject)val).getDelegate().getClass());
 					}
 					else {
