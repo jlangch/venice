@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.excel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -91,7 +92,7 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
  * 
  * @author juerg
  */
-public class Excel {
+public class Excel implements Closeable {
 
 	Excel(final Workbook workbook) {
 		this.workbook = workbook;
@@ -125,7 +126,7 @@ public class Excel {
 		} 
 		catch(Exception ex) {
 			throw new ExcelException(String.format(
-					"Failed to open Excel file '%s'. File nout found!",
+					"Failed to open the Excel file '%s'. File not found!",
 					file.getPath()));
 		}
 	}
@@ -135,7 +136,7 @@ public class Excel {
 			return new Excel(WorkbookFactory.create(document));
 		} 
 		catch(Exception ex) {
-			throw new ExcelException("Failed to open Excel document");
+			throw new ExcelException("Failed to open the Excel document from the input stream");
 		}
 	}
 
@@ -202,14 +203,14 @@ public class Excel {
 	public void write(final OutputStream outputStream) {
 		if (outputStream == null) {
 			close();
-			throw new IllegalArgumentException("An outputStream must not be null");
+			throw new IllegalArgumentException("An 'outputStream' must not be null");
 		}
 		
 		try {
 			this.workbook.write(outputStream);
 		}
 		catch(Exception ex) {
-			throw new ExcelException("Failed to create EXCEL document", ex);
+			throw new ExcelException("Failed to write the Excel document to the output stream", ex);
 		}
 		finally {
 			close();
@@ -231,7 +232,7 @@ public class Excel {
 			fos.write(writeToBytes());
 		}
 		catch(Exception ex) {
-			throw new FileException("Failed to write excel to file", ex);
+			throw new FileException("Failed to write the Excel to a file", ex);
 		}
 	}
 	

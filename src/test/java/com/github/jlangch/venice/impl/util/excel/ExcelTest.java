@@ -72,7 +72,7 @@ public class ExcelTest {
 										.end()
 									.withColumn("Age", Person::getAge)
 										.end()
-									.renderData(persons())
+									.renderItems(persons())
 									.autoSizeColumns()
 									.end()
 								.writeToBytes();
@@ -106,7 +106,7 @@ public class ExcelTest {
 										.end()
 									.withColumn("Age", Person::getAge)
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -133,7 +133,7 @@ public class ExcelTest {
 										.end()
 									.withColumn("Age", "age")
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -162,7 +162,7 @@ public class ExcelTest {
 										.colMapper(Person::getAge)
 										.footerMin()
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -187,7 +187,7 @@ public class ExcelTest {
 										.colMapper(Person::getAge)
 										.footerMax()
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -212,7 +212,7 @@ public class ExcelTest {
 										.colMapper(Person::getAge)
 										.footerAverage()
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -237,7 +237,7 @@ public class ExcelTest {
 										.colMapper(Person::getAge)
 										.footerSum()
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -260,7 +260,7 @@ public class ExcelTest {
 										.end()
 									.withColumn("Age", Person::getAge)
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.value(persons.size()+1, 0, "SUM age")
 									.withSum(persons.size()+1, 2)
 										.cellFrom(1, 2).cellTo(persons.size(), 2).end()
@@ -316,7 +316,7 @@ public class ExcelTest {
 										.footerSum()
 										.footerStyle("sum-age")
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.autoSizeColumns()
 									.end()
 								.toExcel();
@@ -360,7 +360,7 @@ public class ExcelTest {
 										.end()
 									.withColumn("Age", Person::getAge)
 										.end()
-									.renderData(persons)
+									.renderItems(persons)
 									.value(persons.size()+1, 0, "SUM age", "sum-header")
 									.withSum(persons.size()+1, 2)
 										.cellFrom(1, 2).cellTo(persons.size(), 2).style("sum-result").end()

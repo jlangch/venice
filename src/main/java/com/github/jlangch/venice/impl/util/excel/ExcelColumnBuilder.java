@@ -106,7 +106,11 @@ public class ExcelColumnBuilder<T> {
 
 	public ExcelSheetBuilder<T> end() {
 		if (!hidden) {
-			columnDefs.add(new ExcelColumnDef<T>(name, mapper, width, headerStyle, bodyStyle, footerStyle, footerValue, footerType));
+			columnDefs.add(
+				new ExcelColumnDef<T>(
+						name, mapper, width, 
+						headerStyle, bodyStyle, footerStyle, 
+						footerValue, footerType));
 		}
 		return parentBuilder;
 	}

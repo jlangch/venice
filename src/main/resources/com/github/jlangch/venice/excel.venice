@@ -40,6 +40,7 @@
 (import :com.github.jlangch.venice.impl.util.excel.EntityRecord)
 (import :java.io.File)
 (import :java.io.OutputStream)
+(import :java.io.FileOutputStream)
 
 
 (def colors { :BLACK1                  0
@@ -125,7 +126,7 @@
                         (excel/end)
                       (excel/with-column "Age" :age)
                         (excel/end)
-                      (excel/render-data-items data)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xls"))))
@@ -143,7 +144,7 @@
                         (excel/end)
                       (excel/with-column "Age" :age)
                         (excel/end)
-                      (excel/render-data-items data)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -173,21 +174,26 @@
               (-> (excel/excel-builder :xlsx)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
-                      (excel/render-data-items data)
+                        (excel/end)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/with-sheet "Sheet 2")
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
-                      (excel/render-data-items data)
+                        (excel/end)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '(
-          "excel/with-column", "excel/render-data-items", "excel/render-data-item",
+          "excel/with-column", "excel/render-items", "excel/render-item",
           "excel/cell-value", "excel/cell-formula",
           "excel/no-header", "excel/auto-size-columns", "excel/auto-size-column",
           "excel/default-header-style", "excel/default-body-style",
@@ -205,7 +211,7 @@
 
 
 (defn
-  ^{ :arglists '("(with-font builder name)")
+  ^{ :arglists '("(with-font builder font)")
      :doc "Returns a new font builder to define a new named font."
      :examples '(
           """
@@ -224,10 +230,13 @@
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
+                        (excel/end)
                       (excel/default-header-style :header)
-                      (excel/render-data-items data)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -237,15 +246,15 @@
           "excel/bold", "excel/italic", "excel/color",
           "excel/end")}
 
-  with-font [builder name]
+  with-font [builder font]
 
-  { :pre [(instance-of? :ExcelBuilder builder) (string? name)] }
+  { :pre [(instance-of? :ExcelBuilder builder) (keyword? font)] }
 
-  (. builder :withFont name))
+  (. builder :withFont (name font)))
 
 
 (defn
-  ^{ :arglists '("(with-cell-style builder name)")
+  ^{ :arglists '("(with-cell-style builder style)")
      :doc "Returns a new cell style builder to define a new named cell style."
      :examples '(
           """
@@ -263,10 +272,13 @@
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
+                        (excel/end)
                       (excel/default-header-style :header)
-                      (excel/render-data-items data)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -276,11 +288,11 @@
          "excel/warp-text", "excel/h-align", "excel/v-align",
          "excel/end")}
 
-  with-cell-style [builder name]
+  with-cell-style [builder style]
 
-  { :pre [(instance-of? :ExcelBuilder builder) (string? name)] }
+  { :pre [(instance-of? :ExcelBuilder builder) (keyword? style)] }
 
-  (. builder :withCellStyle name))
+  (. builder :withCellStyle (name style)))
 
 
 (defn
@@ -295,9 +307,12 @@
              (-> (excel/excel-builder :xlsx)
                    (excel/with-sheet "Sheet 1")
                      (excel/with-column "First Name" :first)
+                       (excel/end)
                      (excel/with-column "Last Name" :last)
+                       (excel/end)
                      (excel/with-column "Age" :age)
-                     (excel/render-data-items data)
+                       (excel/end)
+                     (excel/render-items data)
                      (excel/auto-size-columns)
                      (excel/end)
                    (excel/write-file "sample.xlsx"))))
@@ -309,7 +324,7 @@
   { :pre [(instance-of? :ExcelBuilder builder)
           (or (string? f) (instance-of? :File f)) ] }
 
-  (. builder :write (. :java.io.FileOutputStream :new f)))
+  (. builder :write (. :FileOutputStream :new f)))
 
 
 (defn
@@ -325,9 +340,12 @@
              (-> (excel/excel-builder :xlsx)
                    (excel/with-sheet "Sheet 1")
                      (excel/with-column "First Name" :first)
+                       (excel/end)
                      (excel/with-column "Last Name" :last)
+                       (excel/end)
                      (excel/with-column "Age" :age)
-                     (excel/render-data-items data)
+                       (excel/end)
+                     (excel/render-items data)
                      (excel/auto-size-columns)
                      (excel/end)
                    (excel/write-stream os))))
@@ -354,9 +372,12 @@
              (-> (excel/excel-builder :xlsx)
                    (excel/with-sheet "Sheet 1")
                      (excel/with-column "First Name" :first)
+                       (excel/end)
                      (excel/with-column "Last Name" :last)
+                       (excel/end)
                      (excel/with-column "Age" :age)
-                     (excel/render-data-items data)
+                       (excel/end)
+                     (excel/render-items data)
                      (excel/auto-size-columns)
                      (excel/end)
                    (excel/write-bytebuf))))
@@ -382,8 +403,10 @@
              (-> (excel/excel-builder :xlsx)
                    (excel/with-sheet "Sheet 1")
                      (excel/with-column "First Name" :first)
+                       (excel/end)
                      (excel/with-column "Last Name" :last)
-                     (excel/render-data-items data)
+                       (excel/end)
+                     (excel/render-items data)
                      (excel/auto-size-columns)
                      (excel/end)
                    (excel/write-file "sample.xlsx"))))
@@ -419,9 +442,12 @@
                     (excel/with-sheet "Sheet 1")
                       (excel/no-header-row)
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
-                      (excel/render-data-items data)
+                        (excel/end)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -451,9 +477,12 @@
                     (excel/with-sheet "Sheet 1")
                       (excel/default-header-style :header)
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
-                      (excel/render-data-items data)
+                        (excel/end)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -464,7 +493,7 @@
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
 
-  (. builder :defaultHeaderStyle (str style)))
+  (. builder :defaultHeaderStyle (name style)))
 
 
 (defn
@@ -483,9 +512,12 @@
                     (excel/with-sheet "Sheet 1")
                       (excel/default-body-style :body)
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
-                      (excel/render-data-items data)
+                        (excel/end)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -496,7 +528,7 @@
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
 
-  (. builder :defaultBodyStyle (str style)))
+  (. builder :defaultBodyStyle (name style)))
 
 
 (defn
@@ -515,11 +547,13 @@
                     (excel/with-sheet "Sheet 1")
                       (excel/default-footer-style :footer)
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
                         (excel/col-footer-aggregated :avg)
                         (excel/end)
-                      (excel/render-data-items data)
+                      (excel/render-items data)
                       (excel/auto-size-columns)
                       (excel/end)
                     (excel/write-file "sample.xlsx"))))
@@ -530,7 +564,7 @@
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
 
-  (. builder :defaultFooterStyle (str style)))
+  (. builder :defaultFooterStyle (name style)))
 
 
 (defn
@@ -538,11 +572,22 @@
      :doc "Sets the default column width for the sheet's columns."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (default-column-width 200)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                        (excel/end)
+                      (excel/with-column "Last Name" :last)
+                        (excel/end)
+                      (excel/with-column "Age" :age)
+                        (excel/end)
+                      (excel/default-column-width 100)
+                      (excel/render-items data)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '("no-header")}
 
@@ -550,7 +595,7 @@
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (long? points)] }
 
-  (. builder :setColumnWidthInPoints points))
+  (. builder :setDefaultColumnWidthInPoints points))
 
 
 (defn
@@ -562,17 +607,29 @@
           """
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (display-zeros true)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 0 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                        (excel/end)
+                      (excel/with-column "Last Name" :last)
+                        (excel/end)
+                      (excel/with-column "Age" :age)
+                        (excel/end)
+                      (excel/display-zeros false)
+                      (excel/render-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ )
      :see-also '("no-header")}
 
   display-zeros [builder enabled]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (boolean? points)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (boolean? enabled)] }
 
   (. builder :displayZeros enabled))
 
@@ -582,19 +639,30 @@
      :doc "Returns a column builder to add a new named column."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name" :firstName)
-                    (end)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                        (excel/end)
+                      (excel/with-column "Last Name" :last)
+                        (excel/end)
+                      (excel/with-column "Age" :age)
+                        (excel/end)
+                      (excel/render-items data)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ ) }
 
   with-column [builder column-name field]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? field)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)
+          (string? column-name)
+          (keyword? field)] }
 
-  (. builder :withColumn column-name (str field)))
+  (. builder :withColumn column-name (name field)))
 
 
 (defn
@@ -602,11 +670,22 @@
      :doc "Auto size the width of all columns."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (auto-size-columns)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                        (excel/end)
+                      (excel/with-column "Last Name" :last)
+                        (excel/end)
+                      (excel/with-column "Age" :age)
+                        (excel/end)
+                      (excel/render-items data)
+                      (excel/auto-size-columns)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ ) }
 
   auto-size-columns [builder]
@@ -621,34 +700,59 @@
      :doc "Auto size the width of column col (0..n)."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (auto-size-column 1)
-                  (auto-size-column 2)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "First Name" :first)
+                        (excel/end)
+                      (excel/with-column "Last Name" :last)
+                        (excel/end)
+                      (excel/with-column "Age" :age)
+                        (excel/end)
+                      (excel/render-items data)
+                      (excel/auto-size-column 2)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ ) }
 
   auto-size-column [builder col]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (long? col)] }
 
-  (. builder :autoSizeColumn co))
+  (. builder :autoSizeColumn col))
 
 
 (defn
-  ^{ :arglists '("(add-merged-region builder row-from row-to col-from col-to)")
+  ^{ :arglists '("(merged-region builder row-from row-to col-from col-to)")
      :doc "Add a merged region."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (add-merged-region 4 6 0 12)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data [ {:a 100 :b 200 :c 300 :d 400 }
+                         {:a 101 :b 201 :c 301 :d 401 }
+                         {:a 102 :b 202 :c 303 :d 404 } ]]
+              (-> (excel/excel-builder :xlsx)
+                    (excel/with-sheet "Sheet 1")
+                      (excel/with-column "A" :a)
+                        (excel/end)
+                      (excel/with-column "B" :b)
+                        (excel/end)
+                      (excel/with-column "C" :c)
+                        (excel/end)
+                      (excel/with-column "D" :d)
+                        (excel/end)
+                      (excel/no-header-row)
+                      (excel/render-items data)
+                      (excel/merged-region 1 1 1 2)
+                      (excel/end)
+                    (excel/write-file "sample.xlsx"))))
           """ ) }
 
-  add-merged-region [builder row-from row-to col-from col-to]
+  merged-region [builder row-from row-to col-from col-to]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)
           (long? row-from) (long? row-to)
@@ -696,44 +800,45 @@
 
 
 (defn
-  ^{ :arglists '("(render-data-items builder items)")
+  ^{ :arglists '("(render-items builder items)")
      :doc "Render the passed data items"
      :examples '(
           """
           (-> (excel-builder :xlsx)
                 (with-sheet "Sheet 1")
-                  (render-data-items [{:name "smith"  :age 23}
-                                      {:name "miller" :age 29}])
+                  (render-items [{:name "smith"  :age 23}
+                                 {:name "miller" :age 29}])
                   (end)
               (write "sample.xlsx")))
           """ ) }
 
-  render-data-items [builder items]
+  render-items [builder items]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
-  (let [data (map #(. :EntityRecord :of %) items)
-        list (into (. :java.util.ArrayList :new) data)]
-    (. builder :renderDataItems list)))
+  (->> (map #(. :EntityRecord :of %) items)
+       (into (. :java.util.ArrayList :new))
+       (. builder :renderItems)))
 
 
 (defn
-  ^{ :arglists '("(render-data-item builder item)")
+  ^{ :arglists '("(render-item builder item)")
      :doc "Render a single data item"
      :examples '(
           """
           (-> (excel-builder :xlsx)
                 (with-sheet "Sheet 1")
-                  (render-data-item {:name "smith"  :age 23})
+                  (render-item {:name "smith" :age 23})
                   (end)
               (write "sample.xlsx")))
           """ ) }
 
-  render-data-item [builder item]
+  render-item [builder item]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (map? item)] }
 
-  (. builder :renderData (. :EntityRecord :of item)))
+  (->> (. :EntityRecord :of item)
+       (. builder :renderItem)))
 
 
 (defn
@@ -760,7 +865,7 @@
   ([builder row col val style]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
             (long? row) (long? col) (keyword? style)] }
-    (. builder :value row col val (str style))))
+    (. builder :value row col val (name style))))
 
 
 (defn
@@ -785,7 +890,7 @@
   ([builder row col formula style]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
             (long? row) (long? col) (string? formula) (keyword? style)] }
-    (. builder :formula row col formula (str style))))
+    (. builder :formula row col formula (name style))))
 
 
 (defn
@@ -954,7 +1059,7 @@
 
   { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? font-ref)] }
 
-  (. builder :font (str font-ref)))
+  (. builder :font (name font-ref)))
 
 
 (defn
@@ -1134,7 +1239,7 @@
 
   { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
 
-  (. builder :headerStyle (str style)))
+  (. builder :headerStyle (name style)))
 
 
 (defn
@@ -1163,7 +1268,7 @@
 
   { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
 
-  (. builder :bodyStyle (str style)))
+  (. builder :bodyStyle (name style)))
 
 
 (defn
@@ -1192,7 +1297,7 @@
 
   { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
 
-  (. builder :footerStyle (str style)))
+  (. builder :footerStyle (name style)))
 
 
 (defn

@@ -61,7 +61,7 @@ public class ExcelSheetBuilder<T> {
 		return this;
 	}
 
-	public ExcelColumnBuilder<T> withColumn(final String colHeaderName) {		
+	public ExcelColumnBuilder<T> withColumn(final String colHeaderName) {	
 		return new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName);
 	}
 
@@ -69,44 +69,35 @@ public class ExcelSheetBuilder<T> {
 			final String colHeaderName,
 			final Function<? super T, ?> colMapper
 	) {		
-		final ExcelColumnBuilder<T> builder = new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName);
-		builder.colMapper(colMapper);
-		return builder;
+		return new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName)
+					.colMapper(colMapper);
 	}
 
 	public ExcelColumnBuilder<T> withColumn(
 			final String colHeaderName,
 			final String fieldName
 	) {	
-		return withColumn(colHeaderName, e -> ((EntityRecord)e).get(fieldName));
+		return new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName)
+					.colMapper(e -> ((EntityRecord)e).get(fieldName));
 	}
 
-	public ExcelSheetBuilder<T> renderDataItems(final List<T> items) {
-		return renderData(items);
-	}
-
-	public ExcelSheetBuilder<T> renderData(final List<T> items) {	
-		int col = 0;
-		for(ExcelColumnDef<T> colDef : columnDefs) {
-			if (colDef.width != null) sheet.setColumnWidthInPoints(col, colDef.width);
-			col++;
-		}
-		
+	public ExcelSheetBuilder<T> renderItems(final List<T> items) {		
 		renderHeader();
 		
 		final int bodyRowStart = currRow;
-		if (items != null) {
-			items.stream().forEach(v -> renderItem(v, currRow++));
-		}
 		
-		renderFooter(bodyRowStart, bodyRowStart + items.size()-1, items == null || items.isEmpty());
+		items.forEach(v -> renderBodyItem(v));
+
+		final int bodyRowEnd = currRow - 1;
+
+		renderFooter(bodyRowStart, bodyRowEnd);
 		
 		return this;
 	}
 	
-	public ExcelSheetBuilder<T> renderData(final T item) {
+	public ExcelSheetBuilder<T> renderItem(final T item) {
 		renderHeader();
-		renderItem(item, currRow++);
+		renderBodyItem(item);
 		return this;
 	}
 	
@@ -165,8 +156,8 @@ public class ExcelSheetBuilder<T> {
 		return this;
     }
 
-	public ExcelSheetBuilder<T> setColumnWidthInPoints(final int col, final int width) {
-		sheet.setColumnWidthInPoints(col, width);
+	public ExcelSheetBuilder<T> setDefaultColumnWidthInPoints(final int width) {
+		columnWidth = width;
 		return this;
 	}
 
@@ -221,15 +212,20 @@ public class ExcelSheetBuilder<T> {
 	}
 	
 	private void renderHeader() {
-		if (!headerRendered) {
+		if (!headerRendered) {		
+			renderColumnWidths();
+
 			if (!noHeader) {
 				setHeaderValues(currRow++, getHeaderStrings());
 			}
+
 			headerRendered = true;
 		}
 	}
 	
-	private void renderFooter(final int rowFrom, final int rowTo, boolean emptyBody) {
+	private void renderFooter(final int bodyRowFrom, final int bodyRowTo) {
+		final boolean emptyBody = bodyRowTo < bodyRowFrom;
+		
 		if (hasFooter()) {
 			int col = 0;
 			for(ExcelColumnDef<T> colDef : columnDefs) {
@@ -253,8 +249,8 @@ public class ExcelSheetBuilder<T> {
 						else {
 							final String formula = String.format(
 									"SUM(%s:%s)", 
-									new CellAddress(rowFrom, col).formatAsString(),
-									new CellAddress(rowTo, col).formatAsString());
+									new CellAddress(bodyRowFrom, col).formatAsString(),
+									new CellAddress(bodyRowTo, col).formatAsString());
 
 							sheet.setFormula(currRow, col, formula, getColumnFooterStyle(col));
 						}
@@ -266,8 +262,8 @@ public class ExcelSheetBuilder<T> {
 						else {
 							final String formula = String.format(
 									"MIN(%s:%s)", 
-									new CellAddress(rowFrom, col).formatAsString(),
-									new CellAddress(rowTo, col).formatAsString());
+									new CellAddress(bodyRowFrom, col).formatAsString(),
+									new CellAddress(bodyRowTo, col).formatAsString());
 
 							sheet.setFormula(currRow, col, formula, getColumnFooterStyle(col));
 						}
@@ -279,8 +275,8 @@ public class ExcelSheetBuilder<T> {
 						else {
 							final String formula = String.format(
 									"MAX(%s:%s)", 
-									new CellAddress(rowFrom, col).formatAsString(),
-									new CellAddress(rowTo, col).formatAsString());
+									new CellAddress(bodyRowFrom, col).formatAsString(),
+									new CellAddress(bodyRowTo, col).formatAsString());
 
 							sheet.setFormula(currRow, col, formula, getColumnFooterStyle(col));
 						}
@@ -292,8 +288,8 @@ public class ExcelSheetBuilder<T> {
 						else {
 							final String formula = String.format(
 									"AVERAGE(%s:%s)", 
-									new CellAddress(rowFrom, col).formatAsString(),
-									new CellAddress(rowTo, col).formatAsString());
+									new CellAddress(bodyRowFrom, col).formatAsString(),
+									new CellAddress(bodyRowTo, col).formatAsString());
 
 							sheet.setFormula(currRow, col, formula, getColumnFooterStyle(col));
 						}
@@ -305,16 +301,29 @@ public class ExcelSheetBuilder<T> {
 		currRow++;
 	}
 
-	private void renderItem(final T item, final int row) {
+	private void renderBodyItem(final T item) {
 		if (item != null) {
 			int col = 0;
 			for(ExcelColumnDef<T> colDef : columnDefs) {
-				sheet.setValue(row, col, (Object)colDef.colMapper.apply(item), getColumnBodyStyle(col));
+				sheet.setValue(currRow, col, (Object)colDef.colMapper.apply(item), getColumnBodyStyle(col));
 				col++;
 			}
 		}
+		currRow++;
 	}
 		
+	private void renderColumnWidths() {
+		int col = 0;
+		for(ExcelColumnDef<T> colDef : columnDefs) {
+			if (colDef.width != null) {
+				sheet.setColumnWidthInPoints(col, colDef.width);
+			}
+			else  if (columnWidth != null) {
+				sheet.setColumnWidthInPoints(col, columnWidth);
+			}
+			col++;
+		}
+	}
 		
 	
 	public static final int DEFAULT_FONT_SIZE = XSSFFont.DEFAULT_FONT_SIZE;
@@ -325,6 +334,7 @@ public class ExcelSheetBuilder<T> {
 	private boolean noHeader = false;
 	private boolean headerRendered = false;
 	private int currRow = 0;
+	private Integer columnWidth;
 	private String defaultHeaderStyle;
 	private String defaultBodyStyle;
 	private String defaultFooterStyle;

@@ -167,6 +167,7 @@ public class ExcelBuilder {
 	}
 
 	public ExcelBuilder end() {
+		managedExcel.close();
 		return this;
 	}
 
