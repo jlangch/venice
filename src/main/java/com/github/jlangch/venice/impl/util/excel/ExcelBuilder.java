@@ -166,6 +166,10 @@ public class ExcelBuilder {
 		return managedExcel.writeToBytes();
 	}
 
+	public ExcelBuilder end() {
+		return this;
+	}
+
 	
 	private final Excel managedExcel;
 }

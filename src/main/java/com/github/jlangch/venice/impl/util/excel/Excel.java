@@ -93,7 +93,7 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
  */
 public class Excel {
 
-	private Excel(final Workbook workbook) {
+	Excel(final Workbook workbook) {
 		this.workbook = workbook;
 		this.cellDataStyles = new ExcelCellStyles(workbook, fonts);
 		this.evaluator = workbook.getCreationHelper().createFormulaEvaluator();

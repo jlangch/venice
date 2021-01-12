@@ -65,40 +65,20 @@ public class ExcelSheetBuilder<T> {
 		return new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName);
 	}
 
-	public ExcelSheetBuilder<T> withColumn(
-			final String header,
+	public ExcelColumnBuilder<T> withColumn(
+			final String colHeaderName,
 			final Function<? super T, ?> colMapper
 	) {		
-		columnDefs.add(new ExcelColumnDef<T>(header, colMapper, null, null, null, null, null, null));
-		return this;
-	}
-	
-	public ExcelSheetBuilder<T> withColumn(
-			final String header,
-			final Function<? super T, ?> colMapper,
-			final String headerStyle,
-			final String bodyStyle
-	) {		
-		columnDefs.add(new ExcelColumnDef<T>(header, colMapper, null, headerStyle, bodyStyle, null, null, null));
-		return this;
+		final ExcelColumnBuilder<T> builder = new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName);
+		builder.colMapper(colMapper);
+		return builder;
 	}
 
-	public ExcelSheetBuilder<T> withColumn(
-			final String header,
+	public ExcelColumnBuilder<T> withColumn(
+			final String colHeaderName,
 			final String fieldName
-	) {		
-		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((EntityRecord)e).get(fieldName), null, null, null, null, null, null));
-		return this;
-	}
-
-	public ExcelSheetBuilder<T> withColumn(
-			final String header,
-			final String fieldName,
-			final String headerStyle,
-			final String bodyStyle
-	) {		
-		columnDefs.add(new ExcelColumnDef<T>(header, e -> ((EntityRecord)e).get(fieldName), null, headerStyle, bodyStyle, null, null, null));
-		return this;
+	) {	
+		return withColumn(colHeaderName, e -> ((EntityRecord)e).get(fieldName));
 	}
 
 	public ExcelSheetBuilder<T> renderDataItems(final List<T> items) {

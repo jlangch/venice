@@ -120,8 +120,11 @@
               (-> (excel/excel-builder :xls)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
+                        (excel/end)
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
@@ -135,8 +138,11 @@
               (-> (excel/excel-builder :xlsx)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
+                        (excel/end)
                       (excel/with-column "Last Name" :last)
+                        (excel/end)
                       (excel/with-column "Age" :age)
+                        (excel/end)
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
@@ -193,7 +199,7 @@
 
   with-sheet [builder name]
 
-  { :pre [(= (type builder) :ExcelBuilder) (= (type name) :core/string)] }
+  { :pre [(instance-of? :ExcelBuilder builder) (string? name)] }
 
   (. builder :withSheet name (class :EntityRecord)))
 
@@ -208,19 +214,19 @@
             (let [data [ {:first "John" :last "Doe"   :age 28 }
                          {:first "Sue"  :last "Ford"  :age 26 } ]]
               (-> (excel/excel-builder :xlsx)
-                    (excel/with-font "header")
+                    (excel/with-font :header)
                       (excel/height 16)
                       (excel/bold)
                       (excel/color (:DARK_BLUE excel/colors))
                       (excel/end)
-                    (excel/with-cell-style "header")
-                      (excel/font "header")
+                    (excel/with-cell-style :header)
+                      (excel/font :header)
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
                       (excel/with-column "Last Name" :last)
                       (excel/with-column "Age" :age)
-                      (excel/default-header-style "header")
+                      (excel/default-header-style :header)
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
@@ -233,7 +239,7 @@
 
   with-font [builder name]
 
-  { :pre [(= (type builder) :ExcelBuilder) (= (type name) :core/string)] }
+  { :pre [(instance-of? :ExcelBuilder builder) (string? name)] }
 
   (. builder :withFont name))
 
@@ -248,18 +254,18 @@
             (let [data [ {:first "John" :last "Doe"   :age 28 }
                          {:first "Sue"  :last "Ford"  :age 26 } ]]
               (-> (excel/excel-builder :xlsx)
-                    (excel/with-font "header")
+                    (excel/with-font :header)
                       (excel/bold)
                       (excel/end)
-                    (excel/with-cell-style "header")
-                      (excel/font "header")
+                    (excel/with-cell-style :header)
+                      (excel/font :header)
                       (excel/bg-color (:GREY_25_PERCENT excel/colors))
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
                       (excel/with-column "First Name" :first)
                       (excel/with-column "Last Name" :last)
                       (excel/with-column "Age" :age)
-                      (excel/default-header-style "header")
+                      (excel/default-header-style :header)
                       (excel/render-data-items data)
                       (excel/auto-size-columns)
                       (excel/end)
@@ -272,7 +278,7 @@
 
   with-cell-style [builder name]
 
-  { :pre [(= (type builder) :ExcelBuilder) (= (type name) :core/string)] }
+  { :pre [(instance-of? :ExcelBuilder builder) (string? name)] }
 
   (. builder :withCellStyle name))
 
@@ -300,7 +306,8 @@
 
   write-file [builder f]
 
-  { :pre [(= (type builder) :ExcelBuilder) (#{:core/string :File} (type f)) ] }
+  { :pre [(instance-of? :ExcelBuilder builder)
+          (or (string? f) (instance-of? :File f)) ] }
 
   (. builder :write (. :java.io.FileOutputStream :new f)))
 
@@ -329,8 +336,8 @@
 
   write-stream [builder os]
 
-  { :pre [(= (type builder) :ExcelBuilder)
-          (instance-of? :OutputStream (type name))] }
+  { :pre [(instance-of? :ExcelBuilder builder)
+          (instance-of? :OutputStream os)] }
 
   (. builder :write os))
 
@@ -358,7 +365,7 @@
 
   write-bytebuf [builder]
 
-  { :pre [(= (type builder) :ExcelBuilder)] }
+  { :pre [(instance-of? :ExcelBuilder builder)] }
 
   (. builder :writeToBytes))
 
@@ -386,6 +393,11 @@
          "excel/with-column")}
 
   end [builder]
+
+  { :pre [(or (instance-of? :ExcelSheetBuilder builder)
+              (instance-of? :ExcelFontBuilder builder)
+              (instance-of? :ExcelCellStyleBuilder builder)
+              (instance-of? :ExcelColumnBuilder builder))] }
 
   (. builder :end))
 
@@ -418,13 +430,13 @@
 
   no-header-row [builder]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
   (. builder :noHeader))
 
 
 (defn
-  ^{ :arglists '("(default-header-style builder style-name)")
+  ^{ :arglists '("(default-header-style builder style)")
      :doc "Sets the default header style for the sheet header rows."
      :examples '(
           """
@@ -433,11 +445,11 @@
             (let [data [ {:first "John" :last "Doe"   :age 28 }
                          {:first "Sue"  :last "Ford"  :age 26 } ]]
               (-> (excel/excel-builder :xlsx)
-                    (excel/with-cell-style "header")
+                    (excel/with-cell-style :header)
                       (excel/bg-color (:GREY_25_PERCENT excel/colors))
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
-                      (excel/default-header-style "header")
+                      (excel/default-header-style :header)
                       (excel/with-column "First Name" :first)
                       (excel/with-column "Last Name" :last)
                       (excel/with-column "Age" :age)
@@ -448,15 +460,15 @@
           """ )
      :see-also '("no-header")}
 
-  default-header-style [builder style-name]
+  default-header-style [builder style]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
 
-  (. builder :defaultHeaderStyle style-name))
+  (. builder :defaultHeaderStyle (str style)))
 
 
 (defn
-  ^{ :arglists '("(default-body-style builder style-name)")
+  ^{ :arglists '("(default-body-style builder style)")
      :doc "Sets the default body style for the sheet body rows."
      :examples '(
           """
@@ -465,11 +477,11 @@
             (let [data [ {:first "John" :last "Doe"   :age 28 }
                          {:first "Sue"  :last "Ford"  :age 26 } ]]
               (-> (excel/excel-builder :xlsx)
-                    (excel/with-cell-style "body")
+                    (excel/with-cell-style :body)
                       (excel/bg-color (:CORNFLOWER_BLUE excel/colors))
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
-                      (excel/default-body-style "body")
+                      (excel/default-body-style :body)
                       (excel/with-column "First Name" :first)
                       (excel/with-column "Last Name" :last)
                       (excel/with-column "Age" :age)
@@ -480,15 +492,15 @@
           """ )
      :see-also '("no-header")}
 
-  default-body-style [builder style-name]
+  default-body-style [builder style]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
 
-  (. builder :defaultBodyStyle style-name))
+  (. builder :defaultBodyStyle (str style)))
 
 
 (defn
-  ^{ :arglists '("(default-footer-style builder style-name)")
+  ^{ :arglists '("(default-footer-style builder style)")
      :doc "Sets the default footer style for the sheet footer rows."
      :examples '(
           """
@@ -497,11 +509,11 @@
             (let [data [ {:first "John" :last "Doe"   :age 28 }
                          {:first "Sue"  :last "Ford"  :age 26 } ]]
               (-> (excel/excel-builder :xlsx)
-                    (excel/with-cell-style "footer")
+                    (excel/with-cell-style :footer)
                       (excel/bg-color (:CORNFLOWER_BLUE excel/colors))
                       (excel/end)
                     (excel/with-sheet "Sheet 1")
-                      (excel/default-footer-style "footer")
+                      (excel/default-footer-style :footer)
                       (excel/with-column "First Name" :first)
                       (excel/with-column "Last Name" :last)
                       (excel/with-column "Age" :age)
@@ -514,11 +526,11 @@
           """ )
      :see-also '("no-header")}
 
-  default-footer-style [builder style-name]
+  default-footer-style [builder style]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
 
-  (. builder :defaultFooterStyle style-name))
+  (. builder :defaultFooterStyle (str style)))
 
 
 (defn
@@ -528,7 +540,7 @@
           """
           (-> (excel-builder :xlsx)
                 (with-sheet "Sheet 1")
-                  (default-column-width "200")
+                  (default-column-width 200)
                   (end)
               (write "sample.xlsx"))
           """ )
@@ -536,7 +548,7 @@
 
   default-column-width [builder points]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (long? points)] }
 
   (. builder :setColumnWidthInPoints points))
 
@@ -560,13 +572,13 @@
 
   display-zeros [builder enabled]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (boolean? points)] }
 
   (. builder :displayZeros enabled))
 
 
 (defn
-  ^{ :arglists '("(with-column builder column-name field-name)")
+  ^{ :arglists '("(with-column builder column-name field")
      :doc "Returns a column builder to add a new named column."
      :examples '(
           """
@@ -578,11 +590,11 @@
               (write "sample.xlsx"))
           """ ) }
 
-  with-column [builder column-name field-name]
+  with-column [builder column-name field]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? field)] }
 
-  (. builder :withColumn column-name field-name))
+  (. builder :withColumn column-name (str field)))
 
 
 (defn
@@ -599,7 +611,7 @@
 
   auto-size-columns [builder]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
   (. builder :autoSizeColumns))
 
@@ -619,7 +631,7 @@
 
   auto-size-column [builder col]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (long? col)] }
 
   (. builder :autoSizeColumn co))
 
@@ -638,7 +650,9 @@
 
   add-merged-region [builder row-from row-to col-from col-to]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)
+          (long? row-from) (long? row-to)
+          (long? col-from) (long? col-to)] }
 
   (. builder :addMergedRegion row-from row-to col-from col-to))
 
@@ -657,7 +671,7 @@
 
   evaluate-all-formulas [builder]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
   (. builder :evaluateAllFormulas))
 
@@ -676,7 +690,7 @@
 
   skip-data-rows [builder n]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (long? n)] }
 
   (. builder :skipRows n))
 
@@ -696,7 +710,7 @@
 
   render-data-items [builder items]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
   (let [data (map #(. :EntityRecord :of %) items)
         list (into (. :java.util.ArrayList :new) data)]
@@ -717,7 +731,7 @@
 
   render-data-item [builder item]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder) (map? item)] }
 
   (. builder :renderData (. :EntityRecord :of item)))
 
@@ -739,12 +753,14 @@
   cell-value
 
   ([builder row col val]
-    { :pre [(= (type builder) :ExcelSheetBuilder)] }
+    { :pre [(instance-of? :ExcelSheetBuilder builder)
+            (long? row) (long? col)] }
     (. builder :value row col val))
 
-  ([builder row col val style-name]
-    { :pre [(= (type builder) :ExcelSheetBuilder)] }
-    (. builder :value row col val style-name)))
+  ([builder row col val style]
+    { :pre [(instance-of? :ExcelSheetBuilder builder)
+            (long? row) (long? col) (keyword? style)] }
+    (. builder :value row col val (str style))))
 
 
 (defn
@@ -762,12 +778,14 @@
   cell-formula
 
   ([builder row col formula]
-    { :pre [(= (type builder) :ExcelSheetBuilder)] }
+    { :pre [(instance-of? :ExcelSheetBuilder builder)
+            (long? row) (long? col) (string? formula)] }
     (. builder :formula row col formula))
 
-  ([builder row col formula style-name]
-    { :pre [(= (type builder) :ExcelSheetBuilder)] }
-    (. builder :formula row col formula style-name)))
+  ([builder row col formula style]
+    { :pre [(instance-of? :ExcelSheetBuilder builder)
+            (long? row) (long? col) (string? formula) (keyword? style)] }
+    (. builder :formula row col formula (str style))))
 
 
 (defn
@@ -784,7 +802,7 @@
 
   sum-formula [builder row-from row-to col-from col-to]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(long? row-from) (long? row-to) (long? col-from) (long? col-to)] }
 
   (. builder :sumFormula row-from row-to col-from col-to))
 
@@ -804,7 +822,7 @@
 
   cell-address [builder row col]
 
-  { :pre [(= (type builder) :ExcelSheetBuilder)] }
+  { :pre [(long? row) (long? col)] }
 
   (. builder :cellAddress crow col))
 
@@ -815,8 +833,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '(
-          "(height builder points)")
+  ^{ :arglists '("(height builder points)")
      :doc "Sets the font height in points."
      :examples '(
           """
@@ -830,14 +847,13 @@
 
   height [builder points]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelFontBuilder builder) (long? points)] }
 
   (. builder :heightInPoints points))
 
 
 (defn
-  ^{ :arglists '(
-          "(bold builder)")
+  ^{ :arglists '("(bold builder)")
      :doc "Sets the font to bold."
      :examples '(
           """
@@ -851,14 +867,13 @@
 
   bold [builder]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelFontBuilder builder)] }
 
   (. builder :bold))
 
 
 (defn
-  ^{ :arglists '(
-          "(italic builder)")
+  ^{ :arglists '("(italic builder)")
      :doc "Sets the font to italic."
      :examples '(
           """
@@ -872,14 +887,13 @@
 
   italic [builder]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelFontBuilder builder)] }
 
   (. builder :italic))
 
 
 (defn
-  ^{ :arglists '(
-          "(color builder col)")
+  ^{ :arglists '("(color builder col)")
      :doc "Sets the font's color."
      :examples '(
           """
@@ -893,7 +907,7 @@
 
   color [builder col]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelFontBuilder builder) (long? col)] }
 
   (. builder :color col))
 
@@ -904,8 +918,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '(
-          "(format builder f)")
+  ^{ :arglists '("(format builder f)")
      :doc "Sets the format for a cell style."
      :examples '(
           """
@@ -919,35 +932,33 @@
 
   format [builder f]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (string? f)] }
 
   (. builder :format f))
 
 
 (defn
-  ^{ :arglists '(
-          "(font builder ref)")
+  ^{ :arglists '("(font builder font-ref)")
      :doc "Sets the font given by a font ref for a cell style."
      :examples '(
           """
           (-> (excel-builder :xlsx)
-                (with-cell-style "header")
-                  (font "bold")
+                (with-cell-style :header)
+                  (font :bold)
                   (end)
               (write "sample.xlsx"))
           """ )
      :see-also '( "format", "bg-color", "wrap-text", "h-align", "v-align") }
 
-  font [builder ref]
+  font [builder font-ref]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? font-ref)] }
 
-  (. builder :font ref))
+  (. builder :font (str font-ref)))
 
 
 (defn
-  ^{ :arglists '(
-          "(bg-color builder col)")
+  ^{ :arglists '("(bg-color builder col)")
      :doc "Sets the background color for a cell style."
      :examples '(
           """
@@ -961,14 +972,13 @@
 
   bg-color [builder col]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (long? col)] }
 
   (. builder :bgColor col))
 
 
 (defn
-  ^{ :arglists '(
-          "(wrap-text builder wrap)")
+  ^{ :arglists '("(wrap-text builder wrap)")
      :doc "If wrap is true enables text wrapping for a cell style."
      :examples '(
           """
@@ -982,14 +992,13 @@
 
   wrap-text [builder wrap]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (boolean? wrap)] }
 
   (. builder :wrap-text wrap))
 
 
 (defn
-  ^{ :arglists '(
-          "(h-align builder align)")
+  ^{ :arglists '("(h-align builder align)")
      :doc "Sets the horizontal text alignment for a cell style."
      :examples '(
           """
@@ -1003,7 +1012,7 @@
 
   h-align [builder align]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? align)] }
 
   (case align
     :left     (. builder :hAlignLeft)
@@ -1016,8 +1025,7 @@
 
 
 (defn
-  ^{ :arglists '(
-          "(v-align builder align)")
+  ^{ :arglists '("(v-align builder align)")
      :doc "Sets the vertical text alignment for a cell style."
      :examples '(
           """
@@ -1031,7 +1039,7 @@
 
   v-align [builder align]
 
-  { :pre [(= (type builder) :ExcelFontBuilder)] }
+  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? align)] }
 
   (case align
     :top      (. builder :vAlignTop)
@@ -1049,8 +1057,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '(
-          "(col-width builder points)")
+  ^{ :arglists '("(col-width builder points)")
      :doc "Sets the column width in points."
      :examples '(
           """
@@ -1070,21 +1077,17 @@
 
   col-width [builder points]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (long? points)] }
 
   (. builder :widthInPoints points))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-hidden builder hide)")
+  ^{ :arglists '("(col-hidden builder hide)")
      :doc "If hide is true hides the column."
      :examples '(
           """
           (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
-                  (h-align :left)
-                  (end)
                 (with-sheet "Sheet 1")
                   (with-column "Last Name")
                     (col-hidden true)
@@ -1100,24 +1103,23 @@
 
   col-hidden [builder hide]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (boolean? hide)] }
 
   (. builder :hidden hide))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-header-style builder style-name)")
+  ^{ :arglists '("(col-header-style builder style)")
      :doc "Sets the column header style."
      :examples '(
           """
           (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
+                (with-cell-style :header)
                   (h-align :left)
                   (end)
                 (with-sheet "Sheet 1")
                   (with-column "Last Name")
-                    (col-header-style "left-aligned")
+                    (col-header-style :header)
                     (end)
                   (end)
                 (write "sample.xlsx"))
@@ -1128,26 +1130,25 @@
           "col-footer-text-value", "col-footer-numeric-value",
           "col-footer-aggregated") }
 
-  col-header-style [builder style-name]
+  col-header-style [builder style]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
 
-  (. builder :headerStyle style-name))
+  (. builder :headerStyle (str style)))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-body-style builder style-name)")
+  ^{ :arglists '("(col-body-style builder style)")
      :doc "Sets the column header style."
      :examples '(
           """
           (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
+                (with-cell-style :body)
                   (h-align :left)
                   (end)
                 (with-sheet "Sheet 1")
                   (with-column "Last Name")
-                    (col-body-style "left-aligned")
+                    (col-body-style :body)
                     (end)
                   (end)
                 (write "sample.xlsx"))
@@ -1160,24 +1161,23 @@
 
   col-body-style [builder style-name]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
 
-  (. builder :bodyStyle style-name))
+  (. builder :bodyStyle (str style)))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-footer-style builder style-name)")
+  ^{ :arglists '("(col-footer-style builder style)")
      :doc "Sets the column footer style."
      :examples '(
           """
           (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
+                (with-cell-style :footer)
                   (h-align :left)
                   (end)
                 (with-sheet "Sheet 1")
                   (with-column "Last Name")
-                    (col-footer-style "left-aligned")
+                    (col-footer-style :footer)
                     (end)
                   (end)
                 (write "sample.xlsx"))
@@ -1188,16 +1188,15 @@
           "col-footer-text-value", "col-footer-numeric-value",
           "col-footer-aggregated") }
 
-  col-footer-style [builder style-name]
+  col-footer-style [builder style]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
 
-  (. builder :footerStyle style-name))
+  (. builder :footerStyle (str style)))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-footer-text-value builder text)")
+  ^{ :arglists '("(col-footer-text-value builder text)")
      :doc "Sets an explicit footer text value."
      :examples '(
           """
@@ -1220,14 +1219,13 @@
 
   col-footer-text-value [builder text]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (string? text)] }
 
   (. builder :footerTextValue text))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-footer-numeric-value builder value)")
+  ^{ :arglists '("(col-footer-numeric-value builder value)")
      :doc "Sets an explicit footer numeric value."
      :examples '(
           """
@@ -1250,14 +1248,14 @@
 
   col-footer-numeric-value [builder value]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder)
+          (or (string? value) (number? value))] }
 
   (. builder :footerNumberValue value))
 
 
 (defn
-  ^{ :arglists '(
-          "(col-footer-aggregated builder mode)")
+  ^{ :arglists '("(col-footer-aggregated builder mode)")
      :doc """
           Sets the aggregation for calculating the columns footer value.
           The aggregation mode is one of :min, :max, :avg, or :sum
@@ -1282,7 +1280,7 @@
 
   col-footer-aggregated [builder mode]
 
-  { :pre [(= (type builder) :ExcelColumnBuilder)] }
+  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? mode)] }
 
   (case mode
     :min  (. builder :footerMin)

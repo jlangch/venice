@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,24 @@ public class FunctionPreconditionsTest {
 
 		assertEquals(Long.valueOf(4), venice.eval(script1));
 	}
-	
+
+	@Test
+	public void test_defn_precondition_instanceof() {
+		final Venice venice = new Venice();
+
+		final String script1 = 
+				"(do                                         \n" +
+				"  (import :java.util.ArrayList)             \n" +
+				"  (defn sum [l]                             \n" +
+				"    { :pre [(instance-of? :ArrayList l)] }  \n" +
+				"    nil)                                    \n" +
+				"                                            \n" +
+				"  (sum (. :ArrayList :new))                 \n" +
+				") ";
+
+		assertNull(venice.eval(script1));
+	}
+
 	@Test
 	public void test_defn_multi_arity_precondition() {
 		final Venice venice = new Venice();
