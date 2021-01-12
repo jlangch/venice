@@ -3795,12 +3795,12 @@ public class CoreFunctionsTest {
 		assertEquals(":core/val", venice.eval("(pr-str (supertype (atom 0)))"));
 		assertEquals(":core/val", venice.eval("(pr-str (supertype (thread-local)))"));
 		
-		assertEquals(":core/val", venice.eval("(pr-str (supertype 1))"));
-		assertEquals(":core/val", venice.eval("(pr-str (supertype (* 1 3)))"));
-		assertEquals(":core/val", venice.eval("(pr-str (supertype 1.0))"));
-		assertEquals(":core/val", venice.eval("(pr-str (supertype (* 1.0 2.0)))"));
-		assertEquals(":core/val", venice.eval("(pr-str (supertype 1.06M))"));
-		assertEquals(":core/val", venice.eval("(pr-str (supertype (* 1.06M 2.0M)))"));
+		assertEquals(":core/number", venice.eval("(pr-str (supertype 1))"));
+		assertEquals(":core/number", venice.eval("(pr-str (supertype (* 1 3)))"));
+		assertEquals(":core/number", venice.eval("(pr-str (supertype 1.0))"));
+		assertEquals(":core/number", venice.eval("(pr-str (supertype (* 1.0 2.0)))"));
+		assertEquals(":core/number", venice.eval("(pr-str (supertype 1.06M))"));
+		assertEquals(":core/number", venice.eval("(pr-str (supertype (* 1.06M 2.0M)))"));
 		
 		assertEquals(":core/sequence", venice.eval("(pr-str (supertype '()))"));
 		assertEquals(":core/sequence", venice.eval("(pr-str (supertype (list)))"));

@@ -15,6 +15,11 @@ and this project adheres to
 
 - Excel builder
 
+### Fixed
+
+- `supertype` for number types. Returns now e.g. ":core/number" for `(supertype 1)` 
+  instead of ":core/val".
+
 ### Changed
 
 - function `instance?` to `instance-of?`

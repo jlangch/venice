@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
@@ -40,6 +42,22 @@ public abstract class VncNumber extends VncVal {
 		super(wrappingTypeDef, meta);
 	}
 	
+	
+	@Override
+	public VncKeyword getType() {
+		return TYPE;
+	}
+	
+	@Override
+	public VncKeyword getSupertype() {
+		return VncVal.TYPE;
+	}
+	
+	@Override
+	public List<VncKeyword> getAllSupertypes() {
+		return Arrays.asList(VncVal.TYPE);
+	}
+	
 
 	public abstract Integer toJavaInteger();
 	public abstract Long toJavaLong();
@@ -47,7 +65,8 @@ public abstract class VncNumber extends VncVal {
 	public abstract BigInteger toJavaBigInteger();
 	public abstract BigDecimal toJavaBigDecimal();
 	public abstract BigDecimal toJavaBigDecimal(final int scale);
-
+	
+	public static final VncKeyword TYPE = new VncKeyword(":core/number");
 	
     private static final long serialVersionUID = -1848883965231344442L;
 }

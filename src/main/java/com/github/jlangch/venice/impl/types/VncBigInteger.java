@@ -88,14 +88,14 @@ public class VncBigInteger extends VncNumber {
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return isWrapped() ? TYPE : VncVal.TYPE;
+		return isWrapped() ? TYPE : super.getType();
 	}
 	
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
 				? Arrays.asList(TYPE, VncVal.TYPE)
-				: Arrays.asList(VncVal.TYPE);
+				: super.getAllSupertypes();
 	}
 	
 	public VncBigInteger negate() { 

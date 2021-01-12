@@ -297,10 +297,12 @@ public class Types {
 			case "core/char":			return Types.isVncChar(val);
 			case "core/string":			return Types.isVncString(val);
 			case "core/boolean":		return Types.isVncBoolean(val);
+			case "core/number":			return Types.isVncNumber(val);
 			case "core/integer":		return Types.isVncInteger(val);
 			case "core/long":			return Types.isVncLong(val);
 			case "core/double":			return Types.isVncDouble(val);
 			case "core/decimal":		return Types.isVncBigDecimal(val);
+			case "core/bigint":			return Types.isVncBigInteger(val);
 			case "core/bytebuf":		return Types.isVncByteBuffer(val);
 
 			case "core/symbol":			return Types.isVncSymbol(val);
