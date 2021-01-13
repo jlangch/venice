@@ -45,6 +45,11 @@ public class ExcelColumnBuilder<T> {
 		return this;
 	}
 
+	public ExcelColumnBuilder<T> colMapper(final String fieldName) {
+		this.mapper = e -> ((DataRecord)e).get(fieldName);
+		return this;
+	}
+
 	public ExcelColumnBuilder<T> widthInPoints(final int width) {
 		this.width = width;
 		return this;

@@ -129,8 +129,7 @@ public class ExcelSheetBuilder<T> {
 	}
 
 	public ExcelSheetBuilder<T> skipRows(final int count) {	
-		renderHeader();
-		currRow0 += Math.min(0, count);
+		skipRows = Math.max(0, count);
 		return this;
 	}
 
@@ -305,20 +304,25 @@ public class ExcelSheetBuilder<T> {
 	}
 
 	private void renderBodyItem(final T item) {
-		if (item != null) {
-			int col0 = 0;
-			for(ExcelColumnDef<T> colDef : columnDefs) {
-				if (colDef.colMapper != null) {
-					sheet.setValue(
-							currRow0, 
-							col0,
-							(Object)colDef.colMapper.apply(item), 
-							getColumnBodyStyle(col0));
-				}
-				col0++;
-			}
+		if (skipRows > 0) {
+			skipRows--;
 		}
-		currRow0++;
+		else {
+			if (item != null) {
+				int col0 = 0;
+				for(ExcelColumnDef<T> colDef : columnDefs) {
+					if (colDef.colMapper != null) {
+						sheet.setValue(
+								currRow0, 
+								col0,
+								(Object)colDef.colMapper.apply(item), 
+								getColumnBodyStyle(col0));
+					}
+					col0++;
+				}
+			}
+			currRow0++;
+		}
 	}
 		
 	private void renderColumnWidths() {
@@ -342,7 +346,8 @@ public class ExcelSheetBuilder<T> {
 	private final List<ExcelColumnDef<T>> columnDefs = new ArrayList<>();
 	private boolean noHeader = false;
 	private boolean headerRendered = false;
-	private int currRow0 = 0;
+	private int currRow0 = 0;  // zero based
+	private int skipRows = 0;
 	private Integer columnWidth;
 	private String defaultHeaderStyle;
 	private String defaultBodyStyle;

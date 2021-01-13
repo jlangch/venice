@@ -32,14 +32,14 @@
 
 (ns excel)
 
-(import :com.github.jlangch.venice.excel.ExcelReader)
-(import :com.github.jlangch.venice.excel.ExcelSheetReader)
-(import :com.github.jlangch.venice.excel.ExcelBuilder)
-(import :com.github.jlangch.venice.excel.ExcelSheetBuilder)
-(import :com.github.jlangch.venice.excel.ExcelFontBuilder)
-(import :com.github.jlangch.venice.excel.ExcelCellStyleBuilder)
-(import :com.github.jlangch.venice.excel.ExcelColumnBuilder)
-(import :com.github.jlangch.venice.excel.EntityRecord)
+(import :com.github.jlangch.venice.util.excel.ExcelReader)
+(import :com.github.jlangch.venice.util.excel.ExcelSheetReader)
+(import :com.github.jlangch.venice.util.excel.ExcelBuilder)
+(import :com.github.jlangch.venice.util.excel.ExcelSheetBuilder)
+(import :com.github.jlangch.venice.util.excel.ExcelFontBuilder)
+(import :com.github.jlangch.venice.util.excel.ExcelCellStyleBuilder)
+(import :com.github.jlangch.venice.util.excel.ExcelColumnBuilder)
+(import :com.github.jlangch.venice.util.excel.DataRecord)
 (import :java.io.File)
 (import :java.io.OutputStream)
 (import :java.io.FileOutputStream)
@@ -118,41 +118,33 @@
           """
           (do
             (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xls)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xls"))))
+            (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/excel-builder :xls)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/render-items sheet data)
+              (excel/write-file wbook "sample.xls")))
           """,
           """
           (do
             (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
+            (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/render-items sheet data)
+              (excel/write-file wbook "sample.xlsx")))
           """ )
      :see-also '(
-        "excel/with-sheet", "excel/with-font", "excel/with-cell-style",
+        "excel/add-sheet", "excel/add-font", "excel/add-cell-style",
         "excel/write-file", "excel/write-stream", "excel/write-bytebuf" )}
 
   excel-builder [type]
@@ -165,159 +157,22 @@
 
 
 (defn
-  ^{ :arglists '("(with-sheet builder name)")
-     :doc "Returns a sheet builder to add a new named sheet."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/with-sheet "Sheet 2")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '(
-          "excel/with-column", "excel/render-items", "excel/render-item",
-          "excel/cell-value", "excel/cell-formula",
-          "excel/no-header", "excel/auto-size-columns", "excel/auto-size-column",
-          "excel/default-header-style", "excel/default-body-style",
-          "excel/default-footer-style",
-          "excel/default-column-width", "excel/display-zeros"
-          "excel/add-merged-region", "excel/evaluate-all-formulas",
-          "excel/skip-data-rows",
-          "excel/sum-formula", "excel/cell-address", "excel/end")}
-
-  with-sheet [builder name]
-
-  { :pre [(instance-of? :ExcelBuilder builder) (string? name)] }
-
-  (. builder :withSheet name (class :EntityRecord)))
-
-
-(defn
-  ^{ :arglists '("(with-font builder font)")
-     :doc "Returns a new font builder to define a new named font."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-font :header)
-                      (excel/height 16)
-                      (excel/bold)
-                      (excel/color (:DARK_BLUE excel/colors))
-                      (excel/end)
-                    (excel/with-cell-style :header)
-                      (excel/font :header)
-                      (excel/end)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/default-header-style :header)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '(
-          "excel/height",
-          "excel/bold", "excel/italic", "excel/color",
-          "excel/end")}
-
-  with-font [builder font]
-
-  { :pre [(instance-of? :ExcelBuilder builder) (keyword? font)] }
-
-  (. builder :withFont (name font)))
-
-
-(defn
-  ^{ :arglists '("(with-cell-style builder style)")
-     :doc "Returns a new cell style builder to define a new named cell style."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-font :header)
-                      (excel/bold)
-                      (excel/end)
-                    (excel/with-cell-style :header)
-                      (excel/font :header)
-                      (excel/bg-color (:GREY_25_PERCENT excel/colors))
-                      (excel/end)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/default-header-style :header)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '(
-         "excel/format", "excel/font", "excel/bg-color",
-         "excel/warp-text", "excel/h-align", "excel/v-align",
-         "excel/end")}
-
-  with-cell-style [builder style]
-
-  { :pre [(instance-of? :ExcelBuilder builder) (keyword? style)] }
-
-  (. builder :withCellStyle (name style)))
-
-
-(defn
   ^{ :arglists '("(write-file builder f)")
      :doc "Writes the excel to a file."
      :examples '(
          """
          (do
            (load-module :excel)
-           (let [data [ {:first "John" :last "Doe"   :age 28 }
-                        {:first "Sue"  :last "Ford"  :age 26 } ]]
-             (-> (excel/excel-builder :xlsx)
-                   (excel/with-sheet "Sheet 1")
-                     (excel/with-column "First Name" :first)
-                       (excel/end)
-                     (excel/with-column "Last Name" :last)
-                       (excel/end)
-                     (excel/with-column "Age" :age)
-                       (excel/end)
-                     (excel/render-items data)
-                     (excel/auto-size-columns)
-                     (excel/end)
-                   (excel/write-file "sample.xlsx"))))
+           (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]
+                 wbook (excel/excel-builder :xlsx)
+                 sheet (excel/add-sheet wbook "Sheet 1"
+                                        { :auto-size-all-cols true })]
+             (excel/add-column sheet "First Name" { :data-field :first })
+             (excel/add-column sheet "Last Name" { :data-field :last })
+             (excel/add-column sheet "Age" { :data-field :age })
+             (excel/render-items sheet data)
+             (excel/write-file wbook "sample.xlsx")))
          """ )
      :see-also '("excel/write-stream", "excel/write-bytebuf")}
 
@@ -336,21 +191,17 @@
          """
          (do
            (load-module :excel)
-           (let [os   (. :java.io.FileOutputStream :new "sample.xlsx")
-                 data [ {:first "John" :last "Doe"   :age 28 }
-                        {:first "Sue"  :last "Ford"  :age 26 } ]]
-             (-> (excel/excel-builder :xlsx)
-                   (excel/with-sheet "Sheet 1")
-                     (excel/with-column "First Name" :first)
-                       (excel/end)
-                     (excel/with-column "Last Name" :last)
-                       (excel/end)
-                     (excel/with-column "Age" :age)
-                       (excel/end)
-                     (excel/render-items data)
-                     (excel/auto-size-columns)
-                     (excel/end)
-                   (excel/write-stream os))))
+           (let [os    (. :java.io.FileOutputStream :new "sample.xlsx")
+                 data  [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]
+                 wbook (excel/excel-builder :xlsx)
+                 sheet (excel/add-sheet wbook "Sheet 1"
+                                        { :auto-size-all-cols true })]
+             (excel/add-column sheet "First Name" { :data-field :first })
+             (excel/add-column sheet "Last Name" { :data-field :last })
+             (excel/add-column sheet "Age" { :data-field :age })
+             (excel/render-items sheet data)
+             (excel/write-stream os)))
          """ )
      :see-also '("excel/write-file", "excel/write-bytebuf")}
 
@@ -369,20 +220,16 @@
          """
          (do
            (load-module :excel)
-           (let [data [ {:first "John" :last "Doe"   :age 28 }
-                        {:first "Sue"  :last "Ford"  :age 26 } ]]
-             (-> (excel/excel-builder :xlsx)
-                   (excel/with-sheet "Sheet 1")
-                     (excel/with-column "First Name" :first)
-                       (excel/end)
-                     (excel/with-column "Last Name" :last)
-                       (excel/end)
-                     (excel/with-column "Age" :age)
-                       (excel/end)
-                     (excel/render-items data)
-                     (excel/auto-size-columns)
-                     (excel/end)
-                   (excel/write-bytebuf))))
+           (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                         {:first "Sue"  :last "Ford"  :age 26 } ]
+                 wbook (excel/excel-builder :xlsx)
+                 sheet (excel/add-sheet wbook "Sheet 1"
+                                        { :auto-size-all-cols true })]
+             (excel/add-column sheet "First Name" { :data-field :first })
+             (excel/add-column sheet "Last Name" { :data-field :last })
+             (excel/add-column sheet "Age" { :data-field :age })
+             (excel/render-items sheet data)
+             (excel/write-bytebuf)))
          """ )
      :see-also '("excel/write-file", "excel/write-stream")}
 
@@ -393,454 +240,35 @@
   (. builder :writeToBytes))
 
 
-(defn
-  ^{ :arglists '("(end builder)")
-     :doc "Ends the current builder and returns the parent builder."
-     :examples '(
-         """
-         (do
-           (load-module :excel)
-           (let [data [ {:first "John" :last "Doe"   :age 28 }
-                        {:first "Sue"  :last "Ford"  :age 26 } ]]
-             (-> (excel/excel-builder :xlsx)
-                   (excel/with-sheet "Sheet 1")
-                     (excel/with-column "First Name" :first)
-                       (excel/end)
-                     (excel/with-column "Last Name" :last)
-                       (excel/end)
-                     (excel/render-items data)
-                     (excel/auto-size-columns)
-                     (excel/end)
-                   (excel/write-file "sample.xlsx"))))
-         """ )
-     :see-also '(
-         "excel/with-sheet", "excel/with-font", "excel/with-cell-style",
-         "excel/with-column")}
-
-  end [builder]
-
-  { :pre [(or (instance-of? :ExcelSheetBuilder builder)
-              (instance-of? :ExcelFontBuilder builder)
-              (instance-of? :ExcelCellStyleBuilder builder)
-              (instance-of? :ExcelColumnBuilder builder))] }
-
-  (. builder :end))
-
 
 ;; -----------------------------------------------------------------------------
 ;; ExcelSheetBuilder
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(no-header-row builder)")
-     :doc "Render the sheet without header row."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/no-header-row)
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '("no-header-row")}
-
-  no-header-row [builder]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
-
-  (. builder :noHeader))
-
-
-(defn
-  ^{ :arglists '("(default-header-style builder style)")
-     :doc "Sets the default header style for the sheet header rows."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-cell-style :header)
-                      (excel/bg-color (:GREY_25_PERCENT excel/colors))
-                      (excel/end)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/default-header-style :header)
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '("no-header")}
-
-  default-header-style [builder style]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
-
-  (. builder :defaultHeaderStyle (name style)))
-
-
-(defn
-  ^{ :arglists '("(default-body-style builder style)")
-     :doc "Sets the default body style for the sheet body rows."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-cell-style :body)
-                      (excel/bg-color (:CORNFLOWER_BLUE excel/colors))
-                      (excel/end)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/default-body-style :body)
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '("no-header")}
-
-  default-body-style [builder style]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
-
-  (. builder :defaultBodyStyle (name style)))
-
-
-(defn
-  ^{ :arglists '("(default-footer-style builder style)")
-     :doc "Sets the default footer style for the sheet footer rows."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-cell-style :footer)
-                      (excel/bg-color (:CORNFLOWER_BLUE excel/colors))
-                      (excel/end)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/default-footer-style :footer)
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/col-footer-aggregated :avg)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '("no-header")}
-
-  default-footer-style [builder style]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (keyword? style)] }
-
-  (. builder :defaultFooterStyle (name style)))
-
-
-(defn
-  ^{ :arglists '("(default-column-width builder points)")
-     :doc "Sets the default column width for the sheet's columns."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/default-column-width 100)
-                      (excel/render-items data)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '("no-header")}
-
-  default-column-width [builder points]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (long? points)] }
-
-  (. builder :setDefaultColumnWidthInPoints points))
-
-
-(defn
-  ^{ :arglists '("(display-zeros builder enabled)")
-     :doc """
-          Set whether a cell should show 0 (zero) when containing zero value. \
-          When false, cells with zero value appear blank instead of showing \
-          the number zero.
-          """
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 0 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/display-zeros false)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ )
-     :see-also '("no-header")}
-
-  display-zeros [builder enabled]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (boolean? enabled)] }
-
-  (. builder :displayZeros enabled))
-
-
-(defn
-  ^{ :arglists '(
-          "(with-column builder column-name field"
-          "(with-column builder column-name" )
-     :doc "Returns a column builder to add a new named column."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ ) }
-
-  with-column
-
-  ([builder column-name]
-    { :pre [(instance-of? :ExcelSheetBuilder builder) (string? column-name)] }
-    (. builder :withColumn column-name))
-
-  ([builder column-name field]
-    { :pre [(instance-of? :ExcelSheetBuilder builder)
-            (string? column-name)
-            (keyword? field)] }
-    (. builder :withColumn column-name (name field))))
-
-
-(defn
-  ^{ :arglists '("(auto-size-columns builder)")
-     :doc "Auto size the width of all columns."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-columns)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ ) }
-
-  auto-size-columns [builder]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
-
-  (. builder :autoSizeColumns))
-
-
-(defn
-  ^{ :arglists '("(auto-size-column builder col)")
-     :doc "Auto size the width of column col (1..n)."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "First Name" :first)
-                        (excel/end)
-                      (excel/with-column "Last Name" :last)
-                        (excel/end)
-                      (excel/with-column "Age" :age)
-                        (excel/end)
-                      (excel/render-items data)
-                      (excel/auto-size-column 3)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ ) }
-
-  auto-size-column [builder col]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (long? col)] }
-
-  (. builder :autoSizeColumn col))
-
-
-(defn
-  ^{ :arglists '("(merged-region builder row-from row-to col-from col-to)")
-     :doc "Add a merged region."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:a 100 :b 200 :c 300 :d 400 }
-                         {:a 101 :b 201 :c 301 :d 401 }
-                         {:a 102 :b 202 :c 303 :d 404 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "A" :a)
-                        (excel/end)
-                      (excel/with-column "B" :b)
-                        (excel/end)
-                      (excel/with-column "C" :c)
-                        (excel/end)
-                      (excel/with-column "D" :d)
-                        (excel/end)
-                      (excel/no-header-row)
-                      (excel/render-items data)
-                      (excel/merged-region 2 2 2 3)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-          """ ) }
-
-  merged-region [builder row-from row-to col-from col-to]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder)
-          (long? row-from) (long? row-to)
-          (long? col-from) (long? col-to)] }
-
-  (. builder :addMergedRegion row-from row-to col-from col-to))
-
-
-(defn
-  ^{ :arglists '("(evaluate-all-formulas builder)")
-     :doc "Evaluate all formulas on the sheet."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data [ {:a 100 :b 200 }
-                         {:a 101 :b 201 }
-                         {:a 102 :b 202 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "A" :a)
-                        (excel/end)
-                      (excel/with-column "B" :b)
-                        (excel/end)
-                      (excel/with-column "C")
-                        (excel/end)
-                      (excel/no-header-row)
-                      (excel/render-items data)
-                      (excel/cell-formula 1 3 "SUM(A1,B1)")
-                      (excel/cell-formula 2 3 "SUM(A2,B2)")
-                      (excel/cell-formula 3 3 "SUM(A3,B3)")
-                      (excel/evaluate-all-formulas)
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
-            """ ) }
-
-  evaluate-all-formulas [builder]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
-
-  (. builder :evaluateAllFormulas))
-
-
-(defn
-  ^{ :arglists '("(skip-data-rows builder n)")
-     :doc "Skip n data rows."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (skip-data-rows 6)
-                  (end)
-              (write "sample.xlsx"))
-          """ ) }
-
-  skip-data-rows [builder n]
-
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (long? n)] }
-
-  (. builder :skipRows n))
-
-
-(defn
   ^{ :arglists '("(render-items builder items)")
      :doc "Render the passed data items"
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (render-items [{:name "smith"  :age 23}
-                                 {:name "miller" :age 29}])
-                  (end)
-              (write "sample.xlsx")))
+          (do
+            (load-module :excel)
+            (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/render-items sheet data)
+              (excel/write-file wbook "sample.xlsx")))
           """ ) }
 
   render-items [builder items]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
-  (->> (map #(. :EntityRecord :of %) items)
+  (->> (map #(. :DataRecord :of %) items)
        (into (. :java.util.ArrayList :new))
        (. builder :renderItems)))
 
@@ -850,18 +278,24 @@
      :doc "Render a single data item"
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (render-item {:name "smith" :age 23})
-                  (end)
-              (write "sample.xlsx")))
+          (do
+            (load-module :excel)
+            (let [wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/render-item sheet {:first "John" :last "Doe"   :age 28 })
+              (excel/render-item sheet {:first "Sue"  :last "Ford"  :age 26 })
+              (excel/write-file wbook "sample.xlsx")))
           """ ) }
 
   render-item [builder item]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (map? item)] }
 
-  (->> (. :EntityRecord :of item)
+  (->> (. :DataRecord :of item)
        (. builder :renderItem)))
 
 
@@ -870,13 +304,42 @@
      :doc "Set a value for a specific cell given by its row and col."
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (cell-value 2 0 "row 2, col 0")
-                  (cell-value 2 1 "row 2, col 1")
-                  (cell-value 2 2 "row 2, col 2")
-                  (end)
-              (write "sample.xlsx")))
+          (do
+            (load-module :excel)
+            (let [wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/cell-value sheet 1 1 "John")
+              (excel/cell-value sheet 1 2 "Doe")
+              (excel/cell-value sheet 1 3 28)
+              (excel/cell-value sheet 2 1 "Sue")
+              (excel/cell-value sheet 2 2 "Ford")
+              (excel/cell-value sheet 2 3 26)
+              (excel/write-file wbook "sample.xlsx")))
+          """,
+          """
+          (do
+            (load-module :excel)
+            (let [wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-font wbook :italic { :italic true })
+              (excel/add-font wbook :bold { :bold true })
+              (excel/add-style wbook :italic { :font :italic })
+              (excel/add-style wbook :bold { :font :bold })
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/cell-value sheet 1 1 "John" :italic)
+              (excel/cell-value sheet 1 2 "Doe"  :italic)
+              (excel/cell-value sheet 1 3 28     :bold)
+              (excel/cell-value sheet 2 1 "Sue"  :italic)
+              (excel/cell-value sheet 2 2 "Ford" :italic)
+              (excel/cell-value sheet 2 3 26     :bold)
+              (excel/write-file wbook "sample.xlsx")))
           """ ) }
 
   cell-value
@@ -899,24 +362,42 @@
           """
           (do
             (load-module :excel)
-            (let [data [ {:a 100 :b 200 }
-                         {:a 101 :b 201 }
-                         {:a 102 :b 202 } ]]
-              (-> (excel/excel-builder :xlsx)
-                    (excel/with-sheet "Sheet 1")
-                      (excel/with-column "A" :a)
-                        (excel/end)
-                      (excel/with-column "B" :b)
-                        (excel/end)
-                      (excel/with-column "C")
-                        (excel/end)
-                      (excel/no-header-row)
-                      (excel/render-items data)
-                      (excel/cell-formula 1 3 "SUM(A1,B1)")
-                      (excel/cell-formula 2 3 "SUM(A2,B2)")
-                      (excel/cell-formula 3 3 "SUM(A3,B3)")
-                      (excel/end)
-                    (excel/write-file "sample.xlsx"))))
+            (let [data  [ {:a 100 :b 200 }
+                          {:a 101 :b 201 }
+                          {:a 102 :b 202 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row true
+                                           :auto-size-all-cols true })]
+              (excel/add-column sheet "A" { :data-field :a })
+              (excel/add-column sheet "B" { :data-field :b })
+              (excel/add-column sheet "C" { :data-field :c })
+              (excel/render-items sheet data)
+              (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
+              (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
+              (excel/cell-formula sheet 3 3 "SUM(A3,B3)")
+              (excel/write-file wbook "sample.xlsx")))
+          """,
+          """
+          (do
+            (load-module :excel)
+            (let [data  [ {:a 100 :b 200 }
+                          {:a 101 :b 201 }
+                          {:a 102 :b 202 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row true
+                                           :auto-size-all-cols true })]
+              (excel/add-font wbook :bold { :bold true })
+              (excel/add-style wbook :bold { :font :bold })
+              (excel/add-column sheet "A" { :data-field :a })
+              (excel/add-column sheet "B" { :data-field :b })
+              (excel/add-column sheet "C" { :data-field :c })
+              (excel/render-items sheet data)
+              (excel/cell-formula sheet 1 3 "SUM(A1,B1)" :bold)
+              (excel/cell-formula sheet 2 3 "SUM(A2,B2)" :bold)
+              (excel/cell-formula sheet 3 3 "SUM(A3,B3)" :bold)
+              (excel/write-file wbook "sample.xlsx")))
           """ ) }
 
   cell-formula
@@ -933,505 +414,411 @@
 
 
 (defn
-  ^{ :arglists '("(sum-formula row-from row-to col-from col-to)")
+  ^{ :arglists '("(sum-formula builder row-from row-to col-from col-to)")
      :doc "Returns a sum formula"
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (formula 31 0 (sum-formula 0 30 0 0))
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data  [ {:a 100 :b 200 }
+                          {:a 101 :b 201 }
+                          {:a 102 :b 202 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row true
+                                           :auto-size-all-cols true })]
+              (excel/add-column sheet "A" { :data-field :a })
+              (excel/add-column sheet "B" { :data-field :b })
+              (excel/add-column sheet "C" { :data-field :c })
+              (excel/render-items sheet data)
+              (excel/cell-formula sheet 1 3 (excel/sum-formula sheet 1 1 1 2))
+              (excel/cell-formula sheet 2 3 (excel/sum-formula sheet 2 2 1 2))
+              (excel/cell-formula sheet 3 3 (excel/sum-formula sheet 3 3 1 2))
+              (excel/write-file wbook "sample.xlsx")))
           """ ) }
 
   sum-formula [builder row-from row-to col-from col-to]
 
-  { :pre [(long? row-from) (long? row-to) (long? col-from) (long? col-to)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)
+          (long? row-from) (long? row-to)
+          (long? col-from) (long? col-to)] }
 
   (. builder :sumFormula row-from row-to col-from col-to))
 
 
 (defn
-  ^{ :arglists '("(cell-address row col)")
-     :doc "Returns the cell address for a cell at row/col"
+  ^{ :arglists '("(cell-address builder row col)")
+     :doc "Returns the cell address for a cell at row/col in a sheet"
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (sum-builder 10 0)
-                    (end)
-                  (end)
-              (write "sample.xlsx"))
+          (do
+            (load-module :excel)
+            (let [data  [ {:a 100 :b 200 }
+                          {:a 101 :b 201 }
+                          {:a 102 :b 202 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row true
+                                           :auto-size-all-cols true })
+                  addr  (fn [r c] (excel/cell-address sheet r c))]
+              (excel/add-column sheet "A" { :data-field :a })
+              (excel/add-column sheet "B" { :data-field :b })
+              (excel/add-column sheet "C" { :data-field :c })
+              (excel/render-items sheet data)
+              (excel/cell-formula sheet 1 3 "SUM(~(addr 1 1),~(addr 1 2))")
+              (excel/cell-formula sheet 2 3 "SUM(~(addr 2 1),~(addr 2 2))")
+              (excel/cell-formula sheet 3 3 "SUM(~(addr 3 1),~(addr 3 2))")
+              (excel/write-file wbook "sample.xlsx")))
           """ ) }
 
   cell-address [builder row col]
 
-  { :pre [(long? row) (long? col)] }
+  { :pre [(instance-of? :ExcelSheetBuilder builder)
+          (long? row) (long? col)] }
 
-  (. builder :cellAddress crow col))
-
-
-
-;; -----------------------------------------------------------------------------
-;; ExcelFontBuilder
-;; -----------------------------------------------------------------------------
-
-(defn
-  ^{ :arglists '("(height builder points)")
-     :doc "Sets the font height in points."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-font "header")
-                  (height 16)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("bold", "italic", "color") }
-
-  height [builder points]
-
-  { :pre [(instance-of? :ExcelFontBuilder builder) (long? points)] }
-
-  (. builder :heightInPoints points))
-
-
-(defn
-  ^{ :arglists '("(bold builder)")
-     :doc "Sets the font to bold."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-font "header")
-                  (bold)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("height", "italic", "color") }
-
-  bold [builder]
-
-  { :pre [(instance-of? :ExcelFontBuilder builder)] }
-
-  (. builder :bold))
-
-
-(defn
-  ^{ :arglists '("(italic builder)")
-     :doc "Sets the font to italic."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-font "header")
-                  (italic)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("height", "bold", "color") }
-
-  italic [builder]
-
-  { :pre [(instance-of? :ExcelFontBuilder builder)] }
-
-  (. builder :italic))
-
-
-(defn
-  ^{ :arglists '("(color builder col)")
-     :doc "Sets the font's color."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-font "header")
-                  (color (:SKY_BLUE colors))
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("height", "bold", "italic") }
-
-  color [builder col]
-
-  { :pre [(instance-of? :ExcelFontBuilder builder) (long? col)] }
-
-  (. builder :color col))
+  (. builder :cellAddress row col))
 
 
 
 ;; -----------------------------------------------------------------------------
-;; ExcelCellStyleBuilder
+;; Sheet
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(format builder f)")
-     :doc "Sets the format for a cell style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "float")
-                  (format "#.##")
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '( "font", "bg-color", "wrap-text", "h-align", "v-align") }
-
-  format [builder f]
-
-  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (string? f)] }
-
-  (. builder :format f))
-
-
-(defn
-  ^{ :arglists '("(font builder font-ref)")
-     :doc "Sets the font given by a font ref for a cell style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style :header)
-                  (font :bold)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '( "format", "bg-color", "wrap-text", "h-align", "v-align") }
-
-  font [builder font-ref]
-
-  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? font-ref)] }
-
-  (. builder :font (name font-ref)))
-
-
-(defn
-  ^{ :arglists '("(bg-color builder col)")
-     :doc "Sets the background color for a cell style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "header")
-                  (bg-color (:SKY_BLUE colors))
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("format", "font", "wrap-text", "h-align", "v-align") }
-
-  bg-color [builder col]
-
-  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (long? col)] }
-
-  (. builder :bgColor col))
-
-
-(defn
-  ^{ :arglists '("(wrap-text builder wrap)")
-     :doc "If wrap is true enables text wrapping for a cell style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "float")
-                  (wrap-text true)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("format", "font", "bg-color", "h-align", "v-align") }
-
-  wrap-text [builder wrap]
-
-  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (boolean? wrap)] }
-
-  (. builder :wrap-text wrap))
-
-
-(defn
-  ^{ :arglists '("(h-align builder align)")
-     :doc "Sets the horizontal text alignment for a cell style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "float")
-                  (h-align :left)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("format", "font", "bg-color", "wrap-text", "v-align") }
-
-  h-align [builder align]
-
-  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? align)] }
-
-  (case align
-    :left     (. builder :hAlignLeft)
-    :center   (. builder :hAlignCenter)
-    :right    (. builder :hAlignRight)
-    (throw    (. :VncException :new
-              (str "Invalid horizontal alignment "
-                   align
-                   ". Use one of :left, :center, or :right")))))
-
-
-(defn
-  ^{ :arglists '("(v-align builder align)")
-     :doc "Sets the vertical text alignment for a cell style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "float")
-                  (v-align true)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '("format", "font", "bg-color", "wrap-text", "h-align") }
-
-  v-align [builder align]
-
-  { :pre [(instance-of? :ExcelCellStyleBuilder builder) (keyword? align)] }
-
-  (case align
-    :top      (. builder :vAlignTop)
-    :midddle  (. builder :vAlignMiddle)
-    :bottom   (. builder :hAlignBottom)
-    (throw    (. :VncException :new
-              (str "Invalid vertical alignment "
-                   align
-                   ". Use one of :top, :middle, or :bottom")))))
-
-
-
-;; -----------------------------------------------------------------------------
-;; ExcelColumnBuilder
-;; -----------------------------------------------------------------------------
-
-(defn
-  ^{ :arglists '("(col-width builder points)")
-     :doc "Sets the column width in points."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-width 64)
-                    (end)
-                  (end)
-              (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-hidden",
-          "col-header-style", "col-body-style", "col-footer-style",
-          "col-footer-text-value", "col-footer-numeric-value",
-          "col-footer-aggregated") }
-
-  col-width [builder points]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (long? points)] }
-
-  (. builder :widthInPoints points))
-
-
-(defn
-  ^{ :arglists '("(col-hidden builder hide)")
-     :doc "If hide is true hides the column."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-hidden true)
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width",
-          "col-header-style", "col-body-style", "col-footer-style",
-          "col-footer-text-value", "col-footer-numeric-value",
-          "col-footer-aggregated") }
-
-  col-hidden [builder hide]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (boolean? hide)] }
-
-  (. builder :hidden hide))
-
-
-(defn
-  ^{ :arglists '("(col-header-style builder style)")
-     :doc "Sets the column header style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style :header)
-                  (h-align :left)
-                  (end)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-header-style :header)
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width", "col-hidden",
-          "col-body-style", "col-footer-style",
-          "col-footer-text-value", "col-footer-numeric-value",
-          "col-footer-aggregated") }
-
-  col-header-style [builder style]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
-
-  (. builder :headerStyle (name style)))
-
-
-(defn
-  ^{ :arglists '("(col-body-style builder style)")
-     :doc "Sets the column header style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style :body)
-                  (h-align :left)
-                  (end)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-body-style :body)
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width", "col-hidden",
-          "col-header-style", "col-footer-style",
-          "col-footer-text-value", "col-footer-numeric-value",
-          "col-footer-aggregated") }
-
-  col-body-style [builder style-name]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
-
-  (. builder :bodyStyle (name style)))
-
-
-(defn
-  ^{ :arglists '("(col-footer-style builder style)")
-     :doc "Sets the column footer style."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style :footer)
-                  (h-align :left)
-                  (end)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-footer-style :footer)
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width", "col-hidden",
-          "col-header-style", "col-body-style",
-          "col-footer-text-value", "col-footer-numeric-value",
-          "col-footer-aggregated") }
-
-  col-footer-style [builder style]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? style)] }
-
-  (. builder :footerStyle (name style)))
-
-
-(defn
-  ^{ :arglists '("(col-footer-text-value builder text)")
-     :doc "Sets an explicit footer text value."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
-                  (h-align :left)
-                  (end)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-footer-text-value "x-x-x-x-x")
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width", "col-hidden",
-          "col-header-style", "col-body-style", "col-footer-style",
-          "col-footer-numeric-value",
-          "col-footer-aggregated") }
-
-  col-footer-text-value [builder text]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (string? text)] }
-
-  (. builder :footerTextValue text))
-
-
-(defn
-  ^{ :arglists '("(col-footer-numeric-value builder value)")
-     :doc "Sets an explicit footer numeric value."
-     :examples '(
-          """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
-                  (h-align :left)
-                  (end)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-footer-numeric-value 345.00)
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width", "col-hidden",
-          "col-header-style", "col-body-style", "col-footer-style",
-          "col-footer-text-value",
-          "col-footer-aggregated") }
-
-  col-footer-numeric-value [builder value]
-
-  { :pre [(instance-of? :ExcelColumnBuilder builder)
-          (or (string? value) (number? value))] }
-
-  (. builder :footerNumberValue value))
-
-
-(defn
-  ^{ :arglists '("(col-footer-aggregated builder mode)")
+  ^{ :arglists '(
+          "(add-sheet excel-builder title)"
+          "(add-sheet excel-builder title options)" )
      :doc """
-          Sets the aggregation for calculating the columns footer value.
-          The aggregation mode is one of :min, :max, :avg, or :sum
+          Adds a sheet with optional attributes to an Excel.
+
+          Options:
+          no-header-row b         - without header row, e.g. true, false
+          default-column-width n  - default column width in points, e.g. 100
+          default-header-style s  - default header style, e.g. :header
+          default-body-style s    - default body style, e.g. :body
+          default-footer-style s  - default footer style, e.g. :footer
+          auto-size-all-cols b    - auto size all columns, e.g. true, false
+          auto-size-cols arr      - auto size columns, e.g. [1 2 6 7]
+          merged-region r         - merged region [row-from row-to col-from col-to],
+                                    e.g. [1 1 4 10]
+          display-zeros b         - display zeros, e.g. true, false
+                                    Set whether a cell should show 0 (zero) when
+                                    containing zero value. When false, cells with
+                                    zero value appear blank instead of showing
+                                    the number zero.
           """
      :examples '(
           """
-          (-> (excel-builder :xlsx)
-                (with-cell-style "left-aligned")
-                  (h-align :left)
-                  (end)
-                (with-sheet "Sheet 1")
-                  (with-column "Last Name")
-                    (col-footer-aggregated :min)
-                    (end)
-                  (end)
-                (write "sample.xlsx"))
-          """ )
-     :see-also '(
-          "col-width", "col-hidden",
-          "col-header-style", "col-body-style", "col-footer-style",
-          "col-footer-text-value", "col-footer-numeric-value") }
+          (do
+            (load-module :excel)
+            (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/excel-builder :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :auto-size-all-cols true })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/render-items sheet data)
+              (excel/write-file wbook "sample.xlsx")))
+          """,
+          """
+          (do
+            (load-module :excel)
+            (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/excel-builder :xlsx)]
+              (excel/add-font wbook :bold { :bold true })
+              (excel/add-font wbook :italic { :italic true })
+              (excel/add-style wbook :header { :font :bold })
+              (excel/add-style wbook :body { :font :italic })
+              (excel/add-style wbook :footer { :font :bold })
 
-  col-footer-aggregated [builder mode]
+              (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                           { :auto-size-all-cols true
+                                             :no-header-row false
+                                             :default-column-width 100
+                                             :default-header-style :header
+                                             :default-body-style :body
+                                             :default-footer-style :footer
+                                             :auto-size-all-cols false
+                                             :auto-size-cols [1 2 3]
+                                             :display-zeros true})]
+                (excel/add-column sheet "First Name" { :data-field :first })
+                (excel/add-column sheet "Last Name" { :data-field :last })
+                (excel/add-column sheet "Age" { :data-field :age })
+                (excel/render-items sheet data)
+                (excel/write-file wbook "sample.xlsx"))))
+          """ ) }
 
-  { :pre [(instance-of? :ExcelColumnBuilder builder) (keyword? mode)] }
+  add-sheet
 
-  (case mode
-    :min  (. builder :footerMin)
-    :max  (. builder :footerMax)
-    :avg  (. builder :footerAverage)
-    :sum  (. builder :footerSum)
-    (throw (. :VncException :new
-              (str "Invalid aggregate mode "
-                   align
-                   ". Use one of :min, :max, :avg, or :sum")))))
+  ([excel-builder title]
+    (add-sheet excel-builder title {}))
+
+  ([excel-builder title options]
+    { :pre [(instance-of? :ExcelBuilder excel-builder)
+            (string? title)] }
+    (let [builder (. excel-builder :withSheet (name title) (class :DataRecord))]
+      (when-let [x (:no-header-row options)]
+        (. builder :noHeader))
+      (when-let [x (:default-column-width options)]
+        (. builder :setDefaultColumnWidthInPoints x))
+      (when-let [x (:default-header-style options)]
+        (. builder :defaultHeaderStyle (name x)))
+      (when-let [x (:default-body-style options)]
+        (. builder :defaultBodyStyle (name x)))
+      (when-let [x (:default-footer-style options)]
+        (. builder :defaultFooterStyle (name x)))
+      (when-let [x (:auto-size-all-cols options)]
+        (. builder :autoSizeColumns))
+      (when-let [x (:auto-size-cols options)]
+        (docoll #(. builder :autoSizeColumn %) x))
+      (when-let [x (:merged-region options)]
+        (. builder :addMergedRegion (first x) (second x) (third x) (fourth x)))
+      (when-let [x (:display-zeros options)]
+        (. builder :displayZeros x))
+
+      (. builder :end)
+      builder)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Font
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(add-font excel-builder font-id)"
+          "(add-font excel-builder font-id options)")
+     :doc """
+          Add font with optional attributes to an Excel.
+
+          Options:
+          height n            - height in points, e.g. 12
+          bold b              - bold, e.g. true, false
+          italic b            - italic, e.g. true, false
+          color c             - color, e.g. :excel/SKY_BLUE
+          """
+     :examples '(
+          """
+          (do
+            (load-module :excel)
+            (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/excel-builder :xlsx)]
+              (excel/add-font wbook :header { :height 12
+                                              :bold true
+                                              :italic false
+                                              :color (:SKY_BLUE excel/colors) })
+              (excel/add-style wbook :header { :font :header })
+
+              (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                           { :auto-size-all-cols true
+                                             :no-header-row false
+                                             :default-header-style :header })]
+                (excel/add-column sheet "First Name" { :data-field :first })
+                (excel/add-column sheet "Last Name" { :data-field :last })
+                (excel/add-column sheet "Age" { :data-field :age })
+                (excel/render-items sheet data)
+                (excel/write-file wbook "sample.xlsx"))))
+          """ ) }
+
+  add-font
+
+  ([excel-builder font-id]
+    (add-font excel-builder font-key {}))
+
+  ([excel-builder font-id options]
+    { :pre [(instance-of? :ExcelBuilder excel-builder)
+            (keyword? font-id)] }
+    (let [builder (. excel-builder :withFont (name font-id))]
+      (when-let [x (:height options)] (. builder :heightInPoints x))
+      (when-let [x (:bold options)]   (. builder :bold))
+      (when-let [x (:italic options)] (. builder :italic))
+      (when-let [x (:color options)]  (. builder :color x))
+
+      (. builder :end)
+      builder)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Style
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(add-style excel-builder style-id)"
+          "(add-style excel-builder style-id options)")
+     :doc """
+          Add a style with optional attributes to an Excel.
+
+          Options:
+          format s            - format, e.g. "0#.##"
+          font r              - font name, e.g. :header
+          bg-color c          - background color, e.g. :excel/SKY_BLUE
+          wrap-text b         - wrap text, e.g. true, false
+          h-align e           - horizontal alignment {:left, :center, :right}
+          v-align e           - vertical alignment {:top, :middle, :bottom}
+          """
+     :examples '(
+          """
+          (do
+            (load-module :excel)
+            (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
+                          {:first "Sue"  :last "Ford"  :weight 54.2 } ]
+                  wbook (excel/excel-builder :xlsx)]
+              (excel/add-font wbook :header { :bold true })
+              (excel/add-style wbook :header { :font :header
+                                               :bg-color (:GREY_25_PERCENT excel/colors)
+                                               :h-align :center })
+              (excel/add-style wbook :weight { :format, "#.#"
+                                               :h-align :right })
+
+              (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                           { :auto-size-all-cols true
+                                             :no-header-row false
+                                             :default-header-style :header })]
+                (excel/add-column sheet "First Name" { :data-field :first })
+                (excel/add-column sheet "Last Name" { :data-field :last })
+                (excel/add-column sheet "Weight" { :data-field :weight
+                                                   :body-style :weight })
+                (excel/render-items sheet data)
+                (excel/write-file wbook "sample.xlsx"))))
+          """ ) }
+
+  add-style
+
+  ([excel-builder style-id]
+    (add-style excel-builder style-id {}))
+
+  ([excel-builder style-id options]
+    { :pre [(instance-of? :ExcelBuilder excel-builder)
+            (keyword? style-id)] }
+    (let [builder (. excel-builder :withCellStyle (name style-id))]
+      (when-let [x (:format options)]    (. builder :format x))
+      (when-let [x (:font options)]      (. builder :font x))
+      (when-let [x (:bg-color options)]  (. builder :bgColor x))
+      (when-let [x (:wrap-text options)] (. builder :wrapText))
+      (when-let [x (:h-align options)]
+        (case x
+          :left     (. builder :hAlignLeft)
+          :center   (. builder :hAlignCenter)
+          :right    (. builder :hAlignRight)
+          (throw    (. :VncException :new
+                    (str "Invalid horizontal alignment "
+                         align
+                         ". Use one of :left, :center, or :right")))))
+      (when-let [x (:v-align options)]
+        (case align
+          :top      (. builder :vAlignTop)
+          :midddle  (. builder :vAlignMiddle)
+          :bottom   (. builder :hAlignBottom)
+          (throw    (. :VncException :new
+                    (str "Invalid vertical alignment "
+                         align
+                         ". Use one of :top, :middle, or :bottom")))))
+
+      (. builder :end)
+      builder)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Column
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+          "(add-column sheet-builder title)"
+          "(add-column sheet-builder title options)")
+     :doc """
+          Defines a column with optional attributes.
+
+          Options:
+          field f             - a field, e.g. :first-name
+          width n             - width in points, e.g. 100
+          hidden b            - hidden, e.g. true, false
+          header-style r      - style name for header row, e.g. :header
+          body-style r        - style name for body rows, e.g. :body
+          footer-style r      - style name for footer row, e.g. :footer
+          footer-value        - text or numeric value for the column's footer cell,
+                                e.g. "done", 10000.00M, nil
+          footer-aggregate e  - aggregation mode for the column's footer cell
+                                value, e.g. {:min, :max, :avg, :sum, :none}
+          """
+     :examples '(
+          """
+          (do
+            (load-module :excel)
+            (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
+                          {:first "Sue"  :last "Ford"  :weight 54.2 } ]
+                  wbook (excel/excel-builder :xlsx)]
+              (excel/add-font wbook :header { :bold true })
+              (excel/add-style wbook :header { :font :header
+                                               :bg-color (:GREY_25_PERCENT excel/colors)
+                                               :h-align :center })
+              (excel/add-style wbook :weight { :format, "#.#"
+                                               :h-align :right })
+
+              (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                           { :auto-size-all-cols true
+                                             :no-header-row false
+                                             :default-header-style :header })]
+                (excel/add-column sheet "First Name" { :data-field :first })
+                (excel/add-column sheet "Last Name" { :data-field :last })
+                (excel/add-column sheet "Weight" { :data-field :weight
+                                                   :body-style :weight })
+                (excel/render-items sheet data)
+                (excel/write-file wbook "sample.xlsx"))))
+          """,
+          """
+          (excel/column "First Name"
+                        { :data-field :first-name
+                          :width 100
+                          :hidden false
+                          :header-style :header
+                          :body-style :body
+                          :footer-style :footer
+                          :footer-value 10000.00M
+                          :footer-aggregate :none })
+          """ ) }
+
+  add-column
+
+  ([sheet-builder title]
+    (add-columnn sheet-builder title {}))
+
+  ([sheet-builder title options]
+    { :pre [(instance-of? :ExcelSheetBuilder sheet-builder)
+            (string? title)] }
+    (let [builder (. sheet-builder :withColumn title)]
+      (when-let [x (:data-field options)]   (. builder :colMapper x))
+      (when-let [x (:width options)]        (. builder :widthInPoints x))
+      (when-let [x (:hidden options)]       (. builder :hidden x))
+      (when-let [x (:header-style options)] (. builder :headerStyle (name x)))
+      (when-let [x (:body-style options)]   (. builder :bodyStyle (name x)))
+      (when-let [x (:footer-style options)] (. builder :footerStyle (name x)))
+      (when-let [x (:footer-value options)]
+        (cond
+          (nil? x)    nil
+          (string? x) (. builder :footerTextValue x)
+          (number? x) (. builder :footerNumberValue x)
+          :else       (throw (. :VncException :new
+                                (str "An explicit column footer value must be "
+                                     "nil, a string, or a number")))))
+      (when-let [x (:footer-aggregate options)]
+        (case x
+          :min  (. builder :footerMin)
+          :max  (. builder :footerMax)
+          :avg  (. builder :footerAverage)
+          :sum  (. builder :footerSum)
+          (throw (. :VncException :new
+                    (str "Invalid aggregate mode "
+                         x
+                         ". Use one of :min, :max, :avg, or :sum")))))
+
+      (. builder :end)
+      builder)))
