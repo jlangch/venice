@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.excel.EntityRecord;
-import com.github.jlangch.venice.excel.ExcelBuilder;
 import com.github.jlangch.venice.support.Person;
+import com.github.jlangch.venice.util.excel.DataRecord;
+import com.github.jlangch.venice.util.excel.ExcelBuilder;
 
 
 public class ExcelTest {
@@ -124,11 +124,11 @@ public class ExcelTest {
 	
 	@Test
 	public void test_Builder_with_GenericEntity() {
-		final List<EntityRecord> persons = personMap();
+		final List<DataRecord> persons = personMap();
 		
 		final Excel excel = ExcelBuilder
 								.createXlsx()
-								.withSheet("Persons", EntityRecord.class)
+								.withSheet("Persons", DataRecord.class)
 									.withColumn("FirstName", "firstName")
 										.end()
 									.withColumn("LastName", "lastName")
@@ -394,7 +394,7 @@ public class ExcelTest {
 				new Person("Sue",  "Ford",  34));
 	}
 	
-	private List<EntityRecord> personMap() {
+	private List<DataRecord> personMap() {
 		return persons().stream().map(p -> p.toEntityRecord()).collect(Collectors.toList());
 	}
 

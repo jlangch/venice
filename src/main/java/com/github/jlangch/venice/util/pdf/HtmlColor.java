@@ -1,4 +1,4 @@
-package com.github.jlangch.venice.pdf;
+package com.github.jlangch.venice.util.pdf;
 
 import java.awt.Color;
 import java.util.HashMap;

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.excel;
+package com.github.jlangch.venice.util.excel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +81,7 @@ public class ExcelSheetBuilder<T> {
 			final String fieldName
 	) {	
 		return new ExcelColumnBuilder<T>(this, columnDefs, colHeaderName)
-					.colMapper(e -> ((EntityRecord)e).get(fieldName));
+					.colMapper(e -> ((DataRecord)e).get(fieldName));
 	}
 
 	public ExcelSheetBuilder<T> renderItems(final List<T> items) {		

@@ -30,7 +30,7 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
-import com.github.jlangch.venice.pdf.PdfRenderer;
+import com.github.jlangch.venice.util.pdf.PdfRenderer;
 
 
 public class CheatsheetRenderer {

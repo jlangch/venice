@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.excel;
+package com.github.jlangch.venice.util.excel;
 
 import java.io.OutputStream;
 
@@ -68,7 +68,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  * 
  * <p><b>Example 3 (footer SUM):</b>
  * <pre>
- *    final List<Person> persons = persons();
+ *    final List<DataRecord> persons = persons();
  *    final byte[] data = ExcelBuilder
  *                           .createXlsx()
  *                           .withSheet("Persons", Person.class)
@@ -93,7 +93,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  * 
  * <p><b>Example 4 (footer SUM with styles):</b>
  * <pre>
- *    final List<Person> persons = persons();
+ *    final List<DataRecord> persons = persons();
  *    final byte[] data = ExcelBuilder
  *                           .createXlsx()
  *                           .withFont("bold").bold().end()

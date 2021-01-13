@@ -36,7 +36,7 @@ public class PdfRendererTest {
 				"(do                                                                \n" +
 				"	  (ns test)                                                     \n" +
 				"	                                                                \n" +
-				"	  (import :com.github.jlangch.venice.pdf.PdfRenderer)           \n" +
+				"	  (import :com.github.jlangch.venice.util.pdf.PdfRenderer)      \n" +
 				"	                                                                \n" +
 				"	  (load-module :kira)                                           \n" +
 				"	                                                                \n" +

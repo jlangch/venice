@@ -24,7 +24,7 @@ package com.github.jlangch.venice.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.jlangch.venice.excel.EntityRecord;
+import com.github.jlangch.venice.util.excel.DataRecord;
 
 
 public class Person {
@@ -39,12 +39,12 @@ public class Person {
 	public String getLastName() { return lastName; }
 	public Integer getAge() { return age; }
 	
-	public EntityRecord toEntityRecord() {
+	public DataRecord toEntityRecord() {
 		final Map<String,Object> entity = new HashMap<>();
 		entity.put("firstName", firstName);
 		entity.put("lastName", lastName);
 		entity.put("age", age);
-		return EntityRecord.of(entity);
+		return DataRecord.of(entity);
 	}
 	
 	public String toString() { 

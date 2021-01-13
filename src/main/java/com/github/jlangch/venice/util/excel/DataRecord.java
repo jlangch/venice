@@ -1,4 +1,3 @@
-package com.github.jlangch.venice.excel;
 /*   __    __         _
  *   \ \  / /__ _ __ (_) ___ ___ 
  *    \ \/ / _ \ '_ \| |/ __/ _ \
@@ -20,17 +19,19 @@ package com.github.jlangch.venice.excel;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.jlangch.venice.util.excel;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class EntityRecord {
-	public EntityRecord() {
+public class DataRecord {
+	
+	public DataRecord() {
 	}
 	
-	public static EntityRecord of(final Map<String,Object> fields) {
-		final EntityRecord ge = new EntityRecord();
+	public static DataRecord of(final Map<String,Object> fields) {
+		final DataRecord ge = new DataRecord();
 		fields.forEach((k,v) -> ge.put(k, v));
 		return ge;
 	}
