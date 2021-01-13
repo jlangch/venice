@@ -41,8 +41,6 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                             .autoSizeColumns()
  *                             .end()
  *                           .writeToBytes();
- *
- *    return new XlsxDocument("report", "report.xlsx", data);	
  * </pre>
  * 
  * <p><b>Example 2 (header row format):</b>
@@ -62,13 +60,11 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                             .autoSizeColumns()
  *                             .end()
  *                           .writeToBytes();
- *
- *    return new XlsxDocument("report", "report.xlsx", data);	
  * </pre>
  * 
  * <p><b>Example 3 (footer SUM):</b>
  * <pre>
- *    final List<DataRecord> persons = persons();
+ *    final List&lt;DataRecord&gt; persons = persons();
  *    final byte[] data = ExcelBuilder
  *                           .createXlsx()
  *                           .withSheet("Persons", Person.class)
@@ -87,13 +83,11 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                              .autoSizeColumns()
  *                              .end()
  *                           .writeToBytes();
- *
- *    return new XlsxDocument("report", "report.xlsx", data);	
  * </pre>
  * 
  * <p><b>Example 4 (footer SUM with styles):</b>
  * <pre>
- *    final List<DataRecord> persons = persons();
+ *    final List&lt;DataRecord&gt; persons = persons();
  *    final byte[] data = ExcelBuilder
  *                           .createXlsx()
  *                           .withFont("bold").bold().end()
@@ -122,8 +116,6 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                              .autoSizeColumns()
  *                              .end()
  *                           .writeToBytes();
- *
- *    return new XlsxDocument("report", "report.xlsx", data);	
  * </pre>
  * 
  * @author juerg
