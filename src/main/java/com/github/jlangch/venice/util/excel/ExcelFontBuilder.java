@@ -31,14 +31,20 @@ public class ExcelFontBuilder {
 	public ExcelFontBuilder(
 			final ExcelBuilder excelBuilder,
 			final Excel managedExcel,
-			final String name
+			final String id
 	) {
 		this.parentBuilder = excelBuilder;
 		this.managedExcel = managedExcel;
-		this.name = name;
+		this.id = id;
 	}
 
 	
+
+	public ExcelFontBuilder name(final String fontName) {
+		this.fontName = fontName;
+		return this;
+	}
+
 	public ExcelFontBuilder heightInPoints(final int heightInPoints) {
 		this.heightInPoints = heightInPoints;
 		return this;
@@ -65,14 +71,15 @@ public class ExcelFontBuilder {
 	}
 
 	public ExcelBuilder end() {
-		managedExcel.registerFont(name, heightInPoints, bold, italic, colorIndex);
+		managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
 		return parentBuilder;
 	}
 
 
 	private final ExcelBuilder parentBuilder;
 	private final Excel managedExcel;
-	private final String name;
+	private final String id;
+	private String fontName;
 	private Integer heightInPoints;
 	private boolean bold;
 	private boolean italic;

@@ -33,11 +33,11 @@ public class ExcelCellStyleBuilder {
 	public ExcelCellStyleBuilder(
 			final ExcelBuilder excelBuilder,
 			final Excel managedExcel,
-			final String name
+			final String id
 	) {
 		this.parentBuilder = excelBuilder;
 		this.managedExcel = managedExcel;
-		this.name = name;
+		this.id = id;
 	}
 
 	
@@ -108,14 +108,14 @@ public class ExcelCellStyleBuilder {
 
 	public ExcelBuilder end() {
 		managedExcel.registerCellFormat(
-				name, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
 		return parentBuilder;
 	}
 
 
 	private final ExcelBuilder parentBuilder;
 	private final Excel managedExcel;
-	private final String name;
+	private final String id;
 	private String format;
 	private String fontRefName;
 	private Short bgColorIndex;

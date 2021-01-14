@@ -178,6 +178,10 @@ public class ExcelSheetBuilder<T> {
 		return sheet.getCellAddress(row1-1, col1-1);
 	}
 	
+	public ExcelSheetReader reader() {
+		return new ExcelSheetReader(sheet);
+	}
+	
 	
 	
 	private String getColumnHeaderStyle(final int col0) {

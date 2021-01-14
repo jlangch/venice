@@ -160,18 +160,22 @@ public class Excel implements Closeable {
 		evaluator.evaluateAll();
 	}
 
-	public void registerFont(final String refName, final int heightInPoints) {
-		registerFont(refName, heightInPoints, false, false, null);
+	public void registerFont(final String id, final String fontName, final int heightInPoints) {
+		registerFont(id, fontName, heightInPoints, false, false, null);
 	}
 	
 	public void registerFont(
-			final String refName, 
+			final String id,
+			final String fontName,
 			final Integer heightInPoints, 
 			final boolean bold, 
 			final boolean italic, 
 			final Short colorIndex
 	) {
 		final Font font = workbook.createFont();
+		if (fontName != null) {
+			font.setFontName(fontName);
+		}
 		if (heightInPoints != null) {
 			font.setFontHeightInPoints(heightInPoints.shortValue());
 		}
@@ -180,15 +184,15 @@ public class Excel implements Closeable {
 		if (colorIndex != null) {
 			font.setColor(colorIndex);
 		}
-		fonts.put(refName, font);
+		fonts.put(id, font);
 	}
 
-	public void registerCellFormat(final String name, final String format) {
-		registerCellFormat(name, format, null, null, null, null, null);
+	public void registerCellFormat(final String id, final String format) {
+		registerCellFormat(id, format, null, null, null, null, null);
 	}
 
 	public void registerCellFormat(
-			final String name,
+			final String id,
 			final String format,
 			final String fontRefName,
 			final Short bgColorIndex,
@@ -197,7 +201,7 @@ public class Excel implements Closeable {
 			final VerticalAlignment vAlign
 	) {
 		cellDataStyles.registerCellFormat(
-				name, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
 	}
 	
 	public void write(final OutputStream outputStream) {

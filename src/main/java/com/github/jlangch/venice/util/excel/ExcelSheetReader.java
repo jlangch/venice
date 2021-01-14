@@ -45,11 +45,11 @@ public class ExcelSheetReader {
 	}
 
 	public int getFirstRowNum() {
-		return sheet.getFirstRowNum();
+		return sheet.getFirstRowNum()+1;
 	}
 
 	public int getLastRowNum() {
-		return sheet.getLastRowNum();
+		return sheet.getLastRowNum()+1;
 	}
 
 	public int getFirstCellNum(final int row1) {
@@ -62,6 +62,10 @@ public class ExcelSheetReader {
 
 	public boolean isCellEmpty(final int row1, final int col1) {
 		return sheet.isCellEmpty(row1-1, col1-1);
+	}
+
+	public String getCellType(final int row1, final int col1) {
+		return sheet.getCellType(row1-1, col1-1);
 	}
 
 	public String getCellAddress(final int row1, final int col1) {

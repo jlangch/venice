@@ -92,7 +92,35 @@ public class ExcelSheet {
 	public String getCellAddress(final int row, final int col) {
 		return new CellAddress(row, col).formatAsString();
 	}
-	
+
+	public String getCellType(final int row, final int col) {
+		final Cell cell = getCell(row, col);		
+		if (cell == null) {
+			return "inexistent";
+		}
+		if (cell.getCellType() == CellType.BLANK) { 
+			return "blank";
+		}
+		else if (cell.getCellType() == CellType.STRING) { 
+			return "string";
+		}
+		else if (cell.getCellType() == CellType.BOOLEAN) { 
+			return "boolean";
+		}
+		else if (cell.getCellType() == CellType.NUMERIC) { 
+			return "numeric";
+		}
+		else if (cell.getCellType() == CellType.FORMULA) { 
+			return "formula";
+		}
+		else if (cell.getCellType() == CellType.ERROR) { 
+			return "error";
+		}
+		else {
+			return "unknown";
+		}
+	}
+
 	public String getString(final int row, final int col) {
 		final Cell cell = getCell(row, col);		
 		if (cell == null) {
