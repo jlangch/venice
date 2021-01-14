@@ -139,21 +139,9 @@
               (excel/write-file wbook "sample.xls")))
           """,
           """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-items sheet data)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+           """ )
      :see-also '(
-        "excel/add-sheet", "excel/add-font", "excel/add-cell-style",
+        "excel/add-sheet", "excel/add-font", "excel/add-style",
         "excel/write-file", "excel/write-stream", "excel/write-bytebuf" )}
 
   excel-builder [type]
@@ -163,6 +151,33 @@
     :xlsx (. :ExcelBuilder :createXlsx)
     (throw (. :VncException :new
               (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
+
+
+(defn
+  ^{ :arglists '("(wirte-data builder sheet-name data)")
+     :doc "Writes the data of a 2D array to the excel."
+     :examples '(
+         """
+         (do
+           (load-module :excel)
+           (let [wbook (excel/excel-builder :xlsx)
+                 dt    (time/local-date 2021 1 1)
+                 ts    (time/local-date-time 2021 1 1 15 30 45)]
+             (excel/write-data wbook "Data" [[100  101  102  103  104  105]
+                                             [200  "ab" 1.23 dt   ts   false]])
+             (excel/write-file wbook "sample.xlsx")))
+         """ )
+     :see-also '("excel/write-stream", "excel/write-bytebuf")}
+
+  write-data [builder sheet-name data ]
+
+  { :pre [(instance-of? :ExcelBuilder builder)
+          (string? sheet-name) ] }
+
+  (let [sheet (excel/add-sheet builder sheet-name { :no-header-row true })
+        cell  (fn [r c val] (excel/cell-value sheet (inc r) (inc c) val))]
+    (map-indexed (fn [row rv] (map-indexed (fn [col cv] (cell row col cv)) rv))
+                 data)))
 
 
 (defn
@@ -273,8 +288,9 @@
               (excel/write-file wbook "sample.xlsx")))
           """ )
      :see-also '(
-          "render-item", "cell-value", "cell-formula",
-          "auto-size-columns", "auto-size-column", "reader") }
+          "excel/render-item", "excel/cell-value", "excel/cell-formula",
+          "excel/auto-size-columns", "excel/auto-size-column",
+          "excel/reader") }
 
   render-items [builder items]
 
@@ -303,8 +319,9 @@
               (excel/write-file wbook "sample.xlsx")))
           """ )
      :see-also '(
-          "render-items", "cell-value", "cell-formula",
-          "auto-size-columns", "auto-size-column", "reader") }
+          "excel/render-items", "excel/cell-value", "excel/cell-formula",
+          "excel/auto-size-columns", "excel/auto-size-column",
+          "excel/reader") }
 
   render-item [builder item]
 
@@ -357,8 +374,9 @@
               (excel/write-file wbook "sample.xlsx")))
           """ )
      :see-also '(
-          "render-items", "render-item", "cell-formula",
-          "auto-size-columns", "auto-size-column", "reader") }
+          "excel/render-items", "excel/render-item", "excel/cell-formula",
+          "excel/auto-size-columns", "excel/auto-size-column",
+          "excel/reader") }
 
   cell-value
 
@@ -457,7 +475,7 @@
               (excel/auto-size-columns sheet)
               (excel/write-file wbook "sample.xlsx")))
           """ )
-     :see-also '("cell-address") }
+     :see-also '("excel/cell-address") }
 
   sum-formula [builder row-from row-to col-from col-to]
 
@@ -492,7 +510,7 @@
               (excel/auto-size-columns sheet)
               (excel/write-file wbook "sample.xlsx")))
           """ )
-     :see-also '("cell-formula") }
+     :see-also '("excel/cell-formula") }
 
   cell-address [builder row col]
 
@@ -521,8 +539,8 @@
               (excel/write-file wbook "sample.xlsx")))
           """ )
      :see-also '(
-          "auto-size-column", "render-items", "render-item", "cell-value",
-          "cell-formula", "reader") }
+          "excel/auto-size-column", "excel/render-items", "excel/render-item",
+          "excel/cell-value", "excel/cell-formula", "excel/reader") }
 
   auto-size-columns [builder]
 
@@ -552,8 +570,8 @@
               (excel/write-file wbook "sample.xlsx")))
           """ )
      :see-also '(
-          "auto-size-columns", "render-items", "render-item", "cell-value",
-          "cell-formula", "reader") }
+          "excel/auto-size-columns", "excel/render-items", "excel/render-item",
+          "excel/cell-value", "excel/cell-formula", "excel/reader") }
 
   auto-size-column [builder col]
 
@@ -588,8 +606,10 @@
                 (excel/cell-long-val reader 1 1))))
             """ )
        :see-also '(
-            "render-items", "render-item", "cell-value", "cell-formula",
-            "auto-size-columns", "auto-size-column", "reader") }
+            "excel/render-items", "excel/render-item",
+            "excel/cell-value", "excel/cell-formula",
+            "excel/auto-size-columns", "excel/auto-size-column",
+            "excel/reader") }
 
   evaluate-formulas [builder]
 
@@ -667,7 +687,7 @@
                 (excel/auto-size-column sheet 3)
                 (excel/write-file wbook "sample.xlsx"))))
           """ )
-     :see-also '("add-column", "add-font", "add-style") }
+     :see-also '("excel/add-column", "excel/add-font", "excel/add-style") }
 
   add-sheet
 
@@ -739,7 +759,7 @@
                 (excel/auto-size-columns sheet)
                 (excel/write-file wbook "sample.xlsx"))))
           """ )
-     :see-also '("add-sheet", "add-style") }
+     :see-also '("excel/add-sheet", "excel/add-style") }
 
   add-font
 
@@ -790,7 +810,7 @@
               (excel/add-style wbook :header { :font :header
                                                :bg-color (:GREY_25_PERCENT excel/colors)
                                                :h-align :center })
-              (excel/add-style wbook :weight { :format, "#.#"
+              (excel/add-style wbook :weight { :format, "#,##0.0"
                                                :h-align :right })
 
               (let [sheet (excel/add-sheet wbook "Sheet 1"
@@ -804,7 +824,7 @@
                 (excel/auto-size-columns sheet)
                 (excel/write-file wbook "sample.xlsx"))))
           """ )
-     :see-also '("add-sheet", "add-font") }
+     :see-also '("excel/add-sheet", "excel/add-font") }
 
   add-style
 
@@ -877,7 +897,7 @@
               (excel/add-style wbook :header { :font :header
                                                :bg-color (:GREY_25_PERCENT excel/colors)
                                                :h-align :center })
-              (excel/add-style wbook :weight { :format, "#.#"
+              (excel/add-style wbook :weight { :format, "#,##0.0"
                                                :h-align :right })
 
               (let [sheet (excel/add-sheet wbook "Sheet 1"
@@ -902,7 +922,7 @@
                           :footer-value 10000.00M
                           :footer-aggregate :none })
           """ )
-     :see-also '("add-sheet") }
+     :see-also '("excel/add-sheet") }
 
   add-column
 
@@ -954,8 +974,8 @@
      :doc """
           Opens an Excel from a source and returns an Excel reader.
 
-          Supported sources are a string file path, a bytebuf, a :java.io.File,
-          or a :java.io.InputStrteam.
+          Supported sources are string file path, bytebuf, :java.io.File,
+          or :java.io.InputStrteam.
           """
      :examples '(
           """
@@ -963,7 +983,8 @@
             (load-module :excel)
             (excel/open "sample.xls"))
           """ )
-     :see-also '("sheet-count", "sheet", "evaluate-formulas") }
+     :see-also '(
+          "excel/sheet-count", "excel/sheet", "excel/evaluate-formulas") }
 
   open [source]
 
@@ -984,13 +1005,20 @@
           """
           (do
             (load-module :excel)
-            (excel/open "sample.xls"))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))]
+              (excel/sheet-count wbook)))
           """ )
-     :see-also '("sheet", "evaluate-formulas") }
+     :see-also '("excel/sheet", "excel/evaluate-formulas") }
 
   sheet-count [wbook]
 
-  (. wbook :getNumberOfSheets wbook))
+  (long (. wbook :getNumberOfSheets)))
 
 
 (defn
@@ -1000,14 +1028,20 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-              (excel/evaluate-formulas wbook))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))]
+              (excel/evaluate-formulas wbook)))
           """ )
-     :see-also '("sheet-count", "sheet") }
+     :see-also '("excel/sheet-count", "excel/sheet") }
 
   evaluate-formulas [wbook]
 
-  (. wbook :evaluateAllFormulas wbook))
+  (. wbook :evaluateAllFormulas))
 
 
 (defn
@@ -1021,21 +1055,31 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet1 (excel/sheet wbook "Payments")
-                  sheet2 (excel/sheet wbook 1)))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data1" [[100 101 102] [200 201 202]])
+                (excel/write-data wbook "Data2" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook  (excel/open (test-xls))
+                  sheet1 (excel/sheet wbook "Data1")
+                  sheet2 (excel/sheet wbook 2)]
+              ))
           """ )
-     :see-also '("sheet-count", "evaluate-formulas",
-                 "sheet-name", "sheet-row-range", "sheet-col-range",
-                 "cell-empty?", "cell-type",
-                 "cell-string-val", "cell-boolean-val", "cell-long-val",
-                 "cell-double-val", "cell-date-val") }
+     :see-also '("excel/sheet-count", "excel/evaluate-formulas",
+                 "excel/sheet-name", "excel/sheet-row-range",
+                 "excel/sheet-col-range",
+                 "excel/cell-empty?", "excel/cell-type",
+                 "excel/cell-string-val", "excel/cell-boolean-val",
+                 "excel/cell-long-val", "excel/cell-double-val",
+                 "excel/cell-date-val") }
 
   sheet [wbook s]
 
   (cond
-    (string? ref)  (. wbook :getSheet ref)
-    (long? ref)    (. wbook :getSheetAt ref)
+    (string? s)  (. wbook :getSheet s)
+    (long? s)    (. wbook :getSheetAt s)
 
     :else (throw (. :VncException :new
               (str "Invalid Excel sheet reference type " (type s))))))
@@ -1052,9 +1096,15 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/sheet-name sheet))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/sheet-name sheet)))
           """ )
      :see-also '() }
 
@@ -1068,20 +1118,27 @@
      :doc
           """
           Returns the first and the last row with data in a sheet as vector.
+          Returns -1 values if no row exists.
           """
      :examples '(
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/sheet-row-range sheet))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/sheet-row-range sheet)))
           """ )
-     :see-also '("sheet-col-range")}
+     :see-also '("excel/sheet-col-range")}
 
   sheet-row-range [sheet]
 
-  [(. sheet :getFirstRowNum) (. sheet :getLastRowNum)])
+  [(long (. sheet :getFirstRowNum)) (long (. sheet :getLastRowNum))])
 
 
 (defn
@@ -1089,20 +1146,28 @@
      :doc
           """
           Returns the first and the last col with data in a sheet row as vector.
+          Returns -1 values if the row does notexists or the row does not have \
+          any columns.
           """
      :examples '(
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/sheet-col-range sheet 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/sheet-col-range sheet 1)))
           """ )
-     :see-also '("sheet-row-range")}
+     :see-also '("excel/sheet-row-range")}
 
   sheet-col-range [sheet row]
 
-  [(. sheet :getFirstCellNum row) (. sheet :getLastCellNum row)])
+  [(long (. sheet :getFirstCellNum row)) (long (. sheet :getLastCellNum row))])
 
 
 (defn
@@ -1115,14 +1180,22 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-empty? sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              [(excel/cell-empty? sheet 1 1)
+               (excel/cell-empty? sheet 2 1)
+               (excel/cell-empty? sheet 3 1)]))
           """ )
      :see-also '(
-          "cell-type",
-          "cell-string-val", "cell-boolean-val", "cell-long-val",
-          "cell-double-val", "cell-date-val") }
+          "excel/cell-type", "excel/cell-string-val",
+          "excel/cell-boolean-val", "excel/cell-long-val",
+          "excel/cell-double-val", "excel/cell-date-val") }
 
   cell-empty? [sheet row col]
 
@@ -1140,14 +1213,23 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-type sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 "101" 102.0]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              [(excel/cell-type sheet 1 1)
+               (excel/cell-type sheet 1 2)
+               (excel/cell-type sheet 1 3)
+               (excel/cell-type sheet 1 4)]))
           """ )
      :see-also '(
-          "cell-empty?",
-          "cell-string-val", "cell-boolean-val", "cell-long-val",
-          "cell-double-val", "cell-date-val") }
+          "excel/cell-empty?", "excel/cell-string-val",
+          "excel/cell-boolean-val", "excel/cell-long-val",
+          "excel/cell-double-val", "excel/cell-date-val") }
 
   cell-type [sheet row col]
 
@@ -1173,14 +1255,20 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-string-val sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 "101" 102.0]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/cell-string-val sheet 1 2)))
           """ )
      :see-also '(
-          "cell-empty?", "cell-type",
-          "cell-boolean-val", "cell-long-val",
-          "cell-double-val", "cell-date-val")}
+          "excel/cell-empty?", "excel/cell-type",
+          "excel/cell-boolean-val", "excel/cell-long-val",
+          "excel/cell-double-val", "excel/cell-date-val")}
 
   cell-string-val [sheet row col]
 
@@ -1197,14 +1285,20 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-boolean-val sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 true 102]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/cell-boolean-val sheet 1 2)))
           """ )
      :see-also '(
-          "cell-empty?", "cell-type",
-          "cell-string-val", "cell-long-val",
-          "cell-double-val", "cell-date-val")}
+          "excel/cell-empty?", "excel/cell-type",
+          "excel/cell-string-val", "excel/cell-long-val",
+          "excel/cell-double-val", "excel/cell-date-val")}
 
   cell-boolean-val [sheet row col]
 
@@ -1221,18 +1315,24 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-long-val sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/cell-long-val sheet 1 2)))
           """ )
      :see-also '(
-          "cell-empty?", "cell-type",
-          "cell-string-val", "cell-boolean-val",
-          "cell-double-val", "cell-date-val")}
+          "excel/cell-empty?", "excel/cell-type",
+          "excel/cell-string-val", "excel/cell-boolean-val",
+          "excel/cell-double-val", "excel/cell-date-val")}
 
   cell-long-val [sheet row col]
 
-  (. sheet :getLong row col))
+  (. sheet :getInteger row col))
 
 
 (defn
@@ -1245,18 +1345,24 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-double-val sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)]
+                (excel/write-data wbook "Data" [[100 101.23 102]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/cell-double-val sheet 1 2)))
           """ )
      :see-also '(
-          "cell-empty?", "cell-type",
-          "cell-string-val", "cell-boolean-val", "cell-long-val",
-          "cell-date-val") }
+          "excel/cell-empty?", "excel/cell-type",
+          "excel/cell-string-val", "excel/cell-boolean-val",
+          "excel/cell-long-val", "excel/cell-date-val") }
 
   cell-double-val [sheet row col]
 
-  (. sheet :getDouble row col))
+  (. sheet :getFloat row col))
 
 
 (defn
@@ -1269,14 +1375,23 @@
           """
           (do
             (load-module :excel)
-            (let [wbook (excel/open "sample.xls")]
-                  sheet (excel/sheet wbook 1))
-              (excel/cell-date-val sheet 1 1))
+
+            (defn test-xls []
+              (let [wbook (excel/excel-builder :xlsx)
+                    dt    (time/local-date 2021 1 1)
+                    ts    (time/local-date-time 2021 1 1 15 30 45)]
+                (excel/write-data wbook "Data" [[100 dt ts 102]])
+                (excel/write-bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              [(excel/cell-date-val sheet 1 2)
+               (excel/cell-date-val sheet 1 3)]))
           """ )
      :see-also '(
-          "cell-empty?", "cell-type",
-          "cell-string-val", "cell-boolean-val", "cell-long-val",
-          "cell-double-val") }
+          "excel/cell-empty?", "excel/cell-type",
+          "excel/cell-string-val", "excel/cell-boolean-val",
+          "excel/cell-long-val", "excel/cell-double-val") }
 
   cell-date-val [sheet row col]
 

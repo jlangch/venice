@@ -74,7 +74,7 @@ public class ExcelReader {
 	}
 
 	public ExcelSheetReader getSheetAt(final int sheetIdx) {
-		return new ExcelSheetReader(excel.getSheetAt(sheetIdx));
+		return new ExcelSheetReader(excel.getSheetAt(sheetIdx-1));
 	}
 	
 	

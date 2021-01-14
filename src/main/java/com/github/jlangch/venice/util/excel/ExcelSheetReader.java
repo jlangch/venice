@@ -45,19 +45,24 @@ public class ExcelSheetReader {
 	}
 
 	public int getFirstRowNum() {
-		return sheet.getFirstRowNum()+1;
+		final int n = sheet.getFirstRowNum();		
+		return n < 0 ? n : n + 1;
 	}
 
 	public int getLastRowNum() {
-		return sheet.getLastRowNum()+1;
+		final int n = sheet.getLastRowNum();		
+		return n < 0 ? n : n + 1;
 	}
 
 	public int getFirstCellNum(final int row1) {
-		return sheet.getFirstCellNum(row1-1);
+		final int n = sheet.getFirstCellNum(row1-1);		
+		return n < 0 ? n : n + 1;
 	}
 
 	public int getLastCellNum(final int row1) {
-		return sheet.getLastCellNum(row1-1);
+		// returns the last cell number PLUS ONE
+		final int n = sheet.getLastCellNum(row1-1);		
+		return n; // no correction
 	}
 
 	public boolean isCellEmpty(final int row1, final int col1) {
