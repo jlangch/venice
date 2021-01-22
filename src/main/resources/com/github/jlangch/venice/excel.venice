@@ -119,32 +119,31 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(excel-builder type)")
+  ^{ :arglists '("(writer type)")
      :doc """
           Creates a new Excel builder for the given type :xls or :xlsx.
           """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xls)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-items sheet data)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xls")))
-          """,
-          """
-           """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xls)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xls")))
+        """)
      :see-also '(
         "excel/add-sheet", "excel/add-font", "excel/add-style",
-        "excel/write-file", "excel/write-stream", "excel/write-bytebuf" )}
+        "excel/write->file", "excel/write->stream", "excel/write->bytebuf",
+        "excel/evaluate-formulas" )}
 
-  excel-builder [type]
+  writer [type]
 
   (case type
     :xls  (. :ExcelBuilder :createXls)
@@ -154,34 +153,7 @@
 
 
 (defn
-  ^{ :arglists '("(wirte-data builder sheet-name data)")
-     :doc "Writes the data of a 2D array to the excel."
-     :examples '(
-         """
-         (do
-           (load-module :excel)
-           (let [wbook (excel/excel-builder :xlsx)
-                 dt    (time/local-date 2021 1 1)
-                 ts    (time/local-date-time 2021 1 1 15 30 45)]
-             (excel/write-data wbook "Data" [[100  101  102  103  104  105]
-                                             [200  "ab" 1.23 dt   ts   false]])
-             (excel/write-file wbook "sample.xlsx")))
-         """ )
-     :see-also '("excel/write-stream", "excel/write-bytebuf")}
-
-  write-data [builder sheet-name data ]
-
-  { :pre [(instance-of? :ExcelBuilder builder)
-          (string? sheet-name) ] }
-
-  (let [sheet (excel/add-sheet builder sheet-name { :no-header-row true })
-        cell  (fn [r c val] (excel/cell-value sheet (inc r) (inc c) val))]
-    (map-indexed (fn [row rv] (map-indexed (fn [col cv] (cell row col cv)) rv))
-                 data)))
-
-
-(defn
-  ^{ :arglists '("(write-file builder f)")
+  ^{ :arglists '("(write->file builder f)")
      :doc "Writes the excel to a file."
      :examples '(
          """
@@ -189,18 +161,18 @@
            (load-module :excel)
            (let [data  [ {:first "John" :last "Doe"   :age 28 }
                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                 wbook (excel/excel-builder :xlsx)
+                 wbook (excel/writer :xlsx)
                  sheet (excel/add-sheet wbook "Sheet 1")]
              (excel/add-column sheet "First Name" { :data-field :first })
              (excel/add-column sheet "Last Name" { :data-field :last })
              (excel/add-column sheet "Age" { :data-field :age })
-             (excel/render-items sheet data)
+             (excel/write-items sheet data)
              (excel/auto-size-columns sheet)
-             (excel/write-file wbook "sample.xlsx")))
-         """ )
-     :see-also '("excel/write-stream", "excel/write-bytebuf")}
+             (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '("excel/write->stream", "excel/write->bytebuf")}
 
-  write-file [builder f]
+  write->file [builder f]
 
   { :pre [(instance-of? :ExcelBuilder builder)
           (or (string? f) (instance-of? :File f)) ] }
@@ -209,27 +181,27 @@
 
 
 (defn
-  ^{ :arglists '("(write-stream builder os)")
+  ^{ :arglists '("(write->stream builder os)")
      :doc "Writes the excel to a Java :OutputStream."
      :examples '(
-         """
-         (do
-           (load-module :excel)
-           (let [os    (. :java.io.FileOutputStream :new "sample.xlsx")
-                 data  [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]
-                 wbook (excel/excel-builder :xlsx)
-                 sheet (excel/add-sheet wbook "Sheet 1")]
-             (excel/add-column sheet "First Name" { :data-field :first })
-             (excel/add-column sheet "Last Name" { :data-field :last })
-             (excel/add-column sheet "Age" { :data-field :age })
-             (excel/render-items sheet data)
-             (excel/auto-size-columns sheet)
-             (excel/write-stream os)))
-         """ )
-     :see-also '("excel/write-file", "excel/write-bytebuf")}
+        """
+        (do
+          (load-module :excel)
+          (let [os    (. :java.io.FileOutputStream :new "sample.xlsx")
+                data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->stream wbook os)))
+        """ )
+     :see-also '("excel/write->file", "excel/write->bytebuf")}
 
-  write-stream [builder os]
+  write->stream [builder os]
 
   { :pre [(instance-of? :ExcelBuilder builder)
           (instance-of? :OutputStream os)] }
@@ -238,30 +210,86 @@
 
 
 (defn
-  ^{ :arglists '("(write-bytebuf builder os)")
+  ^{ :arglists '("(write->bytebuf builder os)")
      :doc "Writes the excel to a bytebuf. Returns the bytebuf."
      :examples '(
-         """
-         (do
-           (load-module :excel)
-           (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                         {:first "Sue"  :last "Ford"  :age 26 } ]
-                 wbook (excel/excel-builder :xlsx)
-                 sheet (excel/add-sheet wbook "Sheet 1")]
-             (excel/add-column sheet "First Name" { :data-field :first })
-             (excel/add-column sheet "Last Name" { :data-field :last })
-             (excel/add-column sheet "Age" { :data-field :age })
-             (excel/render-items sheet data)
-             (excel/auto-size-columns sheet)
-             (excel/write-bytebuf)))
-         """ )
-     :see-also '("excel/write-file", "excel/write-stream")}
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->bytebuf wbook)))
+        """ )
+     :see-also '("excel/write->file", "excel/write->stream")}
 
-  write-bytebuf [builder]
+  write->bytebuf [builder]
 
   { :pre [(instance-of? :ExcelBuilder builder)] }
 
   (. builder :writeToBytes))
+
+
+(defn
+  ^{ :arglists '("(write-data builder sheet-name data)")
+     :doc
+        """
+        Writes the data of a 2D array to an excel sheet. Creates a new
+        sheet with the name given by 'sheet-name'.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                dt    (time/local-date 2021 1 1)
+                ts    (time/local-date-time 2021 1 1 15 30 45)]
+            (excel/write-data wbook "Data" [[100  101  102  103  104  105]
+                                            [200  "ab" 1.23 dt   ts   false]])
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '("excel/write->stream", "excel/write->bytebuf")}
+
+  write-data [builder sheet-name data ]
+
+  { :pre [(instance-of? :ExcelBuilder builder)
+          (string? sheet-name) ] }
+
+  (let [sheet (excel/add-sheet builder sheet-name { :no-header-row true })
+        cell  (fn [r c val] (excel/write-value sheet (inc r) (inc c) val))]
+    (map-indexed (fn [row rv] (map-indexed (fn [col cv] (cell row col cv)) rv))
+                 data)))
+
+
+(defn
+  ^{ :arglists '("(evaluate-formulas wbook)")
+     :doc "Evaluate all formulas in the Excel."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
+
+          (let [wbook (excel/open (test-xls))]
+            (excel/evaluate-formulas wbook)))
+        """ )
+     :see-also '("excel/writer") }
+
+  evaluate-formulas [wbook]
+
+  { :pre [(instance-of? :ExcelBuilder wbook)] }
+
+  (. wbook :evaluateAllFormulas))
 
 
 
@@ -270,29 +298,28 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(render-items builder items)")
-     :doc "Render the passed data items"
+  ^{ :arglists '("(write-items builder items)")
+     :doc "Writes the passed data items to the sheet"
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-items sheet data)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '(
-          "excel/render-item", "excel/cell-value", "excel/cell-formula",
-          "excel/auto-size-columns", "excel/auto-size-column",
-          "excel/reader") }
+        "excel/write-item", "excel/write-value", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column") }
 
-  render-items [builder items]
+  write-items [builder items]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
@@ -302,28 +329,27 @@
 
 
 (defn
-  ^{ :arglists '("(render-item builder item)")
-     :doc "Render a single data item"
+  ^{ :arglists '("(write-item builder item)")
+     :doc "Render a single data item to the sheet"
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-item sheet {:first "John" :last "Doe"   :age 28 })
-              (excel/render-item sheet {:first "Sue"  :last "Ford"  :age 26 })
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-item sheet {:first "John" :last "Doe"   :age 28 })
+            (excel/write-item sheet {:first "Sue"  :last "Ford"  :age 26 })
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '(
-          "excel/render-items", "excel/cell-value", "excel/cell-formula",
-          "excel/auto-size-columns", "excel/auto-size-column",
-          "excel/reader") }
+        "excel/write-items", "excel/write-value", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column") }
 
-  render-item [builder item]
+  write-item [builder item]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder) (map? item)] }
 
@@ -332,53 +358,52 @@
 
 
 (defn
-  ^{ :arglists '("(cell-value builder row col val)")
-     :doc "Set a value for a specific cell given by its row and col."
+  ^{ :arglists '("(write-value builder row col val)")
+     :doc "Writes a value to a specific cell given by its row and col."
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/cell-value sheet 1 1 "John")
-              (excel/cell-value sheet 1 2 "Doe")
-              (excel/cell-value sheet 1 3 28)
-              (excel/cell-value sheet 2 1 "Sue")
-              (excel/cell-value sheet 2 2 "Ford")
-              (excel/cell-value sheet 2 3 26)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """,
-          """
-          (do
-            (load-module :excel)
-            (let [wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-font wbook :italic { :italic true })
-              (excel/add-font wbook :bold { :bold true })
-              (excel/add-style wbook :italic { :font :italic })
-              (excel/add-style wbook :bold { :font :bold })
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/cell-value sheet 1 1 "John" :italic)
-              (excel/cell-value sheet 1 2 "Doe"  :italic)
-              (excel/cell-value sheet 1 3 28     :bold)
-              (excel/cell-value sheet 2 1 "Sue"  :italic)
-              (excel/cell-value sheet 2 2 "Ford" :italic)
-              (excel/cell-value sheet 2 3 26     :bold)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-value sheet 1 1 "John")
+            (excel/write-value sheet 1 2 "Doe")
+            (excel/write-value sheet 1 3 28)
+            (excel/write-value sheet 2 1 "Sue")
+            (excel/write-value sheet 2 2 "Ford")
+            (excel/write-value sheet 2 3 26)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """,
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-font wbook :italic { :italic true })
+            (excel/add-font wbook :bold { :bold true })
+            (excel/add-style wbook :italic { :font :italic })
+            (excel/add-style wbook :bold { :font :bold })
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-value sheet 1 1 "John" :italic)
+            (excel/write-value sheet 1 2 "Doe"  :italic)
+            (excel/write-value sheet 1 3 28     :bold)
+            (excel/write-value sheet 2 1 "Sue"  :italic)
+            (excel/write-value sheet 2 2 "Ford" :italic)
+            (excel/write-value sheet 2 3 26     :bold)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '(
-          "excel/render-items", "excel/render-item", "excel/cell-formula",
-          "excel/auto-size-columns", "excel/auto-size-column",
-          "excel/reader") }
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column") }
 
-  cell-value
+  write-value
 
   ([builder row col val]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
@@ -395,49 +420,53 @@
   ^{ :arglists '("(cell-formula builder row col formula)")
      :doc "Set a formula for a specific cell given by its row and col."
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:a 100 :b 200 }
-                          {:a 101 :b 201 }
-                          {:a 102 :b 202 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1"
-                                         { :no-header-row true })]
-              (excel/add-column sheet "A" { :data-field :a })
-              (excel/add-column sheet "B" { :data-field :b })
-              (excel/add-column sheet "C" { :data-field :c })
-              (excel/render-items sheet data)
-              (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
-              (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
-              (excel/cell-formula sheet 3 3 "SUM(A3,B3)")
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """,
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:a 100 :b 200 }
-                          {:a 101 :b 201 }
-                          {:a 102 :b 202 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1"
-                                         { :no-header-row true })]
-              (excel/add-font wbook :bold { :bold true })
-              (excel/add-style wbook :bold { :font :bold })
-              (excel/add-column sheet "A" { :data-field :a })
-              (excel/add-column sheet "B" { :data-field :b })
-              (excel/add-column sheet "C" { :data-field :c })
-              (excel/render-items sheet data)
-              (excel/cell-formula sheet 1 3 "SUM(A1,B1)" :bold)
-              (excel/cell-formula sheet 2 3 "SUM(A2,B2)" :bold)
-              (excel/cell-formula sheet 3 3 "SUM(A3,B3)" :bold)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:a 100 :b 200 }
+                        {:a 101 :b 201 }
+                        {:a 102 :b 202 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1"
+                                       { :no-header-row true })]
+            (excel/add-column sheet "A" { :data-field :a })
+            (excel/add-column sheet "B" { :data-field :b })
+            (excel/add-column sheet "C" { :data-field :c })
+            (excel/write-items sheet data)
+            (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
+            (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
+            (excel/cell-formula sheet 3 3 "SUM(A3,B3)")
+            (excel/evaluate-formulas wbook)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """,
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:a 100 :b 200 }
+                        {:a 101 :b 201 }
+                        {:a 102 :b 202 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1"
+                                       { :no-header-row true })]
+            (excel/add-font wbook :bold { :bold true })
+            (excel/add-style wbook :bold { :font :bold })
+            (excel/add-column sheet "A" { :data-field :a })
+            (excel/add-column sheet "B" { :data-field :b })
+            (excel/add-column sheet "C" { :data-field :c })
+            (excel/write-items sheet data)
+            (excel/cell-formula sheet 1 3 "SUM(A1,B1)" :bold)
+            (excel/cell-formula sheet 2 3 "SUM(A2,B2)" :bold)
+            (excel/cell-formula sheet 3 3 "SUM(A3,B3)" :bold)
+            (excel/evaluate-formulas wbook)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '(
-          "cell-address", "sum-formula", "render-items", "render-item",
-          "cell-value", "auto-size-columns", "auto-size-column", "reader") }
+        "excel/cell-address", "excel/sum-formula",
+        "excel/write-items", "excel/write-item",
+        "excel/write-value", "excel/auto-size-columns",
+        "excel/auto-size-column") }
 
   cell-formula
 
@@ -456,25 +485,26 @@
   ^{ :arglists '("(sum-formula builder row-from row-to col-from col-to)")
      :doc "Returns a sum formula"
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:a 100 :b 200 }
-                          {:a 101 :b 201 }
-                          {:a 102 :b 202 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1"
-                                         { :no-header-row true })]
-              (excel/add-column sheet "A" { :data-field :a })
-              (excel/add-column sheet "B" { :data-field :b })
-              (excel/add-column sheet "C" { :data-field :c })
-              (excel/render-items sheet data)
-              (excel/cell-formula sheet 1 3 (excel/sum-formula sheet 1 1 1 2))
-              (excel/cell-formula sheet 2 3 (excel/sum-formula sheet 2 2 1 2))
-              (excel/cell-formula sheet 3 3 (excel/sum-formula sheet 3 3 1 2))
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:a 100 :b 200 }
+                        {:a 101 :b 201 }
+                        {:a 102 :b 202 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1"
+                                       { :no-header-row true })]
+            (excel/add-column sheet "A" { :data-field :a })
+            (excel/add-column sheet "B" { :data-field :b })
+            (excel/add-column sheet "C" { :data-field :c })
+            (excel/write-items sheet data)
+            (excel/cell-formula sheet 1 3 (excel/sum-formula sheet 1 1 1 2))
+            (excel/cell-formula sheet 2 3 (excel/sum-formula sheet 2 2 1 2))
+            (excel/cell-formula sheet 3 3 (excel/sum-formula sheet 3 3 1 2))
+            (excel/evaluate-formulas wbook)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '("excel/cell-address") }
 
   sum-formula [builder row-from row-to col-from col-to]
@@ -490,26 +520,28 @@
   ^{ :arglists '("(cell-address builder row col)")
      :doc "Returns the cell address for a cell at row/col in a sheet"
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:a 100 :b 200 }
-                          {:a 101 :b 201 }
-                          {:a 102 :b 202 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1"
-                                         { :no-header-row true })
-                  addr  (fn [r c] (excel/cell-address sheet r c))]
-              (excel/add-column sheet "A" { :data-field :a })
-              (excel/add-column sheet "B" { :data-field :b })
-              (excel/add-column sheet "C" { :data-field :c })
-              (excel/render-items sheet data)
-              (excel/cell-formula sheet 1 3 "SUM(~(addr 1 1),~(addr 1 2))")
-              (excel/cell-formula sheet 2 3 "SUM(~(addr 2 1),~(addr 2 2))")
-              (excel/cell-formula sheet 3 3 "SUM(~(addr 3 1),~(addr 3 2))")
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:a 100 :b 200 }
+                        {:a 101 :b 201 }
+                        {:a 102 :b 202 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1"
+                                       { :no-header-row true })
+                addr  #(excel/cell-address sheet %1 %2)
+                sum   #(str "SUM\u0028" %1 "," %2 ")")]
+            (excel/add-column sheet "A" { :data-field :a })
+            (excel/add-column sheet "B" { :data-field :b })
+            (excel/add-column sheet "C" { :data-field :c })
+            (excel/write-items sheet data)
+            (excel/cell-formula sheet 1 3 (sum (addr 1 1) (addr 1 2)))
+            (excel/cell-formula sheet 2 3 (sum (addr 2 1) (addr 2 2)))
+            (excel/cell-formula sheet 3 3 (sum (addr 3 1) (addr 3 2)))
+            (excel/evaluate-formulas wbook)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '("excel/cell-formula") }
 
   cell-address [builder row col]
@@ -524,23 +556,23 @@
   ^{ :arglists '("(auto-size-columns builder)")
      :doc "Auto size the width of all columns."
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-items sheet data)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '(
-          "excel/auto-size-column", "excel/render-items", "excel/render-item",
-          "excel/cell-value", "excel/cell-formula", "excel/reader") }
+        "excel/auto-size-column", "excel/write-items", "excel/write-item",
+        "excel/write-value", "excel/cell-formula") }
 
   auto-size-columns [builder]
 
@@ -553,25 +585,25 @@
   ^{ :arglists '("(auto-size-column builder col)")
      :doc "Auto size the width of column col (1..n)."
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-items sheet data)
-              (excel/auto-size-column sheet 1)
-              (excel/auto-size-column sheet 2)
-              (excel/auto-size-column sheet 3)
-              (excel/write-file wbook "sample.xlsx")))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-column sheet 1)
+            (excel/auto-size-column sheet 2)
+            (excel/auto-size-column sheet 3)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
      :see-also '(
-          "excel/auto-size-columns", "excel/render-items", "excel/render-item",
-          "excel/cell-value", "excel/cell-formula", "excel/reader") }
+        "excel/auto-size-columns", "excel/write-items", "excel/write-item",
+        "excel/write-value", "excel/cell-formula") }
 
   auto-size-column [builder col]
 
@@ -582,38 +614,38 @@
 
 
 (defn
-  ^{ :arglists '("(reader builder)")
-     :doc "Return a sheet reader for the sheet builder."
+  ^{ :arglists '("(convert->reader builder)")
+     :doc
+        """
+        Converts an excel or sheet builder to the corresponding reader.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:a 100 :b 200 }
-                          {:a 101 :b 201 }
-                          {:a 102 :b 202 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1"
-                                         { :no-header-row true })]
-              (excel/add-column sheet "A" { :data-field :a })
-              (excel/add-column sheet "B" { :data-field :b })
-              (excel/add-column sheet "C" { :data-field :c })
-              (excel/render-items sheet data)
-              (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
-              (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
-              (excel/cell-formula sheet 3 3 "SUM(A3,B3)")
-              (let [reader (excel/reader sheet)]
-                (excel/evaluate-formulas reader)
-                (excel/cell-long-val reader 1 1))))
-            """ )
-       :see-also '(
-            "excel/render-items", "excel/render-item",
-            "excel/cell-value", "excel/cell-formula",
-            "excel/auto-size-columns", "excel/auto-size-column",
-            "excel/reader") }
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:a 100 :b 200 }
+                        {:a 101 :b 201 }
+                        {:a 102 :b 202 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1"
+                                       { :no-header-row true })]
+            (excel/add-column sheet "A" { :data-field :a })
+            (excel/add-column sheet "B" { :data-field :b })
+            (excel/add-column sheet "C" { :data-field :c })
+            (excel/write-items sheet data)
+            (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
+            (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
+            (excel/cell-formula sheet 3 3 "SUM(A3,B3)")
+            (let [reader (excel/convert->reader sheet)]
+              (excel/evaluate-formulas reader)
+              (excel/read-long-val reader 1 3))))
+          """ )
+       :see-also '() }
 
-  evaluate-formulas [builder]
+  convert->reader [builder]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
+  { :pre [(or (instance-of? :ExcelBuilder builder)
+              (instance-of? :ExcelSheetBuilder builder))] }
 
   (. builder :reader))
 
@@ -625,79 +657,80 @@
 
 (defn
   ^{ :arglists '(
-          "(add-sheet excel-builder title)"
-          "(add-sheet excel-builder title options)" )
-     :doc """
-          Adds a sheet with optional attributes to an Excel.
+        "(add-sheet writer title)"
+        "(add-sheet writer title options)" )
+     :doc
+        """
+        Adds a sheet with optional attributes to an Excel.
 
-          Options:
-          no-header-row b         - without header row, e.g. true, false
-          default-column-width n  - default column width in points, e.g. 100
-          default-header-style s  - default header style, e.g. :header
-          default-body-style s    - default body style, e.g. :body
-          default-footer-style s  - default footer style, e.g. :footer
-          merged-region r         - merged region [row-from row-to col-from col-to],
-                                    e.g. [1 1 4 10]
-          display-zeros b         - display zeros, e.g. true, false
-                                    Set whether a cell should show 0 (zero) when
-                                    containing zero value. When false, cells with
-                                    zero value appear blank instead of showing
-                                    the number zero.
-          """
+        Options:
+        no-header-row b         - without header row, e.g. true, false
+        default-column-width n  - default column width in points, e.g. 100
+        default-header-style s  - default header style, e.g. :header
+        default-body-style s    - default body style, e.g. :body
+        default-footer-style s  - default footer style, e.g. :footer
+        merged-region r         - merged region [row-from row-to col-from col-to],
+                                  e.g. [1 1 4 10]
+        display-zeros b         - display zeros, e.g. true, false
+                                  Set whether a cell should show 0 (zero) when
+                                  containing zero value. When false, cells with
+                                  zero value appear blank instead of showing
+                                  the number zero.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :data-field :first })
+            (excel/add-column sheet "Last Name" { :data-field :last })
+            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/write->file wbook "sample.xlsx")))
+        """,
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)]
+            (excel/add-font wbook :bold { :bold true })
+            (excel/add-font wbook :italic { :italic true })
+            (excel/add-style wbook :header { :font :bold })
+            (excel/add-style wbook :body { :font :italic })
+            (excel/add-style wbook :footer { :font :bold })
+
+            (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row false
+                                           :default-column-width 100
+                                           :default-header-style :header
+                                           :default-body-style :body
+                                           :default-footer-style :footer
+                                           :display-zeros true})]
               (excel/add-column sheet "First Name" { :data-field :first })
               (excel/add-column sheet "Last Name" { :data-field :last })
               (excel/add-column sheet "Age" { :data-field :age })
-              (excel/render-items sheet data)
-              (excel/auto-size-columns sheet)
-              (excel/write-file wbook "sample.xlsx")))
-          """,
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)]
-              (excel/add-font wbook :bold { :bold true })
-              (excel/add-font wbook :italic { :italic true })
-              (excel/add-style wbook :header { :font :bold })
-              (excel/add-style wbook :body { :font :italic })
-              (excel/add-style wbook :footer { :font :bold })
-
-              (let [sheet (excel/add-sheet wbook "Sheet 1"
-                                           { :no-header-row false
-                                             :default-column-width 100
-                                             :default-header-style :header
-                                             :default-body-style :body
-                                             :default-footer-style :footer
-                                             :display-zeros true})]
-                (excel/add-column sheet "First Name" { :data-field :first })
-                (excel/add-column sheet "Last Name" { :data-field :last })
-                (excel/add-column sheet "Age" { :data-field :age })
-                (excel/render-items sheet data)
-                (excel/auto-size-column sheet 1)
-                (excel/auto-size-column sheet 2)
-                (excel/auto-size-column sheet 3)
-                (excel/write-file wbook "sample.xlsx"))))
-          """ )
+              (excel/write-items sheet data)
+              (excel/auto-size-column sheet 1)
+              (excel/auto-size-column sheet 2)
+              (excel/auto-size-column sheet 3)
+              (excel/write->file wbook "sample.xlsx"))))
+        """ )
      :see-also '("excel/add-column", "excel/add-font", "excel/add-style") }
 
   add-sheet
 
-  ([excel-builder title]
-    (add-sheet excel-builder title {}))
+  ([writer title]
+    (add-sheet writer title {}))
 
-  ([excel-builder title options]
-    { :pre [(instance-of? :ExcelBuilder excel-builder)
+  ([writer title options]
+    { :pre [(instance-of? :ExcelBuilder writer)
             (string? title)] }
-    (let [builder (. excel-builder :withSheet (name title) (class :DataRecord))]
+    (let [builder (. writer :withSheet (name title) (class :DataRecord))]
       (when-let [x (:no-header-row options)]
         (. builder :noHeader))
       (when-let [x (:default-column-width options)]
@@ -724,52 +757,53 @@
 
 (defn
   ^{ :arglists '(
-          "(add-font excel-builder font-id)"
-          "(add-font excel-builder font-id options)")
-     :doc """
-          Add font with optional attributes to an Excel.
+        "(add-font writer font-id)"
+        "(add-font writer font-id options)")
+     :doc
+        """
+        Add font with optional attributes to an Excel.
 
-          Options:
-          name s              - font name, e.g. 'Arial'
-          height n            - height in points, e.g. 12
-          bold b              - bold, e.g. true, false
-          italic b            - italic, e.g. true, false
-          color c             - color, e.g. :excel/SKY_BLUE
-          """
+        Options:
+        name s              - font name, e.g. 'Arial'
+        height n            - height in points, e.g. 12
+        bold b              - bold, e.g. true, false
+        italic b            - italic, e.g. true, false
+        color c             - color, e.g. :excel/SKY_BLUE
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/excel-builder :xlsx)]
-              (excel/add-font wbook :header { :height 12
-                                              :bold true
-                                              :italic false
-                                              :color (:SKY_BLUE excel/colors) })
-              (excel/add-style wbook :header { :font :header })
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)]
+            (excel/add-font wbook :header { :height 12
+                                            :bold true
+                                            :italic false
+                                            :color (:SKY_BLUE excel/colors) })
+            (excel/add-style wbook :header { :font :header })
 
-              (let [sheet (excel/add-sheet wbook "Sheet 1"
-                                           { :no-header-row false
-                                             :default-header-style :header })]
-                (excel/add-column sheet "First Name" { :data-field :first })
-                (excel/add-column sheet "Last Name" { :data-field :last })
-                (excel/add-column sheet "Age" { :data-field :age })
-                (excel/render-items sheet data)
-                (excel/auto-size-columns sheet)
-                (excel/write-file wbook "sample.xlsx"))))
-          """ )
+            (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row false
+                                           :default-header-style :header })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/write-items sheet data)
+              (excel/auto-size-columns sheet)
+              (excel/write->file wbook "sample.xlsx"))))
+        """ )
      :see-also '("excel/add-sheet", "excel/add-style") }
 
   add-font
 
-  ([excel-builder font-id]
-    (add-font excel-builder font-key {}))
+  ([writer font-id]
+    (add-font writer font-key {}))
 
-  ([excel-builder font-id options]
-    { :pre [(instance-of? :ExcelBuilder excel-builder)
+  ([writer font-id options]
+    { :pre [(instance-of? :ExcelBuilder writer)
             (keyword? font-id)] }
-    (let [builder (. excel-builder :withFont (name font-id))]
+    (let [builder (. writer :withFont (name font-id))]
       (when-let [x (:height options)] (. builder :heightInPoints x))
       (when-let [x (:bold options)]   (. builder :bold))
       (when-let [x (:italic options)] (. builder :italic))
@@ -786,55 +820,56 @@
 
 (defn
   ^{ :arglists '(
-          "(add-style excel-builder style-id)"
-          "(add-style excel-builder style-id options)")
-     :doc """
-          Add a style with optional attributes to an Excel.
+        "(add-style writer style-id)"
+        "(add-style writer style-id options)")
+     :doc
+        """
+        Add a style with optional attributes to an Excel.
 
-          Options:
-          format s            - format, e.g. "0#.##"
-          font r              - font name, e.g. :header
-          bg-color c          - background color, e.g. :excel/SKY_BLUE
-          wrap-text b         - wrap text, e.g. true, false
-          h-align e           - horizontal alignment {:left, :center, :right}
-          v-align e           - vertical alignment {:top, :middle, :bottom}
-          """
+        Options:
+        format s            - format, e.g. "0#.##"
+        font r              - font name, e.g. :header
+        bg-color c          - background color, e.g. :excel/SKY_BLUE
+        wrap-text b         - wrap text, e.g. true, false
+        h-align e           - horizontal alignment {:left, :center, :right}
+        v-align e           - vertical alignment {:top, :middle, :bottom}
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
-                          {:first "Sue"  :last "Ford"  :weight 54.2 } ]
-                  wbook (excel/excel-builder :xlsx)]
-              (excel/add-font wbook :header { :bold true })
-              (excel/add-style wbook :header { :font :header
-                                               :bg-color (:GREY_25_PERCENT excel/colors)
-                                               :h-align :center })
-              (excel/add-style wbook :weight { :format, "#,##0.0"
-                                               :h-align :right })
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
+                        {:first "Sue"  :last "Ford"  :weight 54.2 } ]
+                wbook (excel/writer :xlsx)]
+            (excel/add-font wbook :header { :bold true })
+            (excel/add-style wbook :header { :font :header
+                                             :bg-color (:GREY_25_PERCENT excel/colors)
+                                             :h-align :center })
+            (excel/add-style wbook :weight { :format, "#,##0.0"
+                                             :h-align :right })
 
-              (let [sheet (excel/add-sheet wbook "Sheet 1"
-                                           { :no-header-row false
-                                             :default-header-style :header })]
-                (excel/add-column sheet "First Name" { :data-field :first })
-                (excel/add-column sheet "Last Name" { :data-field :last })
-                (excel/add-column sheet "Weight" { :data-field :weight
-                                                   :body-style :weight })
-                (excel/render-items sheet data)
-                (excel/auto-size-columns sheet)
-                (excel/write-file wbook "sample.xlsx"))))
-          """ )
+            (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row false
+                                           :default-header-style :header })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Weight" { :data-field :weight
+                                                 :body-style :weight })
+              (excel/write-items sheet data)
+              (excel/auto-size-columns sheet)
+              (excel/write->file wbook "sample.xlsx"))))
+        """ )
      :see-also '("excel/add-sheet", "excel/add-font") }
 
   add-style
 
-  ([excel-builder style-id]
-    (add-style excel-builder style-id {}))
+  ([writer style-id]
+    (add-style writer style-id {}))
 
-  ([excel-builder style-id options]
-    { :pre [(instance-of? :ExcelBuilder excel-builder)
+  ([writer style-id options]
+    { :pre [(instance-of? :ExcelBuilder writer)
             (keyword? style-id)] }
-    (let [builder (. excel-builder :withCellStyle (name style-id))]
+    (let [builder (. writer :withCellStyle (name style-id))]
       (when-let [x (:format options)]    (. builder :format x))
       (when-let [x (:font options)]      (. builder :font x))
       (when-let [x (:bg-color options)]  (. builder :bgColor x))
@@ -869,59 +904,60 @@
 
 (defn
   ^{ :arglists '(
-          "(add-column sheet-builder title)"
-          "(add-column sheet-builder title options)")
-     :doc """
-          Defines a column with optional attributes.
+        "(add-column sheet-builder title)"
+        "(add-column sheet-builder title options)")
+     :doc
+        """
+        Defines a column with optional attributes.
 
-          Options:
-          field f             - a field, e.g. :first-name
-          width n             - width in points, e.g. 100
-          hidden b            - hidden, e.g. true, false
-          header-style r      - style name for header row, e.g. :header
-          body-style r        - style name for body rows, e.g. :body
-          footer-style r      - style name for footer row, e.g. :footer
-          footer-value        - text or numeric value for the column's footer cell,
-                                e.g. "done", 10000.00M, nil
-          footer-aggregate e  - aggregation mode for the column's footer cell
-                                value, e.g. {:min, :max, :avg, :sum, :none}
-          """
+        Options:
+        field f             - a field, e.g. :first-name
+        width n             - width in points, e.g. 100
+        hidden b            - hidden, e.g. true, false
+        header-style r      - style name for header row, e.g. :header
+        body-style r        - style name for body rows, e.g. :body
+        footer-style r      - style name for footer row, e.g. :footer
+        footer-value        - text or numeric value for the column's footer cell,
+                              e.g. "done", 10000.00M, nil
+        footer-aggregate e  - aggregation mode for the column's footer cell
+                              value, e.g. {:min, :max, :avg, :sum, :none}
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
-                          {:first "Sue"  :last "Ford"  :weight 54.2 } ]
-                  wbook (excel/excel-builder :xlsx)]
-              (excel/add-font wbook :header { :bold true })
-              (excel/add-style wbook :header { :font :header
-                                               :bg-color (:GREY_25_PERCENT excel/colors)
-                                               :h-align :center })
-              (excel/add-style wbook :weight { :format, "#,##0.0"
-                                               :h-align :right })
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
+                        {:first "Sue"  :last "Ford"  :weight 54.2 } ]
+                wbook (excel/writer :xlsx)]
+            (excel/add-font wbook :header { :bold true })
+            (excel/add-style wbook :header { :font :header
+                                             :bg-color (:GREY_25_PERCENT excel/colors)
+                                             :h-align :center })
+            (excel/add-style wbook :weight { :format, "#,##0.0"
+                                             :h-align :right })
 
-              (let [sheet (excel/add-sheet wbook "Sheet 1"
-                                           { :no-header-row false
-                                             :default-header-style :header })]
-                (excel/add-column sheet "First Name" { :data-field :first })
-                (excel/add-column sheet "Last Name" { :data-field :last })
-                (excel/add-column sheet "Weight" { :data-field :weight
-                                                   :body-style :weight })
-                (excel/render-items sheet data)
-                (excel/auto-size-columns sheet)
-                (excel/write-file wbook "sample.xlsx"))))
-          """,
-          """
-          (excel/column "First Name"
-                        { :data-field :first-name
-                          :width 100
-                          :hidden false
-                          :header-style :header
-                          :body-style :body
-                          :footer-style :footer
-                          :footer-value 10000.00M
-                          :footer-aggregate :none })
-          """ )
+            (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                         { :no-header-row false
+                                           :default-header-style :header })]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Weight" { :data-field :weight
+                                                 :body-style :weight })
+              (excel/write-items sheet data)
+              (excel/auto-size-columns sheet)
+              (excel/write->file wbook "sample.xlsx"))))
+        """,
+        """
+        (excel/column "First Name"
+                      { :data-field :first-name
+                        :width 100
+                        :hidden false
+                        :header-style :header
+                        :body-style :body
+                        :footer-style :footer
+                        :footer-value 10000.00M
+                        :footer-aggregate :none })
+        """ )
      :see-also '("excel/add-sheet") }
 
   add-column
@@ -971,20 +1007,21 @@
 
 (defn
   ^{ :arglists '("(open source)")
-     :doc """
-          Opens an Excel from a source and returns an Excel reader.
+     :doc
+        """
+        Opens an Excel from a source and returns an Excel reader.
 
-          Supported sources are string file path, bytebuf, :java.io.File,
-          or :java.io.InputStrteam.
-          """
+        Supported sources are string file path, bytebuf, :java.io.File,
+        or :java.io.InputStrteam.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
-            (excel/open "sample.xls"))
-          """ )
+        """
+        (do
+          (load-module :excel)
+          (excel/open "sample.xls"))
+        """ )
      :see-also '(
-          "excel/sheet-count", "excel/sheet", "excel/evaluate-formulas") }
+        "excel/sheet-count", "excel/sheet", "excel/evaluate-formulas") }
 
   open [source]
 
@@ -1002,80 +1039,62 @@
   ^{ :arglists '("(sheet-count wbook)")
      :doc "Returns the number of sheets in the Excel."
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))]
-              (excel/sheet-count wbook)))
-          """ )
+          (let [wbook (excel/open (test-xls))]
+            (excel/sheet-count wbook)))
+        """ )
      :see-also '("excel/sheet", "excel/evaluate-formulas") }
 
   sheet-count [wbook]
+
+  { :pre [(instance-of? :ExcelReader wbook)] }
 
   (long (. wbook :getNumberOfSheets)))
 
 
 (defn
-  ^{ :arglists '("(evaluate-formulas wbook)")
-     :doc "Evaluate all formulas in the Excel."
-     :examples '(
-          """
-          (do
-            (load-module :excel)
-
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
-
-            (let [wbook (excel/open (test-xls))]
-              (excel/evaluate-formulas wbook)))
-          """ )
-     :see-also '("excel/sheet-count", "excel/sheet") }
-
-  evaluate-formulas [wbook]
-
-  (. wbook :evaluateAllFormulas))
-
-
-(defn
   ^{ :arglists '("(sheet wbook ref)")
      :doc
-          """
-          Returns a sheet from the Excel reader referenced by its name or
-          sheet index.
-          """
+        """
+        Returns a sheet from the Excel reader referenced by its name or
+        sheet index.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data1" [[100 101 102] [200 201 202]])
-                (excel/write-data wbook "Data2" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data1" [[100 101 102] [200 201 202]])
+              (excel/write-data wbook "Data2" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook  (excel/open (test-xls))
-                  sheet1 (excel/sheet wbook "Data1")
-                  sheet2 (excel/sheet wbook 2)]
-              ))
-          """ )
-     :see-also '("excel/sheet-count", "excel/evaluate-formulas",
-                 "excel/sheet-name", "excel/sheet-row-range",
-                 "excel/sheet-col-range",
-                 "excel/cell-empty?", "excel/cell-type",
-                 "excel/cell-string-val", "excel/cell-boolean-val",
-                 "excel/cell-long-val", "excel/cell-double-val",
-                 "excel/cell-date-val") }
+          (let [wbook  (excel/open (test-xls))
+                sheet1 (excel/sheet wbook "Data1")
+                sheet2 (excel/sheet wbook 2)]
+            ))
+        """ )
+     :see-also '(
+        "excel/sheet-count", "excel/evaluate-formulas",
+        "excel/sheet-name", "excel/sheet-row-range",
+        "excel/sheet-col-range",
+        "excel/cell-empty?", "excel/cell-type",
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-long-val", "excel/read-double-val",
+        "excel/read-date-val") }
 
   sheet [wbook s]
+
+  { :pre [(instance-of? :ExcelReader wbook)] }
 
   (cond
     (string? s)  (. wbook :getSheet s)
@@ -1088,27 +1107,28 @@
 (defn
   ^{ :arglists '("(sheet-name sheet)")
      :doc
-          """
-          Returns a sheet from the Excel reader referenced by its name or
-          sheet index.
-          """
+        """
+        Returns a sheet from the Excel reader referenced by its name or
+        sheet index.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/sheet-name sheet)))
-          """ )
-     :see-also '() }
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/sheet-name sheet)))
+        """ ) }
 
   sheet-name [sheet]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :getName))
 
@@ -1116,27 +1136,29 @@
 (defn
   ^{ :arglists '("(sheet-row-range sheet)")
      :doc
-          """
-          Returns the first and the last row with data in a sheet as vector.
-          Returns -1 values if no row exists.
-          """
+        """
+        Returns the first and the last row with data in a sheet as vector.
+        Returns -1 values if no row exists.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/sheet-row-range sheet)))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/sheet-row-range sheet)))
+        """ )
      :see-also '("excel/sheet-col-range")}
 
   sheet-row-range [sheet]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   [(long (. sheet :getFirstRowNum)) (long (. sheet :getLastRowNum))])
 
@@ -1144,28 +1166,30 @@
 (defn
   ^{ :arglists '("(sheet-col-range sheet)")
      :doc
-          """
-          Returns the first and the last col with data in a sheet row as vector.
-          Returns -1 values if the row does notexists or the row does not have \
-          any columns.
-          """
+        """
+        Returns the first and the last col with data in a sheet row as vector.
+        Returns -1 values if the row does notexists or the row does not have \
+        any columns.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/sheet-col-range sheet 1)))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/sheet-col-range sheet 1)))
+        """ )
      :see-also '("excel/sheet-row-range")}
 
   sheet-col-range [sheet row]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   [(long (. sheet :getFirstCellNum row)) (long (. sheet :getLastCellNum row))])
 
@@ -1173,31 +1197,33 @@
 (defn
   ^{ :arglists '("(cell-empty? sheet row col)")
      :doc
-          """
-          Returns true if the sheet cell given by row/col is empty.
-          """
+        """
+        Returns true if the sheet cell given by row/col is empty.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              [(excel/cell-empty? sheet 1 1)
-               (excel/cell-empty? sheet 2 1)
-               (excel/cell-empty? sheet 3 1)]))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            [(excel/cell-empty? sheet 1 1)
+             (excel/cell-empty? sheet 2 1)
+             (excel/cell-empty? sheet 3 1)]))
+        """ )
      :see-also '(
-          "excel/cell-type", "excel/cell-string-val",
-          "excel/cell-boolean-val", "excel/cell-long-val",
-          "excel/cell-double-val", "excel/cell-date-val") }
+        "excel/cell-type", "excel/read-string-val",
+        "excel/read-boolean-val", "excel/read-long-val",
+        "excel/read-double-val", "excel/read-date-val") }
 
   cell-empty? [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :isCellEmpty row col))
 
@@ -1205,33 +1231,35 @@
 (defn
   ^{ :arglists '("(cell-type sheet row col)")
      :doc
-          """
-          Returns the sheet cell type as one of { :notfound, :blank, :string,
-          :boolean, :numeric, :formula, :error, or :unknown }
-          """
+        """
+        Returns the sheet cell type as one of { :notfound, :blank, :string,
+        :boolean, :numeric, :formula, :error, or :unknown }
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 "101" 102.0]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 "101" 102.0]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              [(excel/cell-type sheet 1 1)
-               (excel/cell-type sheet 1 2)
-               (excel/cell-type sheet 1 3)
-               (excel/cell-type sheet 1 4)]))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            [(excel/cell-type sheet 1 1)
+             (excel/cell-type sheet 1 2)
+             (excel/cell-type sheet 1 3)
+             (excel/cell-type sheet 1 4)]))
+        """ )
      :see-also '(
-          "excel/cell-empty?", "excel/cell-string-val",
-          "excel/cell-boolean-val", "excel/cell-long-val",
-          "excel/cell-double-val", "excel/cell-date-val") }
+        "excel/cell-empty?", "excel/read-string-val",
+        "excel/read-boolean-val", "excel/read-long-val",
+        "excel/read-double-val", "excel/read-date-val") }
 
   cell-type [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (case (. sheet :getCellType row col)
     "notfound"  :notfound
@@ -1246,153 +1274,182 @@
 
 
 (defn
-  ^{ :arglists '("(cell-string-val sheet row col)")
+  ^{ :arglists '("(read-string-val sheet row col)")
      :doc
-          """
-          Returns the sheet cell value as string.
-          """
+        """
+        Returns the sheet cell value as string.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 "101" 102.0]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 "101" 102.0]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/cell-string-val sheet 1 2)))
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/read-string-val sheet 1 2)))
           """ )
      :see-also '(
-          "excel/cell-empty?", "excel/cell-type",
-          "excel/cell-boolean-val", "excel/cell-long-val",
-          "excel/cell-double-val", "excel/cell-date-val")}
+        "excel/cell-empty?", "excel/cell-type",
+        "excel/read-boolean-val", "excel/read-long-val",
+        "excel/read-double-val", "excel/read-date-val")}
 
-  cell-string-val [sheet row col]
+  read-string-val [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :getString row col))
 
 
 (defn
-  ^{ :arglists '("(cell-boolean-val sheet row col)")
+  ^{ :arglists '("(read-boolean-val sheet row col)")
      :doc
-          """
-          Returns the sheet cell value as boolean.
-          """
+        """
+        Returns the sheet cell value as boolean.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 true 102]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 true 102]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/cell-boolean-val sheet 1 2)))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/read-boolean-val sheet 1 2)))
+        """ )
      :see-also '(
-          "excel/cell-empty?", "excel/cell-type",
-          "excel/cell-string-val", "excel/cell-long-val",
-          "excel/cell-double-val", "excel/cell-date-val")}
+        "excel/cell-empty?", "excel/cell-type",
+        "excel/read-string-val", "excel/read-long-val",
+        "excel/read-double-val", "excel/read-date-val")}
 
-  cell-boolean-val [sheet row col]
+  read-boolean-val [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :getBoolean row col))
 
 
 (defn
-  ^{ :arglists '("(cell-long-val sheet row col)")
+  ^{ :arglists '("(read-long-val sheet row col)")
      :doc
-          """
-          Returns the sheet cell value as long.
-          """
+        """
+        Returns the sheet cell value as long.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101 102]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/cell-long-val sheet 1 2)))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/read-long-val sheet 1 2)))
+        """,
+        """
+        (do
+          (load-module :excel)
+
+          (defn test-xls []
+            (let [data [ {:a 100 :b 200 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Data"
+                                       { :no-header-row true })]
+              (excel/add-column sheet "A" { :data-field :a })
+              (excel/add-column sheet "B" { :data-field :b })
+              (excel/write-items sheet data)
+              (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
+              (excel/write->bytebuf wbook)))
+
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/read-long-val sheet 1 3)))
+        """ )
      :see-also '(
-          "excel/cell-empty?", "excel/cell-type",
-          "excel/cell-string-val", "excel/cell-boolean-val",
-          "excel/cell-double-val", "excel/cell-date-val")}
+        "excel/cell-empty?", "excel/cell-type",
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-double-val", "excel/read-date-val")}
 
-  cell-long-val [sheet row col]
+  read-long-val [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :getInteger row col))
 
 
 (defn
-  ^{ :arglists '("(cell-double-val sheet row col)")
+  ^{ :arglists '("(read-double-val sheet row col)")
      :doc
-          """
-          Returns the sheet cell value as double.
-          """
+        """
+        Returns the sheet cell value as double.
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)]
-                (excel/write-data wbook "Data" [[100 101.23 102]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 101.23 102]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              (excel/cell-double-val sheet 1 2)))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/read-double-val sheet 1 2)))
+        """ )
      :see-also '(
-          "excel/cell-empty?", "excel/cell-type",
-          "excel/cell-string-val", "excel/cell-boolean-val",
-          "excel/cell-long-val", "excel/cell-date-val") }
+        "excel/cell-empty?", "excel/cell-type",
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-long-val", "excel/read-date-val") }
 
-  cell-double-val [sheet row col]
+  read-double-val [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :getFloat row col))
 
 
 (defn
-  ^{ :arglists '("(cell-date-val sheet row col)")
+  ^{ :arglists '("(read-date-val sheet row col)")
      :doc
-          """
-          Returns the sheet cell value as a date (LocalDateTime).
-          """
+        """
+        Returns the sheet cell value as a date (LocalDateTime).
+        """
      :examples '(
-          """
-          (do
-            (load-module :excel)
+        """
+        (do
+          (load-module :excel)
 
-            (defn test-xls []
-              (let [wbook (excel/excel-builder :xlsx)
-                    dt    (time/local-date 2021 1 1)
-                    ts    (time/local-date-time 2021 1 1 15 30 45)]
-                (excel/write-data wbook "Data" [[100 dt ts 102]])
-                (excel/write-bytebuf wbook)))
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)
+                  dt    (time/local-date 2021 1 1)
+                  ts    (time/local-date-time 2021 1 1 15 30 45)]
+              (excel/write-data wbook "Data" [[100 dt ts 102]])
+              (excel/write->bytebuf wbook)))
 
-            (let [wbook (excel/open (test-xls))
-                  sheet (excel/sheet wbook "Data")]
-              [(excel/cell-date-val sheet 1 2)
-               (excel/cell-date-val sheet 1 3)]))
-          """ )
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            [(excel/read-date-val sheet 1 2)
+             (excel/read-date-val sheet 1 3)]))
+        """ )
      :see-also '(
-          "excel/cell-empty?", "excel/cell-type",
-          "excel/cell-string-val", "excel/cell-boolean-val",
-          "excel/cell-long-val", "excel/cell-double-val") }
+        "excel/cell-empty?", "excel/cell-type",
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-long-val", "excel/read-double-val") }
 
-  cell-date-val [sheet row col]
+  read-date-val [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
   (. sheet :getDate row col))

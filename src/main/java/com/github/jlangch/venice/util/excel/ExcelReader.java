@@ -36,9 +36,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  */
 public class ExcelReader {
 
-	private ExcelReader(
-		final Excel excel
-	) {
+	ExcelReader(final Excel excel) {
 		this.excel = excel;
 	}
 

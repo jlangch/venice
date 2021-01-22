@@ -147,6 +147,10 @@ public class ExcelBuilder {
 	public <T> ExcelSheetBuilder<T> withSheet(final String name, final Class<T> type) {
 		return new ExcelSheetBuilder<T>(this, managedExcel.createSheet(name));
 	}
+	
+	public void evaluateAllFormulas() {
+		managedExcel.evaluateAllFormulas();;
+	}
 
 	public Excel toExcel() {
 		return managedExcel;
@@ -158,6 +162,11 @@ public class ExcelBuilder {
 	
 	public byte[] writeToBytes() {
 		return managedExcel.writeToBytes();
+	}
+
+	public ExcelReader reader() {
+		managedExcel.close();
+		return new ExcelReader(managedExcel);
 	}
 
 	public ExcelBuilder end() {

@@ -197,11 +197,16 @@ public class DocGenerator {
 		java.addSection(new DocSection("Java Interop", "javainterop"));
 		content.add(java);
 
-		final DocSection util = new DocSection("Util", "io");
-		util.addSection(new DocSection("I/O", "io"));
+		final DocSection util = new DocSection("Util", "util");
 		util.addSection(new DocSection("Time", "time"));
 		util.addSection(new DocSection("Regex", "regex"));
 		content.add(util);
+
+		final DocSection io = new DocSection("I/O", "io");
+		io.addSection(new DocSection("I/O", "io.util"));
+		io.addSection(new DocSection("File", "io.file"));
+		io.addSection(new DocSection("Zip/GZip", "io.zip"));
+		content.add(io);
 
 		final DocSection documents = new DocSection("Documents", "miscellaneous");
 		documents.addSection(new DocSection("JSON", "miscellaneous.json"));
@@ -209,6 +214,7 @@ public class DocGenerator {
 		documents.addSection(new DocSection("PDF Tools", "miscellaneous.pdftools"));
 		documents.addSection(new DocSection("CSV", "miscellaneous.csv"));
 		documents.addSection(new DocSection("XML", "modules.xml"));
+		documents.addSection(new DocSection("Excel", "modules.excel"));
 		content.add(documents);
 
 		final DocSection extmod = new DocSection("Modules", "modules");
@@ -221,7 +227,6 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Java", "modules.java"));
 		extmod.addSection(new DocSection("Semver", "modules.semver"));
 		extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
-		extmod.addSection(new DocSection("Excel", "modules.excel"));
 		content.add(extmod);
 
 		final DocSection embed = new DocSection("Embedding", "embedding");
@@ -242,9 +247,16 @@ public class DocGenerator {
 				getSpecialFormsSection(),
 				getTypesSection(),
 				getNamespaceSection(),
-				getAppSection(),
 				getJavaInteropSection(),
-				getModulesSection());
+				getMiscellaneousSection(),
+				
+				getModuleKiraSection(),
+				getModuleCryptographySection(),
+				getModuleXmlSection(),
+				getModuleJavaSection(),
+				getModuleGradleSection(),
+				getModuleMavenSection(),
+				getModuleHexdumpSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -256,7 +268,13 @@ public class DocGenerator {
 				getSystemSection(),
 				getTimeSection(),
 				getIOSection(),
-				getMiscellaneousSection());
+				getIOFileSection(),
+				getIOZipSection(),
+				getAppSection(),
+				
+				getModuleTracingSection(),
+				getModuleSemverSection(),
+				getModuleExcelSection());
 	}
 
 	private List<DocItem> getDocItems(List<DocSection> sections) {
@@ -1365,7 +1383,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getIOSection() {
-		final DocSection section = new DocSection("IO", "io");
+		final DocSection section = new DocSection("I/O", "io.util");
 
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
@@ -1388,7 +1406,48 @@ public class DocGenerator {
 		from.addItem(getDocItem("read-line"));
 		from.addItem(getDocItem("read-string"));
 
-		final DocSection file = new DocSection("file", "io.file");
+		final DocSection classpath = new DocSection("classpath", "io.classpath");
+		all.addSection(classpath);
+		classpath.addItem(getDocItem("io/load-classpath-resource", false));
+		classpath.addItem(getDocItem("io/classpath-resource?", false));
+		
+		final DocSection stream = new DocSection("stream", "io.stream");
+		all.addSection(stream);
+		stream.addItem(getDocItem("io/copy-stream"));
+		stream.addItem(getDocItem("io/slurp-stream"));
+		stream.addItem(getDocItem("io/spit-stream"));
+		stream.addItem(getDocItem("io/uri-stream", false));
+		stream.addItem(getDocItem("io/bytebuf-in-stream", false));
+		stream.addItem(getDocItem("io/wrap-os-with-buffered-writer"));
+		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
+		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
+
+		final DocSection rd_wr = new DocSection("reader/writer", "io.readerwriter");
+		all.addSection(rd_wr);
+		rd_wr.addItem(getDocItem("io/buffered-reader"));
+		rd_wr.addItem(getDocItem("io/buffered-writer"));
+
+		final DocSection http = new DocSection("http", "io.http");
+		all.addSection(http);
+		http.addItem(getDocItem("io/download", false));
+		http.addItem(getDocItem("io/internet-avail?", false));
+
+		final DocSection other = new DocSection("other", "io.other");
+		all.addSection(other);
+		other.addItem(getDocItem("with-out-str"));
+		other.addItem(getDocItem("io/mime-type"));
+		other.addItem(getDocItem("io/default-charset"));
+
+		return section;
+	}
+
+	private DocSection getIOFileSection() {
+		final DocSection section = new DocSection("File I/O", "io.file");
+
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection file = new DocSection("file", "io.file_");
 		all.addSection(file);
 		file.addItem(getDocItem("io/file"));
 		file.addItem(getDocItem("io/file-parent"));
@@ -1447,33 +1506,16 @@ public class DocGenerator {
 		file_other.addItem(getDocItem("io/user-dir"));
 		file_other.addItem(getDocItem("io/user-home-dir"));
 
-		final DocSection classpath = new DocSection("classpath", "io.classpath");
-		all.addSection(classpath);
-		classpath.addItem(getDocItem("io/load-classpath-resource", false));
-		classpath.addItem(getDocItem("io/classpath-resource?", false));
-		
-		final DocSection stream = new DocSection("stream", "io.stream");
-		all.addSection(stream);
-		stream.addItem(getDocItem("io/copy-stream"));
-		stream.addItem(getDocItem("io/slurp-stream"));
-		stream.addItem(getDocItem("io/spit-stream"));
-		stream.addItem(getDocItem("io/uri-stream", false));
-		stream.addItem(getDocItem("io/bytebuf-in-stream", false));
-		stream.addItem(getDocItem("io/wrap-os-with-buffered-writer"));
-		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
-		stream.addItem(getDocItem("io/wrap-is-with-buffered-reader"));
+		return section;
+	}
 
-		final DocSection rd_wr = new DocSection("reader/writer", "io.readerwriter");
-		all.addSection(rd_wr);
-		rd_wr.addItem(getDocItem("io/buffered-reader"));
-		rd_wr.addItem(getDocItem("io/buffered-writer"));
+	private DocSection getIOZipSection() {
+		final DocSection section = new DocSection("Zip/GZip", "io.zip");
 
-		final DocSection http = new DocSection("http", "io.http");
-		all.addSection(http);
-		http.addItem(getDocItem("io/download", false));
-		http.addItem(getDocItem("io/internet-avail?", false));
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
 		
-		final DocSection zip = new DocSection("zip", "io.zip");
+		final DocSection zip = new DocSection("zip", "io.zip_");
 		all.addSection(zip);
 		zip.addItem(getDocItem("io/zip", false));
 		zip.addItem(getDocItem("io/zip-file", false));
@@ -1495,12 +1537,6 @@ public class DocGenerator {
 		gzip.addItem(getDocItem("io/gzip?"));
 		gzip.addItem(getDocItem("io/ungzip"));
 		gzip.addItem(getDocItem("io/ungzip-to-stream"));
-
-		final DocSection other = new DocSection("other", "io.other");
-		all.addSection(other);
-		other.addItem(getDocItem("with-out-str"));
-		other.addItem(getDocItem("io/mime-type"));
-		other.addItem(getDocItem("io/default-charset"));
 
 		return section;
 	}
@@ -1856,90 +1892,226 @@ public class DocGenerator {
 		return section;
 	}
 
-	private DocSection getModulesSection() {
-		final DocSection section = new DocSection("Extension Modules (selection)", "modules");
+	private DocSection getModuleKiraSection() {
+		final DocSection section = new DocSection("Module Kira", "modules.kira");
 
-		final DocSection all = new DocSection("", id());
+		final DocSection all = new DocSection("(load-module :kira)", id());
 		section.addSection(all);
 
-		final DocSection kira = new DocSection("Kira", "modules.kira");
+		final DocSection kira = new DocSection("Kira", id());
 		all.addSection(kira);
-		kira.addItem(new DocItem("(load-module :kira)", null));
 		kira.addItem(getDocItem("kira/eval"));
 		kira.addItem(getDocItem("kira/fn"));
-		kira.addItem(getDocItem("kira/escape-xml"));
-		kira.addItem(getDocItem("kira/escape-html"));
 
 
-		final DocSection trace = new DocSection("Tracing", "modules.tracing");
+		final DocSection escape = new DocSection("Escape", id());
+		all.addSection(escape);
+		escape.addItem(getDocItem("kira/escape-xml"));
+		escape.addItem(getDocItem("kira/escape-html"));
+
+		return section;
+	}
+
+	private DocSection getModuleTracingSection() {
+		final DocSection section = new DocSection("Module Tracing", "modules.tracing");
+
+		final DocSection all = new DocSection("(load-module :trace)", id());
+		section.addSection(all);
+
+		final DocSection trace = new DocSection("Tracing", id());
 		all.addSection(trace);
-		trace.addItem(new DocItem("(load-module :trace)", null));
 		trace.addItem(getDocItem("trace/trace"));
-		trace.addItem(getDocItem("trace/traced?"));
-		trace.addItem(getDocItem("trace/traceable?"));
 		trace.addItem(getDocItem("trace/trace-var"));
 		trace.addItem(getDocItem("trace/untrace-var"));
-		trace.addItem(getDocItem("trace/trace-str-limit"));
-		
-		final DocSection xml = new DocSection("XML", "modules.xml");
+
+		final DocSection test = new DocSection("Test", id());
+		all.addSection(test);
+		test.addItem(getDocItem("trace/traced?"));
+		test.addItem(getDocItem("trace/traceable?"));
+
+		final DocSection util = new DocSection("Util", id());
+		all.addSection(util);
+		util.addItem(getDocItem("trace/trace-str-limit"));
+
+		return section;
+	}
+
+	private DocSection getModuleXmlSection() {
+		final DocSection section = new DocSection("Module XML", "modules.xml");
+
+		final DocSection all = new DocSection("(load-module :xml)", id());
+		section.addSection(all);
+
+		final DocSection xml = new DocSection("XML", id());
 		all.addSection(xml);
-		xml.addItem(new DocItem("(load-module :xml)", null));
 		xml.addItem(getDocItem("xml/parse-str"));
 		xml.addItem(getDocItem("xml/parse"));
 		xml.addItem(getDocItem("xml/path->"));
 		xml.addItem(getDocItem("xml/children"));
 		xml.addItem(getDocItem("xml/text"));
-		
-		final DocSection crypt = new DocSection("Cryptography", "modules.cryptography");
+
+		return section;
+	}
+
+	private DocSection getModuleCryptographySection() {
+		final DocSection section = new DocSection("Module Cryptography", "modules.cryptography");
+
+		final DocSection all = new DocSection("(load-module :crypt)", id());
+		section.addSection(all);
+
+		final DocSection hashes = new DocSection("Hashes", id());
+		all.addSection(hashes);
+		hashes.addItem(getDocItem("crypt/md5-hash"));
+		hashes.addItem(getDocItem("crypt/sha1-hash"));
+		hashes.addItem(getDocItem("crypt/sha512-hash"));
+		hashes.addItem(getDocItem("crypt/pbkdf2-hash"));
+
+		final DocSection crypt = new DocSection("Encrypt", id());
 		all.addSection(crypt);
-		crypt.addItem(new DocItem("(load-module :crypt)", null));
-		crypt.addItem(getDocItem("crypt/md5-hash"));
-		crypt.addItem(getDocItem("crypt/sha1-hash"));
-		crypt.addItem(getDocItem("crypt/sha512-hash"));
-		crypt.addItem(getDocItem("crypt/pbkdf2-hash"));
 		crypt.addItem(getDocItem("crypt/encrypt"));
 		crypt.addItem(getDocItem("crypt/decrypt"));
-		
-		final DocSection gradle = new DocSection("Gradle", "modules.gradle");
+
+		return section;
+	}
+
+	private DocSection getModuleGradleSection() {
+		final DocSection section = new DocSection("Module Gradle", "modules.gradle");
+
+		final DocSection all = new DocSection("(load-module :gradle)", id());
+		section.addSection(all);
+
+		final DocSection gradle = new DocSection("Gradle", id());
 		all.addSection(gradle);
-		gradle.addItem(new DocItem("(load-module :gradle)", null));
 		gradle.addItem(getDocItem("gradle/with-home", false));
 		gradle.addItem(getDocItem("gradle/version", false));
 		gradle.addItem(getDocItem("gradle/task", false));
-		
-		final DocSection maven = new DocSection("Maven", "modules.maven");
+
+		return section;
+	}
+
+	private DocSection getModuleMavenSection() {
+		final DocSection section = new DocSection("Module Maven", "modules.maven");
+
+		final DocSection all = new DocSection("(load-module :maven)", id());
+		section.addSection(all);
+
+		final DocSection maven = new DocSection("Maven", id());
 		all.addSection(maven);
-		maven.addItem(new DocItem("(load-module :maven)", null));
 		maven.addItem(getDocItem("maven/download", false));
 		maven.addItem(getDocItem("maven/get", false));
 		maven.addItem(getDocItem("maven/uri", false));
-		
-		final DocSection java = new DocSection("Java", "modules.java");
+
+		return section;
+	}
+
+	private DocSection getModuleJavaSection() {
+		final DocSection section = new DocSection("Module Java", "modules.java");
+
+		final DocSection all = new DocSection("(load-module :java)", id());
+		section.addSection(all);
+
+		final DocSection java = new DocSection("Java", id());
 		all.addSection(java);
-		java.addItem(new DocItem("(load-module :java)", null));
 		java.addItem(getDocItem("java/javadoc", false));
-		
-		final DocSection semver = new DocSection("Semver", "modules.semver");
+
+		return section;
+	}
+
+	private DocSection getModuleSemverSection() {
+		final DocSection section = new DocSection("Module Semver", "modules.semver");
+
+		final DocSection all = new DocSection("(load-module :semver)", id());
+		section.addSection(all);
+
+		final DocSection semver = new DocSection("Semver", id());
 		all.addSection(semver);
-		semver.addItem(new DocItem("(load-module :semver)", null));
 		semver.addItem(getDocItem("semver/parse"));
-		semver.addItem(getDocItem("semver/valid?"));
-		semver.addItem(getDocItem("semver/valid-format?"));
 		semver.addItem(getDocItem("semver/version"));
-		semver.addItem(getDocItem("semver/cmp"));
-		semver.addItem(getDocItem("semver/newer?"));
-		semver.addItem(getDocItem("semver/older?"));
-		semver.addItem(getDocItem("semver/equal?"));
-		
-		final DocSection hexdump = new DocSection("Hexdump", "modules.hexdump");
+
+		final DocSection valid = new DocSection("Validation", id());
+		all.addSection(valid);
+		valid.addItem(getDocItem("semver/valid?"));
+		valid.addItem(getDocItem("semver/valid-format?"));
+
+		final DocSection test = new DocSection("Test", id());
+		all.addSection(test);
+		test.addItem(getDocItem("semver/newer?"));
+		test.addItem(getDocItem("semver/older?"));
+		test.addItem(getDocItem("semver/equal?"));
+		test.addItem(getDocItem("semver/cmp"));
+
+		return section;
+	}
+
+	private DocSection getModuleHexdumpSection() {
+		final DocSection section = new DocSection("Module Hexdump", "modules.hexdump");
+
+		final DocSection all = new DocSection("(load-module :hexdump)", id());
+		section.addSection(all);
+
+		final DocSection hexdump = new DocSection("Hexdump", id());
 		all.addSection(hexdump);
-		hexdump.addItem(new DocItem("(load-module :hexdump)", null));
 		hexdump.addItem(getDocItem("hexdump/dump", false));
-		
-		final DocSection excel = new DocSection("Excel", "modules.excel");
-		all.addSection(excel);
-		excel.addItem(new DocItem("(load-module :excel)", null));
-		excel.addItem(getDocItem("excel/excel-builder", false));
+
+		return section;
+	}
+
+	private DocSection getModuleExcelSection() {
+		final DocSection section = new DocSection("Module Excel", "modules.excel");
+
+		final DocSection all = new DocSection("(load-module :excel)", id());
+		section.addSection(all);
+
+		final DocSection wr = new DocSection("Writer", id());
+		all.addSection(wr);
+		wr.addItem(getDocItem("excel/writer", false));
+		wr.addItem(getDocItem("excel/add-sheet", false));
+		wr.addItem(getDocItem("excel/add-font", false));
+		wr.addItem(getDocItem("excel/add-style", false));
+		wr.addItem(getDocItem("excel/add-column", false));
+
+		final DocSection wr_data = new DocSection("Writer Data", id());
+		all.addSection(wr_data);
+		wr_data.addItem(getDocItem("excel/write-data", false));
+		wr_data.addItem(getDocItem("excel/write-items", false));
+		wr_data.addItem(getDocItem("excel/write-item", false));
+		wr_data.addItem(getDocItem("excel/write-value", false));
+
+		final DocSection wr_io = new DocSection("Writer I/O", id());
+		all.addSection(wr_io);
+		wr_io.addItem(getDocItem("excel/write->file", false));
+		wr_io.addItem(getDocItem("excel/write->stream", false));
+		wr_io.addItem(getDocItem("excel/write->bytebuf", false));
+
+		final DocSection wr_util = new DocSection("Writer Util", id());
+		all.addSection(wr_util);
+		wr_util.addItem(getDocItem("excel/cell-formula", false));
+		wr_util.addItem(getDocItem("excel/sum-formula", false));
+		wr_util.addItem(getDocItem("excel/cell-address", false));
+		wr_util.addItem(getDocItem("excel/auto-size-columns", false));
+		wr_util.addItem(getDocItem("excel/auto-size-column", false));
+		wr_util.addItem(getDocItem("excel/evaluate-formulas", false));
+		wr_util.addItem(getDocItem("excel/convert->reader", false));
+
+		final DocSection rd = new DocSection("Reader", id());
+		all.addSection(rd);
+		rd.addItem(getDocItem("excel/open", false));
+		rd.addItem(getDocItem("excel/sheet", false));
+		rd.addItem(getDocItem("excel/read-string-val", false));
+		rd.addItem(getDocItem("excel/read-boolean-val", false));
+		rd.addItem(getDocItem("excel/read-long-val", false));
+		rd.addItem(getDocItem("excel/read-double-val", false));
+		rd.addItem(getDocItem("excel/read-date-val", false));
+
+		final DocSection rd_util = new DocSection("Reader Util", id());
+		all.addSection(rd_util);
+		rd_util.addItem(getDocItem("excel/sheet-count", false));
+		rd_util.addItem(getDocItem("excel/sheet-name", false));
+		rd_util.addItem(getDocItem("excel/sheet-row-range", false));
+		rd_util.addItem(getDocItem("excel/sheet-col-range", false));
+		rd_util.addItem(getDocItem("excel/evaluate-formulas", false));
+		rd_util.addItem(getDocItem("excel/cell-empty?", false));
+		rd_util.addItem(getDocItem("excel/cell-type", false));
 
 		return section;
 	}
@@ -1972,9 +2144,9 @@ public class DocGenerator {
 		if (fn != null) {
 			return new DocItem(
 					name, 
-					toStringList(fn.getArgLists()), 
+					toStringList(fn.getArgLists(), name, ":arglists"), 
 					fn.getDoc() == Constants.Nil ? "" : ((VncString)fn.getDoc()).getValue(),
-					runExamples(name, toStringList(fn.getExamples()), runExamples, catchEx),
+					runExamples(name, toStringList(fn.getExamples(), name, ":examples"), runExamples, catchEx),
 					createCrossRefs(name, fn),
 					id(name));
 		}
@@ -2133,14 +2305,14 @@ public class DocGenerator {
 		return new CrossRef(name, id(name), descr);
 	}
 
-	private List<String> toStringList(final VncList list) {
+	private List<String> toStringList(final VncList list, final String name, final String helpType) {
 		try {
 			return list.stream()
 					   .map(s -> ((VncString)s).getValue())
 					   .collect(Collectors.toList());
 		}
 		catch(Exception ex) {
-			throw ex;
+			throw new RuntimeException(String.format("Failed on item '%s' processing %s", name, helpType), ex);
 		}
 	}
 
