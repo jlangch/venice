@@ -54,14 +54,17 @@
 
 (ns xchart)
 
-
-(defn xchart/available? []
-  (some? (. :org.knowm.xchart.style.AxesChartStyler$TextAlignment :class)))
-
+(load-module :semver)
 
 ;; ensure we have XChart 3.8.0+
 ;; Xchart 3.8.0 introduced API incompatibilites to earlier versions
-(assert (xchart/available?) "Venice requires XChart 3.8.0+")
+(if (exists-class? :org.knowm.xchart.PieChart)
+  (let [version (jar-maven-version :org.knowm.xchart :xchart)
+        too-old (semver/older? version "3.8.0")]
+    (when too-old
+      (assert false "XChart ~{version} is too old. Venice requires XChart 3.8.0+")))
+  (assert false "XChart missing. Venice requires XChart 3.8.0+"))
+
 
 
 (import :com.github.jlangch.venice.impl.util.xchart.XChartEncoder)
@@ -122,24 +125,6 @@
 (import :javax.swing.JPanel)
 (import :javax.swing.JFrame)
 (import :javax.swing.SwingUtilities)
-
-
-(defn check-required-libs []
-  (when-not (exists-class? :org.knowm.xchart.PieChart)
-    (throw (. :VncException :new
-              """
-              The XChart libraries are not on the classpath!
-
-              ---------------------------------------------------
-              (do
-                (load-module :maven)
-                (maven/download "org.knowm.xchart:xchart:3.6.5"))
-              ---------------------------------------------------
-              """))))
-
-
-; ensure the XChart libs are on the classpath (constant defs require classes)
-(check-required-libs)
 
 
 

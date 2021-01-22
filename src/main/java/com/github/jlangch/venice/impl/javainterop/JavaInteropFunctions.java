@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -421,6 +422,52 @@ public class JavaInteropFunctions {
 			final String name = cl.getValue().replace(".", "/") + ".class";
 					
 			return new VncLong(ClassVersionChecker.getClassResourceMajorVersion(name));
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+
+	public static class JavaJarMavenVersionFn extends AbstractJavaFn {
+		public JavaJarMavenVersionFn() {
+			super(
+				"jar-maven-version", 
+				VncFunction
+					.meta()
+					.arglists("(jar-maven-version group-id artefact-id)")
+					.doc(
+						"Returns the maven version for a loaded JAR.\n\n" +
+						"Reads the version from the JAR's pom.properties file at: \n" +
+						"  /META-INF/maven/{group-id}/{artefact-id}/pom.properties")
+					.examples("(jar-maven-version :org.knowm.xchart :xchart)")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			ArityExceptions.assertArity(this, args, 2);
+			sandboxFunctionCallValidation();
+
+			final VncKeyword groupID = Coerce.toVncKeyword(args.first());
+			final VncKeyword artefactID = Coerce.toVncKeyword(args.second());
+			
+			try {
+				final String resource = String.format(
+											"/META-INF/maven/%s/%s/pom.properties",
+											groupID.getValue(),
+											artefactID.getValue());
+				final Properties props = new Properties();
+				props.load(getClass().getResourceAsStream(resource));
+				return new VncString(props.getProperty("version"));
+			}
+			catch(Exception ex) {
+				throw new VncException(
+						String.format(
+							"Failed to get JAR maven version for group-id '%s' and artefact-id '%s'",
+							groupID.getValue(),
+							artefactID.getValue()),
+						ex);
+			}
 		}
 
 		private static final long serialVersionUID = -1848883965231344442L;
@@ -1044,6 +1091,7 @@ public class JavaInteropFunctions {
 					.add(new JavaExStacktraceFn())
 					.add(new JavaClassFn())
 					.add(new JavaClassOfFn())
+					.add(new JavaJarMavenVersionFn())
 					.add(new JavaClassNameFn())
 					.add(new JavaModuleNameFn())
 					.add(new JavaClassVersionFn())

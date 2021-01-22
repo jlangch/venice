@@ -1820,6 +1820,10 @@ public class DocGenerator {
 		clazz.addItem(getDocItem("classloader"));
 		clazz.addItem(getDocItem("classloader-of"));
 
+		final DocSection jar = new DocSection("JARs", "javainterop.jar");
+		all.addSection(jar);	
+		jar.addItem(getDocItem("jar-maven-version", false));
+
 		final DocSection modules = new DocSection("Modules", "javainterop.modules");
 		all.addSection(modules);	
 		modules.addItem(getDocItem("module-name", false));
@@ -1902,7 +1906,6 @@ public class DocGenerator {
 		all.addSection(kira);
 		kira.addItem(getDocItem("kira/eval"));
 		kira.addItem(getDocItem("kira/fn"));
-
 
 		final DocSection escape = new DocSection("Escape", id());
 		all.addSection(escape);
@@ -2112,6 +2115,17 @@ public class DocGenerator {
 		rd_util.addItem(getDocItem("excel/evaluate-formulas", false));
 		rd_util.addItem(getDocItem("excel/cell-empty?", false));
 		rd_util.addItem(getDocItem("excel/cell-type", false));
+
+
+		final DocSection libs = new DocSection("3rd Party", id());
+		all.addSection(libs);
+		libs.addItem(new DocItem("; required 3rd party libraries", null));
+		libs.addItem(new DocItem("org.apache.poi:poi:4.1.2", null));
+		libs.addItem(new DocItem("org.apache.poi:ooxml:4.1.2", null));
+		libs.addItem(new DocItem("org.apache.poi:ooxml-schemas:4.1.2", null));
+		libs.addItem(new DocItem("commons-codec:commons-codec:1.15", null));
+		libs.addItem(new DocItem("org.apache.commons:commons-collections4:4.4", null));
+		libs.addItem(new DocItem("org.apache.xmlbeans:xmlbeans:3.1.0", null));
 
 		return section;
 	}
