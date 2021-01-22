@@ -23,12 +23,21 @@
 
 ;;;; Required 3rd party libraries
 ;;;;   org.apache.poi:poi:4.1.2
-;;;;   org.apache.poi:ooxml:4.1.2
-;;;;   org.apache.poi:ooxml-schemas:4.1.2
+;;;;   org.apache.poi:poi-ooxml:4.1.2
+;;;;   org.apache.poi:poi-ooxml-schemas:4.1.2
 ;;;;   commons-codec:commons-codec:1.15
 ;;;;   org.apache.commons:commons-collections4:4.4
 ;;;;   org.apache.commons:commons-compress:1.20
 ;;;;   org.apache.xmlbeans:xmlbeans:3.1.0
+
+;;;;   (maven/download "org.apache.poi:poi:4.1.2")
+;;;;   (maven/download "org.apache.poi:poi-ooxml:4.1.2")
+;;;;   (maven/download "org.apache.poi:poi-ooxml-schemas:4.1.2")
+;;;;   (maven/download "commons-codec:commons-codec:1.15")
+;;;;   (maven/download "org.apache.commons:commons-collections4:4.4")
+;;;;   (maven/download "org.apache.commons:commons-compress:1.20")
+;;;;   (maven/download "org.apache.xmlbeans:xmlbeans:3.1.0")
+
 
 (ns excel)
 
