@@ -184,13 +184,18 @@
                 margin: 0.5em;
                 padding: 0 0.5em 0.5em;
             }
-            .embedding {
-                background-color: white;
-                margin: 0 0 0 0;
-                padding: ${= (if pdfmode "0em" "10em") }$ 0 0 0;
+            .section-title {
+                margin: ${= (if pdfmode "0em" "10em") }$ 0.5em 1em 0.5em;
+                padding: 0.5em 0.5em 0.5em 0.5em;
+                background-color: #ebebeb;
             }
-            div.embedding h1 {
-                padding: 0 0.5em 0.5em;
+            div.section-title h1 {
+				margin: 0;
+			}
+           .embedding {
+                background-color: white;
+                margin: 0.5em 0 0 0;
+                padding: 0;
             }
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -239,7 +244,7 @@
                 clear: both;
                 background-color: white;
                 margin: 0 0 0 0;
-                padding: ${= (if pdfmode "0em" "20em") }$ 0.5em 0.5em;
+                padding: 0.5em 0.5em 0.5em;
             }
             .detail {
                 background-color: #ebebeb;
@@ -387,9 +392,73 @@
 
             <div style="clear: both;"></div>
 
-            <div class="embedding" id="embedding" style="page-break-before: always;">
+            <div class="section-title" id="modules" style="page-break-before: always;">
+               <h1>Modules</h1>
+            </div>
+ 
+            <div class="column">
+                 ${ (doseq [s1 left-modules] }$
+                 <div class="section" id="${= (:id s1) }$">
+                    <h2>${= (kira/escape-xml (:title s1)) }$</h2>
+                    ${ (doseq [s2 (:sections s1)] }$
+                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    <table>
+                        <tbody>
+                            ${ (doseq [s3 (:sections s2)] }$
+                            <tr id="${= (:id s3) }$">
+                                <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
+                                <td class="expand">
+                                  <div class="refs"><!-- prevent whitespaces
+                                     -->${ (doseq [{:keys [id altName name]} (:items s3)] }$<!-- 
+                                     -->${ (when id }$<div class="alias"><a href="#${= id }$">${= (kira/escape-xml altName) }$</a></div>${ ) }$<!--
+                                     -->${ (when-not id }$<div class="literal">${= (kira/escape-xml name) }$</div>${ ) }$<!--
+                                     -->${ ) }$<!--
+                                  --></div>
+                                </td>
+                            </tr>
+                            ${ ) }$
+                        </tbody>
+                    </table>
+                    ${ ) }$
+                </div>
+                ${ ) }$
+            </div>
+            
+            <div class="column">
+                ${ (doseq [s1 right-modules] }$
+                <div class="section" id="${= (:id s1) }$">
+                    <h2>${= (kira/escape-xml (:title s1)) }$</h2>
+                    ${ (doseq [s2 (:sections s1)] }$
+                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    <table>
+                        <tbody>
+                            ${ (doseq [s3 (:sections s2)] }$
+                            <tr id="${= (:id s3) }$">
+                                <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
+                                <td class="expand">
+                                  <div class="refs"><!-- prevent whitespaces
+                                     -->${ (doseq [{:keys [id altName name]} (:items s3)] }$<!-- 
+                                     -->${ (when id }$<div class="alias"><a href="#${= id }$">${= (kira/escape-xml altName) }$</a></div>${ ) }$<!--
+                                     -->${ (when-not id }$<div class="literal">${= (kira/escape-xml name) }$</div>${ ) }$<!--
+                                     -->${ ) }$<!--
+                                  --></div>
+                                </td>
+                             </tr>
+                            ${ ) }$
+                        </tbody>
+                    </table>
+                    ${ ) }$
+                </div>
+                ${ ) }$
+            </div>
+
+            <div style="clear: both;"></div>
+
+            <div class="section-title" id="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
-               
+            </div>
+
+            <div class="embedding">
                ${ (doseq [s snippets] }$ 
                <div class="code-example">
 	               <h2>${= (kira/escape-xml (:title s)) }$</h2>
@@ -399,10 +468,12 @@
                </div>
                ${ ) }$
             </div>
-            
-            <div class="details" style="page-break-before: always;">
-                <h1>Function details</h1>
-                
+
+            <div class="section-title" id="details" style="page-break-before: always;">
+               <h1>Function Details</h1>
+            </div>
+           
+            <div class="details">
                 ${ (doseq [it details] }$ 
                 ${ (when (:id it) }$
                 <div class="detail" id="${= (:id it) }$">

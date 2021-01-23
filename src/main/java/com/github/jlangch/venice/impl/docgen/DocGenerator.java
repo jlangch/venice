@@ -103,6 +103,8 @@ public class DocGenerator {
 			
 			final List<DocSection> left = getLeftSections();
 			final List<DocSection> right = getRightSections();
+			final List<DocSection> leftModules = getModulesLeftSections();
+			final List<DocSection> rightModules = getModulesRightSections();
 
 			validateUniqueSectionsId(left, right);
 			
@@ -110,10 +112,11 @@ public class DocGenerator {
 			data.put("meta-author", "Venice");
 			data.put("version", version);
 			data.put("toc", getTOC());
-			data.put("sections", concat(left, right));
 			data.put("left", left);
 			data.put("right", right);
-			data.put("details", getDocItems(concat(left, right)));
+			data.put("left-modules", leftModules);
+			data.put("right-modules", rightModules);
+			data.put("details", getDocItems(concat(left, right, leftModules, rightModules)));
 			data.put("snippets", new CodeSnippetReader().readSnippets());
 			
 			// [1] create a HTML
@@ -248,15 +251,7 @@ public class DocGenerator {
 				getTypesSection(),
 				getNamespaceSection(),
 				getJavaInteropSection(),
-				getMiscellaneousSection(),
-				
-				getModuleKiraSection(),
-				getModuleCryptographySection(),
-				getModuleXmlSection(),
-				getModuleJavaSection(),
-				getModuleGradleSection(),
-				getModuleMavenSection(),
-				getModuleHexdumpSection());
+				getMiscellaneousSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -270,14 +265,28 @@ public class DocGenerator {
 				getIOSection(),
 				getIOFileSection(),
 				getIOZipSection(),
-				getAppSection(),
-				
+				getAppSection());
+	}
+
+	private List<DocSection> getModulesLeftSections() {
+		return Arrays.asList(
+				getModuleKiraSection(),
+				getModuleCryptographySection(),
+				getModuleXmlSection(),
+				getModuleJavaSection(),
+				getModuleGradleSection(),
+				getModuleMavenSection(),
+				getModuleHexdumpSection());
+	}
+	
+	private List<DocSection> getModulesRightSections() {
+		return Arrays.asList(
 				getModuleTracingSection(),
 				getModuleSemverSection(),
 				getModuleExcelSection());
 	}
 
-	private List<DocItem> getDocItems(List<DocSection> sections) {
+	private List<DocItem> getDocItems(final List<DocSection> sections) {
 		return sections
 				.stream()
 				.map(s -> s.getSections())
@@ -2330,10 +2339,17 @@ public class DocGenerator {
 		}
 	}
 
-	private List<DocSection> concat(final List<DocSection> l1, final List<DocSection> l2) {
+	private List<DocSection> concat(
+			final List<DocSection> s1, 
+			final List<DocSection> s2,
+			final List<DocSection> s3, 
+			final List<DocSection> s4
+	) {
 		final List<DocSection> list = new ArrayList<>();
-		list.addAll(l1);
-		list.addAll(l2);
+		list.addAll(s1);
+		list.addAll(s2);
+		list.addAll(s3);
+		list.addAll(s4);
 		return list;
 	}
 	
