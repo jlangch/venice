@@ -25,6 +25,7 @@ and this project adheres to
 
 - function `instance?` to `instance-of?`
 - build to Gradle 6.8
+- JLine dependency to version 3.19.0
 
 
 

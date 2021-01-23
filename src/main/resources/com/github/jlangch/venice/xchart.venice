@@ -57,8 +57,10 @@
 (load-module :semver)
 
 
-;; ensure we have XChart 3.8.0+ on the classpath
-;; XChart 3.8.0 introduced API incompatibilites to earlier versions
+;; ---------------------------------------------------------------------------
+;; verify XChart 3.8.0+ libs are available
+;; ---------------------------------------------------------------------------
+
 (defn throw-3rdparty-lib-ex [msg]
   (venice-exception
     """
@@ -75,12 +77,16 @@
   (throw-3rdparty-lib-ex
     "The XChart library is missing. Venice requires XChart 3.8.0+"))
 
-(let [version (jar-maven-version :org.knowm.xchart :xchart)]
+(let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
   (when (semver/older? version "3.8.0")
     (throw-3rdparty-lib-ex
       "The XChart ~{version} library is too old. Venice requires XChart 3.8.0+")))
 
 
+
+;; ---------------------------------------------------------------------------
+;; imports
+;; ---------------------------------------------------------------------------
 
 (import :com.github.jlangch.venice.impl.util.xchart.XChartEncoder)
 

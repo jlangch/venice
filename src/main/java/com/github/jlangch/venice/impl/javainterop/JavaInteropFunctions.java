@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import static com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor.invokeInstanceMethod;
 
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -428,18 +429,23 @@ public class JavaInteropFunctions {
 	}
 
 
-	public static class JavaJarMavenVersionFn extends AbstractJavaFn {
-		public JavaJarMavenVersionFn() {
+	public static class JavaJarMavenManifestVersionFn extends AbstractJavaFn {
+		public JavaJarMavenManifestVersionFn() {
 			super(
-				"jar-maven-version", 
+				"jar-maven-manifest-version", 
 				VncFunction
 					.meta()
-					.arglists("(jar-maven-version group-id artefact-id)")
+					.arglists("(jar-maven-manifest-version group-id artefact-id)")
 					.doc(
-						"Returns the maven version for a loaded JAR.\n\n" +
-						"Reads the version from the JAR's pom.properties file at: \n" +
-						"  /META-INF/maven/{group-id}/{artefact-id}/pom.properties")
-					.examples("(jar-maven-version :org.knowm.xchart :xchart)")
+						"Returns the Maven version for a loaded JAR's manifest or " +
+						"nil if there is no Maven manifest.\n\n" +
+						"Reads the version from the JAR's Maven 'pom.properties' file at: \n" +
+						"  /META-INF/maven/{group-id}/{artefact-id}/pom.properties\n\n" +
+						"A 'pom.properties' may look like: \n" +
+						"  artifactId=xchart\n" +
+						"  groupId=org.knowm.xchart\n" +
+						"  version=3.8.0\n")
+					.examples("(jar-maven-manifest-version :org.knowm.xchart :xchart)")
 					.build());
 		}
 	
@@ -456,17 +462,19 @@ public class JavaInteropFunctions {
 											"/META-INF/maven/%s/%s/pom.properties",
 											groupID.getValue(),
 											artefactID.getValue());
-				final Properties props = new Properties();
-				props.load(getClass().getResourceAsStream(resource));
-				return new VncString(props.getProperty("version"));
+				
+				final InputStream is = getClass().getResourceAsStream(resource);
+				if (is == null) {
+					return Constants.Nil;
+				}
+				else {
+					final Properties props = new Properties();
+					props.load(is);
+					return new VncString(props.getProperty("version"));
+				}
 			}
 			catch(Exception ex) {
-				throw new VncException(
-						String.format(
-							"Failed to get JAR maven version for group-id '%s' and artefact-id '%s'",
-							groupID.getValue(),
-							artefactID.getValue()),
-						ex);
+				return Constants.Nil;
 			}
 		}
 
@@ -1091,7 +1099,7 @@ public class JavaInteropFunctions {
 					.add(new JavaExStacktraceFn())
 					.add(new JavaClassFn())
 					.add(new JavaClassOfFn())
-					.add(new JavaJarMavenVersionFn())
+					.add(new JavaJarMavenManifestVersionFn())
 					.add(new JavaClassNameFn())
 					.add(new JavaModuleNameFn())
 					.add(new JavaClassVersionFn())

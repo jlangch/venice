@@ -1822,7 +1822,7 @@ public class DocGenerator {
 
 		final DocSection jar = new DocSection("JARs", "javainterop.jar");
 		all.addSection(jar);	
-		jar.addItem(getDocItem("jar-maven-version", false));
+		jar.addItem(getDocItem("jar-maven-manifest-version", false));
 
 		final DocSection modules = new DocSection("Modules", "javainterop.modules");
 		all.addSection(modules);	
