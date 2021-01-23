@@ -56,14 +56,29 @@
 
 (load-module :semver)
 
-;; ensure we have XChart 3.8.0+
-;; Xchart 3.8.0 introduced API incompatibilites to earlier versions
-(if (exists-class? :org.knowm.xchart.PieChart)
-  (let [version (jar-maven-version :org.knowm.xchart :xchart)
-        too-old (semver/older? version "3.8.0")]
-    (when too-old
-      (assert false "XChart ~{version} is too old. Venice requires XChart 3.8.0+")))
-  (assert false "XChart missing. Venice requires XChart 3.8.0+"))
+
+;; ensure we have XChart 3.8.0+ on the classpath
+;; XChart 3.8.0 introduced API incompatibilites to earlier versions
+(defn throw-3rdparty-lib-ex [msg]
+  (venice-exception
+    """
+    ~(msg)
+
+    ---------------------------------------------------
+    (do
+     (load-module :maven)
+     (maven/download "org.knowm.xchart:xchart:3.8.0"))
+    ---------------------------------------------------
+    """))
+
+(when-not (exists-class? :org.knowm.xchart.PieChart)
+  (throw-3rdparty-lib-ex
+    "The XChart library is missing. Venice requires XChart 3.8.0+"))
+
+(let [version (jar-maven-version :org.knowm.xchart :xchart)]
+  (when (semver/older? version "3.8.0")
+    (throw-3rdparty-lib-ex
+      "The XChart ~{version} library is too old. Venice requires XChart 3.8.0+")))
 
 
 
