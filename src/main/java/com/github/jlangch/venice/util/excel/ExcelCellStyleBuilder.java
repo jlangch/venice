@@ -21,11 +21,14 @@
  */
 package com.github.jlangch.venice.util.excel;
 
+import java.awt.Color;
+
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 
 import com.github.jlangch.venice.impl.util.excel.Excel;
+import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 
 public class ExcelCellStyleBuilder {
@@ -51,8 +54,18 @@ public class ExcelCellStyleBuilder {
 		return this;
 	}
 	
-	public ExcelCellStyleBuilder bgColor(final IndexedColors bgColor) {
-		this.bgColorIndex = bgColor.getIndex();
+	public ExcelCellStyleBuilder bgColor(final IndexedColors color) {
+		this.bgColorIndex = color.getIndex();
+		return this;
+	}
+	
+	public ExcelCellStyleBuilder bgColor(final Color color) {
+		this.bgColor = color;
+		return this;
+	}
+
+	public ExcelCellStyleBuilder bgColorHtml(final String color) {
+		this.bgColor = HtmlColor.getColor(color);
 		return this;
 	}
 
@@ -107,8 +120,19 @@ public class ExcelCellStyleBuilder {
 	}
 
 	public ExcelBuilder end() {
-		managedExcel.registerCellFormat(
-				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+		if (bgColorIndex != null) {
+			managedExcel.registerCellFormat(
+					id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+		}
+		else if (bgColor != null) {
+			managedExcel.registerCellFormat(
+					id, format, fontRefName, bgColor, wrapText, hAlign, vAlign);
+		}
+		else {
+			managedExcel.registerCellFormat(
+					id, format, fontRefName, (Short)null, wrapText, hAlign, vAlign);
+		}
+		
 		return parentBuilder;
 	}
 
@@ -119,6 +143,7 @@ public class ExcelCellStyleBuilder {
 	private String format;
 	private String fontRefName;
 	private Short bgColorIndex;
+	private Color bgColor;
 	private Boolean wrapText;
 	private HorizontalAlignment hAlign;
 	private VerticalAlignment vAlign;

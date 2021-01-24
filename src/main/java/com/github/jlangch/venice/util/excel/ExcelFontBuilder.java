@@ -21,9 +21,12 @@
  */
 package com.github.jlangch.venice.util.excel;
 
+import java.awt.Color;
+
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 import com.github.jlangch.venice.impl.util.excel.Excel;
+import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 
 public class ExcelFontBuilder {
@@ -70,8 +73,27 @@ public class ExcelFontBuilder {
 		return this;
 	}
 
+	public ExcelFontBuilder color(final Color color) {
+		this.color = color;
+		return this;
+	}
+
+	public ExcelFontBuilder colorHtml(final String color) {
+		this.color = HtmlColor.getColor(color);
+		return this;
+	}
+
 	public ExcelBuilder end() {
-		managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
+		if (colorIndex != null) {
+			managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
+		}
+		else if (color != null) {
+			managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, color);
+		}
+		else {
+			managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, (Short)null);
+		}
+
 		return parentBuilder;
 	}
 
@@ -84,4 +106,5 @@ public class ExcelFontBuilder {
 	private boolean bold;
 	private boolean italic;
 	private Short colorIndex;
+	private Color color;
 }

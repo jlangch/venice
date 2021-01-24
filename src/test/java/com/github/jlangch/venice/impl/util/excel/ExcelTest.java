@@ -280,6 +280,51 @@ public class ExcelTest {
 	}
 
 	@Test
+	public void test_BuilderWithFont_HTMLColor() {
+		final List<Person> persons = persons();
+		
+		final Excel excel = ExcelBuilder
+								.createXlsx()
+								.withFont("bold")
+									.bold()
+									.end()
+								.withFont("bold-blue")
+									.bold()
+									.colorHtml("#00FF00")
+									.end()
+								.withCellStyle("header")
+									.font("bold")
+									.bgColorHtml("#A0A0A0")
+									.end()
+								.withSheet("Persons", Person.class)
+									.defaultHeaderStyle("header")
+									.withColumn("FirstName")
+										.colMapper(Person::getFirstName)
+										.footerTextValue("SUM age")
+										.footerStyle("sum-header")
+										.end()
+									.withColumn("LastName")
+										.colMapper(Person::getLastName)
+										.end()
+									.withColumn("Age")
+										.colMapper(Person::getAge)
+										.bodyStyle("age")
+										.footerSum()
+										.footerStyle("sum-age")
+										.end()
+									.renderItems(persons)
+									.autoSizeColumns()
+									.end()
+								.toExcel();
+		
+		// verify sum
+		final long sumAge = excel.getSheet("Persons").getInteger(persons.size()+1, 2);
+		assertEquals(sumAge, persons.stream().mapToLong(p -> p.getAge() == null ? 0L : p.getAge()).sum());		
+		
+		//FileUtil.save(excel.writeToBytes(), new File("/Users/juerg/Desktop/sum.xlsx"), true);
+	}
+
+	@Test
 	public void test_BuilderWithSumWithStyles1() {
 		final List<Person> persons = persons();
 		

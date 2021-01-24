@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.excel;
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -33,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -40,6 +42,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -160,8 +163,12 @@ public class Excel implements Closeable {
 		evaluator.evaluateAll();
 	}
 
-	public void registerFont(final String id, final String fontName, final int heightInPoints) {
-		registerFont(id, fontName, heightInPoints, false, false, null);
+	public void registerFont(
+			final String id, 
+			final String fontName, 
+			final int heightInPoints
+	) {
+		registerFont(id, fontName, heightInPoints, false, false, (Short)null);
 	}
 	
 	public void registerFont(
@@ -186,9 +193,37 @@ public class Excel implements Closeable {
 		}
 		fonts.put(id, font);
 	}
+	
+	public void registerFont(
+			final String id,
+			final String fontName,
+			final Integer heightInPoints, 
+			final boolean bold, 
+			final boolean italic, 
+			final Color color
+	) {
+		final Font font = workbook.createFont();
+		if (fontName != null) {
+			font.setFontName(fontName);
+		}
+		if (heightInPoints != null) {
+			font.setFontHeightInPoints(heightInPoints.shortValue());
+		}
+		font.setBold(bold);
+		font.setItalic(italic);
+		if (color != null) {
+			if (font instanceof XSSFFont) {
+				((XSSFFont)font).setColor(new XSSFColor(color, null));
+			}
+			else if (font instanceof HSSFFont) {
+				font.setColor(ColorUtil.bestHSSFColor((HSSFWorkbook)workbook, color).getIndex());
+			}
+		}
+		fonts.put(id, font);
+	}
 
 	public void registerCellFormat(final String id, final String format) {
-		registerCellFormat(id, format, null, null, null, null, null);
+		registerCellFormat(id, format, null, (Short)null, null, null, null);
 	}
 
 	public void registerCellFormat(
@@ -202,6 +237,19 @@ public class Excel implements Closeable {
 	) {
 		cellDataStyles.registerCellFormat(
 				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+	}
+
+	public void registerCellFormat(
+			final String id,
+			final String format,
+			final String fontRefName,
+			final Color bgColor,
+			final Boolean wrapText,
+			final HorizontalAlignment hAlign,
+			final VerticalAlignment vAlign
+	) {
+		cellDataStyles.registerCellFormat(
+				id, format, fontRefName, bgColor, wrapText, hAlign, vAlign);
 	}
 	
 	public void write(final OutputStream outputStream) {

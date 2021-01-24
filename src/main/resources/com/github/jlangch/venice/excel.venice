@@ -56,6 +56,7 @@
 (import :java.io.FileOutputStream)
 
 
+;; the indexed colors supported by XLS and XLSX Excel formats
 (def colors { :BLACK1                  0
               :WHITE1                  1
               :RED1                    2
@@ -777,7 +778,9 @@
         height n            - height in points, e.g. 12
         bold b              - bold, e.g. true, false
         italic b            - italic, e.g. true, false
-        color c             - color, e.g. :excel/SKY_BLUE
+        color c             - color, either an Excel indexed color or a HTML
+                              color, e.g. (:BLUE excel/colors), "#00FF00"
+                              note: only XLSX supports 24 bit colors
         """
      :examples '(
         """
@@ -789,7 +792,7 @@
             (excel/add-font wbook :header { :height 12
                                             :bold true
                                             :italic false
-                                            :color (:SKY_BLUE excel/colors) })
+                                            :color (:BLUE excel/colors) })
             (excel/add-style wbook :header { :font :header })
 
             (let [sheet (excel/add-sheet wbook "Sheet 1"
@@ -816,7 +819,9 @@
       (when-let [x (:height options)] (. builder :heightInPoints x))
       (when-let [x (:bold options)]   (. builder :bold))
       (when-let [x (:italic options)] (. builder :italic))
-      (when-let [x (:color options)]  (. builder :color x))
+      (when-let [x (:color options)]  (if (string? x)
+                                        (. builder :colorHtml x)
+                                        (. builder :color x)))
 
       (. builder :end)
       builder)))
@@ -838,7 +843,9 @@
         Options:
         format s            - format, e.g. "0#.##"
         font r              - font name, e.g. :header
-        bg-color c          - background color, e.g. :excel/SKY_BLUE
+        bg-color c          - background color, either an Excel indexed color or
+                              a HTML color, e.g. (:PLUM excel/colors), "#00FF00"
+                              note: only XLSX supports 24 bit colors
         wrap-text b         - wrap text, e.g. true, false
         h-align e           - horizontal alignment {:left, :center, :right}
         v-align e           - vertical alignment {:top, :middle, :bottom}
@@ -881,7 +888,9 @@
     (let [builder (. writer :withCellStyle (name style-id))]
       (when-let [x (:format options)]    (. builder :format x))
       (when-let [x (:font options)]      (. builder :font x))
-      (when-let [x (:bg-color options)]  (. builder :bgColor x))
+      (when-let [x (:bg-color options)]  (if (string? x)
+                                           (. builder :bgColorHtml x)
+                                           (. builder :bgColor x)))
       (when-let [x (:wrap-text options)] (. builder :wrapText))
       (when-let [x (:h-align options)]
         (case x

@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- 24-bit color support to Excel builder
 
 
 
