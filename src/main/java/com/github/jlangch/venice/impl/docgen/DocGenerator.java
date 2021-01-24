@@ -305,8 +305,7 @@ public class DocGenerator {
 		final DocSection section = new DocSection("Primitives", "primitives");
 		
 		final DocSection lit = new DocSection("Literals", "primitives.literals");
-		section.addSection(lit);
-		
+		section.addSection(lit);		
 		lit.addLiteralIem("Nil",                  "nil");
 		lit.addLiteralIem("Boolean",              "true, false");
 		lit.addLiteralIem("Integer",              "150I, 1_000_000I, 0x1FFI");
@@ -1831,8 +1830,9 @@ public class DocGenerator {
 
 		final DocSection jar = new DocSection("JARs", "javainterop.jar");
 		all.addSection(jar);	
-		jar.addItem(getDocItem("jar-maven-manifest-version", false));
-
+		jar.addItem(getDocItem("jar-maven-manifest-version"));
+		jar.addItem(getDocItem("java-package-version"));
+		
 		final DocSection modules = new DocSection("Modules", "javainterop.modules");
 		all.addSection(modules);	
 		modules.addItem(getDocItem("module-name", false));
@@ -1906,7 +1906,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleKiraSection() {
-		final DocSection section = new DocSection("Module Kira", "modules.kira");
+		final DocSection section = new DocSection("Kira", "modules.kira");
 
 		final DocSection all = new DocSection("(load-module :kira)", id());
 		section.addSection(all);
@@ -1925,7 +1925,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleTracingSection() {
-		final DocSection section = new DocSection("Module Tracing", "modules.tracing");
+		final DocSection section = new DocSection("Tracing", "modules.tracing");
 
 		final DocSection all = new DocSection("(load-module :trace)", id());
 		section.addSection(all);
@@ -1949,7 +1949,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleXmlSection() {
-		final DocSection section = new DocSection("Module XML", "modules.xml");
+		final DocSection section = new DocSection("XML", "modules.xml");
 
 		final DocSection all = new DocSection("(load-module :xml)", id());
 		section.addSection(all);
@@ -1966,7 +1966,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleCryptographySection() {
-		final DocSection section = new DocSection("Module Cryptography", "modules.cryptography");
+		final DocSection section = new DocSection("Cryptography", "modules.cryptography");
 
 		final DocSection all = new DocSection("(load-module :crypt)", id());
 		section.addSection(all);
@@ -1987,7 +1987,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleGradleSection() {
-		final DocSection section = new DocSection("Module Gradle", "modules.gradle");
+		final DocSection section = new DocSection("Gradle", "modules.gradle");
 
 		final DocSection all = new DocSection("(load-module :gradle)", id());
 		section.addSection(all);
@@ -2002,7 +2002,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleMavenSection() {
-		final DocSection section = new DocSection("Module Maven", "modules.maven");
+		final DocSection section = new DocSection("Maven", "modules.maven");
 
 		final DocSection all = new DocSection("(load-module :maven)", id());
 		section.addSection(all);
@@ -2017,7 +2017,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleJavaSection() {
-		final DocSection section = new DocSection("Module Java", "modules.java");
+		final DocSection section = new DocSection("Java", "modules.java");
 
 		final DocSection all = new DocSection("(load-module :java)", id());
 		section.addSection(all);
@@ -2030,7 +2030,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleSemverSection() {
-		final DocSection section = new DocSection("Module Semver", "modules.semver");
+		final DocSection section = new DocSection("Semver", "modules.semver");
 
 		final DocSection all = new DocSection("(load-module :semver)", id());
 		section.addSection(all);
@@ -2056,7 +2056,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleHexdumpSection() {
-		final DocSection section = new DocSection("Module Hexdump", "modules.hexdump");
+		final DocSection section = new DocSection("Hexdump", "modules.hexdump");
 
 		final DocSection all = new DocSection("(load-module :hexdump)", id());
 		section.addSection(all);
@@ -2069,7 +2069,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleExcelSection() {
-		final DocSection section = new DocSection("Module Excel", "modules.excel");
+		final DocSection section = new DocSection("Excel", "modules.excel");
 
 		final DocSection all = new DocSection("(load-module :excel)", id());
 		section.addSection(all);

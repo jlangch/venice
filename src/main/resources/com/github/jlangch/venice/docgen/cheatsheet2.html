@@ -192,7 +192,20 @@
             div.section-title h1 {
 				margin: 0;
 			}
-           .embedding {
+			div.section .sub-header {
+				margin-top: 1.5em;
+				margin-bottom: 0.5em;
+				font-size: 1.17em;
+				font-weight: 400;
+				line-height: 1.5em;
+			}
+			div.section .sub-header-module {
+				margin-bottom: 0.5em;
+				font-size: 1em;
+				font-weight: 400;
+                font-family: 'Source Code Pro', sans-serif;
+			}
+            .embedding {
                 background-color: white;
                 margin: 0.5em 0 0 0;
                 padding: 0;
@@ -251,7 +264,10 @@
                 margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
             }
-            .detail h1 {
+            .detail .header {
+				font-size: 1.8em;
+				line-height: 2em;
+				font-weight: 300;
                 color: #4165a2;
                 background-color: #f5f5f5;
                 margin: 0.1em 0 0.5em 0;
@@ -282,7 +298,7 @@
                 margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
             }
-            .seealso h1 {
+            .seealso .header {
                 margin: 0;
                 padding: 0;
                 color: #777;
@@ -339,7 +355,7 @@
                  <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -367,7 +383,7 @@
                 <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -401,7 +417,7 @@
                  <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -429,7 +445,7 @@
                 <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<h3 id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</h3>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -478,7 +494,7 @@
                 ${ (when (:id it) }$
                 <div class="detail" id="${= (:id it) }$">
                     <div class="nav-back"><a href="#top">top</a></div>
-                    <h1>${= (kira/escape-xml (:name it)) }$</h1>
+                    <div class="header">${= (kira/escape-xml (:name it)) }$</div>
                     ${ (when (not-empty? (:signatures it)) }$
                     <div class="arglists">
                         <div class="arglist">
@@ -498,7 +514,7 @@
                     ${ ) }$
                     ${ (when (not-empty? (:crossRefs it)) }$
                     <div class="seealso">
-                        <h1>SEE ALSO</h1>
+                        <div class="header">SEE ALSO</div>
                         ${ (doseq [{:keys [id name description]} (:crossRefs it)] }$ 
                         <div class="crossref">
                             <div class="name"><a href="#${= id }$">${= (kira/escape-xml name) }$</a></div>

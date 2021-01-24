@@ -58,6 +58,8 @@ import com.github.jlangch.venice.impl.types.VncTunnelAsJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -428,7 +430,6 @@ public class JavaInteropFunctions {
 		private static final long serialVersionUID = -1848883965231344442L;
 	}
 
-
 	public static class JavaJarMavenManifestVersionFn extends AbstractJavaFn {
 		public JavaJarMavenManifestVersionFn() {
 			super(
@@ -445,7 +446,8 @@ public class JavaInteropFunctions {
 						"  artifactId=xchart\n" +
 						"  groupId=org.knowm.xchart\n" +
 						"  version=3.8.0\n")
-					.examples("(jar-maven-manifest-version :org.knowm.xchart :xchart)")
+					.examples("(jar-maven-manifest-version :com.github.librepdf :openpdf)")
+					.seeAlso("java-package-version")
 					.build());
 		}
 	
@@ -472,6 +474,66 @@ public class JavaInteropFunctions {
 					props.load(is);
 					return new VncString(props.getProperty("version"));
 				}
+			}
+			catch(Exception ex) {
+				return Constants.Nil;
+			}
+		}
+
+		private static final long serialVersionUID = -1848883965231344442L;
+	}
+
+	public static class JavaPackageVersionFn extends AbstractJavaFn {
+		public JavaPackageVersionFn() {
+			super(
+				"java-package-version", 
+				VncFunction
+					.meta()
+					.arglists("(java-package-version class)")
+					.doc(
+						"Returns version information for a Java package or " +
+						"nil if the package does not exist or is not visible.")
+					.examples(
+						"(java-package-version :java.lang.String)",
+						"(java-package-version (class :java.lang.String))")
+					.seeAlso("jar-maven-manifest-version", "class")
+					.build());
+		}
+	
+		@Override
+		public VncVal apply(final VncList args) {
+			ArityExceptions.assertArity(this, args, 1);
+			sandboxFunctionCallValidation();
+
+			try {
+				final Class<?> clazz = JavaInteropUtil.toClass(
+											args.first(), 
+											Namespaces.getCurrentNamespace().getJavaImports());
+
+				final Package pkg = clazz.getPackage();
+				
+				VncMap map = new VncOrderedMap();
+				
+				if (pkg.getImplementationTitle() != null) {
+					map = map.assoc(new VncKeyword("implementation-title"), new VncString(pkg.getImplementationTitle()));
+				}
+				if (pkg.getImplementationTitle() != null) {
+					map = map.assoc(new VncKeyword("implementation-vendor"), new VncString(pkg.getImplementationVendor()));
+				}
+				if (pkg.getImplementationTitle() != null) {
+					map = map.assoc(new VncKeyword("implementation-version"), new VncString(pkg.getImplementationVersion()));
+				}
+				if (pkg.getImplementationTitle() != null) {
+					map = map.assoc(new VncKeyword("specification-title"), new VncString(pkg.getSpecificationTitle()));
+				}
+				if (pkg.getImplementationTitle() != null) {
+					map = map.assoc(new VncKeyword("specification-vendor"), new VncString(pkg.getSpecificationVendor()));
+				}
+				if (pkg.getImplementationTitle() != null) {
+					map = map.assoc(new VncKeyword("specification-version"), new VncString(pkg.getSpecificationVersion()));
+				}
+				
+				return map;
 			}
 			catch(Exception ex) {
 				return Constants.Nil;
@@ -1065,7 +1127,8 @@ public class JavaInteropFunctions {
 				.assoc(new VncKeyword(":type"),new VncKeyword(type.getTypeName()))
 				.assoc(new VncKeyword(":setter"), VncBoolean.True);
 	}
-
+	
+	
 	private static Set<String> skippedFn = new HashSet<>(Arrays.asList(
 													"clone",
 													"equals",
@@ -1100,6 +1163,7 @@ public class JavaInteropFunctions {
 					.add(new JavaClassFn())
 					.add(new JavaClassOfFn())
 					.add(new JavaJarMavenManifestVersionFn())
+					.add(new JavaPackageVersionFn())
 					.add(new JavaClassNameFn())
 					.add(new JavaModuleNameFn())
 					.add(new JavaClassVersionFn())
