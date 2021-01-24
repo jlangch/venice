@@ -843,7 +843,12 @@
         Add a style with optional attributes to an Excel.
 
         Options:
-        format s            - format, e.g. "0#.##"
+        format s            - format, e.g. "#0"
+                              default formats:
+                                long,integer: "#0"
+                                float,double: "#,##0.00"
+                                date:         "d.m.yyyy"
+                                datetime:     "d.m.yyyy hh:mm:ss"
         font r              - font name, e.g. :header
         bg-color c          - background color, either an Excel indexed color or
                               a HTML color, e.g. :PLUM, "#00FF00"
