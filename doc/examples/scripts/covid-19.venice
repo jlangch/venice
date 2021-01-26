@@ -91,23 +91,13 @@
   (defn normalize-population [p]
     (/ p (double population-norm)))
 
-  (defn parse-date [year date]
-    ;; convert "Feb 02 to "2020 Feb 02" and parse it
-    (time/local-date-parse (str year " " date) "yyyy MMM dd" :ENGLISH))
+  (defn parse-date [date]
+    ;; convert "Feb 2, 2020" to "2020 Feb 02" and parse it
+    (time/local-date-parse date "MMM dd, yyyy" :ENGLISH))
 
   (defn parse-days [days]
-    ;; ("Feb 15","Feb 16",...,"Aug 28","Aug 29")
-    ;; map without year rollover:  (map #(parse-date 2020 %) days))
-    (loop [days days, year 2020, dates '()]
-      (if (empty? days)
-         dates
-         (let [day      (first days)
-               date     (parse-date year day)
-               rollover (and (= year 2020) (= (time/month date) 1))
-               date     (if rollover
-                          (parse-date 2021 day) ; year rollover to 2021
-                          date)]
-           (recur (rest days) (time/year date) (conj dates date))))))
+    ;; ("Feb 15, 2020","Feb 16, 2020",...,"Aug 29, 2020")
+    (map parse-date days))
 
   (defn parse-daily-cases [cases]
     ;; ("0","0",...,"215","186","143","1212)
@@ -122,11 +112,11 @@
          (butlast)))
 
   (defn extract-days [data]
-    ;;  """categories: ["Feb 15","Feb 16",...,"Aug 28","Aug 29"]   },"""
+    ;;  """categories: ["Feb 15, 2020","Feb 16, 2020",...,"Aug 29, 2020"]   },"""
     (as-> data <>
           (filter #(str/contains? % "categories: [") <>)
           (first <>)
-          (regex/find-all (regex/matcher """["][A-Za-z0-9 ]+["]""" <>))
+          (regex/find-all (regex/matcher """["][A-Za-z0-9, ]+["]""" <>))
           (map str/double-unquote <>)))
 
   (defn extract-daily-cases [data]

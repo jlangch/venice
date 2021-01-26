@@ -120,21 +120,24 @@ public final class XChartEncoder {
 		}
 	}
 
-	private static void setDPI(IIOMetadata metadata, int DPI) throws IIOInvalidTreeException {	
+	private static void setDPI(
+			final IIOMetadata metadata, 
+			final int DPI
+	) throws IIOInvalidTreeException {	
 		// for PNG, it's dots per millimeter
-		double dotsPerMilli = 1.0 * DPI / 10 / 2.54;
+		final double dotsPerMilli = 1.0 * DPI / 10 / 2.54;
 		
-		IIOMetadataNode horiz = new IIOMetadataNode("HorizontalPixelSize");
+		final IIOMetadataNode horiz = new IIOMetadataNode("HorizontalPixelSize");
 		horiz.setAttribute("value", Double.toString(dotsPerMilli));
 		
-		IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
+		final IIOMetadataNode vert = new IIOMetadataNode("VerticalPixelSize");
 		vert.setAttribute("value", Double.toString(dotsPerMilli));
 		
-		IIOMetadataNode dim = new IIOMetadataNode("Dimension");
+		final IIOMetadataNode dim = new IIOMetadataNode("Dimension");
 		dim.appendChild(horiz);
 		dim.appendChild(vert);
 		
-		IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
+		final IIOMetadataNode root = new IIOMetadataNode("javax_imageio_1.0");
 		root.appendChild(dim);
 		
 		metadata.mergeTree("javax_imageio_1.0", root);

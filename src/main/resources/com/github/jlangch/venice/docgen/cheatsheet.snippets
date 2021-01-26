@@ -27,6 +27,31 @@ public class Example {
 }
 
 
+**Dealing with Java objects
+
+import java.awt.Point;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.Parameters;
+
+public class Example {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
+
+      // returns a string: "Point=(x: 100.0, y: 200.0)"
+      String ret = (String)venice.eval(
+                            "(let [x (:x point) \n" +
+                            "      y (:y point)] \n" +
+                            "(str \"Point=(x: \" x \", y: \" y \")\")", 
+                            Parameters.of("point", new Point(100, 200))));
+
+      // returns a java.awt.Point: [x=110,y=220]
+      Point point = (Point)venice.eval(
+                            "(. :java.awt.Point :new (+ x 10) (+ y 20))", 
+                            Parameters.of("x", 100, "y", 200)));
+   }
+}
+
+
 **Precompiled
 
 import com.github.jlangch.venice.Venice;

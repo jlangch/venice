@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -64,7 +65,11 @@ public class ExcelCellStyles {
 			final Short bgColorIndex,
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
-			final VerticalAlignment vAlign
+			final VerticalAlignment vAlign,
+			final BorderStyle borderTopStyle,
+			final BorderStyle borderRightStyle,
+			final BorderStyle borderBottomStyle,
+			final BorderStyle borderLeftStyle
 	) {
 		if (name == null) {
 			throw new IllegalArgumentException("A cell format name must not be null");
@@ -94,6 +99,18 @@ public class ExcelCellStyles {
 		if (vAlign != null) {
 			style.setVerticalAlignment(vAlign);
 		}
+		if (borderTopStyle != null) {
+			style.setBorderTop(borderTopStyle);
+		}
+		if (borderRightStyle != null) {
+			style.setBorderRight(borderRightStyle);
+		}
+		if (borderBottomStyle != null) {
+			style.setBorderBottom(borderBottomStyle);
+		}
+		if (borderLeftStyle != null) {
+			style.setBorderLeft(borderLeftStyle);
+		}
 
 		cellStyles.put(name, style);
 	}
@@ -105,7 +122,11 @@ public class ExcelCellStyles {
 			final Color bgColor,
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
-			final VerticalAlignment vAlign
+			final VerticalAlignment vAlign,
+			final BorderStyle borderTopStyle,
+			final BorderStyle borderRightStyle,
+			final BorderStyle borderBottomStyle,
+			final BorderStyle borderLeftStyle
 	) {
 		if (name == null) {
 			throw new IllegalArgumentException("A cell format name must not be null");
@@ -143,7 +164,19 @@ public class ExcelCellStyles {
 		if (vAlign != null) {
 			style.setVerticalAlignment(vAlign);
 		}
-
+		if (borderTopStyle != null) {
+			style.setBorderTop(borderTopStyle);
+		}
+		if (borderRightStyle != null) {
+			style.setBorderRight(borderRightStyle);
+		}
+		if (borderBottomStyle != null) {
+			style.setBorderBottom(borderBottomStyle);
+		}
+		if (borderLeftStyle != null) {
+			style.setBorderLeft(borderLeftStyle);
+		}
+		
 		cellStyles.put(name, style);
 	}
 
@@ -156,7 +189,9 @@ public class ExcelCellStyles {
 			.entrySet()
 			.stream()
 			.filter(e -> e.getValue() != null)
-			.forEach(e -> registerCellFormat(e.getKey(), e.getValue(), null, (Short)null, null, null, null));	
+			.forEach(e -> registerCellFormat(
+								e.getKey(), e.getValue(), null, (Short)null, 
+								null, null, null, null, null, null, null));	
 	}
 
 	private Map<String,String> getStandardFormats() {

@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -223,7 +224,9 @@ public class Excel implements Closeable {
 	}
 
 	public void registerCellFormat(final String id, final String format) {
-		registerCellFormat(id, format, null, (Short)null, null, null, null);
+		registerCellFormat(
+				id, format, null, (Short)null, null, null, null,
+				null, null, null, null);
 	}
 
 	public void registerCellFormat(
@@ -233,10 +236,15 @@ public class Excel implements Closeable {
 			final Short bgColorIndex,
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
-			final VerticalAlignment vAlign
+			final VerticalAlignment vAlign,
+			final BorderStyle borderTopStyle,
+			final BorderStyle borderRightStyle,
+			final BorderStyle borderBottomStyle,
+			final BorderStyle borderLeftStyle
 	) {
 		cellDataStyles.registerCellFormat(
-				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign,
+				borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 	}
 
 	public void registerCellFormat(
@@ -246,10 +254,15 @@ public class Excel implements Closeable {
 			final Color bgColor,
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
-			final VerticalAlignment vAlign
+			final VerticalAlignment vAlign,
+			final BorderStyle borderTopStyle,
+			final BorderStyle borderRightStyle,
+			final BorderStyle borderBottomStyle,
+			final BorderStyle borderLeftStyle
 	) {
 		cellDataStyles.registerCellFormat(
-				id, format, fontRefName, bgColor, wrapText, hAlign, vAlign);
+				id, format, fontRefName, bgColor, wrapText, hAlign, vAlign,
+				borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 	}
 	
 	public void write(final OutputStream outputStream) {

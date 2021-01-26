@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.excel;
 
 import java.awt.Color;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -119,18 +120,41 @@ public class ExcelCellStyleBuilder {
 		return this;
 	}
 
+	public ExcelCellStyleBuilder borderTopStyle(final BorderStyle style) {
+		this.borderTopStyle = style;
+		return this;
+	}
+
+	public ExcelCellStyleBuilder borderRightStyle(final BorderStyle style) {
+		this.borderRightStyle = style;
+		return this;
+	}
+
+	public ExcelCellStyleBuilder borderBottomStyle(final BorderStyle style) {
+		this.borderBottomStyle = style;
+		return this;
+	}
+
+	public ExcelCellStyleBuilder borderLeftStyle(final BorderStyle style) {
+		this.borderLeftStyle = style;
+		return this;
+	}
+
 	public ExcelBuilder end() {
 		if (bgColorIndex != null) {
 			managedExcel.registerCellFormat(
-					id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign);
+					id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign,
+					borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 		}
 		else if (bgColor != null) {
 			managedExcel.registerCellFormat(
-					id, format, fontRefName, bgColor, wrapText, hAlign, vAlign);
+					id, format, fontRefName, bgColor, wrapText, hAlign, vAlign,
+					borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 		}
 		else {
 			managedExcel.registerCellFormat(
-					id, format, fontRefName, (Short)null, wrapText, hAlign, vAlign);
+					id, format, fontRefName, (Short)null, wrapText, hAlign, vAlign,
+					borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 		}
 		
 		return parentBuilder;
@@ -147,4 +171,8 @@ public class ExcelCellStyleBuilder {
 	private Boolean wrapText;
 	private HorizontalAlignment hAlign;
 	private VerticalAlignment vAlign;
+	private BorderStyle borderTopStyle;
+	private BorderStyle borderRightStyle;
+	private BorderStyle borderBottomStyle;
+	private BorderStyle borderLeftStyle;
 }

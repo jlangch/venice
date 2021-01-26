@@ -417,12 +417,13 @@
 
   ([builder row col val]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
-            (long? row) (long? col)] }
+            (long? row) (long? col) (pos? row) (pos? col)] }
     (. builder :value row col val))
 
   ([builder row col val style]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
-            (long? row) (long? col) (keyword? style)] }
+            (long? row) (long? col) (pos? row) (pos? col)
+            (keyword? style)] }
     (. builder :value row col val (name style))))
 
 
@@ -482,7 +483,8 @@
 
   ([builder row col formula]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
-            (long? row) (long? col) (string? formula)] }
+            (long? row) (long? col) (pos? row) (pos? col)
+            (string? formula)] }
     (. builder :formula row col formula))
 
   ([builder row col formula style]
@@ -557,7 +559,7 @@
   cell-address [builder row col]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)
-          (long? row) (long? col)] }
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. builder :cellAddress row col))
 
@@ -618,7 +620,7 @@
   auto-size-column [builder col]
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)
-          (long? col)] }
+          (long? col) (pos? col)] }
 
   (. builder :autoSizeColumn col))
 
@@ -856,6 +858,17 @@
         wrap-text b         - wrap text, e.g. true, false
         h-align e           - horizontal alignment {:left, :center, :right}
         v-align e           - vertical alignment {:top, :middle, :bottom}
+        border-top s        - border top style, e.g. :thin
+        border-right s      - border right style, e.g. :none
+        border-bottom s     - border bottom style, e.g. :thin
+        border-left s       - border left style, e.g. :none
+
+        Border styles:
+          :none      :dotted    :medium-dashed      :medium-dash-dot-dot
+          :thin      :thick     :dash-dot           :slanted-dash-dot
+          :medium    :double    :medium-dash-dot
+          :dashed    :hair      :dash-dot-dot
+
         """
      :examples '(
         """
@@ -867,7 +880,9 @@
             (excel/add-font wbook :header { :bold true })
             (excel/add-style wbook :header { :font :header
                                              :bg-color :GREY_25_PERCENT
-                                             :h-align :center })
+                                             :h-align :center
+                                             :border-top :thin
+                                             :border-bottom :thin })
             (excel/add-style wbook :weight { :format, "#,##0.0"
                                              :h-align :right })
 
@@ -920,9 +935,36 @@
                     (str "Invalid vertical alignment "
                          align
                          ". Use one of :top, :middle, or :bottom")))))
+      (when-let [x (:border-top options)]
+        (. builder :borderTopStyle (map-border-style x)))
+      (when-let [x (:border-right options)]
+        (. builder :borderRightStyle (map-border-style x)))
+      (when-let [x (:border-bottom options)]
+        (. builder :borderBottomStyle (map-border-style x)))
+      (when-let [x (:border-left options)]
+        (. builder :borderLeftStyle (map-border-style x)))
 
       (. builder :end)
       builder)))
+
+
+(defn- map-border-style [style]
+  (case style
+    :none                 :NONE
+    :thin                 :THIN
+    :medium               :MEDIUM
+    :dashed               :DASHED
+    :dotted               :DOTTED
+    :thick                :THICK
+    :double               :DOUBLE
+    :hair                 :HAIR
+    :medium-dashed        :MEDIUM_DASHED
+    :dash-dot             :DASH_DOT
+    :medium-dash-dot      :MEDIUM_DASH_DOT
+    :dash-dot-dot         :DASH_DOT_DOT
+    :medium-dash-dot-dot  :MEDIUM_DASH_DOT_DOT
+    :slanted-dash-dot     :SLANTED_DASH_DOT
+    :default              :NONE))
 
 
 
@@ -1196,7 +1238,7 @@
      :doc
         """
         Returns the first and the last col with data in a sheet row as vector.
-        Returns -1 values if the row does notexists or the row does not have \
+        Returns -1 values if the row does not exist or the row does not have \
         any columns.
         """
      :examples '(
@@ -1217,7 +1259,8 @@
 
   sheet-col-range [sheet row]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (pos? row)] }
 
   [(long (. sheet :getFirstCellNum row)) (long (. sheet :getLastCellNum row))])
 
@@ -1251,7 +1294,8 @@
 
   cell-empty? [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :isCellEmpty row col))
 
@@ -1287,7 +1331,8 @@
 
   cell-type [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (case (. sheet :getCellType row col)
     "notfound"  :notfound
@@ -1328,7 +1373,8 @@
 
   read-string-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getString row col))
 
@@ -1360,7 +1406,8 @@
 
   read-boolean-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getBoolean row col))
 
@@ -1411,7 +1458,8 @@
 
   read-long-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getInteger row col))
 
@@ -1443,7 +1491,8 @@
 
   read-double-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getFloat row col))
 
@@ -1478,6 +1527,7 @@
 
   read-date-val [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getDate row col))
