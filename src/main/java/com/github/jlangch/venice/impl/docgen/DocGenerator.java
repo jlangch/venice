@@ -2131,9 +2131,11 @@ public class DocGenerator {
 		libs.addItem(new DocItem("; required 3rd party libraries", null));
 		libs.addItem(new DocItem("org.apache.poi:poi:4.1.2", null));
 		libs.addItem(new DocItem("org.apache.poi:ooxml:4.1.2", null));
-		libs.addItem(new DocItem("org.apache.poi:ooxml-schemas:4.1.2", null));
+		libs.addItem(new DocItem("org.apache.poi:ooxml-schemas:4.1.2", null));	
 		libs.addItem(new DocItem("commons-codec:commons-codec:1.15", null));
 		libs.addItem(new DocItem("org.apache.commons:commons-collections4:4.4", null));
+		libs.addItem(new DocItem("org.apache.commons:commons-compress:1.20", null));
+		libs.addItem(new DocItem("org.apache.commons:commons-math3:3.6.1", null));
 		libs.addItem(new DocItem("org.apache.xmlbeans:xmlbeans:3.1.0", null));
 
 		return section;

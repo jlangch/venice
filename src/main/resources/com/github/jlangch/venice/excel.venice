@@ -26,6 +26,7 @@
 ;;;;   org.apache.poi:poi-ooxml:4.1.2
 ;;;;   org.apache.poi:poi-ooxml-schemas:4.1.2
 ;;;;   commons-codec:commons-codec:1.15
+;;;;   org.apache.commons:commons-math3:3.6.1
 ;;;;   org.apache.commons:commons-collections4:4.4
 ;;;;   org.apache.commons:commons-compress:1.20
 ;;;;   org.apache.xmlbeans:xmlbeans:3.1.0
@@ -34,6 +35,7 @@
 ;;;;   (maven/download "org.apache.poi:poi-ooxml:4.1.2")
 ;;;;   (maven/download "org.apache.poi:poi-ooxml-schemas:4.1.2")
 ;;;;   (maven/download "commons-codec:commons-codec:1.15")
+;;;;   (maven/download "org.apache.commons:commons-math3:3.6.1")
 ;;;;   (maven/download "org.apache.commons:commons-collections4:4.4")
 ;;;;   (maven/download "org.apache.commons:commons-compress:1.20")
 ;;;;   (maven/download "org.apache.xmlbeans:xmlbeans:3.1.0")
@@ -278,7 +280,7 @@
 
 
 (defn
-  ^{ :arglists '("(evaluate-formulas wbook)")
+  ^{ :arglists '("(evaluate-formulas it)")
      :doc "Evaluate all formulas in the Excel."
      :examples '(
         """
@@ -295,11 +297,13 @@
         """ )
      :see-also '("excel/writer") }
 
-  evaluate-formulas [wbook]
+  evaluate-formulas [it]
 
-  { :pre [(instance-of? :ExcelBuilder wbook)] }
+  { :pre [(or (instance-of? :ExcelBuilder it)
+              (instance-of? :ExcelReader it)
+              (instance-of? :ExcelSheetReader it))] }
 
-  (. wbook :evaluateAllFormulas))
+  (. it :evaluateAllFormulas))
 
 
 
@@ -422,7 +426,8 @@
 
   ([builder row col val style]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
-            (long? row) (long? col) (pos? row) (pos? col)
+            (long? row) (long? col)
+            (pos? row) (pos? col)
             (keyword? style)] }
     (. builder :value row col val (name style))))
 
@@ -489,7 +494,9 @@
 
   ([builder row col formula style]
     { :pre [(instance-of? :ExcelSheetBuilder builder)
-            (long? row) (long? col) (string? formula) (keyword? style)] }
+            (long? row) (long? col)
+            (pos? row) (pos? col)
+            (string? formula) (keyword? style)] }
     (. builder :formula row col formula (name style))))
 
 
@@ -523,7 +530,9 @@
 
   { :pre [(instance-of? :ExcelSheetBuilder builder)
           (long? row-from) (long? row-to)
-          (long? col-from) (long? col-to)] }
+          (long? col-from) (long? col-to)
+          (pos? row-from) (pos? row-to)
+          (pos? col-from) (pos? col-to)] }
 
   (. builder :sumFormula row-from row-to col-from col-to))
 
@@ -1016,17 +1025,6 @@
               (excel/write-items sheet data)
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx"))))
-        """,
-        """
-        (excel/column "First Name"
-                      { :data-field :first-name
-                        :width 100
-                        :hidden false
-                        :header-style :header
-                        :body-style :body
-                        :footer-style :footer
-                        :footer-value 10000.00M
-                        :footer-aggregate :none })
         """ )
      :see-also '("excel/add-sheet") }
 
