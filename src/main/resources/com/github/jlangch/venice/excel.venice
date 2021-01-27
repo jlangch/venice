@@ -331,7 +331,8 @@
         """ )
      :see-also '(
         "excel/write-item", "excel/write-value", "excel/cell-formula",
-        "excel/auto-size-columns", "excel/auto-size-column") }
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
 
   write-items [builder items]
 
@@ -361,7 +362,8 @@
         """ )
      :see-also '(
         "excel/write-items", "excel/write-value", "excel/cell-formula",
-        "excel/auto-size-columns", "excel/auto-size-column") }
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
 
   write-item [builder item]
 
@@ -415,7 +417,8 @@
         """ )
      :see-also '(
         "excel/write-items", "excel/write-item", "excel/cell-formula",
-        "excel/auto-size-columns", "excel/auto-size-column") }
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
 
   write-value
 
@@ -482,7 +485,7 @@
         "excel/cell-address", "excel/sum-formula",
         "excel/write-items", "excel/write-item",
         "excel/write-value", "excel/auto-size-columns",
-        "excel/auto-size-column") }
+        "excel/auto-size-column", "excel/row-height") }
 
   cell-formula
 
@@ -593,7 +596,7 @@
         """ )
      :see-also '(
         "excel/auto-size-column", "excel/write-items", "excel/write-item",
-        "excel/write-value", "excel/cell-formula") }
+        "excel/write-value", "excel/cell-formula", "excel/row-height") }
 
   auto-size-columns [builder]
 
@@ -624,7 +627,7 @@
         """ )
      :see-also '(
         "excel/auto-size-columns", "excel/write-items", "excel/write-item",
-        "excel/write-value", "excel/cell-formula") }
+        "excel/write-value", "excel/cell-formula", "excel/row-height") }
 
   auto-size-column [builder col]
 
@@ -632,6 +635,38 @@
           (long? col) (pos? col)] }
 
   (. builder :autoSizeColumn col))
+
+
+  (defn
+    ^{ :arglists '("(row-height builder row height)")
+       :doc "Set the height of a row (1..n)."
+       :examples '(
+          """
+          (do
+            (load-module :excel)
+            (let [os    (. :java.io.FileOutputStream :new "sample.xlsx")
+                  data  [ {:first "John" :last "Doe"   :age 28 }
+                          {:first "Sue"  :last "Ford"  :age 26 } ]
+                  wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Sheet 1")]
+              (excel/add-column sheet "First Name" { :data-field :first })
+              (excel/add-column sheet "Last Name" { :data-field :last })
+              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/write-items sheet data)
+              (excel/auto-size-columns sheet)
+              (excel/row-height sheet 2 100)
+              (excel/write->stream wbook os)))
+          """ )
+       :see-also '(
+          "excel/auto-size-columns", "excel/write-items", "excel/write-item",
+          "excel/write-value", "excel/cell-formula", "excel/auto-size-column") }
+
+    row-height [builder row height]
+
+    { :pre [(instance-of? :ExcelSheetBuilder builder)
+            (long? row) (pos? row)] }
+
+    (. builder :rowHeightInPoints row height))
 
 
 (defn
@@ -741,7 +776,8 @@
               (excel/auto-size-column sheet 3)
               (excel/write->file wbook "sample.xlsx"))))
         """ )
-     :see-also '("excel/add-column", "excel/add-font", "excel/add-style") }
+     :see-also '(
+       "excel/add-column", "excel/add-font", "excel/add-style") }
 
   add-sheet
 

@@ -241,6 +241,8 @@
             }
             .literal {
             }
+            .comments {
+            }
             .code-example {
                 color: #424242;
                 background-color: #ebebeb;
@@ -422,6 +424,7 @@
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
                             <tr id="${= (:id s3) }$">
+                                ${ (if-not (= (:title s3) ":comment:") (do }$
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -431,6 +434,15 @@
                                      -->${ ) }$<!--
                                   --></div>
                                 </td>
+                                ${ ) (do }$
+                                <td colspan="2">
+                                   <div class="comments"><!-- prevent whitespaces
+                                     -->${ (doseq [{:keys [id altName name]} (:items s3)] }$<!-- 
+                                     -->${ (when-not id }$<div>${= (kira/escape-xml name) }$</div>${ ) }$<!--
+                                     -->${ ) }$<!--
+                                  --></div>
+                                </td>
+                                ${ )) }$
                             </tr>
                             ${ ) }$
                         </tbody>
@@ -450,6 +462,7 @@
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
                             <tr id="${= (:id s3) }$">
+                                ${ (if-not (= (:title s3) ":comment:") (do }$
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -459,6 +472,15 @@
                                      -->${ ) }$<!--
                                   --></div>
                                 </td>
+                                ${ ) (do }$
+                                <td colspan="2">
+                                   <div class="comments"><!-- prevent whitespaces
+                                     -->${ (doseq [{:keys [id altName name]} (:items s3)] }$<!-- 
+                                     -->${ (when-not id }$<div>${= (kira/escape-xml name) }$</div>${ ) }$<!--
+                                     -->${ ) }$<!--
+                                  --></div>
+                                </td>
+                                ${ )) }$
                              </tr>
                             ${ ) }$
                         </tbody>

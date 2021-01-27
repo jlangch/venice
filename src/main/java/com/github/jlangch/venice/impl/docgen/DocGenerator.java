@@ -276,12 +276,12 @@ public class DocGenerator {
 				getModuleJavaSection(),
 				getModuleGradleSection(),
 				getModuleMavenSection(),
-				getModuleHexdumpSection());
+				getModuleTracingSection());
 	}
 	
 	private List<DocSection> getModulesRightSections() {
 		return Arrays.asList(
-				getModuleTracingSection(),
+				getModuleHexdumpSection(),
 				getModuleSemverSection(),
 				getModuleExcelSection());
 	}
@@ -2102,6 +2102,7 @@ public class DocGenerator {
 		wr_util.addItem(getDocItem("excel/cell-address", false));
 		wr_util.addItem(getDocItem("excel/auto-size-columns", false));
 		wr_util.addItem(getDocItem("excel/auto-size-column", false));
+		wr_util.addItem(getDocItem("excel/row-height", false));
 		wr_util.addItem(getDocItem("excel/evaluate-formulas", false));
 		wr_util.addItem(getDocItem("excel/convert->reader", false));
 
@@ -2126,17 +2127,17 @@ public class DocGenerator {
 		rd_util.addItem(getDocItem("excel/cell-type", false));
 
 
-		final DocSection libs = new DocSection("3rd Party", id());
+		final DocSection libs = new DocSection(":comment:", id());
 		all.addSection(libs);
-		libs.addItem(new DocItem("; required 3rd party libraries", null));
-		libs.addItem(new DocItem("org.apache.poi:poi:4.1.2", null));
-		libs.addItem(new DocItem("org.apache.poi:ooxml:4.1.2", null));
-		libs.addItem(new DocItem("org.apache.poi:ooxml-schemas:4.1.2", null));	
-		libs.addItem(new DocItem("commons-codec:commons-codec:1.15", null));
-		libs.addItem(new DocItem("org.apache.commons:commons-collections4:4.4", null));
-		libs.addItem(new DocItem("org.apache.commons:commons-compress:1.20", null));
-		libs.addItem(new DocItem("org.apache.commons:commons-math3:3.6.1", null));
-		libs.addItem(new DocItem("org.apache.xmlbeans:xmlbeans:3.1.0", null));
+		libs.addItem(new DocItem("required 3rd party libraries:", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.poi:poi:4.1.2", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.poi:ooxml:4.1.2", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.poi:ooxml-schemas:4.1.2", null));	
+		libs.addItem(new DocItem(IDENT_ENUM+"commons-codec:commons-codec:1.15", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.commons:commons-collections4:4.4", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.commons:commons-compress:1.20", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.commons:commons-math3:3.6.1", null));
+		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.xmlbeans:xmlbeans:3.1.0", null));
 
 		return section;
 	}
@@ -2417,6 +2418,7 @@ public class DocGenerator {
 			Collections.unmodifiableList(new ArrayList<>());
 	
 	private static final int CROSSREF_MAX_LEN = 145;
+	private static final String IDENT_ENUM = "\u00a0\u00a0\u00a0\u00a0\u2022\u00a0";
 	
 	private final Map<String,String> idMap = new HashMap<>();
 	

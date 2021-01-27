@@ -133,6 +133,11 @@ public class ExcelSheetBuilder<T> {
 		return this;
 	}
 
+	public ExcelSheetBuilder<T> rowHeightInPoints(final int row1, final int height) {
+		sheet.rowHeightInPoints(row1-1, height);
+		return this;
+	}
+
 	public ExcelSheetBuilder<T> autoSizeColumns() {
 		sheet.autoSizeColumns();
 		return this;
@@ -162,10 +167,6 @@ public class ExcelSheetBuilder<T> {
 		columnWidth = width;
 		return this;
 	}
-
-	public ExcelBuilder end() {
-		return parentBuilder;
-	}
 	
 	public String sumFormula(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
 		return String.format(
@@ -180,6 +181,10 @@ public class ExcelSheetBuilder<T> {
 	
 	public ExcelSheetReader reader() {
 		return new ExcelSheetReader(sheet);
+	}
+
+	public ExcelBuilder end() {
+		return parentBuilder;
 	}
 	
 	
