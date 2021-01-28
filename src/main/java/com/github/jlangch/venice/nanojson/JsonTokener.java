@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.github.jlangch.venice.nanojson;
 
 import java.io.BufferedInputStream;
@@ -23,15 +22,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Internal class for tokenizing JSON. Used by both {@link JsonParser} and {@link JsonReader}.
  */
 final class JsonTokener {
 	// Used by tests
-	static final int BUFFER_SIZE = 1 * 1024 * 1024;
+	static final int BUFFER_SIZE = 32 * 1024;
 
 	static final int BUFFER_ROOM = 256;
+	static final int MAX_ESCAPE = 5; // uXXXX (don't need the leading slash)
 
 	private int linePos = 1, rowPos, charOffset, utf8adjust;
 	private int tokenCharPos, tokenCharOffset;
@@ -64,20 +65,6 @@ final class JsonTokener {
 	static final int TOKEN_OBJECT_START = 10;
 	static final int TOKEN_ARRAY_START = 11;
 	static final int TOKEN_VALUE_MIN = TOKEN_NULL;
-
-	static final String[] TOKEN_SYMBOL = {
-							"EOF",
-							"COMMA",
-							"COLON",
-							"OBJECT_END",
-							"ARRAY_END",
-							"NULL",
-							"TRUE",
-							"FALSE",
-							"STRING",
-							"NUMBER",
-							"OBJECT_START",
-							"ARRAY_START" };
 
 	/**
 	 * A {@link Reader} that reads a UTF8 stream without decoding it for performance.
@@ -133,12 +120,12 @@ final class JsonTokener {
 			} else if (sig[0] == 0xFF && sig[1] == 0xFE && sig[2] == 0x00 && sig[3] == 0x00) {
 				charset = Charset.forName("UTF-32LE");
 			} else if (sig[0] == 0xFE && sig[1] == 0xFF) {
-				charset = Charset.forName("UTF-16BE");
+				charset = StandardCharsets.UTF_16BE;
 				buffered.reset();
 				buffered.read();
 				buffered.read();
 			} else if (sig[0] == 0xFF && sig[1] == 0xFE) {
-				charset = Charset.forName("UTF-16LE");
+				charset = StandardCharsets.UTF_16LE;
 				buffered.reset();
 				buffered.read();
 				buffered.read();
@@ -149,10 +136,10 @@ final class JsonTokener {
 				charset = Charset.forName("UTF-32LE");
 				buffered.reset();
 			} else if (sig[0] == 0 && sig[1] != 0 && sig[2] == 0 && sig[3] != 0) {
-				charset = Charset.forName("UTF-16BE");
+				charset = StandardCharsets.UTF_16BE;
 				buffered.reset();
 			} else if (sig[0] != 0 && sig[1] == 0 && sig[2] != 0 && sig[3] == 0) {
-				charset = Charset.forName("UTF-16LE");
+				charset = StandardCharsets.UTF_16LE;
 				buffered.reset();
 			} else {
 				buffered.reset();
@@ -227,13 +214,10 @@ final class JsonTokener {
 				sw:
 				switch (state) {
 				case 1: // start leading negative
-					if (nc == '-' && state == 0) {
-						ns = 1; break sw;
-					}
 					if (nc == '0') {
 						ns = 3; break sw;
 					}
-					if (nc >= '0' && nc <= '9') {
+					if (nc > '0' && nc <= '9') {
 						ns = 2; break sw;
 					}
 					break;
@@ -302,6 +286,7 @@ final class JsonTokener {
 	void consumeTokenString() throws JsonParserException {
 		reusableBuffer.setLength(0);
 		
+		// Assume no escapes or UTF-8 in the string to start (fast path)
 		start:
 		while (true) {
 			int n = ensureBuffer(BUFFER_ROOM);
@@ -311,8 +296,9 @@ final class JsonTokener {
 			for (int i = 0; i < n; i++) {
 				char c = stringChar();
 				if (c == '"') {
-					fixupAfterRawBufferRead();
+					// Use the index before we fixup
 					reusableBuffer.append(buffer, index - i - 1, i);
+					fixupAfterRawBufferRead();
 					return;
 				}
 				if (c == '\\' || (utf8 && (c & 0x80) != 0)) {
@@ -345,6 +331,19 @@ final class JsonTokener {
 					fixupAfterRawBufferRead();
 					return;
 				case '\\':
+					// Ensure that we have at least MAX_ESCAPE here in the buffer
+					if (end - index < MAX_ESCAPE) {
+						// Re-adjust the buffer end, unlikely path
+						n = ensureBuffer(MAX_ESCAPE);
+						end = index + n;
+						// Make sure that there's enough chars for a \\uXXXX escape
+						if (buffer[index] == 'u' && n < MAX_ESCAPE) {
+							index = bufferLength; // Reset index to last valid location
+							throw createParseException(null,
+									"EOF encountered in the middle of a string escape",
+									false);
+						}
+					}
 					char escape = buffer[index++];
 					switch (escape) {
 					case 'b':
@@ -380,8 +379,8 @@ final class JsonTokener {
 							} else if (digit >= 'a' && digit <= 'f') {
 								escaped |= (digit - 'a') + 10;
 							} else {
-								throw createParseException(null, "Expected unicode hex escape character: " + (char)digit
-										+ " (" + digit + ")", false);
+								throw createParseException(null, "Expected unicode hex escape character: "
+									+ (char)digit + " (" + digit + ")", false);
 							}
 						}
 	
@@ -537,7 +536,7 @@ final class JsonTokener {
 	}
 
 	/**
-	 * Peek one char ahead, don't advance, returns {@link Token#EOF} on end of input.
+	 * Peek one char ahead, don't advance, returns {@code EOF} (-1) on end of input.
 	 */
 	private int peekChar() {
 		return eof ? -1 : buffer[index];
@@ -579,7 +578,7 @@ final class JsonTokener {
 	}
 
 	/**
-	 * Advance one character ahead, or return {@link Token#EOF} on end of input.
+	 * Advance one character ahead, or return {@code EOF} (-1) on end of input.
 	 */
 	private int advanceChar() throws JsonParserException {
 		if (eof)
@@ -708,6 +707,7 @@ final class JsonTokener {
 			throw createParseException(null, "Unexpected character: " + (char)c, true);
 		}
 		
+//		consumeWhitespace();
 		return token;
 	}
 
@@ -748,19 +748,11 @@ final class JsonTokener {
 	 */
 	JsonParserException createParseException(Exception e, String message, boolean tokenPos) {
 		if (tokenPos)
-			return new JsonParserException(
-					e, 
-					message + " on line " + linePos + ", char " + tokenCharPos,
-					linePos, 
-					tokenCharPos, 
-					tokenCharOffset);
+			return new JsonParserException(e, message + " on line " + linePos + ", char " + tokenCharPos,
+					linePos, tokenCharPos, tokenCharOffset);
 		else {
 			int charPos = Math.max(1, index + charOffset - rowPos - utf8adjust);
-			return new JsonParserException(
-					e, 
-					message + " on line " + linePos + ", char " + charPos, 
-					linePos, 
-					charPos,
+			return new JsonParserException(e, message + " on line " + linePos + ", char " + charPos, linePos, charPos,
 					index + charOffset);
 		}
 	}

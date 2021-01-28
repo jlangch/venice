@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -21,6 +21,8 @@ import java.io.PrintStream;
 import java.io.Writer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Map;
 
 //@formatter:off
 /**
@@ -49,18 +51,18 @@ public final class JsonWriter {
 	private JsonWriter() {
 	}
 
-	/*
+	/**
 	 * Allows for additional configuration of the {@link JsonWriter}.
 	 */
 	public static final class JsonWriterContext {
-		private String indent;
+		private final String indent;
 
 		private JsonWriterContext(String indent) {
 			this.indent = indent;
 		}
 
 		//@formatter:off
-		/*
+		/**
 		 * Creates a new {@link JsonStringWriter}.
 		 *
          * <pre>
@@ -81,7 +83,7 @@ public final class JsonWriter {
 			return new JsonStringWriter(indent);
 		}
 
-		/*
+		/**
 		 * Creates a {@link JsonAppendableWriter} that can output to an
 		 * {@link Appendable} subclass, such as a {@link StringBuilder}, a
 		 * {@link Writer} a {@link PrintStream} or a {@link CharBuffer}.
@@ -91,7 +93,7 @@ public final class JsonWriter {
 		}
 
 		//@formatter:off
-		/*
+		/**
 		 * Creates a {@link JsonAppendableWriter} that can output to an {@link PrintStream} subclass.
 		 * 
 		 * <pre>
@@ -109,7 +111,7 @@ public final class JsonWriter {
 		}
 
 		//@formatter:off
-		/*
+		/**
 		 * Creates a {@link JsonAppendableWriter} that can output to an {@link OutputStream} subclass. Uses the UTF-8
 		 * {@link Charset}. To specify a different charset, use the {@link JsonWriter#on(Appendable)} method with an
 		 * {@link OutputStreamWriter}.
@@ -132,7 +134,7 @@ public final class JsonWriter {
 	}
 
 	//@formatter:off
-	/*
+	/**
 	 * Creates a {@link JsonWriter} source that will write indented output with the given indent.
 	 * 
 	 * <pre>
@@ -164,7 +166,7 @@ public final class JsonWriter {
 	}
 
 	//@formatter:off
-	/*
+	/**
 	 * Creates a new {@link JsonStringWriter}.
 	 * 
      * <pre>
@@ -185,7 +187,7 @@ public final class JsonWriter {
 		return new JsonStringWriter(null);
 	}
 
-	/*
+	/**
 	 * Emits a single value (a JSON primitive such as a {@link Number},
 	 * {@link Boolean}, {@link String}, a {@link Map} or {@link JsonObject}, or
 	 * a {@link Collection} or {@link JsonArray}.
@@ -206,7 +208,7 @@ public final class JsonWriter {
 		return new JsonStringWriter(null).value(value).done();
 	}
 
-	/*
+	/**
 	 * Creates a {@link JsonAppendableWriter} that can output to an
 	 * {@link Appendable} subclass, such as a {@link StringBuilder}, a
 	 * {@link Writer} a {@link PrintStream} or a {@link CharBuffer}.
@@ -216,7 +218,7 @@ public final class JsonWriter {
 	}
 
 	//@formatter:off
-	/*
+	/**
 	 * Creates a {@link JsonAppendableWriter} that can output to an {@link PrintStream} subclass.
 	 * 
 	 * <pre>
@@ -234,7 +236,7 @@ public final class JsonWriter {
 	}
 
 	//@formatter:off
-	/*
+	/**
 	 * Creates a {@link JsonAppendableWriter} that can output to an {@link OutputStream} subclass. Uses the UTF-8
 	 * {@link Charset}. To specify a different charset, use the {@link JsonWriter#on(Appendable)} method with an
 	 * {@link OutputStreamWriter}.
@@ -253,7 +255,7 @@ public final class JsonWriter {
 		return new JsonAppendableWriter(out, null);
 	}
 
-	/*
+	/**
 	 * Escape a string value.
 	 * 
 	 * @param value

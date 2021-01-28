@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -26,7 +26,7 @@ import java.util.Stack;
  *            The type of JSON object to build.
  */
 public final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
-	private Stack<Object> json = new Stack<Object>();
+	private Stack<Object> json = new Stack<>();
 	private T root;
 
 	JsonBuilder(T root) {
@@ -34,7 +34,7 @@ public final class JsonBuilder<T> implements JsonSink<JsonBuilder<T>> {
 		json.push(root);
 	}
 
-	/*
+	/**
 	 * Completes this builder, closing any unclosed objects and returns the built object.
 	 */
 	public T done() {

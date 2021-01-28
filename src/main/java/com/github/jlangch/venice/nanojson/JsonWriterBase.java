@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -14,6 +14,11 @@
  * the License.
  */
 package com.github.jlangch.venice.nanojson;
+
+/*
+ * Modified by Venice 12.05.2019
+ *  - changed function preValue(String key) to emit ": " instead of ":" for pretty printing
+ */
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -95,13 +100,11 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 
 	@Override
 	public SELF array(String key, Collection<?> c) {
-		if (key == null) {
+		if (key == null)
 			array();
-		}
-		else {
+		else
 			array(key);
-		}
-		
+
 		for (Object o : c) {
 			value(o);
 		}
@@ -116,13 +119,11 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 
 	@Override
 	public SELF object(String key, Map<?, ?> map) {
-		if (key == null) {
+		if (key == null)
 			object();
-		}
-		else {
+		else
 			object(key);
-		}
-		
+
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			Object o = entry.getValue();
 			if (!(entry.getKey() instanceof String))
@@ -202,9 +203,8 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 
 	@Override
 	public SELF value(String s) {
-		if (s == null) {
+		if (s == null)
 			return nul();
-		}
 		preValue();
 		emitStringValue(s);
 		return castThis();
@@ -248,20 +248,17 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 	@Override
 	public SELF value(Number n) {
 		preValue();
-		if (n == null) {
+		if (n == null)
 			raw(NULL);
-		}
-		else {
+		else
 			raw(n.toString());
-		}
 		return castThis();
 	}
 
 	@Override
 	public SELF value(String key, String s) {
-		if (s == null) {
+		if (s == null)
 			return nul(key);
-		}
 		preValue(key);
 		emitStringValue(s);
 		return castThis();
@@ -371,8 +368,7 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 				appendIndent();
 			}
 			raw('}');
-		} 
-		else {
+		} else {
 			raw(']');
 		}
 
@@ -389,14 +385,12 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 	 *             and objects that were started have been properly ended.
 	 */
 	protected void doneInternal() {
-		if (stateIndex > 0) {
+		if (stateIndex > 0)
 			throw new JsonWriterException(
 					"Unclosed JSON objects and/or arrays when closing writer");
-		}
-		if (first) {
+		if (first)
 			throw new JsonWriterException(
 					"Nothing was written to the JSON writer");
-		}
 
 		flush();
 	}
@@ -418,8 +412,7 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 				flush();
 			for (int i = 0; i < l; i++)
 				bb[bo++] = (byte) s.charAt(i);
-		} 
-		else {
+		} else {
 			buffer.append(s);
 			if (buffer.length() > BUFFER_SIZE) {
 				flush();
@@ -434,8 +427,7 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 				flush();
 			for (int i = 0; i < l; i++)
 				bb[bo++] = (byte) c[i];
-		} 
-		else {
+		} else {
 			buffer.append(c);
 			if (buffer.length() > BUFFER_SIZE) {
 				flush();
@@ -448,8 +440,7 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 			if (bo + 1 > BUFFER_SIZE)
 				flush();
 			bb[bo++] = (byte)c;
-		} 
-		else {
+		} else {
 			buffer.append(c);
 			if (buffer.length() > BUFFER_SIZE) {
 				flush();
@@ -462,13 +453,11 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 			if (utf8) {
 				out.write(bb, 0, bo);
 				bo = 0;
-			} 
-			else {
+			} else {
 				appendable.append(buffer.toString());
 				buffer.setLength(0);
 			}
-		} 
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new JsonWriterException(e);
 		}
 	}
@@ -476,12 +465,10 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 	private void pre() {
 		if (first) {
 			first = false;
-		} 
-		else {
-			if (stateIndex == 0) {
+		} else {
+			if (stateIndex == 0)
 				throw new JsonWriterException(
 						"Invalid call to emit a value in a finished JSON writer");
-			}
 			raw(',');
 			if (indentString != null && inObject) {
 				appendNewLine();
@@ -490,26 +477,23 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 	}
 
 	private void preValue() {
-		if (inObject) {
+		if (inObject)
 			throw new JsonWriterException(
 					"Invalid call to emit a keyless value while writing an object");
-		}
 
 		pre();
 	}
 
 	private void preValue(String key) {
-		if (!inObject) {
+		if (!inObject)
 			throw new JsonWriterException(
 					"Invalid call to emit a key value while not writing an object");
-		}
 
 		pre();
 
 		if (indentString != null) {
 			appendIndent();
 		}
-		
 		emitStringValue(key);
 		raw(indentString != null ? ": " : ":");
 	}
@@ -559,32 +543,27 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 						raw(UNICODE_SMALL);
 						raw(HEX[(c >> 4) & 0xf]);
 						raw(HEX[c & 0xf]);
-					} 
-					else {
+					} else {
 						raw(UNICODE_LARGE);
 						raw(HEX[(c >> 12) & 0xf]);
 						raw(HEX[(c >> 8) & 0xf]);
 						raw(HEX[(c >> 4) & 0xf]);
 						raw(HEX[c & 0xf]);
 					}
-				} 
-				else {
+				} else {
 					if (utf8) {
 						if (bo + 4 > BUFFER_SIZE) // 4 is the max char size
 							flush();
 						if (c < 0x80) {
 							bb[bo++] = (byte) c;
-						} 
-						else if (c < 0x800) {
+						} else if (c < 0x800) {
 							bb[bo++] = (byte) (0xc0 | c >> 6);
 							bb[bo++] = (byte) (0x80 | c & 0x3f);
-						} 
-						else if (c < 0xd800) {
+						} else if (c < 0xd800) {
 							bb[bo++] = (byte) (0xe0 | c >> 12);
 							bb[bo++] = (byte) (0x80 | (c >> 6) & 0x3f);
 							bb[bo++] = (byte) (0x80 | c & 0x3f);
-						} 
-						else if (c < 0xdfff) {
+						} else if (c < 0xdfff) {
 							// TODO: bad surrogates
 							i++;
 
@@ -594,19 +573,16 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 								bb[bo++] = (byte) (0x80 | (fc >> 12) & 0x3f);
 								bb[bo++] = (byte) (0x80 | (fc >> 6) & 0x3f);
 								bb[bo++] = (byte) (0x80 | fc & 0x3f);
-							} 
-							else {
+							} else {
 								throw new JsonWriterException("Unable to encode character 0x" 
 										+ Integer.toHexString(fc));
 							}
-						} 
-						else {
+						} else {
 							bb[bo++] = (byte) (0xe0 | c >> 12);
 							bb[bo++] = (byte) (0x80 | (c >> 6) & 0x3f);
 							bb[bo++] = (byte) (0x80 | c & 0x3f);
 						}
-					} 
-					else {
+					} else {
 						raw(c);
 					}
 				}
@@ -620,8 +596,7 @@ class JsonWriterBase<SELF extends JsonWriterBase<SELF>> implements
 	 * json.org spec says that all control characters must be escaped.
 	 */
 	private boolean shouldBeEscaped(char c) {
-		return c < ' ' 
-				|| (c >= '\u0080' && c < '\u00a0')
+		return c < ' ' || (c >= '\u0080' && c < '\u00a0')
 				|| (c >= '\u2000' && c < '\u2100');
 	}
 }

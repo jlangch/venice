@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -44,7 +44,8 @@ import java.io.OutputStream;
  */
 // @formatter:on
 public final class JsonAppendableWriter extends
-		JsonWriterBase<JsonAppendableWriter> {
+		JsonWriterBase<JsonAppendableWriter> implements
+		JsonSink<JsonAppendableWriter> {
 	JsonAppendableWriter(Appendable appendable, String indent) {
 		super(appendable, indent);
 	}

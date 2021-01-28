@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -13,19 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.github.jlangch.venice.nanojson;
 
-/**
+/*
  * Modified by Venice 12.05.2019
  *  - added function from(Reader in)
  */
-package com.github.jlangch.venice.nanojson;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.stream.Collectors;
 
 /**
  * Streaming reader for JSON documents.
@@ -69,28 +68,28 @@ public final class JsonReader {
 		NULL,
 	};
 
-	/*
+	/**
 	 * Create a {@link JsonReader} from an {@link Reader}.
 	 */
 	public static JsonReader from(Reader in) throws JsonParserException {
 		return new JsonReader(new JsonTokener(in));
 	}
 
-	/*
+	/**
 	 * Create a {@link JsonReader} from an {@link InputStream}.
 	 */
 	public static JsonReader from(InputStream in) throws JsonParserException {
 		return new JsonReader(new JsonTokener(in));
 	}
 
-	/*
+	/**
 	 * Create a {@link JsonReader} from a {@link String}.
 	 */
 	public static JsonReader from(String s) throws JsonParserException {
 		return new JsonReader(new JsonTokener(new StringReader(s)));
 	}
 
-	/*
+	/**
 	 * Internal constructor.
 	 */
 	JsonReader(JsonTokener tokener) throws JsonParserException {
@@ -98,7 +97,7 @@ public final class JsonReader {
 		token = tokener.advanceToToken();
 	}
 
-	/*
+	/**
 	 * Returns to the array or object structure above the current one, and
 	 * advances to the next key or value.
 	 */
@@ -111,7 +110,7 @@ public final class JsonReader {
 		return token != JsonTokener.TOKEN_EOF;
 	}
 
-	/*
+	/**
 	 * Returns the current type of the value.
 	 */
 	public Type current() throws JsonParserException {
@@ -136,41 +135,38 @@ public final class JsonReader {
 		}
 	}
 
-	/*
+	/**
 	 * Starts reading an object at the current value.
 	 */
 	public void object() throws JsonParserException {
-		if (token != JsonTokener.TOKEN_OBJECT_START) {
+		if (token != JsonTokener.TOKEN_OBJECT_START)
 			throw createTokenMismatchException(JsonTokener.TOKEN_OBJECT_START);
-		}
 		states.set(stateIndex++, inObject);
 		inObject = true;
 		first = true;
 	}
 
-	/*
+	/**
 	 * Reads the key for the object at the current value. Does not advance to the next value.
 	 */
 	public String key() throws JsonParserException {
-		if (!inObject) {
+		if (!inObject)
 			throw tokener.createParseException(null, "Not reading an object", true);
-		}
 		return key.toString();
 	}
 
-	/*
+	/**
 	 * Starts reading an array at the current value.
 	 */
 	public void array() throws JsonParserException {
-		if (token != JsonTokener.TOKEN_ARRAY_START) {
+		if (token != JsonTokener.TOKEN_ARRAY_START)
 			throw createTokenMismatchException(JsonTokener.TOKEN_ARRAY_START);
-		}
 		states.set(stateIndex++, inObject);
 		inObject = false;
 		first = true;
 	}
 
-	/*
+	/**
 	 * Returns the current value.
 	 */
 	public Object value() throws JsonParserException {
@@ -191,54 +187,47 @@ public final class JsonReader {
 		}
 	}
 
-	/*
+	/**
 	 * Parses the current value as a null.
 	 */
 	public void nul() throws JsonParserException {
-		if (token != JsonTokener.TOKEN_NULL) {
+		if (token != JsonTokener.TOKEN_NULL)
 			throw createTokenMismatchException(JsonTokener.TOKEN_NULL);
-		}
 	}
 
-	/*
+	/**
 	 * Parses the current value as a string.
 	 */
 	public String string() throws JsonParserException {
-		if (token == JsonTokener.TOKEN_NULL) {
+		if (token == JsonTokener.TOKEN_NULL)
 			return null;
-		}
-		if (token != JsonTokener.TOKEN_STRING) {
+		if (token != JsonTokener.TOKEN_STRING)
 			throw createTokenMismatchException(JsonTokener.TOKEN_NULL, JsonTokener.TOKEN_STRING);
-		}
 		return tokener.reusableBuffer.toString();
 	}
 
-	/*
+	/**
 	 * Parses the current value as a boolean.
 	 */
 	public boolean bool() throws JsonParserException {
-		if (token == JsonTokener.TOKEN_TRUE) {
+		if (token == JsonTokener.TOKEN_TRUE)
 			return true;
-		}
-		else if (token == JsonTokener.TOKEN_FALSE) {
+		else if (token == JsonTokener.TOKEN_FALSE)
 			return false;
-		}
-		else {
+		else
 			throw createTokenMismatchException(JsonTokener.TOKEN_TRUE, JsonTokener.TOKEN_FALSE);
-		}
 	}
 
-	/*
+	/**
 	 * Parses the current value as a {@link Number}.
 	 */
 	public Number number() throws JsonParserException {
-		if (token == JsonTokener.TOKEN_NULL) {
+		if (token == JsonTokener.TOKEN_NULL)
 			return null;
-		}
 		return new JsonLazyNumber(tokener.reusableBuffer.toString(), tokener.isDouble);
 	}
 
-	/*
+	/**
 	 * Parses the current value as a long.
 	 */
 	public long longVal() throws JsonParserException {
@@ -246,7 +235,7 @@ public final class JsonReader {
 		return tokener.isDouble ? (long)Double.parseDouble(s) : Long.parseLong(s);
 	}
 
-	/*
+	/**
 	 * Parses the current value as an integer.
 	 */
 	public int intVal() throws JsonParserException {
@@ -254,7 +243,7 @@ public final class JsonReader {
 		return tokener.isDouble ? (int)Double.parseDouble(s) : Integer.parseInt(s);
 	}
 
-	/*
+	/**
 	 * Parses the current value as a float.
 	 */
 	public float floatVal() throws JsonParserException {
@@ -262,7 +251,7 @@ public final class JsonReader {
 		return Float.parseFloat(s);
 	}
 
-	/*
+	/**
 	 * Parses the current value as a double.
 	 */
 	public double doubleVal() throws JsonParserException {
@@ -270,7 +259,7 @@ public final class JsonReader {
 		return Double.parseDouble(s);
 	}
 
-	/*
+	/**
 	 * Advance to the next value in this array or object. If no values remain,
 	 * return to the parent array or object.
 	 * 
@@ -288,37 +277,32 @@ public final class JsonReader {
 		if (inObject) {
 			if (token == JsonTokener.TOKEN_OBJECT_END) {
 				inObject = states.get(--stateIndex);
-				first = false;  // fixed empty object:  {"a" : { }}
+				first = false;
 				return false;
 			}
 			
 			if (!first) {
-				if (token != JsonTokener.TOKEN_COMMA) {
+				if (token != JsonTokener.TOKEN_COMMA)
 					throw createTokenMismatchException(JsonTokener.TOKEN_COMMA, JsonTokener.TOKEN_OBJECT_END);
-				}
 				token = tokener.advanceToToken();
 			}
 
-			if (token != JsonTokener.TOKEN_STRING) {
+			if (token != JsonTokener.TOKEN_STRING)
 				throw createTokenMismatchException(JsonTokener.TOKEN_STRING);
-			}
 			key.setLength(0);
 			key.append(tokener.reusableBuffer); // reduce string garbage 
-			if ((token = tokener.advanceToToken()) != JsonTokener.TOKEN_COLON) {
+			if ((token = tokener.advanceToToken()) != JsonTokener.TOKEN_COLON)
 				throw createTokenMismatchException(JsonTokener.TOKEN_COLON);
-			}
 			token = tokener.advanceToToken();
-		} 
-		else {
+		} else {
 			if (token == JsonTokener.TOKEN_ARRAY_END) {
 				inObject = states.get(--stateIndex);
-				first = false;  // fixed empty array:  {"a" : [ ], "b" : 12}
+				first = false;
 				return false;
 			}
 			if (!first) {
-				if (token != JsonTokener.TOKEN_COMMA) {
+				if (token != JsonTokener.TOKEN_COMMA)
 					throw createTokenMismatchException(JsonTokener.TOKEN_COMMA, JsonTokener.TOKEN_ARRAY_END);
-				}
 				token = tokener.advanceToToken();
 			}
 		}
@@ -326,27 +310,19 @@ public final class JsonReader {
 		if (token != JsonTokener.TOKEN_NULL && token != JsonTokener.TOKEN_STRING
 				&& token != JsonTokener.TOKEN_NUMBER && token != JsonTokener.TOKEN_TRUE
 				&& token != JsonTokener.TOKEN_FALSE && token != JsonTokener.TOKEN_OBJECT_START
-				&& token != JsonTokener.TOKEN_ARRAY_START) {
+				&& token != JsonTokener.TOKEN_ARRAY_START)
 			throw createTokenMismatchException(JsonTokener.TOKEN_NULL, JsonTokener.TOKEN_STRING,
 					JsonTokener.TOKEN_NUMBER, JsonTokener.TOKEN_TRUE, JsonTokener.TOKEN_FALSE,
 					JsonTokener.TOKEN_OBJECT_START, JsonTokener.TOKEN_ARRAY_START);
-		}
+
 		first = false;
 		
 		return true;
 	}
-
+	
 	private JsonParserException createTokenMismatchException(int... t) {
-		final String expected = t.length == 1
-									? JsonTokener.TOKEN_SYMBOL[t[0]]
-									: Arrays.stream(t)
-											.mapToObj(s -> JsonTokener.TOKEN_SYMBOL[s])
-											.collect(Collectors.toList())
-											.toString();
-		
-		return tokener.createParseException(
-					null, 
-					"token mismatch (expected " + expected + ", was " + JsonTokener.TOKEN_SYMBOL[token] + ")",
-					true);
+		return tokener.createParseException(null, "token mismatch (expected " + Arrays.toString(t)
+						+ ", was " + token + ")",
+				true);
 	}
 }

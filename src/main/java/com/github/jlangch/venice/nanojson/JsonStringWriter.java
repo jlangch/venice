@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -42,7 +42,7 @@ public final class JsonStringWriter extends JsonWriterBase<JsonStringWriter> {
 		super(new StringBuilder(), indent);
 	}
 
-	/*
+	/**
 	 * Completes this JSON writing session and returns the internal representation as a {@link String}.
 	 */
 	public String done() {

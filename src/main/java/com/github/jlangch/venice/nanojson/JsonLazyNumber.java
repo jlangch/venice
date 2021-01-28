@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2011 The nanojson Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -13,14 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.github.jlangch.venice.nanojson;
 
-/**
+/*
  * Modified by Venice 12.05.2019
  *  - made this class (JsonLazyNumber) public
  *  - added function isDouble()
  *  - added function bigDecimalValue()
  */
-package com.github.jlangch.venice.nanojson;
 
 import java.math.BigDecimal;
 
@@ -32,7 +32,7 @@ public class JsonLazyNumber extends Number {
 	private String value;
 	private boolean isDouble;
 
-	public JsonLazyNumber(String number, boolean isDoubleValue) {
+	JsonLazyNumber(String number, boolean isDoubleValue) {
 		this.value = number;
 		this.isDouble = isDoubleValue;
 	}
@@ -65,7 +65,7 @@ public class JsonLazyNumber extends Number {
 		return isDouble;
 	}
 
-	/*
+	/**
 	 * Avoid serializing {@link JsonLazyNumber}.
 	 */
 	private Object writeReplace() {
