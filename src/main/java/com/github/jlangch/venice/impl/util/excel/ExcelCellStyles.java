@@ -66,6 +66,7 @@ public class ExcelCellStyles {
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
 			final VerticalAlignment vAlign,
+			final Short rotation,
 			final BorderStyle borderTopStyle,
 			final BorderStyle borderRightStyle,
 			final BorderStyle borderBottomStyle,
@@ -99,6 +100,9 @@ public class ExcelCellStyles {
 		if (vAlign != null) {
 			style.setVerticalAlignment(vAlign);
 		}
+		if (rotation != null) {
+			style.setRotation(rotation);
+		}
 		if (borderTopStyle != null) {
 			style.setBorderTop(borderTopStyle);
 		}
@@ -123,6 +127,7 @@ public class ExcelCellStyles {
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
 			final VerticalAlignment vAlign,
+			final Short rotation,
 			final BorderStyle borderTopStyle,
 			final BorderStyle borderRightStyle,
 			final BorderStyle borderBottomStyle,
@@ -164,6 +169,9 @@ public class ExcelCellStyles {
 		if (vAlign != null) {
 			style.setVerticalAlignment(vAlign);
 		}
+		if (rotation != null) {
+			style.setRotation(rotation);
+		}
 		if (borderTopStyle != null) {
 			style.setBorderTop(borderTopStyle);
 		}
@@ -191,7 +199,7 @@ public class ExcelCellStyles {
 			.filter(e -> e.getValue() != null)
 			.forEach(e -> registerCellFormat(
 								e.getKey(), e.getValue(), null, (Short)null, 
-								null, null, null, null, null, null, null));	
+								null, null, null, null, null, null, null, null));	
 	}
 
 	private Map<String,String> getStandardFormats() {

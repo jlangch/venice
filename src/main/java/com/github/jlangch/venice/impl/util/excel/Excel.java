@@ -225,7 +225,7 @@ public class Excel implements Closeable {
 
 	public void registerCellFormat(final String id, final String format) {
 		registerCellFormat(
-				id, format, null, (Short)null, null, null, null,
+				id, format, null, (Short)null, null, null, null, (Short)null, 
 				null, null, null, null);
 	}
 
@@ -237,13 +237,14 @@ public class Excel implements Closeable {
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
 			final VerticalAlignment vAlign,
+			final Short rotation,
 			final BorderStyle borderTopStyle,
 			final BorderStyle borderRightStyle,
 			final BorderStyle borderBottomStyle,
 			final BorderStyle borderLeftStyle
 	) {
 		cellDataStyles.registerCellFormat(
-				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign,
+				id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign, rotation,
 				borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 	}
 
@@ -255,13 +256,14 @@ public class Excel implements Closeable {
 			final Boolean wrapText,
 			final HorizontalAlignment hAlign,
 			final VerticalAlignment vAlign,
+			final Short rotation,
 			final BorderStyle borderTopStyle,
 			final BorderStyle borderRightStyle,
 			final BorderStyle borderBottomStyle,
 			final BorderStyle borderLeftStyle
 	) {
 		cellDataStyles.registerCellFormat(
-				id, format, fontRefName, bgColor, wrapText, hAlign, vAlign,
+				id, format, fontRefName, bgColor, wrapText, hAlign, vAlign, rotation,
 				borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 	}
 	

@@ -21,6 +21,9 @@
 
 ;;;; XChart
 
+;;;; Required 3rd party libraries
+;;;;   org.knowm.xchart:xchart:3.8.0
+
 ;;;; Thanks to Jean Niklas L'orange and his clojure xchart project
 ;;;; (https://github.com/hypirion/clj-xchart). Venice's xchart
 ;;;; builds heavily on Jean Niklas' smart work.

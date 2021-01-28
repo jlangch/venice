@@ -13,8 +13,7 @@ and this project adheres to
 
 ### Added
 
-- 24-bit color support to Excel builder
-- cell border support to Excel builder
+- support for 24-bit colors, cell border, and cell rotation to Excel builder
 
 
 

@@ -903,6 +903,7 @@
         wrap-text b         - wrap text, e.g. true, false
         h-align e           - horizontal alignment {:left, :center, :right}
         v-align e           - vertical alignment {:top, :middle, :bottom}
+        rotation r          - rotation angle [degree], e.g. 45
         border-top s        - border top style, e.g. :thin
         border-right s      - border right style, e.g. :none
         border-bottom s     - border bottom style, e.g. :thin
@@ -926,6 +927,7 @@
             (excel/add-style wbook :header { :font :header
                                              :bg-color :GREY_25_PERCENT
                                              :h-align :center
+                                             :rotation 0
                                              :border-top :thin
                                              :border-bottom :thin })
             (excel/add-style wbook :weight { :format, "#,##0.0"
@@ -980,6 +982,7 @@
                     (str "Invalid vertical alignment "
                          align
                          ". Use one of :top, :middle, or :bottom")))))
+      (when-let [x (:rotation options)]  (. builder :rotation x))
       (when-let [x (:border-top options)]
         (. builder :borderTopStyle (map-border-style x)))
       (when-let [x (:border-right options)]

@@ -119,6 +119,11 @@ public class ExcelCellStyleBuilder {
 		this.vAlign = VerticalAlignment.BOTTOM;
 		return this;
 	}
+	
+	public ExcelCellStyleBuilder rotation(final short rotation) {
+		this.rotation = rotation;
+		return this;
+	}
 
 	public ExcelCellStyleBuilder borderTopStyle(final BorderStyle style) {
 		this.borderTopStyle = style;
@@ -143,17 +148,17 @@ public class ExcelCellStyleBuilder {
 	public ExcelBuilder end() {
 		if (bgColorIndex != null) {
 			managedExcel.registerCellFormat(
-					id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign,
+					id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign, rotation,
 					borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 		}
 		else if (bgColor != null) {
 			managedExcel.registerCellFormat(
-					id, format, fontRefName, bgColor, wrapText, hAlign, vAlign,
+					id, format, fontRefName, bgColor, wrapText, hAlign, vAlign, rotation,
 					borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 		}
 		else {
 			managedExcel.registerCellFormat(
-					id, format, fontRefName, (Short)null, wrapText, hAlign, vAlign,
+					id, format, fontRefName, (Short)null, wrapText, hAlign, vAlign, rotation,
 					borderTopStyle, borderRightStyle, borderBottomStyle, borderLeftStyle);
 		}
 		
@@ -171,6 +176,7 @@ public class ExcelCellStyleBuilder {
 	private Boolean wrapText;
 	private HorizontalAlignment hAlign;
 	private VerticalAlignment vAlign;
+	private Short rotation;
 	private BorderStyle borderTopStyle;
 	private BorderStyle borderRightStyle;
 	private BorderStyle borderBottomStyle;
