@@ -18,6 +18,7 @@
  * Modified by Venice 12.05.2019
  *  - made this class (JsonLazyNumber) public
  *  - added function isDouble()
+ *  - added function bigDecimalValue()
  */
 package com.github.jlangch.venice.nanojson;
 

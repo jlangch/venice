@@ -870,7 +870,8 @@
                                         (string? x)  (. builder :colorHtml x)
                                         (keyword? x) (. builder :color (x colors))
                                         (long? x)    (. builder :color x))
-                                        :else (. :VncException :new "Invalid font color"))
+                                        :else        (. :VncException :new
+                                                        "Invalid font color"))
 
       (. builder :end)
       builder)))
@@ -955,15 +956,18 @@
     { :pre [(instance-of? :ExcelBuilder writer)
             (keyword? style-id)] }
     (let [builder (. writer :withCellStyle (name style-id))]
-      (when-let [x (:format options)]    (. builder :format x))
-      (when-let [x (:font options)]      (. builder :font x))
+      (when-let [x (:format options)]
+        (. builder :format x))
+      (when-let [x (:font options)]
+        (. builder :font x))
       (when-let [x (:bg-color options)]
         (cond
           (string? x)  (. builder :bgColorHtml x)
           (keyword? x) (. builder :bgColor (x colors))
           (long? x)    (. builder :bgColor x))
-          :else (. :VncException :new "Invalid style bg color"))
-      (when-let [x (:wrap-text options)] (. builder :wrapText))
+          :else        (. :VncException :new "Invalid style bg color"))
+      (when-let [x (:wrap-text options)]
+        (. builder :wrapText))
       (when-let [x (:h-align options)]
         (case x
           :left     (. builder :hAlignLeft)
@@ -982,7 +986,8 @@
                     (str "Invalid vertical alignment "
                          align
                          ". Use one of :top, :middle, or :bottom")))))
-      (when-let [x (:rotation options)]  (. builder :rotation x))
+      (when-let [x (:rotation options)]
+        (. builder :rotation x))
       (when-let [x (:border-top options)]
         (. builder :borderTopStyle (map-border-style x)))
       (when-let [x (:border-right options)]
@@ -1137,9 +1142,8 @@
     (bytebuf? source)                   (. :ExcelReader :open source)
     (instance-of? :File source)         (. :ExcelReader :open source)
     (instance-of? :InputStream source)  (. :ExcelReader :open source)
-
     :else (throw (. :VncException :new
-              (str "Invalid Excel open source " (type source) )))))
+                    (str "Invalid Excel open source " (type source) )))))
 
 
 (defn
@@ -1206,9 +1210,8 @@
   (cond
     (string? s)  (. wbook :getSheet s)
     (long? s)    (. wbook :getSheetAt s)
-
     :else (throw (. :VncException :new
-              (str "Invalid Excel sheet reference type " (type s))))))
+                    (str "Invalid Excel sheet reference type " (type s))))))
 
 
 (defn

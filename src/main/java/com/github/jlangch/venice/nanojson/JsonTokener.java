@@ -14,13 +14,6 @@
  * the License.
  */
 
-/**
- * Modified by Venice 12.05.2019
- *  - added function getLinePosition()
- *  - added function getCharPosition()
- *  - added function getCharOffset()
- */
-
 package com.github.jlangch.venice.nanojson;
 
 import java.io.BufferedInputStream;
