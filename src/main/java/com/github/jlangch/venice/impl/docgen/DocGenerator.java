@@ -2490,7 +2490,9 @@ public class DocGenerator {
 			Collections.unmodifiableList(new ArrayList<>());
 	
 	private static final int CROSSREF_MAX_LEN = 145;
-	private static final String IDENT_ENUM = "\u00a0\u00a0\u00a0\u00a0\u2022\u00a0";
+	private static final char NON_BLOCKING_SPACE = '\u00a0';
+	private static final char BULLET = '\u2022';
+	private static final String IDENT_ENUM = StringUtil.repeat(NON_BLOCKING_SPACE, 4) + BULLET + NON_BLOCKING_SPACE;
 	
 	private final Map<String,String> idMap = new HashMap<>();
 	
