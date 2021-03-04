@@ -192,19 +192,30 @@ public class JavaInteropUtil {
 		}
 		catch(JavaMethodInvocationException ex) {
 			Throwable cause = ex.getCause();
-			if (cause != null && cause instanceof SecurityException) {
-				throw new SecurityException(String.format(
-						"%s. %s", 
-						cause.getMessage(),
-						ErrorMessage.buildErrLocation(args)));
-			}
-			if (cause != null && cause instanceof InvocationTargetException) {
-				cause = cause.getCause();
-				if (cause != null && cause instanceof SecurityException) {
+			if (cause != null) {
+				if (cause instanceof SecurityException) {
 					throw new SecurityException(String.format(
 							"%s. %s", 
 							cause.getMessage(),
 							ErrorMessage.buildErrLocation(args)));
+				}
+				else if (cause instanceof InvocationTargetException) {
+					cause = cause.getCause();
+					if (cause != null) {
+						if (cause instanceof SecurityException) {
+							throw new SecurityException(String.format(
+									"%s. %s", 
+									cause.getMessage(),
+									ErrorMessage.buildErrLocation(args)));
+						}
+
+						throw new JavaMethodInvocationException(
+								String.format(
+									"%s. %s", 
+									ex.getMessage(),
+									ErrorMessage.buildErrLocation(args)),
+								cause);
+					}
 				}
 			}
 			
@@ -213,8 +224,7 @@ public class JavaInteropUtil {
 					String.format(
 						"%s. %s", 
 						ex.getMessage(),
-						ErrorMessage.buildErrLocation(args)),
-					ex);
+						ErrorMessage.buildErrLocation(args)));
 		}
 		catch(SecurityException ex) {
 			throw new SecurityException(String.format(

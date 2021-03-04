@@ -47,6 +47,4 @@ public class JavaInterop_filter_Test {
 		
 		assertEquals("(pete, 48, 1970-01-12)", venice.eval(script));
 	}
-
-
 }
