@@ -248,6 +248,7 @@ java {
 javadoc {
   exclude "com/github/jlangch/venice/impl/**"
   exclude "com/github/jlangch/venice/examples/**"
+  exclude "com/github/jlangch/venice/nanojson/**"
   source = sourceSets.main.allJava
 }
 
