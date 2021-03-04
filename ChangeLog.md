@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- the option to pass arguments for opening MacOS apps. E.g.: (shell/open-macos-app "TextEdit" "example.txt")
 
 
 

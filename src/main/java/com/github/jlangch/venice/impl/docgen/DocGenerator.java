@@ -1139,6 +1139,7 @@ public class DocGenerator {
 		final DocSection tools = new DocSection("Shell Tools", "system.shell.tools");
 		all.addSection(tools);
 		tools.addItem(getDocItem("sh/open", false));
+		tools.addItem(getDocItem("sh/pwd", false));
 				
 		return section;
 	}

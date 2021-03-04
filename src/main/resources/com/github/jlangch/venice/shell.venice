@@ -101,17 +101,22 @@
 
 
 (defn
-  ^{ :arglists '("(open-macos-app name)")
+  ^{ :arglists '("(open-macos-app name & args)")
      :doc "Opens a Mac OSX app."
-     :examples '("""(shell/open-macos-app "ArangoDB")""")
+     :examples '(
+       """(shell/open-macos-app "Calendar")""",
+       """(shell/open-macos-app "Maps")""",
+       """(shell/open-macos-app "TextEdit" "example.txt")""")
      :see-also '("shell/open") }
 
-  open-macos-app [name]
+  open-macos-app [name & args]
 
   (when-not (os-type? :mac-osx)
     (throw (venice-exception "Can only open a Mac OSX applicaton on Mac OSX!")))
 
-  (sh "/usr/bin/open" "-a" name))
+  (if (empty? args)
+    (sh "/usr/bin/open" "-a" name)
+    (apply sh "/usr/bin/open" "-a" name args)))
 
 
 (defn

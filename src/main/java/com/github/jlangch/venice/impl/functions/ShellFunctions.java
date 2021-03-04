@@ -76,7 +76,7 @@ public class ShellFunctions {
 					.meta()
 					.arglists("(sh & args)")		
 					.doc(
-						"Passes the given strings to Runtime.exec() to launch a sub-process.\n\n" +
+						"Launches a new sub-process.\n\n" +
 						"Options are\n" + 
 						"  :in        may be given followed by input source as InputStream,\n" + 
 						"             Reader, File, ByteBuf, or String, to be fed to the\n" + 
@@ -175,7 +175,7 @@ public class ShellFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
-	public static VncFunction sh_open =
+	public static VncFunction open =
 		new VncFunction(
 				"sh/open",
 				VncFunction
@@ -221,6 +221,33 @@ public class ShellFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 	
+	public static VncFunction pwd =
+		new VncFunction(
+				"sh/pwd",
+				VncFunction
+					.meta()
+					.arglists("(sh/pwd)")
+					.doc(
+						"Returns the current working directory.\n\n" +
+						"Note: \n" +
+						"You can't change the current working directory of the Java VM but " +
+						"if you were to launch another process using (sh & args) you can " +
+						"specify the working directory for the new spawned process.")
+					.examples("(sh/pwd)")
+					.seeAlso("sh")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+				
+				sandboxFunctionCallValidation();
+
+				return new VncJavaObject(new File(System.getProperty("user.dir")));
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 			
 	///////////////////////////////////////////////////////////////////////////
 	// Util
@@ -528,6 +555,7 @@ public class ShellFunctions {
 			new VncHashMap
 					.Builder()
 					.add(sh)
-					.add(sh_open)
+					.add(open)
+					.add(pwd)
 					.toMap();	
 }
