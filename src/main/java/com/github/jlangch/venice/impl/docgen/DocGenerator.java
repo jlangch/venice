@@ -2105,8 +2105,6 @@ public class DocGenerator {
 		geoip.addItem(getDocItem("geoip/ip-to-country-loc-resolver", false));
 		geoip.addItem(getDocItem("geoip/ip-to-city-loc-resolver", false));
 		geoip.addItem(getDocItem("geoip/ip-to-city-loc-resolver-mem-optimized", false));
-		geoip.addItem(getDocItem("geoip/country-to-location-resolver", false));
-		geoip.addItem(getDocItem("geoip/map-location-to-numerics", false));
 		
 		final DocSection db = new DocSection("Databases", id());
 		all.addSection(db);
@@ -2125,6 +2123,8 @@ public class DocGenerator {
 		all.addSection(util);
 		util.addItem(getDocItem("geoip/build-maxmind-country-db-url"));
 		util.addItem(getDocItem("geoip/build-maxmind-city-db-url"));
+		util.addItem(getDocItem("geoip/map-location-to-numerics"));
+		util.addItem(getDocItem("geoip/country-to-location-resolver", false));
 
 		return section;
 	}
