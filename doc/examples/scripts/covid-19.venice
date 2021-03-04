@@ -33,17 +33,18 @@
   ;; https://www.worldometers.info/population/europe/
   (def country-config
     (ordered-map
-      "Switzerland" { :population  8725700  :color :x-green      :stroke :solid     }
-      "Romania"     { :population 19372000  :color :x-blue       :stroke :solid     }
-      "Austria"     { :population  8955100  :color :x-purple     :stroke :solid     }
-      "Hungary"     { :population  9684600  :color :x-orange     :stroke :solid     }
-      "Germany"     { :population 83517000  :color :x-red        :stroke :solid     }
-      "Italy"       { :population 60550000  :color :x-pink       :stroke :solid     }
-      "France"      { :population 65129800  :color :x-light-blue :stroke :solid     }
-      "Sweden"      { :population 10036300  :color :x-dark-gray  :stroke :solid     }
-      "Greece"      { :population 10473400  :color :x-purple     :stroke :dash-dash }
-      "Spain"       { :population 46736700  :color :x-red        :stroke :dash-dash }
-      "Quarantine"  { :population        0  :color :x-light-gray :stroke :solid     } ))
+      "Switzerland"    { :population  8725700  :color :x-green      :stroke :solid }
+      "Romania"        { :population 19372000  :color :x-blue       :stroke :solid }
+      "Austria"        { :population  8955100  :color :x-purple     :stroke :solid }
+      "Hungary"        { :population  9684600  :color :x-orange     :stroke :solid }
+      "Germany"        { :population 83517000  :color :x-red        :stroke :solid }
+      "Italy"          { :population 60550000  :color :x-pink       :stroke :solid }
+      "France"         { :population 65129800  :color :x-light-blue :stroke :solid }
+      "Sweden"         { :population 10036300  :color :x-dark-gray  :stroke :solid }
+      "Greece"         { :population 10473400  :color :x-dark-pink  :stroke :solid }
+      "Spain"          { :population 46736700  :color :x-dark-green :stroke :solid }
+      "UK"             { :population 67886011  :color :x-yellow     :stroke :solid }
+      "Quarantine"     { :population        0  :color :x-light-gray :stroke :solid } ))
 
   ;; definitions for case data statistics
   (def sample-days 7)
@@ -193,17 +194,18 @@
 
   (defn calc-country-series [country-data country-config]
     (let [country-series (partial series country-data country-config)]
-      (ordered-map "Switzerland" (country-series "Switzerland")
-                   "Romania"     (country-series "Romania")
-                   "Austria"     (country-series "Austria")
-                   "Hungary"     (country-series "Hungary")
-                   "Germany"     (country-series "Germany")
-                   "Italy"       (country-series "Italy")
-                   "France"      (country-series "France")
-                   "Sweden"      (country-series "Sweden")
-                   "Spain"       (country-series "Spain")
-                   "Greece"      (country-series "Greece")
-                   "Quarantine"  (country-series "Quarantine"))))
+      (ordered-map "Switzerland"    (country-series "Switzerland")
+                   "Romania"        (country-series "Romania")
+                   "Austria"        (country-series "Austria")
+                   "Hungary"        (country-series "Hungary")
+                   "Germany"        (country-series "Germany")
+                   "Italy"          (country-series "Italy")
+                   "France"         (country-series "France")
+                   "Sweden"         (country-series "Sweden")
+                   "Spain"          (country-series "Spain")
+                   "Greece"         (country-series "Greece")
+                   "United Kingdom" (country-series "UK")
+                   "Quarantine"     (country-series "Quarantine"))))
 
   (defn remove-quarantine-series [series]
     (dissoc series (if quarantine-show nil "Quarantine")))

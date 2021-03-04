@@ -32,17 +32,14 @@ public class DataRecord {
 	
 	public static DataRecord of(final Map<String,Object> fields) {
 		final DataRecord ge = new DataRecord();
-		fields.forEach((k,v) -> ge.put(k, v));
+		fields.forEach((k,v) -> ge.fields.put(k, v));
 		return ge;
-	}
-	
-	public void put(final String fieldName, final Object fieldValue) {
-		fields.put(fieldName, fieldValue);
 	}
 
 	public Object get(final String fieldName) {
 		return fields.get(fieldName);
 	}
 
+	
 	final private Map<String,Object> fields = new HashMap<>();
 }

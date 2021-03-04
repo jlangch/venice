@@ -60,6 +60,8 @@
 (import :java.net.Inet4Address)
 (import :java.net.Inet6Address)
 
+
+
 ;; MaxMind GEO IP database download URL.
 ;;
 ;; Placeholders:
@@ -76,6 +78,7 @@
 ;;      https://github.com/google/dspl/tree/master/samples/google/canonical
 (def geoip/google-country-url
        "https://raw.githubusercontent.com/google/dspl/master/samples/google/canonical/countries.csv")
+
 
 (def geoip/stats (atom {}))
 
@@ -101,15 +104,20 @@
            """
            (do
              (def rv (geoip/ip-to-country-loc-resolver
-                                    "resources/geoip-country.zip"
+                                    "./geoip-country.zip"
                                     (geoip/download-google-country-db)))
 
              (rv "91.223.55.1")) ;; => {:ip "91.223.55.6"
                                  ;;     :loc ["51.919438" "19.145136"]
                                  ;;     :country-name "Poland"
                                  ;;     :country-iso "PL"}
-           """
-           ) }
+           """)
+      :see-also '(
+           "geoip/download-maxmind-db-to-zipfile"
+           "geoip/ip-to-country-resolver"
+           "geoip/ip-to-city-loc-resolver"
+           "geoip/ip-to-city-loc-resolver-mem-optimized"
+           "geoip/country-to-location-resolver") }
 
   geoip/ip-to-country-loc-resolver [geoip-zip location-csv]
 
@@ -152,7 +160,7 @@
      :examples '(
            """
            (do
-             (def rv (geoip/ip-to-city-loc-resolver "resources/geoip-city.zip"))
+             (def rv (geoip/ip-to-city-loc-resolver "./geoip-city.zip"))
 
              (rv "192.241.235.46")) ;; => {:ip "192.241.235.46"
                                     ;;     :loc ["37.7353" "-122.3732"]
@@ -160,8 +168,13 @@
                                     ;;     :country-iso "US"
                                     ;;     :region "California"
                                     ;;     :city "San Francisco"}
-           """
-           ) }
+           """)
+      :see-also '(
+           "geoip/download-maxmind-db-to-zipfile"
+           "geoip/ip-to-country-resolver"
+           "geoip/ip-to-country-loc-resolver"
+           "geoip/ip-to-city-loc-resolver-mem-optimized"
+           "geoip/country-to-location-resolver") }
 
   geoip/ip-to-city-loc-resolver [geoip-zip]
 
@@ -211,7 +224,7 @@
        :examples '(
              """
              (do
-               (def rv (geoip/ip-to-city-loc-resolver-mem-optimized "resources/geoip-city.zip"))
+               (def rv (geoip/ip-to-city-loc-resolver-mem-optimized "./geoip-city.zip"))
 
                (rv "192.241.235.46")) ;; => {:ip "192.241.235.46"
                                       ;;     :loc ["37.7353" "-122.3732"]
@@ -219,8 +232,13 @@
                                       ;;     :country-iso "US"
                                       ;;     :region "California"
                                       ;;     :city "San Francisco"}
-             """
-             ) }
+             """)
+        :see-also '(
+             "geoip/download-maxmind-db-to-zipfile"
+             "geoip/ip-to-country-resolver"
+             "geoip/ip-to-country-loc-resolver"
+             "geoip/ip-to-city-loc-resolver"
+             "geoip/country-to-location-resolver") }
 
     geoip/ip-to-city-loc-resolver-mem-optimized [geoip-zip]
 
@@ -260,8 +278,13 @@
            (do
              (def rv (geoip/country-to-location-resolver geoip/download-google-country-db))
              (rv "PL")) ;; => ["51.919438", "19.145136"]
-           """
-           ) }
+           """)
+      :see-also '(
+           "geoip/download-maxmind-db-to-zipfile"
+           "geoip/ip-to-country-resolver"
+           "geoip/ip-to-country-loc-resolver"
+           "geoip/ip-to-city-loc-resolver"
+           "geoip/ip-to-city-loc-resolver-mem-optimized") }
 
   geoip/country-to-location-resolver [location-csv]
 
@@ -292,11 +315,16 @@
      :examples '(
            """
            (do
-             (def rv (geoip/ip-to-country-resolver "resources/geoip-country.zip"))
+             (def rv (geoip/ip-to-country-resolver "./geoip-country.zip"))
              (rv "91.223.55.1")) ;; => { :country-name "Poland"
                                  ;;      :country-iso "PL" }
-           """
-           ) }
+           """)
+      :see-also '(
+           "geoip/download-maxmind-db-to-zipfile"
+           "geoip/ip-to-country-loc-resolver"
+           "geoip/ip-to-city-loc-resolver"
+           "geoip/ip-to-city-loc-resolver-mem-optimized"
+           "geoip/country-to-location-resolver") }
 
   geoip/ip-to-country-resolver [geoip-zip]
 
@@ -328,7 +356,7 @@
           The maxmind-countries are optional and map the geoname-id to country \
           data.
 
-          Returns a trie datastructure with the CIDR address as the key and a
+          Returns a trie datastructure with the CIDR address as the key and a \
           map with country data as the value.
 
           maxmind-countries:
@@ -344,18 +372,31 @@
           """
      :examples '(
            """
-           (geoip/parse-maxmind-country-ip-db
-               :IPv4
-               "resources/geoip-country.zip"
-               nil)
+           (do
+             (load-module :geoip)
+             (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
+                                                   :country
+                                                   "YOUR-MAXMIND-LIC-KEY")
+             (geoip/parse-maxmind-country-ip-db
+                 :IPv4
+                 "./geoip-country.zip"
+                 nil))
            """,
            """
-           (geoip/parse-maxmind-country-ip-db
-               :IPv6
-               "resources/geoip-country.zip"
-               (geoip/parse-maxmind-country-db "resources/geoip-country.zip"))
-           """,
-           ) }
+           (do
+             (load-module :geoip)
+             (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
+                                                   :country
+                                                   "YOUR-MAXMIND-LIC-KEY")
+             (geoip/parse-maxmind-country-ip-db
+                 :IPv6
+                 "./geoip-country.zip"
+                 (geoip/parse-maxmind-country-db "./geoip-country.zip")))
+           """)
+      :see-also '(
+           "geoip/download-maxmind-db-to-zipfile"
+           "geoip/parse-maxmind-country-db"
+           "geoip/parse-maxmind-city-ip-db") }
   ;; Format MaxMind country IP blocks DB:
   ;;
   ;; network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider
@@ -391,7 +432,7 @@
           The maxmind-countries are optional and map the geoname-id to country \
           data.
 
-          Returns a trie datastructure with the CIDR address as the key and a
+          Returns a trie datastructure with the CIDR address as the key and a \
           map with city/country data as the value.
 
           maxmind-cities:
@@ -402,18 +443,31 @@
           """
      :examples '(
            """
-           (geoip/parse-maxmind-city-ip-db
-               :IPv4
-               "resources/geoip-city.zip"
-               nil)
+           (do
+             (load-module :geoip)
+             (geoip/download-maxmind-db-to-zipfile "./geoip-city.zip"
+                                                   :city
+                                                   "YOUR-MAXMIND-LIC-KEY")
+             (geoip/parse-maxmind-city-ip-db
+                 :IPv4
+                 "./geoip-city.zip"
+                 nil))
            """,
            """
-           (geoip/parse-maxmind-city-ip-db
-               :IPv6
-               "resources/geoip-country.zip"
-               (geoip/parse-maxmind-city-db "resources/geoip-city.zip"))
-           """,
-           ) }
+           (do
+             (load-module :geoip)
+             (geoip/download-maxmind-db-to-zipfile "./geoip-city.zip"
+                                                   :city
+                                                   "YOUR-MAXMIND-LIC-KEY")
+             (geoip/parse-maxmind-city-ip-db
+                 :IPv6
+                 "./geoip-city.zip"
+                 (geoip/parse-maxmind-city-db "./geoip-city.zip")))
+           """)
+      :see-also '(
+           "geoip/download-maxmind-db-to-zipfile"
+           "geoip/parse-maxmind-city-db"
+           "geoip/parse-maxmind-country-ip-db") }
   ;; Format MaxMind city IP blocks DB:
   ;;
   ;; network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider,postal_code,latitude,longitude,accuracy_radius
@@ -450,12 +504,24 @@
   ^{ :arglists '("(geoip/parse-maxmind-country-db zip)")
      :doc """
           Parses the MaxMind country-location CSV file. Returns a map with \
-          country geoname-id as key and the country data as value.
+          the country geoname-id as key and the country data as value.
 
           Return:
              { "49518" {:country-iso "RW" :country-name "Rwanda"}
                "51537" {:country-iso "SO" :country-name "Somalia"} }
-          """ }
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
+                                                  :country
+                                                  "YOUR-MAXMIND-LIC-KEY")
+            (geoip/parse-maxmind-country-db "./geoip-country.zip"))
+          """)
+     :see-also '(
+          "geoip/download-maxmind-db-to-zipfile"
+          "geoip/parse-maxmind-city-db") }
   ;; format:
   ;;
   ;; geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,is_in_european_union
@@ -483,7 +549,19 @@
                          :region "England"  :city "London"}
               "2661881" {:country-iso "CH" :country-name "Switzerland"
                          :region "Aargau"  :city "Aarau"} }
-          """ }
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/download-maxmind-db-to-zipfile "./geoip-city.zip"
+                                                  :city
+                                                  "YOUR-MAXMIND-LIC-KEY")
+            (geoip/parse-maxmind-city-db "./geoip-city.zip"))
+          """)
+     :see-also '(
+          "geoip/download-maxmind-db-to-zipfile"
+          "geoip/parse-maxmind-country-db") }
   ;; format:
   ;;
   ;; geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,subdivision_1_iso_code,subdivision_1_name,subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,time_zone,is_in_european_union
@@ -504,7 +582,22 @@
 
 (defn
   ^{ :arglists '("(geoip/download-google-country-db-to-csvfile csvfile)")
-     :doc "Downloads the Google country-gps database to the given CSV file." }
+     :doc """
+          Downloads the Google country GPS database to the given CSV file \
+          location. The database holds a mapping from country to location \
+          (latitude/longitude).
+
+          The Google country database URL is defined in the global var \
+          'geoip/google-country-url'.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/download-google-country-db-to-csvfile "./country-gps.csv"))
+          """)
+     :see-also '(
+          "geoip/download-google-country-db") }
 
   geoip/download-google-country-db-to-csvfile [csvfile]
 
@@ -515,9 +608,21 @@
   ^{ :arglists '("(geoip/download-google-country-db)")
      :doc """
           Downloads the Google country database. The database holds a mapping \
-          form country to location (latitude/longitude). Returns the data \
-          as CSV file.
-          """ }
+          from country to location (latitude/longitude).
+
+          The Google country database URL is defined in the global var \
+          'geoip/google-country-url'.
+
+          Returns the downloaded CSV data as a bytebuf.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/download-google-country-db))
+          """)
+     :see-also '(
+          "geoip/download-google-country-db-to-csvfile")  }
 
   geoip/download-google-country-db []
 
@@ -530,8 +635,21 @@
           Downloads the MaxMind country or city GEO IP database to the given \
           ZIP file. The type is either :country or :city.
 
-          The download requires your personal MaxMind license key.
-          """ }
+          The download requires your personal MaxMind license key. The \
+          license to download the free MaxMind GeoLite databases can be \
+          obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
+                                                  :country
+                                                  "YOUR-MAXMIND-LIC-KEY"))
+          """)
+     :see-also '(
+          "geoip/build-maxmind-country-db-url"
+          "geoip/build-maxmind-city-db-url") }
 
   geoip/download-maxmind-db-to-zipfile [zipfile db-type lic-key]
 
@@ -544,8 +662,19 @@
           Downloads the MaxMind country or city GEO IP database. Returns the \
           DB as bytebuffer. The type is either :country or :city.
 
-          The download requires your personal MaxMind license key.
-          """ }
+          The download requires your personal MaxMind license key. The \
+          license to download the free MaxMind GeoLite databases can be \
+          obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/download-maxmind-db :country "YOUR-MAXMIND-LIC-KEY"))
+          """)
+     :see-also '(
+          "geoip/build-maxmind-country-db-url"
+          "geoip/build-maxmind-city-db-url") }
 
   geoip/download-maxmind-db [type lic-key]
 
@@ -561,8 +690,19 @@
           Build the URL for the MaxMind country GEO IP database. The download \
           requires a license key that is sent as part of the URL.
 
-          The download requires your personal MaxMind license key.
-          """ }
+          The download requires your personal MaxMind license key. The \
+          license to download the free MaxMind GeoLite databases can be \
+          obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/build-maxmind-country-db-url "YOUR-MAXMIND-LIC-KEY"))
+          """)
+     :see-also '(
+          "geoip/download-maxmind-db"
+          "geoip/download-maxmind-db-to-zipfile") }
 
   geoip/build-maxmind-country-db-url [lic-key]
 
@@ -573,10 +713,21 @@
 (defn
   ^{ :arglists '("(geoip/build-maxmind-city-db-url lic-key)")
      :doc """
-          Build the URL for the MaxMind city GEO IP database. The download \
-          requires your personal MaxMind license key that is sent as part of \
-          the URL.
-          """ }
+          Build the URL for downloading the MaxMind city GEO IP database.
+
+          The download requires your personal MaxMind license key. The \
+          license to download the free MaxMind GeoLite databases can be \
+          obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/build-maxmind-city-db-url "YOUR-MAXMIND-LIC-KEY"))
+          """)
+     :see-also '(
+          "geoip/download-maxmind-db"
+          "geoip/download-maxmind-db-to-zipfile") }
 
   geoip/build-maxmind-city-db-url [lic-key]
 
@@ -587,11 +738,19 @@
 (defn
   ^{ :arglists '("(map-location-to-numerics loc)")
      :doc """
-          Maps a location to numerical coordinates. A location \
-          is given as a vector of a latitude and a longitude.
-          """ }
+          Maps a location to numerical coordinates. A location is given as \
+          a vector of a latitude and a longitude.
 
-  map-location-to-numerics [loc]
+          Returns a location vector with a numerical latitude and a longitude.
+          """
+    :examples '(
+          """
+          (do
+            (load-module :geoip)
+            (geoip/map-location-to-numerics ["51.919438", "19.145136"]))
+          """) }
+
+  geoip/map-location-to-numerics [loc]
 
   [(double (first loc)) (double (second loc))])
 

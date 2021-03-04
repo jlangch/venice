@@ -92,7 +92,8 @@
         """
      :examples '(
         """(shell/open "img.png")"""
-        """(shell/open "https://www.heise.de/")""") }
+        """(shell/open "https://www.heise.de/")""")
+     :see-also '("shell/open-macos-app") }
 
   open [url]
 
@@ -102,7 +103,8 @@
 (defn
   ^{ :arglists '("(open-macos-app name)")
      :doc "Opens a Mac OSX app."
-     :examples '("""(shell/open-macos-app "ArangoDB")""") }
+     :examples '("""(shell/open-macos-app "ArangoDB")""")
+     :see-also '("shell/open") }
 
   open-macos-app [name]
 
@@ -128,7 +130,8 @@
        "shell/process-handle"
        "shell/process-info"
        "shell/alive?"
-       "shell/kill" ) }
+       "shell/kill"
+       "shell/processes" ) }
 
   pid
 
@@ -261,7 +264,7 @@
         Requires Java 9+.
         """
      :examples '("(shell/alive? 4556)")
-     :see-also '("shell/pid") }
+     :see-also '("shell/pid" "shell/processes") }
 
   alive? [p]
 
@@ -395,7 +398,7 @@
              (shell/parent-process)
              (shell/process-info))
         """)
-     :see-also '("shell/process-info" "shell/pid") }
+     :see-also '("shell/process-info" "shell/pid" "shell/processes") }
 
   parent-process [p]
 
@@ -420,7 +423,7 @@
         """
      :examples '(
         "(shell/kill 4556)")
-     :see-also '("shell/pid", "shell/kill-forcibly") }
+     :see-also '("shell/pid" "shell/kill-forcibly" "shell/processes") }
 
   kill [p]
 
@@ -443,7 +446,7 @@
         """
      :examples '(
         "(shell/kill-forcibly 4556)")
-     :see-also '("shell/pid", "shell/kill") }
+     :see-also '("shell/pid" "shell/kill" "shell/processes") }
 
   kill-forcibly [p]
 
@@ -466,7 +469,7 @@
         """
      :examples '(
         "(shell/wait-for-process-exit 12345 20)")
-     :see-also '("shell/pid", "shell/kill") }
+     :see-also '("shell/pid" "shell/kill" "shell/processes") }
 
   wait-for-process-exit [p timeout]
 

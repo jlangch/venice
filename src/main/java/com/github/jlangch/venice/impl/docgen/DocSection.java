@@ -28,8 +28,39 @@ import java.util.List;
 public class DocSection {
 	
 	public DocSection(final String title, final String id) {
+		this(title, id, (String)null, (String)null);
+	}
+	
+	public DocSection(
+			final String title, 
+			final String id, 
+			final String header, 
+			final String footer
+	) {
 		this.title = title;
 		this.id = id;
+		if (header != null) {
+			this.headers.add(header);
+		}
+		if (footer != null) {
+			this.footers.add(footer);
+		}
+	}
+	
+	public DocSection(
+			final String title, 
+			final String id, 
+			final List<String> headers, 
+			final List<String> footers
+	) {
+		this.title = title;
+		this.id = id;
+		if (headers != null) {
+			this.headers.addAll(headers);
+		}
+		if (footers != null) {
+			this.footers.addAll(footers);
+		}
 	}
 	
 	
@@ -39,6 +70,14 @@ public class DocSection {
 	
 	public String getId() {
 		return id;
+	}
+	
+	public List<String> getHeaders() {
+		return headers;
+	}
+	
+	public List<String> getFooters() {
+		return footers;
 	}
 	
 	public void addSection(final DocSection section) {
@@ -78,6 +117,8 @@ public class DocSection {
 	
 	private final String title;
 	private final String id;
+	private final List<String> headers = new ArrayList<>();
+	private final List<String> footers = new ArrayList<>();
 	
 	private final List<DocSection> sections = new ArrayList<>();	
 	private final List<DocItem> items = new ArrayList<>();

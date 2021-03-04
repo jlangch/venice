@@ -143,9 +143,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xls)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xls")))
@@ -175,9 +175,9 @@
                          {:first "Sue"  :last "Ford"  :age 26 } ]
                  wbook (excel/writer :xlsx)
                  sheet (excel/add-sheet wbook "Sheet 1")]
-             (excel/add-column sheet "First Name" { :data-field :first })
-             (excel/add-column sheet "Last Name" { :data-field :last })
-             (excel/add-column sheet "Age" { :data-field :age })
+             (excel/add-column sheet "First Name" { :field :first })
+             (excel/add-column sheet "Last Name" { :field :last })
+             (excel/add-column sheet "Age" { :field :age })
              (excel/write-items sheet data)
              (excel/auto-size-columns sheet)
              (excel/write->file wbook "sample.xlsx")))
@@ -204,9 +204,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->stream wbook os)))
@@ -232,9 +232,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->bytebuf wbook)))
@@ -322,9 +322,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
@@ -352,9 +352,9 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-item sheet {:first "John" :last "Doe"   :age 28 })
             (excel/write-item sheet {:first "Sue"  :last "Ford"  :age 26 })
             (excel/auto-size-columns sheet)
@@ -382,9 +382,9 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John")
             (excel/write-value sheet 1 2 "Doe")
             (excel/write-value sheet 1 3 28)
@@ -403,9 +403,9 @@
             (excel/add-font wbook :bold { :bold true })
             (excel/add-style wbook :italic { :font :italic })
             (excel/add-style wbook :bold { :font :bold })
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-value sheet 1 1 "John" :italic)
             (excel/write-value sheet 1 2 "Doe"  :italic)
             (excel/write-value sheet 1 3 28     :bold)
@@ -448,9 +448,9 @@
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1"
                                        { :no-header-row true })]
-            (excel/add-column sheet "A" { :data-field :a })
-            (excel/add-column sheet "B" { :data-field :b })
-            (excel/add-column sheet "C" { :data-field :c })
+            (excel/add-column sheet "A" { :field :a })
+            (excel/add-column sheet "B" { :field :b })
+            (excel/add-column sheet "C" { :field :c })
             (excel/write-items sheet data)
             (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
             (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
@@ -470,9 +470,9 @@
                                        { :no-header-row true })]
             (excel/add-font wbook :bold { :bold true })
             (excel/add-style wbook :bold { :font :bold })
-            (excel/add-column sheet "A" { :data-field :a })
-            (excel/add-column sheet "B" { :data-field :b })
-            (excel/add-column sheet "C" { :data-field :c })
+            (excel/add-column sheet "A" { :field :a })
+            (excel/add-column sheet "B" { :field :b })
+            (excel/add-column sheet "C" { :field :c })
             (excel/write-items sheet data)
             (excel/cell-formula sheet 1 3 "SUM(A1,B1)" :bold)
             (excel/cell-formula sheet 2 3 "SUM(A2,B2)" :bold)
@@ -516,9 +516,9 @@
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1"
                                        { :no-header-row true })]
-            (excel/add-column sheet "A" { :data-field :a })
-            (excel/add-column sheet "B" { :data-field :b })
-            (excel/add-column sheet "C" { :data-field :c })
+            (excel/add-column sheet "A" { :field :a })
+            (excel/add-column sheet "B" { :field :b })
+            (excel/add-column sheet "C" { :field :c })
             (excel/write-items sheet data)
             (excel/cell-formula sheet 1 3 (excel/sum-formula sheet 1 1 1 2))
             (excel/cell-formula sheet 2 3 (excel/sum-formula sheet 2 2 1 2))
@@ -555,9 +555,9 @@
                                        { :no-header-row true })
                 addr  #(excel/cell-address sheet %1 %2)
                 sum   #(str "SUM\u0028" %1 "," %2 ")")]
-            (excel/add-column sheet "A" { :data-field :a })
-            (excel/add-column sheet "B" { :data-field :b })
-            (excel/add-column sheet "C" { :data-field :c })
+            (excel/add-column sheet "A" { :field :a })
+            (excel/add-column sheet "B" { :field :b })
+            (excel/add-column sheet "C" { :field :c })
             (excel/write-items sheet data)
             (excel/cell-formula sheet 1 3 (sum (addr 1 1) (addr 1 2)))
             (excel/cell-formula sheet 2 3 (sum (addr 2 1) (addr 2 2)))
@@ -587,9 +587,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
@@ -616,9 +616,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-column sheet 1)
             (excel/auto-size-column sheet 2)
@@ -649,9 +649,9 @@
                           {:first "Sue"  :last "Ford"  :age 26 } ]
                   wbook (excel/writer :xlsx)
                   sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/add-column sheet "First Name" { :field :first })
+              (excel/add-column sheet "Last Name" { :field :last })
+              (excel/add-column sheet "Age" { :field :age })
               (excel/write-items sheet data)
               (excel/auto-size-columns sheet)
               (excel/row-height sheet 2 100)
@@ -685,9 +685,9 @@
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1"
                                        { :no-header-row true })]
-            (excel/add-column sheet "A" { :data-field :a })
-            (excel/add-column sheet "B" { :data-field :b })
-            (excel/add-column sheet "C" { :data-field :c })
+            (excel/add-column sheet "A" { :field :a })
+            (excel/add-column sheet "B" { :field :b })
+            (excel/add-column sheet "C" { :field :c })
             (excel/write-items sheet data)
             (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
             (excel/cell-formula sheet 2 3 "SUM(A2,B2)")
@@ -720,18 +720,18 @@
         Adds a sheet with optional attributes to an Excel.
 
         Options:
-        no-header-row b         - without header row, e.g. true, false
-        default-column-width n  - default column width in points, e.g. 100
-        default-header-style s  - default header style, e.g. :header
-        default-body-style s    - default body style, e.g. :body
-        default-footer-style s  - default footer style, e.g. :footer
-        merged-region r         - merged region [row-from row-to col-from col-to],
-                                  e.g. [1 1 4 10]
-        display-zeros b         - display zeros, e.g. true, false
-                                  Set whether a cell should show 0 (zero) when
-                                  containing zero value. When false, cells with
-                                  zero value appear blank instead of showing
-                                  the number zero.
+        :no-header-row b         - without header row, e.g. true, false
+        :default-column-width n  - default column width in points, e.g. 100
+        :default-header-style s  - default header style, e.g. :header
+        :default-body-style s    - default body style, e.g. :body
+        :default-footer-style s  - default footer style, e.g. :footer
+        :merged-region r         - merged region [row-from row-to col-from col-to],
+                                   e.g. [1 1 4 10]
+        :display-zeros b         - display zeros, e.g. true, false
+                                   Set whether a cell should show 0 (zero) when
+                                   containing zero value. When false, cells with
+                                   zero value appear blank instead of showing
+                                   the number zero.
         """
      :examples '(
         """
@@ -741,9 +741,9 @@
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/add-column sheet "First Name" { :data-field :first })
-            (excel/add-column sheet "Last Name" { :data-field :last })
-            (excel/add-column sheet "Age" { :data-field :age })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
@@ -767,9 +767,9 @@
                                            :default-body-style :body
                                            :default-footer-style :footer
                                            :display-zeros true})]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/add-column sheet "First Name" { :field :first })
+              (excel/add-column sheet "Last Name" { :field :last })
+              (excel/add-column sheet "Age" { :field :age })
               (excel/write-items sheet data)
               (excel/auto-size-column sheet 1)
               (excel/auto-size-column sheet 2)
@@ -821,13 +821,13 @@
         Add font with optional attributes to an Excel.
 
         Options:
-        name s              - font name, e.g. 'Arial'
-        height n            - height in points, e.g. 12
-        bold b              - bold, e.g. true, false
-        italic b            - italic, e.g. true, false
-        color c             - color, either an Excel indexed color or a HTML
-                              color, e.g. :BLUE, "#00FF00"
-                              note: only XLSX supports 24 bit colors
+        :name s              - font name, e.g. 'Arial'
+        :height n            - height in points, e.g. 12
+        :bold b              - bold, e.g. true, false
+        :italic b            - italic, e.g. true, false
+        :color c             - color, either an Excel indexed color or a HTML
+                               color, e.g. :BLUE, "#00FF00"
+                               note: only XLSX supports 24 bit colors
         """
      :examples '(
         """
@@ -845,9 +845,9 @@
             (let [sheet (excel/add-sheet wbook "Sheet 1"
                                          { :no-header-row false
                                            :default-header-style :header })]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Age" { :data-field :age })
+              (excel/add-column sheet "First Name" { :field :first })
+              (excel/add-column sheet "Last Name" { :field :last })
+              (excel/add-column sheet "Age" { :field :age })
               (excel/write-items sheet data)
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx"))))
@@ -891,24 +891,24 @@
         Add a style with optional attributes to an Excel.
 
         Options:
-        format s            - format, e.g. "#0"
-                              default formats:
-                                long,integer: "#0"
-                                float,double: "#,##0.00"
-                                date:         "d.m.yyyy"
-                                datetime:     "d.m.yyyy hh:mm:ss"
-        font r              - font name, e.g. :header
-        bg-color c          - background color, either an Excel indexed color or
-                              a HTML color, e.g. :PLUM, "#00FF00"
-                              note: only XLSX supports 24 bit colors
-        wrap-text b         - wrap text, e.g. true, false
-        h-align e           - horizontal alignment {:left, :center, :right}
-        v-align e           - vertical alignment {:top, :middle, :bottom}
-        rotation r          - rotation angle [degree], e.g. 45
-        border-top s        - border top style, e.g. :thin
-        border-right s      - border right style, e.g. :none
-        border-bottom s     - border bottom style, e.g. :thin
-        border-left s       - border left style, e.g. :none
+        :format s            - format, e.g. "#0"
+                               default formats:
+                                 long,integer: "#0"
+                                 float,double: "#,##0.00"
+                                 date:         "d.m.yyyy"
+                                 datetime:     "d.m.yyyy hh:mm:ss"
+        :font r              - font name, e.g. :header
+        :bg-color c          - background color, either an Excel indexed color or
+                               a HTML color, e.g. :PLUM, "#00FF00"
+                               note: only XLSX supports 24 bit colors
+        :wrap-text b         - wrap text, e.g. true, false
+        :h-align e           - horizontal alignment {:left, :center, :right}
+        :v-align e           - vertical alignment {:top, :middle, :bottom}
+        :rotation r          - rotation angle [degree], e.g. 45
+        :border-top s        - border top style, e.g. :thin
+        :border-right s      - border right style, e.g. :none
+        :border-bottom s     - border bottom style, e.g. :thin
+        :border-left s       - border left style, e.g. :none
 
         Border styles:
           :none      :dotted    :medium-dashed      :medium-dash-dot-dot
@@ -937,9 +937,9 @@
             (let [sheet (excel/add-sheet wbook "Sheet 1"
                                          { :no-header-row false
                                            :default-header-style :header })]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Weight" { :data-field :weight
+              (excel/add-column sheet "First Name" { :field :first })
+              (excel/add-column sheet "Last Name" { :field :last })
+              (excel/add-column sheet "Weight" { :field :weight
                                                  :body-style :weight })
               (excel/write-items sheet data)
               (excel/auto-size-columns sheet)
@@ -1034,23 +1034,23 @@
         Defines a column with optional attributes.
 
         Options:
-        field f             - a field, e.g. :first-name
-        width n             - width in points, e.g. 100
-        hidden b            - hidden, e.g. true, false
-        header-style r      - style name for header row, e.g. :header
-        body-style r        - style name for body rows, e.g. :body
-        footer-style r      - style name for footer row, e.g. :footer
-        footer-value        - text or numeric value for the column's footer cell,
-                              e.g. "done", 10000.00M, nil
-        footer-aggregate e  - aggregation mode for the column's footer cell
-                              value, e.g. {:min, :max, :avg, :sum, :none}
+        :field f             - a field, e.g. :first-name
+        :width n             - width in points, e.g. 100
+        :hidden b            - hidden, e.g. true, false
+        :header-style r      - style name for header row, e.g. :header
+        :body-style r        - style name for body rows, e.g. :body
+        :footer-style r      - style name for footer row, e.g. :footer
+        :footer-value        - explicit text or numeric value for the column's
+                               footer cell, e.g. "done", 10000.00M, nil
+        :footer-aggregate e  - aggregation mode for the column's footer cell
+                               value, e.g. {:min, :max, :avg, :sum, :none}
         """
      :examples '(
         """
         (do
           (load-module :excel)
-          (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
-                        {:first "Sue"  :last "Ford"  :weight 54.2 } ]
+          (let [data  [ {:first "John" :last "Doe"  :weight 70.5 }
+                        {:first "Sue"  :last "Ford" :weight 54.2 } ]
                 wbook (excel/writer :xlsx)]
             (excel/add-font wbook :header { :bold true })
             (excel/add-style wbook :header { :font :header
@@ -1062,9 +1062,9 @@
             (let [sheet (excel/add-sheet wbook "Sheet 1"
                                          { :no-header-row false
                                            :default-header-style :header })]
-              (excel/add-column sheet "First Name" { :data-field :first })
-              (excel/add-column sheet "Last Name" { :data-field :last })
-              (excel/add-column sheet "Weight" { :data-field :weight
+              (excel/add-column sheet "First Name" { :field :first })
+              (excel/add-column sheet "Last Name" { :field :last })
+              (excel/add-column sheet "Weight" { :field :weight
                                                  :body-style :weight })
               (excel/write-items sheet data)
               (excel/auto-size-columns sheet)
@@ -1081,7 +1081,15 @@
     { :pre [(instance-of? :ExcelSheetBuilder sheet-builder)
             (string? title)] }
     (let [builder (. sheet-builder :withColumn title)]
-      (when-let [x (:data-field options)]   (. builder :colMapper x))
+      (when-let [x (:field options)]
+         (cond
+           (keyword? x) (. builder :colMapper x)
+           (string? x)  (. builder :colMapper x)
+           :else        (throw (. :VncException :new
+                                  (str "A column field must be either a keyword "
+                                       "or a string acting as a key to get the "
+                                       "column's value from the row data map")))))
+      (when-let [x (:data-field options)]   (. builder :colMapper x)) ;; compatibility
       (when-let [x (:width options)]        (. builder :widthInPoints x))
       (when-let [x (:hidden options)]       (. builder :hidden x))
       (when-let [x (:header-style options)] (. builder :headerStyle (name x)))
@@ -1481,8 +1489,8 @@
                 wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Data"
                                        { :no-header-row true })]
-              (excel/add-column sheet "A" { :data-field :a })
-              (excel/add-column sheet "B" { :data-field :b })
+              (excel/add-column sheet "A" { :field :a })
+              (excel/add-column sheet "B" { :field :b })
               (excel/write-items sheet data)
               (excel/cell-formula sheet 1 3 "SUM(A1,B1)")
               (excel/write->bytebuf wbook)))

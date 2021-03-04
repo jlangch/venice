@@ -205,6 +205,11 @@
 				font-weight: 400;
                 font-family: 'Source Code Pro', sans-serif;
 			}
+			div.section .footer {
+				margin: 0.5em 0 0 0;
+				padding: 0.5em;
+                background-color: #f5f5f5;
+			}
             .embedding {
                 background-color: white;
                 margin: 0.5em 0 0 0;
@@ -240,8 +245,6 @@
                 display: inline-block;
             }
             .literal {
-            }
-            .comments {
             }
             .code-example {
                 color: #424242;
@@ -376,6 +379,14 @@
                         </tbody>
                     </table>
                     ${ ) }$
+                     
+                    ${ (when-not (empty? (:footers s1)) }$
+                    <div class="footer">
+                      ${ (doseq [p (:footers s1)] }$
+                      <div>${= (kira/escape-xml p) }$</div>
+                      ${ ) }$
+                    </div>
+                    ${ ) }$                 
                 </div>
                 ${ ) }$
             </div>
@@ -404,6 +415,14 @@
                         </tbody>
                     </table>
                     ${ ) }$
+                    
+                    ${ (when-not (empty? (:footers s1)) }$
+                    <div class="footer">
+                      ${ (doseq [p (:footers s1)] }$
+                      <div>${= (kira/escape-xml p) }$</div>
+                      ${ ) }$
+                    </div>
+                    ${ ) }$                 
                 </div>
                 ${ ) }$
             </div>
@@ -424,7 +443,6 @@
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
                             <tr id="${= (:id s3) }$">
-                                ${ (if-not (= (:title s3) ":comment:") (do }$
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -434,20 +452,19 @@
                                      -->${ ) }$<!--
                                   --></div>
                                 </td>
-                                ${ ) (do }$
-                                <td colspan="2">
-                                   <div class="comments"><!-- prevent whitespaces
-                                     -->${ (doseq [{:keys [id altName name]} (:items s3)] }$<!-- 
-                                     -->${ (when-not id }$<div>${= (kira/escape-xml name) }$</div>${ ) }$<!--
-                                     -->${ ) }$<!--
-                                  --></div>
-                                </td>
-                                ${ )) }$
-                            </tr>
+                             </tr>
                             ${ ) }$
                         </tbody>
                     </table>
                     ${ ) }$
+                    
+                    ${ (when-not (empty? (:footers s1)) }$
+                    <div class="footer">
+                      ${ (doseq [p (:footers s1)] }$
+                      <div>${= (kira/escape-xml p) }$</div>
+                      ${ ) }$
+                    </div>
+                    ${ ) }$                 
                 </div>
                 ${ ) }$
             </div>
@@ -462,7 +479,6 @@
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
                             <tr id="${= (:id s3) }$">
-                                ${ (if-not (= (:title s3) ":comment:") (do }$
                                 <td class="shrink">${= (kira/escape-xml (:title s3)) }$</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -472,20 +488,19 @@
                                      -->${ ) }$<!--
                                   --></div>
                                 </td>
-                                ${ ) (do }$
-                                <td colspan="2">
-                                   <div class="comments"><!-- prevent whitespaces
-                                     -->${ (doseq [{:keys [id altName name]} (:items s3)] }$<!-- 
-                                     -->${ (when-not id }$<div>${= (kira/escape-xml name) }$</div>${ ) }$<!--
-                                     -->${ ) }$<!--
-                                  --></div>
-                                </td>
-                                ${ )) }$
-                             </tr>
+                              </tr>
                             ${ ) }$
                         </tbody>
                     </table>
                     ${ ) }$
+                    
+                    ${ (when-not (empty? (:footers s1)) }$
+                    <div class="footer">
+                      ${ (doseq [p (:footers s1)] }$
+                      <div>${= (kira/escape-xml p) }$</div>
+                      ${ ) }$
+                    </div>
+                    ${ ) }$                 
                 </div>
                 ${ ) }$
             </div>

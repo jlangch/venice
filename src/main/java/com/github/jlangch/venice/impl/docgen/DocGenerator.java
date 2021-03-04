@@ -64,7 +64,8 @@ public class DocGenerator {
 			.addAll(Arrays.asList(
 						"app",    "xml",    "crypt",  "gradle", 
 						"trace",  "ansi",   "maven",  "kira",
-						"java",   "semver", "excel",  "hexdump"));
+						"java",   "semver", "excel",  "hexdump",
+						"shell",  "geoip" ));
 		
 		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -220,6 +221,10 @@ public class DocGenerator {
 		documents.addSection(new DocSection("Excel", "modules.excel"));
 		content.add(documents);
 
+		final DocSection embed = new DocSection("Embedding", "embedding");
+		embed.addSection(new DocSection("Embedding in Java", "embedding"));
+		content.add(embed);
+
 		final DocSection extmod = new DocSection("Modules", "modules");
 		extmod.addSection(new DocSection("Kira Templates", "modules.kira"));
 		extmod.addSection(new DocSection("Tracing", "modules.tracing"));
@@ -230,11 +235,9 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Java", "modules.java"));
 		extmod.addSection(new DocSection("Semver", "modules.semver"));
 		extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
+		extmod.addSection(new DocSection("Shell", "modules.shell"));
+		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
 		content.add(extmod);
-
-		final DocSection embed = new DocSection("Embedding", "embedding");
-		embed.addSection(new DocSection("Embedding in Java", "embedding"));
-		content.add(embed);
 
 		return content;
 	}
@@ -276,13 +279,15 @@ public class DocGenerator {
 				getModuleJavaSection(),
 				getModuleGradleSection(),
 				getModuleMavenSection(),
-				getModuleTracingSection());
+				getModuleTracingSection(),
+				getModuleShellSection());
 	}
 	
 	private List<DocSection> getModulesRightSections() {
 		return Arrays.asList(
 				getModuleHexdumpSection(),
 				getModuleSemverSection(),
+				getModuleGeoipSection(),
 				getModuleExcelSection());
 	}
 
@@ -1948,6 +1953,39 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getModuleShellSection() {
+		final DocSection section = new DocSection("Shell", "modules.shell");
+
+		final DocSection all = new DocSection("(load-module :shell)", id());
+		section.addSection(all);
+
+		final DocSection trace = new DocSection("Open", id());
+		all.addSection(trace);
+		trace.addItem(getDocItem("shell/open", false));
+		trace.addItem(getDocItem("shell/open-macos-app", false));
+
+		final DocSection test = new DocSection("Process", id());
+		all.addSection(test);
+		test.addItem(getDocItem("shell/kill", false));
+		test.addItem(getDocItem("shell/kill-forcibly", false));
+		test.addItem(getDocItem("shell/wait-for-process-exit", false));
+		test.addItem(getDocItem("shell/alive?", false));
+		test.addItem(getDocItem("shell/pid", false));
+		test.addItem(getDocItem("shell/process-handle", false));
+		test.addItem(getDocItem("shell/process-handle?", false));
+		test.addItem(getDocItem("shell/process-info", false));
+		test.addItem(getDocItem("shell/processes", false));
+		test.addItem(getDocItem("shell/processes-info", false));
+		test.addItem(getDocItem("shell/descendant-processes", false));
+		test.addItem(getDocItem("shell/parent-process", false));
+
+		final DocSection util = new DocSection("Util", id());
+		all.addSection(util);
+		util.addItem(getDocItem("shell/diff", false));
+
+		return section;
+	}
+
 	private DocSection getModuleXmlSection() {
 		final DocSection section = new DocSection("XML", "modules.xml");
 
@@ -2055,6 +2093,42 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getModuleGeoipSection() {
+		final DocSection section = new DocSection("Geo IP", "modules.geoip");
+
+		final DocSection all = new DocSection("(load-module :geoip)", id());
+		section.addSection(all);
+
+		final DocSection geoip = new DocSection("Lookup", id());
+		all.addSection(geoip);
+		geoip.addItem(getDocItem("geoip/ip-to-country-resolver", false));
+		geoip.addItem(getDocItem("geoip/ip-to-country-loc-resolver", false));
+		geoip.addItem(getDocItem("geoip/ip-to-city-loc-resolver", false));
+		geoip.addItem(getDocItem("geoip/ip-to-city-loc-resolver-mem-optimized", false));
+		geoip.addItem(getDocItem("geoip/country-to-location-resolver", false));
+		geoip.addItem(getDocItem("geoip/map-location-to-numerics", false));
+		
+		final DocSection db = new DocSection("Databases", id());
+		all.addSection(db);
+		db.addItem(getDocItem("geoip/download-google-country-db-to-csvfile", false));
+		db.addItem(getDocItem("geoip/download-maxmind-db-to-zipfile", false));
+		db.addItem(getDocItem("geoip/download-maxmind-db", false));
+
+		final DocSection dbBuild = new DocSection("DB Parser", id());
+		all.addSection(dbBuild);
+		dbBuild.addItem(getDocItem("geoip/parse-maxmind-country-ip-db", false));
+		dbBuild.addItem(getDocItem("geoip/parse-maxmind-city-ip-db", false));
+		dbBuild.addItem(getDocItem("geoip/parse-maxmind-country-db", false));
+		dbBuild.addItem(getDocItem("geoip/parse-maxmind-city-db", false));
+
+		final DocSection util = new DocSection("Util", id());
+		all.addSection(util);
+		util.addItem(getDocItem("geoip/build-maxmind-country-db-url"));
+		util.addItem(getDocItem("geoip/build-maxmind-city-db-url"));
+
+		return section;
+	}
+
 	private DocSection getModuleHexdumpSection() {
 		final DocSection section = new DocSection("Hexdump", "modules.hexdump");
 
@@ -2069,7 +2143,18 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleExcelSection() {
-		final DocSection section = new DocSection("Excel", "modules.excel");
+		final List<String> footers = Arrays.asList(
+										"Required 3rd party libraries:",
+										IDENT_ENUM + "org.apache.poi:poi:4.1.2",
+										IDENT_ENUM + "org.apache.poi:ooxml:4.1.2",
+										IDENT_ENUM + "org.apache.poi:ooxml-schemas:4.1.2",
+										IDENT_ENUM + "commons-codec:commons-codec:1.15",
+										IDENT_ENUM + "org.apache.commons:commons-collections4:4.4",
+										IDENT_ENUM + "org.apache.commons:commons-compress:1.20",
+										IDENT_ENUM + "org.apache.commons:commons-math3:3.6.1",
+										IDENT_ENUM + "org.apache.xmlbeans:xmlbeans:3.1.0");
+
+		final DocSection section = new DocSection("Excel", "modules.excel", null, footers);
 
 		final DocSection all = new DocSection("(load-module :excel)", id());
 		section.addSection(all);
@@ -2125,19 +2210,6 @@ public class DocGenerator {
 		rd_util.addItem(getDocItem("excel/evaluate-formulas", false));
 		rd_util.addItem(getDocItem("excel/cell-empty?", false));
 		rd_util.addItem(getDocItem("excel/cell-type", false));
-
-
-		final DocSection libs = new DocSection(":comment:", id());
-		all.addSection(libs);
-		libs.addItem(new DocItem("required 3rd party libraries:", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.poi:poi:4.1.2", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.poi:ooxml:4.1.2", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.poi:ooxml-schemas:4.1.2", null));	
-		libs.addItem(new DocItem(IDENT_ENUM+"commons-codec:commons-codec:1.15", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.commons:commons-collections4:4.4", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.commons:commons-compress:1.20", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.commons:commons-math3:3.6.1", null));
-		libs.addItem(new DocItem(IDENT_ENUM+"org.apache.xmlbeans:xmlbeans:3.1.0", null));
 
 		return section;
 	}
