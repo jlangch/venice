@@ -720,18 +720,18 @@
         Adds a sheet with optional attributes to an Excel.
 
         Options:
-        :no-header-row b         - without header row, e.g. true, false
-        :default-column-width n  - default column width in points, e.g. 100
-        :default-header-style s  - default header style, e.g. :header
-        :default-body-style s    - default body style, e.g. :body
-        :default-footer-style s  - default footer style, e.g. :footer
-        :merged-region r         - merged region [row-from row-to col-from col-to],
-                                   e.g. [1 1 4 10]
-        :display-zeros b         - display zeros, e.g. true, false
-                                   Set whether a cell should show 0 (zero) when
-                                   containing zero value. When false, cells with
-                                   zero value appear blank instead of showing
-                                   the number zero.
+          :no-header-row b         - without header row, e.g. true, false
+          :default-column-width n  - default column width in points, e.g. 100
+          :default-header-style s  - default header style, e.g. :header
+          :default-body-style s    - default body style, e.g. :body
+          :default-footer-style s  - default footer style, e.g. :footer
+          :merged-region r         - merged region [row-from row-to col-from col-to],
+                                     e.g. [1 1 4 10]
+          :display-zeros b         - display zeros, e.g. true, false
+                                     Set whether a cell should show 0 (zero) when
+                                     containing zero value. When false, cells with
+                                     zero value appear blank instead of showing
+                                     the number zero.
         """
      :examples '(
         """
@@ -821,13 +821,13 @@
         Add font with optional attributes to an Excel.
 
         Options:
-        :name s              - font name, e.g. 'Arial'
-        :height n            - height in points, e.g. 12
-        :bold b              - bold, e.g. true, false
-        :italic b            - italic, e.g. true, false
-        :color c             - color, either an Excel indexed color or a HTML
-                               color, e.g. :BLUE, "#00FF00"
-                               note: only XLSX supports 24 bit colors
+          :name s              - font name, e.g. 'Arial'
+          :height n            - height in points, e.g. 12
+          :bold b              - bold, e.g. true, false
+          :italic b            - italic, e.g. true, false
+          :color c             - color, either an Excel indexed color or a HTML
+                                 color, e.g. :BLUE, "#00FF00"
+                                 note: only XLSX supports 24 bit colors
         """
      :examples '(
         """
@@ -891,26 +891,26 @@
         Add a style with optional attributes to an Excel.
 
         Options:
-        :format s            - format, e.g. "#0"
-                               default formats:
-                                 long,integer: "#0"
-                                 float,double: "#,##0.00"
-                                 date:         "d.m.yyyy"
-                                 datetime:     "d.m.yyyy hh:mm:ss"
-        :font r              - font name, e.g. :header
-        :bg-color c          - background color, either an Excel indexed color or
-                               a HTML color, e.g. :PLUM, "#00FF00"
-                               note: only XLSX supports 24 bit colors
-        :wrap-text b         - wrap text, e.g. true, false
-        :h-align e           - horizontal alignment {:left, :center, :right}
-        :v-align e           - vertical alignment {:top, :middle, :bottom}
-        :rotation r          - rotation angle [degree], e.g. 45
-        :border-top s        - border top style, e.g. :thin
-        :border-right s      - border right style, e.g. :none
-        :border-bottom s     - border bottom style, e.g. :thin
-        :border-left s       - border left style, e.g. :none
+          :format s            - format, e.g. "#0"
+                                 default formats:
+                                   long,integer: "#0"
+                                   float,double: "#,##0.00"
+                                   date:         "d.m.yyyy"
+                                   datetime:     "d.m.yyyy hh:mm:ss"
+          :font r              - font name, e.g. :header
+          :bg-color c          - background color, either an Excel indexed color or
+                                 a HTML color, e.g. :PLUM, "#00FF00"
+                                 note: only XLSX supports 24 bit colors
+          :wrap-text b         - wrap text, e.g. true, false
+          :h-align e           - horizontal alignment {:left, :center, :right}
+          :v-align e           - vertical alignment {:top, :middle, :bottom}
+          :rotation r          - rotation angle [degree], e.g. 45
+          :border-top s        - border top style, e.g. :thin
+          :border-right s      - border right style, e.g. :none
+          :border-bottom s     - border bottom style, e.g. :thin
+          :border-left s       - border left style, e.g. :none
 
-        Border styles:
+        Available border styles:
           :none      :dotted    :medium-dashed      :medium-dash-dot-dot
           :thin      :thick     :dash-dot           :slanted-dash-dot
           :medium    :double    :medium-dash-dot
@@ -1034,16 +1034,16 @@
         Defines a column with optional attributes.
 
         Options:
-        :field f             - a field, e.g. :first-name
-        :width n             - width in points, e.g. 100
-        :hidden b            - hidden, e.g. true, false
-        :header-style r      - style name for header row, e.g. :header
-        :body-style r        - style name for body rows, e.g. :body
-        :footer-style r      - style name for footer row, e.g. :footer
-        :footer-value        - explicit text or numeric value for the column's
-                               footer cell, e.g. "done", 10000.00M, nil
-        :footer-aggregate e  - aggregation mode for the column's footer cell
-                               value, e.g. {:min, :max, :avg, :sum, :none}
+          :field f             - a field, e.g. :first-name
+          :width n             - width in points, e.g. 100
+          :hidden b            - hidden, e.g. true, false
+          :header-style r      - style name for header row, e.g. :header
+          :body-style r        - style name for body rows, e.g. :body
+          :footer-style r      - style name for footer row, e.g. :footer
+          :footer-value        - explicit text or numeric value for the column's
+                                 footer cell, e.g. "done", 10000.00M, nil
+          :footer-aggregate e  - aggregation mode for the column's footer cell
+                                 value, e.g. {:min, :max, :avg, :sum, :none}
         """
      :examples '(
         """
