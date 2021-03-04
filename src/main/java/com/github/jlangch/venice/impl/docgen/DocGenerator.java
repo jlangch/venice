@@ -2149,7 +2149,7 @@ public class DocGenerator {
 										IDENT_ENUM + "org.apache.poi:ooxml:4.1.2",
 										IDENT_ENUM + "org.apache.poi:ooxml-schemas:4.1.2",
 										IDENT_ENUM + "commons-codec:commons-codec:1.15",
-										IDENT_ENUM + "org.apache.commons:commons-collections4:4.4",
+										IDENT_ENUM + "org.apache.commons:commons-collections:4.4.4",
 										IDENT_ENUM + "org.apache.commons:commons-compress:1.20",
 										IDENT_ENUM + "org.apache.commons:commons-math3:3.6.1",
 										IDENT_ENUM + "org.apache.xmlbeans:xmlbeans:3.1.0");
