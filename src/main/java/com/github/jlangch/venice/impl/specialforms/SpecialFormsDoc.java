@@ -373,7 +373,7 @@ public class SpecialFormsDoc {
 					.arglists("(defonce name expr)")
 					.doc("Creates a global variable that can not be overwritten")
 					.examples("(defonce x 5)")
-					.seeAlso("defonce", "def-dynamic")
+					.seeAlso("def", "def-dynamic")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
