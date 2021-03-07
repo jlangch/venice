@@ -185,7 +185,8 @@ a string and has well defined constraints.
   (deftype-of :first-name2 :string not-empty?)
   
   ; the constraint (validation) can also be written as
-  (deftype-of :first-name3 :string #(assert (not-empty? %)))
+  (deftype-of :first-name3 :string #(not-empty? %))
+  (deftype-of :first-name4 :string #(assert (not-empty? %)))
   
   (def name (first-name. "John"))
   
