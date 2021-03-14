@@ -59,6 +59,23 @@ public class EsrModuleTest {
 	}
 
 	@Test
+	public void test_checksum_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                 \n" +
+				"   (load-module :esr)                                               \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"123456789\")))        \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"0123456789\")))       \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"00123456789\")))      \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"000123456789\")))     \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"0000123456789\")))    \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"00000123456789\"))))"; 
+
+		venice.eval(script);
+	}
+
+	@Test
 	public void test_format() {
 		final Venice venice = new Venice();
 
