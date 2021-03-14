@@ -490,7 +490,8 @@ public class CoreFunctions {
 						"(char 65)", 
 						"(char \"A\")",
 						"(long (char \"A\"))",
-						"(str/join (map char [65 66 67 68]))")
+						"(str/join (map char [65 66 67 68]))",
+						"(map #(- (long %) (long (char \"0\"))) (str/chars \"123456\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
