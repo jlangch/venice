@@ -45,10 +45,10 @@
           invoice number.
 
           Rules:
-           1) The identification number must have exactly 6 digits.
-           2) The invoice number must have one to N digits
-           3) The length of the identification and the invoice number must
-              not exceed 26 digits
+            1) The identification number must have exactly 6 digits.
+            2) The invoice number must have one to N digits
+            3) The length of the identification and the invoice number must
+               not exceed 26 digits
           """
      :examples (list
           """(esr/create "158888" "123456789")""" ) }
@@ -79,6 +79,7 @@
 
   (assert (= (count esr-ref) 27))
   (assert (match? esr-ref "[0-9]+"))
+  (assert (esr/valid? esr-ref))
 
   (let [id-nr      (str/subs esr-ref 0 6)
         invoice-nr (str/subs esr-ref 6 26)
@@ -86,6 +87,28 @@
     {:identification-nr  id-nr
      :invoice-nr (strip-leading-zeroes invoice-nr)
      :checksum checksum}))
+
+
+(defn
+  ^{ :arglists '("(esr/valid? esr-ref)")
+     :doc """
+          Returns true if the ESR reference is valid else false.
+
+          Rules:
+            1) The ESR reference must have exactly 27 digits.
+            2) The 27th digit must be the checksum for the first 26 digits
+          """
+     :examples (list
+          """(esr/valid? "158888000000000001234567892")""" ) }
+
+  esr/valid? [esr-ref]
+
+  (if (and (= (count esr-ref) 27) (match? esr-ref "[0-9]+"))
+    (let [ref          (str/subs esr-ref 0 26)
+          checksum-ref (str/subs esr-ref 26 27)
+          checksum     (esr/modulo-10-checksum ref)]
+      (= checksum-ref checksum))
+    false))
 
 
 (defn
@@ -103,7 +126,7 @@
 
   (loop [digits (str/chars esr-ref-digits) carry 0]
     (if (empty? digits)
-      (esr/int-digit->char (mod (- 10 carry) 10))
+      (str (esr/int-digit->char (mod (- 10 carry) 10)))
       (let [ch (first digits)]
         (if (= ch (char " "))
           (recur (rest digits) carry)

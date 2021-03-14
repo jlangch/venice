@@ -33,12 +33,12 @@ public class EsrModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                                        \n" +
-				"   (load-module :esr)                                                                      \n" +
-				"   (assert (= (char \"8\") (esr/modulo-10-checksum \"150001 1234567890123456 00 0 1\")))   \n" +
-				"   (assert (= (char \"9\") (esr/modulo-10-checksum \"150001 1234567890123456 00 1 1\")))   \n" +
-				"   (assert (= (char \"5\") (esr/modulo-10-checksum \"150001 1234567890123456 00 2 1\")))   \n" +
-				"   (assert (= (char \"4\") (esr/modulo-10-checksum \"150001 1234567890123456 00 3 1\"))))"; 
+				"(do                                                                                 \n" +
+				"   (load-module :esr)                                                               \n" +
+				"   (assert (= \"8\" (esr/modulo-10-checksum \"150001 1234567890123456 00 0 1\")))   \n" +
+				"   (assert (= \"9\" (esr/modulo-10-checksum \"150001 1234567890123456 00 1 1\")))   \n" +
+				"   (assert (= \"5\" (esr/modulo-10-checksum \"150001 1234567890123456 00 2 1\")))   \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"150001 1234567890123456 00 3 1\"))))"; 
 
 		venice.eval(script);
 	}
@@ -48,12 +48,12 @@ public class EsrModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                                    \n" +
-				"   (load-module :esr)                                                                  \n" +
-				"   (assert (= (char \"8\") (esr/modulo-10-checksum \"15000112345678901234560001\")))   \n" +
-				"   (assert (= (char \"9\") (esr/modulo-10-checksum \"15000112345678901234560011\")))   \n" +
-				"   (assert (= (char \"5\") (esr/modulo-10-checksum \"15000112345678901234560021\")))   \n" +
-				"   (assert (= (char \"4\") (esr/modulo-10-checksum \"15000112345678901234560031\"))))"; 
+				"(do                                                                             \n" +
+				"   (load-module :esr)                                                           \n" +
+				"   (assert (= \"8\" (esr/modulo-10-checksum \"15000112345678901234560001\")))   \n" +
+				"   (assert (= \"9\" (esr/modulo-10-checksum \"15000112345678901234560011\")))   \n" +
+				"   (assert (= \"5\" (esr/modulo-10-checksum \"15000112345678901234560021\")))   \n" +
+				"   (assert (= \"4\" (esr/modulo-10-checksum \"15000112345678901234560031\"))))"; 
 
 		venice.eval(script);
 	}
@@ -147,6 +147,18 @@ public class EsrModuleTest {
 				"     (assert (= \"158888\" (:identification-nr esr)))              \n" +
 				"     (assert (= \"123456789\" (:invoice-nr esr)))                  \n" +
 				"     (assert (= \"2\" (:checksum esr)))))"; 
+
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_validQ() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                                \n" +
+				"   (load-module :esr)                                              \n" +
+				"   (assert (esr/valid? \"158888000000000001234567892\")))"; 
 
 		venice.eval(script);
 	}
