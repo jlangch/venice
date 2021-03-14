@@ -1,0 +1,151 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2021 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Swiss ESR functions
+
+
+(ns esr)
+
+
+(def ^{ :private true } checksum-table [0 9 4 6 8 2 7 1 3 5])
+
+(def ^{ :private true } ascii-code-0 (long (char "0")))
+
+(defn- int-digit->char [x] (char (+ ascii-code-0 x)))
+
+(defn- char->int-digit [ch] (- (long ch) ascii-code-0))
+
+(defn- strip-leading-zeroes [s] (str/replace-first s (regex/pattern "^0+") ""))
+
+(defn- strip-spaces [s] (str/replace-all s " " ""))
+
+
+(defn
+  ^{ :arglists '("(esr/create id-number invoice-number)")
+     :doc """
+          Creates a 27 digit ESR reference from an identification number and an
+          invoice number.
+
+          Rules:
+           1) The identification number must have exactly 6 digits.
+           2) The invoice number must have one to N digits
+           3) The length of the identification and the invoice number must
+              not exceed 26 digits
+          """
+     :examples (list
+          """(esr/create "158888" "123456789")""" ) }
+
+  esr/create [id-number invoice-number]
+
+  (assert (= (count id-number) 6))
+  (assert (> (count invoice-number) 0))
+  (assert (<= (+ (count id-number) (count invoice-number)) 26))
+  (assert (match? id-number "[0-9]+"))
+  (assert (match? invoice-number "[0-9]+"))
+
+  (let [zeros (- 26 (+ (count id-number) (count invoice-number)))
+        ref   (str id-number (str/repeat "0" zeros) invoice-number)]
+    (str ref (esr/modulo-10-checksum ref))))
+
+
+(defn
+  ^{ :arglists '("(esr/parse esr-ref)")
+     :doc """
+          Parses an ESR reference into an identification number and an
+          invoice number. Strips the leading zeroes from the invoice number.
+          """
+     :examples (list
+          """(esr/parse "158888000000000001234567892")""" ) }
+
+  esr/parse [esr-ref]
+
+  (assert (= (count esr-ref) 27))
+  (assert (match? esr-ref "[0-9]+"))
+
+  (let [id-nr      (str/subs esr-ref 0 6)
+        invoice-nr (str/subs esr-ref 6 26)
+        checksum   (str/subs esr-ref 26 27)]
+    {:identification-nr  id-nr
+     :invoice-nr (strip-leading-zeroes invoice-nr)
+     :checksum checksum}))
+
+
+(defn
+  ^{ :arglists '("(esr/modulo-10-checksum esr-ref-digits)")
+     :doc """
+          Calculates a modulo 10 checksum for a string of ESR reference digits.
+          """
+     :examples (list
+          """(esr/modulo-10-checksum "00005634098")""" ) }
+
+  esr/modulo-10-checksum [esr-ref-digits]
+
+  (assert (not (str/blank? esr-ref-digits)))
+  (assert (match? esr-ref-digits "[ 0-9]+"))
+
+  (loop [digits (str/chars esr-ref-digits) carry 0]
+    (if (empty? digits)
+      (esr/int-digit->char (mod (- 10 carry) 10))
+      (let [ch (first digits)]
+        (if (= ch (char " "))
+          (recur (rest digits) carry)
+          (let [n     (mod (+ carry (esr/char->int-digit ch)) 10)
+                carry (nth checksum-table n)]
+            (recur (rest digits) carry)))))))
+
+
+(defn
+  ^{ :arglists '("(esr/format esr-ref)")
+     :doc """
+          Formats an ESR reference by building blocks with 5 digits separated
+          by a spaces.
+          """
+     :examples (list
+          """(esr/format "150001123456789012345600314")""" ) }
+
+  esr/format [esr-ref]
+
+  (if (<= (count esr-ref) 5)
+    esr-ref
+    (do
+      (->> (str/reverse esr-ref)
+           (str/chars)
+           (partition 5)
+           (interpose " ")
+           (flatten)
+           (reverse)
+           (apply str)))))
+
+
+(defn
+  ^{ :arglists '("(esr/normalize esr-ref)")
+     :doc """
+          Normalize a formatted ESR reference by removing the formatting
+          spaces.
+          """
+     :examples (list
+          """(esr/normalize "15 00011 23456 78901 23456 00314")""" ) }
+
+  esr/normalize [esr-ref]
+
+  (if (empty? esr-ref)
+    esr-ref
+    (esr/strip-spaces esr-ref)))

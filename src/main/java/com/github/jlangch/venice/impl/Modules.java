@@ -50,6 +50,7 @@ public class Modules {
 							"core", 
 							"crypt", 
 							"excel", 
+							"esr", 
 							"fam", 
 							"geoip", 
 							"gradle", 
