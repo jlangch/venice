@@ -932,7 +932,14 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(= x y)")
 					.doc("Returns true if both operands have equivalent type and value")
-					.examples("(= 0 0)", "(= 0 1)", "(= 0 0.0)", "(= 0 0.0M)")
+					.examples(
+						"(= \"abc\" \"abc\")", 
+						"(= 0 0)",
+						"(= 0 1)",
+						"(= 0 0.0)",
+						"(= 0 0.0M)",
+						"(= \"0\" 0)")
+					.seeAlso("==")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -962,8 +969,17 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(== x y)")
-					.doc("Returns true if both operands have equivalent value")
-					.examples("(== 0 0)", "(== 0 1)", "(== 0 0.0)", "(== 0 0.0M)")
+					.doc(
+						"Returns true if both operands have equivalent value. \n\n" +
+						"Numbers of different types can be checked for value equality.")
+					.examples(
+						"(== \"abc\" \"abc\")", 
+						"(== 0 0)",
+						"(== 0 1)",
+						"(== 0 0.0)",
+						"(== 0 0.0M)",
+						"(== \"0\" 0)")
+					.seeAlso("=")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
