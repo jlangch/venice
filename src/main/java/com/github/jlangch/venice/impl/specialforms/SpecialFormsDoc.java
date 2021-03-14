@@ -358,7 +358,8 @@ public class SpecialFormsDoc {
 					.doc("Creates a global variable.")
 					.examples(
 						 "(def x 5)",
-						 "(def sum (fn [x y] (+ x y)))")
+						 "(def sum (fn [x y] (+ x y)))",
+						 "(def ^{:private true} x 100)")
 					.seeAlso("def", "defonce")
 					.build()
 		) {
@@ -372,7 +373,9 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(defonce name expr)")
 					.doc("Creates a global variable that can not be overwritten")
-					.examples("(defonce x 5)")
+					.examples(
+						"(defonce x 5)",
+						"(defonce ^{:private true} x 5)")
 					.seeAlso("def", "def-dynamic")
 					.build()
 		) {
@@ -661,7 +664,8 @@ public class SpecialFormsDoc {
 						"   (println x)           \n" +
 						"   (binding [x 200]      \n" +
 						"      (println x))       \n" +
-						"   (println x)))           ")
+						"   (println x)))           ",
+						"(def-dynamic ^{:private true} x 100)")
 					.seeAlso("def", "defonce")
 					.build()
 		) {
