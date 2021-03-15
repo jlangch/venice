@@ -54,7 +54,7 @@
   (def population-norm 100_000)
 
   ;; the start/end date for the cases
-  (def start-date (time/local-date 2020 10 1))
+  (def start-date (time/local-date 2020 12 1))
   (def end-date nil)
 
   ;; chart rendering
@@ -214,12 +214,12 @@
     (xchart/xy-chart
        (-> (calc-country-series country-data country-config)
            (remove-quarantine-series))
-       { :title        "Covid-19 (~(str (time/local-date)))"
+       { :title        "Covid-19 Incidence (~(str (time/local-date)))"
          :width        chart-width
          :height       chart-height
-         :x-axis       { :title "Date", :date-pattern "MMM-dd" }
-         :y-axis       { :title "Cases ~{sample-days} days per 100'000" }
-         :theme        :xchart
+         :x-axis       { :title "", :date-pattern "MMM-dd" }
+         :y-axis       { :title "Cases over ~{sample-days} Days per 100'000" }
+         :theme        :matlab
          :render-style :line } )))
 
   (defn create-chart [country-html-data country-names]

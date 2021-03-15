@@ -168,12 +168,9 @@
   (assert (not (str/blank? esr-ref-digits)))
   (assert (esr/digits-or-spaces? esr-ref-digits))
 
-  (loop [digits (str/chars esr-ref-digits) carry 0]
+  (loop [digits (str/chars (esr/strip-spaces esr-ref-digits)) carry 0]
     (if (empty? digits)
       (str (esr/int-digit->char (mod (- 10 carry) 10)))
-      (let [ch (first digits)]
-        (if (= ch (char " "))
-          (recur (rest digits) carry)
-          (let [n     (mod (+ carry (esr/char->int-digit ch)) 10)
-                carry (nth checksum-table n)]
-            (recur (rest digits) carry)))))))
+      (let [n     (mod (+ carry (esr/char->int-digit (first digits))) 10)
+            carry (nth checksum-table n)]
+        (recur (rest digits) carry)))))
