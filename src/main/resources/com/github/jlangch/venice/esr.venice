@@ -62,8 +62,8 @@
   (assert (= (count id-number) 6))
   (assert (> (count invoice-number) 0))
   (assert (<= (+ (count id-number) (count invoice-number)) 26))
-  (assert (digits? id-number))
-  (assert (digits? invoice-number))
+  (assert (esr/digits? id-number))
+  (assert (esr/digits? invoice-number))
 
   (let [zeros (- 26 (+ (count id-number) (count invoice-number)))
         ref   (str id-number (str/repeat "0" zeros) invoice-number)]
@@ -82,14 +82,14 @@
   esr/parse [esr-ref]
 
   (assert (= (count esr-ref) 27))
-  (assert (digits? esr-ref))
+  (assert (esr/digits? esr-ref))
   (assert (esr/valid? esr-ref))
 
   (let [id-nr      (str/subs esr-ref 0 6)
         invoice-nr (str/subs esr-ref 6 26)
         checksum   (str/subs esr-ref 26 27)]
     {:identification-nr  id-nr
-     :invoice-nr (strip-leading-zeroes invoice-nr)
+     :invoice-nr (esr/strip-leading-zeroes invoice-nr)
      :checksum checksum}))
 
 
@@ -118,7 +118,7 @@
 (defn
   ^{ :arglists '("(esr/format esr-ref)")
      :doc """
-          Formats an ESR reference by building blocks with 5 digits separated \
+          Formats an ESR reference by building blocks of 5 digits separated \
           by a spaces.
           """
      :examples (list
@@ -126,8 +126,8 @@
 
   esr/format [esr-ref]
 
-  (assert (not (str/blank? esr-ref-digits)))
-  (assert (digits? esr-ref))
+  (assert (not (str/blank? esr-ref)))
+  (assert (esr/digits? esr-ref))
 
   (->> (str/reverse esr-ref)
        (str/chars)
@@ -149,8 +149,8 @@
 
   esr/normalize [esr-ref]
 
-  (assert (not (str/blank? esr-ref-digits)))
-  (assert (digits-or-spaces? esr-ref))
+  (assert (not (str/blank? esr-ref)))
+  (assert (esr/digits-or-spaces? esr-ref))
 
   (esr/strip-spaces esr-ref))
 
@@ -166,7 +166,7 @@
   esr/modulo-10-checksum [esr-ref-digits]
 
   (assert (not (str/blank? esr-ref-digits)))
-  (assert (digits-or-spaces? esr-ref-digits))
+  (assert (esr/digits-or-spaces? esr-ref-digits))
 
   (loop [digits (str/chars esr-ref-digits) carry 0]
     (if (empty? digits)
