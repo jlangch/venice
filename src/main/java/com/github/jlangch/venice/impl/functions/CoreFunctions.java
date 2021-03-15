@@ -3335,7 +3335,13 @@ public class CoreFunctions {
 					.examples(
 						"(dissoc {:a 1 :b 2 :c 3} :b)",
 						"(dissoc {:a 1 :b 2 :c 3} :c :b)",
-						"(dissoc [1 2 3] 0)")
+						"(dissoc [1 2 3] 0)",
+						"(do                                                 \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (def x (complex. 100 200))                        \n" +
+						"  (def y (dissoc x :real))                          \n" +
+						"  (pr-str y))                                         "
+)
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

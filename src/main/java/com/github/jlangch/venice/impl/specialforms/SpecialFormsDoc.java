@@ -504,13 +504,27 @@ public class SpecialFormsDoc {
 						"              (assert (pos? (:imaginary t)) \"imaginary must be positive\"))) \n" +
 						"  (def x (complex. 100 200))                                                  \n" +
 						"  [(:real x) (:imaginary x)])                                                   ",
-						"(do                                                      \n" +
-						"  (ns foo)                                               \n" +
-						"  (deftype :named [name :string, value :any])            \n" +
-						"  (def x (named. \"count\" 200))                         \n" +
-						"  (def y (named. \"seq\" [1 2]))                         \n" +
-						"  [x y])                                                   ")
-					.seeAlso("deftype?", "deftype-of", "deftype-or", ".:")
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype :named [name :string, value :any])       \n" +
+						"  (def x (named. \"count\" 200))                    \n" +
+						"  (def y (named. \"seq\" [1 2]))                    \n" +
+						"  [x y])                                              ",
+						";; modifying a custom type field                    \n" +
+						"(do                                                 \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (def x (complex. 100 200))                        \n" +
+						"  (def y (assoc x :real 110)) ; y is of type complex\n" +
+						"  (pr-str y))                                         ",
+						";; removing a custom type field                     \n" +
+						"(do                                                 \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (def x (complex. 100 200))                        \n" +
+						"  (def y (dissoc x :real)) ; y is just a map now    \n" +
+						"  (pr-str y))                                         "
+)
+					.seeAlso(
+						"deftype?", "deftype-of", "deftype-or", ".:", "assoc", "dissoc")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
