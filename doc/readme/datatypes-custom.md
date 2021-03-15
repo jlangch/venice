@@ -99,7 +99,7 @@ Remove fields with `dissoc`:
 (do
   (deftype :complex [real :long, imaginary :long])
   (def x (complex. 100 200))
-  (def y (dissoc x :real 110))
+  (def y (dissoc x :real))
   y)
 ```
 
