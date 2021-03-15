@@ -37,12 +37,16 @@
 
 (defn- strip-spaces [s] (str/replace-all s " " ""))
 
+(defn- digits? [s] (match? s "[0-9]+"))
+
+(defn- digits-or-spaces? [s] (match? s "[ 0-9]+"))
+
 
 (defn
   ^{ :arglists '("(esr/create id-number invoice-number)")
      :doc """
-          Creates a 27 digit ESR reference from an identification number and an
-          invoice number.
+          Creates a 27 digit ESR reference from an identification number and \
+          an invoice number.
 
           Rules:
             1) The identification number must have exactly 6 digits.
@@ -58,8 +62,8 @@
   (assert (= (count id-number) 6))
   (assert (> (count invoice-number) 0))
   (assert (<= (+ (count id-number) (count invoice-number)) 26))
-  (assert (match? id-number "[0-9]+"))
-  (assert (match? invoice-number "[0-9]+"))
+  (assert (digits? id-number))
+  (assert (digits? invoice-number))
 
   (let [zeros (- 26 (+ (count id-number) (count invoice-number)))
         ref   (str id-number (str/repeat "0" zeros) invoice-number)]
@@ -69,7 +73,7 @@
 (defn
   ^{ :arglists '("(esr/parse esr-ref)")
      :doc """
-          Parses an ESR reference into an identification number and an
+          Parses an ESR reference into an identification number and an \
           invoice number. Strips the leading zeroes from the invoice number.
           """
      :examples (list
@@ -78,7 +82,7 @@
   esr/parse [esr-ref]
 
   (assert (= (count esr-ref) 27))
-  (assert (match? esr-ref "[0-9]+"))
+  (assert (digits? esr-ref))
   (assert (esr/valid? esr-ref))
 
   (let [id-nr      (str/subs esr-ref 0 6)
@@ -112,6 +116,46 @@
 
 
 (defn
+  ^{ :arglists '("(esr/format esr-ref)")
+     :doc """
+          Formats an ESR reference by building blocks with 5 digits separated \
+          by a spaces.
+          """
+     :examples (list
+          """(esr/format "150001123456789012345600314")""" ) }
+
+  esr/format [esr-ref]
+
+  (assert (not (str/blank? esr-ref-digits)))
+  (assert (digits? esr-ref))
+
+  (->> (str/reverse esr-ref)
+       (str/chars)
+       (partition 5)
+       (interpose " ")
+       (flatten)
+       (reverse)
+       (apply str)))
+
+
+(defn
+  ^{ :arglists '("(esr/normalize esr-ref)")
+     :doc """
+          Normalize a formatted ESR reference by removing the formatting \
+          spaces.
+          """
+     :examples (list
+          """(esr/normalize "15 00011 23456 78901 23456 00314")""" ) }
+
+  esr/normalize [esr-ref]
+
+  (assert (not (str/blank? esr-ref-digits)))
+  (assert (digits-or-spaces? esr-ref))
+
+  (esr/strip-spaces esr-ref))
+
+
+(defn
   ^{ :arglists '("(esr/modulo-10-checksum esr-ref-digits)")
      :doc """
           Calculates a modulo 10 checksum for a string of ESR reference digits.
@@ -122,7 +166,7 @@
   esr/modulo-10-checksum [esr-ref-digits]
 
   (assert (not (str/blank? esr-ref-digits)))
-  (assert (match? esr-ref-digits "[ 0-9]+"))
+  (assert (digits-or-spaces? esr-ref-digits))
 
   (loop [digits (str/chars esr-ref-digits) carry 0]
     (if (empty? digits)
@@ -133,42 +177,3 @@
           (let [n     (mod (+ carry (esr/char->int-digit ch)) 10)
                 carry (nth checksum-table n)]
             (recur (rest digits) carry)))))))
-
-
-(defn
-  ^{ :arglists '("(esr/format esr-ref)")
-     :doc """
-          Formats an ESR reference by building blocks with 5 digits separated
-          by a spaces.
-          """
-     :examples (list
-          """(esr/format "150001123456789012345600314")""" ) }
-
-  esr/format [esr-ref]
-
-  (if (<= (count esr-ref) 5)
-    esr-ref
-    (do
-      (->> (str/reverse esr-ref)
-           (str/chars)
-           (partition 5)
-           (interpose " ")
-           (flatten)
-           (reverse)
-           (apply str)))))
-
-
-(defn
-  ^{ :arglists '("(esr/normalize esr-ref)")
-     :doc """
-          Normalize a formatted ESR reference by removing the formatting
-          spaces.
-          """
-     :examples (list
-          """(esr/normalize "15 00011 23456 78901 23456 00314")""" ) }
-
-  esr/normalize [esr-ref]
-
-  (if (empty? esr-ref)
-    esr-ref
-    (esr/strip-spaces esr-ref)))
