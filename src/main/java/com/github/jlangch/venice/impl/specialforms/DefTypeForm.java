@@ -305,9 +305,29 @@ public class DefTypeForm {
 			final VncCustomTypeDef typeDef, 
 			final VncMap fields
 	) {
+		final Set<VncKeyword> fieldNames = typeDef.getFieldNames();
+		
+		fields.keys().forEach(name -> {
+			if (name instanceof VncKeyword) {
+				if (!fieldNames.contains(name)) {
+					throw new VncException(String.format(
+							"The custom type %s does not support the field %s", 
+							typeDef.getType().toString(), 
+							name.toString())); 
+				}
+		}
+			else {
+				throw new VncException(String.format(
+						"The custom type %s requires field names of type keyword. "
+						+ "An invalid field name of type %s has been passed.", 
+						typeDef.getType().toString(),
+						name.getType().toString())); 
+			}
+		});
+
 		if (typeDef.count() != fields.size()) {
 			throw new VncException(String.format(
-					"The custom type %s requires %d args. %d have been passed", 
+					"The custom type %s requires %d fields. %d have been passed", 
 					typeDef.getType().toString(), 
 					typeDef.count(),
 					fields.size())); 

@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.types.custom;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.VncException;
@@ -59,6 +61,10 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 
 	public List<VncCustomTypeFieldDef> getFieldDefs() {
 		return fieldDefs;
+	}
+
+	public Set<VncKeyword> getFieldNames() {
+		return fieldDefs.stream().map(f -> f.getName()).collect(Collectors.toSet());
 	}
 
 	public VncFunction getValidationFn() {
