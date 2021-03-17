@@ -315,7 +315,7 @@ public class DefTypeForm {
 							typeDef.getType().toString(), 
 							name.toString())); 
 				}
-		}
+			}
 			else {
 				throw new VncException(String.format(
 						"The custom type %s requires field names of type keyword. "
