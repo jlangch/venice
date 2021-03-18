@@ -89,9 +89,18 @@ Modify fields with `assoc`:
   (deftype :complex [real :long, imaginary :long])
   (def x (complex. 100 200))
   (def y (assoc x :real 110))
+  (def z (assoc x :real 110 :imaginary 210))
   y)
 ```
 
+```clojure
+(do
+  (deftype :complex [real :long, imaginary :long])
+  (def x (atom (complex. 100 200)))
+  (swap! x assoc :real 110)
+  (swap! x assoc :real 120 :imaginary 220)
+  @x)
+```
 
 Remove fields with `dissoc`:
 
