@@ -3,7 +3,7 @@
 ## Sequential Destructuring
 
 Sequential destructuring breaks up a sequential data structure as a Venice 
-list or vector within a let binding.
+list or vector within a let binding
 
 ```clojure
 (do
@@ -23,6 +23,17 @@ list or vector within a let binding.
    (let [[x y z] "abc"]
      (println x y z))
      ;=> a b c
+)
+```
+
+or within function parameters
+
+```clojure
+(do
+   (defn position [[x y]]
+      (println "x:" x "y:" y))
+      
+   (position [1 2]) ;=> x: 1 y: 2
 )
 ```
 
