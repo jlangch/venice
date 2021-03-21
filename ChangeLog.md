@@ -15,7 +15,12 @@ and this project adheres to
 
 - the option to pass arguments for opening MacOS apps. E.g.: 
   (shell/open-macos-app "TextEdit" "example.txt")
-- an ESR module for dealing with Swiss ESR reference numbers 
+- an ESR module for dealing with Swiss ESR reference numbers
+
+### Changed
+
+- function >,>=,<, and <= throw an exception if operand 1 is 
+  a number but operand 2 is not
 
 
 
