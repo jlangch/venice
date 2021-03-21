@@ -1074,7 +1074,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(< x y)", "(< x y & more)")
-					.doc("Returns true the numbers are in monotonically increasing order, otherwise false.")
+					.doc("Returns true if the numbers are in monotonically increasing order, otherwise false.")
 					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)", "(< 2 3 4 5 6 7)")
 					.build()
 		) {
@@ -1123,7 +1123,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(<= x y)", "(<= x y & more)")
-					.doc("Returns true the numbers are in monotonically non-decreasing order, otherwise false.")
+					.doc("Returns true if the numbers are in monotonically non-decreasing order, otherwise false.")
 					.examples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)", "(<= 2 3 4 5 6 7)")
 					.build()
 		) {
@@ -1172,7 +1172,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(> x y)", "(> x y & more)")
-					.doc("Returns true the numbers are in monotonically decreasing order, otherwise false.")
+					.doc("Returns true if the numbers are in monotonically decreasing order, otherwise false.")
 					.examples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)", "(> 7 6 5 4 3 2)")
 					.build()
 		) {
@@ -1221,7 +1221,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(>= x y)", "(>= x y & more)")
-					.doc("Returns true the numbers are in monotonically non-increasing order, otherwise false.")
+					.doc("Returns true if the numbers are in monotonically non-increasing order, otherwise false.")
 					.examples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)", "(>= 7 6 5 4 3 2)")
 					.build()
 		) {
