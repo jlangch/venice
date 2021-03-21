@@ -19,7 +19,7 @@ and this project adheres to
 
 ### Changed
 
-- function >,>=,<, and <= throw an exception if the operands are not numbers
+- function >, >=, <, and <= throw an exception if the operands are not numbers
 
 
 
