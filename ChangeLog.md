@@ -20,7 +20,7 @@ and this project adheres to
 ### Changed
 
 - function >, >=, <, and <= support now more than 2 arguments and throw an 
-  exception if the operands are not numbers
+  exception if the arguments are not numbers
 
 
 
