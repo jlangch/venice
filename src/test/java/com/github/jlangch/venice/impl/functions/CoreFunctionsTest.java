@@ -1468,11 +1468,6 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(> 2N 3.0M)"));
 		assertFalse((Boolean)venice.eval("(> 2N 2.0M)"));
 		assertTrue((Boolean)venice.eval("(> 2N 1.0M)"));
-
-		// String
-		assertFalse((Boolean)venice.eval("(> \"k\" \"z\")"));
-		assertFalse((Boolean)venice.eval("(> \"k\" \"k\")"));
-		assertTrue((Boolean)venice.eval("(> \"k\" \"a\")"));
 	}
 
 	@Test
@@ -1534,11 +1529,6 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(>= 2N 3.0M)"));
 		assertTrue((Boolean)venice.eval("(>= 2N 2.0M)"));
 		assertTrue((Boolean)venice.eval("(>= 2N 1.0M)"));
-
-		// String
-		assertFalse((Boolean)venice.eval("(>= \"k\" \"z\")"));
-		assertTrue((Boolean)venice.eval("(>= \"k\" \"k\")"));
-		assertTrue((Boolean)venice.eval("(>= \"k\" \"a\")"));
 	}
 
 	@Test
@@ -2373,11 +2363,6 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(< 2N 3.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2N 2.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2N 1.0M)"));
-
-		// String
-		assertTrue((Boolean)venice.eval("(< \"k\" \"z\")"));
-		assertFalse((Boolean)venice.eval("(< \"k\" \"k\")"));
-		assertFalse((Boolean)venice.eval("(< \"k\" \"a\")"));
 	}
 
 	@Test
@@ -2439,11 +2424,6 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2N 3.0M)"));
 		assertTrue((Boolean)venice.eval("(<= 2N 2.0M)"));
 		assertFalse((Boolean)venice.eval("(<= 2N 1.0M)"));
-
-		// String
-		assertTrue((Boolean)venice.eval("(<= \"k\" \"z\")"));
-		assertTrue((Boolean)venice.eval("(<= \"k\" \"k\")"));
-		assertFalse((Boolean)venice.eval("(<= \"k\" \"a\")"));
 	}
 
 	@Test
@@ -3519,11 +3499,6 @@ public class CoreFunctionsTest {
 		assertEquals("(1.0 2.0)", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) '(2.0 1.0)))"));
 		assertEquals("(1.0 2.0 3.0)", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) '(3.0 2.0 1.0)))"));
 
-		assertEquals("()", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) '()))"));
-		assertEquals("(a)", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) '(\"a\")))"));
-		assertEquals("(a b)", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) '(\"b\" \"a\")))"));
-		assertEquals("(a b c)", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) '(\"c\" \"b\" \"a\")))"));
-
 		
 		assertEquals("[]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) []))"));
 		assertEquals("[1]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [1]))"));
@@ -3534,11 +3509,6 @@ public class CoreFunctionsTest {
 		assertEquals("[1.0]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [1.0]))"));
 		assertEquals("[1.0 2.0]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [2.0 1.0]))"));
 		assertEquals("[1.0 2.0 3.0]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [3.0 2.0 1.0]))"));
-
-		assertEquals("[]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) []))"));
-		assertEquals("[a]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [\"a\"]))"));
-		assertEquals("[a b]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [\"b\" \"a\"]))"));
-		assertEquals("[a b c]", venice.eval("(str (sort (fn [x y] (if (< x y) -1 1)) [\"c\" \"b\" \"a\"]))"));
 	}
 
 	@Test

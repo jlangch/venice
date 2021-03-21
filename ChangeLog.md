@@ -19,8 +19,7 @@ and this project adheres to
 
 ### Changed
 
-- function >,>=,<, and <= throw an exception if operand 1 is 
-  a number but operand 2 is not
+- function >,>=,<, and <= throw an exception if the operands are not numbers
 
 
 

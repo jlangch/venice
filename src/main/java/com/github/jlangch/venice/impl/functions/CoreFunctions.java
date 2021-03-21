@@ -1075,7 +1075,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(< x y)")
 					.doc("Returns true if x is smaller than y")
-					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)", "(< \"abcde\" \"def\")")
+					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1084,31 +1084,11 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 
-				if (Types.isVncNumber(op1)) {
-					if (!Types.isVncNumber(op2)) {
-						throw new VncException(String.format(
-								"Function '<' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
+				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
 					return VncBoolean.of(op1.compareTo(op2) < 0);
 				}
-				else if (Types.isVncString(op1)) {
-					if (!Types.isVncString(op2)) {
-						throw new VncException(String.format(
-								"Function '<' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
-
-					final String s1 = ((VncString)op1).getValue();
-					final String s2 = ((VncString)op2).getValue();
-					return VncBoolean.of(s1.compareTo(s2) < 0);
-				}
 				else {
-					throw new VncException(String.format(
-											"Function '<' does not allow %s as operand 1",
-											Types.getType(op1)));
+					throw new VncException("Function '<' supports numbers only.");
 				}
 			}
 
@@ -1131,31 +1111,11 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 
-				if (Types.isVncNumber(op1)) {
-					if (!Types.isVncNumber(op2)) {
-						throw new VncException(String.format(
-								"Function '<=' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
+				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
 					return VncBoolean.of(op1.compareTo(op2) <= 0);
 				}
-				else if (Types.isVncString(op1)) {
-					if (!Types.isVncString(op2)) {
-						throw new VncException(String.format(
-								"Function '<=' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
-
-					final String s1 = ((VncString)op1).getValue();
-					final String s2 = ((VncString)op2).getValue();
-					return VncBoolean.of(s1.compareTo(s2) <= 0);
-				}
 				else {
-					throw new VncException(String.format(
-											"Function '<=' does not allow %s as operand 1",
-											Types.getType(op1)));
+					throw new VncException("Function '<=' supports numbers only.");
 				}
 			}
 
@@ -1178,31 +1138,11 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 
-				if (Types.isVncNumber(op1)) {
-					if (!Types.isVncNumber(op2)) {
-						throw new VncException(String.format(
-								"Function '>' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
+				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
 					return VncBoolean.of(op1.compareTo(op2) > 0);
 				}
-				else if (Types.isVncString(op1)) {
-					if (!Types.isVncString(op2)) {
-						throw new VncException(String.format(
-								"Function '>' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
-
-					final String s1 = ((VncString)op1).getValue();
-					final String s2 = ((VncString)op2).getValue();
-					return VncBoolean.of(s1.compareTo(s2) > 0);
-				}
 				else {
-					throw new VncException(String.format(
-											"Function '>' does not allow %s as operand 1",
-											Types.getType(op1)));
+					throw new VncException("Function '>' supports numbers only.");
 				}
 			}
 
@@ -1225,31 +1165,11 @@ public class CoreFunctions {
 				final VncVal op1 = args.first();
 				final VncVal op2 = args.second();
 
-				if (Types.isVncNumber(op1)) {
-					if (!Types.isVncNumber(op2)) {
-						throw new VncException(String.format(
-								"Function '>=' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
+				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
 					return VncBoolean.of(op1.compareTo(op2) >= 0);
 				}
-				else if (Types.isVncString(op1)) {
-					if (!Types.isVncString(op2)) {
-						throw new VncException(String.format(
-								"Function '>=' with operand 1 of type %s does not allow %s as operand 2",
-								Types.getType(op1),
-								Types.getType(op2)));
-					}
-
-					final String s1 = ((VncString)op1).getValue();
-					final String s2 = ((VncString)op2).getValue();
-					return VncBoolean.of(s1.compareTo(s2) >= 0);
-				}
 				else {
-					throw new VncException(String.format(
-											"Function '>=' does not allow %s as operand 1",
-											Types.getType(op1)));
+					throw new VncException("Function '>=' supports numbers only.");
 				}
 			}
 
