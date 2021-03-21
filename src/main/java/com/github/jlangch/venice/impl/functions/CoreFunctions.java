@@ -1073,22 +1073,44 @@ public class CoreFunctions {
 				"<",
 				VncFunction
 					.meta()
-					.arglists("(< x y)")
-					.doc("Returns true if x is smaller than y")
-					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)")
+					.arglists("(< x y)", "(< x y & more)")
+					.doc("Returns true the numbers are in monotonically increasing order, otherwise false.")
+					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)", "(< 2 3 4 5 6 7)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
-				final VncVal op1 = args.first();
-				final VncVal op2 = args.second();
+				VncVal op1 = args.first();
+				if (!Types.isVncNumber(op1)) {
+					throw new VncException("Function '<' supports numbers only.");
+				}
 
-				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
+				if (args.size() == 2) {
+					final VncVal op2 = args.second();
+					if (!Types.isVncNumber(op2)) {
+						throw new VncException("Function '<' supports numbers only.");
+					}
 					return VncBoolean.of(op1.compareTo(op2) < 0);
 				}
 				else {
-					throw new VncException("Function '<' supports numbers only.");
+					VncList vals = args.rest();
+					while(!vals.isEmpty()) {
+						VncVal op2 = vals.first();
+						if (!Types.isVncNumber(op2)) {
+							throw new VncException("Function '<' supports numbers only.");
+						}
+	
+						if (op1.compareTo(op2) < 0) {
+							op1 = op2;
+							vals = vals.rest();
+						}
+						else {
+							return VncBoolean.False;
+						}
+					}
+					
+					return VncBoolean.True;
 				}
 			}
 
@@ -1100,22 +1122,44 @@ public class CoreFunctions {
 				"<=",
 				VncFunction
 					.meta()
-					.arglists("(<= x y)")
-					.doc("Returns true if x is smaller or equal to y")
-					.examples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)")
+					.arglists("(<= x y)", "(<= x y & more)")
+					.doc("Returns true the numbers are in monotonically non-decreasing order, otherwise false.")
+					.examples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)", "(<= 2 3 4 5 6 7)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
-				final VncVal op1 = args.first();
-				final VncVal op2 = args.second();
+				VncVal op1 = args.first();
+				if (!Types.isVncNumber(op1)) {
+					throw new VncException("Function '<=' supports numbers only.");
+				}
 
-				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
+				if (args.size() == 2) {
+					final VncVal op2 = args.second();
+					if (!Types.isVncNumber(op2)) {
+						throw new VncException("Function '<=' supports numbers only.");
+					}
 					return VncBoolean.of(op1.compareTo(op2) <= 0);
 				}
 				else {
-					throw new VncException("Function '<=' supports numbers only.");
+					VncList vals = args.rest();
+					while(!vals.isEmpty()) {
+						VncVal op2 = vals.first();
+						if (!Types.isVncNumber(op2)) {
+							throw new VncException("Function '<=' supports numbers only.");
+						}
+	
+						if (op1.compareTo(op2) <= 0) {
+							op1 = op2;
+							vals = vals.rest();
+						}
+						else {
+							return VncBoolean.False;
+						}
+					}
+					
+					return VncBoolean.True;
 				}
 			}
 
@@ -1127,22 +1171,44 @@ public class CoreFunctions {
 				">",
 				VncFunction
 					.meta()
-					.arglists("(> x y)")
-					.doc("Returns true if x is greater than y")
-					.examples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)")
+					.arglists("(> x y)", "(> x y & more)")
+					.doc("Returns true the numbers are in monotonically decreasing order, otherwise false.")
+					.examples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)", "(> 7 6 5 4 3 2)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
-				final VncVal op1 = args.first();
-				final VncVal op2 = args.second();
+				VncVal op1 = args.first();
+				if (!Types.isVncNumber(op1)) {
+					throw new VncException("Function '>' supports numbers only.");
+				}
 
-				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
+				if (args.size() == 2) {
+					final VncVal op2 = args.second();
+					if (!Types.isVncNumber(op2)) {
+						throw new VncException("Function '>' supports numbers only.");
+					}
 					return VncBoolean.of(op1.compareTo(op2) > 0);
 				}
 				else {
-					throw new VncException("Function '>' supports numbers only.");
+					VncList vals = args.rest();
+					while(!vals.isEmpty()) {
+						VncVal op2 = vals.first();
+						if (!Types.isVncNumber(op2)) {
+							throw new VncException("Function '>' supports numbers only.");
+						}
+	
+						if (op1.compareTo(op2) > 0) {
+							op1 = op2;
+							vals = vals.rest();
+						}
+						else {
+							return VncBoolean.False;
+						}
+					}
+					
+					return VncBoolean.True;
 				}
 			}
 
@@ -1154,22 +1220,44 @@ public class CoreFunctions {
 				">=",
 				VncFunction
 					.meta()
-					.arglists("(>= x y)")
-					.doc("Returns true if x is greater or equal to y")
-					.examples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)")
+					.arglists("(>= x y)", "(>= x y & more)")
+					.doc("Returns true the numbers are in monotonically non-increasing order, otherwise false.")
+					.examples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)", "(>= 7 6 5 4 3 2)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
-				final VncVal op1 = args.first();
-				final VncVal op2 = args.second();
+				VncVal op1 = args.first();
+				if (!Types.isVncNumber(op1)) {
+					throw new VncException("Function '>=' supports numbers only.");
+				}
 
-				if (Types.isVncNumber(op1) && Types.isVncNumber(op2)) {
+				if (args.size() == 2) {
+					final VncVal op2 = args.second();
+					if (!Types.isVncNumber(op2)) {
+						throw new VncException("Function '>=' supports numbers only.");
+					}
 					return VncBoolean.of(op1.compareTo(op2) >= 0);
 				}
 				else {
-					throw new VncException("Function '>=' supports numbers only.");
+					VncList vals = args.rest();
+					while(!vals.isEmpty()) {
+						VncVal op2 = vals.first();
+						if (!Types.isVncNumber(op2)) {
+							throw new VncException("Function '>=' supports numbers only.");
+						}
+	
+						if (op1.compareTo(op2) >= 0) {
+							op1 = op2;
+							vals = vals.rest();
+						}
+						else {
+							return VncBoolean.False;
+						}
+					}
+					
+					return VncBoolean.True;
 				}
 			}
 

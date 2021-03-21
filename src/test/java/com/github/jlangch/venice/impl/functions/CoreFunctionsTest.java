@@ -1427,6 +1427,13 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(> 2 2N)"));
 		assertTrue((Boolean)venice.eval("(> 2 1N)"));
 
+		assertTrue((Boolean)venice.eval("(> 4 3 2)"));
+		assertFalse((Boolean)venice.eval("(> 4 1 2)"));
+		assertFalse((Boolean)venice.eval("(> 4 6 2)"));
+		assertFalse((Boolean)venice.eval("(> 2 3 2)"));
+
+		assertTrue((Boolean)venice.eval("(> 9 8 7 6 5 4 3 2)"));
+
 		// Double
 		assertFalse((Boolean)venice.eval("(> 2.0 3.0)"));
 		assertFalse((Boolean)venice.eval("(> 2.0 2.0)"));
@@ -1487,6 +1494,13 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(>= 2 3N)"));
 		assertTrue((Boolean)venice.eval("(>= 2 2N)"));
 		assertTrue((Boolean)venice.eval("(>= 2 1N)"));
+
+		assertTrue((Boolean)venice.eval("(>= 4 3 2)"));
+		assertFalse((Boolean)venice.eval("(>= 4 1 2)"));
+		assertFalse((Boolean)venice.eval("(>= 4 6 2)"));
+		assertFalse((Boolean)venice.eval("(>= 2 3 2)"));
+
+		assertTrue((Boolean)venice.eval("(>= 9 8 7 6 5 4 3 2)"));
 
 		// Double
 		assertFalse((Boolean)venice.eval("(>= 2.0 3.0)"));
@@ -2322,6 +2336,13 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(< 2 2N)"));
 		assertFalse((Boolean)venice.eval("(< 2 1N)"));
 
+		assertTrue((Boolean)venice.eval("(< 2 3 4)"));
+		assertFalse((Boolean)venice.eval("(< 2 1 4)"));
+		assertFalse((Boolean)venice.eval("(< 2 6 4)"));
+		assertFalse((Boolean)venice.eval("(< 2 3 2)"));
+
+		assertTrue((Boolean)venice.eval("(< 2 3 4 5 6 7 8 9)"));
+
 		// Double
 		assertTrue((Boolean)venice.eval("(< 2.0 3.0)"));
 		assertFalse((Boolean)venice.eval("(< 2.0 2.0)"));
@@ -2382,6 +2403,13 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2 3N)"));
 		assertTrue((Boolean)venice.eval("(<= 2 2N)"));
 		assertFalse((Boolean)venice.eval("(<= 2 1N)"));
+
+		assertTrue((Boolean)venice.eval("(<= 2 3 4)"));
+		assertFalse((Boolean)venice.eval("(<= 2 1 4)"));
+		assertFalse((Boolean)venice.eval("(<= 2 6 4)"));
+		assertFalse((Boolean)venice.eval("(<= 2 3 2)"));
+
+		assertTrue((Boolean)venice.eval("(<= 2 3 4 5 6 7 8 9)"));
 
 		// Double
 		assertTrue((Boolean)venice.eval("(<= 2.0 3.0)"));

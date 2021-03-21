@@ -19,7 +19,8 @@ and this project adheres to
 
 ### Changed
 
-- function >, >=, <, and <= throw an exception if the operands are not numbers
+- function >, >=, <, and <= support now more than 2 arguments and throw an 
+  exception if the operands are not numbers
 
 
 
