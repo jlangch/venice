@@ -657,7 +657,7 @@ public class ConcurrencyFunctions {
 						"  :error-handler handler-fn \n" +
 						"  :error-mode mode-keyword \n" +
 						"  :validator validate-fn \n" +
-						"The handler-fn is called if an action throws an exception. It's a" +
+						"The handler-fn is called if an action throws an exception. It's a " +
 						"function taking two args the agent and the exception. The " +
 						"mode-keyword may be either :continue (the default) or :fail " +
 						"The validate-fn must be nil or a side-effect-free fn of one " + 
