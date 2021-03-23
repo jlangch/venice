@@ -1,4 +1,4 @@
-# Concurrency
+(map (fn [x] (. :Semaphore :new 1)))))# Concurrency
 
 * [Atoms](#atoms)
 * [Futures & Promises](#futures-and-promises)
@@ -276,7 +276,7 @@ Thread local vars get inherited by child threads
   (def max-thinking-time 3000)
   (def retry-time 5)
   (def forks (->> (range n-philosophers)
-                  (map #(. :Semaphore :new 1))))
+                  (map (fn [x] (. :Semaphore :new 1)))))
   (def log-mutex 0)
 
   (defn log [& xs]
