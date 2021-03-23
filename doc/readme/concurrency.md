@@ -1,4 +1,4 @@
-(map (fn [x] (. :Semaphore :new 1)))))# Concurrency
+# Concurrency
 
 * [Atoms](#atoms)
 * [Futures & Promises](#futures-and-promises)
