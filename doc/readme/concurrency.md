@@ -272,14 +272,14 @@ Thread local vars get inherited by child threads
   (import :java.util.concurrent.Semaphore)
   
   ;;              [P0]
-  ;;         F0          F4
+  ;;         F0          F1
   ;;
   ;;    [P4]                 [P1]
   ;;
-  ;;     F1                   F3
+  ;;     F4                   F2
   ;;
   ;;        [P3]        [P2]            Px: philosopher
-  ;;               F2                   Fx: fork 
+  ;;               F3                   Fx: fork 
   
   (def n-philosophers 5)
   (def max-eating-time 5000)
@@ -292,7 +292,7 @@ Thread local vars get inherited by child threads
     (locking log-mutex (println (apply str xs))))
 
   (defn left-fork [n]
-    (nth forks (mod (dec n) n-philosophers)))
+    (nth forks (mod (inc n) n-philosophers)))
 
   (defn right-fork [n]
     (nth forks n))
