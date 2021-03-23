@@ -275,8 +275,7 @@ Thread local vars get inherited by child threads
   (def max-eating-time 5000)
   (def max-thinking-time 3000)
   (def retry-time 5)
-  (def forks (->> (range n-philosophers)
-                  (map (fn [x] (. :Semaphore :new 1)))))
+  (def forks (repeatedly n-philosophers #(. :Semaphore :new 1)))
   (def log-mutex 0)
 
   (defn log [& xs]
