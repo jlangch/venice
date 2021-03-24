@@ -265,7 +265,7 @@ Thread local vars get inherited by child threads
 ```
 
 
-## Example: Dining Philosophers
+## Example: Dining Philosophers with Semaphores
 
 ```clojure
 (do
@@ -344,3 +344,95 @@ Thread local vars get inherited by child threads
 )
 ```
 
+
+
+## Example: Dining Philosophers with Atoms
+
+```clojure
+(do
+  ;;              [P0]
+  ;;         F0          F1
+  ;;
+  ;;    [P4]                 [P1]
+  ;;
+  ;;     F4                   F2
+  ;;
+  ;;        [P3]        [P2]            Px: philosopher
+  ;;               F3                   Fx: fork
+
+  (def n-philosophers 5)
+  (def max-eating-time 5000)
+  (def max-thinking-time 3000)
+  (def retry-time 5)
+  (def forks (atom (into [] (repeat 5 nil)))) ; value nil if not used else the
+                                              ; philosophers index that uses the fork
+  (def log-mutex 0)
+
+  (defn log [& xs]
+    (locking log-mutex (println (apply str xs))))
+
+  (defn left-fork [n]
+    (mod (inc n) n-philosophers))
+
+  (defn right-fork [n]
+    n)
+
+  (defn forks-acquired? [fs n]
+    (and (some? (fs (left-fork n))) (some? (fs (right-fork n)))))
+
+  (defn forks-acquired-by? [fs n x]
+    (and (= (fs (left-fork n)) x) (= (fs (right-fork n)) x)))
+
+  (defn forks-free? [fs n]
+    (and (nil? (fs (left-fork n))) (nil? (fs (right-fork n)))))
+
+  (defn forks-set [fs n val]
+    (-> fs
+        (assoc (left-fork n) val)
+        (assoc (right-fork n) val)))
+
+  (defn debug [fs n]
+    (log "Philosopher " n " forks: " fs))
+
+  (defn take-forks [n]
+    (let [upd (swap! forks
+                     (fn [fs]
+                       (if (forks-free? fs n)
+                         (forks-set fs n n)
+                         fs)))
+          acquired (forks-acquired-by? upd n n)]
+       (when acquired (debug upd n))
+       acquired))
+
+  (defn put-down-forks [n]
+    (let [upd (swap! forks (fn [fs] (forks-set fs n nil)))]
+      (debug upd n)))
+
+  (defn eat [n]
+    (log "Philosopher " n " is dining")
+    (sleep (rand-long max-eating-time))
+    (put-down-forks n)
+    (log "Philosopher " n " put down forks"))
+
+  (defn think [n]
+    (log "Philosopher " n " is thinking")
+    (sleep (rand-long max-thinking-time)))
+
+  (defn philosopher [n]
+    (fn []
+      (try
+        (log "Philosopher " n " just sat down")
+        (while true
+          (if (take-forks n)
+            (do (log "Philosopher " n " picked up forks")
+                (eat n)
+                (think n))
+            (sleep retry-time)))
+      (catch :RuntimeException ex
+        (log "Philosopher " n " died! " (:message ex))))))
+
+   ;; launch
+   (println "Starting (stop with <ctrl-c>)")
+   (apply futures-wait (futures-fork n-philosophers #(philosopher %)))
+)
+```
