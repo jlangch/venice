@@ -1311,6 +1311,7 @@ public class DocGenerator {
 		atoms.addItem(getDocItem("deref?"));
 		atoms.addItem(getDocItem("reset!"));
 		atoms.addItem(getDocItem("swap!"));
+		atoms.addItem(getDocItem("swap-vals!"));
 		atoms.addItem(getDocItem("compare-and-set!"));
 		atoms.addItem(getDocItem("add-watch"));
 		atoms.addItem(getDocItem("remove-watch"));

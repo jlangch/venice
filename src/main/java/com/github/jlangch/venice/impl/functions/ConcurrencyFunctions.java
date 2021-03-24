@@ -505,8 +505,8 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Atomically swaps the value of an atom or a volatile to be: " + 
 						"(apply f current-value-of-box args). Note that f may be called " + 
-						"multiple times, and thus should be free of side effects. Returns " + 
-						"the value that was swapped in.")
+						"multiple times, and thus should be free of side effects. " + 
+						"Returns the value that was swapped in.")
 					.examples(
 						"(do                                  \n" +
 						"   (def counter (atom 0))            \n" +
@@ -527,7 +527,7 @@ public class ConcurrencyFunctions {
 						"   (def counter (volatile 0))        \n" +
 						"   (swap! counter (partial + 6))     \n" +
 						"   @counter)                           ")
-				.seeAlso("atom", "volatile")
+				.seeAlso("swap-vals!", "reset!", "compare-and-set!", "atom", "volatile")
 				.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -548,6 +548,45 @@ public class ConcurrencyFunctions {
 				else {
 					throw new VncException(String.format(
 							"Function 'swap!' does not allow type %s as argument.",
+							Types.getType(box)));
+				}
+
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction swap_vals_BANG = 
+		new VncFunction(
+				"swap-vals!", 
+				VncFunction
+					.meta()
+					.arglists("(swap-vals! atom f & args)")		
+					.doc(
+						"Atomically swaps the value of an atom to be: " + 
+						"(apply f current-value-of-atom args). Note that f may be called " + 
+						"multiple times, and thus should be free of side effects. " + 
+						"Returns [old new], the value of the atom before and after the swap.")
+					.examples(
+						"(do                                \n" +
+						"   (def queue (atom '(1 2 3)))     \n" +
+						"   (swap-vals! queue pop))           ")
+				.seeAlso("swap!", "reset!", "compare-and-set!", "atom", "volatile")
+				.build()
+		) {		
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 2);
+				
+				final VncVal box = args.first();
+				
+				if (Types.isVncAtom(box)) {
+					final VncFunction fn = Coerce.toVncFunction(args.second());
+					final VncList swapArgs = args.slice(2);					
+					return ((VncAtom)box).swap_vals(fn, swapArgs);
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'swap-vals!' does not allow type %s as argument.",
 							Types.getType(box)));
 				}
 
@@ -1860,6 +1899,7 @@ public class ConcurrencyFunctions {
 					.add(atom_Q)
 					.add(reset_BANG)
 					.add(swap_BANG)
+					.add(swap_vals_BANG)
 					.add(compare_and_set_BANG)
 
 					.add(new_volatile)

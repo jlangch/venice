@@ -24,6 +24,17 @@ The value held by an atom is changed with the `swap!` method.
    (deref counter))
 ```
 
+`@foo` is the dereference short form for `(deref foo)`
+
+```clojure
+(do
+   (def counter (atom 2))
+   (swap! counter + 2)
+   @counter)
+```
+
+
+
 ## Futures and Promises
 
 A future takes a function and yields a future object that will invoke the function 
@@ -39,6 +50,16 @@ if its computation has finished `(realized? f)`.
    (defn task [] (sleep 1000) 200)
    (deref (future task)))
 ```
+
+Dereference with a timeout, and a default value. The default value that is returned 
+if the computation is not finished within the timeout time.
+
+```clojure
+(do
+   (defn task [] (sleep 1000) 200)
+   (deref (future task) 100 :timeout))
+```
+
 
 A promise is a thread-safe object that encapsulates an immutable value. This value 
 might not be available yet and can be delivered exactly once, from any thread, 
@@ -69,7 +90,7 @@ will cache the result and return it on all subsequent `force` calls.
 ```clojure
 (do  
    (def x (delay (println "realizing...") 100))
-   (sleep 1000)
+   (sleep 1 :seconds)
    (deref x))
 ```
 

@@ -31,6 +31,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.Watchable;
 
 
@@ -95,6 +96,21 @@ public class VncAtom extends VncVal implements IDeref {
 			if (state.compareAndSet(oldVal, newVal)) {
 				watchable.notifyWatches(this, oldVal, newVal);
 				return state.get();
+			}
+		}
+	}
+	
+	public VncVector swap_vals(final VncFunction fn, final VncList args) {
+		for(;;) {
+			final VncVal oldVal = deref();
+			
+			final VncList new_args = VncList.of(oldVal).addAllAtEnd(args);
+			final VncVal newVal = fn.apply(new_args);
+			validate(newVal);
+
+			if (state.compareAndSet(oldVal, newVal)) {
+				watchable.notifyWatches(this, oldVal, newVal);
+				return VncVector.of(oldVal, state.get());
 			}
 		}
 	}
