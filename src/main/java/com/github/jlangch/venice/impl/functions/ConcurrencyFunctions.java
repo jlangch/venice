@@ -505,7 +505,7 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Atomically swaps the value of an atom or a volatile to be: " + 
 						"(apply f current-value-of-box args). Note that f may be called " + 
-						"multiple times, and thus should be free of side effects.  Returns " + 
+						"multiple times, and thus should be free of side effects. Returns " + 
 						"the value that was swapped in.")
 					.examples(
 						"(do                           \n" +
@@ -562,7 +562,7 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Atomically sets the value of atom to newval if and only if the " + 
 						"current value of the atom is identical to oldval. Returns true if " + 
-						"set happened, else false")
+						"set happened, else false.")
 					.examples(
 						"(do                               \n" +
 						"   (def counter (atom 2))         \n" +
