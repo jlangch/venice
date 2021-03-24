@@ -508,23 +508,26 @@ public class ConcurrencyFunctions {
 						"multiple times, and thus should be free of side effects. Returns " + 
 						"the value that was swapped in.")
 					.examples(
-						"(do                           \n" +
-						"   (def counter (atom 0))     \n" +
-						"   (swap! counter inc)        \n" +
-						"   @counter)                    ",
-						"(do                           \n" +
-						"   (def counter (atom 0))     \n" +
-						"   (swap! counter inc))         ",
-						"(do                           \n" +
-						"   (def fruits (atom ()))     \n" +
-						"   (swap! fruits conj :apple) \n" +
-						"   (swap! fruits conj :mango) \n" +
-						"   @fruits)                     ",
-						"(do                               \n" +
-						"   (def counter (volatile 0))     \n" +
-						"   (swap! counter (partial + 6))  \n" +
-						"   @counter)                        ")
-				.seeAlso("agent", "volatile")
+						"(do                                  \n" +
+						"   (def counter (atom 0))            \n" +
+						"   (swap! counter inc))                ",
+						"(do                                  \n" +
+						"   (def counter (atom 0))            \n" +
+						"   (swap! counter inc)               \n" +
+						"   (swap! counter + 1)               \n" +
+						"   (swap! counter #(inc %))          \n" +
+						"   (swap! counter (fn [x] (inc x)))  \n" +
+						"   @counter)                           ",
+						"(do                                  \n" +
+						"   (def fruits (atom ()))            \n" +
+						"   (swap! fruits conj :apple)        \n" +
+						"   (swap! fruits conj :mango)        \n" +
+						"   @fruits)                            ",
+						"(do                                  \n" +
+						"   (def counter (volatile 0))        \n" +
+						"   (swap! counter (partial + 6))     \n" +
+						"   @counter)                           ")
+				.seeAlso("atom", "volatile")
 				.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -567,7 +570,7 @@ public class ConcurrencyFunctions {
 						"(do                               \n" +
 						"   (def counter (atom 2))         \n" +
 						"   (compare-and-set! counter 2 4) \n" +
-						"   (deref counter))                 ")
+						"   @counter)                        ")
 					.seeAlso("atom")
 					.build()
 		) {		
