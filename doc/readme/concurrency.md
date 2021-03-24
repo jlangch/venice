@@ -365,8 +365,9 @@ Thread local vars get inherited by child threads
   (def max-eating-time 5000)
   (def max-thinking-time 3000)
   (def retry-time 5)
-  ;; forks value: nil if the fork is not locked else the philosophers index that locked the fork
-  (def forks (atom (into [] (repeat n-philosophers nil)))) ; nil if the fork is not locked else the
+  ;; forks value: nil if the fork is not locked else the philosophers index that 
+  ;; locked the fork
+  (def forks (atom (into [] (repeat n-philosophers nil))))
   (def log-mutex 0)
 
   (defn log [& xs]
