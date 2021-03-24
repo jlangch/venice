@@ -265,7 +265,9 @@ Thread local vars get inherited by child threads
 ```
 
 
-## Example: Dining Philosophers with Semaphores
+## Example: Dining Philosophers
+
+### Dining Philosophers with Semaphores
 
 ```clojure
 (do
@@ -345,8 +347,7 @@ Thread local vars get inherited by child threads
 ```
 
 
-
-## Example: Dining Philosophers with Atoms
+### Dining Philosophers with Atoms
 
 ```clojure
 (do
