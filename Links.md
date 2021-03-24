@@ -34,6 +34,15 @@
 
 [Reflection](https://www.sitepoint.com/reflection-vs-encapsulation-in-the-java-module-system/)
 
+[Gradle Modules Plugin](https://github.com/java9-modularity/gradle-modules-plugin)
+
+```groovy
+test {
+    moduleOptions {
+        runOnClasspath = true
+    }
+}
+```
 
 ## Performance
 
