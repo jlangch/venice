@@ -78,6 +78,7 @@ test {
 
 [Socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
 
+
 ### STM
 
 [Clojure STM](https://clojure.org/reference/refs)
@@ -85,6 +86,10 @@ test {
 [STM Implementation](https://soft.vub.ac.be/~tvcutsem/talks/presentations/STM-in-Clojure.pdf)
 
 [STM Implementation](https://github.com/tvcutsem/stm-in-clojure)
+
+[Multiverse](https://github.com/pveentjer/Multiverse)
+
+[Multiverse Examples](https://javacreed.com/software-transactional-memory-example-using-multiverse)
 
 
 ## GitHub Wiki

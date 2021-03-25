@@ -83,6 +83,20 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_atom_swap_vals() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                  \n" +
+				"   (def queue (atom '(1 2 3)))       \n" +
+				"   (pr-str (swap-vals! queue pop)))    ";
+
+		final String result = (String)venice.eval(script);
+		
+		assertEquals("[(1 2 3) (2 3)]", result);
+	}
+
+	@Test
 	public void test_atom_dereferenceable() {
 		final Venice venice = new Venice();
 
@@ -98,11 +112,11 @@ public class ConcurrencyFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                               \n" +
-				"   (def x (atom 2))               \n" +
-				"   (compare-and-set! x 3 5)       \n" +
-				"   (compare-and-set! x 2 4)       \n" +
-				"   @x)                              ";
+				"(do                                    \n" +
+				"   (def x (atom 2))                    \n" +
+				"   (compare-and-set! x 2 4)  ; true    \n" +
+				"   (compare-and-set! x 3 5)  ; false   \n" +
+				"   @x)                                   ";
 
 		final Object result = venice.eval(script);
 		
