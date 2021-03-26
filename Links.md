@@ -91,6 +91,8 @@ test {
 
 [Multiverse Examples](https://javacreed.com/software-transactional-memory-example-using-multiverse)
 
+[ByteSTM](http://www.hydravm.org/hydra/chrome/site/pub/ByteSTM_tech.pdf)
+
 
 ## GitHub Wiki
 
