@@ -695,15 +695,14 @@ public class ConcurrencyFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                                        " +
-				"   (def p (promise))                       " +
-				"   (def task (fn []                        " +
-				"                 (do                       " +
-				"                    (sleep 500)            " +
-				"                    (deliver p 123))))     " +
-				"                                           " +
-				"   (future task)                           " +
-				"   (deref p))                              " +
+				"(do                          " +
+				"   (def p (promise))         " +
+				"   (defn task []             " +
+				"      (sleep 500)            " +
+				"      (deliver p 123))       " +
+				"                             " +
+				"   (future task)             " +
+				"   (deref p))                " +
 				") ";
 
 		assertEquals(Long.valueOf(123), venice.eval(script));
@@ -752,7 +751,7 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                             " +
-				"   (def wait (fn [] (do (sleep 500) {:a 100}))) " +
+				"   (defn wait [] (sleep 500) {:a 100})          " +
 				"                                                " +
 				"   (let [f (future wait)]                       " +
 				"        (deref f))                              " +
@@ -767,7 +766,7 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                        " +
-				"   (def wait (fn [] (do (sleep 500) 100))) " +
+				"   (defn wait [] (sleep 500) 100)          " +
 				"                                           " +
 				"   (let [f (future wait)]                  " +
 				"        (deref f 700 :timeout))            " +
@@ -808,13 +807,86 @@ public class ConcurrencyFunctionsTest {
 
 		final String script = 
 				"(do                                        " +
-				"   (def wait (fn [] (do (sleep 500) 100))) " +
+				"   (defn wait [] (sleep 500) 100)          " +
 				"                                           " +
 				"   (let [f (future wait)]                  " +
 				"        (deref f 300 :timeout))            " +
 				") ";
 
 		assertEquals("timeout", venice.eval(script));
+	}
+
+	@Test
+	public void test_future_done() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 \n" +
+				"   (defn wait [] (sleep 200) 100)   \n" +
+				"                                    \n" +
+				"   (def f (future wait))            \n" +
+				"   (deref f)                        \n" +
+				"   (future-done? f))                  ";
+
+		assertEquals(true, venice.eval(script));
+	}
+
+	@Test
+	public void test_future_cancel_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"   (defn worker []                         \n" +
+				"     (sleep 500)                           \n" +
+				"     100)                                  \n" +
+				"                                           \n" +
+				"   (def f (future worker))                 \n" +
+				"   (sleep 100)                             \n" +
+				"   (future-cancel f)                       \n" +
+				"   (future-cancelled? f))                   ";
+
+		assertEquals(true, venice.eval(script));
+	}
+
+	@Test
+	public void test_future_cancel_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"   (defn worker []                         \n" +
+				"     (sleep 500)                           \n" +
+				"     100)                                  \n" +
+				"                                           \n" +
+				"   (def f (future worker))                 \n" +
+				"   (sleep 100)                             \n" +
+				"   (future-cancel f)                       \n" +
+				"   (future-done? f))                         ";
+
+		assertEquals(true, venice.eval(script));
+	}
+
+	@Test
+	public void test_future_cancel_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"   (def progress (atom nil))               \n" +
+				"   (defn worker []                         \n" +
+				"     (reset! progress :started)            \n" +
+				"     (sleep 500)                           \n" +
+				"     (reset! progress :end)	            \n" +
+				"     100)                                  \n" +
+				"                                           \n" +
+				"   (def f (future worker))                 \n" +
+				"   (sleep 100)                             \n" +
+				"   (future-cancel f)                       \n" +
+				"   (sleep 500)                             \n" +
+				"   @progress)                                ";
+
+		assertEquals("started", venice.eval(script));
 	}
 
 	@Test

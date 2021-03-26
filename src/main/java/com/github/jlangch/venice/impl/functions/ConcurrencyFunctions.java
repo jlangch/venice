@@ -1352,6 +1352,37 @@ public class ConcurrencyFunctions {
 												.submit(taskWrapper);
 				
 				return new VncJavaObject(future);
+				
+//				// Canceling a CompletableFuture does not interrupt the task wrapper!!!
+//				
+//				final CompletableFuture<VncVal> completableFuture = new CompletableFuture<>();
+//				
+//				final Runnable taskWrapper = () -> {
+//					// The future function is called from the JavaVM. Rig a
+//					// Venice context with the thread local vars and the sandbox
+//					try {
+//						// inherit thread local values to the child thread
+//						ThreadLocalMap.setValues(parentThreadLocals.get());
+//						ThreadLocalMap.clearCallStack();
+//						JavaInterop.register(parentInterceptor);	
+//						
+//						try {
+//							completableFuture.complete(fn.applyOf());
+//						}
+//						catch(Exception ex) {
+//							completableFuture.completeExceptionally(ex);
+//						}
+//					}
+//					finally {
+//						// clean up
+//						JavaInterop.unregister();
+//						ThreadLocalMap.remove();
+//					}
+//				};
+//				
+//				mngdExecutor.getExecutor().submit(taskWrapper);
+//				
+//				return new VncJavaObject(completableFuture);
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
