@@ -1658,7 +1658,8 @@ public class ConcurrencyFunctions {
 					.examples(
 						"(do                                              \n" +
 						"   (def x (delay (println \"working...\") 100))  \n" +
-						"   (force x))")
+						"   (force x))",
+						"(force (+ 1 2))")
 					.seeAlso("delay", "deref", "realized?")
 					.build()
 		) {	

@@ -94,6 +94,13 @@ will cache the result and return it on all subsequent `force` calls.
    (deref x))
 ```
 
+```clojure
+(do  
+   (def x (delay (println "realizing...") 100))
+   (sleep 1 :seconds)
+   (force x))
+```
+
 
 ## Agents
 

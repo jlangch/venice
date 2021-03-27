@@ -87,6 +87,8 @@ test {
 
 [STM Implementation](https://github.com/tvcutsem/stm-in-clojure)
 
+[STM Blog](https://sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/)
+
 [Multiverse](https://github.com/pveentjer/Multiverse)
 
 [Multiverse Examples](https://javacreed.com/software-transactional-memory-example-using-multiverse)
