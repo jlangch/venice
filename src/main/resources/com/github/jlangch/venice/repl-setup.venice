@@ -42,30 +42,30 @@
                 "com.github.librepdf:openpdf:1.3.25",
                 "com.github.librepdf:pdf-toolbox:1.3.25" ])
 
-(def fonts-base-url "https://github.com/google/fonts/tree/master/")
+(def fonts-base-url "https://github.com/")
 
 (def fonts-min [])
 
-(def fonts-ext [ "apache/opensans/OpenSans-Regular.ttf",
-                 "apache/opensans/OpenSans-Italic.ttf",
-                 "apache/opensans/OpenSans-Light.ttf",
-                 "apache/opensans/OpenSans-Bold.ttf",
-                 "ofl/sourcecodepro/SourceCodePro-Regular.ttf",
-                 "ofl/sourcecodepro/SourceCodePro-Light.ttf",
-                 "ofl/sourcecodepro/SourceCodePro-Bold.ttf",
-                 "ofl/audiowide/Audiowide-Regular.ttf",
-                 "ofl/roboto/static/Roboto-Black.ttf",
-                 "ofl/roboto/static/Roboto-BlackItalic.ttf",
-                 "ofl/roboto/static/Roboto-Bold.ttf",
-                 "ofl/roboto/static/Roboto-BoldItalic.ttf",
-                 "ofl/roboto/static/Roboto-Italic.ttf",
-                 "ofl/roboto/static/Roboto-Light.ttf",
-                 "ofl/roboto/static/Roboto-LightItalic.ttf",
-                 "ofl/roboto/static/Roboto-Medium.ttf",
-                 "ofl/roboto/static/Roboto-MediumItalic.ttf",
-                 "ofl/roboto/static/Roboto-Regular.ttf",
-                 "ofl/roboto/static/Roboto-Thin.ttf",
-                 "ofl/roboto/static/Roboto-ThinItalic.ttf" ])
+(def fonts-ext [ "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Regular.ttf"
+                 "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Italic.ttf"
+                 "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Light.ttf"
+                 "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Bold.ttf"
+                 "google/fonts/tree/main/ofl/sourcecodepro/SourceCodePro-Regular.ttf"
+                 "google/fonts/tree/main/ofl/sourcecodepro/SourceCodePro-Light.ttf"
+                 "google/fonts/tree/main/ofl/sourcecodepro/SourceCodePro-Bold.ttf"
+                 "google/fonts/tree/main/ofl/audiowide/Audiowide-Regular.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Black.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-BlackItalic.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Bold.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-BoldItalic.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Italic.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Light.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-LightItalic.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Medium.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-MediumItalic.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Regular.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-Thin.ttf"
+                 "google/fonts/tree/main/apache/roboto/static/Roboto-ThinItalic.ttf" ])
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"

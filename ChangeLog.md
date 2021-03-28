@@ -26,6 +26,10 @@ and this project adheres to
 - function >, >=, <, and <= support now more than 2 arguments and throw an 
   exception if the arguments are not numbers
 
+### Fixed
+
+- Google open source font download directories for extended REPL setup
+
 
 
 ## [1.9.12] - 2021-03-04
