@@ -14,11 +14,18 @@ REM # -------------------------------------------------------------------------
 
 cd C:/Users/foo/venice
 
+:start
+
 java.exe ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
   -cp "libs\*" ^
   com.github.jlangch.venice.Launcher ^
-  -loadpath "scripts" 
+  -loadpath "scripts" ^
+  -restartable ^
   -colors
+  
+REM # if the REPL exits with exit code 99 restart the REPL otherwise exit the
+REM # shell
+if %errorlevel% equ 99 goto start

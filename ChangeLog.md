@@ -17,6 +17,9 @@ and this project adheres to
 - the option to pass arguments for opening MacOS apps. E.g.: 
   (shell/open-macos-app "TextEdit" "example.txt")
 - an ESR module for dealing with Swiss ESR reference numbers
+- a restartable option for the REPL if the REPL launcher script supports it.
+  While REPL 'reload' creates a new Venice context, a 'restart' exits the
+  current REPL process and starts a new REPL with a new Java VM running.
 
 ### Changed
 
