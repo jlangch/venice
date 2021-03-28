@@ -1,29 +1,20 @@
-#!/bin/sh
-# ------------------------------------------------------------------------------
-# Starts a Venice REPL
-# ------------------------------------------------------------------------------
-# --home
-#    |
-#    +-- libs
-#    |    +-- venice-1.7.25.jar
-#    |
-#    +-- scripts
-#    |    +-- script-1.venice
-#    |    +-- script-2.venice
-#    |
-#    +-- repl.json
-#    |
-#    +-- repl.sh
-# ------------------------------------------------------------------------------
 
+cd /Users/juerg/Desktop/venice/
 
-cd /Users/foo/venice/
+DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 
-java \
-  -server \
-  -Xmx4G \
-  -XX:-OmitStackTraceInFastThrow \
-  -cp "libs/*" \
-  com.github.jlangch.venice.Launcher \
-  -loadpath "scripts" \
-  -colors
+while true; do
+  ${JAVA_8_HOME}/bin/java \
+    -server \
+    -Xmx6G \
+    -XX:-OmitStackTraceInFastThrow \
+    -Djava.io.tmpdir=tmp \
+    -cp "libs/*" \
+    com.github.jlangch.venice.Launcher \
+    -loadpath "/Users/juerg/Desktop/venice/scripts;/Users/juerg/Desktop/venice/scripts.zip" \
+    -colors
+
+  # if the REPL exits with exit code 99 restart the REPL otherwise exit the
+  # shell
+  if [ $? -ne 99 ]; then exit 0; fi
+done

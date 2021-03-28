@@ -256,7 +256,11 @@ public class REPL {
 							// 	// create a new context class loader
 							// 	mainThread.setContextClassLoader(new DynamicClassLoader2());
 							// }
-							printer.println("system", "reloaded");					
+							printer.println("system", "reloaded");
+						}
+						else if (cmd.equals("restart")) {
+							printer.println("system", "restarting...");
+							System.exit(RESTART_EXIT_CODE);
 						}
 						else if (cmd.equals("activate-class-loader")) {
 							if (!allowDynamicClassLoader) {
@@ -1031,6 +1035,7 @@ public class REPL {
 			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
 			"   !sandbox add-rule venice:module:shell\n";	
 
+	private final static int RESTART_EXIT_CODE = 99;
 	private final static String DELIM = StringUtil.repeat('-', 80);
 	private final static String HISTORY_FILE = ".repl.history";
 
