@@ -33,17 +33,17 @@
   ;; https://www.worldometers.info/population/europe/
   (def country-config
     (ordered-map
-      "Switzerland"    { :population  8725700  :color :x-green      :stroke :solid }
-      "Romania"        { :population 19372000  :color :x-blue       :stroke :solid }
-      "Austria"        { :population  8955100  :color :x-purple     :stroke :solid }
-      "Hungary"        { :population  9684600  :color :x-orange     :stroke :solid }
-      "Germany"        { :population 83517000  :color :x-red        :stroke :solid }
-      "Italy"          { :population 60550000  :color :x-pink       :stroke :solid }
-      "France"         { :population 65129800  :color :x-light-blue :stroke :solid }
-      "Sweden"         { :population 10036300  :color :x-dark-gray  :stroke :solid }
-      "Greece"         { :population 10473400  :color :x-dark-pink  :stroke :solid }
-      "Spain"          { :population 46736700  :color :x-dark-green :stroke :solid }
-      "UK"             { :population 67886011  :color :x-yellow     :stroke :solid }
+      "Switzerland"    { :population  8655000  :color :x-green      :stroke :solid }
+      "Romania"        { :population 19238000  :color :x-blue       :stroke :solid }
+      "Austria"        { :population  9006000  :color :x-purple     :stroke :solid }
+      "Hungary"        { :population  9660000  :color :x-orange     :stroke :solid }
+      "Germany"        { :population 83784000  :color :x-red        :stroke :solid }
+      "Italy"          { :population 60462000  :color :x-pink       :stroke :solid }
+      "France"         { :population 65273000  :color :x-light-blue :stroke :solid }
+      "Sweden"         { :population 10099000  :color :x-dark-gray  :stroke :solid }
+      "Greece"         { :population 10423000  :color :x-dark-pink  :stroke :solid }
+      "Spain"          { :population 46755000  :color :x-dark-green :stroke :solid }
+      "UK"             { :population 67886000  :color :x-yellow     :stroke :solid }
       "Quarantine"     { :population        0  :color :x-light-gray :stroke :solid } ))
 
   ;; definitions for case data statistics
@@ -73,10 +73,12 @@
   (defn save-chart [chart file dpi]
     (xchart/write-to-file chart :png dpi file))
 
+  (defn worldometers-country-url [country]
+    (str worldometers-url (str/lower-case country) "/"))
+
   (defn load-country-html-data [country]
     (println "Loading cases for" country "...")
-    (io/download (str worldometers-url (str/lower-case country) "/")
-                 :user-agent "Mozilla"))
+    (io/download (worldometers-country-url country) :user-agent "Mozilla"))
 
   (defn load-countries-html-data [countries]
     ; returns a list of tuples [country html]
@@ -220,6 +222,7 @@
          :x-axis       { :title "", :date-pattern "MMM-dd" }
          :y-axis       { :title "Cases over ~{sample-days} Days per 100'000" }
          :theme        :matlab
+         :legend       { :border-color :white }
          :render-style :line } )))
 
   (defn create-chart [country-html-data country-names]

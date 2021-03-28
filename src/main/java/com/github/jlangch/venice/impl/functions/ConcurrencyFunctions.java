@@ -80,7 +80,7 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Dereferences an atom, a future or a promise object. When applied to an " + 
 						"atom, returns its current state. When applied to a future, " +
-						"will block if computation not complete. The variant taking a " +
+						"will block if computation is not complete. The variant taking a " +
 						"timeout can be used for futures and will return timeout-val " + 
 						"if the timeout (in milliseconds) is reached before a value " + 
 						"is available. If a future is deref'd and the waiting thread is " + 

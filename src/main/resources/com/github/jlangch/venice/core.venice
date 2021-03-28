@@ -1058,7 +1058,7 @@
             (def x (delay (println "working...") 100))
             (deref x))
           """)
-    :see-also '("deref" "force" "realized?") }
+    :see-also '("deref" "force" "realized?" "delay?" "memoize") }
 
   delay [& body]
 
@@ -1381,7 +1381,8 @@
                     :else (+ (fibonacci (- n 1)) (fibonacci (- n 2)))))))
 
             (time (fibonacci 25)))
-          """ ) }
+          """ )
+     :see-also '("delay") }
 
   memoize
 
