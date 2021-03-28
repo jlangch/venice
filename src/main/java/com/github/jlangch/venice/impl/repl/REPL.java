@@ -99,6 +99,8 @@ public class REPL {
 				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
 			}
 
+			restartable = cli.switchPresent("-restartable");
+
 			final String jansiVersion = config.getJansiVersion();
 
 			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
@@ -259,8 +261,13 @@ public class REPL {
 							printer.println("system", "reloaded");
 						}
 						else if (cmd.equals("restart")) {
-							printer.println("system", "restarting...");
-							System.exit(RESTART_EXIT_CODE);
+							if (restartable) {
+								printer.println("system", "restarting...");
+								System.exit(RESTART_EXIT_CODE);
+							}
+							else {
+								printer.println("error", "The REPL is not restartable!");
+							}
 						}
 						else if (cmd.equals("activate-class-loader")) {
 							if (!allowDynamicClassLoader) {
@@ -863,6 +870,7 @@ public class REPL {
 		printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
 		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
 		printer.println("stdout", "Macro Expansion: " + (venice.isMacroexpandOnLoad() ? "on" : "off"));
+		printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
 		printer.println("stdout", "");
 		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
 		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
@@ -964,6 +972,9 @@ public class REPL {
 			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
 			"Commands: \n" +	
 			"  !reload      reload Venice environment\n" +	
+			"  !restart     restart the REPL.\n" +
+			"               note: the REPL launcher script must support\n" +	
+			"                     REPL restarting.\n" +	
 			"  !?, !help    help\n" +	
 			"  !info        show REPL setup context data\n" +	
 			"  !config      show a sample REPL config\n" +	
@@ -1048,4 +1059,5 @@ public class REPL {
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
 	private boolean allowDynamicClassLoader = false;
+	private boolean restartable = false;
 }

@@ -14,6 +14,7 @@ while true; do
     -cp "libs/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "/Users/juerg/Desktop/venice/scripts;/Users/juerg/Desktop/venice/scripts.zip" \
+    -restartable \
     -colors
 
   # if the REPL exits with exit code 99 restart the REPL otherwise exit the
