@@ -99,10 +99,28 @@ public class VncQueue extends VncCollection {
 		return queue.isEmpty();
 	}
 
+	/**
+	 * Inserts the specified element into the queue represented by this deque 
+	 * (in other words, at the tail of this deque) if it is possible to do so 
+	 * immediately without violating capacity restrictions, returning true 
+	 * upon success and false if no space is currently available. 
+	 * 
+	 * @param val the value to add
+	 * @return true if the value was added to this queue, else false
+	 */
 	public VncBoolean offer(final VncVal val) {
 		return VncBoolean.of(queue.offer(val));
 	}
 
+	/**
+	 * Inserts the specified element into the queue represented by this deque 
+	 * (in other words, at the tail of this deque), waiting up to the specified 
+	 * wait time if necessary for space to become available.
+	 * 
+	 * @param val the value to add
+	 * @param timeoutMillis timeout how long to wait before giving up, in units of milliseconds 
+	 * @return if the value was added to this queue, else false
+	 */
 	public VncBoolean offer(final VncVal val, final long timeoutMillis) {
 		try {
 			return VncBoolean.of(queue.offer(val, timeoutMillis, TimeUnit.MILLISECONDS));
@@ -111,11 +129,42 @@ public class VncQueue extends VncCollection {
 			throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (offer queue timeout val)", ex);
 		}
 	}
+
+	/**
+	 * Inserts the specified element into the queue represented by this deque 
+	 * (in other words, at the tail of this deque), waiting if necessary for 
+	 * space to become available.
+	 * 
+	 * @param val the value to add
+	 */
+	public void put(final VncVal val) {
+		try {
+			queue.put(val);
+		}
+		catch(InterruptedException ex) {
+			throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (put queue val)", ex);
+		}
+	}
 	
+	/**
+	 * Retrieves and removes the head of the queue represented by this deque 
+	 * (in other words, the first element of this deque), or returns nil
+	 * if this deque is empty.
+	 * 
+	 * @return the head of this deque, or nil if this deque is empty
+	 */
 	public VncVal poll() {
 		return toNil(queue.poll());
 	}
 	
+	/**
+	 * Retrieves and removes the head of the queue represented by this deque 
+	 * (in other words, the first element of this deque), waiting up to the 
+	 * specified wait time if necessary for an element to become available.
+	 * 
+	 * @param timeoutMillis timeout how long to wait before giving up, in units of milliseconds 
+	 * @return the head of this deque, or nil if the specified waiting time elapses before an element is available
+	 */
 	public VncVal poll(final long timeoutMillis) {
 		try {
 			return toNil(queue.poll(timeoutMillis, TimeUnit.MILLISECONDS));
@@ -125,8 +174,31 @@ public class VncQueue extends VncCollection {
 		}
 	}
 
+	/**
+	 * Retrieves, but does not remove, the head of the queue represented by this 
+	 * deque (in other words, the first element of this deque), or returns nil 
+	 * if this deque is empty.
+	 * 
+	 * @return the head of this deque, or nil if this deque is empty
+	 */
 	public VncVal peek() {
 		return toNil(queue.peek());
+	}
+	
+	/**
+	 * Retrieves and removes the head of the queue represented by this deque 
+	 * (in other words, the first element of this deque), waiting if necessary 
+	 * until an element becomes available.
+	 * 
+	 * @return the head of this deque
+	 */
+	public VncVal take() {
+		try {
+			return queue.take();
+		}
+		catch(InterruptedException ex) {
+			throw new com.github.jlangch.venice.InterruptedException("interrupted while calling (take queue)", ex);
+		}
 	}
 
 	public void clear() {

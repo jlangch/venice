@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- synchronous element processing to the Venice queue: `(queue)`
 
 
 

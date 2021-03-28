@@ -108,8 +108,6 @@ Agents provide uncoordinated, asynchronous access to a single identity. Actions 
 functions that are asynchronously applied to an Agent's state and whose 
 return value becomes the Agent's new state.
 
-while agents accept functions to process the agent's state...
-
 ```clojure
 (do
    (def x (agent 100))
@@ -118,10 +116,43 @@ while agents accept functions to process the agent's state...
    @x)
 ```
 
-actors accept data to be processed by the actor's function
+
+
+This example is an implementation of the send-a-message-around-a-ring test. A chain 
+of n agents is created, then a sequence of m actions are dispatched to the head 
+of the chain and relayed through it:
+
+*Note: The example has been taken from the Clojure Agent demo and uses a synchronous queue*
 
 ```clojure
-;; simple actors implemented on top of agents
+(do
+  (defn relay [x i]
+    (when (:next x)
+      (send (:next x) relay i))
+    (when (and (zero? i) (:report-queue x))
+      (offer! (:report-queue x) :indefinite i))
+    x)
+
+  (defn run [m n]
+    (let [q (queue)
+          hd (reduce (fn [next _] (agent {:next next}))
+                     (agent {:report-queue q}) (range (dec m)))]
+      (doseq [i (reverse (range n))]
+        (send hd relay i))
+      (poll! q :indefinite)))
+
+  ; 1 million message sends:
+  (time (run 1000 1000))) ;; Elapsed time: 2.9s
+```
+
+### Actors
+
+While Agents accept functions to process the Agent's state, Actors accept 
+data to be processed by the Actor's function
+
+A simple Actors model can be implemented on top of Agents:
+
+```clojure
 (do
    (def actors (atom {}))
 

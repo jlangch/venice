@@ -2696,22 +2696,45 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(queue)", "(queue 100)")
-					.doc("Creates a new mutable threadsafe bounded or unbounded queue.")
+					.doc(
+						"Creates a new mutable threadsafe bounded or unbounded queue.\n\n" +
+						"The queue can be turned into a synchronous queue when using " +
+						"indefinite timeouts for offering and polling values. With a " +
+						"synchronous queue offer! waits until the value can be added " +
+						"to the queue and poll! waits until a value is available from " +
+						"queue thus synchronizing the producer and consumer.")
 					.examples(
-						";unbounded queue   \n" +
+						"; unbounded queue  \n" +
 						"(let [q (queue)]   \n" +
 						"  (offer! q 1)     \n" +
 						"  (offer! q 2)     \n" +
 						"  (offer! q 3)     \n" +
 						"  (poll! q)        \n" +
 						"   q)                ",
-						";bounded queue        \n" +
+						
+						"; bounded queue       \n" +
 						"(let [q (queue 10)]   \n" +
 						"  (offer! q 1000 1)   \n" +
 						"  (offer! q 1000 2)   \n" +
 						"  (offer! q 1000 3)   \n" +
 						"  (poll! q 1000)      \n" +
-						"   q)                   ")
+						"   q)                   ",
+
+						"; synchronous unbounded queue  \n" +
+						"(let [q (queue)]               \n" +
+						"  (offer! q :indefinite 1)     \n" +
+						"  (offer! q :indefinite 2)     \n" +
+						"  (offer! q :indefinite 3)     \n" +
+						"  (poll! q :indefinite)        \n" +
+						"   q)                            ",
+
+						"; synchronous bounded queue  \n" +
+						"(let [q (queue 10)]          \n" +
+						"  (offer! q :indefinite 1)   \n" +
+						"  (offer! q :indefinite 2)   \n" +
+						"  (offer! q :indefinite 3)   \n" +
+						"  (poll! q :indefinite)      \n" +
+						"   q)                          ")
 					.seeAlso("peek", "poll!", "offer!", "empty?", "count")
 					.build()
 		) {
@@ -5818,8 +5841,10 @@ public class CoreFunctions {
 						.doc(
 							"Offers an item to a queue with an optional timeout in milliseconds. " +
 							"If a timeout is given waits up to the specified wait time if necessary " +
-							"for space to become available. If no timeout is given returns immediately " +	
-							"false if the queue does not have any more capacity." +
+							"for space to become available. For an indefinite timeout pass the timeout " +
+							"value :indefinite." +
+							"If no timeout is given returns immediately false if the queue does not " +
+							"have any more capacity." +
 							"Returns true if the element was added to this queue, else false")
 						.examples(
 							"(let [s (queue)]  \n" +
@@ -5843,7 +5868,22 @@ public class CoreFunctions {
 							return ((VncQueue)val).offer(args.second());
 						}
 						else {
-							return ((VncQueue)val).offer(args.third(), Coerce.toVncLong(args.second()).getValue());
+							final VncVal option = args.second();
+							if (Types.isVncKeyword(option)) {
+								if (((VncKeyword)option).hasValue("indefinite")) {
+									((VncQueue)val).put(args.third());
+									return VncBoolean.True;
+								}
+								else {
+									throw new VncException(String.format(
+											"offer!: timeout value '%s' not supported",
+											option.toString()));
+								}
+							}
+							else {
+								final long timeout = Coerce.toVncLong(option).getValue();
+								return ((VncQueue)val).offer(args.third(), timeout);
+							}
 						}
 					}
 					else {
@@ -5866,6 +5906,7 @@ public class CoreFunctions {
 							"(poll! queue timeout)")
 						.doc(
 							"Polls an item from a queue with an optional timeout in milliseconds. " +
+							"For an indefinite timeout pass the timeout value :indefinite." +
 							"If no timeout is given returns the item if one is available else " +
 							"returns nil. With a timeout returns the item if one is available within" +
 							"the given timeout else returns nil.")
@@ -5891,7 +5932,21 @@ public class CoreFunctions {
 							return ((VncQueue)val).poll();
 						}
 						else {
-							return ((VncQueue)val).poll(Coerce.toVncLong(args.second()).getValue());
+							final VncVal option = args.second();
+							if (Types.isVncKeyword(option)) {
+								if (((VncKeyword)option).hasValue("indefinite")) {
+									return ((VncQueue)val).take();
+								}
+								else {
+									throw new VncException(String.format(
+											"poll!: timeout value '%s' not supported",
+											option.toString()));
+								}
+							}
+							else {
+								final long timeout = Coerce.toVncLong(option).getValue();
+								return ((VncQueue)val).poll(timeout);
+							}
 						}
 					}
 					else {
