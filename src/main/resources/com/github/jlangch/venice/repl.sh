@@ -20,12 +20,20 @@
 
 cd /Users/foo/venice/
 
-java \
-  -server \
-  -Xmx4G \
-  -XX:-OmitStackTraceInFastThrow \
-  -Djava.io.tmpdir=tmp \
-  -cp "libs:libs/*" \
-  com.github.jlangch.venice.Launcher \
-  -loadpath "scripts" \
-  -colors
+export REPL_LIBS_DIR="libs"
+
+while true; do
+  java \
+    -server \
+    -Xmx4G \
+    -XX:-OmitStackTraceInFastThrow \
+    -Djava.io.tmpdir=tmp \
+    -cp "libs:libs/*" \
+    com.github.jlangch.venice.Launcher \
+    -loadpath "scripts" \
+    -colors
+
+  # if the REPL exits with exit code 99 restart the REPL otherwise exit the
+  # shell
+  if [ $? -ne 99 ]; then exit 0; fi
+done

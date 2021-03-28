@@ -3,6 +3,8 @@ cd /Users/juerg/Desktop/venice/
 
 DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 
+export REPL_LIBS_DIR="libs"
+
 while true; do
   ${JAVA_8_HOME}/bin/java \
     -server \
