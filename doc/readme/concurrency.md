@@ -125,6 +125,15 @@ of the chain and relayed through it:
 *Note: The example has been taken from the Clojure Agent demo and uses a synchronous queue*
 
 ```clojure
+;; Agent chain
+;;
+;; +-------+    +-------+    ........    +-------+    +--------+    +-------+
+;; | agent |    | agent |    .      .    | agent |    | agent  |    | queue |
+;; |  998  |    |  997  |    .      .    |   0   |    |        |    |       |
+;; |       |    |       |    .      .    |       |    |        |    |       |
+;; | :next o--->| :next o--->.      .--->| :next o--->| :queue o--->|       |
+;; +-------+    +-------+    ........    +-------+    +--------+    +-------+
+
 (do
   (defn relay [x i]
     (when (:next x)
@@ -132,11 +141,15 @@ of the chain and relayed through it:
     (when (and (zero? i) (:report-queue x))
       (offer! (:report-queue x) :indefinite i))
     x)
+    
+  (defn chain-agents [m q]
+    (reduce (fn [next _] (agent {:next next}))
+                         (agent {:report-queue q}) 
+                         (range (dec m))))
 
   (defn run [m n]
-    (let [q (queue)
-          hd (reduce (fn [next _] (agent {:next next}))
-                     (agent {:report-queue q}) (range (dec m)))]
+    (let [q  (queue)
+          hd (chain-agents m q)]
       (doseq [i (reverse (range n))]
         (send hd relay i))
       (poll! q :indefinite)))
