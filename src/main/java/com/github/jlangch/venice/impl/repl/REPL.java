@@ -269,6 +269,9 @@ public class REPL {
 								printer.println("error", "The REPL is not restartable!");
 							}
 						}
+						else if (cmd.equals("restartable")) {
+							printer.println("stdout", "restartable: " + (restartable ? "yes" : "no"));
+						}
 						else if (cmd.equals("activate-class-loader")) {
 							if (!allowDynamicClassLoader) {
 								allowDynamicClassLoader = true;
