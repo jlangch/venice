@@ -375,11 +375,12 @@ See [PI Monte Carlo](https://www.geeksforgeeks.org/estimating-value-pi-using-mon
 
   (defn sample []
     (circle? (rand-double) (rand-double)))
-    
+
   (defn worker [iterations]
-     (reduce
-     (count (filter true? (repeatedly iterations sample))))
-   
+    (->> (repeatedly iterations sample)
+         (filter true?)
+         (count)))
+
   (defn pi [iterations workers]
     (let [iter_worker (/ iterations workers)
           inside (->> (repeatedly workers (fn [] (future #(worker iter_worker))))
