@@ -8,7 +8,7 @@
 * [Locking](#locking)
 * [Schedulers](#schedulers)
 * [Thread local vars](#thread-local-vars)
-* [Example Dining Philosophers](#example-dining-philosophers)
+* [Examples](#examples)
 
 
 ## Atoms
@@ -129,22 +129,22 @@ of the chain and relayed through it:
 ;;
 ;; +-------+    +-------+    ........    +-------+    +--------+    +-------+
 ;; | agent |    | agent |    .      .    | agent |    | agent  |    | queue |
-;; |  998  |    |  997  |    .      .    |   0   |    |        |    |       |
-;; |       |    |       |    .      .    |       |    |        |    |       |
-;; | :next o--->| :next o--->.      .--->| :next o--->| :queue o--->|       |
+;; |  998  |    |  997  |    .      .    |   0   |    |   *    |    |  ---  |
+;; |       |    |       |    .      .    |       |    |        |    |  ---  |
+;; | :next o--->| :next o--->.      .--->| :next o--->| :queue o--->|  ---  |
 ;; +-------+    +-------+    ........    +-------+    +--------+    +-------+
 
 (do
   (defn relay [x i]
     (when (:next x)
       (send (:next x) relay i))
-    (when (and (zero? i) (:report-queue x))
-      (offer! (:report-queue x) :indefinite i))
+    (when (and (zero? i) (:queue x))
+      (offer! (:queue x) :indefinite i))
     x)
     
   (defn chain-agents [m q]
     (reduce (fn [next _] (agent {:next next}))
-                         (agent {:report-queue q}) 
+                         (agent {:queue q}) 
                          (range (dec m))))
 
   (defn run [m n]
@@ -155,7 +155,7 @@ of the chain and relayed through it:
       (poll! q :indefinite)))
 
   ; 1 million message sends:
-  (time (run 1000 1000))) ;; Elapsed time: 2.9s
+  (time (run 1000 1000))) ;; Elapsed time: 2.94s
 ```
 
 ### Actors
@@ -337,9 +337,62 @@ Thread local vars get inherited by child threads
 ```
 
 
-## Example: Dining Philosophers
+## Examples
 
-### Dining Philosophers with Semaphores
+
+### Estimating PI using the Monte Carlo method
+
+#### Estimating PI single-threaded
+
+```clojure
+(do  
+  (defn circle? [x y]
+    (<= (+ (* x x) (* y y)) 1.0))
+
+  (defn sample []
+    (circle? (rand-double) (rand-double)))
+
+  (defn pi [iterations]
+    (let [measurements (repeatedly iterations sample)
+          inside       (filter true? measurements)]
+       (* 4.0 (/ (double (count inside)) iterations)))))
+       
+  ;; (time (pi 10_000_000))
+  ;; Elapsed time: 16.34s
+  ;; => 3.1418628  
+```
+
+
+#### Estimating PI multi-threaded
+
+```clojure
+(do  
+  (defn circle? [x y]
+    (<= (+ (* x x) (* y y)) 1.0))
+
+  (defn sample []
+    (circle? (rand-double) (rand-double)))
+    
+  (defn worker [iterations]
+     (reduce
+     (count (filter true? (repeatedly iterations sample))))
+   
+  (defn pi [iterations workers]
+    (let [iter_worker (/ iterations workers)
+          inside (->> (repeatedly workers (fn [] (future #(worker iter_worker))))
+                      (map deref)
+                      (apply +))]
+      (* 4.0 (/ (double inside) iter_worker workers)))))
+       
+  ;; (time (pi 10_000_000 n))
+  ;; n       1       2       3       4       5       6
+  ;; time    16.68s  12.32s  11.28s  12.47s  14.83s  16.02s
+```
+
+
+### Dining Philosophers
+
+#### Dining Philosophers with Semaphores
 
 ```clojure
 (do
