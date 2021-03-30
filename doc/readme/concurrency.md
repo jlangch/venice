@@ -342,6 +342,9 @@ Thread local vars get inherited by child threads
 
 ### Estimating PI using the Monte Carlo method
 
+See [PI Monte Carlo](https://www.geeksforgeeks.org/estimating-value-pi-using-monte-carlo/)
+
+
 #### Estimating PI single-threaded
 
 ```clojure
