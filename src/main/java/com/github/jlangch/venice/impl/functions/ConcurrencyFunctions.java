@@ -1567,25 +1567,36 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction futures_thread_pool_size = 
+	public static VncFunction futures_thread_pool_info = 
 		new VncFunction(
-				"futures-thread-pool-size", 
+				"futures-thread-pool-info", 
 				VncFunction
 					.meta()
-					.arglists(
-						"(futures-thread-pool-size)")		
+					.arglists("(futures-thread-pool-info)")		
 					.doc(
-						"Returns the maximum pool size of the ThreadPoolExecutor that serving " +
-						"the futures.")
+						"Returns the thread pool info of the ThreadPoolExecutor serving " +
+						"the futures.\n\n" +
+						"core-pool-size        the number of threads to keep in the pool,\n" +
+						"                      even if they are idle\n" +
+						"maximum-pool-size     the maximum allowed number of threads\n" +
+						"current-pool-size     the current number of threads in the pool\n" +
+						"largest-pool-size     the largest number of threads that have\n" +
+						"                      ever simultaneously been in the pool\n" +
+						"active-thread-count   the approximate number of threads that are\n" +
+						"                      actively executing tasks\n" +
+						"scheduled-task-count  the approximate total number of tasks that\n" +
+						"                      have ever been scheduled for execution\n" +
+						"completed-task-count  the approximate total number of tasks\n" +
+						"                      that have completed execution")
 					.examples(
-						"(futures-thread-pool-size)")
+						"(futures-thread-pool-info)")
 					.seeAlso("future")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				return new VncLong(mngdExecutor.getMaximumThreadPoolSize());
+				return mngdExecutor.info();
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1986,7 +1997,7 @@ public class ConcurrencyFunctions {
 					.add(future_cancelled_Q)
 					.add(futures_fork)
 					.add(futures_wait)
-					.add(futures_thread_pool_size)
+					.add(futures_thread_pool_info)
 
 					.add(delay_Q)
 					.add(force)
@@ -2004,5 +2015,5 @@ public class ConcurrencyFunctions {
 	
 	
 	private static ManagedCachedThreadPoolExecutor mngdExecutor = 
-			new ManagedCachedThreadPoolExecutor("venice-future-pool", 100);
+			new ManagedCachedThreadPoolExecutor("venice-future-pool", 200);
 }

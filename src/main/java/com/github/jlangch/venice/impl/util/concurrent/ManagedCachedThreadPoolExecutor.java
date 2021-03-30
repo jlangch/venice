@@ -20,6 +20,11 @@ package com.github.jlangch.venice.impl.util.concurrent;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+
 
 public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 
@@ -56,8 +61,56 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 		}
 	}
 	
+	public int getCoreThreadPoolSize() {
+		return getExecutor().getCorePoolSize();
+	}
+	
 	public int getMaximumThreadPoolSize() {
 		return maximumThreadPoolSize;
+	}
+	
+	public int getLargestThreadPoolSize() {
+		return getExecutor().getLargestPoolSize();
+	}
+	
+	public int getActiveCountThreadPoolSize() {
+		return getExecutor().getActiveCount();
+	}
+	
+	public int getThreadPoolSize() {
+		return getExecutor().getPoolSize();
+	}
+	
+	public long getTaskCount() {
+		return getExecutor().getTaskCount();
+	}
+	
+	public long getCompletedTaskCount() {
+		return getExecutor().getCompletedTaskCount();
+	}
+	
+	public VncMap info() {
+		return VncOrderedMap.of(
+				new VncKeyword("core-pool-size"),
+				new VncLong(getCoreThreadPoolSize()),
+				
+				new VncKeyword("maximum-pool-size"),
+				new VncLong(getMaximumThreadPoolSize()),
+				
+				new VncKeyword("current-pool-size"),
+				new VncLong(getThreadPoolSize()),
+
+				new VncKeyword("largest-pool-size"),
+				new VncLong(getLargestThreadPoolSize()),
+				
+				new VncKeyword("active-thread-count"),
+				new VncLong(getActiveCountThreadPoolSize()),
+				
+				new VncKeyword("scheduled-task-count"),
+				new VncLong(getTaskCount()),
+				
+				new VncKeyword("completed-task-count"),
+				new VncLong(getCompletedTaskCount()));
 	}
 
 	
