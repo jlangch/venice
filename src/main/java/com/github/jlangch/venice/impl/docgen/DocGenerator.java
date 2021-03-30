@@ -1360,6 +1360,9 @@ public class DocGenerator {
 		agents.addItem(getDocItem("shutdown-agents?", false));
 		agents.addItem(getDocItem("await-termination-agents", false));
 		agents.addItem(getDocItem("await-termination-agents?", false));
+		agents.addItem(getDocItem("agent-send-thread-pool-info"));
+		agents.addItem(getDocItem("agent-send-off-thread-pool-info"));
+		
 		
 		final DocSection sched = new DocSection("Scheduler", "concurrency.scheduler");
 		all.addSection(sched);

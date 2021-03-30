@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.types.concurrent;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,9 +38,11 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
@@ -196,6 +197,54 @@ public class Agent implements IDeref {
 		return sendExecutor.isTerminated() && sendOffExecutor.isTerminated();
 	}
 
+	public static VncMap sendExecutorInfo() {
+		return VncOrderedMap.of(
+				new VncKeyword("core-pool-size"),
+				new VncLong(sendExecutor.getCoreThreadPoolSize()),
+				
+				new VncKeyword("maximum-pool-size"),
+				new VncLong(sendExecutor.getMaximumThreadPoolSize()),
+				
+				new VncKeyword("current-pool-size"),
+				new VncLong(sendExecutor.getThreadPoolSize()),
+
+				new VncKeyword("largest-pool-size"),
+				new VncLong(sendExecutor.getLargestThreadPoolSize()),
+				
+				new VncKeyword("active-thread-count"),
+				new VncLong(sendExecutor.getActiveThreadCount()),
+				
+				new VncKeyword("scheduled-task-count"),
+				new VncLong(sendExecutor.getScheduledTaskCount()),
+				
+				new VncKeyword("completed-task-count"),
+				new VncLong(sendExecutor.getCompletedTaskCount()));
+	}
+
+	public static VncMap sendOffExecutorInfo() {
+		return VncOrderedMap.of(
+				new VncKeyword("core-pool-size"),
+				new VncLong(sendOffExecutor.getCoreThreadPoolSize()),
+				
+				new VncKeyword("maximum-pool-size"),
+				new VncLong(sendOffExecutor.getMaximumThreadPoolSize()),
+				
+				new VncKeyword("current-pool-size"),
+				new VncLong(sendOffExecutor.getThreadPoolSize()),
+
+				new VncKeyword("largest-pool-size"),
+				new VncLong(sendOffExecutor.getLargestThreadPoolSize()),
+				
+				new VncKeyword("active-thread-count"),
+				new VncLong(sendOffExecutor.getActiveThreadCount()),
+				
+				new VncKeyword("scheduled-task-count"),
+				new VncLong(sendOffExecutor.getScheduledTaskCount()),
+				
+				new VncKeyword("completed-task-count"),
+				new VncLong(sendOffExecutor.getCompletedTaskCount()));
+	}
+	
 	private static VncFunction getErrorHandler(final VncMap options) {
 		if (options != null) {
 			final VncVal errHandler = options.get(ERROR_HANDLER);
@@ -390,7 +439,7 @@ public class Agent implements IDeref {
 
 	private final static AtomicLong sendOffThreadPoolCounter = new AtomicLong(0);
 
-	private final static ExecutorService sendExecutor = 
+	private final static StripedExecutorService sendExecutor = 
 			new StripedExecutorService(
 				Executors.newFixedThreadPool(
 						2 + Runtime.getRuntime().availableProcessors(),
@@ -399,7 +448,7 @@ public class Agent implements IDeref {
 								sendThreadPoolCounter,
 								true /* daemon threads */)));
 
-	private final static ExecutorService sendOffExecutor = 
+	private final static StripedExecutorService sendOffExecutor = 
 			new StripedExecutorService(
 				Executors.newCachedThreadPool(
 						ThreadPoolUtil.createThreadFactory(

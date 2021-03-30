@@ -38,6 +38,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -139,6 +140,51 @@ public class StripedExecutorService extends AbstractExecutorService {
         this(Executors.newFixedThreadPool(numberOfThreads));
     }
 
+    
+	public int getCoreThreadPoolSize() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getCorePoolSize()
+				: 0;
+	}
+	
+	public int getMaximumThreadPoolSize() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getMaximumPoolSize()
+				: 0;
+	}
+	
+	public int getLargestThreadPoolSize() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getLargestPoolSize()
+				: 0;
+	}
+	
+	public int getThreadPoolSize() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getPoolSize()
+				: 0;
+	}
+	
+	public int getActiveThreadCount() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getActiveCount()
+				: 0;
+	}
+	
+	public long getScheduledTaskCount() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getTaskCount()
+				: 0;
+	}
+	
+	public long getCompletedTaskCount() {
+		return executor instanceof ThreadPoolExecutor 
+				? ((ThreadPoolExecutor)executor).getCompletedTaskCount()
+				: 0;
+	}
+    
+    
+    
     /**
      * If the runnable also implements StripedObject, we store the
      * stripe object in a thread local, since the actual runnable

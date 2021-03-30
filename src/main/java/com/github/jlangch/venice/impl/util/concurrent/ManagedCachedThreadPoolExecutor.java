@@ -73,7 +73,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 		return getExecutor().getLargestPoolSize();
 	}
 	
-	public int getActiveCountThreadPoolSize() {
+	public int getActiveThreadCount() {
 		return getExecutor().getActiveCount();
 	}
 	
@@ -81,7 +81,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 		return getExecutor().getPoolSize();
 	}
 	
-	public long getTaskCount() {
+	public long getScheduledTaskCount() {
 		return getExecutor().getTaskCount();
 	}
 	
@@ -104,10 +104,10 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 				new VncLong(getLargestThreadPoolSize()),
 				
 				new VncKeyword("active-thread-count"),
-				new VncLong(getActiveCountThreadPoolSize()),
+				new VncLong(getActiveThreadCount()),
 				
 				new VncKeyword("scheduled-task-count"),
-				new VncLong(getTaskCount()),
+				new VncLong(getScheduledTaskCount()),
 				
 				new VncKeyword("completed-task-count"),
 				new VncLong(getCompletedTaskCount()));

@@ -1168,8 +1168,77 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+	public static VncFunction agent_send_thread_pool_info = 
+		new VncFunction(
+				"agent-send-thread-pool-info", 
+				VncFunction
+					.meta()
+					.arglists("(agent-send-thread-pool-info)")		
+					.doc(
+						"Returns the thread pool info of the ThreadPoolExecutor serving " +
+						"agent send.\n\n" +
+						"core-pool-size        the number of threads to keep in the pool,\n" +
+						"                      even if they are idle\n" +
+						"maximum-pool-size     the maximum allowed number of threads\n" +
+						"current-pool-size     the current number of threads in the pool\n" +
+						"largest-pool-size     the largest number of threads that have\n" +
+						"                      ever simultaneously been in the pool\n" +
+						"active-thread-count   the approximate number of threads that are\n" +
+						"                      actively executing tasks\n" +
+						"scheduled-task-count  the approximate total number of tasks that\n" +
+						"                      have ever been scheduled for execution\n" +
+						"completed-task-count  the approximate total number of tasks\n" +
+						"                      that have completed execution")
+					.examples(
+						"(agent-send-thread-pool-info)")
+					.seeAlso("agent", "send")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
 
+				return Agent.sendExecutorInfo();
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction agent_send_off_thread_pool_info = 
+		new VncFunction(
+				"agent-send-off-thread-pool-info", 
+				VncFunction
+					.meta()
+					.arglists("(agent-send-off-thread-pool-info)")		
+					.doc(
+						"Returns the thread pool info of the ThreadPoolExecutor serving " +
+						"agent send-off.\n\n" +
+						"core-pool-size        the number of threads to keep in the pool,\n" +
+						"                      even if they are idle\n" +
+						"maximum-pool-size     the maximum allowed number of threads\n" +
+						"current-pool-size     the current number of threads in the pool\n" +
+						"largest-pool-size     the largest number of threads that have\n" +
+						"                      ever simultaneously been in the pool\n" +
+						"active-thread-count   the approximate number of threads that are\n" +
+						"                      actively executing tasks\n" +
+						"scheduled-task-count  the approximate total number of tasks that\n" +
+						"                      have ever been scheduled for execution\n" +
+						"completed-task-count  the approximate total number of tasks\n" +
+						"                      that have completed execution")
+					.examples(
+						"(agent-send-off-thread-pool-info)")
+					.seeAlso("agent", "send")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+	
+				return Agent.sendOffExecutorInfo();
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 	///////////////////////////////////////////////////////////////////////////
 	// Promises
 	///////////////////////////////////////////////////////////////////////////
@@ -1985,6 +2054,8 @@ public class ConcurrencyFunctions {
 					.add(shutdown_agents_Q)
 					.add(await_termination_agents)
 					.add(await_termination_agents_Q)
+					.add(agent_send_thread_pool_info)
+					.add(agent_send_off_thread_pool_info)
 										
 					.add(promise)
 					.add(promise_Q)
