@@ -445,7 +445,7 @@ public class Venice {
 			final Callable<Object> callable, 
 			final int timeoutSeconds
 	) throws Exception {
-		final Future<Object> future = mngExecutor
+		final Future<Object> future = mngdExecutor
 										.getExecutor()
 										.submit(callable);
 
@@ -478,7 +478,7 @@ public class Venice {
 	}
 	
 	
-	private static ManagedCachedThreadPoolExecutor mngExecutor = 
+	private static ManagedCachedThreadPoolExecutor mngdExecutor = 
 			new ManagedCachedThreadPoolExecutor("venice-timeout-pool", 100);
 		
 	private final IInterceptor interceptor;

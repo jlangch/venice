@@ -55,6 +55,10 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 			}
 		}
 	}
+	
+	public int getMaximumThreadPoolSize() {
+		return maximumThreadPoolSize;
+	}
 
 	
 	private int maximumThreadPoolSize;

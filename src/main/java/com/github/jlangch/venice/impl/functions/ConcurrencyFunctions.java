@@ -1567,6 +1567,30 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction futures_thread_pool_size = 
+		new VncFunction(
+				"futures-thread-pool-size", 
+				VncFunction
+					.meta()
+					.arglists(
+						"(futures-thread-pool-size)")		
+					.doc(
+						"Returns the maximum pool size of the ThreadPoolExecutor that serving " +
+						"the futures.")
+					.examples(
+						"(futures-thread-pool-size)")
+					.seeAlso("future")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+
+				return new VncLong(mngdExecutor.getMaximumThreadPoolSize());
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
 	public static VncFunction futures_wait = 
 		new VncFunction(
 				"futures-wait", 
@@ -1620,8 +1644,8 @@ public class ConcurrencyFunctions {
 			
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-	
 
+		
 	///////////////////////////////////////////////////////////////////////////
 	// Delay
 	///////////////////////////////////////////////////////////////////////////
@@ -1962,6 +1986,7 @@ public class ConcurrencyFunctions {
 					.add(future_cancelled_Q)
 					.add(futures_fork)
 					.add(futures_wait)
+					.add(futures_thread_pool_size)
 
 					.add(delay_Q)
 					.add(force)
