@@ -13,12 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.jlangch.venice.nanojson;
 
 /*
  * Modified by Venice 12.05.2019
+ *  - changed package to com.github.jlangch.venice.nanojson
  *  - added function from(Reader in)
  */
+package com.github.jlangch.venice.nanojson;
 
 import java.io.InputStream;
 import java.io.Reader;

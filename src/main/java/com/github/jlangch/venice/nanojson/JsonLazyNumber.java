@@ -13,14 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.github.jlangch.venice.nanojson;
 
 /*
  * Modified by Venice 12.05.2019
+ *  - changed package to com.github.jlangch.venice.nanojson
  *  - made this class (JsonLazyNumber) public
  *  - added function isDouble()
  *  - added function bigDecimalValue()
  */
+package com.github.jlangch.venice.nanojson;
 
 import java.math.BigDecimal;
 
