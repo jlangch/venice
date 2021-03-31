@@ -267,6 +267,9 @@ jar {
     exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
     
     archiveFileName = "venice-raw-${project.version}.jar"
+    
+    metaInf { from 'src/main/resources/META-INF/license.txt'
+              from 'src/main/resources/META-INF/notice.txt' }
 }
 
 
@@ -431,6 +434,24 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
+        }
+        
+        println "Updating version ${project.version} -> 'notice.txt'"
+        ant.replaceregexp(
+                match:   "Venice Release ${version_regex}", 
+                replace: "Venice Release ${project.version}", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources/META_INF', includes: 'notice.txt')
+        }
+        
+        println "Updating version ${project.version} -> 'license.txt'"
+        ant.replaceregexp(
+                match:   "Venice Release ${version_regex}", 
+                replace: "Venice Release ${project.version}", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources/META_INF', includes: 'license.txt')
         }
     }
 }
