@@ -1226,7 +1226,7 @@ public class ConcurrencyFunctions {
 						"                      that have completed execution")
 					.examples(
 						"(agent-send-off-thread-pool-info)")
-					.seeAlso("agent", "send")
+					.seeAlso("agent", "send-off")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
