@@ -11,7 +11,7 @@
 
 ## Overview
 
-The main purpose for embedding Venice in a Java applications is to use Venice as an expression
+The main purpose for embedding Venice in Java applications is to use Venice as an expression
 or rules engine. 
 
 Precompiling these Venice expressions or rules results in performance improvement that can be
