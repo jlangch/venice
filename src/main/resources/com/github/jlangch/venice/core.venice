@@ -750,7 +750,7 @@
           "(doseq [x (range 5)] (print (* x 2)))"
           "(doseq [x (range 10) :when (odd? x)] (print x))"
           "(doseq [x (range 10) :when (odd? x)] (print (* x 2)))"
-          "(doseq [x (seq \"abc\") y [0 1 2]] (print (pr-str [x y])))")
+          "(doseq [x [1 2 3] y [1 2 3]] (println [x y]))")
      :see-also '("list-comp" "dotimes") }
 
   doseq [[binding_ coll-expr & bindings] & body]

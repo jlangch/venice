@@ -118,8 +118,8 @@ return value becomes the Agent's new state.
 
 
 
-This example is an implementation of the send-a-message-around-a-ring test. A chain 
-of n agents is created, then a sequence of m actions are dispatched to the head 
+The following example is an implementation of a message relay. A chain of n 
+agents is created, then a sequence of m actions are dispatched to the head 
 of the chain and relayed through it:
 
 *Note: The example has been taken from the Clojure Agent demo and uses a synchronous queue*
@@ -154,8 +154,8 @@ of the chain and relayed through it:
         (send hd relay i))
       (poll! q :indefinite)))
 
-  ; 1 million message sends:
-  (time (run 1000 1000))) ;; Elapsed time: 2.94s
+  ;; 1 million message sends:
+  (time (run 1000 1000))) ; Elapsed time: 2.94s
 ```
 
 ### Actors
