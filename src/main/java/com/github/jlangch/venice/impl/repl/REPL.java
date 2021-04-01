@@ -69,7 +69,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
-import com.github.jlangch.venice.impl.util.Licenses;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -438,9 +437,6 @@ public class REPL {
 			else if (cmd.startsWith("sandbox ")) {
 				final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
 				handleSandboxCommand(params, terminal, env);
-			}
-			else if (cmd.equals("lic")) {
-				printLicenses();
 			}
 			else if (cmd.equals("colors")) {
 				printConfiguredColors();
@@ -834,16 +830,6 @@ public class REPL {
 		}
 	}
 
-	private void printLicenses() {
-		Licenses.lics().entrySet().forEach(e -> {
-			printer.println("stdout", "");
-			printer.println("stdout", DELIM);
-			printer.println("stdout", e.getKey() + " License");
-			printer.println("stdout", DELIM);
-			printer.println("stdout", e.getValue());
-		});
-	}
-
 	private void printConfiguredColors() {
 		printer.println("default",   "default");
 		printer.println("result",    "result");
@@ -1050,7 +1036,6 @@ public class REPL {
 			"   !sandbox add-rule venice:module:shell\n";	
 
 	private final static int RESTART_EXIT_CODE = 99;
-	private final static String DELIM = StringUtil.repeat('-', 80);
 	private final static String HISTORY_FILE = ".repl.history";
 
 	private ReplConfig config;
