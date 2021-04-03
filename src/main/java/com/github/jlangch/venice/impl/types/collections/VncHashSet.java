@@ -199,9 +199,7 @@ public class VncHashSet extends VncSet {
 			return 1;
 		}
 		else if (Types.isVncHashSet(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncHashSet)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncHashSet)o).size());
 			if (c != 0) {
 				return c;
 			}

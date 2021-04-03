@@ -117,8 +117,7 @@ public class Destructuring {
 			else if (Types.isVncVector(bindVal)) {
 				throw new VncException(
 						String.format(
-								"Associative destructuring on vector is not yet implemented",
-								Types.getType(bindVal),
+								"Associative destructuring on vector is not yet implemented. %s",
 								ErrorMessage.buildErrLocation(bindVal)));
 			}
 			else if (bindVal == Nil) {

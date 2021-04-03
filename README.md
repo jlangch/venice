@@ -1,9 +1,9 @@
 [![](https://github.com/jlangch/venice/blob/master/doc/license.svg)](./LICENSE)
 [![](https://github.com/jlangch/venice/blob/master/doc/maven-central.svg)](https://search.maven.org/search?q=a:venice)
 ![Java CI](https://github.com/jlangch/venice/workflows/Java%20CI/badge.svg?branch=master)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/jlangch/venice.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jlangch/venice/context:java)
 ![Java Version](https://img.shields.io/badge/java-%3E%3D%201.8-success)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice) 
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/jlangch/venice.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jlangch/venice/context:java)
 
 # Venice
 

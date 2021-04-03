@@ -440,9 +440,7 @@ public class SandboxRules {
 	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules rejectAllVeniceIoFunctions() {
-		if (rules != null) {
-			rejectVeniceFunctions("*io*");
-		}
+		rejectVeniceFunctions("*io*");
 		return this;
 	}
 	
@@ -452,9 +450,7 @@ public class SandboxRules {
 	 * @return this {@code SandboxRules}
 	 */
 	public SandboxRules rejectAllJavaCalls() {
-		if (rules != null) {
-			rejectVeniceFunctions(".");
-		}
+		rejectVeniceFunctions(".");
 		return this;
 	}
 	

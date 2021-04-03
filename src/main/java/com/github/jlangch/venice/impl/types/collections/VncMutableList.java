@@ -343,15 +343,13 @@ public class VncMutableList extends VncSequence {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (Types.isVncList(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncMutableList)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+		else if (Types.isVncMutableList(o)) {
+			int c = Integer.compare(size(), ((VncMutableList)o).size());
 			if (c != 0) {
 				return c;
 			}
 			else {
-				for(int ii=0; ii<sizeThis; ii++) {
+				for(int ii=0; ii<size(); ii++) {
 					c = nth(ii).compareTo(((VncMutableList)o).nth(ii));
 					if (c != 0) {
 						return c;

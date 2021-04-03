@@ -145,7 +145,7 @@ public class SandboxRecorder extends Interceptor {
 	public String onReadSystemProperty(
 			final String propertyName
 	) throws SecurityException {
-		format("system.property:propertyName", propertyName);
+		format("system.property:%s", propertyName);
 		return super.onReadSystemProperty(propertyName);
 	}
 	
@@ -153,7 +153,7 @@ public class SandboxRecorder extends Interceptor {
 	public String onReadSystemEnv(
 			final String name
 	) throws SecurityException {
-		format("system.env:name", name);
+		format("system.env:%s", name);
 		return super.onReadSystemEnv(name);
 	}
 	

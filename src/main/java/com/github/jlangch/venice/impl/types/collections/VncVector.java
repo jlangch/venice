@@ -367,14 +367,12 @@ public class VncVector extends VncSequence implements IVncFunction {
 			return 1;
 		}
 		else if (Types.isVncVector(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncVector)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncVector)o).size());
 			if (c != 0) {
 				return c;
 			}
 			else {
-				for(int ii=0; ii<sizeThis; ii++) {
+				for(int ii=0; ii<size(); ii++) {
 					c = nth(ii).compareTo(((VncVector)o).nth(ii));
 					if (c != 0) {
 						return c;

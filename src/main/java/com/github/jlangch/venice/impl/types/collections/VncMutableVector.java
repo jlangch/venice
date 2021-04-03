@@ -347,15 +347,13 @@ public class VncMutableVector extends VncSequence {
 		if (o == Constants.Nil) {
 			return 1;
 		}
-		else if (Types.isVncList(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncMutableVector)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+		else if (Types.isVncMutableVector(o)) {
+			int c = Integer.compare(size(), ((VncMutableVector)o).size());
 			if (c != 0) {
 				return c;
 			}
 			else {
-				for(int ii=0; ii<sizeThis; ii++) {
+				for(int ii=0; ii<size(); ii++) {
 					c = nth(ii).compareTo(((VncMutableVector)o).nth(ii));
 					if (c != 0) {
 						return c;

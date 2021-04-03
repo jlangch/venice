@@ -350,14 +350,12 @@ public class VncList extends VncSequence {
 			return 1;
 		}
 		else if (Types.isVncList(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncList)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncList)o).size());
 			if (c != 0) {
 				return c;
 			}
 			else {
-				for(int ii=0; ii<sizeThis; ii++) {
+				for(int ii=0; ii<size(); ii++) {
 					c = nth(ii).compareTo(((VncList)o).nth(ii));
 					if (c != 0) {
 						return c;

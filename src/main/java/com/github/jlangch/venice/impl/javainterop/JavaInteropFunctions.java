@@ -346,7 +346,7 @@ public class JavaInteropFunctions {
 			}
 			else {
 				throw new VncException(String.format(
-						"Function 'class-name' requires a Java class as argument", 
+						"Function 'class-name' requires a Java class as argument. Got a '%s'.", 
 						Types.getType(args.first())));
 			}
 		}

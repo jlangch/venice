@@ -505,7 +505,7 @@ public class Reader {
 					case '\\': sb.append('\\'); break;
 					
 					// line escape
-					case '\r': if (ii<len && chars[ii] == '\n') ii++; else sb.append("\\\r"); break;
+					case '\r': if (ii<len && chars[ii] == '\n') { ii++; } else { sb.append("\\\r"); } break;
 					case '\n': break;
 					
 					default: break;

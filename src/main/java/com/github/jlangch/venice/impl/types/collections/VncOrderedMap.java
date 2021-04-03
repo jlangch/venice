@@ -264,9 +264,7 @@ public class VncOrderedMap extends VncMap {
 			return 1;
 		}
 		else if (Types.isVncOrderedMap(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncOrderedMap)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncOrderedMap)o).size());
 			if (c != 0) {
 				return c;
 			}

@@ -262,9 +262,7 @@ public class VncSortedMap extends VncMap {
 			return 1;
 		}
 		else if (Types.isVncSortedMap(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncSortedMap)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncSortedMap)o).size());
 			if (c != 0) {
 				return c;
 			}

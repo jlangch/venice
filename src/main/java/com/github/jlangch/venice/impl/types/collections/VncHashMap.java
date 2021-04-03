@@ -273,9 +273,7 @@ public class VncHashMap extends VncMap {
 			return 1;
 		}
 		else if (Types.isVncHashMap(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncHashMap)o).size());
 			if (c != 0) {
 				return c;
 			}

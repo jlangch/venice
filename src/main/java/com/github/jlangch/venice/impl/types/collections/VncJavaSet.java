@@ -241,9 +241,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 			return 1;
 		}
 		else if (Types.isVncJavaSet(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncJavaSet)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncJavaSet)o).size());
 			if (c != 0) {
 				return c;
 			}

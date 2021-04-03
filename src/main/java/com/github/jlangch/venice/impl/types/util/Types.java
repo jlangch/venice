@@ -475,7 +475,7 @@ public class Types {
 					if (((VncSequence)a).size() != ((VncSequence)b).size()) {
 						return false;
 					}
-					for (Integer i=0; i<((VncSequence)a).size(); i++) {
+					for (int i=0; i<((VncSequence)a).size(); i++) {
 						if (!_equal_Q(((VncSequence)a).nth(i), ((VncSequence)b).nth(i))) {
 							return false;
 						}

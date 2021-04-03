@@ -213,9 +213,7 @@ public class VncMutableSet extends VncSet {
 			return 1;
 		}
 		else if (Types.isVncMutableSet(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncMutableSet)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncMutableSet)o).size());
 			if (c != 0) {
 				return c;
 			}

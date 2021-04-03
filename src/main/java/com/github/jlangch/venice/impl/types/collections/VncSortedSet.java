@@ -199,9 +199,7 @@ public class VncSortedSet extends VncSet {
 			return 1;
 		}
 		else if (Types.isVncSortedSet(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncSortedSet)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncSortedSet)o).size());
 			if (c != 0) {
 				return c;
 			}

@@ -247,9 +247,7 @@ public class VncMutableMap extends VncMap {
 			return 1;
 		}
 		else if (Types.isVncMutableMap(o)) {
-			final Integer sizeThis = size();
-			final Integer sizeOther = ((VncMutableMap)o).size();
-			int c = sizeThis.compareTo(sizeOther);
+			int c = Integer.compare(size(), ((VncMutableMap)o).size());
 			if (c != 0) {
 				return c;
 			}
