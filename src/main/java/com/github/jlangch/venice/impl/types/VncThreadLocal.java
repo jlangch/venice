@@ -98,7 +98,7 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public VncThreadLocal assoc(final VncVal... kvs) {
-		for (int ii=0; ii<kvs.length; ii+=2) {
+		for (int ii=0; ii<kvs.length-1; ii+=2) {
 			set(Coerce.toVncKeyword(kvs[ii]), kvs[ii+1]);
 		}
 		return this;

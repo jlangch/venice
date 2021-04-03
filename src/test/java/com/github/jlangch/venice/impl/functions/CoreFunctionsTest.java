@@ -99,6 +99,14 @@ public class CoreFunctionsTest {
 	public void test_assoc() {
 		final Venice venice = new Venice();
 
+		assertEquals("{}", venice.eval("(str (assoc {}))"));
+		assertEquals("{}", venice.eval("(str (assoc (ordered-map )))"));
+		assertEquals("{}", venice.eval("(str (assoc (sorted-map )))"));
+
+		assertEquals("{:a 1}", venice.eval("(str (assoc {} :a 1))"));
+		assertEquals("{:a 1}", venice.eval("(str (assoc (ordered-map ) :a 1))"));
+		assertEquals("{:a 1}", venice.eval("(str (assoc (sorted-map ) :a 1))"));
+
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (assoc {} :a 1 :b 2))"));
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (assoc (ordered-map ) :a 1 :b 2))"));
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (assoc (sorted-map ) :a 1 :b 2))"));
@@ -117,6 +125,10 @@ public class CoreFunctionsTest {
 	@Test
 	public void test_assoc_BANG() {
 		final Venice venice = new Venice();
+
+		assertEquals("{}", venice.eval("(str (assoc! (mutable-map)))"));
+
+		assertEquals("{:a 1}", venice.eval("(str (assoc! (mutable-map) :a 1))"));
 
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (assoc! (mutable-map) :a 1 :b 2))"));
 		

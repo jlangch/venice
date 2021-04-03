@@ -197,7 +197,7 @@ public class VncOrderedMap extends VncMap {
 		}
 		
 		io.vavr.collection.LinkedHashMap<VncVal,VncVal> tmp = value;
-		for (int i=0; i<mvs.length; i+=2) {
+		for (int i=0; i<mvs.length-1; i+=2) {
 			tmp = tmp.put(mvs[i], mvs[i+1]);
 		}
 		return new VncOrderedMap(tmp, getMeta());

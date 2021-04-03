@@ -167,7 +167,7 @@ public class VncMutableMap extends VncMap {
 					ErrorMessage.buildErrLocation(mvs[0])));
 		}
 		
-		for (int i=0; i<mvs.length; i+=2) {
+		for (int i=0; i<mvs.length-1; i+=2) {
 			value.put(mvs[i], mvs[i+1]);
 		}
 		return this;
