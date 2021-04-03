@@ -1,5 +1,9 @@
 # Links
 
+## LGTM (Semmle) Code Quality
+
+[LGTM](https://lgtm.com/dashboard)
+
 
 ## Release to Maven
 

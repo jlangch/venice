@@ -443,7 +443,7 @@ public class VncTinyList extends VncList {
 				return this;
 			}
 			
-			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
+			if (otherLen + len <= MAX_ELEMENTS) {
 				final VncVal[] vals = new VncVal[otherLen + len];
 				if (reverseAdd) {
 					for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(otherLen-ii-1);

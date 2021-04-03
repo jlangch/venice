@@ -477,7 +477,7 @@ public class VncTinyVector extends VncVector {
 				return this;
 			}
 			
-			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
+			if (otherLen + len <= MAX_ELEMENTS) {
 				final VncVal[] vals = new VncVal[otherLen + len];
 				if (reverseAdd) {
 					for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(otherLen-ii-1);
@@ -514,7 +514,7 @@ public class VncTinyVector extends VncVector {
 				return this;
 			}
 			
-			if (otherLen + len <= MAX_ELEMENTS && !(list instanceof VncLazySeq)) {
+			if (otherLen + len <= MAX_ELEMENTS) {
 				final VncVal[] vals = new VncVal[otherLen + len];
 				for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
 				for(int ii=0; ii<otherLen; ii++) vals[ii+len] = list.nth(ii);

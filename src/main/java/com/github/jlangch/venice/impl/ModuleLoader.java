@@ -59,7 +59,8 @@ public class ModuleLoader {
 		if (!file.endsWith(".venice")) {
 			throw new VncException(String.format(
 					"Must not load other than Venice (*.venice) resources from "
-						+ "classpath. Resource: '%s'"));
+						+ "classpath. Resource: '%s'",
+						file));
 		}
 		
 		try {

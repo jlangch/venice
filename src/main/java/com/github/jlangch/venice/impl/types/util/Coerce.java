@@ -75,7 +75,7 @@ public class Coerce {
 		}
 		else {
 			throw new VncException(String.format(
-					"Cannot coerce value of type %s to IDeref. %s", 
+					"Cannot coerce value of type %s to IDeref", 
 					val.getClass()));
 		}
 	}

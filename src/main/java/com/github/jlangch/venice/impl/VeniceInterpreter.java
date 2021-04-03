@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 
-import java.io.Closeable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2001,17 +2000,6 @@ public class VeniceInterpreter implements Serializable  {
 						if (r instanceof AutoCloseable) {
 							try {
 								((AutoCloseable)r).close();
-							}
-							catch(Exception ex) {
-								throw new VncException(
-										String.format(
-												"'try-with' failed to close resource %s.",
-												b.getName()));
-							}
-						}
-						else if (r instanceof Closeable) {
-							try {
-								((Closeable)r).close();
 							}
 							catch(Exception ex) {
 								throw new VncException(

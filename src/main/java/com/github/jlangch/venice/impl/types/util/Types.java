@@ -468,54 +468,60 @@ public class Types {
 				return ((VncString)a).getValue().equals(((VncString)b).getValue());
 			} 
 			else if (a instanceof VncSequence) {
-				if (((VncSequence)a).size() != ((VncSequence)b).size()) {
-					return false;
+				if (a instanceof VncJavaList) {
+					return a.equals(b);
 				}
-				for (Integer i=0; i<((VncSequence)a).size(); i++) {
-					if (!_equal_Q(((VncSequence)a).nth(i), ((VncSequence)b).nth(i))) {
+				else {
+					if (((VncSequence)a).size() != ((VncSequence)b).size()) {
 						return false;
 					}
-				}
-				return true;
-			} 
-			else if (a instanceof VncHashSet) {
-				if (((VncHashSet)a).size() != ((VncHashSet)b).size()) {
-					return false;
-				}
-				return ((VncHashSet)a).stream().allMatch(v -> ((VncHashSet)b).contains(v));
-			} 
-			else if (a instanceof VncMap) {
-				if (((VncMap)a).getJavaMap().size() != ((VncMap)b).getJavaMap().size()) {
-					return false;
-				}
-				final VncMap mhm = ((VncMap)a);
-				final Map<VncVal,VncVal> hm = mhm.getJavaMap();
-				for (VncVal k : hm.keySet()) {
-					final VncVal valA = ((VncMap)a).getJavaMap().get(k);
-					final VncVal valB = ((VncMap)b).getJavaMap().get(k);
-					if (valA == null && valB == null) {
-						return true;
-					}
-					else if (valA != null && valB != null) {
-						if (! _equal_Q(valA,valB)) {
+					for (Integer i=0; i<((VncSequence)a).size(); i++) {
+						if (!_equal_Q(((VncSequence)a).nth(i), ((VncSequence)b).nth(i))) {
 							return false;
 						}
 					}
-					else {
+					return true;
+				}
+			} 
+			else if (a instanceof VncSet) {
+				if (a instanceof VncJavaSet) {
+					return a.equals(b);
+				}
+				else {
+					if (((VncSet)a).size() != ((VncSet)b).size()) {
 						return false;
 					}
+					return ((VncSet)a).stream().allMatch(v -> ((VncSet)b).contains(v));
 				}
-				return true;
 			} 
-			else if (a instanceof VncJavaList) {
-				return a.equals(b);
-			}
-			else if (a instanceof VncJavaSet) {
-				return a.equals(b);
-			}
-			else if (a instanceof VncJavaMap) {
-				return a.equals(b);
-			}
+			else if (a instanceof VncMap) {
+				if (a instanceof VncJavaMap) {
+					return a.equals(b);
+				}
+				else {
+					if (((VncMap)a).getJavaMap().size() != ((VncMap)b).getJavaMap().size()) {
+						return false;
+					}
+					final VncMap mhm = ((VncMap)a);
+					final Map<VncVal,VncVal> hm = mhm.getJavaMap();
+					for (VncVal k : hm.keySet()) {
+						final VncVal valA = ((VncMap)a).getJavaMap().get(k);
+						final VncVal valB = ((VncMap)b).getJavaMap().get(k);
+						if (valA == null && valB == null) {
+							return true;
+						}
+						else if (valA != null && valB != null) {
+							if (! _equal_Q(valA,valB)) {
+								return false;
+							}
+						}
+						else {
+							return false;
+						}
+					}
+					return true;
+				}
+			} 
 			else {
 				return a.equals(b);
 			}
