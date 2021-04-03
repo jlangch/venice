@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
-abstract public class VncVal implements Comparable<VncVal>, Serializable {
+public abstract class VncVal implements Comparable<VncVal>, Serializable {
 
 	public VncVal() {
 		this(null, Nil);
@@ -51,13 +51,13 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 		this._private = MetaUtil.isPrivate(meta);
 	}
 	
-	abstract public VncVal withMeta(final VncVal meta);
+	public abstract VncVal withMeta(final VncVal meta);
 	
-	abstract public VncKeyword getType();
+	public abstract VncKeyword getType();
 	
-	abstract public VncKeyword getSupertype();
+	public abstract VncKeyword getSupertype();
 	
-	abstract public List<VncKeyword> getAllSupertypes();
+	public abstract List<VncKeyword> getAllSupertypes();
 	
 	public VncWrappingTypeDef getWrappingTypeDef() {
 		return wrappingTypeDef;
@@ -74,13 +74,13 @@ abstract public class VncVal implements Comparable<VncVal>, Serializable {
 							getType().getValue()));
 	}
 	
-	abstract public TypeRank typeRank();
+	public abstract TypeRank typeRank();
 
 	public boolean isVncList() {
 		return false;
 	}
 
-	abstract public Object convertToJavaObject();
+	public abstract Object convertToJavaObject();
 
 	public VncVal getMeta() {
 		// getMeta() can be redefined. Some data types do that to manage meta data themselves.

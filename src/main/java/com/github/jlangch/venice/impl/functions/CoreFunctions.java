@@ -3037,14 +3037,12 @@ public class CoreFunctions {
 					return new VncHashMap().assoc((VncList)args.rest());
 				}
 				else if (Types.isVncMutableMap(coll)) {
-					throw new VncException(String.format(
-							"Function 'assoc' can not be used with mutable maps use assoc!",
-							Types.getType(coll)));
+					throw new VncException(
+							"Function 'assoc' can not be used with mutable maps use assoc!");
 				}
 				else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll)) {
-					throw new VncException(String.format(
-							"Function 'assoc' can not be used with mutable vectors use assoc!",
-							Types.getType(coll)));
+					throw new VncException(
+							"Function 'assoc' can not be used with mutable vectors use assoc!");
 				}
 				else if (Types.isVncCustomType(coll)) {
 					return ((VncCustomType)coll).assoc((VncList)args.rest());
@@ -3405,9 +3403,8 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (Types.isVncMutableMap(coll)) {
-					throw new VncException(String.format(
-							"Function 'dissoc' can not be used with mutable maps use dissoc!",
-							Types.getType(coll)));
+					throw new VncException(
+							"Function 'dissoc' can not be used with mutable maps use dissoc!");
 				}
 				else if (Types.isVncMap(coll)) {
 					return ((VncMap)args.first()).dissoc(args.rest());
@@ -3955,7 +3952,7 @@ public class CoreFunctions {
 						"(into to)",
 						"(into to from)")
 					.doc(
-						"Returns a new coll consisting of to coll with all of the items of" +
+						"Returns a new coll consisting of to coll with all of the items of " +
 						"from coll conjoined.")
 					.examples(
 						"(into (sorted-map) [ [:a 1] [:c 3] [:b 2] ])",
@@ -7145,9 +7142,7 @@ public class CoreFunctions {
 				final VncSequence seq = Coerce.toVncSequence(args.first());
 				
 				if (seq.isEmpty()) {
-					throw new VncException(String.format(
-							"cycle: the cycle collection must not be empty!",
-							Types.getType(args.first())));
+					throw new VncException("cycle: the cycle collection must not be empty!");
 				}
 				
 				final VncFunction f = new VncFunction(createAnonymousFuncName("cycle")) {

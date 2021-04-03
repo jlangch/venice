@@ -596,7 +596,7 @@ public class BytebufFunctions {
 				}
 				else {
 					throw new VncException(
-							"Function 'bytebuf-put-byte!' expects an integer or a long value"
+							"Function 'bytebuf-put-byte!' expects an integer or a long value "
 								+ "as second arg");
 				}
 				

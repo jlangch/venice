@@ -584,7 +584,7 @@ public class StringFunctions {
 					final Locale locale = toLocale(args.first());
 					if (locale == null) {
 						throw new VncException(String.format(
-									"str/lower-case: the first arg is not a locale",
+									"str/lower-case: the first arg is not a locale. Got a '%s'.",
 									Types.getType(args.first())));
 					}
 					else if (args.second() == Nil) {
@@ -637,7 +637,7 @@ public class StringFunctions {
 					final Locale locale = toLocale(args.first());
 					if (locale == null) {
 						throw new VncException(String.format(
-									"str/upper-case: the first arg is not a locale",
+									"str/upper-case: the first arg is not a locale. Got a '%s'.",
 									Types.getType(args.first())));
 					}
 					else if (args.second() == Nil) {
@@ -1407,7 +1407,7 @@ public class StringFunctions {
 					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
-								"Function 'str/digit?' expects a single char string",
+								"Function 'str/digit?' expects a single char string. Got a '%s'.",
 								Types.getType(v)));
 					}
 					return VncBoolean.of(Character.isDigit(str.charAt(0)));
@@ -1446,7 +1446,7 @@ public class StringFunctions {
 					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
-								"Function 'str/letter?' expects a single char string",
+								"Function 'str/letter?' expects a single char string. Got a '%s'.",
 								Types.getType(v)));
 					}
 					return VncBoolean.of(Character.isLetter(str.charAt(0)));
@@ -1485,7 +1485,7 @@ public class StringFunctions {
 					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
-								"Function 'str/lower-case?' expects a single char string",
+								"Function 'str/lower-case?' expects a single char string. Got a '%s'.",
 								Types.getType(v)));
 					}
 					return VncBoolean.of(Character.isLowerCase(str.charAt(0)));
@@ -1524,7 +1524,7 @@ public class StringFunctions {
 					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
-								"Function 'str/upper-case?' expects a single char string",
+								"Function 'str/upper-case?' expects a single char string. Got a '%s'.",
 								Types.getType(v)));
 					}
 					return VncBoolean.of(Character.isUpperCase(str.charAt(0)));
@@ -1561,7 +1561,7 @@ public class StringFunctions {
 					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
-								"Function 'str/linefeed?' expects a single char string",
+								"Function 'str/linefeed?' expects a single char string. Got a '%s'.",
 								Types.getType(args.first())));
 					}
 					return VncBoolean.of(str.charAt(0) == '\n');
@@ -1600,7 +1600,7 @@ public class StringFunctions {
 					final String str = Coerce.toVncString(v).getValue();
 					if (str.length() != 1) {
 						throw new VncException(String.format(
-								"Function 'str/whitespace?' expects a single char string",
+								"Function 'str/whitespace?' expects a single char string. Got a '%s'.",
 								Types.getType(v)));
 					}
 					return VncBoolean.of(Character.isWhitespace(str.charAt(0)));

@@ -192,7 +192,7 @@ public class JsonFunctions {
 					else if (out instanceof Writer) {
 						final JsonAppendableWriter writer = prettyPrint
 																? JsonWriter.indent(INDENT).on((Writer)out)
-																: JsonWriter.on((OutputStream)out);
+																: JsonWriter.on((Writer)out);
 																
 						new VncJsonWriter(writer, decimalAsDouble).write(val).done();
 					}

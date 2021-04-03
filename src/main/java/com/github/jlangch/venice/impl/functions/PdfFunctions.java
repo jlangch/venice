@@ -491,8 +491,8 @@ public class PdfFunctions {
 					final String text = Coerce.toVncString(args.first()).getValue();
 					
 					final VncMap options = VncHashMap.ofAll(args.slice(1));
-					final Float fontSize = getFloatOption("font-size", options, 9.0); 
-					final Integer fontWeight = getIntOption("font-weight", options, 200); 
+					final float fontSize = getFloatOption("font-size", options, 9.0); 
+					final int fontWeight = getIntOption("font-weight", options, 200); 
 					final boolean fontMonoSpace = getBooleanOption("font-monospace", options, false); 
 
 					final List<List<String>> pages = splitIntoPages(text)
@@ -502,8 +502,8 @@ public class PdfFunctions {
 
 					final Map<String,Object> data = new HashMap<>();		
 					data.put("pages", pages);
-					data.put("fontSize", fontSize.toString());
-					data.put("fontWeight", fontWeight.toString());
+					data.put("fontSize", fontSize);
+					data.put("fontWeight", fontWeight);
 					data.put("fontFamiliy", fontMonoSpace ? "Courier" : "Helvetica, Sans-Serif");
 
 					final String template = loadText2PdfTemplate();

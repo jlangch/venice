@@ -434,7 +434,7 @@ public class RegexFunctions {
 					.meta()
 					.arglists("(regex/group matcher group)")		
 					.doc(
-						"Returns the input subsequence captured by the given group during the" + 
+						"Returns the input subsequence captured by the given group during the " + 
 						"previous match operation.")
 					.examples(
 						"(let [p (regex/pattern \"([0-9]+)(.*)\")      \n" +
