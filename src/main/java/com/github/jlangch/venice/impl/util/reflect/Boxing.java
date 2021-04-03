@@ -149,12 +149,13 @@ public class Boxing {
 	}
 
 	private static Object boxArrayArg(Class<?> type, final Object arg) {
+		if (arg == null) {
+			return null;
+		}
+
 		final Class<?> componentType = type.getComponentType();					
 		if (componentType == byte.class) {
-			if (arg == null) {
-				return boxStringToByteArray((String)arg);
-			}
-			else if (arg.getClass() == String.class) {
+			if (arg.getClass() == String.class) {
 				return boxStringToByteArray((String)arg);
 			}
 			else if (arg.getClass() == byte[].class) {

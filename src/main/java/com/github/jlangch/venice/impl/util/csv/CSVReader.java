@@ -65,8 +65,7 @@ public class CSVReader {
 	public List<List<String>> parse(final Reader reader) {
 		final List<List<String>> records = new ArrayList<>();
 		
-		try(Reader rd = reader) {
-			final BufferedReader br = new BufferedReader(rd);
+		try(BufferedReader br = new BufferedReader(reader)) {
 			String l = br.readLine();
 			while(l != null) {
 				final List<String> items = split(l);

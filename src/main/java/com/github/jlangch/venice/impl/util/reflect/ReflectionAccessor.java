@@ -151,6 +151,13 @@ public class ReflectionAccessor {
 			final String methodName, 
 			final Object[] args
 	) {
+		if (target == null) {
+			throw new JavaMethodInvocationException(
+					String.format(
+							"Failed to invoke instance method '%s' on <null> target",
+							methodName));
+		}
+		
 		try {
 			final Class<?> clazz = targetFormalType == null ? target.getClass() : targetFormalType;
 			final List<Method> methods = memoizedInstanceMethod(clazz, methodName, args.length, true);
@@ -165,7 +172,7 @@ public class ReflectionAccessor {
 						String.format(
 								"Failed to invoke instance method '%s' on target '%s'",
 								methodName,
-								target == null ? "<null>" : target.getClass().getName()),
+								target.getClass().getName()),
 						ex);
 			}
 			else {
@@ -173,7 +180,7 @@ public class ReflectionAccessor {
 						String.format(
 								"Failed to invoke instance method '%s' on target '%s' with formal type '%s'",
 								methodName,
-								target == null ? "<null>" : target.getClass().getName(),
+								target.getClass().getName(),
 								targetFormalType.getName()),
 						ex);
 			}
@@ -342,6 +349,13 @@ public class ReflectionAccessor {
 			final String methodName, 
 			final Object[] args
 	) {
+		if (target == null) {
+			throw new JavaMethodInvocationException(
+					String.format(
+							"Failed to check for available instance metho '%s' on <null> target",
+							methodName));
+		}
+		
 		try {
 			final Class<?> clazz = target.getClass();
 			final List<Method> methods = memoizedInstanceMethod(clazz, methodName, args.length, true);
@@ -355,7 +369,7 @@ public class ReflectionAccessor {
 					String.format(
 							"Failed to check for available instance method '%s' on target '%s'",
 							methodName,
-							target == null ? "<null>" : target.getClass().getName()),
+							target.getClass().getName()),
 					ex);
 		}
 	}

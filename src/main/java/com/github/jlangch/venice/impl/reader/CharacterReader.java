@@ -24,11 +24,11 @@ package com.github.jlangch.venice.impl.reader;
 
 public class CharacterReader {
 
-	public CharacterReader(final String str) {
-		this.str = str == null ? "" : str;
-		this.length = str.length();
-		this.pos = str.isEmpty() ? 1 : 0;
-		this.chNext = str.isEmpty() ? EOF : str.charAt(0);
+	public CharacterReader(final String s) {
+		str = s == null ? "" : s;
+		length = str.length();
+		pos = str.isEmpty() ? 1 : 0;
+		chNext = str.isEmpty() ? EOF : str.charAt(0);
 	}
 
 	public int peek() {

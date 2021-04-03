@@ -1550,28 +1550,29 @@ public class CoreFunctions {
 				}
 				else {
 					final VncVal arg = args.first();
-					final VncLong scale = args.size() < 3 ? null : Coerce.toVncLong(args.second());
+					final boolean scaling = args.size() == 3;
+					final int scale = scaling ? Coerce.toVncLong(args.second()).getIntValue() : 0;
 					final RoundingMode roundingMode = args.size() < 3 ? null : VncBigDecimal.toRoundingMode((VncString)args.nth(2));
 
 					if (arg == Constants.Nil) {
 						final BigDecimal dec = BigDecimal.ZERO;
-						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
+						return new VncBigDecimal(!scaling ? dec : dec.setScale(scale, roundingMode));
 					}
 					else if (VncBoolean.isFalse(arg)) {
 						final BigDecimal dec = BigDecimal.ZERO;
-						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
+						return new VncBigDecimal(!scaling ? dec : dec.setScale(scale, roundingMode));
 					}
 					else if (VncBoolean.isTrue(arg)) {
 						final BigDecimal dec = BigDecimal.ONE;
-						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
+						return new VncBigDecimal(!scaling ? dec : dec.setScale(scale, roundingMode));
 					}
 					else if (Types.isVncString(arg)) {
 						final BigDecimal dec = new BigDecimal(((VncString)arg).getValue());
-						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
+						return new VncBigDecimal(!scaling ? dec : dec.setScale(scale, roundingMode));
 					}
 					else if (Types.isVncNumber(arg)) {
 						final BigDecimal dec = VncBigDecimal.of(arg).getValue();
-						return new VncBigDecimal(args.size() < 3 ? dec : dec.setScale(scale.getValue().intValue(), roundingMode));
+						return new VncBigDecimal(!scaling ? dec : dec.setScale(scale, roundingMode));
 					}
 					else if (Types.isVncJavaObject(arg, BigDecimal.class)) {
 						return new VncBigDecimal((BigDecimal)((VncJavaObject)arg).getDelegate());
