@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -46,7 +45,8 @@ public class CommandLineArgsTest {
 		
 		assertEquals("a.txt", cli.switchValue("-file"));
 		assertEquals("blue", cli.switchValue("-color"));
-		assertNull(cli.switchValue("-time"));
+		assertEquals(null, cli.switchValue("-color-unknown"));
+		assertEquals("green", cli.switchValue("-color-unknown", "green"));
 	}
 
 	@Test
