@@ -48,5 +48,25 @@ public class CommandLineArgsTest {
 		assertEquals("blue", cli.switchValue("-color"));
 		assertNull(cli.switchValue("-time"));
 	}
+
+	@Test
+	public void test_3() {
+		final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-long", "300");
+		
+		assertEquals("a.txt", cli.switchValue("-file"));
+		assertEquals(300L, cli.switchLongValue("-long"));
+		assertEquals(null, cli.switchLongValue("-long-unknown"));
+		assertEquals(400L, cli.switchLongValue("-long-unknown", 400L));
+	}
+
+	@Test
+	public void test_4() {
+		final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-double", "1.5");
+		
+		assertEquals("a.txt", cli.switchValue("-file"));
+		assertEquals(1.5D, cli.switchDoubleValue("-double"));
+		assertEquals(null, cli.switchDoubleValue("-double-unknown"));
+		assertEquals(2.5D, cli.switchDoubleValue("-double-unknown", 2.5D));
+	}
 	
 }
