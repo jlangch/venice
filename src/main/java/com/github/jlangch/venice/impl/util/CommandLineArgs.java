@@ -95,23 +95,23 @@ public class CommandLineArgs {
 	}
 	
 	public Long switchLongValue(final String switchName) {
-		return switchLongValue(switchName, null);
+		final String val = switchValue(switchName);
+		return parseOptionalLong(val);
 	}
 	
 	public Long switchLongValue(final String switchName, final Long defaultValue) {
-		final String switchValue = switchValue(switchName, null);
-		
-		return switchValue == null ? defaultValue : Long.parseLong(switchValue);
+		final Long val = switchLongValue(switchName);		
+		return val == null ? defaultValue : val;
 	}
 	
 	public Double switchDoubleValue(final String switchName) {
-		return switchDoubleValue(switchName, null);
+		final String val = switchValue(switchName);
+		return parseOptionalDouble(val);
 	}
 	
 	public Double switchDoubleValue(final String switchName, final Double defaultValue) {
-		String switchValue = switchValue(switchName, null);
-		
-		return switchValue == null ? defaultValue : Double.parseDouble(switchValue);
+		final Double val = switchDoubleValue(switchName);		
+		return val == null ? defaultValue : val;
 	}
 	
 	
@@ -143,6 +143,15 @@ public class CommandLineArgs {
 		}
 	
 		return targetArray;
+	}
+	
+	
+	private static Long parseOptionalLong(final String val) {
+		return val == null ? null : Long.parseLong(val);
+	}
+	
+	private static Double parseOptionalDouble(final String val) {
+		return val == null ? null : Double.parseDouble(val);
 	}
 	
 	
