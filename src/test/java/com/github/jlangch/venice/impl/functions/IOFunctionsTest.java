@@ -47,12 +47,14 @@ public class IOFunctionsTest {
 
 		try {
 			final File from = File.createTempFile("from__", ".txt");
+			from.deleteOnExit();
 			venice.eval(
 					"(io/spit file \"123456789\" :append true)", 
 					Parameters.of("file", from));
 			
 			final File to = File.createTempFile("to__", ".txt");
 			to.delete();
+			to.deleteOnExit();
 
 			assertTrue((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", from)));	
 			assertFalse((Boolean)venice.eval("(io/exists-file? f))", Parameters.of("f", to)));	
@@ -81,6 +83,11 @@ public class IOFunctionsTest {
 			final File file1 = File.createTempFile("spit", ".txt");
 			final File file2 = File.createTempFile("spit", ".txt");
 			final File file3 = File.createTempFile("spit", ".txt");
+			
+			file1.deleteOnExit();
+			file2.deleteOnExit();
+			file3.deleteOnExit();
+
 			venice.eval(
 					"(io/spit file \"123456789\" :append true)", 
 					Parameters.of("file", file1));
@@ -190,8 +197,11 @@ public class IOFunctionsTest {
 	public void test_io_list_files() throws Exception{
 		final Venice venice = new Venice();
 
-		final File file1 = File.createTempFile("spit-", "-1.txt");
-		final File file2 = File.createTempFile("spit-", "-2.txt");
+		final File file1 = File.createTempFile("spit-list", "-1.txt");
+		final File file2 = File.createTempFile("spit-list", "-2.txt");
+
+		file1.deleteOnExit();
+		file2.deleteOnExit();
 
 		try {
 			venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file1));
@@ -210,15 +220,11 @@ public class IOFunctionsTest {
 							"(count " +
 							"  (io/list-files " +
 							"         dir " +
-							"         (fn [f] (match? (get f :name) \"spit-.*[.]txt\"))))", 
+							"         (fn [f] (match? (get f :name) \"spit-list.*[.]txt\"))))", 
 							Parameters.of("dir", dir)));
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
-		}
-		finally {			
-			file1.delete();
-			file2.delete();
 		}
 	}
 	
@@ -229,6 +235,10 @@ public class IOFunctionsTest {
 		final File file1 = File.createTempFile("spit-", "-1.txt");
 		final File file2 = File.createTempFile("spit-", "-2.txt");
 		final File file3 = File.createTempFile("spit-", "-2.xml");
+
+		file1.deleteOnExit();
+		file2.deleteOnExit();
+		file3.deleteOnExit();
 
 		try {
 			venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file1));
@@ -247,11 +257,6 @@ public class IOFunctionsTest {
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
 		}
-		finally {			
-			file1.delete();
-			file2.delete();
-			file3.delete();
-		}
 	}
 	
 	@Test
@@ -269,20 +274,17 @@ public class IOFunctionsTest {
 		// with default encoding
 		try {
 			final File file = File.createTempFile("spit", ".txt");
-			try {				
-				venice.eval(
-						"(io/spit file \"123456789\" :append true)", 
-						Parameters.of("file", file.getAbsolutePath()));
-				
-				assertEquals(
-						"123456789", 
-						venice.eval(
-								"(io/slurp file)", 
-								Parameters.of("file", file.getAbsolutePath())));					
-			}
-			finally {
-				file.delete();
-			}
+			file.deleteOnExit();
+			
+			venice.eval(
+					"(io/spit file \"123456789\" :append true)", 
+					Parameters.of("file", file.getAbsolutePath()));
+			
+			assertEquals(
+					"123456789", 
+					venice.eval(
+							"(io/slurp file)", 
+							Parameters.of("file", file.getAbsolutePath())));					
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
@@ -291,20 +293,17 @@ public class IOFunctionsTest {
 		// with UTF-8 encoding
 		try {
 			final File file = File.createTempFile("spit", ".txt");
-			try {				
-				venice.eval(
-						"(io/spit file \"123456789\" :append true :encoding \"UTF-8\")", 
-						Parameters.of("file", file.getAbsolutePath()));
-				
-				assertEquals(
-						"123456789", 
-						venice.eval(
-								"(io/slurp file :encoding \"UTF-8\")", 
-								Parameters.of("file", file.getAbsolutePath())));					
-			}
-			finally {
-				file.delete();
-			}
+			file.deleteOnExit();
+			
+			venice.eval(
+					"(io/spit file \"123456789\" :append true :encoding \"UTF-8\")", 
+					Parameters.of("file", file.getAbsolutePath()));
+			
+			assertEquals(
+					"123456789", 
+					venice.eval(
+							"(io/slurp file :encoding \"UTF-8\")", 
+							Parameters.of("file", file.getAbsolutePath())));					
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
@@ -318,18 +317,15 @@ public class IOFunctionsTest {
 		// with default encoding
 		try {
 			final File file = File.createTempFile("slurp", ".txt");
-			try {
-				Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
-				
-				assertEquals(
-						"123456789", 
-						venice.eval(
-								"(io/slurp file)", 
-								Parameters.of("file", file.getAbsolutePath())));					
-			}
-			finally {
-				file.delete();
-			}
+			file.deleteOnExit();
+
+			Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
+			
+			assertEquals(
+					"123456789", 
+					venice.eval(
+							"(io/slurp file)", 
+							Parameters.of("file", file.getAbsolutePath())));					
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);
@@ -338,18 +334,15 @@ public class IOFunctionsTest {
 		// with UTF-8 encoding
 		try {
 			final File file = File.createTempFile("slurp", ".txt");
-			try {
-				Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
-				
-				assertEquals(
-						"123456789", 
-						venice.eval(
-								"(io/slurp file :encoding \"UTF-8\")", 
-								Parameters.of("file", file.getAbsolutePath())));					
-			}
-			finally {
-				file.delete();
-			}
+			file.deleteOnExit();
+
+			Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
+			
+			assertEquals(
+					"123456789", 
+					venice.eval(
+							"(io/slurp file :encoding \"UTF-8\")", 
+							Parameters.of("file", file.getAbsolutePath())));					
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(ex);

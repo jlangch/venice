@@ -159,7 +159,10 @@ public class JsonFunctions {
 					final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
 					if (out instanceof File) {
-						try (BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream((File)out), encoding))) {
+						try (FileOutputStream fos = new FileOutputStream((File)out);
+							 OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
+							 BufferedWriter wr = new BufferedWriter(osw)
+						) {
 							final JsonAppendableWriter writer = prettyPrint
 									? JsonWriter.indent(INDENT).on(wr)
 									: JsonWriter.on(wr);

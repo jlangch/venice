@@ -23,8 +23,11 @@ package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 
 
@@ -260,4 +263,30 @@ public class JsonFunctionsTest {
 
 		assertEquals("{a 100 b 100}", venice.eval(script));
 	}
+	
+	@Test
+	public void test_json_read_write_file() {
+		final Venice venice = new Venice();
+
+		try {
+			final File file = File.createTempFile("from__", ".json");
+			file.deleteOnExit();
+			final String fileName = file.getAbsolutePath();
+			
+			// write
+			venice.eval(
+					"(json/spit (io/file file-name) {:a 100 :b 100}))", 
+					Parameters.of("file-name", fileName));
+
+			// read
+			assertEquals(
+					"{a 100 b 100}", 
+					venice.eval("(str (json/slurp (io/file file-name)))", 
+							Parameters.of("file-name", fileName)));
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
 }
