@@ -445,7 +445,7 @@ task updateReleaseVersion {
                 replace: "Venice Release ${project.version}", 
                 flags:   'g'
         ) {
-            fileset(dir: 'src/main/resources/META_INF', includes: 'notice.txt')
+            fileset(dir: 'src/main/resources/META-INF', includes: 'notice.txt')
         }
         
         println "Updating version ${project.version} -> 'license.txt'"
@@ -454,7 +454,7 @@ task updateReleaseVersion {
                 replace: "Venice Release ${project.version}", 
                 flags:   'g'
         ) {
-            fileset(dir: 'src/main/resources/META_INF', includes: 'license.txt')
+            fileset(dir: 'src/main/resources/META-INF', includes: 'license.txt')
         }
     }
 }

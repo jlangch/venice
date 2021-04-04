@@ -9,11 +9,15 @@ and this project adheres to
 
 
 
-## [1.9.14] - 2021-04-xx
+## [1.9.14] - 2021-04-04
 
 ### Added
 
 - synchronous element processing to the Venice queue: `(queue)` 
+
+### Fixed
+
+- alerts reported by the LGTM code quality analysis
 
 
 
