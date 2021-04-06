@@ -70,20 +70,34 @@ public class TransducerFunctions {
 						"(transduce xform f coll)",
 						"(transduce xform f init coll)")
 					.doc(
-						"Reduce with a transformation of a reduction function f (xf). If init is not " +
-						"supplied, (f) will be called to produce it. f should be a reducing " +
-						"step function that accepts both 1 and 2 arguments. Returns the result " +
-						"of applying (the transformed) xf to init and the first item in coll, " +
-						"then applying xf to that result and the 2nd item, etc. If coll " +
-						"contains no items, returns init and f is not called.")
+						"Reduce with a transformation of a reduction function f (xf). " +
+						"If init is not supplied, (f) will be called to produce it. " +
+						"f should be a reducing step function that accepts both 1 and " +
+						"2 arguments. Returns the result of applying (the transformed) " +
+						"xf to init and the first item in coll, then applying xf to " +
+						"that result and the 2nd item, etc. If coll contains no items, " +
+						"returns init and f is not called.\n\n"+
+						"Transformations            Reductions\n" +
+						"---------------------      ------------------\n" +
+						"map       map-indexed      rf-first\n" +
+						"filter    flatten          rf-last\n" +
+						"drop      drop-while       rf-any?\n" +
+						"take      take-while       rf-every?\n" +
+						"keep      remove           conj, +, max, min\n" +
+						"dedupe    distinct\n" +
+						"sorted    reverse\n" +
+						"halt-when\n" +
+						"")
 					.examples(
-						"(do                                       \n" +
-						"  (def xform (map #(+ % 1)))              \n" +
-						"  (transduce xform + [1 2 3 4]))            ",
+						"(transduce (map #(+ % 3)) + [1 2 3 4])",
+						
+						"(transduce identity max [1 2 3])",
 
-						"(do                                       \n" +
-						"  (def xform (map #(+ % 1)))              \n" +
-						"  (transduce xform conj [1 2 3 4]))         ",
+						"(transduce identity rf-last [1 2 3])",
+
+						"(transduce identity (rf-every? pos?) [1 2 3])",
+
+						"(transduce (map inc) conj [1 2 3])",
 
 						"(do                                       \n" +
 						"  (def xform (comp (drop 2) (take 3)))    \n" +
@@ -92,13 +106,12 @@ public class TransducerFunctions {
 						"(do                                       \n" +
 						"  (def xform (comp                        \n" +
 						"              (map #(* % 10))             \n" +
-						"              (map #(- % 5))              \n" +
+						"              (map #(+ % 1))              \n" +
 						"              (sorted compare)            \n" +
 						"              (drop 3)                    \n" +
 						"              (take 2)                    \n" +
 						"              (reverse)))                 \n" +
-						"  (def coll [5 2 1 6 4 3])                \n" +
-						"  (str (transduce xform conj coll)))        ")
+						"  (transduce xform conj [1 2 3 4 5 6]))     ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
