@@ -6599,13 +6599,16 @@ public class CoreFunctions {
 						"Returns the result of applying concat to the result of applying map " +
 						"to fn and colls. Thus function fn should return a collection.")
 					.examples(
-						"(mapcat reverse [[3 2 1 0] [6 5 4] [9 8 7]])",
+						"(mapcat identity [[1 2 3] [4 5 6] [7 8 9]])",
+						"(mapcat identity [[1 2 [3 4]] [5 6 [7 8]]])",
+						"(mapcat reverse [[3 2 1 ] [6 5 4] [9 8 7]])",
 						"(mapcat list [:a :b :c] [1 2 3])",
 						"(mapcat #(remove even? %) [[1 2] [2 2] [2 3]])",
 						"(mapcat #(repeat 2 %) [1 2])",
 						"(mapcat (juxt inc dec)  [1 2 3 4])",
 						";; Turn a frequency map back into a coll.\n" + 
 						"(mapcat (fn [[x n]] (repeat n x)) {:a 2 :b 1 :c 3})")
+					.seeAlso("map", "flatten")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

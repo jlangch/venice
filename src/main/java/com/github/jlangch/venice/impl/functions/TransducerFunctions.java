@@ -105,12 +105,12 @@ public class TransducerFunctions {
 
 						"(do                                       \n" +
 						"  (def xform (comp                        \n" +
-						"              (map #(* % 10))             \n" +
-						"              (map #(+ % 1))              \n" +
-						"              (sorted compare)            \n" +
-						"              (drop 3)                    \n" +
-						"              (take 2)                    \n" +
-						"              (reverse)))                 \n" +
+						"               (map #(* % 10))            \n" +
+						"               (map #(+ % 1))             \n" +
+						"               (sorted compare)           \n" +
+						"               (drop 3)                   \n" +
+						"               (take 2)                   \n" +
+						"               (reverse)))                \n" +
 						"  (transduce xform conj [1 2 3 4 5 6]))     ")
 					.build()
 		) {
@@ -1192,13 +1192,14 @@ public class TransducerFunctions {
 					.doc(
 						"Takes any nested combination of collections (lists, vectors, " +
 						"etc.) and returns their contents as a single, flat sequence. " +
-						"(flatten nil) returns an empty list." +
+						"(flatten nil) returns an empty list. " +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(flatten [])",
 						"(flatten [[1 2 3] [4 [5 6]] [7 [8 [9]]]])",
 						"(flatten [1 2 {:a 3 :b [4 5 6]}])",
 						"(flatten (seq {:a 1 :b 2}))")
+					.seeAlso("mapcat")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
