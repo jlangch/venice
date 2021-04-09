@@ -25,17 +25,19 @@
 (ns crypt)
 
 (import :java.security.MessageDigest)
+(import :java.util.Base64)
 
-(import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
-(import :com.github.jlangch.venice.impl.util.crypt.SHA1_Hash)
-(import :com.github.jlangch.venice.impl.util.crypt.SHA512_Hash)
-(import :com.github.jlangch.venice.impl.util.crypt.PBKDF2_Hash)
+(import :javax.crypto.Cipher)
+(import :javax.crypto.SecretKey)
+(import :javax.crypto.SecretKeyFactory)
+(import :javax.crypto.spec.IvParameterSpec)
+(import :javax.crypto.spec.PBEKeySpec)
+(import :javax.crypto.spec.PBEParameterSpec)
+(import :javax.crypto.spec.SecretKeySpec)
+
 (import :com.github.jlangch.venice.impl.util.crypt.CipherSuiteFactory)
 (import :com.github.jlangch.venice.impl.util.crypt.CipherSuite)
 
-
-(defn- to-bytes [data]
-  (if (string? data) (bytebuf-from-string data :UTF-8) data))
 
 (defn
   ^{ :arglists '("(crypt/md5-hash data)")
@@ -138,8 +140,8 @@
   ^{ :arglists '("(crypt/pbkdf2-hash data salt)"
                  "(crypt/pbkdf2-hash data salt iterations key-length)")
      :doc """
-          Hashes a string using PBKDF2. iterations default to 1000, key-length \
-          defaults to 256.
+          Hashes a string using PBKDF2. iterations defaults to 1000, \
+          key-length defaults to 256.
           """
      :examples (list
           """
@@ -165,7 +167,19 @@
             "The passed iterations must be either a long or an integer")
     (assert (or (long? key-length) (int? key-length))
             "The passed key-length must be either a long or an integer")
-    (. :PBKDF2_Hash :hash text salt iterations key-length)))
+    (try
+      (let [spec (. :PBEKeySpec :new
+                    text
+                    (if (nil? salt) (bytebuf) (bytebuf-from-string salt :UTF-8))
+                    iterations
+                    key-length)]
+        (-> (. :SecretKeyFactory :getInstance "PBKDF2WithHmacSHA512")
+            (. :generateSecret spec)
+            (. :getEncoded)))
+      (catch :Exception ex
+             (throw (. :VncException :new "Failed to compute PBKDF2 hash." ex))))))
+
+    ;(. :PBKDF2_Hash :hash text salt iterations key-length)))
 
 
 (defn
@@ -242,3 +256,98 @@
   (let [url-safe (:url-safe (apply hash-map options) false)
         suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
      (fn [data] (. suite :decrypt data))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Utils
+;; -----------------------------------------------------------------------------
+
+(defn- salt []
+  (bytebuf 0xA9 0x9B 0xC8 0x32 0x56 0x35 0xE3 0x03))
+
+
+(defn- to-bytes [data]
+  (if (string? data) (bytebuf-from-string data :UTF-8) data))
+
+
+(defn- url-encode [s]
+  (-> s
+      (str/replace-all  "+" "-")
+      (str/replace-all  "/" "_")))
+
+
+(defn- url-decode [s]
+  (-> s
+      (str/replace-all  "-" "+")
+      (str/replace-all  "_" "/")))
+
+
+(defn- base64-encode [bytes safe-url]
+  (if safe-url
+    (-> (. :Base64 :getEncoder)
+        (. :withoutPadding)
+        (. :encodeToString bytes)
+        (url-encode))
+    (-> (. :Base64 :getEncoder)
+        (. :encodeToString bytes))))
+
+
+(defn- base64-decode [s safe-url]
+  (-> (. :Base64 :getDecoder)
+      (. :decode (to-bytes (if safe-url (url-decode  s) s)))))
+
+
+;; -----------------------------------------------------------------------------
+;; AES256
+;; -----------------------------------------------------------------------------
+
+(defn- create-iv-spec-AES256 []
+  (let [iv (bytebuf 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)]
+    (. :IvParameterSpec :new iv)))
+
+
+(defn- create-cipher-AES256 [mode secret-key iv-spec]
+  (-> (. :Cipher :getInstance "AES/CBC/PKCS5PADDING")
+      (. :init mode secret-key iv-spec)))
+
+
+(defn- create-secret-key-AES256 [passphrase]
+  (let [factory    (. :SecretKeyFactory :getInstance "PBKDF2WithHmacSHA256")
+        key-spec   (. :PBEKeySpec passphrase (salt) 65536 256)
+        secret     (. factory :generateSecret key-spec)
+        secret-key (. :SecretKeySpec (. secret :getEncoded) "AES")]
+    secret-key))
+
+
+(defn- create-encrypt-fn-AES256 [passphrase safe-url]
+  (let [secret-key (create-secret-key-AES256 passphrase)
+        iv-spec    (create-iv-spec-AES256)
+        cipher     (create-cipher-AES256 :ENCRYPT_MODE secret-key iv-spec)]
+    (fn [data]
+      (try
+        (locking cipher
+          (cond
+            (empty? data)   data
+            (string? data)  (-<> (to-bytes data)
+                                 (. cipher :doFinal <>)
+                                 (base64-encode <> safe-url))
+            (bytebuf? data) (. cipher :doFinal data)))
+      (catch :Exception ex
+        (throw (. :VncException :new "Failed to encrypt data." ex)))))))
+
+
+(defn- create-decrypt-fn-AES256 [passphrase safe-url]
+  (let [secret-key (create-secret-key-AES256 passphrase)
+        iv-spec    (create-iv-spec-AES256)
+        cipher     (create-cipher-AES256 :DECRYPT_MODE secret-key iv-spec)]
+    (fn [data]
+      (try
+        (locking cipher
+          (cond
+            (empty? data)   data
+            (string? data)  (-<> (base64-decode <> safe-url)
+                                 (. cipher :doFinal <>))
+            (bytebuf? data) (. cipher :doFinal data)))
+      (catch :Exception ex
+        (throw (. :VncException :new "Failed to decrypt data." ex)))))))
