@@ -164,6 +164,11 @@ public class ArgTypeMatcher {
 					return true;
 				}
 			}
+			else if (paramComponentType == char.class) {
+				if (argType == String.class) {
+					return true;
+				}
+			}
 			return false;
 		}
 		

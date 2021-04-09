@@ -200,6 +200,15 @@ public class JavaInteropTest {
 	}
 
 	@Test
+	public void testCharArray() {
+		final Venice venice = new Venice();
+
+		assertEquals(null, venice.eval("(. jobj :getCharArray)", symbols()));
+		assertEquals("[a b c]", venice.eval("(str (do (. jobj :setCharArray \"abc\") (. jobj :getCharArray)))", symbols()));
+		assertEquals("[]", venice.eval("(str (do (. jobj :setCharArray \"\") (. jobj :getCharArray)))", symbols()));
+	}
+
+	@Test
 	public void testStringArray() {
 		final Venice venice = new Venice();
 

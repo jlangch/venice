@@ -133,6 +133,12 @@ public class JavaObject {
 	public void setMap(Map<?, ?> _Map) {
 		this._Map = _Map;
 	}
+	public char[] getCharArray() {
+		return _CharArr;
+	}
+	public void setCharArray(char[] _CharArr) {
+		this._CharArr = _CharArr;
+	}
 	public byte[] getByteArray() {
 		return _ByteArr;
 	}
@@ -228,6 +234,7 @@ public class JavaObject {
 	private List<?> _List;
 	private Set<?> _Set;
 	private Map<?,?> _Map;
+	private char[] _CharArr;
 	private byte[] _ByteArr;
 	private int[] _IntArr;
 	private Integer[] _IntegerArr;

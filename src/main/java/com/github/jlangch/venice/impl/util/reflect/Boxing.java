@@ -165,6 +165,11 @@ public class Boxing {
 				return ((ByteBuffer)arg).array();
 			}
 		}
+		else if (componentType == char.class) {
+			if (arg.getClass() == String.class) {
+				return ((String)arg).toCharArray();
+			}
+		}
 		else {
 			if (ReflectionTypes.isArrayType(arg.getClass())) {
 				final Class<?> argComponentType = arg.getClass().getComponentType();
