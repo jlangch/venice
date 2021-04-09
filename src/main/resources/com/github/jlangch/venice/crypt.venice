@@ -34,6 +34,9 @@
 (import :com.github.jlangch.venice.impl.util.crypt.CipherSuite)
 
 
+(defn- to-bytes [data]
+  (if (string? data) (bytebuf-from-string data :UTF-8) data))
+
 (defn
   ^{ :arglists '("(crypt/md5-hash data)")
      :doc """
@@ -53,12 +56,10 @@
           "The passed data must be either a string or a bytebuf")
 
   (try
-    (let [md5 (. :MessageDigest :getInstance "MD5")]
-      (. md5 :reset)
-      (. md5 :update (if (string? data)
-                         (bytebuf-from-string data :UTF-8)
-                         data))
-      (. md5 :digest))
+    (let [md (. :MessageDigest :getInstance "MD5")]
+      (. md :reset)
+      (. md :update (to-bytes data))
+      (. md :digest))
     (catch :Exception ex
            (throw (. :VncException :new "Failed to compute MD5 hash." ex)))))
 
@@ -79,15 +80,23 @@
 
   crypt/sha1-hash
 
-  ([text]
-    (. :SHA1_Hash :hash text nil))
+  ([data]
+    (sha1-hash data nil))
 
-  ([text salt]
+  ([data salt]
     (assert (or (string? data) (bytebuf? data))
             "The passed data must be either a string or a bytebuf")
-    (assert (or (string? salt) (nil? salt))
-            "The passed salt must be either a string or nil")
-    (. :SHA1_Hash :hash text salt)))
+    (assert (or (string? salt) (bytebuf? salt) (nil? salt))
+            "The passed salt must be either a string, a bytebuf or nil")
+    (try
+      (let [md (. :MessageDigest :getInstance "SHA-1")]
+        (. md :reset)
+        (when (some? salt)
+          (. md :update (to-bytes salt)))
+        (. md :update (to-bytes data))
+        (. md :digest))
+      (catch :Exception ex
+             (throw (. :VncException :new "Failed to compute SHA1 hash." ex))))))
 
 
 (defn
@@ -107,14 +116,22 @@
   crypt/sha512-hash
 
   ([data]
-    (. :SHA512_Hash :hash data nil))
+    (sha1-hash data nil))
 
   ([data salt]
     (assert (or (string? data) (bytebuf? data))
             "The passed data must be either a string or a bytebuf")
-    (assert (or (string? salt) (nil? salt))
-            "The passed salt must be either a string or nil")
-    (. :SHA512_Hash :hash data salt)))
+    (assert (or (string? salt) (bytebuf? salt) (nil? salt))
+            "The passed salt must be either a string, a bytebuf or nil")
+    (try
+      (let [md (. :MessageDigest :getInstance "SHA-512")]
+        (. md :reset)
+        (when (some? salt)
+          (. md :update (to-bytes salt)))
+        (. md :update (to-bytes data))
+        (. md :digest))
+      (catch :Exception ex
+             (throw (. :VncException :new "Failed to compute SHA512 hash." ex))))))
 
 
 (defn
