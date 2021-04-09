@@ -2894,8 +2894,8 @@ public class CoreFunctions {
 					"stack?",
 					VncFunction
 						.meta()
-						.arglists("(stack? obj)")
-						.doc("Returns true if obj is a stack")
+						.arglists("(stack? coll)")
+						.doc("Returns true if coll is a stack")
 						.examples("(stack? (stack))")
 						.build()
 			) {
@@ -2913,8 +2913,8 @@ public class CoreFunctions {
 				"queue?",
 				VncFunction
 					.meta()
-					.arglists("(queue? obj)")
-					.doc("Returns true if obj is a queue")
+					.arglists("(queue? coll)")
+					.doc("Returns true if coll is a queue")
 					.examples("(queue? (queue))")
 					.build()
 		) {
@@ -4115,8 +4115,8 @@ public class CoreFunctions {
 				"sequential?",
 				VncFunction
 					.meta()
-					.arglists("(sequential? obj)")
-					.doc("Returns true if obj is a sequential collection")
+					.arglists("(sequential? coll)")
+					.doc("Returns true if coll is a sequential collection")
 					.examples(
 						"(sequential? '(1))",
 						"(sequential? [1])",
@@ -4139,8 +4139,8 @@ public class CoreFunctions {
 				"coll?",
 				VncFunction
 					.meta()
-					.arglists("(coll? obj)")
-					.doc("Returns true if obj is a collection")
+					.arglists("(coll? coll)")
+					.doc("Returns true if coll is a collection")
 					.examples("(coll? {:a 1})", "(coll? [1 2])")
 					.build()
 		) {
@@ -5840,10 +5840,10 @@ public class CoreFunctions {
 							"Offers an item to a queue with an optional timeout in milliseconds. " +
 							"If a timeout is given waits up to the specified wait time if necessary " +
 							"for space to become available. For an indefinite timeout pass the timeout " +
-							"value :indefinite." +
+							"value :indefinite. " +
 							"If no timeout is given returns immediately false if the queue does not " +
-							"have any more capacity." +
-							"Returns true if the element was added to this queue, else false")
+							"have any more capacity. " +
+							"Returns true if the element was added to this queue, else false.")
 						.examples(
 							"(let [s (queue)]  \n" +
 							"  (offer! s 4)    \n" +
@@ -5904,9 +5904,9 @@ public class CoreFunctions {
 							"(poll! queue timeout)")
 						.doc(
 							"Polls an item from a queue with an optional timeout in milliseconds. " +
-							"For an indefinite timeout pass the timeout value :indefinite." +
+							"For an indefinite timeout pass the timeout value :indefinite. " +
 							"If no timeout is given returns the item if one is available else " +
-							"returns nil. With a timeout returns the item if one is available within" +
+							"returns nil. With a timeout returns the item if one is available within " +
 							"the given timeout else returns nil.")
 						.examples(
 							"(let [s (queue)]  \n" +

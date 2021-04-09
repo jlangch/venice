@@ -24,6 +24,8 @@
 
 (ns crypt)
 
+(import :java.security.MessageDigest)
+
 (import :com.github.jlangch.venice.impl.util.crypt.MD5_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.SHA1_Hash)
 (import :com.github.jlangch.venice.impl.util.crypt.SHA512_Hash)
@@ -37,17 +39,28 @@
      :doc """
           Hashes a string or a bytebuf using MD5.
 
-          Note: MD5 is not safe any more use PBKDF2.
+          Note: MD5 is not safe any more use PBKDF2!
           """
      :examples (list
           """
           (-> (crypt/md5-hash "hello world")
               (str/bytebuf-to-hex :upper))
-           """ ) }
+          """ ) }
 
-  crypt/md5-hash [text]
+  crypt/md5-hash [data]
 
-  (. :MD5_Hash :hash text))
+  (assert (or (string? data) (bytebuf? data))
+          "The passed data must be either a string or a bytebuf")
+
+  (try
+    (let [md5 (. :MessageDigest :getInstance "MD5")]
+      (. md5 :reset)
+      (. md5 :update (if (string? data)
+                         (bytebuf-from-string data :UTF-8)
+                         data))
+      (. md5 :digest))
+    (catch :Exception ex
+           (throw (. :VncException :new "Failed to compute MD5 hash." ex)))))
 
 
 (defn
@@ -58,16 +71,23 @@
           """
           (-> (crypt/sha1-hash "hello world")
               (str/bytebuf-to-hex :upper))
-           """,
-           """
-           (-> (crypt/sha1-hash "hello world" "-salt-")
-               (str/bytebuf-to-hex :upper))
-           """ ) }
+          """,
+          """
+          (-> (crypt/sha1-hash "hello world" "-salt-")
+              (str/bytebuf-to-hex :upper))
+          """ ) }
 
   crypt/sha1-hash
 
-  ([text] (. :SHA1_Hash :hash text nil))
-  ([text salt] (. :SHA1_Hash :hash text salt)))
+  ([text]
+    (. :SHA1_Hash :hash text nil))
+
+  ([text salt]
+    (assert (or (string? data) (bytebuf? data))
+            "The passed data must be either a string or a bytebuf")
+    (assert (or (string? salt) (nil? salt))
+            "The passed salt must be either a string or nil")
+    (. :SHA1_Hash :hash text salt)))
 
 
 (defn
@@ -78,21 +98,28 @@
           """
           (-> (crypt/sha512-hash "hello world")
               (str/bytebuf-to-hex :upper))
-           """,
-           """
-           (-> (crypt/sha512-hash "hello world" "-salt-")
-               (str/bytebuf-to-hex :upper))
-           """ ) }
+          """,
+          """
+          (-> (crypt/sha512-hash "hello world" "-salt-")
+              (str/bytebuf-to-hex :upper))
+          """ ) }
 
   crypt/sha512-hash
 
-  ([text] (. :SHA512_Hash :hash text nil))
-  ([text salt] (. :SHA512_Hash :hash text salt)))
+  ([data]
+    (. :SHA512_Hash :hash data nil))
+
+  ([data salt]
+    (assert (or (string? data) (bytebuf? data))
+            "The passed data must be either a string or a bytebuf")
+    (assert (or (string? salt) (nil? salt))
+            "The passed salt must be either a string or nil")
+    (. :SHA512_Hash :hash data salt)))
 
 
 (defn
-  ^{ :arglists '("(crypt/pbkdf2-hash text salt)"
-                 "(crypt/pbkdf2-hash text salt iterations key-length)")
+  ^{ :arglists '("(crypt/pbkdf2-hash data salt)"
+                 "(crypt/pbkdf2-hash data salt iterations key-length)")
      :doc """
           Hashes a string using PBKDF2. iterations default to 1000, key-length \
           defaults to 256.
@@ -101,18 +128,27 @@
           """
           (-> (crypt/pbkdf2-hash "hello world" "-salt-")
               (str/bytebuf-to-hex :upper))
-           """,
-           """
-           (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
-               (str/bytebuf-to-hex :upper))
-           """ ) }
+          """,
+          """
+          (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+              (str/bytebuf-to-hex :upper))
+          """ ) }
 
   crypt/pbkdf2-hash
 
   ([text salt]
-      (crypt/pbkdf2-hash text salt 1000 256))
+    (crypt/pbkdf2-hash text salt 1000 256))
+
   ([text salt iterations key-length]
-      (. :PBKDF2_Hash :hash text salt iterations key-length)))
+    (assert (string? text)
+            "The passed text must be a string")
+    (assert (or (string? salt) (nil? salt))
+            "The passed salt must be either a string or nil")
+    (assert (or (long? iterations) (int? iterations))
+            "The passed iterations must be either a long or an integer")
+    (assert (or (long? key-length) (int? key-length))
+            "The passed key-length must be either a long or an integer")
+    (. :PBKDF2_Hash :hash text salt iterations key-length)))
 
 
 (defn
@@ -143,7 +179,7 @@
             (encrypt "hello") ; => "ndmW1NLsDHA"
             (encrypt "world") ; => "KPYjndkZ8vM"
             (encrypt (bytebuf [1 2 3 4 5])))
-           """ ) }
+          """ ) }
 
   crypt/encrypt
 
@@ -161,7 +197,7 @@
        algorithm and passphrase. If a string is passed it is base64 decoded, \
        decrypted, and returned as string. If a bytebuf is passed the decrypted \
        bytebuf is returned.
-       
+
        Supported algorithms: "DES", "3DES", "AES256"
 
        Options:
@@ -180,7 +216,7 @@
             (decrypt "ndmW1NLsDHA") ; => "hello"
             (decrypt "KPYjndkZ8vM") ; => "world"
             (decrypt  (bytebuf [234 220 237 189 12 176 242 147])))
-           """ ) }
+          """ ) }
 
   crypt/decrypt
 
