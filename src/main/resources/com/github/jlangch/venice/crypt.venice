@@ -148,8 +148,8 @@
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
      :doc """
-          Returns a new function to encrypt a string or a bytebuf given \
-          the algorithm and passphrase. If a string is passed it is \
+          Returns a new thread safe function to encrypt a string or a bytebuf \
+          given the algorithm and passphrase. If a string is passed it is \
           encrypted and returned as a base64 encoded string. If a bytebuf \
           is passed the encryped bytebuf is returned.
 
@@ -158,7 +158,7 @@
           Options:
             :url-safe enabled
                 The boolean option directs the base64 encoder to emit
-                standard or URL safe base64 enoded strings.
+                standard or URL safe base64 encoded strings.
                 If enabled (true) the base64 encoder will emit '-' and '_'
                 instead of the usual '+' and '/' characters.
                 Defaults to false.
@@ -172,7 +172,7 @@
             (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
             (encrypt "hello") ; => "ndmW1NLsDHA"
             (encrypt "world") ; => "KPYjndkZ8vM"
-            (encrypt (bytebuf [1 2 3 4 5])))
+            (encrypt (bytebuf [1 2 3 4]))) ; => [128 216 205 163 62 43 52 82]
           """ ) }
 
   crypt/encrypt
@@ -191,10 +191,10 @@
 (defn
   ^{ :arglists '("(crypt/decrypt algorithm passphrase & options)")
   :doc """
-       Returns a new function to decrypt a string or a bytebuf given the \
-       algorithm and passphrase. If a string is passed it is base64 decoded, \
-       decrypted, and returned as string. If a bytebuf is passed the decrypted \
-       bytebuf is returned.
+       Returns a new thread safe function to decrypt a string or a bytebuf \
+       given the algorithm and passphrase. If a string is passed it is base64 \
+       decoded, decrypted, and returned as string. If a bytebuf is passed the \
+       decrypted bytebuf is returned.
 
        Supported algorithms: "DES", "3DES", "AES256"
 
@@ -213,7 +213,7 @@
             (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
             (decrypt "ndmW1NLsDHA") ; => "hello"
             (decrypt "KPYjndkZ8vM") ; => "world"
-            (decrypt  (bytebuf [234 220 237 189 12 176 242 147])))
+            (decrypt (bytebuf [128 216 205 163 62 43 52 82]))) ; => [1 2 3 4]
           """ ) }
 
   crypt/decrypt
@@ -254,8 +254,8 @@
       (str/replace-all  "_" "/")))
 
 
-(defn- base64-encode [bytes safe-url]
-  (if safe-url
+(defn- base64-encode [bytes url-safe]
+  (if url-safe
     (-> (. :Base64 :getEncoder)
         (. :withoutPadding)
         (. :encodeToString bytes)
@@ -264,9 +264,9 @@
         (. :encodeToString bytes))))
 
 
-(defn- base64-decode [s safe-url]
+(defn- base64-decode [s url-safe]
   (-> (. :Base64 :getDecoder)
-      (. :decode (to-bytes (if safe-url (url-decode s) s)))))
+      (. :decode (to-bytes (if url-safe (url-decode s) s)))))
 
 
 (defn-
@@ -300,14 +300,14 @@
 (def ENCRYPT_MODE 1)
 (def DECRYPT_MODE 2)
 
-(defn- cipher-encrypt [cipher data safe-url]
+(defn- cipher-encrypt [cipher data url-safe]
   (try
     (locking cipher
       (cond
         (empty? data)   data
         (string? data)  (-<> (to-bytes data)
                              (. cipher :doFinal <>)
-                             (base64-encode <> safe-url))
+                             (base64-encode <> url-safe))
         (bytebuf? data) (. cipher :doFinal data)
         :else           (throw (. :VncException :new
                                   "Invalid datatype for data."))))
@@ -315,12 +315,12 @@
     (throw (. :VncException :new "Failed to encrypt data." ex)))))
 
 
-(defn- cipher-decrypt [cipher data safe-url]
+(defn- cipher-decrypt [cipher data url-safe]
   (try
     (locking cipher
       (cond
         (empty? data)   data
-        (string? data)  (-<> (base64-decode data safe-url)
+        (string? data)  (-<> (base64-decode data url-safe)
                              (. cipher :doFinal <>)
                              (bytebuf-to-string <> :UTF-8))
         (bytebuf? data) (. cipher :doFinal data)
@@ -350,20 +350,20 @@
         (. :init mode secret-key param-spec)))
 
 
-(defn- create-encrypt-fn-DES [passphrase safe-url]
+(defn- create-encrypt-fn-DES [passphrase url-safe]
   (let [secret-key (create-secret-key-DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
         cipher     (create-cipher-DES ENCRYPT_MODE secret-key param-spec)]
     (fn [data]
-      (cipher-encrypt cipher data safe-url))))
+      (cipher-encrypt cipher data url-safe))))
 
 
-(defn- create-decrypt-fn-DES [passphrase safe-url]
+(defn- create-decrypt-fn-DES [passphrase url-safe]
   (let [secret-key (create-secret-key-DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
         cipher     (create-cipher-DES DECRYPT_MODE secret-key param-spec)]
     (fn [data]
-      (cipher-decrypt cipher data safe-url))))
+      (cipher-decrypt cipher data url-safe))))
 
 
 
@@ -386,20 +386,20 @@
         (. :init mode secret-key param-spec)))
 
 
-(defn- create-encrypt-fn-3DES [passphrase safe-url]
+(defn- create-encrypt-fn-3DES [passphrase url-safe]
   (let [secret-key (create-secret-key-3DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
         cipher     (create-cipher-3DES ENCRYPT_MODE secret-key param-spec)]
     (fn [data]
-      (cipher-encrypt cipher data safe-url))))
+      (cipher-encrypt cipher data url-safe))))
 
 
-(defn- create-decrypt-fn-3DES [passphrase safe-url]
+(defn- create-decrypt-fn-3DES [passphrase url-safe]
   (let [secret-key (create-secret-key-3DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
         cipher     (create-cipher-3DES DECRYPT_MODE secret-key param-spec)]
     (fn [data]
-      (cipher-decrypt cipher data safe-url))))
+      (cipher-decrypt cipher data url-safe))))
 
 
 
@@ -425,17 +425,17 @@
         (. :init mode secret-key iv-spec)))
 
 
-(defn- create-encrypt-fn-AES256 [passphrase safe-url]
+(defn- create-encrypt-fn-AES256 [passphrase url-safe]
   (let [secret-key (create-secret-key-AES256 passphrase)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 ENCRYPT_MODE secret-key iv-spec)]
     (fn [data]
-      (cipher-encrypt cipher data safe-url))))
+      (cipher-encrypt cipher data url-safe))))
 
 
-(defn- create-decrypt-fn-AES256 [passphrase safe-url]
+(defn- create-decrypt-fn-AES256 [passphrase url-safe]
   (let [secret-key (create-secret-key-AES256 passphrase)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
     (fn [data]
-      (cipher-decrypt cipher data safe-url))))
+      (cipher-decrypt cipher data url-safe))))
