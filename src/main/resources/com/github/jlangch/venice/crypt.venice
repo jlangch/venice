@@ -24,8 +24,9 @@
 
 (ns crypt)
 
-(import :java.security.MessageDigest)
 (import :java.util.Base64)
+(import :java.security.MessageDigest)
+(import :java.security.spec.AlgorithmParameterSpec)
 
 (import :javax.crypto.Cipher)
 (import :javax.crypto.SecretKey)
@@ -35,35 +36,29 @@
 (import :javax.crypto.spec.PBEParameterSpec)
 (import :javax.crypto.spec.SecretKeySpec)
 
-(import :com.github.jlangch.venice.impl.util.crypt.CipherSuiteFactory)
-(import :com.github.jlangch.venice.impl.util.crypt.CipherSuite)
-
 
 (defn
-  ^{ :arglists '("(crypt/md5-hash data)")
+  ^{ :arglists '("(crypt/md5-hash data)"
+                 "(crypt/md5-hash data salt)")
      :doc """
-          Hashes a string or a bytebuf using MD5.
+          Hashes a string or a bytebuf using MD5 with an optional salt.
 
-          Note: MD5 is not safe any more use PBKDF2!
+          Note: MD5 is not safe any more use PBKDF2 instead!
           """
      :examples (list
           """
           (-> (crypt/md5-hash "hello world")
               (str/bytebuf-to-hex :upper))
+          """,
+          """
+          (-> (crypt/md5-hash "hello world" "-salt-")
+              (str/bytebuf-to-hex :upper))
           """ ) }
 
-  crypt/md5-hash [data]
+  crypt/md5-hash
 
-  (assert (or (string? data) (bytebuf? data))
-          "The passed data must be either a string or a bytebuf")
-
-  (try
-    (let [md (. :MessageDigest :getInstance "MD5")]
-      (. md :reset)
-      (. md :update (to-bytes data))
-      (. md :digest))
-    (catch :Exception ex
-           (throw (. :VncException :new "Failed to compute MD5 hash." ex)))))
+  ([data] (hash "MD5" data nil))
+  ([data salt] (hash "MD5" data salt)))
 
 
 (defn
@@ -82,23 +77,8 @@
 
   crypt/sha1-hash
 
-  ([data]
-    (sha1-hash data nil))
-
-  ([data salt]
-    (assert (or (string? data) (bytebuf? data))
-            "The passed data must be either a string or a bytebuf")
-    (assert (or (string? salt) (bytebuf? salt) (nil? salt))
-            "The passed salt must be either a string, a bytebuf or nil")
-    (try
-      (let [md (. :MessageDigest :getInstance "SHA-1")]
-        (. md :reset)
-        (when (some? salt)
-          (. md :update (to-bytes salt)))
-        (. md :update (to-bytes data))
-        (. md :digest))
-      (catch :Exception ex
-             (throw (. :VncException :new "Failed to compute SHA1 hash." ex))))))
+  ([data] (hash "SHA-1" data nil))
+  ([data salt] (hash "SHA-1" data salt)))
 
 
 (defn
@@ -117,23 +97,8 @@
 
   crypt/sha512-hash
 
-  ([data]
-    (sha1-hash data nil))
-
-  ([data salt]
-    (assert (or (string? data) (bytebuf? data))
-            "The passed data must be either a string or a bytebuf")
-    (assert (or (string? salt) (bytebuf? salt) (nil? salt))
-            "The passed salt must be either a string, a bytebuf or nil")
-    (try
-      (let [md (. :MessageDigest :getInstance "SHA-512")]
-        (. md :reset)
-        (when (some? salt)
-          (. md :update (to-bytes salt)))
-        (. md :update (to-bytes data))
-        (. md :digest))
-      (catch :Exception ex
-             (throw (. :VncException :new "Failed to compute SHA512 hash." ex))))))
+  ([data] (hash "SHA-512" data nil))
+  ([data salt] (hash "SHA-512" data salt)))
 
 
 (defn
@@ -179,8 +144,6 @@
       (catch :Exception ex
              (throw (. :VncException :new "Failed to compute PBKDF2 hash." ex))))))
 
-    ;(. :PBKDF2_Hash :hash text salt iterations key-length)))
-
 
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
@@ -216,9 +179,13 @@
 
   [algorithm passphrase & options]
 
-  (let [url-safe (:url-safe (apply hash-map options) false)
-        suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
-    (fn [data] (. suite :encrypt data))))
+  (let [url-safe (:url-safe (apply hash-map options) false)]
+    (case algorithm
+      "DES"    (create-encrypt-fn-DES passphrase url-safe)
+      "3DES"   (create-encrypt-fn-3DES passphrase url-safe)
+      "AES256" (create-encrypt-fn-AES256 passphrase url-safe)
+      (throw (. :VncException :new
+                (str "Invalid cipher alogorithm '" algorithm "'"))))))
 
 
 (defn
@@ -243,7 +210,7 @@
           """
           (do
             (load-module :crypt)
-            (def decrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+            (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
             (decrypt "ndmW1NLsDHA") ; => "hello"
             (decrypt "KPYjndkZ8vM") ; => "world"
             (decrypt  (bytebuf [234 220 237 189 12 176 242 147])))
@@ -253,9 +220,13 @@
 
   [algorithm passphrase & options]
 
-  (let [url-safe (:url-safe (apply hash-map options) false)
-        suite (. :CipherSuiteFactory :create algorithm passphrase url-safe)]
-     (fn [data] (. suite :decrypt data))))
+  (let [url-safe (:url-safe (apply hash-map options) false)]
+    (case algorithm
+      "DES"    (create-decrypt-fn-DES passphrase url-safe)
+      "3DES"   (create-decrypt-fn-3DES passphrase url-safe)
+      "AES256" (create-decrypt-fn-AES256 passphrase url-safe)
+      (throw (. :VncException :new
+                (str "Invalid cipher alogorithm '" algorithm "'"))))))
 
 
 
@@ -264,7 +235,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- salt []
-  (bytebuf 0xA9 0x9B 0xC8 0x32 0x56 0x35 0xE3 0x03))
+  (bytebuf [0xA9 0x9B 0xC8 0x32 0x56 0x35 0xE3 0x03]))
 
 
 (defn- to-bytes [data]
@@ -295,7 +266,141 @@
 
 (defn- base64-decode [s safe-url]
   (-> (. :Base64 :getDecoder)
-      (. :decode (to-bytes (if safe-url (url-decode  s) s)))))
+      (. :decode (to-bytes (if safe-url (url-decode s) s)))))
+
+
+(defn-
+  crypt/hash
+
+  ([algo data]
+    (hash algo data nil))
+
+  ([algo data salt]
+    (assert (or (string? data) (bytebuf? data))
+            "The passed data must be either a string or a bytebuf")
+    (assert (or (string? salt) (bytebuf? salt) (nil? salt))
+            "The passed salt must be either a string, a bytebuf or nil")
+    (try
+      (let [md (. :MessageDigest :getInstance algo)]
+        (. md :reset)
+        (when (some? salt)
+          (. md :update (to-bytes salt)))
+        (. md :update (to-bytes data))
+        (. md :digest))
+      (catch :Exception ex
+             (throw (. :VncException :new
+                       (str "Failed to compute " algo " hash.")
+                       ex))))))
+
+
+;; -----------------------------------------------------------------------------
+;; Cipher
+;; -----------------------------------------------------------------------------
+
+(def ENCRYPT_MODE 1)
+(def DECRYPT_MODE 2)
+
+(defn- cipher-encrypt [cipher data safe-url]
+  (try
+    (locking cipher
+      (cond
+        (empty? data)   data
+        (string? data)  (-<> (to-bytes data)
+                             (. cipher :doFinal <>)
+                             (base64-encode <> safe-url))
+        (bytebuf? data) (. cipher :doFinal data)
+        :else           (throw (. :VncException :new
+                                  "Invalid datatype for data."))))
+  (catch :Exception ex
+    (throw (. :VncException :new "Failed to encrypt data." ex)))))
+
+
+(defn- cipher-decrypt [cipher data safe-url]
+  (try
+    (locking cipher
+      (cond
+        (empty? data)   data
+        (string? data)  (-<> (base64-decode data safe-url)
+                             (. cipher :doFinal <>)
+                             (bytebuf-to-string <> :UTF-8))
+        (bytebuf? data) (. cipher :doFinal data)
+        :else           (throw (. :VncException :new
+                                  "Invalid datatype for data."))))
+  (catch :Exception ex
+    (throw (. :VncException :new "Failed to decrypt data." ex)))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; DES
+;; -----------------------------------------------------------------------------
+
+(defn- iterations-DES [] 19)
+
+
+(defn- create-secret-key-DES [passphrase]
+  (let [factory    (. :SecretKeyFactory :getInstance "PBEWithMD5AndDES")
+        key-spec   (. :PBEKeySpec :new passphrase (salt) (iterations-DES))
+        secret     (. factory :generateSecret key-spec)]
+    secret))
+
+
+(defn- create-cipher-DES [mode secret-key param-spec]
+  (doto (. :Cipher :getInstance (. secret-key :getAlgorithm))
+        (. :init mode secret-key param-spec)))
+
+
+(defn- create-encrypt-fn-DES [passphrase safe-url]
+  (let [secret-key (create-secret-key-DES passphrase)
+        param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
+        cipher     (create-cipher-DES ENCRYPT_MODE secret-key param-spec)]
+    (fn [data]
+      (cipher-encrypt cipher data safe-url))))
+
+
+(defn- create-decrypt-fn-DES [passphrase safe-url]
+  (let [secret-key (create-secret-key-DES passphrase)
+        param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
+        cipher     (create-cipher-DES DECRYPT_MODE secret-key param-spec)]
+    (fn [data]
+      (cipher-decrypt cipher data safe-url))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; 3DES
+;; -----------------------------------------------------------------------------
+
+(defn- iterations-3DES [] 19)
+
+
+(defn- create-secret-key-3DES [passphrase]
+  (let [factory    (. :SecretKeyFactory :getInstance "PBEWithMD5AndTripleDES")
+        key-spec   (. :PBEKeySpec :new passphrase (salt) (iterations-3DES))
+        secret     (. factory :generateSecret key-spec)]
+    secret))
+
+
+(defn- create-cipher-3DES [mode secret-key param-spec]
+  (doto (. :Cipher :getInstance (. secret-key :getAlgorithm))
+        (. :init mode secret-key param-spec)))
+
+
+(defn- create-encrypt-fn-3DES [passphrase safe-url]
+  (let [secret-key (create-secret-key-3DES passphrase)
+        param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
+        cipher     (create-cipher-3DES ENCRYPT_MODE secret-key param-spec)]
+    (fn [data]
+      (cipher-encrypt cipher data safe-url))))
+
+
+(defn- create-decrypt-fn-3DES [passphrase safe-url]
+  (let [secret-key (create-secret-key-3DES passphrase)
+        param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
+        cipher     (create-cipher-3DES DECRYPT_MODE secret-key param-spec)]
+    (fn [data]
+      (cipher-decrypt cipher data safe-url))))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -303,51 +408,34 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- create-iv-spec-AES256 []
-  (let [iv (bytebuf 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)]
+  (let [iv (bytebuf [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])]
     (. :IvParameterSpec :new iv)))
-
-
-(defn- create-cipher-AES256 [mode secret-key iv-spec]
-  (-> (. :Cipher :getInstance "AES/CBC/PKCS5PADDING")
-      (. :init mode secret-key iv-spec)))
 
 
 (defn- create-secret-key-AES256 [passphrase]
   (let [factory    (. :SecretKeyFactory :getInstance "PBKDF2WithHmacSHA256")
-        key-spec   (. :PBEKeySpec passphrase (salt) 65536 256)
+        key-spec   (. :PBEKeySpec :new passphrase (salt) 65536 256)
         secret     (. factory :generateSecret key-spec)
-        secret-key (. :SecretKeySpec (. secret :getEncoded) "AES")]
+        secret-key (. :SecretKeySpec :new (. secret :getEncoded) "AES")]
     secret-key))
+
+
+(defn- create-cipher-AES256 [mode secret-key iv-spec]
+  (doto (. :Cipher :getInstance "AES/CBC/PKCS5PADDING")
+        (. :init mode secret-key iv-spec)))
 
 
 (defn- create-encrypt-fn-AES256 [passphrase safe-url]
   (let [secret-key (create-secret-key-AES256 passphrase)
         iv-spec    (create-iv-spec-AES256)
-        cipher     (create-cipher-AES256 :ENCRYPT_MODE secret-key iv-spec)]
+        cipher     (create-cipher-AES256 ENCRYPT_MODE secret-key iv-spec)]
     (fn [data]
-      (try
-        (locking cipher
-          (cond
-            (empty? data)   data
-            (string? data)  (-<> (to-bytes data)
-                                 (. cipher :doFinal <>)
-                                 (base64-encode <> safe-url))
-            (bytebuf? data) (. cipher :doFinal data)))
-      (catch :Exception ex
-        (throw (. :VncException :new "Failed to encrypt data." ex)))))))
+      (cipher-encrypt cipher data safe-url))))
 
 
 (defn- create-decrypt-fn-AES256 [passphrase safe-url]
   (let [secret-key (create-secret-key-AES256 passphrase)
         iv-spec    (create-iv-spec-AES256)
-        cipher     (create-cipher-AES256 :DECRYPT_MODE secret-key iv-spec)]
+        cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
     (fn [data]
-      (try
-        (locking cipher
-          (cond
-            (empty? data)   data
-            (string? data)  (-<> (base64-decode <> safe-url)
-                                 (. cipher :doFinal <>))
-            (bytebuf? data) (. cipher :doFinal data)))
-      (catch :Exception ex
-        (throw (. :VncException :new "Failed to decrypt data." ex)))))))
+      (cipher-decrypt cipher data safe-url))))

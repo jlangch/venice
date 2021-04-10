@@ -188,7 +188,21 @@ public class CryptoModuleTest {
 	}
 
 	@Test
-	public void test_DES_encrypt() {
+	public void test_DES_encrypt_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                             \n" + 
+				"  (load-module :crypt)                                                          \n" + 
+				"  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))               \n" + 
+				"  (assert (== \"QdxpapAEjgI\" (encrypt \"hello\")))                             \n" + 
+				")";
+
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_DES_encrypt_2() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -196,7 +210,7 @@ public class CryptoModuleTest {
 				"  (load-module :crypt)                                                          \n" + 
 				"  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))               \n" + 
 				"  (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true))               \n" + 
-				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                          \n" + 
+				"  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                         \n" + 
 				"  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
 				")";
 
@@ -204,7 +218,21 @@ public class CryptoModuleTest {
 	}
 
 	@Test
-	public void test_3DES_encrypt() {
+	public void test_3DES_encrypt_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                             \n" + 
+				"  (load-module :crypt)                                                          \n" + 
+				"  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))              \n" + 
+				"  (assert (== \"ndmW1NLsDHA\" (encrypt \"hello\")))                             \n" + 
+				")";
+
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_3DES_encrypt_2() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -212,7 +240,7 @@ public class CryptoModuleTest {
 				"  (load-module :crypt)                                                          \n" + 
 				"  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))              \n" + 
 				"  (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true))              \n" + 
-				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                          \n" + 
+				"  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                         \n" + 
 				"  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
 				")";
 
@@ -220,7 +248,21 @@ public class CryptoModuleTest {
 	}
 
 	@Test
-	public void test_AES256_encrypt() {
+	public void test_AES256_encrypt_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                             \n" + 
+				"  (load-module :crypt)                                                          \n" + 
+				"  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))            \n" + 
+				"  (assert (== \"e4m1qe6Fyx3Rr7NTIZe97g\" (encrypt \"hello\")))                  \n" + 
+				")";
+
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_AES256_encrypt_2() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -228,7 +270,7 @@ public class CryptoModuleTest {
 				"  (load-module :crypt)                                                          \n" + 
 				"  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))            \n" + 
 				"  (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true))            \n" + 
-				"  (assert (== \"hello\" (decrypt(encrypt \"hello\"))))                          \n" + 
+				"  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                          \n" + 
 				"  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" + 
 				")";
 
