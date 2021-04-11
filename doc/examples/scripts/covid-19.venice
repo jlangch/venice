@@ -33,24 +33,20 @@
   ;; https://www.worldometers.info/population/europe/
   (def country-config
     (ordered-map
-      "Switzerland"    { :population  8655000  :color :x-green      :stroke :solid }
-      "Romania"        { :population 19238000  :color :x-blue       :stroke :solid }
-      "Austria"        { :population  9006000  :color :x-purple     :stroke :solid }
-      "Hungary"        { :population  9660000  :color :x-orange     :stroke :solid }
-      "Germany"        { :population 83784000  :color :x-red        :stroke :solid }
-      "Italy"          { :population 60462000  :color :x-pink       :stroke :solid }
-      "France"         { :population 65273000  :color :x-light-blue :stroke :solid }
-      "Sweden"         { :population 10099000  :color :x-dark-gray  :stroke :solid }
-      "Greece"         { :population 10423000  :color :x-dark-pink  :stroke :solid }
-      "Spain"          { :population 46755000  :color :x-dark-green :stroke :solid }
-      "UK"             { :population 67886000  :color :x-yellow     :stroke :solid }
-      "Quarantine"     { :population        0  :color :x-light-gray :stroke :solid } ))
+      "Switzerland"    { :population  8655000  :color :x-green      }
+      "Romania"        { :population 19238000  :color :x-blue       }
+      "Austria"        { :population  9006000  :color :x-purple     }
+      "Hungary"        { :population  9660000  :color :x-orange     }
+      "Germany"        { :population 83784000  :color :x-red        }
+      "Italy"          { :population 60462000  :color :x-pink       }
+      "France"         { :population 65273000  :color :x-light-blue }
+      "Sweden"         { :population 10099000  :color :x-dark-gray  }
+      "Greece"         { :population 10423000  :color :x-dark-pink  }
+      "Spain"          { :population 46755000  :color :x-dark-green }
+      "UK"             { :population 67886000  :color :x-yellow     } ))
 
   ;; definitions for case data statistics
   (def sample-days 7)
-  (def quarantine-case-limit 60)
-  (def quarantine-case-diff 60)
-  (def quarantine-show false)
   (def population-norm 100_000)
 
   ;; the start/end date for the cases
@@ -169,22 +165,6 @@
          (interleave country-names)
          (apply ordered-map)))
 
-  (defn add-quarantine [country-data]
-    (let [sample (get country-data "Switzerland")]
-      (assoc country-data
-             "Quarantine"
-             (map (fn [x] [(first x) (+ (second x) quarantine-case-diff)])
-                  sample))))
-
-(defn add-quarantine-old [country-data]
-  (let [sample     (get country-data "Switzerland")
-        first-day  (first (first sample))
-        last-day   (first (last sample))]
-    (assoc country-data
-           "Quarantine"
-             [ [ first-day quarantine-case-limit ]
-               [ last-day  quarantine-case-limit ] ])))
-
   (defn series [country-data country-config country]
     (let [data   (get country-data country)
           style  (get country-config country)]
@@ -192,7 +172,7 @@
         :y     (map second data)
         :style { :marker-type :none
                  :line-color  (:color style)
-                 :line-style  (:stroke style) }}))
+                 :line-style  (:stroke style :solid) }}))
 
   (defn calc-country-series [country-data country-config]
     (let [country-series (partial series country-data country-config)]
@@ -206,16 +186,11 @@
                    "Sweden"         (country-series "Sweden")
                    "Spain"          (country-series "Spain")
                    "Greece"         (country-series "Greece")
-                   "United Kingdom" (country-series "UK")
-                   "Quarantine"     (country-series "Quarantine"))))
-
-  (defn remove-quarantine-series [series]
-    (dissoc series (if quarantine-show nil "Quarantine")))
+                   "United Kingdom" (country-series "UK"))))
 
   (defn render-chart [country-data country-config]
     (xchart/xy-chart
-       (-> (calc-country-series country-data country-config)
-           (remove-quarantine-series))
+       (calc-country-series country-data country-config)
        { :title        "Covid-19 Incidence (~(str (time/local-date)))"
          :width        chart-width
          :height       chart-height
@@ -223,20 +198,19 @@
          :y-axis       { :title "Cases over ~{sample-days} Days per 100'000" }
          :theme        :matlab
          :legend       { :border-color :white }
-         :render-style :line } )))
+         :render-style :line } ))
 
   (defn create-chart [country-html-data country-names]
     (let [country-populations (map-vals :population country-config)]
       (-> (compute-countries country-html-data
                              country-populations
                              country-names)
-          (add-quarantine)
           (render-chart country-config))))
 
   (defn main []
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
     (let [chart-file    "covid-19.png"
-          country-names (remove #{"Quarantine"} (keys country-config))]
+          country-names (keys country-config)]
       (-> (load-countries-html-data country-names)
           (create-chart country-names)
           (save-chart chart-file chart-dpi))

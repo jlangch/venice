@@ -298,7 +298,7 @@
             (str "Invalid cipher alogorithm '" algorithm "'"))))
 
 
-(defmulti create-decrypt-fn (fn [algorithm passphrase url-safe] algorithm))
+(defmulti create-decrypt-fn (fn [algorithm passphrase url-safe] (name algorithm)))
 
 (defmethod create-decrypt-fn :default [algorithm passphrase url-safe]
   (throw (. :VncException :new
