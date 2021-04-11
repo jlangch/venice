@@ -954,11 +954,13 @@ public class REPL {
 	}
 	
 	private String unescapeDroppedFileName(final String fileName) {
-		// dropping a file to the REPL that has special characters (space, 
-		// asteriks,  ...) in the filename. The underlying OS shell is 
+		// When dropping a file to the REPL that has special characters (space, 
+		// asteriks,  ...) in the filename the underlying OS shell is 
 		// escaping these characters.
 		// E.g.:  "test\ 1.venice", "test\?1.venice"
+		
 		final String osType = osType();
+		
 		if ("windows".equals(osType)) {
 			return fileName;
 		}
@@ -967,7 +969,7 @@ public class REPL {
 		}
 	}
 	
-	public static String osType() {
+	private static String osType() {
 		final String osName = System.getProperty("os.name");
 		if (osName.startsWith("Windows")) {
 			return "windows";

@@ -18,7 +18,7 @@ and this project adheres to
 ### Fixed
 
 - fixed a potential missing of closing a nested FileOutputStream in a 
-  try-with-resources block with function json/spit
+  try-with-resources block with function json/spit. Reported by LGTM CI
 - dropping a file to the REPL that has special characters (space, asteriks, 
   ...) in the filename. The underlying OS shell is escaping these characters.
   E.g. on MacOSX:  "test\ 1.venice", "test\?1.venice"
