@@ -185,7 +185,7 @@ public class REPL {
 						: null;
 		
 		Env env = loadEnv(cli, out, err, in, false);		
-		venice.setMacroexpandOnLoad(cli.switchPresent("-macroexpand"), env);		
+		venice.setMacroexpandOnLoad(cli.switchPresent("-macroexpand"), env);
 		if (allowDynamicClassLoader) {
 			mainThread.setContextClassLoader(new DynamicClassLoader2());
 		}
@@ -248,7 +248,7 @@ public class REPL {
 				
 				if (line != null) { 
 					if (ReplParser.isCommand(line)) {
-						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));				
+						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
 						if (cmd.equals("reload")) {
 							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
 							// Resetting the dynamic classloader is NOT working properly!
@@ -290,7 +290,7 @@ public class REPL {
 							Thread.sleep(1000);
 							break; // quit the REPL
 						}
-						else {			
+						else {
 							handleCommand(cmd, env, terminal, history);
 						}
 					}
@@ -300,7 +300,7 @@ public class REPL {
 													.readAllLines(new File(fileName).toPath())
 													.stream()
 													.filter(l -> !l.startsWith(";;;;"))
-													.collect(Collectors.toList());						
+													.collect(Collectors.toList());
 						String script = null;
 						if (lines.size() < 20) {
 							// file scripts with less than 20 lines, treat them as if they have 
@@ -312,7 +312,7 @@ public class REPL {
 							script = String.format("(load-file \"%s\")", line.trim());
 						}
 						history.add(script);
-						ThreadLocalMap.clearCallStack();			
+						ThreadLocalMap.clearCallStack();
 						final VncVal result = venice.RE(script, "user", env);
 						if (result != null) {
 							printer.println("result", resultPrefix + venice.PRINT(result));
@@ -321,7 +321,7 @@ public class REPL {
 					}
 					else {
 						// run the s-expr read from the line reader
-						ThreadLocalMap.clearCallStack();			
+						ThreadLocalMap.clearCallStack();
 						final VncVal result = venice.RE(line, "user", env);
 						if (result != null) {
 							printer.println("result", resultPrefix + venice.PRINT(result));
@@ -339,9 +339,9 @@ public class REPL {
 					final String ns = sym.getNamespace();
 					if (!Namespaces.isCoreNS(ns)) {
 						final boolean nsLoaded = env.getAllGlobalFunctionSymbols()
-												    .stream()
-												    .anyMatch(s -> ns.equals(s.getNamespace()));
-						   
+													.stream()
+													.anyMatch(s -> ns.equals(s.getNamespace()));
+						
 						if (!nsLoaded) {
 							printer.println("error", String.format(
 														"Symbol '%s' not found!\n"
@@ -378,7 +378,7 @@ public class REPL {
 				.parser(parser)
 				.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 				.variable(LineReader.INDENTATION, 2)
-                .variable(LineReader.LIST_MAX, 100)
+				.variable(LineReader.LIST_MAX, 100)
 //				.variable(LineReader.HISTORY_SIZE, 20)
 				.variable(LineReader.HISTORY_FILE, HISTORY_FILE)
 //				.variable(LineReader.HISTORY_FILE_SIZE, 25)
@@ -394,10 +394,10 @@ public class REPL {
 		try {
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
 				venice.setMacroexpandOnLoad(true, env);
-				printer.println("system", "Macro expansion enabled");					
+				printer.println("system", "Macro expansion enabled");
 			}
 			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
-				printer.println("stdout", HELP);					
+				printer.println("stdout", HELP);
 			}
 			else if (cmd.equals("config")) {
 				handleConfigCommand();
@@ -511,7 +511,7 @@ public class REPL {
 			// on Windows enforce dark mode
 			final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
 											? ColorMode.Dark
-											: config.getColorMode();			
+											: config.getColorMode();
 			
 			final String sSetupMode = ":" + setupMode.name().toLowerCase();
 			final String sColorMode = ":" + colorMode.name().toLowerCase();
@@ -519,13 +519,13 @@ public class REPL {
 			final String script = 
 				String.format(
 					"(do                                     \n" +
-		            "  (load-module :repl-setup)             \n" +
-		            "  (repl-setup/setup :setup-mode %s      \n" +
-		            "                    :color-mode %s      \n" +
-		            "                    :ansi-terminal %s))   ",
-		            sSetupMode,
-		            sColorMode,
-		            ansiTerminal ? "true" : "false");
+					"  (load-module :repl-setup)             \n" +
+					"  (repl-setup/setup :setup-mode %s      \n" +
+					"                    :color-mode %s      \n" +
+					"                    :ansi-terminal %s))   ",
+					sSetupMode,
+					sColorMode,
+					ansiTerminal ? "true" : "false");
 			
 			venice.RE(script, "user", env);
 		}
@@ -706,7 +706,7 @@ public class REPL {
 					new SandboxInterceptor(
 						rules,
 						LoadPathsFactory.of(
-							interceptor.getLoadPaths().getPaths(), 
+							interceptor.getLoadPaths().getPaths(),
 							true)));
 				return;
 			}
@@ -790,11 +790,11 @@ public class REPL {
 	private PrintStream createPrintStream(final String context, final Terminal terminal) {
 		return new ReplPrintStream(
 					terminal, 
-					ansiTerminal ? config.getColor(context) : null);	
+					ansiTerminal ? config.getColor(context) : null);
 	}
 	
 	private BufferedReader createBufferedReader(final String context, final Terminal terminal) {
-		return new BufferedReader(terminal.reader());	
+		return new BufferedReader(terminal.reader());
 	}
 	
 	private boolean runLoadFile(final String loadFile, final Env env, final String resultPrefix) {
@@ -885,8 +885,8 @@ public class REPL {
 	private void handleReplClasspathCommand() {
 		printer.println("stdout", "REPL classpath:");		
 		Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
-		      .sorted()
-		      .forEach(f -> printer.println("stdout", "  " + f));
+			  .sorted()
+			  .forEach(f -> printer.println("stdout", "  " + f));
 		
 		final ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		if (cl instanceof DynamicClassLoader2) {
@@ -900,8 +900,8 @@ public class REPL {
 	
 	private boolean isSetupMode(final CommandLineArgs cli) {
 		return cli.switchPresent("-setup") 
-			    || cli.switchPresent("-setup-ext") 
-			    || cli.switchPresent("-setup-extended");
+				|| cli.switchPresent("-setup-ext") 
+				|| cli.switchPresent("-setup-extended");
 	}
 	
 	private boolean isRunningOnLinuxGitPod() {
@@ -949,7 +949,7 @@ public class REPL {
 			printer.println("stdout", "Enabled REPL JLine logging");
 		}
 		else {
-			printer.println("error", "Invalid hist command");					
+			printer.println("error", "Invalid hist command");
 		}
 	}
 	
@@ -959,52 +959,52 @@ public class REPL {
 	
 	private final static String HELP =
 			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
-			"Commands: \n" +	
-			"  !reload      reload Venice environment\n" +	
+			"Commands: \n" +
+			"  !reload      reload Venice environment\n" +
 			"  !restart     restart the REPL.\n" +
-			"               note: the REPL launcher script must support\n" +	
-			"                     REPL restarting.\n" +	
-			"  !?, !help    help\n" +	
-			"  !info        show REPL setup context data\n" +	
-			"  !config      show a sample REPL config\n" +	
-			"  !classpath   show the REPL classpath\n" +	
-			"  !loadpath    show the REPL loadpath\n" +	
+			"               note: the REPL launcher script must support\n" +
+			"                     REPL restarting.\n" +
+			"  !?, !help    help\n" +
+			"  !info        show REPL setup context data\n" +
+			"  !config      show a sample REPL config\n" +
+			"  !classpath   show the REPL classpath\n" +
+			"  !loadpath    show the REPL loadpath\n" +
 			"  !highlight   turn highlighting dynamically on or off\n" +
-			"                 !highlight {on/off}\n" +	
+			"                 !highlight {on/off}\n" +
 			"  !lic         prints the licenses for 3rd party\n" +
-			"               libs included with Venice\n" +	
+			"               libs included with Venice\n" +
 			"  !macroexpand enable macro expansion while loading\n" +
 			"               files and modules. \n" +
 			"               This can speed-up script execution by\n" +
 			"               a factor 3 or 5 and even more with\n" +
 			"               complex code!\n" +
-			"  !env         print env symbols:\n" +	
-			"                 !env print {symbol-name}\n" +	
-			"                 !env global\n" +	
-			"                 !env global io/*\n" +	
-			"                 !env global *file*\n" +	
+			"  !env         print env symbols:\n" +
+			"                 !env print {symbol-name}\n" +
+			"                 !env global\n" +
+			"                 !env global io/*\n" +
+			"                 !env global *file*\n" +
 			"  !sandbox     sandbox\n" +	
-			"                 !sandbox status\n" +	
-			"                 !sandbox config\n" +	
-			"                 !sandbox accept-all\n" +	
-			"                 !sandbox reject-all\n" +	
-			"                 !sandbox customized\n" +	
+			"                 !sandbox status\n" +
+			"                 !sandbox config\n" +
+			"                 !sandbox accept-all\n" +
+			"                 !sandbox reject-all\n" +
+			"                 !sandbox customized\n" +
 			"                 !sandbox add-rule rule\n" +
-			"  !java-ex     print Java exception\n" +	
-			"                 !java-ex\n" +	
-			"                 !java-ex {on/off}\n" +	
-			"  !hist clear  clear the history\n" +	
-			"  !quit, !q    quit the REPL\n\n" +	
-			"Drag&Drop: \n" +	
-			"  Scripts can be dragged to the REPL. Upon pressing [return]\n" +	
-			"  the  REPL loads the script through the dropped absolute or\n" +	
-			"  relative filename. If the script has less than 20 lines it's\n" +	
-			"  source is displayed.\n\n" +	
-			"History: \n" +	
-			"  A history of the last three result values is kept by\n" +	
-			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +	
-			"  and `**`. E.g. (printl *1)\n\n" +	
-			"Shortcuts:\n" +	
+			"  !java-ex     print Java exception\n" +
+			"                 !java-ex\n" +
+			"                 !java-ex {on/off}\n" +
+			"  !hist clear  clear the history\n" +
+			"  !quit, !q    quit the REPL\n\n" +
+			"Drag&Drop: \n" +
+			"  Scripts can be dragged to the REPL. Upon pressing [return]\n" +
+			"  the  REPL loads the script through the dropped absolute or\n" +
+			"  relative filename. If the script has less than 20 lines it's\n" +
+			"  source is displayed.\n\n" +
+			"History: \n" +
+			"  A history of the last three result values is kept by\n" +
+			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +
+			"  and `**`. E.g. (printl *1)\n\n" +
+			"Shortcuts:\n" +
 			"  ctrl-A   move the cursor to the start\n" +
 			"  ctrl-C   stop the running command, cancel a multi-line\n" +
 			"           edit, or break out of the REPL\n" +
@@ -1016,24 +1016,24 @@ public class REPL {
 			"  ctrl-_   undo\n";
 
 	private final static String HELP_ENV =
-			"Please choose from:\n" +	
-			"   !env print {symbol-name}\n" +	
-			"   !env global\n" +	
-			"   !env global io/*\n" +	
+			"Please choose from:\n" +
+			"   !env print {symbol-name}\n" +
+			"   !env global\n" +
+			"   !env global io/*\n" +
 			"   !env global *file*\n";
 
 	private final static String HELP_SANDBOX =
-			"Please choose from:\n" +	
-			"   !sandbox status\n" +	
-			"   !sandbox config\n" +	
-			"   !sandbox accept-all\n" +	
-			"   !sandbox reject-all\n" +	
+			"Please choose from:\n" +
+			"   !sandbox status\n" +
+			"   !sandbox config\n" +
+			"   !sandbox accept-all\n" +
+			"   !sandbox reject-all\n" +
 			"   !sandbox customized\n" +
 			"   !sandbox add-rule class:java.lang.Math:*\n" +
 			"   !sandbox add-rule system.property:os.name\n" +
 			"   !sandbox add-rule blacklist:venice:func:io/exists-dir?\n" +
 			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
-			"   !sandbox add-rule venice:module:shell\n";	
+			"   !sandbox add-rule venice:module:shell\n";
 
 	private final static int RESTART_EXIT_CODE = 99;
 	private final static String HISTORY_FILE = ".repl.history";
