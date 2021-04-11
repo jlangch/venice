@@ -180,12 +180,7 @@
   [algorithm passphrase & options]
 
   (let [url-safe (:url-safe (apply hash-map options) false)]
-    (case algorithm
-      "DES"    (create-encrypt-fn-DES passphrase url-safe)
-      "3DES"   (create-encrypt-fn-3DES passphrase url-safe)
-      "AES256" (create-encrypt-fn-AES256 passphrase url-safe)
-      (throw (. :VncException :new
-                (str "Invalid cipher alogorithm '" algorithm "'"))))))
+    (create-encrypt-fn algorithm passphrase url-safe)))
 
 
 (defn
@@ -221,12 +216,7 @@
   [algorithm passphrase & options]
 
   (let [url-safe (:url-safe (apply hash-map options) false)]
-    (case algorithm
-      "DES"    (create-decrypt-fn-DES passphrase url-safe)
-      "3DES"   (create-decrypt-fn-3DES passphrase url-safe)
-      "AES256" (create-decrypt-fn-AES256 passphrase url-safe)
-      (throw (. :VncException :new
-                (str "Invalid cipher alogorithm '" algorithm "'"))))))
+    (create-decrypt-fn algorithm passphrase url-safe)))
 
 
 
@@ -272,16 +262,16 @@
 (defn-
   crypt/hash
 
-  ([algo data]
-    (hash algo data nil))
+  ([algorithm data]
+    (hash algorithm data nil))
 
-  ([algo data salt]
+  ([algorithm data salt]
     (assert (or (string? data) (bytebuf? data))
             "The passed data must be either a string or a bytebuf")
     (assert (or (string? salt) (bytebuf? salt) (nil? salt))
             "The passed salt must be either a string, a bytebuf or nil")
     (try
-      (let [md (. :MessageDigest :getInstance algo)]
+      (let [md (. :MessageDigest :getInstance algorithm)]
         (. md :reset)
         (when (some? salt)
           (. md :update (to-bytes salt)))
@@ -289,7 +279,7 @@
         (. md :digest))
       (catch :Exception ex
              (throw (. :VncException :new
-                       (str "Failed to compute " algo " hash.")
+                       (str "Failed to compute " algorithm " hash.")
                        ex))))))
 
 
@@ -299,6 +289,21 @@
 
 (def ENCRYPT_MODE 1)
 (def DECRYPT_MODE 2)
+
+
+(defmulti create-encrypt-fn (fn [algorithm passphrase url-safe] (name algorithm)))
+
+(defmethod create-encrypt-fn :default [algorithm passphrase url-safe]
+  (throw (. :VncException :new
+            (str "Invalid cipher alogorithm '" algorithm "'"))))
+
+
+(defmulti create-decrypt-fn (fn [algorithm passphrase url-safe] algorithm))
+
+(defmethod create-decrypt-fn :default [algorithm passphrase url-safe]
+  (throw (. :VncException :new
+            (str "Invalid cipher alogorithm '" algorithm "'"))))
+
 
 (defn- cipher-encrypt [cipher data url-safe]
   (try
@@ -350,20 +355,18 @@
         (. :init mode secret-key param-spec)))
 
 
-(defn- create-encrypt-fn-DES [passphrase url-safe]
+(defmethod create-encrypt-fn "DES" [algorithm passphrase url-safe]
   (let [secret-key (create-secret-key-DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
         cipher     (create-cipher-DES ENCRYPT_MODE secret-key param-spec)]
-    (fn [data]
-      (cipher-encrypt cipher data url-safe))))
+    (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
-(defn- create-decrypt-fn-DES [passphrase url-safe]
+(defmethod create-decrypt-fn "DES" [algorithm passphrase url-safe]
   (let [secret-key (create-secret-key-DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
         cipher     (create-cipher-DES DECRYPT_MODE secret-key param-spec)]
-    (fn [data]
-      (cipher-decrypt cipher data url-safe))))
+    (fn [data] (cipher-decrypt cipher data url-safe))))
 
 
 
@@ -386,20 +389,18 @@
         (. :init mode secret-key param-spec)))
 
 
-(defn- create-encrypt-fn-3DES [passphrase url-safe]
+(defmethod create-encrypt-fn "3DES" [algorithm passphrase url-safe]
   (let [secret-key (create-secret-key-3DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
         cipher     (create-cipher-3DES ENCRYPT_MODE secret-key param-spec)]
-    (fn [data]
-      (cipher-encrypt cipher data url-safe))))
+    (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
-(defn- create-decrypt-fn-3DES [passphrase url-safe]
+(defmethod create-decrypt-fn "3DES" [algorithm passphrase url-safe]
   (let [secret-key (create-secret-key-3DES passphrase)
         param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
         cipher     (create-cipher-3DES DECRYPT_MODE secret-key param-spec)]
-    (fn [data]
-      (cipher-decrypt cipher data url-safe))))
+    (fn [data] (cipher-decrypt cipher data url-safe))))
 
 
 
@@ -425,17 +426,15 @@
         (. :init mode secret-key iv-spec)))
 
 
-(defn- create-encrypt-fn-AES256 [passphrase url-safe]
+(defmethod create-encrypt-fn "AES256" [algorithm passphrase url-safe]
   (let [secret-key (create-secret-key-AES256 passphrase)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 ENCRYPT_MODE secret-key iv-spec)]
-    (fn [data]
-      (cipher-encrypt cipher data url-safe))))
+    (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
-(defn- create-decrypt-fn-AES256 [passphrase url-safe]
+(defmethod create-decrypt-fn "AES256" [algorithm passphrase url-safe]
   (let [secret-key (create-secret-key-AES256 passphrase)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
-    (fn [data]
-      (cipher-decrypt cipher data url-safe))))
+    (fn [data] (cipher-decrypt cipher data url-safe))))
