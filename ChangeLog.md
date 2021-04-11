@@ -13,7 +13,8 @@ and this project adheres to
 
 ### Added
 
-- ...
+- refactorings to the :crypt module. It's now a pure Venice module without
+  needing Java helper functions.
 
 ### Fixed
 
