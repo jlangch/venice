@@ -67,6 +67,16 @@
 
 
 
+## Kevlin Henny
+
+[Giving Code a Good Name](https://www.youtube.com/watch?v=CzJ94TMPcD8)
+
+[Refactoring to Immutability](https://www.youtube.com/watch?v=APUCMSPiNh4)
+
+[Lambda? You Keep Using that Letter](https://www.youtube.com/watch?v=Y7StjYhXvpE)
+
+
+
 ## Alan Kay
 
 [Alan Kay: Doing with Images Makes Symbols](https://www.youtube.com/watch?v=p2LZLYcu_JY)
