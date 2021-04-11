@@ -17,7 +17,8 @@ and this project adheres to
 
 ### Fixed
 
-- fixed a potential missing of closing a FileOutputStream with function json/spit
+- fixed a potential missing of closing a nested FileOutputStream in a 
+  try-with-resources block with function json/spit
 - dropping a file to the REPL that has special characters (space, asteriks, 
   ...) in the filename. The underlying OS shell is escaping these characters.
   E.g. on MacOSX:  "test\ 1.venice", "test\?1.venice"
