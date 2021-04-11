@@ -295,7 +295,7 @@ public class REPL {
 						}
 					}
 					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
-						final String fileName = line.trim();
+						final String fileName = unescapeDroppedFileName(line.trim());
 						final List<String> lines = Files
 													.readAllLines(new File(fileName).toPath())
 													.stream()
@@ -953,6 +953,35 @@ public class REPL {
 		}
 	}
 	
+	private String unescapeDroppedFileName(final String fileName) {
+		// dropping a file to the REPL that has special characters (space, 
+		// asteriks,  ...) in the filename. The underlying OS shell is 
+		// escaping these characters.
+		// E.g.:  "test\ 1.venice", "test\?1.venice"
+		final String osType = osType();
+		if ("windows".equals(osType)) {
+			return fileName;
+		}
+		else {
+			return fileName.replace("\\", "");
+		}
+	}
+	
+	public static String osType() {
+		final String osName = System.getProperty("os.name");
+		if (osName.startsWith("Windows")) {
+			return "windows";
+		}
+		else if (osName.startsWith("Mac OS X")) {
+			return "mac-osx";
+		}
+		else if (osName.startsWith("Linux")) {
+			return "linux";
+		}
+		else {
+			return "unknown";
+		}
+	}
 	
 	
 	public static enum SetupMode { Minimal, Extended };
