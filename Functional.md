@@ -7,8 +7,6 @@
 
 [Transparency through data](https://m.youtube.com/watch?v=zznwKCifC1A)
 
-[Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
-
 [Domain Modeling Made Functional](https://youtu.be/2JB1_e5wZmU)
 
 [Functional Design Patterns - Scott Wlaschin](https://youtu.be/srQt1NAHYC0)
@@ -36,6 +34,8 @@
 [The Most Beautiful Program Ever Written](https://www.youtube.com/watch?v=OyfBQmvr2Hc)
 
 [Lisp 1.5 programmer's manual](http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf)
+
+[Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
 
 
 
@@ -67,7 +67,7 @@
 
 
 
-## Kevlin Henny
+## Kevlin Henney
 
 [Giving Code a Good Name](https://www.youtube.com/watch?v=CzJ94TMPcD8)
 
