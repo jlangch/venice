@@ -3,6 +3,12 @@
 
 ## Functional Programming
 
+[Solving Problems the Clojure Way](https://m.youtube.com/watch?v=vK1DazRK_a0)
+
+[Transparency through data](https://m.youtube.com/watch?v=zznwKCifC1A)
+
+[Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
+
 [Domain Modeling Made Functional](https://youtu.be/2JB1_e5wZmU)
 
 [Functional Design Patterns - Scott Wlaschin](https://youtu.be/srQt1NAHYC0)
