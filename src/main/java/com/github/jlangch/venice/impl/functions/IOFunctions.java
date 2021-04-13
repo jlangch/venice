@@ -1077,7 +1077,7 @@ public class IOFunctions {
 				}
 				catch(Exception ex) {
 					throw new VncException(
-							String.format("Failed to list files %s", dir.getPath()),
+							String.format("Failed to list files from %s", dir.getPath()),
 							ex);
 				}
 			}
@@ -1426,54 +1426,66 @@ public class IOFunctions {
 				
 				sandboxFunctionCallValidation();
 
-				try {
-					final VncVal arg = args.first();
+				final VncVal arg = args.first();
 
-					final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
 
-					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-						final File file = Types.isVncString(arg)
-											? new File(((VncString)arg).getValue())
-											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+				if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
+					final File file = Types.isVncString(arg)
+										? new File(((VncString)arg).getValue())
+										:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 
+					try {
 						validateReadableFile(file);
-
+	
 						final VncVal encVal = options.get(new VncKeyword("encoding"));
 						final String encoding = encoding(encVal);
-
+	
 						final List<VncString> lines =
 								Files.readAllLines(file.toPath(), Charset.forName(encoding))
 									 .stream()
 									 .map(s -> new VncString(s))
 									 .collect(Collectors.toList());
-
+	
 						return VncList.ofList(lines);
 					}
-					else if (Types.isVncJavaObject(arg, InputStream.class)) {
+					catch (Exception ex) {
+						throw new VncException(
+								"Failed to slurp text lines from the file " + file.getPath(), 
+								ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, InputStream.class)) {
+					try {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
+	
 						final VncVal encVal = options.get(new VncKeyword("encoding"));
 						final String encoding = encoding(encVal);
-
+	
 						try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding))) {
 							return VncList.ofList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 						}
 					}
-					else if (Types.isVncJavaObject(arg, Reader.class)) {
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp text lines from a :java.io.InputStream", ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, Reader.class)) {
+					try {
 						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
 												
 						try (BufferedReader brd = new BufferedReader(rd)) {
 							return VncList.ofList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
 						}
 					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/slurp-lines' does not allow %s as f",
-								Types.getType(args.first())));
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp text lines from a :java.io.Reader", ex);
 					}
 				}
-				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+				else {
+					throw new VncException(String.format(
+							"Function 'io/slurp-lines' does not allow %s as f",
+							Types.getType(args.first())));
 				}
 			}
 
@@ -1501,19 +1513,18 @@ public class IOFunctions {
 				
 				sandboxFunctionCallValidation();
 
-				try {
-					final VncVal arg = args.first();
+				final VncVal arg = args.first();
 
-					final VncHashMap options = VncHashMap.ofAll(args.rest());
-					final VncVal binary = options.get(new VncKeyword("binary"));
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				final VncVal binary = options.get(new VncKeyword("binary"));
 
-					if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-						final File file = Types.isVncString(arg)
-											? new File(((VncString)arg).getValue())
-											:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
+				if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
+					final File file = Types.isVncString(arg)
+										? new File(((VncString)arg).getValue())
+										:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					try {
 						validateReadableFile(file);
-
+	
 						if (VncBoolean.isTrue(binary)) {
 							final byte[] data = Files.readAllBytes(file.toPath());
 							return new VncByteBuffer(ByteBuffer.wrap(data));
@@ -1521,15 +1532,20 @@ public class IOFunctions {
 						else {
 							final VncVal encVal = options.get(new VncKeyword("encoding"));
 							final String encoding = encoding(encVal);
-
+	
 							final byte[] data = Files.readAllBytes(file.toPath());
-
+	
 							return new VncString(new String(data, encoding));
 						}
 					}
-					else if (Types.isVncJavaObject(arg, InputStream.class)) {
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, InputStream.class)) {
+					try {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
+	
 						if (VncBoolean.isTrue(binary)) {
 							final byte[] data = IOStreamUtil.copyIStoByteArray(is);
 							return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
@@ -1537,11 +1553,16 @@ public class IOFunctions {
 						else {
 							final VncVal encVal = options.get(new VncKeyword("encoding"));
 							final String encoding = encoding(encVal);
-
+	
 							return new VncString(IOStreamUtil.copyIStoString(is, encoding));
 						}
 					}
-					else if (Types.isVncJavaObject(arg, Reader.class)) {
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from a :java.io.InputStream", ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, Reader.class)) {
+					try {
 						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
 						
 						try (BufferedReader brd = new BufferedReader(rd)) {
@@ -1558,14 +1579,14 @@ public class IOFunctions {
 							}
 						}
 					}
-					else {
-						throw new VncException(String.format(
-								"Function 'io/slurp' does not allow %s as f",
-								Types.getType(args.first())));
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from a :java.io.Reader", ex);
 					}
 				}
-				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+				else {
+					throw new VncException(String.format(
+							"Function 'io/slurp' does not allow %s as f",
+							Types.getType(args.first())));
 				}
 			}
 
@@ -1593,12 +1614,11 @@ public class IOFunctions {
 				
 				sandboxFunctionCallValidation();
 
+				final File file = convertToFile(
+									args.first(),
+									"Function 'io/spit' does not allow %s as f");
+
 				try {
-					final File file = convertToFile(
-										args.first(),
-										"Function 'io/spit' does not allow %s as f");
-
-
 					final VncVal content = args.second();
 
 					final VncHashMap options = VncHashMap.ofAll(args.slice(2));
@@ -1635,7 +1655,9 @@ public class IOFunctions {
 					return Nil;
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException(
+							"Failed to spit data to the file " + file.getPath(), 
+							ex);
 				}
 			}
 
@@ -1764,7 +1786,7 @@ public class IOFunctions {
 					}
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException("Failed to download data from the URI: " + uri, ex);
 				}
 			}
 
@@ -1812,7 +1834,7 @@ public class IOFunctions {
 				"io/copy-stream",
 				VncFunction
 					.meta()
-					.arglists("(io/copy-file in-stream out-stream)")
+					.arglists("(io/copy-strean in-stream out-stream)")
 					.doc(
 						"Copies input stream to an output stream. Returns nil or throws IOException. " +
 						"Input and output must be a java.io.InputStream and java.io.OutputStream.")
@@ -1842,7 +1864,8 @@ public class IOFunctions {
 					IOStreamUtil.copy((InputStream)is, (OutputStream)os);
 				}
 				catch(Exception ex) {
-					throw new VncException("Failed to copy stream");
+					throw new VncException(
+							"Failed to copy data from a :java.io.InputStream to an :java.io.OutputStream");
 				}
 
 				return Nil;
@@ -1903,7 +1926,9 @@ public class IOFunctions {
 					throw ex;
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException(
+							"Failed to slurp data from a :java.io.InputStream", 
+							ex);
 				}
 			}
 
@@ -1974,7 +1999,9 @@ public class IOFunctions {
 					return Nil;
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException(
+							"Failed to spit data to a :java.io.OutputStream", 
+							ex);
 				}
 			}
 
@@ -2004,7 +2031,9 @@ public class IOFunctions {
 						return new VncJavaObject(new URL(uri).openStream());
 					}
 					catch (Exception ex) {
-						throw new VncException(ex.getMessage(), ex);
+						throw new VncException(
+								"Failed to create a :java.io.InputStream from an URI", 
+								ex);
 					}
 				}
 
@@ -2071,7 +2100,9 @@ public class IOFunctions {
 					return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, encoding)));
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException(
+							"Failed to wrap an :java.io.OutputStream with a :java.io.BufferedWriter",
+							ex);
 				}
 			}
 
@@ -2109,7 +2140,9 @@ public class IOFunctions {
 					return new VncJavaObject(new PrintWriter(new OutputStreamWriter(os, encoding)));
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException(
+							"Failed to wrap an :java.io.OutputStream with a :java.io.PrintWriter", 
+							ex);
 				}
 			}
 
@@ -2150,7 +2183,9 @@ public class IOFunctions {
 								return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
 							}
 							catch (Exception ex) {
-								throw new VncException(ex.getMessage(), ex);
+								throw new VncException(
+										"Failed to wrap an :java.io.InputStream with a :java.io.BufferReader", 
+										ex);
 							}
 						}
 					}
@@ -2220,8 +2255,8 @@ public class IOFunctions {
 				}
 				
 				throw new VncException(String.format(
-						"Function 'io/buffered-reader' requires an InputStream, " +
-						"a Reader, or a string. %s as is not allowed!",
+						"Function 'io/buffered-reader' requires a :java.io.InputStream, " +
+						"a :java.io.Reader, or a string. %s as is not allowed!",
 						Types.getType(args.first())));
 			}
 
@@ -2268,8 +2303,8 @@ public class IOFunctions {
 				}
 				
 				throw new VncException(String.format(
-						"Function 'io/buffered-writer' requires an OutputStream " +
-						"or a Writer. %s as is not allowed!",
+						"Function 'io/buffered-writer' requires a :java.io.OutputStream " +
+						"or a :java.io.Writer. %s as is not allowed!",
 						Types.getType(args.first())));
 			}
 
@@ -2374,7 +2409,7 @@ public class IOFunctions {
 					return new VncString(Files.createTempDirectory(prefix).normalize().toString());
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException("Failed to create a temp directory", ex);
 				}
 			}
 
@@ -2395,13 +2430,13 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+				
+				sandboxFunctionCallValidation();
+
+				final VncVal name = args.first();
+
 				try {
-					ArityExceptions.assertArity(this, args, 1);
-					
-					sandboxFunctionCallValidation();
-
-					final VncVal name = args.first();
-
 					if (Types.isVncString(name)) {
 						final String res = ((VncString)args.first()).getValue();
 						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
@@ -2425,7 +2460,9 @@ public class IOFunctions {
 					throw ex;
 				}
 				catch (Exception ex) {
-					throw new VncException(ex.getMessage(), ex);
+					throw new VncException(
+							"Failed to load classpath resource: " + name.toString(), 
+							ex);
 				}
 			}
 
@@ -2446,11 +2483,11 @@ public class IOFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal name = args.first();
+
 				try {
-					ArityExceptions.assertArity(this, args, 1);
-
-					final VncVal name = args.first();
-
 					if (Types.isVncString(name)) {
 						final String path = ((VncString)args.first()).getValue();
 						return VncBoolean.of(new ClassPathResource(path).getResource() != null);
