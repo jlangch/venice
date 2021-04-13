@@ -19,31 +19,24 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Creates a Covid-19 chart representing Switzerlands rules for a 14 days
-;;;; quarantine.
-;;;;
-;;;; Switzerland requires people entering from a country having more than
-;;;; 60 Covid-19 cases per 100'000 people for the last 14 days to stay in
-;;;; a 10 days quarantine.
+;;;; Creates a Covid-19 chart representing Switzerlands
 
 
 (do
   (load-module :xchart)
 
-  ;; https://www.worldometers.info/population/europe/
-  (def country-config
-    (ordered-map
-      "Switzerland"  { :name "Switzerland"  :iso "CHE"  :color :x-green      }
-      "Romania"      { :name "Romania"      :iso "ROU"  :color :x-blue       }
-      "Austria"      { :name "Austria"      :iso "AUT"  :color :x-purple     }
-      "Hungary"      { :name "Hungary"      :iso "HUN"  :color :x-orange     }
-      "Germany"      { :name "Germany"      :iso "DEU"  :color :x-red        }
-      "Italy"        { :name "Italy"        :iso "ITA"  :color :x-pink       }
-      "France"       { :name "France"       :iso "FRA"  :color :x-light-blue }
-      "Sweden"       { :name "Sweden"       :iso "SWE"  :color :x-dark-gray  }
-      "Greece"       { :name "Greece"       :iso "GRC"  :color :x-dark-pink  }
-      "Spain"        { :name "Spain"        :iso "ESP"  :color :x-dark-green }
-      "UK"           { :name "UK"           :iso "GBR"  :color :x-yellow     } ))
+  (def country-config [
+      { :name "Switzerland"  :iso "CHE"  :color :x-green      }
+      { :name "Romania"      :iso "ROU"  :color :x-blue       }
+      { :name "Austria"      :iso "AUT"  :color :x-purple     }
+      { :name "Hungary"      :iso "HUN"  :color :x-orange     }
+      { :name "Germany"      :iso "DEU"  :color :x-red        }
+      { :name "Italy"        :iso "ITA"  :color :x-pink       }
+      { :name "France"       :iso "FRA"  :color :x-light-blue }
+      { :name "Sweden"       :iso "SWE"  :color :x-dark-gray  }
+      { :name "Greece"       :iso "GRC"  :color :x-dark-pink  }
+      { :name "Spain"        :iso "ESP"  :color :x-dark-green }
+      { :name "UK"           :iso "GBR"  :color :x-yellow     } ])
 
   ;; definitions for case data statistics
   (def sample-days 7)
@@ -67,26 +60,25 @@
 
   ;;; I/O functions ------------------------------------------------------------
 
-  (defn view [file] (sh/open file))
+  (defn view-chart [file] (sh/open file))
 
   (defn save-chart [chart file dpi]
     (xchart/write-to-file chart :png dpi file))
 
-  (defn worldometers-country-url [country]
-    (str worldometers-url (str/lower-case country) "/"))
+  (defn worldometers-country-url [country-name]
+    (str worldometers-url (str/lower-case country-name) "/"))
 
-  (defn load-country-html-data [country]
-    (println "Loading cases for" country "...")
-    (io/download (worldometers-country-url country) :user-agent "Mozilla"))
+  (defn load-country-html-data [country-name]
+    (println "Loading cases for" country-name "...")
+    (io/download (worldometers-country-url country-name) :user-agent "Mozilla"))
 
-  (defn load-countries-html-data [countries]
-    ; returns a list of tuples [country html]
-    (map #(vector % (load-country-html-data %)) countries))
+  (defn add-country-html-data [country-data]
+    (assoc country-data :html (load-country-html-data (:name country-data))))
 
   (defn rest-country-population-url [country-iso]
     (str rest-population-url country-iso))
 
-  (defn load-population [country-name country-iso]
+  (defn load-country-population [country-name country-iso]
     (println "Loading population for" country-name "...")
     (-<> (rest-country-population-url country-iso)
          (io/download <> :user-agent "Mozilla")
@@ -94,10 +86,11 @@
          (get <> "population")
          (long <>)))
 
-  (defn add-population [country-config]
-    (-<> (vals country-config)
-         (map #(assoc % :population (load-population (:name %) (:iso %))) <>)
-         (reduce #(assoc %1 (:name %2) %2) (ordered-map) <>)))
+  (defn add-country-population [country-data]
+    (let [p (load-country-population (:name country-data) (:iso country-data))]
+      (-> country-data
+           (assoc :population p)
+           (assoc :population-normalized (normalize-population p)))))
 
 
   ;;; Processing ---------------------------------------------------------------
@@ -145,91 +138,91 @@
           (str/replace-all <> "null" "0")
           (regex/find-all (regex/matcher "\\d+" <>))))
 
-  (defn parse-cases [html-cases-section]
-    ;; returns a vector of tuples with the date and the cases
-    ;; E.g.: [... [2020-02-01, 560] [2020-02-02, 594] [2020-02-03, 560]]
-    (map vector (parse-days (extract-days html-cases-section))
-                (parse-daily-cases (extract-daily-cases html-cases-section))))
+  (defn parse-country-cases [html]
+    (let [section (extract-html-daily-cases-section html)]
+      (map vector (parse-days (extract-days section))
+                  (parse-daily-cases (extract-daily-cases section)))))
 
-  (defn aggregate-case-sample [country population data]
-    (let [line       (first data)
-          date       (first line)
-          cases      (second line)
-          tot        (reduce + (map second data))
-          avg-day    (/ tot (count data))
-          avg-norm   (/ tot (normalize-population population))]
-      [ date cases tot avg-day avg-norm ]))
+  (defn add-country-cases [country-data]
+    (-> country-data
+         (assoc :cases (parse-country-cases (:html country-data)))
+         (dissoc :html)))
 
-  (defn aggregate-cases [country population data]
-    (loop [d data, tuples []]
+  (defn filter-country-cases-by-time [start end country-data]
+    (let [filter-cases (fn [cases]
+                         (filter #(time/within? (first %) start end) cases))]
+      (assoc country-data :cases (filter-cases (:cases country-data)))))
+
+  (defn aggregate-case-sample [normalized-population sample]
+    (let [day       (first sample)
+          date      (first day)
+          tot       (reduce + (map second sample))
+          avg-norm  (/ tot normalized-population)]
+      [ date (long avg-norm) ]))
+
+  (defn aggregate-cases [normalized-population cases]
+    (loop [d cases, tuples []]
       (if (>= (count d) sample-days)
         (recur (rest d)
-               (conj tuples (aggregate-case-sample country
-                                                   population
-                                                  (take sample-days d))))
+               (conj tuples (aggregate-case-sample normalized-population
+                                                   (take sample-days d))))
         tuples)))
 
-  (defn aggregate-by-country [country population html]
-    (->> (extract-html-daily-cases-section html)
-         (parse-cases)
-         (filter #(time/within? (first %) start-date end-date))
+  (defn aggregate-country-cases [country-data]
+    (->> (:cases country-data)
          (reverse)
-         (aggregate-cases country population)
+         (aggregate-cases (:population-normalized country-data))
          (reverse)
-         (map #(vector (time/date (first %)) (nth % 4)))))
+         (assoc country-data :cases)))
 
-  (defn compute-countries-data [country-html-data populations country-names]
-    (->> (map (fn [[country html]]
-                (let [population (get populations country)]
-                  (aggregate-by-country country population html)))
-              country-html-data)
-         (interleave country-names)
-         (apply ordered-map)))
+  (defn aggregate-country-data [country-data start end]
+    (let [sample-start-date (time/minus start :days sample-days)
+          sample-end-date   end]
+      (-<> country-data
+           (add-country-population <>)
+           (add-country-html-data <>)
+           (add-country-cases <>)
+           (filter-country-cases-by-time sample-start-date sample-end-date <>)
+           (aggregate-country-cases <>)
+           (filter-country-cases-by-time start end <>))))
 
-  (defn series [country-data country-config country]
-    (let [data   (get country-data country)
-          style  (get country-config country)]
-      { :x     (map first data)
-        :y     (map second data)
+  ;;; Chart --------------------------------------------------------------------
+
+  (defn chart-series-country [country-data]
+    (let [cases  (:cases country-data)
+          style  country-data]
+      { :x     (map (comp time/date first) cases)  ;; XChart requires a Java Date
+        :y     (map second cases)
         :style { :marker-type :none
                  :line-color  (:color style)
                  :line-style  (:stroke style :solid) }}))
 
-  (defn calc-country-series [country-data country-config]
-    (let [country-names (keys country-config)]
-      (reduce #(assoc %1 %2 (series country-data country-config %2))
-              (ordered-map)
-              country-names)))
+  (defn chart-series-all-countries [countries-data]
+    (reduce #(assoc %1 (:name %2) (chart-series-country %2))
+            (ordered-map)
+            countries-data))
 
-  (defn render-chart [country-data country-config]
+  (defn render-chart [countries-data width height sample-days]
     (xchart/xy-chart
-       (calc-country-series country-data country-config)
+       (chart-series-all-countries countries-data)
        { :title        "Covid-19 Incidence (~(str (time/local-date)))"
-         :width        chart-width
-         :height       chart-height
+         :width        width
+         :height       height
          :x-axis       { :title "", :date-pattern "MMM-dd" }
          :y-axis       { :title "Cases over ~{sample-days} Days per 100'000" }
          :theme        :matlab
          :legend       { :border-color :white }
          :render-style :line } ))
 
-  (defn create-chart [country-html-data country-config]
-    (let [country-names (keys country-config)
-          country-populations (map-vals :population country-config)]
-      (-> (compute-countries-data country-html-data
-                                  country-populations
-                                  country-names)
-          (render-chart country-config))))
+  ;;; Main ---------------------------------------------------------------------
 
   (defn main []
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
-    (let [chart-file    "covid-19.png"
-          country-names (keys country-config)
-          country-data  (add-population country-config)]
-      (-> (load-countries-html-data country-names)
-          (create-chart country-data)
+    (let [chart-file "covid-19.png"]
+      (-> (map #(aggregate-country-data % start-date end-date) country-config)
+          (render-chart chart-width chart-height sample-days)
           (save-chart chart-file chart-dpi))
-      (view chart-file)
+      (view-chart chart-file)
       nil))
 
   (main))
