@@ -19,7 +19,8 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Creates a Covid-19 chart representing Switzerlands
+;;;; Creates a Covid-19 chart representing Switzerland compared to some other
+;;;; countries
 
 
 (do
@@ -38,7 +39,7 @@
       { :name "Spain"        :iso "ESP"  :style { :color :x-dark-green }}
       { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }} ])
 
-  ;; definitions for case data statistics
+  ;; the interval length in days to calculate the moving average
   (def sample-days 7)
 
   ;; the start/end date for the cases
@@ -133,35 +134,29 @@
     (let [in-period? #(time/within? (first %) start end)]
       (assoc country-data :cases (filter in-period? (:cases country-data)))))
 
-  (defn aggregate-case-sample [normalized-population sample-cases]
-    (let [day       (first sample-cases)
-          date      (first day)
-          tot       (reduce + (map second sample-cases))
-          avg-norm  (/ tot normalized-population)]
-      [ date (long avg-norm) ]))
-
   (defn aggregate-cases [normalized-population cases]
-    (loop [d cases, tuples []]
+    (loop [d (reverse cases), tuples []]
       (if (>= (count d) sample-days)
-        (recur (rest d)
-               (conj tuples (aggregate-case-sample normalized-population
-                                                   (take sample-days d))))
-        tuples)))
+        (let [window (take sample-days d)
+              day    (first window)
+              date   (first day)
+              tot    (reduce + (map second window))
+              avg    (long (/ tot normalized-population))]
+          (recur (rest d) (conj tuples [ date avg ])))
+        (reverse tuples))))
 
   (defn aggregate-country-cases [country-data]
     (->> (:cases country-data)
-         (reverse)
          (aggregate-cases (:population-normalized country-data))
-         (reverse)
          (assoc country-data :cases)))
 
   (defn aggregate-country-data [country-data start end]
-    (-<> country-data
-         (add-country-population <>)
-         (add-country-html-data <>)
-         (add-country-cases <>)
-         (aggregate-country-cases <>)
-         (filter-country-cases-by-date start end <>))))
+    (->> country-data
+         (add-country-population)
+         (add-country-html-data)
+         (add-country-cases)
+         (aggregate-country-cases)
+         (filter-country-cases-by-date start end)))
 
   ;;; Chart --------------------------------------------------------------------
 

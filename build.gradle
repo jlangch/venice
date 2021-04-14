@@ -217,7 +217,7 @@ classes.dependsOn compileModuleInfoJava
 
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 

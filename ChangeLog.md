@@ -9,7 +9,7 @@ and this project adheres to
 
 
 
-## [1.9.15] - 2021-04-xx
+## [1.9.15] - 2021-04-14
 
 ### Added
 
@@ -23,6 +23,11 @@ and this project adheres to
 - dropping a file to the REPL that has special characters (space, asteriks, 
   ...) in the filename. The underlying OS shell is escaping these characters.
   E.g. on MacOSX:  "test\ 1.venice", "test\?1.venice"
+
+### Changed
+
+- build to Gradle 7.0 and moved to MavenCentral because JCenter's shutdown 
+  has been announced by JFrog in February 2021
 
 
 
