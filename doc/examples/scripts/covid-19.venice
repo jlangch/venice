@@ -40,7 +40,6 @@
 
   ;; definitions for case data statistics
   (def sample-days 7)
-  (def population-norm 100_000)
 
   ;; the start/end date for the cases
   (def start-date (time/local-date 2021 1 1))
@@ -65,29 +64,24 @@
   (defn save-chart [chart file dpi]
     (xchart/write-to-file chart :png dpi file))
 
-  (defn worldometers-country-url [country-name]
-    (str worldometers-url (str/lower-case country-name) "/"))
-
   (defn load-country-html-data [country-name]
-    (println "Loading cases for" country-name "...")
-    (io/download (worldometers-country-url country-name) :user-agent "Mozilla"))
+    (let [url (str worldometers-url (str/lower-case country-name) "/")]
+      (println "Loading cases for" country-name "...")
+      (io/download url :user-agent "Mozilla")))
+
+  (defn load-country-population [country-iso]
+    (let [url (str rest-population-url country-iso)]
+      (println "Loading population for" country-iso "...")
+      (-<> (io/download url :user-agent "Mozilla")
+           (json/read-str <>)
+           (get <> "population")
+           (long <>))))
 
   (defn add-country-html-data [country-data]
     (assoc country-data :html (load-country-html-data (:name country-data))))
 
-  (defn rest-country-population-url [country-iso]
-    (str rest-population-url country-iso))
-
-  (defn load-country-population [country-name country-iso]
-    (println "Loading population for" country-name "...")
-    (-<> (rest-country-population-url country-iso)
-         (io/download <> :user-agent "Mozilla")
-         (json/read-str <>)
-         (get <> "population")
-         (long <>)))
-
   (defn add-country-population [country-data]
-    (let [p (load-country-population (:name country-data) (:iso country-data))]
+    (let [p (load-country-population (:iso country-data))]
       (-> country-data
            (assoc :population p)
            (assoc :population-normalized (normalize-population p)))))
@@ -99,8 +93,7 @@
     ([r g b]   (. :java.awt.Color :new r g b))
     ([r g b a] (. :java.awt.Color :new r g b a)))
 
-  (defn normalize-population [p]
-    (/ p (double population-norm)))
+  (defn normalize-population [p] (/ p 100_000.0))
 
   (defn parse-date [date]
     ;; convert "Feb 2, 2020" to "2020 Feb 02" and parse it
@@ -219,9 +212,10 @@
   (defn main []
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
     (let [chart-file "covid-19.png"]
-      (-> (map #(aggregate-country-data % start-date end-date) country-config)
-          (render-chart chart-width chart-height sample-days)
-          (save-chart chart-file chart-dpi))
+      (-<> country-config
+           (map #(aggregate-country-data % start-date end-date) <>)
+           (render-chart <> chart-width chart-height sample-days)
+           (save-chart <> chart-file chart-dpi))
       (view-chart chart-file)
       nil))
 
