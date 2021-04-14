@@ -1,4 +1,4 @@
-Venice Release 1.9.15-SNAPSHOT
+Venice Release 1.9.15
 
 Copyright (c) 2017-2021 Venice
 
