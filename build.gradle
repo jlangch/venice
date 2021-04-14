@@ -365,7 +365,7 @@ signing {
     sign publishing.publications.venicePublication
 }
 
-
+/*
 jdepsReport {
     sourceSets = ['main']
     configurations = ['runtime']
@@ -377,7 +377,7 @@ jdeprscanReport {
     sourceSets = ['main']
     configurations = ['runtime']
 }
-
+*/
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
     workingDir 'build/libs'
