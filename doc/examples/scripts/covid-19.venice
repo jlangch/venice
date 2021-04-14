@@ -26,17 +26,17 @@
   (load-module :xchart)
 
   (def country-config [
-      { :name "Switzerland"  :iso "CHE"  :color :x-green      }
-      { :name "Romania"      :iso "ROU"  :color :x-blue       }
-      { :name "Austria"      :iso "AUT"  :color :x-purple     }
-      { :name "Hungary"      :iso "HUN"  :color :x-orange     }
-      { :name "Germany"      :iso "DEU"  :color :x-red        }
-      { :name "Italy"        :iso "ITA"  :color :x-pink       }
-      { :name "France"       :iso "FRA"  :color :x-light-blue }
-      { :name "Sweden"       :iso "SWE"  :color :x-dark-gray  }
-      { :name "Greece"       :iso "GRC"  :color :x-dark-pink  }
-      { :name "Spain"        :iso "ESP"  :color :x-dark-green }
-      { :name "UK"           :iso "GBR"  :color :x-yellow     } ])
+      { :name "Switzerland"  :iso "CHE"  :style { :color :x-green      }}
+      { :name "Romania"      :iso "ROU"  :style { :color :x-blue       }}
+      { :name "Austria"      :iso "AUT"  :style { :color :x-purple     }}
+      { :name "Hungary"      :iso "HUN"  :style { :color :x-orange     }}
+      { :name "Germany"      :iso "DEU"  :style { :color :x-red        }}
+      { :name "Italy"        :iso "ITA"  :style { :color :x-pink       }}
+      { :name "France"       :iso "FRA"  :style { :color :x-light-blue }}
+      { :name "Sweden"       :iso "SWE"  :style { :color :x-dark-gray  }}
+      { :name "Greece"       :iso "GRC"  :style { :color :x-dark-pink  }}
+      { :name "Spain"        :iso "ESP"  :style { :color :x-dark-green }}
+      { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }} ])
 
   ;; definitions for case data statistics
   (def sample-days 7)
@@ -83,8 +83,8 @@
   (defn add-country-population [country-data]
     (let [p (load-country-population (:iso country-data))]
       (-> country-data
-           (assoc :population p)
-           (assoc :population-normalized (normalize-population p)))))
+          (assoc :population p)
+          (assoc :population-normalized (/ p 100_000.0)))))
 
 
   ;;; Processing ---------------------------------------------------------------
@@ -92,20 +92,6 @@
   (defn color
     ([r g b]   (. :java.awt.Color :new r g b))
     ([r g b a] (. :java.awt.Color :new r g b a)))
-
-  (defn normalize-population [p] (/ p 100_000.0))
-
-  (defn parse-date [date]
-    ;; convert "Feb 2, 2020" to "2020 Feb 02" and parse it
-    (time/local-date-parse date "MMM dd, yyyy" :ENGLISH))
-
-  (defn parse-days [days]
-    ;; ("Feb 15, 2020","Feb 16, 2020",...,"Aug 29, 2020")
-    (map parse-date days))
-
-  (defn parse-daily-cases [cases]
-    ;; ("0","0",...,"215","186","143","1212)
-    (map long cases))
 
   (defn extract-html-daily-cases-section [html]
     ;; extract the daily cases section from HTML page (javascript)
@@ -115,41 +101,42 @@
          (rest)
          (butlast)))
 
-  (defn extract-days [data]
+  (defn parse-daily-cases-dates [html]
     ;;  """categories: ["Feb 15, 2020","Feb 16, 2020",...,"Aug 29, 2020"]   },"""
-    (as-> data <>
+    (as-> html <>
           (filter #(str/contains? % "categories: [") <>)
           (first <>)
           (regex/find-all (regex/matcher """["][A-Za-z0-9, ]+["]""" <>))
-          (map str/double-unquote <>)))
+          (map str/double-unquote <>)
+          (map #(time/local-date-parse % "MMM dd, yyyy" :ENGLISH) <>)))
 
-  (defn extract-daily-cases [data]
+  (defn parse-daily-cases-numbers [html]
     ;; """data: [null,0,0,0,0,0,1,3,4,...,215,186,143,121]   },"""
-    (as-> data <>
+    (as-> html <>
           (filter #(str/contains? % "data: [") <>)
           (first <>)
           (str/replace-all <> "null" "0")
-          (regex/find-all (regex/matcher "\\d+" <>))))
+          (regex/find-all (regex/matcher "\\d+" <>))
+          (map long <>)))
 
   (defn parse-country-cases [html]
     (let [section (extract-html-daily-cases-section html)]
-      (map vector (parse-days (extract-days section))
-                  (parse-daily-cases (extract-daily-cases section)))))
+      (map vector (parse-daily-cases-dates section)
+                  (parse-daily-cases-numbers section))))
 
   (defn add-country-cases [country-data]
     (-> country-data
-         (assoc :cases (parse-country-cases (:html country-data)))
-         (dissoc :html)))
+        (assoc :cases (parse-country-cases (:html country-data)))
+        (dissoc :html)))
 
-  (defn filter-country-cases-by-time [start end country-data]
-    (let [filter-cases (fn [cases]
-                         (filter #(time/within? (first %) start end) cases))]
-      (assoc country-data :cases (filter-cases (:cases country-data)))))
+  (defn filter-country-cases-by-date [start end country-data]
+    (let [in-period? #(time/within? (first %) start end)]
+      (assoc country-data :cases (filter in-period? (:cases country-data)))))
 
-  (defn aggregate-case-sample [normalized-population sample]
-    (let [day       (first sample)
+  (defn aggregate-case-sample [normalized-population sample-cases]
+    (let [day       (first sample-cases)
           date      (first day)
-          tot       (reduce + (map second sample))
+          tot       (reduce + (map second sample-cases))
           avg-norm  (/ tot normalized-population)]
       [ date (long avg-norm) ]))
 
@@ -169,22 +156,19 @@
          (assoc country-data :cases)))
 
   (defn aggregate-country-data [country-data start end]
-    (let [sample-start-date (time/minus start :days sample-days)
-          sample-end-date   end]
-      (-<> country-data
-           (add-country-population <>)
-           (add-country-html-data <>)
-           (add-country-cases <>)
-           (filter-country-cases-by-time sample-start-date sample-end-date <>)
-           (aggregate-country-cases <>)
-           (filter-country-cases-by-time start end <>))))
+    (-<> country-data
+         (add-country-population <>)
+         (add-country-html-data <>)
+         (add-country-cases <>)
+         (aggregate-country-cases <>)
+         (filter-country-cases-by-date start end <>))))
 
   ;;; Chart --------------------------------------------------------------------
 
   (defn chart-series-country [country-data]
     (let [cases  (:cases country-data)
-          style  country-data]
-      { :x     (map (comp time/date first) cases)  ;; XChart requires a Java Date
+          style  (:style country-data)]
+      { :x     (map (comp time/date first) cases)
         :y     (map second cases)
         :style { :marker-type :none
                  :line-color  (:color style)
