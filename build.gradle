@@ -267,9 +267,6 @@ jar {
     exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
     
     archiveFileName = "venice-raw-${project.version}.jar"
-    
-    metaInf { from 'src/main/resources/META-INF/license.txt'
-              from 'src/main/resources/META-INF/notice.txt' }
 }
 
 
