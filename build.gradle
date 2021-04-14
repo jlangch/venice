@@ -139,11 +139,13 @@ plugins {
     // https://github.com/johnrengelman/shadow/
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 
+/*
     // https://github.com/kordamp/jdeps-gradle-plugin
     id 'org.kordamp.gradle.jdeps' version '0.12.0'
 
     // https://github.com/kordamp/jdeprscan-gradle-plugin
     id 'org.kordamp.gradle.jdeprscan' version '0.9.0'
+*/
 }
 
 
