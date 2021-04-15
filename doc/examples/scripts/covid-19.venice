@@ -135,15 +135,12 @@
       (assoc country-data :cases (filter in-period? (:cases country-data)))))
 
   (defn aggregate-cases [normalized-population cases]
-    (loop [d (reverse cases), tuples []]
-      (if (>= (count d) sample-days)
-        (let [window (take sample-days d)
-              day    (first window)
-              date   (first day)
-              tot    (reduce + (map second window))
-              avg    (long (/ tot normalized-population))]
-          (recur (rest d) (conj tuples [ date avg ])))
-        (reverse tuples))))
+    (->> (partition sample-days 1 cases) ;; create windows of sample-days len
+         (map (fn [window]
+                (let [date (first (last window))
+                      tot  (reduce + (map second window))
+                      avg  (/ tot normalized-population)]
+                [date (long avg)])))))
 
   (defn aggregate-country-cases [country-data]
     (->> (:cases country-data)
