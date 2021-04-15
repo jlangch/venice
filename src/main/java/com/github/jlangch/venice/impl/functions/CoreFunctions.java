@@ -5559,20 +5559,20 @@ public class CoreFunctions {
 						part = ((VncLazySeq)part).realize();
 					}
 					
-
 					if (padseq != null) {
-						VncSequence part1 = part.addAllAtEnd(padseq.take(n-part.size()));
-						result = result.addAtEnd(part1);
+						final VncSequence partPadded = part.addAllAtEnd(padseq.take(n-part.size()));
+						result = result.addAtEnd(partPadded);
 					}
 					else {
 						if (part.size() == n) {
 							result = result.addAtEnd(part);
 						}
 					}
-					
+
 					if (part.size() < n) {
 						break;
 					}
+
 					seq = seq.drop(step);
 				}
 				
