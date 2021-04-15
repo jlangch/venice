@@ -2956,6 +2956,12 @@ public class CoreFunctionsTest {
 	public void test_partition_padseq_without() {
 		final Venice venice = new Venice();
 		
+		assertEquals("()", venice.eval("(str (partition 1 nil))"));
+		assertEquals("()", venice.eval("(str (partition 1 '()))"));
+		assertEquals("((1))", venice.eval("(str (partition 1 '(1)))"));
+		assertEquals("((1) (2))", venice.eval("(str (partition 1 '(1 2)))"));
+		assertEquals("((1) (2) (3))", venice.eval("(str (partition 1 '(1 2 3)))"));
+		
 		assertEquals("()", venice.eval("(str (partition 1 1 nil))"));
 		assertEquals("()", venice.eval("(str (partition 1 1 '()))"));
 		assertEquals("((1))", venice.eval("(str (partition 1 1 '(1)))"));
@@ -3020,6 +3026,12 @@ public class CoreFunctionsTest {
 	@Test
 	public void test_partition_with_padseq_nil() {
 		final Venice venice = new Venice();
+		
+		assertEquals("()", venice.eval("(str (partition 1 1 nil nil))"));
+		assertEquals("()", venice.eval("(str (partition 1 1 nil '()))"));
+		assertEquals("((1))", venice.eval("(str (partition 1 1 nil '(1)))"));
+		assertEquals("((1) (2))", venice.eval("(str (partition 1 1 nil '(1 2)))"));
+		assertEquals("((1) (2) (3))", venice.eval("(str (partition 1 1 nil '(1 2 3)))"));
 
 		assertEquals("()", venice.eval("(str (partition 3 3 nil nil))"));
 		assertEquals("()", venice.eval("(str (partition 3 3 nil '()))"));
