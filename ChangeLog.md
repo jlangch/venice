@@ -18,7 +18,7 @@ and this project adheres to
 ### Fixed
 
 - the `partition` function to behave like Clojure's `partition` function
-- the function `hexdump/dump` to handle an add number of bytes correctly
+- the function `hexdump/dump` to handle an odd number of bytes correctly
 
 
 
