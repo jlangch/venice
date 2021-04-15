@@ -131,7 +131,7 @@
 
   (->> (str/reverse esr-ref)
        (str/chars)
-       (partition 5)
+       (partition 5 5 [])
        (interpose " ")
        (flatten)
        (reverse)

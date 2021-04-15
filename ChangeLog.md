@@ -15,6 +15,11 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- the `partition` function to behave like Clojure's `partition` function
+- the function `hexdump/dump` to handle an add number of bytes correctly
+
 
 
 ## [1.9.15] - 2021-04-14
@@ -26,7 +31,7 @@ and this project adheres to
 
 ### Fixed
 
-- fixed a potential missing of closing a nested FileOutputStream in a 
+- a potential missing of closing a nested FileOutputStream in a 
   try-with-resources block with function json/spit. Reported by LGTM CI
 - dropping a file to the REPL that has special characters (space, asteriks, 
   ...) in the filename. The underlying OS shell is escaping these characters.

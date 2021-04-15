@@ -54,7 +54,7 @@
 
   (defn run-parallel []
     (let [threads (max 1 (/ (cpus) 2))
-          work    (partition threads ip-addresses)
+          work    (partition threads threads [] ip-addresses)
           futures (map #(future (partial process %)) work)]
       (map deref futures)
       nil))

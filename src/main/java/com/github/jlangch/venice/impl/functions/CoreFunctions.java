@@ -5535,7 +5535,11 @@ public class CoreFunctions {
 
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
-				final VncSequence padseq = args.size() > 3 ? Coerce.toVncSequence(args.nth(2)) : VncList.empty();
+				final VncSequence padseq = args.size() == 4
+						                    ? args.third() == Constants.Nil
+						                    		? VncList.empty() 
+						                    		: Coerce.toVncSequence(args.third())
+						                    : null;
 				VncSequence seq = args.last() == Nil ? VncList.empty() : Coerce.toVncSequence(args.last());
 
 				if (n <= 0) {
@@ -5554,9 +5558,21 @@ public class CoreFunctions {
 					if (Types.isVncLazySeq(part)) {
 						part = ((VncLazySeq)part).realize();
 					}
+					
 
-					part = part.addAllAtEnd(padseq.take(n-part.size()));
-					result = result.addAtEnd(part);
+					if (padseq != null) {
+						VncSequence part1 = part.addAllAtEnd(padseq.take(n-part.size()));
+						result = result.addAtEnd(part1);
+					}
+					else {
+						if (part.size() == n) {
+							result = result.addAtEnd(part);
+						}
+					}
+					
+					if (part.size() < n) {
+						break;
+					}
 					seq = seq.drop(step);
 				}
 				

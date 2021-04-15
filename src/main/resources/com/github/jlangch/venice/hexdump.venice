@@ -39,7 +39,7 @@
 (defn hex-ascii-lines [s]
   (->> (map byte s)
        (map #(str/format "%02x" %))
-       (partition 2)
+       (partition 2 2 (repeat " "))
        (interpose " ")
        flatten
        (apply str)
@@ -74,7 +74,7 @@
                               """))))
 
 (defn
-  ^{ :arglists '("(dump & opts)")
+  ^{ :arglists '("(dump s & opts)")
      :doc """
           Prints a hexdump of the given argument to *out*. Optionally supply \
           byte offset (:offset, default: 0) and size (:size, default: :all) \
@@ -91,7 +91,8 @@
           00000060: 6061 6263                                `abc
           """
      :examples (list
-          "(hexdump/dump (range 1000))"
+         "(hexdump/dump [0 1 2 3])"
+         "(hexdump/dump (range 1000))"
           "(hexdump/dump (range 10000) :offset 9000 :size 256)"
           """(hexdump/dump "./img.png")""",
           """(hexdump/dump "./img.png" :offset 0 :size 64)""") }
