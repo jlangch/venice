@@ -420,6 +420,11 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
 
 task updateReleaseVersion {
     doLast {
+        if(version.endsWith('SNAPSHOT')) {
+            throw new GradleException(
+            		"Rejected updating release version. ${project.version} is not a release!")
+        }
+ 
         println "Updating version ${project.version} -> 'maven-central.svg'"
         ant.replaceregexp(
                 match:   "v${version_regex}", 
@@ -454,6 +459,15 @@ task updateReleaseVersion {
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources/META-INF', includes: 'license.txt')
+        }
+        
+        println "Updating version ${project.version} -> 'readme/*.md'"
+        ant.replaceregexp(
+                match:   "venice-${version_regex}[.]jar", 
+                replace: "venice-${project.version}[.]jar", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'doc/readme', includes: '*.md')
         }
     }
 }
