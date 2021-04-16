@@ -5522,10 +5522,11 @@ public class CoreFunctions {
 						"not enough padding elements, return a partition with less than n items. " +
 						"padcoll may be a lazy sequence")
 					.examples(
-						"(partition 3 (range 7))",
-						"(partition 3 3 (repeat 99) (range 7))",
-						"(partition 2 3 (range 7))",
-						"(partition 3 1 (range 7))",
+						"(partition 3 [0 1 2 3 4 5 6])",
+						"(partition 3 3 (repeat 99) [0 1 2 3 4 5 6])",
+						"(partition 3 3 [] [0 1 2 3 4 5 6])",
+						"(partition 2 3 [0 1 2 3 4 5 6])",
+						"(partition 3 1 [0 1 2 3 4 5 6])",
 						"(partition 3 6 [\"a\"] (range 20))",
 						"(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))")
 					.build()
@@ -5543,12 +5544,10 @@ public class CoreFunctions {
 				VncSequence seq = args.last() == Nil ? VncList.empty() : Coerce.toVncSequence(args.last());
 
 				if (n <= 0) {
-					throw new VncException(String.format(
-							"partition: n must be a positive number"));
+					throw new VncException("partition: n must be greater than 0");
 				}
 				if (step <= 0) {
-					throw new VncException(String.format(
-							"partition: step must be a positive number"));
+					throw new VncException("partition: step must be greater than 0");
 				}
 
 				VncList result = VncList.empty();
