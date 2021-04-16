@@ -65,16 +65,16 @@
 ;; ---------------------------------------------------------------------------
 
 (defn throw-3rdparty-lib-ex [msg]
-  (venice-exception
-    """
-    ~{msg}
+  (throw (. :VncException :new
+            """
+            ~{msg}
 
-    ---------------------------------------------------
-    (do
-     (load-module :maven)
-     (maven/download "org.knowm.xchart:xchart:3.8.0"))
-    ---------------------------------------------------
-    """))
+            ---------------------------------------------------
+            (do
+             (load-module :maven)
+             (maven/download "org.knowm.xchart:xchart:3.8.0"))
+            ---------------------------------------------------
+            """))
 
 (when-not (exists-class? :org.knowm.xchart.PieChart)
   (throw-3rdparty-lib-ex
