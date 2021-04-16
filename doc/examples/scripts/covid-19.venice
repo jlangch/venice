@@ -63,7 +63,8 @@
   (defn view-chart [file] (sh/open file))
 
   (defn save-chart [chart file dpi]
-    (xchart/write-to-file chart :png dpi file))
+    (xchart/write-to-file chart :png dpi file)
+    file)
 
   (defn load-country-html-data [country-name]
     (let [url (str worldometers-url (str/lower-case country-name) "/")]
@@ -88,11 +89,7 @@
           (assoc :population-normalized (/ p 100_000.0)))))
 
 
-  ;;; Processing ---------------------------------------------------------------
-
-  (defn color
-    ([r g b]   (. :java.awt.Color :new r g b))
-    ([r g b a] (. :java.awt.Color :new r g b a)))
+  ;;; Extracting, parsing, and aggregating data --------------------------------
 
   (defn extract-html-daily-cases-section [html]
     ;; extract the daily cases section from HTML page (javascript)
@@ -164,7 +161,7 @@
         :y     (map second cases)
         :style { :marker-type :none
                  :line-color  (:color style)
-                 :line-style  (:stroke style :solid) }}))
+                 :line-style  :solid }}))
 
   (defn chart-series-all-countries [countries-data]
     (reduce #(assoc %1 (:name %2) (chart-series-country %2))
@@ -185,14 +182,12 @@
 
   ;;; Main ---------------------------------------------------------------------
 
-  (defn main []
+  (defn main [filename]
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
-    (let [chart-file "covid-19.png"]
-      (-<> country-config
-           (map #(aggregate-country-data % start-date end-date) <>)
-           (render-chart <> chart-width chart-height sample-days)
-           (save-chart <> chart-file chart-dpi))
-      (view-chart chart-file)
-      nil))
+    (-<> country-config
+         (map #(aggregate-country-data % start-date end-date) <>)
+         (render-chart <> chart-width chart-height sample-days)
+         (save-chart <> filename chart-dpi)
+         (view-chart <>)))
 
-  (main))
+  (main "covid-19.png"))

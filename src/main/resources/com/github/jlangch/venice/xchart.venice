@@ -67,7 +67,7 @@
 (defn throw-3rdparty-lib-ex [msg]
   (venice-exception
     """
-    ~(msg)
+    ~{msg}
 
     ---------------------------------------------------
     (do

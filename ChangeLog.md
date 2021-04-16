@@ -15,6 +15,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- 3rdParty library availability check in :xchart module
+
 
 
 ## [1.9.16] - 2021-04-16
