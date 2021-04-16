@@ -74,7 +74,7 @@
              (load-module :maven)
              (maven/download "org.knowm.xchart:xchart:3.8.0"))
             ---------------------------------------------------
-            """))
+            """)))
 
 (when-not (exists-class? :org.knowm.xchart.PieChart)
   (throw-3rdparty-lib-ex
