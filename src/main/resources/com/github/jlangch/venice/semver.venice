@@ -140,6 +140,7 @@
           "semver/valid-format?" ) }
   parse
   [s]
+  (assert (some? s) "A version string must not be nil!")
   (let [[_ major minor patch revision pre-release meta] (regex/matches pattern s)]
     {:major       (parse-long major)
      :minor       (parse-long minor)
