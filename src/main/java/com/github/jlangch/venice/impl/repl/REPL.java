@@ -274,12 +274,6 @@ public class REPL {
 						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
 						if (cmd.equals("reload")) {
 							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
-							// Resetting the dynamic classloader is NOT working properly!
-							// thus libraries cannot be reloaded!
-							// if (allowDynamicClassLoader) {
-							// 	// create a new context class loader
-							// 	mainThread.setContextClassLoader(new DynamicClassLoader2());
-							// }
 							printer.println("system", "reloaded");
 						}
 						else if (cmd.equals("restart")) {
@@ -287,23 +281,10 @@ public class REPL {
 								printer.println("system", "restarting...");
 								ReplRestart.write(venice.isMacroexpandOnLoad());
 								System.exit(RESTART_EXIT_CODE);
+								break;
 							}
 							else {
 								printer.println("error", "The REPL is not restartable!");
-							}
-						}
-						else if (cmd.equals("restartable")) {
-							printer.println("stdout", "restartable: " + (restartable ? "yes" : "no"));
-						}
-						else if (cmd.equals("activate-class-loader")) {
-							if (!allowDynamicClassLoader) {
-								allowDynamicClassLoader = true;
-								// create a new context class loader
-								mainThread.setContextClassLoader(new DynamicClassLoader2());
-								printer.println("system", "dynamic class loader activated");
-							}
-							else {
-								printer.println("system", "dynamic class loader already activated");
 							}
 						}
 						else if (isExitCommand(cmd)) {
@@ -314,34 +295,15 @@ public class REPL {
 							Thread.sleep(1000);
 							break; // quit the REPL
 						}
+						else if (cmd.isEmpty()) {
+							handleCommand("help", env, terminal, history);
+						}
 						else {
 							handleCommand(cmd, env, terminal, history);
 						}
 					}
 					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
-						final String fileName = unescapeDroppedFileName(line.trim());
-						final List<String> lines = Files
-													.readAllLines(new File(fileName).toPath())
-													.stream()
-													.filter(l -> !l.startsWith(";;;;"))
-													.collect(Collectors.toList());
-						String script = null;
-						if (lines.size() < 20) {
-							// file scripts with less than 20 lines, treat them as if they have 
-							// been typed to allow editing it
-							script = String.join("\n", lines);
-							printer.println("stdout", DocForm.highlight(new VncString(script), env).getValue());
-						}
-						else {
-							script = String.format("(load-file \"%s\")", line.trim());
-						}
-						history.add(script);
-						ThreadLocalMap.clearCallStack();
-						final VncVal result = venice.RE(script, "user", env);
-						if (result != null) {
-							printer.println("result", resultPrefix + venice.PRINT(result));
-							resultHistory.add(result);
-						}
+						handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
 					}
 					else {
 						// run the s-expr read from the line reader
@@ -409,6 +371,41 @@ public class REPL {
 				.build();
 	}
 	
+	private void handleDroppedFileName(
+			final String droppedFileName,
+			final Env env, 
+			final History history,
+			final ReplResultHistory resultHistory,
+			final String resultPrefix
+	) throws Exception {
+		final String fileName = unescapeDroppedFileName(droppedFileName.trim());
+		
+		// remove leading comments
+		final List<String> lines = Files
+									.readAllLines(new File(fileName).toPath())
+									.stream()
+									.filter(l -> !l.startsWith(";"))
+									.collect(Collectors.toList());
+		String script = null;
+		if (lines.size() < 20) {
+			// file scripts with less than 20 lines, treat them as if they have 
+			// been typed to allow editing it
+			script = String.join("\n", lines);
+			printer.println("stdout", DocForm.highlight(new VncString(script), env).getValue());
+		}
+		else {
+			script = String.format("(load-file \"%s\")", fileName);
+		}
+		history.add(script);
+		
+		ThreadLocalMap.clearCallStack();
+		final VncVal result = venice.RE(script, "user", env);
+		if (result != null) {
+			printer.println("result", resultPrefix + venice.PRINT(result));
+			resultHistory.add(result);
+		}
+	}
+	
 	private void handleCommand(
 			final String command, 
 			final Env env, 
@@ -420,59 +417,31 @@ public class REPL {
 			final String cmd = items.get(0);
 			final List<String> args = items.subList(1, items.size());
 
-			if (cmd.equals("macroexpand") || cmd.equals("me")) {
-				venice.setMacroexpandOnLoad(true, env);
-				printer.println("system", "Macro expansion enabled");
-			}
-			else if (cmd.equals("?") || cmd.equals("help")) {
-				printer.println("stdout", HELP);
-			}
-			else if (cmd.equals("config")) {
-				handleConfigCommand();
-			}
-			else if (cmd.equals("setup")) {
-				handleSetupCommand(venice, env, SetupMode.Minimal, printer);
-			}
-			else if (cmd.equals("setup-ext")) {
-				handleSetupCommand(venice, env, SetupMode.Extended, printer);
-			}
-			else if (cmd.equals("classpath") || cmd.equals("cp")) {
-				handleReplClasspathCommand();
-			}
-			else if (cmd.equals("loadpath")) {
-				printLoadPaths(interceptor.getLoadPaths());
-			}
-			else if (cmd.equals("launcher")) {
-				handleLauncherCommand();
-			}
-			else if (cmd.equals("env")) {
-				handleEnvCommand(args, env);
-			}
-			else if (cmd.equals("hist")) {
-				handleHistoryCommand(args, terminal, history);
-			}
-			else if (cmd.equals("sandbox")) {
-				handleSandboxCommand(args, terminal, env);
-			}
-			else if (cmd.equals("colors")) {
-				printConfiguredColors();
-			}
-			else if (cmd.equals("info")) {
-				printInfo(terminal);
-			}
-			else if (cmd.startsWith("highlight")) {
-				handleHighlightCommand(args);
-			}
-			else if (cmd.startsWith("java-ex")) {
-				handleJavaExCommand(args);
-			}
-			else {	
-				printer.println("error", "Invalid command");
+			switch(cmd) {
+				case "macroexpand": handleMacroExpandCommand(env); break;
+				case "me":          handleMacroExpandCommand(env); break;
+				case "?":           handleHelpCommand(); break;
+				case "help":        handleHelpCommand(); break;
+				case "config":      handleConfigCommand(); break;
+				case "restartable": handleRestartableCommand(); break;
+				case "setup":       handleSetupCommand(venice, env, SetupMode.Minimal, printer); break;
+				case "setup-ext":   handleSetupCommand(venice, env, SetupMode.Extended, printer); break;
+				case "classpath":   handleReplClasspathCommand(); break;
+				case "cp":          handleReplClasspathCommand(); break;
+				case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
+				case "launcher":    handleLauncherCommand(); break;
+				case "env":         handleEnvCommand(args, env); break;
+				case "hist":        handleHistoryCommand(args, terminal, history); break;
+				case "sandbox":     handleSandboxCommand(args, terminal, env); break;
+				case "colors":      handleConfiguredColorsCommand(); break;
+				case "info":        handleInfoCommand(terminal); break;
+				case "highlight":   handleHighlightCommand(args); break;
+				case "java-ex":     handleJavaExCommand(args); break;
+				default:            handleInvalidCommand(cmd); break;
 			}
 		}
 		catch(RuntimeException ex) {
-			printer.println("error", "Failed to handle command");
-			printer.println("error", ex.getMessage());
+			handleFailedCommand(ex);
 		}
 	}
 
@@ -481,6 +450,15 @@ public class REPL {
 		printer.println("stdout", "to the REPL's working directory:");
 		printer.println();
 		printer.println("stdout", ReplConfig.getDefaultClasspathConfig());
+	}
+
+	private void handleMacroExpandCommand(final Env env) {
+		venice.setMacroexpandOnLoad(true, env);
+		printer.println("system", "Macro expansion enabled");
+	}
+
+	private void handleHelpCommand() {
+		printer.println("stdout", HELP);
 	}
 
 	private void handleSetupCommand(
@@ -742,6 +720,64 @@ public class REPL {
 			}
 		}
 	}
+
+	private void handleConfiguredColorsCommand() {
+		printer.println("default",   "default");
+		printer.println("result",    "result");
+		printer.println("stdout",    "stdout");
+		printer.println("stderr",    "stderr");
+		printer.println("error",     "error");
+		printer.println("system",    "system");
+		printer.println("interrupt", "interrupt");
+	}
+
+	private void handleRestartableCommand() {
+		printer.println("stdout", "restartable: " + (restartable ? "yes" : "no"));
+	}
+	
+	private void handleLoadPathsCommand(final ILoadPaths loadPaths) {
+		printer.println("stdout", "Restricted to load paths: " + (loadPaths.isUnlimitedAccess() ? "no" : "yes"));
+		printer.println("stdout", "Paths: ");
+		loadPaths.getPaths().forEach(p -> printer.println("stdout", "   " + p.getPath()));
+	}
+	
+	private void handleInfoCommand(final Terminal terminal) {
+		final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
+		final Size size = terminal.getSize();
+		printer.println("stdout", "Terminal Name:   " + terminal.getName());
+		printer.println("stdout", "Terminal Type:   " + terminal.getType());
+		printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
+		printer.println("stdout", "Terminal Colors: " + maxColors);
+		printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
+		printer.println("stdout", "");
+		printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
+		printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
+		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
+		printer.println("stdout", "Macro Expansion: " + (venice.isMacroexpandOnLoad() ? "on" : "off"));
+		printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
+		printer.println("stdout", "");
+		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
+		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
+		printer.println("stdout", "");
+		printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
+		printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
+		printer.println("stdout", "OS Version:      " + System.getProperty("os.version"));
+		printer.println("stdout", "");
+		printer.println("stdout", "Java Version:    " + System.getProperty("java.version"));
+		printer.println("stdout", "Java Vendor:     " + System.getProperty("java.vendor"));
+		printer.println("stdout", "Java VM Version: " + System.getProperty("java.vm.version"));
+		printer.println("stdout", "Java VM Name:    " + System.getProperty("java.vm.name"));
+		printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
+	}
+
+	private void handleInvalidCommand(final String cmd) {
+		printer.println("error", "Invalid command");
+	}
+
+	private void handleFailedCommand(final Exception ex) {
+		printer.println("error", "Failed to handle command");
+		printer.println("error", ex.getMessage());
+	}
 	
 	private Env loadEnv(
 			final CommandLineArgs cli,
@@ -856,51 +892,6 @@ public class REPL {
 		else {
 			return "Using dumb terminal (colors turned off)";
 		}
-	}
-
-	private void printConfiguredColors() {
-		printer.println("default",   "default");
-		printer.println("result",    "result");
-		printer.println("stdout",    "stdout");
-		printer.println("stderr",    "stderr");
-		printer.println("error",     "error");
-		printer.println("system",    "system");
-		printer.println("interrupt", "interrupt");
-	}
-	
-	private void printLoadPaths(final ILoadPaths loadPaths) {
-		printer.println("stdout", "Restricted to load paths: " + (loadPaths.isUnlimitedAccess() ? "no" : "yes"));
-		printer.println("stdout", "Paths: ");
-		loadPaths.getPaths().forEach(p -> printer.println("stdout", "   " + p.getPath()));
-	}
-	
-	private void printInfo(final Terminal terminal) {
-		final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
-		final Size size = terminal.getSize();
-		printer.println("stdout", "Terminal Name:   " + terminal.getName());
-		printer.println("stdout", "Terminal Type:   " + terminal.getType());
-		printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
-		printer.println("stdout", "Terminal Colors: " + maxColors);
-		printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
-		printer.println("stdout", "");
-		printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
-		printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
-		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
-		printer.println("stdout", "Macro Expansion: " + (venice.isMacroexpandOnLoad() ? "on" : "off"));
-		printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
-		printer.println("stdout", "");
-		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
-		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
-		printer.println("stdout", "");
-		printer.println("stdout", "OS Arch:         " + System.getProperty("os.arch"));
-		printer.println("stdout", "OS Name:         " + System.getProperty("os.name"));
-		printer.println("stdout", "OS Version:      " + System.getProperty("os.version"));
-		printer.println("stdout", "");
-		printer.println("stdout", "Java Version:    " + System.getProperty("java.version"));
-		printer.println("stdout", "Java Vendor:     " + System.getProperty("java.vendor"));
-		printer.println("stdout", "Java VM Version: " + System.getProperty("java.vm.version"));
-		printer.println("stdout", "Java VM Name:    " + System.getProperty("java.vm.name"));
-		printer.println("stdout", "Java VM Vendor:  " + System.getProperty("java.vm.vendor"));
 	}
 	
 	private boolean isExitCommand(final String cmd) {
@@ -1098,6 +1089,7 @@ public class REPL {
 	private final static int RESTART_EXIT_CODE = 99;
 	
 	private final static String HISTORY_FILE = ".repl.history";
+	
 
 	private ReplConfig config;
 	private IInterceptor interceptor;

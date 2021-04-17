@@ -68,27 +68,11 @@ public class ReplParser extends DefaultParser {
 	}
 
 	public static boolean isDroppedVeniceScriptFile(final String buffer) {
-		final String filename = StringUtil.trimToEmpty(buffer);
-		return filename.endsWith(".venice");
+		return StringUtil.trimToEmpty(buffer).endsWith(".venice");
 	}
 
 	public static boolean isCommand(final String buffer) {
-		final int len = buffer.length();
-
-		if (len == 0) {
-			return false;
-		}
-		else {
-			int pos = 0;
-			
-			// skip spaces
-			while(pos < len) {
-				if (buffer.charAt(pos) != ' ') break;
-				pos++;
-			}
-			
-			return pos < len && buffer.charAt(pos) == '!';
-		}
+		return buffer.trim().startsWith("!");
 	}
 
 	
