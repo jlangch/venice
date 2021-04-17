@@ -55,6 +55,7 @@ public class ReplRestart {
 					RESTART_FILE.toPath(), 
 					lines, 
 					StandardOpenOption.WRITE,
+					StandardOpenOption.CREATE,
 					StandardOpenOption.TRUNCATE_EXISTING);
 		}
 		catch(Exception ex) {

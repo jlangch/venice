@@ -113,9 +113,7 @@ public class REPL {
 			if (ReplRestart.exists()) {
 				try {
 					final ReplRestart restart = ReplRestart.read();
-					if (restart.hasMacroExpand()) {
-						macroexpand = true;
-					}
+					macroexpand = macroexpand || restart.hasMacroExpand();
 				}
 				finally {
 					ReplRestart.remove();
