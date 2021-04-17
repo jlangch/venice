@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- REPL restart honors now macro expansion setting
 
 
 

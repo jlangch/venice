@@ -469,6 +469,18 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'doc/readme', includes: '*.md')
         }
+        
+        println "Updating version ${project.version} -> 'repl.sh'"
+        ant.replaceregexp(
+                match:   "venice-${version_regex}[.]jar", 
+                replace: "venice-${project.version}.jar", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources/**', includes: 'repl.sh')
+            fileset(dir: 'src/main/resources/**', includes: 'repl.sh')
+            fileset(dir: 'doc/examples', includes: 'repl.sh')
+            fileset(dir: 'doc/examples', includes: 'repl.bat')
+        }
     }
 }
 

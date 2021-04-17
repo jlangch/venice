@@ -262,7 +262,10 @@ public class REPL {
 						else if (cmd.equals("restart")) {
 							if (restartable) {
 								printer.println("system", "restarting...");
-								System.exit(RESTART_EXIT_CODE);
+								final int exitCode = venice.isMacroexpandOnLoad() 
+														? RESTART_MACROEXPAND_EXIT_CODE 
+														: RESTART_EXIT_CODE;
+								System.exit(exitCode);
 							}
 							else {
 								printer.println("error", "The REPL is not restartable!");
@@ -1066,7 +1069,9 @@ public class REPL {
 			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
 			"   !sandbox add-rule venice:module:shell\n";
 
+	private final static int RESTART_MACROEXPAND_EXIT_CODE = 98;
 	private final static int RESTART_EXIT_CODE = 99;
+	
 	private final static String HISTORY_FILE = ".repl.history";
 
 	private ReplConfig config;
