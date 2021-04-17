@@ -89,6 +89,8 @@ public class REPL {
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
 		try {
+			boolean macroexpand = false;
+			
 			config = ReplConfig.load(cli);
 
 			final boolean setupMode = isSetupMode(cli);
@@ -107,6 +109,22 @@ public class REPL {
 											|| config.isJLineDumbTerminal();
 			
 			ansiTerminal = !dumbTerminal;
+		
+			if (ReplRestart.hasRestartCommands()) {
+				try {
+					if (ReplRestart.isRestartWithMacroExpand()) {
+						macroexpand = true;
+					}
+				}
+				finally {
+					ReplRestart.removeRestartCommands();
+				}
+			}
+			
+			if (cli.switchPresent("-macroexpand")) {
+				macroexpand = true;
+			}
+
 
 			if (OSUtils.IS_WINDOWS) {
 				if (jansiVersion != null) {
@@ -125,21 +143,25 @@ public class REPL {
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
 			System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
-			if (cli.switchPresent("-macroexpand")) {
+			if (macroexpand) {
 				System.out.println("Macro expansion enabled");
 			}
 			if (!setupMode) {
 				System.out.println("Type '!' for help.");
 			}
 			
-			repl(cli);
+
+			repl(cli, macroexpand);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}	
 	}
 
-	private void repl(final CommandLineArgs cli) throws Exception {
+	private void repl(
+			final CommandLineArgs cli,
+			final boolean macroexpand
+	) throws Exception {
 		final String prompt = config.getPrompt();
 		final String secondaryPrompt = ansiTerminal ? config.getSecondaryPrompt() : "";
 		final String resultPrefix = config.getResultPrefix();
@@ -185,7 +207,7 @@ public class REPL {
 						: null;
 		
 		Env env = loadEnv(cli, out, err, in, false);		
-		venice.setMacroexpandOnLoad(cli.switchPresent("-macroexpand"), env);
+		venice.setMacroexpandOnLoad(macroexpand, env);
 		if (allowDynamicClassLoader) {
 			mainThread.setContextClassLoader(new DynamicClassLoader2());
 		}
@@ -262,10 +284,8 @@ public class REPL {
 						else if (cmd.equals("restart")) {
 							if (restartable) {
 								printer.println("system", "restarting...");
-								final int exitCode = venice.isMacroexpandOnLoad() 
-														? RESTART_MACROEXPAND_EXIT_CODE 
-														: RESTART_EXIT_CODE;
-								System.exit(exitCode);
+								ReplRestart.writeRestartCommands(venice.isMacroexpandOnLoad());
+								System.exit(RESTART_EXIT_CODE);
 							}
 							else {
 								printer.println("error", "The REPL is not restartable!");
@@ -988,6 +1008,7 @@ public class REPL {
 		}
 	}
 	
+
 	
 	public static enum SetupMode { Minimal, Extended };
 	
@@ -1069,7 +1090,6 @@ public class REPL {
 			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
 			"   !sandbox add-rule venice:module:shell\n";
 
-	private final static int RESTART_MACROEXPAND_EXIT_CODE = 98;
 	private final static int RESTART_EXIT_CODE = 99;
 	
 	private final static String HISTORY_FILE = ".repl.history";

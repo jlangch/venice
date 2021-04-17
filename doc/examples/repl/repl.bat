@@ -26,7 +26,6 @@ java.exe ^
   -restartable ^
   -colors
   
-REM # if the REPL exits with exit code 98 or 99 restart the REPL otherwise
-REM #  exit the shell
-if %errorlevel% equ 98 goto start
+REM # if the REPL exits with exit code 99 restart the REPL otherwise
+REM # exit the shell
 if %errorlevel% equ 99 goto start
