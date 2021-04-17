@@ -21,57 +21,76 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public abstract class ReplRestart {
-
-	public static void writeRestartCommands(final boolean macroEpxandOnLoad) {
-		try(FileWriter fw = new FileWriter(RESTART_FILE, false);
-			PrintWriter pw = new PrintWriter(fw)
-		) {
+public class ReplRestart {
+	
+	private ReplRestart(final List<String> lines) {
+		this.lines = lines;
+	}
+	
+	public static ReplRestart read() {
+		try {
+			return new ReplRestart(Files.readAllLines(RESTART_FILE.toPath()));
+		}
+		catch(Exception ex) {
+			return new ReplRestart(new ArrayList<>());
+		}
+	}
+	
+	public static void write(final boolean macroEpxandOnLoad) {
+		try {
+			final List<String> lines = new ArrayList<>();
+			
 			if (macroEpxandOnLoad) {
-				pw.println("-macropexand");
+				lines.add("-macropexand");
 			}
+			
+			Files.write(
+					RESTART_FILE.toPath(), 
+					lines, 
+					StandardOpenOption.WRITE,
+					StandardOpenOption.TRUNCATE_EXISTING);
 		}
 		catch(Exception ex) {
 			// skipped (best effort)
 		}
 	}
 
-	public static boolean hasRestartCommands() {
+	public static boolean exists() {
 		try {
-			return new File(RESTART_FILE).exists();
+			return RESTART_FILE.exists();
 		}
 		catch(Exception ex) {
 			return false;
 		}
 	}
 
-	public static boolean isRestartWithMacroExpand() {
-		try (FileReader rd = new FileReader(new File(RESTART_FILE));
-			 BufferedReader br = new BufferedReader(rd)
-		) {
-			return br.lines().anyMatch(s -> s.trim().equals("-macropexand"));
-		}
-		catch(Exception ex) {
-			return false;
-		}
-	}
-
-	public static void removeRestartCommands() {
+	public static void remove() {
 		try {
-			new File(RESTART_FILE).delete();
+			RESTART_FILE.delete();
 		}
 		catch(Exception ex) {
 			// skipped (best effort)
+		}
+	}
+
+	public boolean hasMacroExpand() {
+		try {
+			return lines.stream().anyMatch(s -> s.trim().equals("-macropexand"));
+		}
+		catch(Exception ex) {
+			return false;
 		}
 	}
 
 	
-	private final static String RESTART_FILE = ".repl.restart";
+	private final static File RESTART_FILE = new File(".repl.restart");
+	
+	private final List<String> lines;
 }

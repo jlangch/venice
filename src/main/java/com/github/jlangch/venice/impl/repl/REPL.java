@@ -110,14 +110,15 @@ public class REPL {
 			
 			ansiTerminal = !dumbTerminal;
 		
-			if (ReplRestart.hasRestartCommands()) {
+			if (ReplRestart.exists()) {
 				try {
-					if (ReplRestart.isRestartWithMacroExpand()) {
+					final ReplRestart restart = ReplRestart.read();
+					if (restart.hasMacroExpand()) {
 						macroexpand = true;
 					}
 				}
 				finally {
-					ReplRestart.removeRestartCommands();
+					ReplRestart.remove();
 				}
 			}
 			
@@ -284,7 +285,7 @@ public class REPL {
 						else if (cmd.equals("restart")) {
 							if (restartable) {
 								printer.println("system", "restarting...");
-								ReplRestart.writeRestartCommands(venice.isMacroexpandOnLoad());
+								ReplRestart.write(venice.isMacroexpandOnLoad());
 								System.exit(RESTART_EXIT_CODE);
 							}
 							else {
@@ -409,17 +410,21 @@ public class REPL {
 	}
 	
 	private void handleCommand(
-			final String cmd, 
+			final String command, 
 			final Env env, 
 			final Terminal terminal,
 			final History history
 	) {
 		try {
+			final List<String> items = Arrays.asList(command.split(" +"));
+			final String cmd = items.get(0);
+			final List<String> args = items.subList(1, items.size());
+
 			if (cmd.equals("macroexpand") || cmd.equals("me")) {
 				venice.setMacroexpandOnLoad(true, env);
 				printer.println("system", "Macro expansion enabled");
 			}
-			else if (cmd.isEmpty() || cmd.equals("?") || cmd.equals("help")) {
+			else if (cmd.equals("?") || cmd.equals("help")) {
 				printer.println("stdout", HELP);
 			}
 			else if (cmd.equals("config")) {
@@ -431,7 +436,7 @@ public class REPL {
 			else if (cmd.equals("setup-ext")) {
 				handleSetupCommand(venice, env, SetupMode.Extended, printer);
 			}
-			else if (cmd.equals("classpath")) {
+			else if (cmd.equals("classpath") || cmd.equals("cp")) {
 				handleReplClasspathCommand();
 			}
 			else if (cmd.equals("loadpath")) {
@@ -441,25 +446,13 @@ public class REPL {
 				handleLauncherCommand();
 			}
 			else if (cmd.equals("env")) {
-				handleEnvCommand(new String[0], env);
-			}
-			else if (cmd.startsWith("env ")) {
-				final String[] params = StringUtil.trimToEmpty(cmd.substring(3)).split(" +");
-				handleEnvCommand(params, env);
+				handleEnvCommand(args, env);
 			}
 			else if (cmd.equals("hist")) {
-				handleHistoryCommand(new String[0], terminal, history);
-			}
-			else if (cmd.startsWith("hist ")) {
-				final String[] params = StringUtil.trimToEmpty(cmd.substring(4)).split(" +");
-				handleHistoryCommand(params, terminal, history);
+				handleHistoryCommand(args, terminal, history);
 			}
 			else if (cmd.equals("sandbox")) {
-				handleSandboxCommand(new String[0], terminal, env);
-			}
-			else if (cmd.startsWith("sandbox ")) {
-				final String[] params = StringUtil.trimToEmpty(cmd.substring(7)).split(" +");
-				handleSandboxCommand(params, terminal, env);
+				handleSandboxCommand(args, terminal, env);
 			}
 			else if (cmd.equals("colors")) {
 				printConfiguredColors();
@@ -468,44 +461,10 @@ public class REPL {
 				printInfo(terminal);
 			}
 			else if (cmd.startsWith("highlight")) {
-				if (cmd.equals("highlight")) {
-					printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
-				}
-				else {
-					final String param = StringUtil.trimToEmpty(cmd.substring("highlight".length()));
-					if ("on".equals(param)) {
-						highlight = true;
-						if (highlighter != null) highlighter.enable(true);
-					}
-					else if ("off".equals(param)) {
-						highlight = false;
-						if (highlighter != null) highlighter.enable(false);
-					}
-					else {
-						printer.println("error", "Invalid parameter. Use !highlight {on|off}.");
-					}
-				}
+				handleHighlightCommand(args);
 			}
 			else if (cmd.startsWith("java-ex")) {
-				if (cmd.equals("java-ex")) {
-					printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
-				}
-				else {
-					final String param = StringUtil.trimToEmpty(cmd.substring("java-ex".length()));
-					if ("on".equals(param)) {
-						javaExceptions = true;
-						printer.setPrintJavaEx(javaExceptions);
-						printer.println("stdout", "Printing Java exceptions");
-					}
-					else if ("off".equals(param)) {
-						javaExceptions = false;
-						printer.setPrintJavaEx(javaExceptions);
-						printer.println("stdout", "Printing Venice exceptions");
-					}
-					else {
-						printer.println("error", "Invalid parameter. Use !java-ex {on|off}.");
-					}
-				}
+				handleJavaExCommand(args);
 			}
 			else {	
 				printer.println("error", "Invalid command");
@@ -568,27 +527,27 @@ public class REPL {
 	}
 
 	private void handleEnvCommand(
-			final String[] params,
+			final List<String> params,
 			final Env env
 	) {
-		if (params.length == 0) {
+		if (params.isEmpty()) {
 			printer.println("stdout", HELP_ENV);
 			return;
 		}
-		else if (params[0].equals("print")) {
-			if (params.length == 2) {
-				final VncVal val = env.get(new VncSymbol(params[1]));
+		else if (params.get(0).equals("print")) {
+			if (params.size() == 2) {
+				final VncVal val = env.get(new VncSymbol(params.get(1)));
 				printer.println("stdout", venice.PRINT(val));
 				return;
 			}
 		}
-		else if (params[0].equals("global")) {
-			if (params.length == 1) {
+		else if (params.get(0).equals("global")) {
+			if (params.size() == 1) {
 				printer.println("stdout", envGlobalsToString(env));
 				return;
 			}
-			else if (params.length == 2) {
-				String filter = StringUtil.trimToNull(params[1]);
+			else if (params.size() == 2) {
+				String filter = StringUtil.trimToNull(params.get(1));
 				filter = filter == null ? null : filter.replaceAll("[*]", ".*");
 				printer.println("stdout", envGlobalsToString(env, filter));
 				return;
@@ -599,19 +558,19 @@ public class REPL {
 	}
 
 	private void handleSandboxCommand(
-			final String[] params,
+			final List<String> params,
 			final Terminal terminal,
 			final Env env
 	) {
-		if (params.length == 0) {
+		if (params.isEmpty()) {
 			terminal.writer().println(HELP_SANDBOX);
 			return;
 		}
 
 		final String interceptorName = interceptor.getClass().getSimpleName();
 			
-		if (params.length == 1) {
-			if (params[0].equals("status")) {
+		if (params.size() == 1) {
+			if (params.get(0).equals("status")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
 					printer.println("stdout", "No sandbox active (" + interceptorName +")");
 					return;
@@ -633,7 +592,7 @@ public class REPL {
 					return;
 				}
 			}
-			else if (params[0].equals("accept-all")) {
+			else if (params.get(0).equals("accept-all")) {
 				activate(
 					new AcceptAllInterceptor(
 						LoadPathsFactory.of(
@@ -641,11 +600,11 @@ public class REPL {
 								true)));
 				return;
 			}
-			else if (params[0].equals("reject-all")) {
+			else if (params.get(0).equals("reject-all")) {
 				activate(new RejectAllInterceptor());
 				return;			
 			}
-			else if (params[0].equals("customized")) {
+			else if (params.get(0).equals("customized")) {
 				activate(
 					new SandboxInterceptor(
 						new SandboxRules(),
@@ -654,7 +613,7 @@ public class REPL {
 								true)));
 				return;			
 			}
-			else if (params[0].equals("config")) {
+			else if (params.get(0).equals("config")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
 					printer.println("stdout", "[accept-all] NO sandbox active");
 					printer.println("stdout", "All Java calls accepted, no Venice calls rejected");
@@ -695,9 +654,9 @@ public class REPL {
 				}
 			}
 		}
-		else if (params.length == 2) {
-			if (params[0].equals("add-rule")) {
-				final String rule = params[1];
+		else if (params.size() == 2) {
+			if (params.get(0).equals("add-rule")) {
+				final String rule = params.get(1);
 				if (!(interceptor instanceof SandboxInterceptor)) {
 					printer.println("system", "rules can only be added to a customized sandbox");
 					return;
@@ -738,6 +697,52 @@ public class REPL {
 		printer.println("error", "invalid sandbox command: " + Arrays.asList(params));
 	}
 
+	private void handleHighlightCommand(
+			final List<String> params
+	) {
+		if (params.isEmpty()) {
+			printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
+		}
+		else {
+			final String param = params.get(0);
+			if ("on".equals(param)) {
+				highlight = true;
+				if (highlighter != null) highlighter.enable(true);
+			}
+			else if ("off".equals(param)) {
+				highlight = false;
+				if (highlighter != null) highlighter.enable(false);
+			}
+			else {
+				printer.println("error", "Invalid parameter. Use !highlight {on|off}.");
+			}
+		}
+	}
+
+	private void handleJavaExCommand(
+			final List<String> params
+	) {
+		if (params.isEmpty()) {
+			printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
+		}
+		else {
+			final String param = params.get(0);
+			if ("on".equals(param)) {
+				javaExceptions = true;
+				printer.setPrintJavaEx(javaExceptions);
+				printer.println("stdout", "Printing Java exceptions");
+			}
+			else if ("off".equals(param)) {
+				javaExceptions = false;
+				printer.setPrintJavaEx(javaExceptions);
+				printer.println("stdout", "Printing Venice exceptions");
+			}
+			else {
+				printer.println("error", "Invalid parameter. Use !java-ex {on|off}.");
+			}
+		}
+	}
+	
 	private Env loadEnv(
 			final CommandLineArgs cli,
 			final PrintStream out,
@@ -943,20 +948,20 @@ public class REPL {
 	}
 
 	private void handleHistoryCommand(
-			final String[] params,
+			final List<String> params,
 			final Terminal terminal,
 			final History history
 	) {
-		if (params.length == 0) {
+		if (params.isEmpty()) {
 			printer.println("stdout", String.format(
 										"History: size: %d, first: %d, last: %d, index: %d",
 										history.size(), history.first(), 
 										history.last(), history.index()));
 		}
-		else if (params[0].equals("clear")) {
+		else if (params.get(0).equals("clear")) {
 			clearCommandHistory(history);	
 		}
-		else if (params[0].equals("load")) {
+		else if (params.get(0).equals("load")) {
 			try {
 				history.load();
 			}
@@ -964,7 +969,7 @@ public class REPL {
 				printer.println("stderr", "Failed to reload REPL command history!");
 			}	
 		}
-		else if (params[0].equals("log")) {
+		else if (params.get(0).equals("log")) {
 			final Logger logger = Logger.getLogger("org.jline");
 			logger.setLevel(Level.INFO);
 			for(Handler h : logger.getHandlers()) logger.removeHandler(h);
