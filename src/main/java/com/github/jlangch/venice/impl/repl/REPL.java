@@ -113,7 +113,9 @@ public class REPL {
 			if (ReplRestart.exists()) {
 				try {
 					final ReplRestart restart = ReplRestart.read();
-					macroexpand = macroexpand || restart.hasMacroExpand();
+					if (!restart.oudated()) {
+						macroexpand = macroexpand || restart.hasMacroExpand();
+					}
 				}
 				finally {
 					ReplRestart.remove();
@@ -207,9 +209,6 @@ public class REPL {
 		
 		Env env = loadEnv(cli, out, err, in, false);		
 		venice.setMacroexpandOnLoad(macroexpand, env);
-		if (allowDynamicClassLoader) {
-			mainThread.setContextClassLoader(new DynamicClassLoader2());
-		}
 		
 		final ReplParser parser = new ReplParser(venice);
 		parser.setEscapeChars(new char[0]);  // leave the char escape handling to Venice
@@ -1013,15 +1012,13 @@ public class REPL {
 			"  !restart     restart the REPL.\n" +
 			"               note: the REPL launcher script must support\n" +
 			"                     REPL restarting.\n" +
-			"  !?, !help    help\n" +
+			"  !, !?, !help help\n" +
 			"  !info        show REPL setup context data\n" +
 			"  !config      show a sample REPL config\n" +
 			"  !classpath   show the REPL classpath\n" +
 			"  !loadpath    show the REPL loadpath\n" +
 			"  !highlight   turn highlighting dynamically on or off\n" +
 			"                 !highlight {on/off}\n" +
-			"  !lic         prints the licenses for 3rd party\n" +
-			"               libs included with Venice\n" +
 			"  !macroexpand enable macro expansion while loading\n" +
 			"               files and modules. \n" +
 			"               This can speed-up script execution by\n" +
@@ -1097,6 +1094,5 @@ public class REPL {
 	private boolean ansiTerminal = false;
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
-	private boolean allowDynamicClassLoader = false;
 	private boolean restartable = false;
 }

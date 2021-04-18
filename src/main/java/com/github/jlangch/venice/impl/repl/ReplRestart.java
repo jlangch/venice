@@ -24,14 +24,18 @@ package com.github.jlangch.venice.impl.repl;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.temporal.ChronoUnit;
 
 
 public class ReplRestart {
 	
 	private ReplRestart(final List<String> lines) {
 		this.lines = lines;
+		this.createdAt = lines.isEmpty() ? null : parse(lines.get(0));
 	}
 	
 	public static ReplRestart read() {
@@ -48,6 +52,7 @@ public class ReplRestart {
 			final List<String> lines = new ArrayList<>();
 			
 			if (macroEpxandOnLoad) {
+				lines.add(format(LocalDateTime.now()));
 				lines.add("-macropexand");
 			}
 			
@@ -90,8 +95,29 @@ public class ReplRestart {
 		}
 	}
 
+	public boolean oudated() {
+		return createdAt == null || ChronoUnit.DAYS.between(createdAt, readAt) > 30L;
+	}
+	
+	private static String format(final LocalDateTime dt) {
+		return dtFormatter.format(dt);
+	}
+	
+	private static LocalDateTime parse(final String s) {
+		try {
+			return LocalDateTime.parse(s, dtFormatter);
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
 	
 	private final static File RESTART_FILE = new File(".repl.restart");
+	private final static DateTimeFormatter dtFormatter = 
+			DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); 
 	
 	private final List<String> lines;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime readAt = LocalDateTime.now();
 }
