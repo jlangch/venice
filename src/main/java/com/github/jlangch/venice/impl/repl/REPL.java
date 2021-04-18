@@ -114,7 +114,7 @@ public class REPL {
 				try {
 					final ReplRestart restart = ReplRestart.read();
 					if (!restart.oudated()) {
-						macroexpand = macroexpand || restart.hasMacroExpand();
+						macroexpand |= restart.hasMacroExpand();
 					}
 				}
 				finally {
@@ -122,10 +122,7 @@ public class REPL {
 				}
 			}
 			
-			if (cli.switchPresent("-macroexpand")) {
-				macroexpand = true;
-			}
-
+			macroexpand |= cli.switchPresent("-macroexpand");
 
 			if (OSUtils.IS_WINDOWS) {
 				if (jansiVersion != null) {
