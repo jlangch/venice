@@ -869,7 +869,7 @@ public class TimeFunctions {
 					.meta()
 					.arglists("(time/period from to unit)")
 					.doc(
-						"Returns the period interval of two dates in the specified unit. " +
+						"Returns the period interval of two dates in the specified unit.\n" +
 						"Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}")
 					.examples(
 						"(time/period (time/local-date) (time/plus (time/local-date) :days 3) :days)",
