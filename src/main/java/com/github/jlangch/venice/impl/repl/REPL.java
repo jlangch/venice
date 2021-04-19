@@ -227,11 +227,11 @@ public class REPL {
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 		
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
-			handleSetupCommand(venice, env, SetupMode.Extended, printer);
+			handleSetupCommand(venice, env, Extended, printer);
 			return; // we stop here
 		}
 		else if (cli.switchPresent("-setup")) {
-			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
+			handleSetupCommand(venice, env, Minimal, printer);
 			return; // we stop here
 		}
 
@@ -401,13 +401,13 @@ public class REPL {
 	}
 	
 	private void handleCommand(
-			final String command, 
+			final String cmdLine, 
 			final Env env, 
 			final Terminal terminal,
 			final History history
 	) {
 		try {
-			final List<String> items = Arrays.asList(command.split(" +"));
+			final List<String> items = Arrays.asList(cmdLine.split(" +"));
 			final String cmd = items.get(0);
 			final List<String> args = items.subList(1, items.size());
 
@@ -418,8 +418,8 @@ public class REPL {
 				case "help":        handleHelpCommand(); break;
 				case "config":      handleConfigCommand(); break;
 				case "restartable": handleRestartableCommand(); break;
-				case "setup":       handleSetupCommand(venice, env, SetupMode.Minimal, printer); break;
-				case "setup-ext":   handleSetupCommand(venice, env, SetupMode.Extended, printer); break;
+				case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
+				case "setup-ext":   handleSetupCommand(venice, env, Extended, printer); break;
 				case "classpath":   handleReplClasspathCommand(); break;
 				case "cp":          handleReplClasspathCommand(); break;
 				case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
@@ -1001,7 +1001,10 @@ public class REPL {
 
 	
 	public static enum SetupMode { Minimal, Extended };
-	
+
+	private static final SetupMode Minimal = SetupMode.Minimal;
+	private static final SetupMode Extended = SetupMode.Extended;
+
 	private final static String HELP =
 			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
 			"Commands: \n" +

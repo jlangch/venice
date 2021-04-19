@@ -46,13 +46,14 @@ import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
-import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 
+import static com.github.jlangch.venice.impl.repl.REPL.SetupMode.*;
 
 public class CustomREPL {
 	
@@ -168,11 +169,11 @@ public class CustomREPL {
 		
 
 		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
-			handleSetupCommand(venice, env, SetupMode.Extended, printer);
+			handleSetupCommand(venice, env, Extended, printer);
 			return; // we stop here
 		}
 		else if (cli.switchPresent("-setup")) {
-			handleSetupCommand(venice, env, SetupMode.Minimal, printer);
+			handleSetupCommand(venice, env, Minimal, printer);
 			return; // we stop here
 		}
 		
@@ -257,15 +258,14 @@ public class CustomREPL {
 			final TerminalPrinter printer
 	) {
 		try {
-			final String script = 
-					mode == SetupMode.Minimal 
-						? "(do                             \n" +
-			              "  (load-module :repl-setup)     \n" +
-			              "  (repl-setup/setup :minimal))  \n"
-			              
-			            : "(do                             \n" +
-					      "  (load-module :repl-setup)     \n" +
-					      "  (repl-setup/setup :extended)) \n";
+			final String script = mode == Minimal 
+									? "(do                             \n" +
+						              "  (load-module :repl-setup)     \n" +
+						              "  (repl-setup/setup :minimal))  \n"
+						              
+						            : "(do                             \n" +
+								      "  (load-module :repl-setup)     \n" +
+								      "  (repl-setup/setup :extended)) \n";
 				
 				venice.RE(script, "user", env);
 		}
