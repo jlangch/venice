@@ -469,6 +469,13 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'doc/readme', includes: '*.md')
         }
+        ant.replaceregexp(
+                match:   "V${version_regex}", 
+                replace: "V${project.version}", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'doc/readme', includes: 'start.md')
+        }
         
         println "Updating version ${project.version} -> 'repl.sh'"
         ant.replaceregexp(
