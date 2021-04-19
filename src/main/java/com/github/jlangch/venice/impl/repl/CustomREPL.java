@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.repl.REPL.SetupMode.Extended;
+import static com.github.jlangch.venice.impl.repl.REPL.SetupMode.Minimal;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.PrintStream;
@@ -46,14 +49,12 @@ import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
-
-import static com.github.jlangch.venice.impl.repl.REPL.SetupMode.*;
 
 public class CustomREPL {
 	
