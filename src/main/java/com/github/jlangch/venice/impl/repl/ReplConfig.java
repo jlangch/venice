@@ -305,8 +305,14 @@ public class ReplConfig {
 		if (cli.switchPresent("-colors")) {
 			return ColorMode.Light;
 		}
+		else if (cli.switchPresent("-colors-light")) {
+			return ColorMode.Light;
+		}
 		else if (cli.switchPresent("-colors-lightmode")) {
 			return ColorMode.Light;
+		}
+		else if (cli.switchPresent("-colors-dark")) {
+			return ColorMode.Dark;
 		}
 		else if (cli.switchPresent("-colors-darkmode")) {
 			return ColorMode.Dark;
