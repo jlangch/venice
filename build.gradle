@@ -443,21 +443,13 @@ task updateReleaseVersion {
             fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
         }
         
-        println "Updating version ${project.version} -> 'notice.txt'"
+        println "Updating version ${project.version} -> 'notice.txt', 'license.txt'"
         ant.replaceregexp(
                 match:   "Venice Release ${version_regex}", 
                 replace: "Venice Release ${project.version}", 
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources/META-INF', includes: 'notice.txt')
-        }
-        
-        println "Updating version ${project.version} -> 'license.txt'"
-        ant.replaceregexp(
-                match:   "Venice Release ${version_regex}", 
-                replace: "Venice Release ${project.version}", 
-                flags:   'g'
-        ) {
             fileset(dir: 'src/main/resources/META-INF', includes: 'license.txt')
         }
         
@@ -477,7 +469,7 @@ task updateReleaseVersion {
             fileset(dir: 'doc/readme', includes: 'start.md')
         }
         
-        println "Updating version ${project.version} -> 'repl.sh'"
+        println "Updating version ${project.version} -> 'repl.sh', 'repl.bat'"
         ant.replaceregexp(
                 match:   "venice-${version_regex}[.]jar", 
                 replace: "venice-${project.version}.jar", 
