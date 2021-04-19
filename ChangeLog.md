@@ -13,7 +13,11 @@ and this project adheres to
 
 ### Added
 
-- REPL restart honors now macro expansion setting
+- REPL restart honors now the current macro expansion setting
+
+### Changed
+
+- JLine3 Jansi dependency to version 2.1.0: org.fusesource.jansi:jansi:2.1.0
 
 
 

@@ -28,7 +28,7 @@
 (load-module :ansi)
 
 
-(def lib-jansi "org.fusesource.jansi:jansi:2.0.1")
+(def lib-jansi "org.fusesource.jansi:jansi:2.1.0")
 
 (def libs-min [ lib-jansi ])
 

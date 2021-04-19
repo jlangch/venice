@@ -97,7 +97,7 @@ public class CustomREPL {
 					System.out.print(
 							"--------------------------------------------------------------------\n" +
 							"The Venice REPL requires the jansi library on Windows.              \n" +
-							"Please download the jar artifact 'org.fusesource.jansi:jansi:1.18'  \n" +
+							"Please download the jar artifact 'org.fusesource.jansi:jansi:2.1.0' \n" +
 							"from a Maven repo and put it on the classpath.                      \n" +
 							"--------------------------------------------------------------------\n\n");
 				}
@@ -255,20 +255,30 @@ public class CustomREPL {
 	private void handleSetupCommand(
 			final VeniceInterpreter venice, 
 			final Env env, 
-			final SetupMode mode,
+			final SetupMode setupMode,
 			final TerminalPrinter printer
 	) {
 		try {
-			final String script = mode == Minimal 
-									? "(do                             \n" +
-						              "  (load-module :repl-setup)     \n" +
-						              "  (repl-setup/setup :minimal))  \n"
-						              
-						            : "(do                             \n" +
-								      "  (load-module :repl-setup)     \n" +
-								      "  (repl-setup/setup :extended)) \n";
-				
-				venice.RE(script, "user", env);
+			// on Windows enforce dark mode
+			final ColorMode colorMode = config.isColorModeLight() && OSUtils.IS_WINDOWS
+											? ColorMode.Dark
+											: config.getColorMode();
+			
+			final String sSetupMode = ":" + setupMode.name().toLowerCase();
+			final String sColorMode = ":" + colorMode.name().toLowerCase();
+			
+			final String script = 
+				String.format(
+					"(do                                     \n" +
+					"  (load-module :repl-setup)             \n" +
+					"  (repl-setup/setup :setup-mode %s      \n" +
+					"                    :color-mode %s      \n" +
+					"                    :ansi-terminal %s))   ",
+					sSetupMode,
+					sColorMode,
+					ansiTerminal ? "true" : "false");
+			
+			venice.RE(script, "user", env);
 		}
 		catch(Exception ex) {
 			printer.printex("error", ex);
