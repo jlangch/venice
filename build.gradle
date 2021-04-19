@@ -476,8 +476,8 @@ task updateReleaseVersion {
                 replace: "venice-${project.version}.jar", 
                 flags:   'g'
         ) {
-            fileset(dir: 'src/main/resources/**', includes: 'repl.sh')
-            fileset(dir: 'src/main/resources/**', includes: 'repl.sh')
+            fileset(dir: 'src/main/resources', includes: '**/repl.sh')
+            fileset(dir: 'src/main/resources', includes: '**/repl.bat')
             fileset(dir: 'doc/examples', includes: 'repl.sh')
             fileset(dir: 'doc/examples', includes: 'repl.bat')
         }
