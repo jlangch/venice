@@ -39,7 +39,7 @@ foo> java -jar venice-1.9.18.jar -colors
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.9.15
+Venice REPL: V1.9.18
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -69,7 +69,7 @@ foo> java -cp venice-1.9.18.jar;jansi-1.18.jar com.github.jlangch.venice.Launche
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.9.15
+Venice REPL: V1.9.18
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
