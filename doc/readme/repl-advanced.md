@@ -36,7 +36,7 @@ Elapsed time: 26,35 ms
 
 ## Drag and Drop Venice files into the REPL for execution
 
-Drag and drop a Venice files into the REPL and press [RETURN] to execute it:
+Drag and drop a Venice file into the REPL and press [RETURN] to execute it:
 
 ```text
 venice> /Users/foo/test.venice
