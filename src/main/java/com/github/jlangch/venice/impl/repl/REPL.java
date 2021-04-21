@@ -93,22 +93,15 @@ public class REPL {
 			
 			config = ReplConfig.load(cli);
 
+			initJLineLogger(config);
+
 			final boolean setupMode = isSetupMode(cli);
 
-			final Level jlineLogLevel = config.getJLineLogLevel();
-			if (jlineLogLevel != null) {
-				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
-			}
-
-			restartable = cli.switchPresent("-restartable");
-
-			final String jansiVersion = config.getJansiVersion();
-
-			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
-											|| cli.switchPresent("-dumb") 
-											|| config.isJLineDumbTerminal();
+			restartable = isRestartable(cli);
 			
-			ansiTerminal = !dumbTerminal;
+			ansiTerminal = isAnsiTerminal(cli, config);
+			
+			macroexpand = isMacroexpand(cli);
 		
 			if (ReplRestart.exists()) {
 				try {
@@ -121,10 +114,9 @@ public class REPL {
 					ReplRestart.remove();
 				}
 			}
-			
-			macroexpand |= cli.switchPresent("-macroexpand");
 
 			if (OSUtils.IS_WINDOWS) {
+				final String jansiVersion = config.getJansiVersion();
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
@@ -138,9 +130,9 @@ public class REPL {
 				}
 			}
 			
+			System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
-			System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
 			if (macroexpand) {
 				System.out.println("Macro expansion enabled");
 			}
@@ -148,7 +140,6 @@ public class REPL {
 				System.out.println("Type '!' for help.");
 			}
 			
-
 			repl(cli, macroexpand);
 		}
 		catch (Exception ex) {
@@ -289,9 +280,6 @@ public class REPL {
 							Thread.sleep(1000);
 							break; // quit the REPL
 						}
-						else if (cmd.isEmpty()) {
-							handleCommand("help", env, terminal, history);
-						}
 						else {
 							handleCommand(cmd, env, terminal, history);
 						}
@@ -414,6 +402,7 @@ public class REPL {
 			switch(cmd) {
 				case "macroexpand": handleMacroExpandCommand(env); break;
 				case "me":          handleMacroExpandCommand(env); break;
+				case "":            handleHelpCommand(); break;
 				case "?":           handleHelpCommand(); break;
 				case "help":        handleHelpCommand(); break;
 				case "config":      handleConfigCommand(); break;
@@ -888,6 +877,26 @@ public class REPL {
 		}
 	}
 	
+	private boolean isAnsiTerminal(
+			final CommandLineArgs cli,
+			final ReplConfig config
+	) {
+		final String jansiVersion = config.getJansiVersion();
+
+		final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
+							|| cli.switchPresent("-dumb") 
+							|| config.isJLineDumbTerminal();
+		
+		return !dumbTerminal;
+	}
+	
+	private void initJLineLogger(final ReplConfig config) {
+		final Level jlineLogLevel = config.getJLineLogLevel();
+		if (jlineLogLevel != null) {
+			Logger.getLogger("org.jline").setLevel(jlineLogLevel);
+		}
+	}
+	
 	private boolean isExitCommand(final String cmd) {
 		return cmd.equals("quit") 
 				|| cmd.equals("q") 
@@ -915,6 +924,14 @@ public class REPL {
 		return cli.switchPresent("-setup") 
 				|| cli.switchPresent("-setup-ext") 
 				|| cli.switchPresent("-setup-extended");
+	}
+	
+	private boolean isRestartable(final CommandLineArgs cli) {
+		return cli.switchPresent("-restartable");
+	}
+	
+	private boolean isMacroexpand(final CommandLineArgs cli) {
+		return cli.switchPresent("-macroexpand");
 	}
 	
 	private boolean isRunningOnLinuxGitPod() {

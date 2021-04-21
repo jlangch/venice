@@ -72,24 +72,16 @@ public class CustomREPL {
 		try {
 			config = ReplConfig.load(cli);
 
+			initJLineLogger(config);
+
 			final boolean setupMode = isSetupMode(cli);
 
-			final Level jlineLogLevel = config.getJLineLogLevel();
-			if (jlineLogLevel != null) {
-				Logger.getLogger("org.jline").setLevel(jlineLogLevel);
-			}
-
-			macroexpand = cli.switchPresent("-macroexpand");
-
-			final String jansiVersion = config.getJansiVersion();
-
-			final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
-											|| cli.switchPresent("-dumb") 
-											|| config.isJLineDumbTerminal();
-
-			ansiTerminal = !dumbTerminal;
+			macroexpand = isMacroexpand(cli);
+	
+			ansiTerminal = isAnsiTerminal(cli, config);
 			
 			if (OSUtils.IS_WINDOWS) {
+				final String jansiVersion = config.getJansiVersion();
 				if (jansiVersion != null) {
 					System.out.println("Using Jansi V" + jansiVersion);
 				}
@@ -103,9 +95,9 @@ public class CustomREPL {
 				}
 			}
 
+			System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
 			System.out.println("Loading configuration from " + config.getConfigSource());
 			System.out.println(getTerminalInfo());
-			System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
 			if (macroexpand) {
 				System.out.println("Macro expansion enabled");
 			}
@@ -300,6 +292,26 @@ public class CustomREPL {
 		}
 	}
 	
+	private boolean isAnsiTerminal(
+			final CommandLineArgs cli,
+			final ReplConfig config
+	) {
+		final String jansiVersion = config.getJansiVersion();
+
+		final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
+							|| cli.switchPresent("-dumb") 
+							|| config.isJLineDumbTerminal();
+		
+		return !dumbTerminal;
+	}
+	
+	private void initJLineLogger(final ReplConfig config) {
+		final Level jlineLogLevel = config.getJLineLogLevel();
+		if (jlineLogLevel != null) {
+			Logger.getLogger("org.jline").setLevel(jlineLogLevel);
+		}
+	}
+	
 	private boolean runApp(
 			final VeniceInterpreter venice, 
 			final Env env, 
@@ -323,6 +335,10 @@ public class CustomREPL {
 		return cli.switchPresent("-setup") 
 			    || cli.switchPresent("-setup-ext") 
 			    || cli.switchPresent("-setup-extended");
+	}
+	
+	private boolean isMacroexpand(final CommandLineArgs cli) {
+		return cli.switchPresent("-macroexpand");
 	}
 
 	
