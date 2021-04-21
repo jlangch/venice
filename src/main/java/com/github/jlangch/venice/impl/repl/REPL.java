@@ -191,12 +191,21 @@ public class REPL {
 		
 		venice = new VeniceInterpreter(interceptor);
 		
+		Env env = loadEnv(cli, out, err, in, false);		
+		venice.setMacroexpandOnLoad(macroexpand, env);
+		
+		if (isSetupMode(cli)) {
+			setupRepl(cli, venice, env, printer);
+			return; // we stop here
+		}
+
+		if (!runInitialLoadFile(config.getLoadFile(), env, resultPrefix)) {
+			return; // we stop here, if the initial load file run failed
+		}
+		
 		highlighter = config.isSyntaxHighlighting()
 						? new ReplHighlighter(config)
 						: null;
-		
-		Env env = loadEnv(cli, out, err, in, false);		
-		venice.setMacroexpandOnLoad(macroexpand, env);
 		
 		final ReplParser parser = new ReplParser(venice);
 		parser.setEscapeChars(new char[0]);  // leave the char escape handling to Venice
@@ -216,19 +225,6 @@ public class REPL {
 									secondaryPrompt);
 		
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
-		
-		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
-			handleSetupCommand(venice, env, Extended, printer);
-			return; // we stop here
-		}
-		else if (cli.switchPresent("-setup")) {
-			handleSetupCommand(venice, env, Minimal, printer);
-			return; // we stop here
-		}
-
-		if (!runLoadFile(config.getLoadFile(), env, resultPrefix)) {
-			return; // stop REPL
-		}
 
 		highlight = highlighter != null;
 				
@@ -844,7 +840,11 @@ public class REPL {
 		return new BufferedReader(terminal.reader());
 	}
 	
-	private boolean runLoadFile(final String loadFile, final Env env, final String resultPrefix) {
+	private boolean runInitialLoadFile(
+			final String loadFile, 
+			final Env env, final 
+			String resultPrefix
+	) {
 		try {
 			if (loadFile != null) {
 				printer.println("stdout", "loading file \"" + loadFile + "\"");
@@ -902,6 +902,22 @@ public class REPL {
 				|| cmd.equals("q") 
 				|| cmd.equals("exit") 
 				|| cmd.equals("e");
+	}
+	
+	private void setupRepl(
+			final CommandLineArgs cli,
+			final VeniceInterpreter venice,
+			final Env env,
+			final TerminalPrinter printer
+	) {
+		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
+			handleSetupCommand(venice, env, Extended, printer);
+			return; // we stop here
+		}
+		else if (cli.switchPresent("-setup")) {
+			handleSetupCommand(venice, env, Minimal, printer);
+			return; // we stop here
+		}
 	}
 	
 	private void handleReplClasspathCommand() {

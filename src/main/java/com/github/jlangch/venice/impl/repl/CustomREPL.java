@@ -160,13 +160,9 @@ public class CustomREPL {
 		
 		final Env env = loadEnv(venice, cli, out, err, in);
 		
-
-		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
-			handleSetupCommand(venice, env, Extended, printer);
-			return; // we stop here
-		}
-		else if (cli.switchPresent("-setup")) {
-			handleSetupCommand(venice, env, Minimal, printer);
+		
+		if (isSetupMode(cli)) {
+			setupRepl(cli, venice, env, printer);
 			return; // we stop here
 		}
 		
@@ -339,6 +335,22 @@ public class CustomREPL {
 	
 	private boolean isMacroexpand(final CommandLineArgs cli) {
 		return cli.switchPresent("-macroexpand");
+	}
+	
+	private void setupRepl(
+			final CommandLineArgs cli,
+			final VeniceInterpreter venice,
+			final Env env,
+			final TerminalPrinter printer
+	) {
+		if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
+			handleSetupCommand(venice, env, Extended, printer);
+			return; // we stop here
+		}
+		else if (cli.switchPresent("-setup")) {
+			handleSetupCommand(venice, env, Minimal, printer);
+			return; // we stop here
+		}
 	}
 
 	
