@@ -189,9 +189,8 @@ public class REPL {
 
 		printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
-		venice = new VeniceInterpreter(interceptor);
-		
-		Env env = loadEnv(cli, out, err, in, false);		
+		venice = new VeniceInterpreter(interceptor);		
+		env = loadEnv(cli, out, err, in, false);		
 		venice.setMacroexpandOnLoad(macroexpand, env);
 		
 		if (isSetupMode(cli)) {
@@ -228,8 +227,24 @@ public class REPL {
 
 		highlight = highlighter != null;
 				
-		// REPL loop
+		replLoop(cli, prompt, resultPrefix, terminal, reader, history, resultHistory, out, err, in);
+	}
+
+	private void replLoop(
+			final CommandLineArgs cli,
+			final String prompt,
+			final String resultPrefix,
+			final Terminal terminal,
+			final LineReader reader,
+			final History history,
+			final ReplResultHistory resultHistory,
+			final PrintStream out,
+			final PrintStream err,
+			final BufferedReader in
+	) {
 		while (true) {
+			ThreadLocalMap.clearCallStack(); // clear the Venice callstack
+			
 			resultHistory.mergeToEnv(env);
 			
 			String line;
@@ -253,31 +268,36 @@ public class REPL {
 				if (line != null) { 
 					if (ReplParser.isCommand(line)) {
 						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
-						if (cmd.equals("reload")) {
-							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
-							printer.println("system", "reloaded");
-						}
-						else if (cmd.equals("restart")) {
-							if (restartable) {
-								printer.println("system", "restarting...");
-								ReplRestart.write(venice.isMacroexpandOnLoad());
-								System.exit(RESTART_EXIT_CODE);
+						switch(cmd) {
+							case "reload":
+								env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
+								printer.println("system", "reloaded");
 								break;
-							}
-							else {
-								printer.println("error", "The REPL is not restartable!");
-							}
-						}
-						else if (isExitCommand(cmd)) {
-							if (config.isClearCommandHistoryOnExit()) {
-								clearCommandHistory(history);
-							}
-							printer.println("interrupt", " good bye ");
-							Thread.sleep(1000);
-							break; // quit the REPL
-						}
-						else {
-							handleCommand(cmd, env, terminal, history);
+								
+							case "restart":
+								if (restartable) {
+									printer.println("system", "restarting...");
+									ReplRestart.write(venice.isMacroexpandOnLoad());
+									System.exit(RESTART_EXIT_CODE);
+									return;
+								}
+								else {
+									printer.println("error", "The REPL is not restartable!");
+								}
+								break;
+								
+							case "quit":
+							case "q":
+							case "exit":
+							case "e":
+								clearCommandHistoryIfRequired(history);
+								printer.println("interrupt", " good bye ");
+								Thread.sleep(1000);
+								return; // quit the REPL
+								
+							default:
+								handleCommand(cmd, env, terminal, history);
+								break;
 						}
 					}
 					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
@@ -285,7 +305,6 @@ public class REPL {
 					}
 					else {
 						// run the s-expr read from the line reader
-						ThreadLocalMap.clearCallStack();
 						final VncVal result = venice.RE(line, "user", env);
 						if (result != null) {
 							printer.println("result", resultPrefix + venice.PRINT(result));
@@ -298,28 +317,10 @@ public class REPL {
 				// ok, just continue
 			}
 			catch (SymbolNotFoundException ex) {
-				final VncSymbol sym = new VncSymbol(ex.getSymbol());
-				if (sym.hasNamespace()) {
-					final String ns = sym.getNamespace();
-					if (!Namespaces.isCoreNS(ns)) {
-						final boolean nsLoaded = env.getAllGlobalFunctionSymbols()
-													.stream()
-													.anyMatch(s -> ns.equals(s.getNamespace()));
-						
-						if (!nsLoaded) {
-							printer.println("error", String.format(
-														"Symbol '%s' not found!\n"
-															+ "Have you loaded the module or file that "
-															+ "defines the namespace '%s'?\n\n",
-														sym,
-														sym.getNamespace()));
-						}
-					}
-				}
-				printer.printex("error", ex);
+				handleSymbolNotFoundException(ex);
 			}
 			catch (Exception ex) {
-				printer.printex("error", ex);
+				handleException(ex);
 			}
 		}
 	}
@@ -758,6 +759,32 @@ public class REPL {
 		printer.println("error", ex.getMessage());
 	}
 	
+	private void handleSymbolNotFoundException(final SymbolNotFoundException ex) {
+		final VncSymbol sym = new VncSymbol(ex.getSymbol());
+		if (sym.hasNamespace()) {
+			final String ns = sym.getNamespace();
+			if (!Namespaces.isCoreNS(ns)) {
+				final boolean nsLoaded = env.getAllGlobalFunctionSymbols()
+											.stream()
+											.anyMatch(s -> ns.equals(s.getNamespace()));
+				
+				if (!nsLoaded) {
+					printer.println("error", String.format(
+												"Symbol '%s' not found!\n"
+													+ "*** Have you loaded the module or file that "
+													+ "defines the namespace '%s'? ***\n\n",
+												sym,
+												sym.getNamespace()));
+				}
+			}
+		}
+		printer.printex("error", ex);
+	}
+	
+	private void handleException(final Exception ex) {
+		printer.printex("error", ex);
+	}
+	
 	private Env loadEnv(
 			final CommandLineArgs cli,
 			final PrintStream out,
@@ -847,7 +874,7 @@ public class REPL {
 	) {
 		try {
 			if (loadFile != null) {
-				printer.println("stdout", "loading file \"" + loadFile + "\"");
+				printer.println("stdout", "Loading file \"" + loadFile + "\"");
 				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
 				printer.println("stdout", resultPrefix + venice.PRINT(result));
 			}
@@ -884,8 +911,8 @@ public class REPL {
 		final String jansiVersion = config.getJansiVersion();
 
 		final boolean dumbTerminal = (OSUtils.IS_WINDOWS && (jansiVersion == null))
-							|| cli.switchPresent("-dumb") 
-							|| config.isJLineDumbTerminal();
+										|| cli.switchPresent("-dumb") 
+										|| config.isJLineDumbTerminal();
 		
 		return !dumbTerminal;
 	}
@@ -895,13 +922,6 @@ public class REPL {
 		if (jlineLogLevel != null) {
 			Logger.getLogger("org.jline").setLevel(jlineLogLevel);
 		}
-	}
-	
-	private boolean isExitCommand(final String cmd) {
-		return cmd.equals("quit") 
-				|| cmd.equals("q") 
-				|| cmd.equals("exit") 
-				|| cmd.equals("e");
 	}
 	
 	private void setupRepl(
@@ -955,6 +975,12 @@ public class REPL {
 					&& System.getenv("GITPOD_REPO_ROOT") != null;
 	}
 
+	private void clearCommandHistoryIfRequired(final History history) {
+		if (config.isClearCommandHistoryOnExit()) {
+			clearCommandHistory(history);
+		}
+	}
+
 	private void clearCommandHistory(final History history) {
 		try {
 			printer.println("stdout", "Cleared REPL command history");
@@ -962,7 +988,7 @@ public class REPL {
 		}
 		catch(IOException ex) {
 			printer.println("stderr", "Failed to clear REPL command history!");
-		}	
+		}
 	}
 
 	private void handleHistoryCommand(
@@ -1122,6 +1148,7 @@ public class REPL {
 	private ReplConfig config;
 	private IInterceptor interceptor;
 	private VeniceInterpreter venice;
+	private Env env;
 	private TerminalPrinter printer;
 	private ReplHighlighter highlighter;
 	private boolean ansiTerminal = false;
