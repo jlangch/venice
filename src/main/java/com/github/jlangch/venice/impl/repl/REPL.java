@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
@@ -1069,10 +1070,11 @@ public class REPL {
 	) {
 		final String l = line.trim();
 		
-		return l.equals("**") 
-				? true 
-				: IntStream.rangeClosed(1, resultHistory.max())
-						   .anyMatch(ii -> l.equals("*" + ii));
+		//  check **, *1, *2, *3, ...
+		return Stream.concat(
+						Stream.of("**"),
+						IntStream.rangeClosed(1, resultHistory.max()).mapToObj(ii -> "*" + ii))
+					 .anyMatch(s -> l.equals(s));
 	}
 
 	
