@@ -244,70 +244,75 @@ public class REPL {
 	) {
 		while (true) {
 			ThreadLocalMap.clearCallStack(); // clear the Venice callstack
+			Thread.interrupted(); // reset the thread's interrupt status
 			
 			resultHistory.mergeToEnv(env);
 			
 			String line;
 			try {
-				Thread.interrupted(); // reset the thread's interrupt status
 				
 				try {
 					line = reader.readLine(prompt, null, (MaskingCallback)null, null);
+					if (line == null) {
+						continue;
+					}
 				}
 				catch (ParseError ex) {
 					printer.printex("error", ex);
 					history.add(reader.getBuffer().toString());
-					line = null;
+					continue;
 				}
 				catch (UserInterruptException ex) {
 					// gracefully handle ctrl-c when reading a line
 					Thread.interrupted(); // reset the thread's interrupt status
-					line = null;
+					continue;
 				}
 				
-				if (line != null) { 
-					if (ReplParser.isCommand(line)) {
-						final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
-						switch(cmd) {
-							case "reload":
-								env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
-								printer.println("system", "reloaded");
-								break;
-								
-							case "restart":
-								if (restartable) {
-									printer.println("system", "restarting...");
-									ReplRestart.write(venice.isMacroexpandOnLoad());
-									System.exit(RESTART_EXIT_CODE);
-									return;
-								}
-								else {
-									printer.println("error", "The REPL is not restartable!");
-								}
-								break;
-								
-							case "quit":
-							case "q":
-							case "exit":
-							case "e":
-								clearCommandHistoryIfRequired(history);
-								printer.println("interrupt", " good bye ");
-								Thread.sleep(1000);
-								return; // quit the REPL
-								
-							default:
-								handleCommand(cmd, env, terminal, history);
-								break;
-						}
+				if (ReplParser.isCommand(line)) {
+					final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
+					switch(cmd) {
+						case "reload":
+							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
+							printer.println("system", "reloaded");
+							break;
+							
+						case "restart":
+							if (restartable) {
+								printer.println("system", "restarting...");
+								ReplRestart.write(venice.isMacroexpandOnLoad());
+								System.exit(RESTART_EXIT_CODE);
+								return;
+							}
+							else {
+								printer.println("error", "The REPL is not restartable!");
+							}
+							break;
+							
+						case "quit":
+						case "q":
+						case "exit":
+						case "e":
+							clearCommandHistoryIfRequired(history);
+							printer.println("interrupt", " good bye ");
+							Thread.sleep(1000);
+							return; // quit the REPL
+							
+						default:
+							handleCommand(cmd, env, terminal, history);
+							break;
 					}
-					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
-						handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
-					}
-					else {
-						// run the s-expr read from the line reader
-						final VncVal result = venice.RE(line, "user", env);
-						if (result != null) {
-							printer.println("result", resultPrefix + venice.PRINT(result));
+				}
+				else if (ReplParser.isDroppedVeniceScriptFile(line)) {
+					handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
+				}
+				else {
+					// run the s-expr read from the line reader
+					final VncVal result = venice.RE(line, "user", env);
+					if (result != null) {
+						printer.println("result", resultPrefix + venice.PRINT(result));
+						
+						// do not add the result for "*1", "*2", "*3", "**" to the result history 
+						if (!isResultHistorySymbol(line, resultHistory)) {
 							resultHistory.add(result);
 						}
 					}
@@ -1057,6 +1062,24 @@ public class REPL {
 		}
 	}
 	
+	private boolean isResultHistorySymbol(
+			final String line,
+			final ReplResultHistory resultHistory
+	) {
+		final String l = line.trim();
+		if (l.startsWith("*")) {
+			if (l.equals("**")) {
+				return true;
+			}
+			for(int ii=1; ii<=resultHistory.max(); ii++) {
+				if (l.equals("*" + ii)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	
 	public static enum SetupMode { Minimal, Extended };

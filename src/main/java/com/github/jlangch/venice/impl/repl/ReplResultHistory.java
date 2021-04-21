@@ -35,12 +35,17 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 public class ReplResultHistory {
 	
 	public ReplResultHistory(final int max) {
+		this.max = max;
 		IntStream.range(0, max).forEach(ii -> results.add(Constants.Nil));
 	}
 
 	public void add(final VncVal val) {
 		results.addFirst(val == null ? Constants.Nil : val);
 		results.removeLast();
+	}
+
+	public int max() {
+		return max;
 	}
 
 	public void mergeToEnv(final Env env) {
@@ -55,5 +60,6 @@ public class ReplResultHistory {
 	}
 
 	
+	private final int max;
 	private final LinkedList<VncVal> results = new LinkedList<>();
 }
