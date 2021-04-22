@@ -36,27 +36,32 @@ public class ListBlockParser {
 			return new ListBlock();
 		}
 
+		if (!ListBlockParser.isBlockStart(reader.peek())) {
+			return new ListBlock();
+		}
+
 		final ListBlock block = new ListBlock();
 
-		
-		while (!reader.eof() && ListBlockParser.isBlockStart(reader.peek())) {
-			TextBlock item = new TextBlock();
+		TextBlock item = new TextBlock();
 
+		while (!reader.eof() && !StringUtil.isBlank(reader.peek())) {
 			String line = reader.peek();
 			reader.consume();
 
-			// strip list bullet
-			line = StringUtil.trimLeft(line);
-			line = line.substring(1);
-			line = StringUtil.trimLeft(line);
-			
-			item.addLine(line);
-			
-			
-			while (!reader.eof() && reader.peek().startsWith("  ")) {
-				line = reader.peek();
-				reader.consume();
+			if (ListBlockParser.isBlockStart(line)) {
+				if (!item.isEmpty()) {
+					block.addItem(item);
+				}
+				item = new TextBlock();
 
+				// strip list bullet
+				line = StringUtil.trimLeft(line);
+				line = line.substring(1);
+				line = StringUtil.trimLeft(line);
+				
+				item.addLine(line);
+			}
+			else {
 				line = StringUtil.trimLeft(line);
 				item.addLine(line);
 			}
