@@ -32,7 +32,7 @@ public class LineReader {
 
 	public LineReader(final String s) {
 		lines = s == null ? new ArrayList<>() : lines(s);
-		lineNr = lines.isEmpty() ? 1 : 0;
+		lineNr = 1;
 		lnNext = lines.isEmpty() ? EOF : lines.get(0);
 	}
 
@@ -41,14 +41,17 @@ public class LineReader {
 	}
 	
 	public void consume() {
-		if (!eof()) {
-			lineNr++;		
-			lnNext = eof() ? EOF :lines.get(lineNr);
+		if (lnNext != EOF) {
+			lnNext = eof() ? EOF : lines.get(lineNr++);
 		}
 	}
 
-	public ReaderPos getPos() {
-		return new ReaderPos(-1, lineNr, 1);
+	public int getLineNr() {
+		return lineNr;
+	}
+	
+	public int size() {
+		return lines.size();
 	}
 
 	private boolean eof() {
@@ -56,9 +59,22 @@ public class LineReader {
 	}
 	
 	private List<String> lines(final String s) {
-		return new BufferedReader(new StringReader(s))
-						.lines()
-						.collect(Collectors.toList());
+		if (s.isEmpty()) {
+			final List<String> lines = new ArrayList<>();
+			lines.add("");
+			return lines;
+		}
+		else {
+			final List<String> lines = new BufferedReader(new StringReader(s))
+											.lines()
+											.collect(Collectors.toList());
+			
+			if (s.endsWith("\n")) {
+				lines.add("");
+			}
+			
+			return lines;
+		}
 	}
 	
 	
