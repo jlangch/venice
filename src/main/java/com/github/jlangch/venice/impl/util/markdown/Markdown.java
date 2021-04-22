@@ -21,29 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util.markdown;
 
-import java.util.ArrayList;
-import java.util.List;
+public class Markdown {
 
-
-public class ListBlock implements Block {
-
-	public ListBlock() {
-	}
-
-	public void addItem(final Block block) {
-		if (block != null) {
-			items.add(block);
-		}
-	}
-	
-	public List<Block> getItems() {
-		return items;
-	}
-	
-	public boolean isEmpty() {
-		return items.isEmpty();
-	}
-	
-	
-	private List<Block> items = new ArrayList<>();
 }

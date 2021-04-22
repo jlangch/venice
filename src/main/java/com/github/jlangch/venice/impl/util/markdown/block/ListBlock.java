@@ -19,42 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown;
+package com.github.jlangch.venice.impl.util.markdown.block;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.jlangch.venice.impl.util.StringUtil;
 
+public class ListBlock implements Block {
 
-public class CodeBlock implements Block {
-
-	public CodeBlock() {
-		this(null);
+	public ListBlock() {
 	}
 
-	public CodeBlock(final String language) {
-		this.language = StringUtil.isEmpty(language) ? "text" : language;
-	}
-
-
-	public void addLine(final String line) {
-		lines.add(StringUtil.trimToEmpty(line));
+	public void addItem(final Block block) {
+		if (block != null) {
+			items.add(block);
+		}
 	}
 	
-	public List<String> getLines() {
-		return lines;
-	}
-	
-	public String getLanguage() {
-		return language;
+	public List<Block> getItems() {
+		return items;
 	}
 	
 	public boolean isEmpty() {
-		return lines.isEmpty();
+		return items.isEmpty();
 	}
 	
 	
-	private final String language;
-	private List<String> lines = new ArrayList<>();
+	private List<Block> items = new ArrayList<>();
 }

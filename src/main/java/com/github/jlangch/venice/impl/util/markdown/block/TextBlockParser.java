@@ -19,33 +19,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown;
+package com.github.jlangch.venice.impl.util.markdown.block;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
-public class TextBlock implements Block {
 
-	public TextBlock() {
+public class TextBlockParser {
+
+	public TextBlockParser(final LineReader reader) {
+		this.reader = reader;
 	}
-
-
-	public void addLine(final String line) {
-		if (StringUtil.isNotEmpty(line)) {
-			lines.add(line);
+	
+	public TextBlock parse() {		
+		if (reader.eof()) {
+			return new TextBlock();
 		}
+
+		String line = reader.peek();
+		reader.consume();
+
+		if (StringUtil.isBlank(line)) {
+			return new TextBlock();
+		}
+
+		final TextBlock block = new TextBlock();
+		
+		block.addLine(line);
+		
+		while(!reader.eof()) {
+			line = reader.peek();
+			reader.consume();
+			
+			if (StringUtil.isBlank(line)) {
+				break;
+			}
+			else {
+				block.addLine(line);
+			}
+		}
+		
+		return block;
 	}
 	
-	public List<String> getLines() {
-		return lines;
+	
+	public static boolean isTextBlockStart(final String line) {
+		return true;
 	}
 
-	public boolean isEmpty() {
-		return lines.isEmpty();
-	}
 	
-	
-	private List<String> lines = new ArrayList<>();
+	private final LineReader reader;
 }

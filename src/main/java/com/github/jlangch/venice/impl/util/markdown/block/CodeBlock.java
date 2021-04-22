@@ -19,54 +19,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown;
+package com.github.jlangch.venice.impl.util.markdown.block;
 
-import com.github.jlangch.venice.impl.reader.LineReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class TextBlockParser {
+public class CodeBlock implements Block {
 
-	public TextBlockParser(final LineReader reader) {
-		this.reader = reader;
+	public CodeBlock() {
+		this(null);
+	}
+
+	public CodeBlock(final String language) {
+		this.language = StringUtil.isEmpty(language) ? "text" : language;
+	}
+
+
+	public void addLine(final String line) {
+		lines.add(StringUtil.trimToEmpty(line));
 	}
 	
-	public TextBlock parse() {		
-		if (reader.eof()) {
-			return new TextBlock();
-		}
-
-		String line = reader.peek();
-		reader.consume();
-
-		if (StringUtil.isBlank(line)) {
-			return new TextBlock();
-		}
-
-		final TextBlock block = new TextBlock();
-		
-		block.addLine(line);
-		
-		while(!reader.eof()) {
-			line = reader.peek();
-			reader.consume();
-			
-			if (StringUtil.isBlank(line)) {
-				break;
-			}
-			else {
-				block.addLine(line);
-			}
-		}
-		
-		return block;
+	public List<String> getLines() {
+		return lines;
+	}
+	
+	public String getLanguage() {
+		return language;
+	}
+	
+	public boolean isEmpty() {
+		return lines.isEmpty();
 	}
 	
 	
-	public static boolean isTextBlockStart(final String line) {
-		return true;
-	}
-
-	
-	private final LineReader reader;
+	private final String language;
+	private List<String> lines = new ArrayList<>();
 }
