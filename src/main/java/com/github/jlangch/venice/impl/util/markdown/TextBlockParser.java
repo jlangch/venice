@@ -21,9 +21,8 @@
  */
 package com.github.jlangch.venice.impl.util.markdown;
 
-import org.junit.platform.commons.util.StringUtils;
-
 import com.github.jlangch.venice.impl.reader.LineReader;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class TextBlockParser {
@@ -40,7 +39,7 @@ public class TextBlockParser {
 		String line = reader.peek();
 		reader.consume();
 
-		if (StringUtils.isBlank(line)) {
+		if (StringUtil.isBlank(line)) {
 			return new TextBlock();
 		}
 
@@ -52,7 +51,7 @@ public class TextBlockParser {
 			line = reader.peek();
 			reader.consume();
 			
-			if (StringUtils.isBlank(line)) {
+			if (StringUtil.isBlank(line)) {
 				break;
 			}
 			else {

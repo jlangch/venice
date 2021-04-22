@@ -24,9 +24,8 @@ package com.github.jlangch.venice.impl.util.markdown;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.platform.commons.util.StringUtils;
-
 import com.github.jlangch.venice.impl.reader.LineReader;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class BlockParser {
@@ -41,7 +40,7 @@ public class BlockParser {
 			String line = reader.peek();
 			
 			// skip blank lines
-			if (StringUtils.isBlank(line)) {
+			if (StringUtil.isBlank(line)) {
 				reader.consume();
 			}
 			else if (CodeBlockParser.isBlockStart(line)) {
