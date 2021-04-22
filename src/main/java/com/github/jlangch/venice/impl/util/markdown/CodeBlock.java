@@ -29,6 +29,10 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class CodeBlock implements Block {
 
+	public CodeBlock() {
+		this(null);
+	}
+
 	public CodeBlock(final String language) {
 		this.language = StringUtil.isEmpty(language) ? "text" : language;
 	}
@@ -44,6 +48,10 @@ public class CodeBlock implements Block {
 	
 	public String getLanguage() {
 		return language;
+	}
+	
+	public boolean isEmpty() {
+		return lines.isEmpty();
 	}
 	
 	

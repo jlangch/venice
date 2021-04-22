@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.impl.util.markdown;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class TextBlock implements Block {
 
@@ -28,16 +32,20 @@ public class TextBlock implements Block {
 	}
 
 
-	public void addChunk(final String chunk) {
-		if (chunk != null && !chunk.isEmpty()) {
-			text = text + chunk;
+	public void addLine(final String line) {
+		if (StringUtil.isNotEmpty(line)) {
+			lines.add(line);
 		}
 	}
 	
-	public String getText() {
-		return text;
+	public List<String> getLines() {
+		return lines;
+	}
+
+	public boolean isEmpty() {
+		return lines.isEmpty();
 	}
 	
 	
-	private String text = "";
+	private List<String> lines = new ArrayList<>();
 }

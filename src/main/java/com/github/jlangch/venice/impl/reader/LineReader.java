@@ -42,7 +42,7 @@ public class LineReader {
 	
 	public void consume() {
 		if (lnNext != EOF) {
-			lnNext = eof() ? EOF : lines.get(lineNr++);
+			lnNext = lineNr >= lines.size() ? EOF : lines.get(lineNr++);
 		}
 	}
 
@@ -54,8 +54,8 @@ public class LineReader {
 		return lines.size();
 	}
 
-	private boolean eof() {
-		return lineNr >= lines.size();
+	public boolean eof() {
+		return lnNext == EOF;
 	}
 	
 	private List<String> lines(final String s) {

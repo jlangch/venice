@@ -21,29 +21,53 @@
  */
 package com.github.jlangch.venice.impl.util.markdown;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.platform.commons.util.StringUtils;
+
+import com.github.jlangch.venice.impl.reader.LineReader;
 
 
-public class ListBlock implements Block {
+public class TextBlockParser {
 
-	public ListBlock() {
+	public TextBlockParser(final LineReader reader) {
+		this.reader = reader;
 	}
-
-	public void addItem(final Block block) {
-		if (block != null) {
-			items.add(block);
+	
+	public TextBlock parse() {		
+		if (reader.eof()) {
+			return new TextBlock();
 		}
+
+		String line = reader.peek();
+		reader.consume();
+
+		if (StringUtils.isBlank(line)) {
+			return new TextBlock();
+		}
+
+		final TextBlock block = new TextBlock();
+		
+		block.addLine(line);
+		
+		while(!reader.eof()) {
+			line = reader.peek();
+			reader.consume();
+			
+			if (StringUtils.isBlank(line)) {
+				break;
+			}
+			else {
+				block.addLine(line);
+			}
+		}
+		
+		return block;
 	}
 	
-	public List<Block> getItems() {
-		return items;
+	
+	public static boolean isTextBlockStart(final String line) {
+		return true;
 	}
+
 	
-	public boolean isEmpty() {
-		return items.isEmpty();
-	}
-	
-	
-	private List<Block> items = new ArrayList<>();
+	private final LineReader reader;
 }
