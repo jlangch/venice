@@ -39,6 +39,18 @@ public class StringUtilTest {
 	}
 
 	@Test
+	public void testTrimLeft() {
+		assertEquals(null, StringUtil.trimLeft(null));
+		assertEquals("", StringUtil.trimLeft(""));
+		assertEquals("", StringUtil.trimLeft(" "));
+		assertEquals("", StringUtil.trimLeft("  "));
+		
+		assertEquals("a", StringUtil.trimLeft("a"));
+		assertEquals("a", StringUtil.trimLeft(" a"));
+		assertEquals("a", StringUtil.trimLeft("  a"));
+	}
+
+	@Test
 	public void testTrimRight() {
 		assertEquals(null, StringUtil.trimRight(null));
 		assertEquals("", StringUtil.trimRight(""));

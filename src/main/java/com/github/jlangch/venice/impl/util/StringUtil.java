@@ -421,6 +421,19 @@ public class StringUtil {
 		return isEmpty(s) ? null : s;
 	}
 	
+	public static String trimLeft(final String str) {
+		if (str == null || str.isEmpty()) {
+			return str;
+		}
+		
+		int pos = 0;
+
+		while (pos < str.length() && str.charAt(pos) <= ' ') {
+			pos++;
+		}
+		return str.substring(pos);
+	}
+	
 	public static String trimRight(final String str) {
 		if (str == null || str.isEmpty()) {
 			return str;
@@ -474,7 +487,7 @@ public class StringUtil {
 			return text;
 		}
 	}
-	
+
 	private static List<String> stripIndent(final String indent, final List<String> lines) {
 		final int skipChars = indent.length();
 		return lines
