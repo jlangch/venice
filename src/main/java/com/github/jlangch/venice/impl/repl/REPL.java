@@ -286,7 +286,7 @@ public class REPL {
 								return;
 							}
 							else {
-								printer.println("error", "The REPL is not restartable!");
+								printer.println("error", "This REPL is not restartable!");
 							}
 							break;
 							
