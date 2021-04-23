@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
+
 public class ChunkParser {
 
 	public ChunkParser(final Chunks chunks) {
@@ -33,8 +34,8 @@ public class ChunkParser {
 	
 	public Chunks parse() {
 		for(Chunk ch : chunksRaw.getChunks()) {
-			if (ch instanceof TextChunk) {
-				chunks.add(parse(((TextChunk)ch).getText()));
+			if (ch instanceof RawChunk) {
+				chunks.add(parse(((RawChunk)ch).getText()));
 			}
 			else {
 				chunks.add(ch);
@@ -63,7 +64,7 @@ public class ChunkParser {
 				ch = reader.peek();
 				if (ch != EOF) {
 					reader.consume();
-					sb.append(ch);
+					sb.append((char)ch);
 				}
 			}
 			else if (ch == '*') {
@@ -108,14 +109,14 @@ public class ChunkParser {
 			}
 			else {
 				reader.consume();
-				sb.append(ch);
+				sb.append((char)ch);
 			}
 		}		
 		
 		return chunks;
 	}
 
-	private Chunk parseEmphasizeSingle(final CharacterReader reader) {	
+	private Chunk parseEmphasizeSingle(final CharacterReader reader) {
 		// .*....*.
 		final StringBuilder sb = new StringBuilder();
 		
@@ -125,8 +126,14 @@ public class ChunkParser {
 		while(true) {
 
 			if (ch == EOF) {
-				// premature EOF
-				return new TextChunk("*" + sb.toString());
+				if (last2Ch != '*' && last1Ch == '*') {
+					final String chunk = StringUtil.removeEnd(sb.toString(), "*");
+					return new TextChunk(chunk, TextChunk.Format.ITALIC);
+				}
+				else {
+					// premature EOF
+					return new TextChunk("*" + sb.toString());
+				}
 			}
 			else if (last2Ch != '*' && last1Ch == '*' && ch != '*') {
 				final String chunk = StringUtil.removeEnd(sb.toString(), "*");
@@ -136,7 +143,7 @@ public class ChunkParser {
 				reader.consume();
 				last2Ch = last1Ch;
 				last1Ch = ch;
-				sb.append(ch);
+				sb.append((char)ch);
 			}
 			
 			ch = reader.peek();
@@ -154,8 +161,14 @@ public class ChunkParser {
 		while(true) {
 
 			if (ch == EOF) {
-				// premature EOF
-				return new TextChunk("**" + sb.toString());
+				if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*') {
+					final String chunk = StringUtil.removeEnd(sb.toString(), "**");
+					return new TextChunk(chunk, TextChunk.Format.BOLD);
+				}
+				else {
+					// premature EOF
+					return new TextChunk("**" + sb.toString());
+				}
 			}
 			else if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*' && ch != '*') {
 				final String chunk = StringUtil.removeEnd(sb.toString(), "**");
@@ -166,7 +179,7 @@ public class ChunkParser {
 				last3Ch = last2Ch;
 				last2Ch = last1Ch;
 				last1Ch = ch;
-				sb.append(ch);
+				sb.append((char)ch);
 			}
 			
 			ch = reader.peek();
@@ -185,11 +198,17 @@ public class ChunkParser {
 		while(true) {
 
 			if (ch == EOF) {
-				// premature EOF
-				return new TextChunk("***" + sb.toString());
+				if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
+					final String chunk = StringUtil.removeEnd(sb.toString(), "***");
+					return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
+				}
+				else {
+					// premature EOF
+					return new TextChunk("***" + sb.toString());
+				}
 			}
 			else if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = StringUtil.removeEnd(sb.toString(), "**");
+				final String chunk = StringUtil.removeEnd(sb.toString(), "***");
 				return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
 			}
 			else {
@@ -198,7 +217,7 @@ public class ChunkParser {
 				last3Ch = last2Ch;
 				last2Ch = last1Ch;
 				last1Ch = ch;
-				sb.append(ch);
+				sb.append((char)ch);
 			}
 			
 			ch = reader.peek();
@@ -220,7 +239,7 @@ public class ChunkParser {
 				return new InlineCodeChunk(sb.toString());
 			}
 			else {
-				sb.append(ch);
+				sb.append((char)ch);
 			}
 			
 			ch = reader.peek();

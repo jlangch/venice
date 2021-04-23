@@ -21,46 +21,28 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.chunk;
 
-import java.util.ArrayList;
-import java.util.List;
 
+public class RawChunk implements Chunk {
 
-public class Chunks {
-
-	public Chunks() {
+	public RawChunk() {
+		this("");
 	}
 
-	public Chunks(final Chunk chunk) {
-		add(chunk);
+	public RawChunk(final String text) {
+		this.text = text == null ? "" : text;
 	}
 
 	
-	public void add(final Chunk chunk) {
-		if (chunk != null && !chunk.isEmpty()) {
-			chunks.add(chunk);
-		}
-	}
-
-	public void add(final Chunks chunks) {
-		if (chunks != null ) {
-			for(Chunk c : chunks.getChunks()) {
-				if (!c.isEmpty()) this.chunks.add(c);
-			}
-		}
-	}
-	
+	@Override
 	public boolean isEmpty() {
-		return chunks.isEmpty();
+		return text.isEmpty();
 	}
 	
-	public int size() {
-		return chunks.size();
-	}
 	
-	public List<Chunk> getChunks() {
-		return chunks;
+	public String getText() {
+		return text;
 	}
 
-
-	private final List<Chunk> chunks = new ArrayList<>();
+	
+	private final String text;
 }

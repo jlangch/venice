@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
-import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 
 
 public class TableBlockParser {
@@ -124,7 +124,7 @@ public class TableBlockParser {
 				ch = reader.peek();
 				if (ch != EOF) {
 					reader.consume();
-					col.append(ch);
+					col.append((char)ch);
 				}
 			}
 			else if (ch == '|') {
@@ -132,7 +132,7 @@ public class TableBlockParser {
 				col = new StringBuilder();
 			}
 			else {
-				col.append(ch);
+				col.append((char)ch);
 			}
 		}
 		
@@ -183,7 +183,7 @@ public class TableBlockParser {
 	
 	private List<Chunks> toChunks(final List<String> list) {
 		return list.stream()
-				   .map(s -> new Chunks(new TextChunk(s)))
+				   .map(s -> new Chunks(new RawChunk(s)))
 				   .collect(Collectors.toList());
 	}
 	

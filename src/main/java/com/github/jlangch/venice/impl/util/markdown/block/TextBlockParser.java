@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 
@@ -46,7 +47,7 @@ public class TextBlockParser {
 
 		final TextBlock block = new TextBlock();
 		
-		block.add(new TextChunk(line));
+		block.add(new RawChunk(line));
 		
 		while(!reader.eof()) {
 			line = reader.peek();

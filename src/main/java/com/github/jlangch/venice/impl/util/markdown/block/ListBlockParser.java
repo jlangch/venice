@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 
 
 public class ListBlockParser {
@@ -60,11 +60,11 @@ public class ListBlockParser {
 				line = line.substring(1);
 				line = StringUtil.trimLeft(line);
 				
-				item.add(new TextChunk(line));
+				item.add(new RawChunk(line));
 			}
 			else {
 				line = StringUtil.trimLeft(line);
-				item.add(new TextChunk(line));
+				item.add(new RawChunk(line));
 			}
 		}
 		
