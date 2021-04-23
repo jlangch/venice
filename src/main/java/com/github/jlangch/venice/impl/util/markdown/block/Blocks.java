@@ -19,28 +19,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown.chunk;
+package com.github.jlangch.venice.impl.util.markdown.block;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Chunks {
+public class Blocks {
 
-	public Chunks() {
+	public Blocks() {
 	}
 	
-	public Chunks add(final Chunk chunk) {
-		if (chunk != null && !chunk.isEmpty()) {
-			chunks.add(chunk);
+	public Blocks add(final Block block) {
+		if (block != null && !block.isEmpty()) {
+			blocks.add(block);
 		}
 		return this;
 	}
 
-	public Chunks add(final Chunks chunks) {
-		if (chunks != null ) {
-			for(Chunk c : chunks.getChunks()) {
-				if (!c.isEmpty()) this.chunks.add(c);
+	public Blocks add(final Blocks blocks) {
+		if (blocks != null ) {
+			for(Block b : blocks.getBlocks()) {
+				if (!b.isEmpty()) this.blocks.add(b);
 			}
 		}
 		
@@ -48,21 +48,21 @@ public class Chunks {
 	}
 	
 	public boolean isEmpty() {
-		return chunks.isEmpty();
+		return blocks.isEmpty();
 	}
 	
 	public int size() {
-		return chunks.size();
+		return blocks.size();
 	}
 	
-	public List<Chunk> getChunks() {
-		return chunks;
+	public List<Block> getBlocks() {
+		return blocks;
 	}
 	
-	public Chunk get(final int index) {
-		return chunks.get(index);
+	public Block get(final int index) {
+		return blocks.get(index);
 	}
 
 
-	private final List<Chunk> chunks = new ArrayList<>();
+	private final List<Block> blocks = new ArrayList<>();
 }

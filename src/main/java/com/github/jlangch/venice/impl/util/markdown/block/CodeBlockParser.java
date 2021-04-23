@@ -54,7 +54,7 @@ public class CodeBlockParser {
 					break;
 				}
 				else {
-					block.addLine(removeIndent(line, indent));
+					block.addLine(removeIndent(StringUtil.trimRight(line), indent));
 				}
 			}
 			
@@ -74,27 +74,22 @@ public class CodeBlockParser {
 	}
 		
 	private static String parseLanguage(final String line) {
-		return StringUtil.removeStart(line.trim(), "```");
+		return StringUtil.removeStart(line.trim(), "```").trim();
 	}
 
 	private static int parseIndent(final String line) {
-		int indent = 0;
-		
-		for(int ii=0; ii<line.length(); ii++) {
-			if (line.charAt(ii) == ' ') {
-				indent++;
-			}
-			else {
-				break;
-			}
-		}
-		return indent;
+		return StringUtil.indexNotOf(line, " ", 0);
 	}
 
 	private static String removeIndent(final String line, final int indent) {
-		final int lineIndent = Math.min(parseIndent(line), indent);
-		
-		return lineIndent == 0 ? line : line.substring(lineIndent);
+		if (indent == 0 ) {
+			return line;
+		}
+		else {
+			final int lineIndent = Math.min(parseIndent(line), indent);
+			
+			return lineIndent == 0 ? line : line.substring(lineIndent);
+		}
 	}
 
 	

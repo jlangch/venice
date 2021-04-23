@@ -257,7 +257,9 @@ public class ChunkParser {
 	}
 	
 	private String collapseWhitespaces(final String str) {
-		return str.trim().replaceAll("\t", " ").replaceAll(" +", " ");
+		return str.trim()
+				  .replaceAll("\t", " ")
+				  .replaceAll(" +", " ");
 	}
 
 	

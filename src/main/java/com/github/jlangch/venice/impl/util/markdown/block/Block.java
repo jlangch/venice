@@ -24,4 +24,6 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 public interface Block {
 
+	boolean isEmpty();
+
 }

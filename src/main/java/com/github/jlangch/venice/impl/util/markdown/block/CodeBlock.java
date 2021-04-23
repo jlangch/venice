@@ -39,7 +39,7 @@ public class CodeBlock implements Block {
 
 
 	public void addLine(final String line) {
-		lines.add(StringUtil.trimToEmpty(line));
+		lines.add(line);
 	}
 	
 	public List<String> getLines() {
@@ -52,6 +52,14 @@ public class CodeBlock implements Block {
 	
 	public boolean isEmpty() {
 		return lines.isEmpty();
+	}
+	
+	public int size() {
+		return lines.size();
+	}
+	
+	public String get(final int index) {
+		return lines.get(index);
 	}
 	
 	

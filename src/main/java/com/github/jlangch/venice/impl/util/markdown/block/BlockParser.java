@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -35,7 +32,7 @@ public class BlockParser {
 	}
 	
 	
-	public List<Block> parse() {
+	public Blocks parse() {
 		while(!reader.eof()) {
 			String line = reader.peek();
 			
@@ -77,5 +74,5 @@ public class BlockParser {
 
 	
 	private final LineReader reader;
-	private final List<Block> blocks = new ArrayList<>();
+	private final Blocks blocks = new Blocks();
 }
