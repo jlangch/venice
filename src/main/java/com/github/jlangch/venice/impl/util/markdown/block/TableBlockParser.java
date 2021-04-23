@@ -21,6 +21,11 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.reader.LineReader;
 
 
@@ -35,11 +40,140 @@ public class TableBlockParser {
 			return new TableBlock();
 		}
 
-		// TODO: implement
+		final List<String> rawRows = parseRawRows();
+		if (rawRows.isEmpty()) {
+			return new TableBlock();
+		}
+		
+		final List<List<String>> cells = rawRows
+											.stream()
+											.map(r -> split(r))
+											.collect(Collectors.toList());
+		
+		final int cols = cells.get(0).size();
+				
+		if (isFormatRow(cells.get(0))) {
+			final List<String> formatRow = cells.get(0);
+			final List<List<String>> body = cells.subList(1, cells.size());
+			
+			return new TableBlock(cols, parseAlignments(formatRow), body);
+		}
+		else if (cells.size() > 1 && isFormatRow(cells.get(1))) {
+			final List<String> headerRow = cells.get(0);
+			final List<String> formatRow = cells.get(1);
+			final List<List<String>> body = cells.subList(2, cells.size());
 
-		return new TableBlock();
+			return new TableBlock(cols, parseAlignments(formatRow), headerRow, body);
+		}
+		else {
+			final List<List<String>> body = cells;
+
+			return new TableBlock(cols, body);
+		}
 	}
 	
 	
+	public static boolean isBlockStart(final String line) {
+		return isRow(line);
+	}
+
+	private static boolean isRow(final String line) {
+		return line.matches(" *|.*| *");
+	}
+
+	private List<String> parseRawRows() {
+		final List<String> rows = new ArrayList<>();
+				
+		String line = reader.peek();
+
+		while(isRow(line)) {
+			reader.consume();
+
+			rows.add(line.trim());
+			
+			line = reader.peek();
+		}
+				
+		return rows;
+	}
+	
+	private List<String> split(final String line) {
+		final CharacterReader reader = new CharacterReader(line);
+
+		final List<String> cols = new ArrayList<>();
+		
+		StringBuilder col = new StringBuilder();
+
+		int ch = reader.peek();
+		if (ch == '|') reader.consume();
+			
+		while(true) {
+			ch = reader.peek();
+			reader.consume();
+			
+			if (ch == EOF) {
+				break;
+			}
+			else if (ch == '\\') {
+				ch = reader.peek();
+				reader.consume();
+				col.append(ch);
+			}
+			else if (ch == '|') {
+				cols.add(col.toString().trim());
+				col = new StringBuilder();
+			}
+			else {
+				col.append(ch);
+			}
+		}
+		
+		return cols;
+	}
+
+	private List<TableBlock.Alignment> parseAlignments(final List<String> row) {
+		final List<TableBlock.Alignment> align = new ArrayList<>();
+
+		for(String s : row) {
+			if (isCenterAlign(s)) {
+				align.add(TableBlock.Alignment.CENTER);
+			}
+			else if (isLeftAlign(s)) {
+				align.add(TableBlock.Alignment.LEFT);
+			}
+			else if (isRightAlign(s)) {
+				align.add(TableBlock.Alignment.RIGHT);
+			}
+			else {
+				align.add(TableBlock.Alignment.LEFT);
+			}
+		}
+		
+		return align;
+	}
+
+	private boolean isFormatRow(final List<String> row) {
+		for(String col : row) {
+			if (isCenterAlign(col) || isLeftAlign(col) || isRightAlign(col)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isCenterAlign(final String s) {
+		return s.matches("---+");
+	}
+	
+	private boolean isLeftAlign(final String s) {
+		return s.matches("[:]--+");
+	}
+	
+	private boolean isRightAlign(final String s) {
+		return s.matches("-+-[:]");
+	}
+
+	
+	private static final int EOF = -1;
 	private final LineReader reader;
 }

@@ -39,9 +39,8 @@ public class BlockParser {
 		while(!reader.eof()) {
 			String line = reader.peek();
 			
-			// skip blank lines
 			if (StringUtil.isBlank(line)) {
-				reader.consume();
+				reader.consume(); // skip blank lines
 			}
 			else if (CodeBlockParser.isBlockStart(line)) {
 				final CodeBlockParser p = new CodeBlockParser(reader);
@@ -53,6 +52,13 @@ public class BlockParser {
 			else if (ListBlockParser.isBlockStart(line)) {
 				final ListBlockParser p = new ListBlockParser(reader);
 				final ListBlock block = p.parse();				
+				if (!block.isEmpty()) {
+					blocks.add(block);
+				}
+			}
+			else if (TableBlockParser.isBlockStart(line)) {
+				final TableBlockParser p = new TableBlockParser(reader);
+				final TableBlock block = p.parse();				
 				if (!block.isEmpty()) {
 					blocks.add(block);
 				}
