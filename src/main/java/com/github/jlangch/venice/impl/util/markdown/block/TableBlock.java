@@ -78,15 +78,15 @@ public class TableBlock implements Block {
 		return !headerRow.isEmpty();
 	}
 
-	public Alignment getFormat(final int col) {
+	public Alignment format(final int col) {
 		return col >= format.size() ? Alignment.LEFT : format.get(col);
 	}
 
-	public Chunks getHeaderCell(final int col) {
+	public Chunks headerCell(final int col) {
 		return col >= headerRow.size() ? new Chunks() : headerRow.get(col);
 	}
 
-	public Chunks getBodyCell(final int row, final int col) {
+	public Chunks bodyCell(final int row, final int col) {
 		if (row >= bodyRows.size()) {
 			return new Chunks();
 		}

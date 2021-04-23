@@ -98,7 +98,7 @@ public class TableBlockParser {
 				
 		String line = reader.peek();
 
-		while(isRow(line)) {
+		while(line != null && isRow(line)) {
 			reader.consume();
 
 			rows.add(line.trim());
@@ -176,15 +176,15 @@ public class TableBlockParser {
 	}
 
 	private boolean isCenterAlign(final String s) {
-		return s.matches("---+");
+		return s.matches("---+") || s.matches("[:]-+[:]");
 	}
 	
 	private boolean isLeftAlign(final String s) {
-		return s.matches("[:]--+");
+		return s.matches("[:]-+");
 	}
 	
 	private boolean isRightAlign(final String s) {
-		return s.matches("-+-[:]");
+		return s.matches("-+[:]");
 	}
 	
 	private List<Chunks> toChunks(final List<String> list) {
