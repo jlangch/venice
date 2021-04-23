@@ -183,7 +183,7 @@ public class TableBlockParser {
 	
 	private List<Chunks> toChunks(final List<String> list) {
 		return list.stream()
-				   .map(s -> new Chunks(new RawChunk(s)))
+				   .map(s -> new Chunks().add(new RawChunk(s)))
 				   .collect(Collectors.toList());
 	}
 	

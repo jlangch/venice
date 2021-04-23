@@ -29,24 +29,22 @@ public class Chunks {
 
 	public Chunks() {
 	}
-
-	public Chunks(final Chunk chunk) {
-		add(chunk);
-	}
-
 	
-	public void add(final Chunk chunk) {
+	public Chunks add(final Chunk chunk) {
 		if (chunk != null && !chunk.isEmpty()) {
 			chunks.add(chunk);
 		}
+		return this;
 	}
 
-	public void add(final Chunks chunks) {
+	public Chunks add(final Chunks chunks) {
 		if (chunks != null ) {
 			for(Chunk c : chunks.getChunks()) {
 				if (!c.isEmpty()) this.chunks.add(c);
 			}
 		}
+		
+		return this;
 	}
 	
 	public boolean isEmpty() {

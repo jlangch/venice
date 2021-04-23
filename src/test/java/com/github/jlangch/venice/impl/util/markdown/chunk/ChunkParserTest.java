@@ -29,38 +29,80 @@ import org.junit.jupiter.api.Test;
 
 public class ChunkParserTest {
 	
+	// -----------------------------------------------------------------------------
+	// EmptyChunk
+	// -----------------------------------------------------------------------------
+
 	@Test
-	public void test_empty_chunk() {
-		final Chunks chunks = new ChunkParser(new Chunks(new EmptyChunk())).parse();
+	public void test_empty_chunk_1() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new EmptyChunk())).parse();
+		
+		assertEquals(0, chunks.size());
+	}
+
+	@Test
+	public void test_empty_chunk_2() {
+		final Chunks chunks = new ChunkParser(
+									new Chunks()
+										.add(new EmptyChunk())
+										.add(new EmptyChunk())).parse();
 		
 		assertEquals(0, chunks.size());
 	}
 	
+	
+	// -----------------------------------------------------------------------------
+	// TextChunk
+	// -----------------------------------------------------------------------------
+	
 	@Test
-	public void test_text_chunk() {
-		Chunks chunks = new ChunkParser(new Chunks(new TextChunk(""))).parse();
+	public void test_text_chunk_1() {
+		Chunks chunks = new ChunkParser(new Chunks().add(new TextChunk(""))).parse();
 		
 		assertEquals(0, chunks.size());
 
 
-		chunks = new ChunkParser(new Chunks(new TextChunk("*abc*"))).parse();
+		chunks = new ChunkParser(new Chunks().add(new TextChunk("*abc*"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
 		assertEquals("*abc*", ((TextChunk)chunks.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 	}
+	
+	@Test
+	public void test_text_chunk_2() {
+		Chunks chunks = new ChunkParser(new Chunks()
+											.add(new TextChunk("*abc*"))
+											.add(new TextChunk("*def*"))).parse();
+		
+		assertEquals(2, chunks.size());
+		
+		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
+		assertEquals("*abc*", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
+		assertEquals("*def*", ((TextChunk)chunks.getChunks().get(1)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(1)).getFormat());
+	}
+
+	
+	
+	// -----------------------------------------------------------------------------
+	// RawChunk single
+	// -----------------------------------------------------------------------------
 
 	@Test
 	public void test_single_text_empty() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk(""))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk(""))).parse();
 		
 		assertEquals(0, chunks.size());
 	}
 
 	@Test
 	public void test_single_text_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("a"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("a"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -70,7 +112,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_2() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("abc"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("abc"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -80,7 +122,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_inline_code_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("`abc`"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("`abc`"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof InlineCodeChunk);
@@ -89,7 +131,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_inline_code_open() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("`abc"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("`abc"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -98,7 +140,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_italic_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("*abc*"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("*abc*"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -108,7 +150,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_italic_2_open() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("*abc"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("*abc"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -118,7 +160,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("**abc**"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("**abc**"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -128,7 +170,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_1_open_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("**abc"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("**abc"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -138,7 +180,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_1_open_2() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("**abc*"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("**abc*"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -148,7 +190,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_italic_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("***abc***"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("***abc***"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -158,7 +200,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_italic_1_open_1() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("***abc"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("***abc"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -168,7 +210,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_italic_1_open_2() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("***abc*"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("***abc*"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
@@ -178,7 +220,7 @@ public class ChunkParserTest {
 
 	@Test
 	public void test_single_text_bold_italic_1_open_3() {
-		final Chunks chunks = new ChunkParser(new Chunks(new RawChunk("***abc**"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("***abc**"))).parse();
 		
 		assertEquals(1, chunks.size());
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);

@@ -124,7 +124,6 @@ public class ChunkParser {
 		int last1Ch = -1;
 		int ch = reader.peek();
 		while(true) {
-
 			if (ch == EOF) {
 				if (last2Ch != '*' && last1Ch == '*') {
 					final String chunk = StringUtil.removeEnd(sb.toString(), "*");
@@ -159,7 +158,6 @@ public class ChunkParser {
 		int last1Ch = -1;
 		int ch = reader.peek();
 		while(true) {
-
 			if (ch == EOF) {
 				if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*') {
 					final String chunk = StringUtil.removeEnd(sb.toString(), "**");
@@ -196,7 +194,6 @@ public class ChunkParser {
 		int last1Ch = -1;
 		int ch = reader.peek();
 		while(true) {
-
 			if (ch == EOF) {
 				if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
 					final String chunk = StringUtil.removeEnd(sb.toString(), "***");
