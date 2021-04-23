@@ -50,6 +50,7 @@ public class CodeBlock implements Block {
 		return language;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return lines.isEmpty();
 	}
@@ -62,6 +63,10 @@ public class CodeBlock implements Block {
 		return lines.get(index);
 	}
 	
+	@Override
+	public void parseChunks() {	
+	}
+
 	
 	private final String language;
 	private List<String> lines = new ArrayList<>();

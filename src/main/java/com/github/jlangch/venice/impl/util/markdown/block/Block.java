@@ -26,4 +26,6 @@ public interface Block {
 
 	boolean isEmpty();
 
+	void parseChunks();
+	
 }

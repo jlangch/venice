@@ -23,7 +23,9 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.markdown.chunk.ChunkParser;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 
 
@@ -94,11 +96,20 @@ public class TableBlock implements Block {
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return headerRow.isEmpty() && bodyRows.isEmpty();
 	}
 	
-	
+	@Override
+	public void parseChunks() {
+		headerRow = parseChunks(headerRow);
+		
+		for(int ii=0; ii<bodyRows.size(); ii++) {
+			bodyRows.set(ii, parseChunks(bodyRows.get(ii)));
+		}
+	}
+
 	private void addFormat(final int cols, final List<Alignment> formats) {
 		for(int ii=0; ii<cols; ii++) {
 			format.add(
@@ -131,6 +142,12 @@ public class TableBlock implements Block {
 					row != null && ii<row.size() ? row.get(ii) : new Chunks());
 			}
 		}
+	}
+	
+	private List<Chunks> parseChunks(final List<Chunks> chunks) {
+		return chunks.stream()
+					 .map(c -> new ChunkParser(c).parse())
+					 .collect(Collectors.toList());
 	}
 	
 	

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.markdown.block;
 
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.ChunkParser;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 
 
@@ -43,8 +44,14 @@ public class TextBlock implements Block {
 		return chunks;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return chunks.isEmpty();
+	}
+	
+	@Override
+	public void parseChunks() {
+		chunks = new ChunkParser(chunks).parse();
 	}
 	
 	

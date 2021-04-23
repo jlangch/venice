@@ -61,6 +61,7 @@ public class TextBlockParser {
 			}
 		}
 		
+		block.parseChunks();
 		return block;
 	}
 	

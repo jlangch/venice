@@ -40,8 +40,22 @@ public class ListBlock implements Block {
 		return items;
 	}
 	
+	@Override
 	public boolean isEmpty() {
 		return items.isEmpty();
+	}
+	
+	public int size() {
+		return items.size();
+	}
+	
+	public Block get(final int index) {
+		return items.get(index);
+	}
+	
+	@Override
+	public void parseChunks() {
+		items.forEach(b -> b.parseChunks());
 	}
 	
 	

@@ -58,6 +58,7 @@ public class CodeBlockParser {
 				}
 			}
 			
+			block.parseChunks();
 			return block;
 		}
 		else {

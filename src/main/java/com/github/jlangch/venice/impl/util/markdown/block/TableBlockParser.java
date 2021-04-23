@@ -58,23 +58,29 @@ public class TableBlockParser {
 			final List<String> formatRow = cells.get(0);
 			final List<List<String>> body = cells.subList(1, cells.size());
 			
-			return new TableBlock(cols, parseAlignments(formatRow), toChunks2(body));
+			final TableBlock block = new TableBlock(cols, parseAlignments(formatRow), toChunks2(body));
+			block.parseChunks();
+			return block;
 		}
 		else if (cells.size() > 1 && isFormatRow(cells.get(1))) {
 			final List<String> headerRow = cells.get(0);
 			final List<String> formatRow = cells.get(1);
 			final List<List<String>> body = cells.subList(2, cells.size());
 
-			return new TableBlock(
+			final TableBlock block = new TableBlock(
 						cols, 
 						parseAlignments(formatRow), 
 						toChunks(headerRow), 
 						toChunks2(body));
+			block.parseChunks();
+			return block;
 		}
 		else {
 			final List<List<String>> body = cells;
 
-			return new TableBlock(cols, toChunks2(body));
+			final TableBlock block = new TableBlock(cols, toChunks2(body));
+			block.parseChunks();
+			return block;
 		}
 	}
 	
@@ -84,7 +90,7 @@ public class TableBlockParser {
 	}
 
 	private static boolean isRow(final String line) {
-		return line.matches(" *|.*| *");
+		return line.matches(" *[|].*[|] *");
 	}
 
 	private List<String> parseRawRows() {

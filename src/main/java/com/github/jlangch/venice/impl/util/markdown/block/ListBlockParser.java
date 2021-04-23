@@ -68,6 +68,11 @@ public class ListBlockParser {
 			}
 		}
 		
+		if (!item.isEmpty()) {
+			block.addItem(item);
+		}
+		
+		block.parseChunks();
 		return block;
 	}
 	
