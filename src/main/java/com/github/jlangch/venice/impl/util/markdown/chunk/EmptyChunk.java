@@ -19,34 +19,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown.block;
-
-import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
-import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
+package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 
-public class TextBlock implements Block {
+public class EmptyChunk implements Chunk {
 
-	public TextBlock() {
+	public EmptyChunk() {
 	}
 
-
-	public void add(final Chunks chunks) {
-		this.chunks.add(chunks);
-	}
-	
-	public void add(final Chunk chunk) {
-		this.chunks.add(chunk);
-	}
-	
-	public Chunks getChunks() {
-		return chunks;
-	}
-
+	@Override
 	public boolean isEmpty() {
-		return chunks.isEmpty();
+		return true;
 	}
-	
-	
-	private Chunks chunks = new Chunks();
 }

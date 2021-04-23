@@ -24,4 +24,6 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 public interface Chunk {
 
+	boolean isEmpty();
+	
 }

@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.reader.LineReader;
+import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
+import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 
 public class TableBlockParser {
@@ -56,19 +58,23 @@ public class TableBlockParser {
 			final List<String> formatRow = cells.get(0);
 			final List<List<String>> body = cells.subList(1, cells.size());
 			
-			return new TableBlock(cols, parseAlignments(formatRow), body);
+			return new TableBlock(cols, parseAlignments(formatRow), toChunks2(body));
 		}
 		else if (cells.size() > 1 && isFormatRow(cells.get(1))) {
 			final List<String> headerRow = cells.get(0);
 			final List<String> formatRow = cells.get(1);
 			final List<List<String>> body = cells.subList(2, cells.size());
 
-			return new TableBlock(cols, parseAlignments(formatRow), headerRow, body);
+			return new TableBlock(
+						cols, 
+						parseAlignments(formatRow), 
+						toChunks(headerRow), 
+						toChunks2(body));
 		}
 		else {
 			final List<List<String>> body = cells;
 
-			return new TableBlock(cols, body);
+			return new TableBlock(cols, toChunks2(body));
 		}
 	}
 	
@@ -116,8 +122,10 @@ public class TableBlockParser {
 			}
 			else if (ch == '\\') {
 				ch = reader.peek();
-				reader.consume();
-				col.append(ch);
+				if (ch != EOF) {
+					reader.consume();
+					col.append(ch);
+				}
 			}
 			else if (ch == '|') {
 				cols.add(col.toString().trim());
@@ -171,6 +179,18 @@ public class TableBlockParser {
 	
 	private boolean isRightAlign(final String s) {
 		return s.matches("-+-[:]");
+	}
+	
+	private List<Chunks> toChunks(final List<String> list) {
+		return list.stream()
+				   .map(s -> new Chunks(new TextChunk(s)))
+				   .collect(Collectors.toList());
+	}
+	
+	private List<List<Chunks>> toChunks2(final List<List<String>> list) {
+		return list.stream()
+				   .map(l -> toChunks(l))
+				   .collect(Collectors.toList());
 	}
 
 	

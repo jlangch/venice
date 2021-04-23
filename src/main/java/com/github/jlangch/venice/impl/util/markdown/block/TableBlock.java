@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
+
 
 public class TableBlock implements Block {
 
@@ -32,7 +34,7 @@ public class TableBlock implements Block {
 
 	public TableBlock(
 		final int cols,
-		final List<List<String>> bodyRows
+		final List<List<Chunks>> bodyRows
 	) {
 		addFormat(cols, new ArrayList<>());
 		addHeaderRow(cols, new ArrayList<>());
@@ -42,7 +44,7 @@ public class TableBlock implements Block {
 	public TableBlock(
 		final int cols,
 		final List<Alignment> format,
-		final List<List<String>> bodyRows
+		final List<List<Chunks>> bodyRows
 	) {
 		addFormat(cols, format);
 		addHeaderRow(cols, new ArrayList<>());
@@ -53,8 +55,8 @@ public class TableBlock implements Block {
 	public TableBlock(
 		final int cols,
 		final List<Alignment> format,
-		final List<String> headerRow,
-		final List<List<String>> bodyRows
+		final List<Chunks> headerRow,
+		final List<List<Chunks>> bodyRows
 	) {
 		addFormat(cols, format);
 		addHeaderRow(cols, headerRow);
@@ -78,17 +80,17 @@ public class TableBlock implements Block {
 		return col >= format.size() ? Alignment.LEFT : format.get(col);
 	}
 
-	public String getHeaderCell(final int col) {
-		return col >= headerRow.size() ? "" : headerRow.get(col);
+	public Chunks getHeaderCell(final int col) {
+		return col >= headerRow.size() ? new Chunks() : headerRow.get(col);
 	}
 
-	public String getBodyCell(final int row, final int col) {
+	public Chunks getBodyCell(final int row, final int col) {
 		if (row >= bodyRows.size()) {
-			return "";
+			return new Chunks();
 		}
 		else {
-			final List<String> bodyRow = bodyRows.get(row);
-			return col >= bodyRow.size() ? "" : bodyRow.get(col);
+			final List<Chunks> bodyRow = bodyRows.get(row);
+			return col >= bodyRow.size() ? new Chunks() : bodyRow.get(col);
 		}
 	}
 
@@ -99,33 +101,34 @@ public class TableBlock implements Block {
 	
 	private void addFormat(final int cols, final List<Alignment> formats) {
 		for(int ii=0; ii<cols; ii++) {
-			format.set(
-				ii, 
+			format.add(
 				formats != null && ii<formats.size() ? formats.get(ii) : Alignment.LEFT);
 		}
 	}
 	
-	private void addHeaderRow(final int cols, final List<String> row) {
-		if (row != null && !row.isEmpty()) {
-			for(int ii=0; ii<cols; ii++) {
-				headerRow.set(
-					ii, 
-					row != null && ii<row.size() ? row.get(ii) : "");
-			}
+	private void addHeaderRow(final int cols, final List<Chunks> row) {
+		if (row == null || row.isEmpty()) {
+			return;
+		}
+
+		for(int ii=0; ii<cols; ii++) {
+			headerRow.add(
+				ii<row.size() ? row.get(ii) : new Chunks());
 		}
 	}
 	
-	private void addBodyRows(final int cols, final List<List<String>> rows) {
-		if (rows != null && !rows.isEmpty()) {
-			for(List<String> row : rows) {
-				final List<String> bodyRow = new ArrayList<>();
-				bodyRows.add(bodyRow);
-				
-				for(int ii=0; ii<cols; ii++) {
-					bodyRow.set(
-						ii, 
-						row != null && ii<row.size() ? row.get(ii) : "");
-				}
+	private void addBodyRows(final int cols, final List<List<Chunks>> rows) {
+		if (rows == null || rows.isEmpty()) {
+			return;
+		}
+		
+		for(List<Chunks> row : rows) {
+			final List<Chunks> bodyRow = new ArrayList<>();
+			bodyRows.add(bodyRow);
+			
+			for(int ii=0; ii<cols; ii++) {
+				bodyRow.add(
+					row != null && ii<row.size() ? row.get(ii) : new Chunks());
 			}
 		}
 	}
@@ -134,6 +137,6 @@ public class TableBlock implements Block {
 	public static enum Alignment { LEFT, CENTER, RIGHT };
 	
 	private List<Alignment> format = new ArrayList<>();
-	private List<String> headerRow = new ArrayList<>();
-	private List<List<String>> bodyRows = new ArrayList<>();
+	private List<Chunks> headerRow = new ArrayList<>();
+	private List<List<Chunks>> bodyRows = new ArrayList<>();
 }

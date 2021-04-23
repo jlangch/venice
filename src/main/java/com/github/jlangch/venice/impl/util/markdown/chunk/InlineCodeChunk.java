@@ -32,7 +32,8 @@ public class InlineCodeChunk implements Chunk {
 		this.text = text;
 	}
 
-	
+
+	@Override
 	public boolean isEmpty() {
 		return text.isEmpty();
 	}

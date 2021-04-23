@@ -19,34 +19,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown.block;
+package com.github.jlangch.venice.impl.util.markdown.chunk;
 
-import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
-import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class TextBlock implements Block {
+public class Chunks {
 
-	public TextBlock() {
+	public Chunks() {
 	}
 
-
-	public void add(final Chunks chunks) {
-		this.chunks.add(chunks);
+	public Chunks(final Chunk chunk) {
+		add(chunk);
 	}
+
 	
 	public void add(final Chunk chunk) {
-		this.chunks.add(chunk);
-	}
-	
-	public Chunks getChunks() {
-		return chunks;
+		if (chunk != null && !chunks.isEmpty()) {
+			chunks.add(chunk);
+		}
 	}
 
+	public void add(final Chunks chunks) {
+		if (chunks != null && !chunks.isEmpty()) {
+			this.chunks.addAll(chunks.chunks);
+		}
+	}
+	
 	public boolean isEmpty() {
 		return chunks.isEmpty();
 	}
 	
-	
-	private Chunks chunks = new Chunks();
+	public List<Chunk> getChunks() {
+		return chunks;
+	}
+
+
+	private final List<Chunk> chunks = new ArrayList<>();
 }

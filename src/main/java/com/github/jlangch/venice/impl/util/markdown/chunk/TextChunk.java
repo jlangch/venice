@@ -38,6 +38,7 @@ public class TextChunk implements Chunk {
 	}
 
 	
+	@Override
 	public boolean isEmpty() {
 		return text.isEmpty();
 	}

@@ -26,5 +26,10 @@ public class LineBreakChunk implements Chunk {
 
 	public LineBreakChunk() {
 	}
-	
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
 }
