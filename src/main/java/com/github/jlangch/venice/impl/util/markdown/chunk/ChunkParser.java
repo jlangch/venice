@@ -56,7 +56,7 @@ public class ChunkParser {
 			int ch = reader.peek();
 			
 			if (ch == EOF) {
-				chunks.add(new TextChunk(sb.toString().trim()));
+				chunks.add(new TextChunk(collapseWhitespaces(sb.toString())));
 				break;
 			}
 			else if (ch == '\\') {
@@ -68,7 +68,7 @@ public class ChunkParser {
 				}
 			}
 			else if (ch == '*') {
-				chunks.add(new TextChunk(sb.toString().trim()));
+				chunks.add(new TextChunk(collapseWhitespaces(sb.toString())));
 				sb = new StringBuilder();
 
 				reader.consume(); // "*" consumed
@@ -101,7 +101,7 @@ public class ChunkParser {
 				}
 			}
 			else if (ch == '`') {
-				chunks.add(new TextChunk(sb.toString().trim()));
+				chunks.add(new TextChunk(collapseWhitespaces(sb.toString())));
 				sb = new StringBuilder();
 
 				reader.consume();
@@ -126,7 +126,9 @@ public class ChunkParser {
 		while(true) {
 			if (ch == EOF) {
 				if (last2Ch != '*' && last1Ch == '*') {
-					final String chunk = StringUtil.removeEnd(sb.toString(), "*");
+					final String chunk = collapseWhitespaces(
+											StringUtil.removeEnd(
+													sb.toString(), "*"));
 					return new TextChunk(chunk, TextChunk.Format.ITALIC);
 				}
 				else {
@@ -135,7 +137,9 @@ public class ChunkParser {
 				}
 			}
 			else if (last2Ch != '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = StringUtil.removeEnd(sb.toString(), "*");
+				final String chunk = collapseWhitespaces(
+										StringUtil.removeEnd(
+												sb.toString(), "*"));
 				return new TextChunk(chunk, TextChunk.Format.ITALIC);
 			}
 			else {
@@ -160,7 +164,9 @@ public class ChunkParser {
 		while(true) {
 			if (ch == EOF) {
 				if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*') {
-					final String chunk = StringUtil.removeEnd(sb.toString(), "**");
+					final String chunk = collapseWhitespaces(
+											StringUtil.removeEnd(
+													sb.toString(), "**"));
 					return new TextChunk(chunk, TextChunk.Format.BOLD);
 				}
 				else {
@@ -169,7 +175,9 @@ public class ChunkParser {
 				}
 			}
 			else if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = StringUtil.removeEnd(sb.toString(), "**");
+				final String chunk = collapseWhitespaces(
+										StringUtil.removeEnd(
+												sb.toString(), "**"));
 				return new TextChunk(chunk, TextChunk.Format.BOLD);
 			}
 			else {
@@ -196,7 +204,9 @@ public class ChunkParser {
 		while(true) {
 			if (ch == EOF) {
 				if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
-					final String chunk = StringUtil.removeEnd(sb.toString(), "***");
+					final String chunk = collapseWhitespaces(
+											StringUtil.removeEnd(
+													sb.toString(), "***"));
 					return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
 				}
 				else {
@@ -205,7 +215,9 @@ public class ChunkParser {
 				}
 			}
 			else if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = StringUtil.removeEnd(sb.toString(), "***");
+				final String chunk = collapseWhitespaces(
+										StringUtil.removeEnd(
+												sb.toString(), "***"));
 				return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
 			}
 			else {
@@ -230,7 +242,8 @@ public class ChunkParser {
 
 			if (ch == EOF) {
 				// premature EOF
-				return new TextChunk("`" + sb.toString());
+				final String chunk = collapseWhitespaces("`" + sb.toString());
+				return new TextChunk(chunk);
 			}
 			else if (ch == '`') {
 				return new InlineCodeChunk(sb.toString());
@@ -241,6 +254,10 @@ public class ChunkParser {
 			
 			ch = reader.peek();
 		}
+	}
+	
+	private String collapseWhitespaces(final String str) {
+		return str.trim().replaceAll("\t", " ").replaceAll(" +", " ");
 	}
 
 	
