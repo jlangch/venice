@@ -37,12 +37,10 @@ public class TextChunk implements Chunk {
 		this.format = format == null ? Format.NORMAL : format;
 	}
 
-	
 	@Override
 	public boolean isEmpty() {
 		return text.isEmpty();
 	}
-	
 	
 	public String getText() {
 		return text;

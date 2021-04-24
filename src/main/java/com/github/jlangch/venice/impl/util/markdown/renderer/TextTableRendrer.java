@@ -19,26 +19,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown;
+package com.github.jlangch.venice.impl.util.markdown.renderer;
 
-import com.github.jlangch.venice.impl.util.markdown.block.BlockParser;
-import com.github.jlangch.venice.impl.util.markdown.block.Blocks;
+import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
 
 
-public class Markdown {
-	
-	private Markdown(final Blocks blocks) {
-		this.blocks = blocks;
+public class TextTableRendrer {
+
+	public TextTableRendrer(final TableBlock block, final int maxWidth) {
+		this.block = block;
+		this.maxWidth = maxWidth;
 	}
 	
-	public static Markdown parse(final String text) {
-		return new Markdown(new BlockParser(text).parse());
-	}
-	
-	public Blocks blocks() {
-		return blocks;
+	public String render() {
+		return "";
 	}
 	
 	
-	private final Blocks blocks;
+	private final TableBlock block;
+	private final int maxWidth;
 }
