@@ -116,6 +116,23 @@ public class TextTableRendererTest {
 
 		assertEquals(expected, rendered);
 	}
+	
+	@Test
+	public void test_006_reservied_char() {
+		final String md5 = 
+			"|c1\\|\\|1|c2|\n" +
+			"|d1|d2..2|";
+		
+		final String expected =
+			"c1||1  c2\n" +
+			"d1     d2..2";
+
+		
+		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
+		final String rendered = new TextTableRendrer(block, 80).render() ;
+
+		assertEquals(expected, rendered);
+	}
 
 	
 	// -----------------------------------------------------------------------------
