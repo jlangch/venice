@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.util.markdown.block.ListBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TextBlock;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
@@ -39,20 +40,25 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 public class TextRenderer {
 	
-	public TextRenderer() {
+	public TextRenderer(final int width) {
+		this.width = width;
 	}
 	
 	public String render(final Markdown md) {
 		final StringBuilder sb = new StringBuilder();
 
 		for(Block b : md.blocks().getBlocks()) {
+			if (sb.length() > 0) {
+				sb.append("\n\n");
+			}
+			
 			sb.append(render(b));
 		}
 		
 		return sb.toString();
 	}
 
-	private String render(final Block b) {
+	public String render(final Block b) {
 		if (b.isEmpty()) {
 			return "";
 		}
@@ -73,10 +79,10 @@ public class TextRenderer {
 		}
 	}
 
-	private String render(final TextBlock block) {
+	public String render(final Chunks chunks) {
 		final StringBuilder sb = new StringBuilder();
 		
-		for(Chunk c : block.getChunks().getChunks()) {
+		for(Chunk c : chunks.getChunks()) {
 			if (c.isEmpty()) continue;
 			
 			if (sb.length() > 0) {
@@ -94,7 +100,11 @@ public class TextRenderer {
 			}
 		}
 
-		return wrap(sb.toString(), WIDTH) + "\n\n";
+		return width <= 0 ? sb.toString() : wrap(sb.toString(), width);
+	}
+
+	private String render(final TextBlock block) {
+		return render(block.getChunks());
 	}
 
 	private String render(final CodeBlock block) {
@@ -103,8 +113,6 @@ public class TextRenderer {
 		block.getLines()
 			 .forEach(l -> {sb.append(l); sb.append("\n"); });
 
-		sb.append("\n\n");
-
 		return sb.toString();
 	}
 	
@@ -112,21 +120,22 @@ public class TextRenderer {
 		final StringBuilder sb = new StringBuilder();
 		
 		for(Block b : block.getItems()) {
+			if (sb.length() > 0) {
+				sb.append("\n");
+			}
+
 			sb.append(
 				indent(
-					wrap(render(b), WIDTH-2), 
+					wrap(render(b), width-2), 
 					BULLET + " ", 
 					"  "));
-			sb.append("\n");
 		}
-
-		sb.append("\n");
 
 		return sb.toString();
 	}
 	
 	private String render(final TableBlock block) {
-		return new TextTableRendrer(block, WIDTH).render();
+		return new TextTableRendrer(block, width).render();
 	}
 	
 	private String render(final TextChunk chunk) {
@@ -142,7 +151,7 @@ public class TextRenderer {
 	}
 	
 	private String wrap(final String text, final int maxWidth) {
-		return new LineWrap().wrap(text, maxWidth);
+		return String.join("\n", LineWrap.wrap(text, maxWidth));
 	}
 
 	private String indent(
@@ -169,5 +178,6 @@ public class TextRenderer {
 	
 
 	private static final char BULLET = 'o';
-	private static final int WIDTH = 80;
+	
+	private final int width;
 }

@@ -30,9 +30,13 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class LineWrap {
 
-	public String wrap(final String text, final int maxWidth) {
+	public static List<String> wrap(final String text, final int maxWidth) {
+		if (maxWidth < 1) {
+			throw new IllegalArgumentException("A maxWidth must be a positive number!");
+		}
+		
 		if (StringUtil.isBlank(text)) {
-			return "";
+			return new ArrayList<>();
 		}
 		
 		final List<String> lines = new ArrayList<>();
@@ -46,10 +50,10 @@ public class LineWrap {
 			reader.consume();
 		}
 		
-		return String.join("\n", lines);
+		return lines;
 	}
 
-	private List<String> wrapLine(final String line, final int maxWidth) {
+	private static List<String> wrapLine(final String line, final int maxWidth) {
 		final List<String> lines = new ArrayList<>();
 
 		if (line.length() <= maxWidth) {
@@ -63,9 +67,9 @@ public class LineWrap {
 			while (rest.length() > maxWidth) {
 				int pos = maxWidth;
 				
-				while(pos > minWidth && rest.charAt(pos) != ' ') pos--;
+				while(pos >= minWidth && rest.charAt(pos) != ' ') pos--;
 				
-				if (pos > minWidth) {
+				if (pos >= minWidth) {
 					// soft wrap					
 					final String part = rest.substring(0, pos).trim();
 					rest = rest.substring(pos).trim();
@@ -74,7 +78,7 @@ public class LineWrap {
 				else {
 					// hard wrap
 					final String part = rest.substring(0, maxWidth).trim();
-					rest = rest.substring(pos).trim();
+					rest = rest.substring(maxWidth).trim();
 					lines.add(part); 
 				}
 			}
