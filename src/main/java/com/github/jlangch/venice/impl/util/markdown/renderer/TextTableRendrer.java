@@ -31,9 +31,21 @@ import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
 
 public class TextTableRendrer {
 
-	public TextTableRendrer(final TableBlock block, final int maxWidth) {
+	public TextTableRendrer(
+			final TableBlock block, 
+			final int maxWidth
+	) {
+		this(block, maxWidth, ' ');
+	}
+
+	public TextTableRendrer(
+			final TableBlock block, 
+			final int maxWidth,
+			final char fillChar
+	) {
 		this.block = block;
 		this.maxWidth = maxWidth;
+		this.fillChar = fillChar;
 	}
 	
 	public String render() {
@@ -153,7 +165,7 @@ public class TextTableRendrer {
 			// give every column a weight in the range 1..10
 			int totalWeight = 0;
 			for(int col=0; col<cols; col++) {
-				final int w = Math.min(10, Math.max(1, maxColWidths[col] / 15));
+				final int w = Math.min(10, Math.max(1, maxColWidths[col] / 10));
 				totalWeight += w;
 				weight[col] = w;
 			}
@@ -165,6 +177,7 @@ public class TextTableRendrer {
 			for(int col=0; col<cols; col++) {
 				if (col < cols -1) {
 					int width = Math.max(1, usableWidth * weight[col] / totalWeight);
+					width = Math.min(maxColWidths[col], width);
 					widths[col] = width;			
 					restWidth -= width;
 				}
@@ -239,10 +252,10 @@ public class TextTableRendrer {
 			final int width
 	) {
 		switch(align) {
-			case LEFT:	 return LineFormatter.leftAlign(str, width);
-			case CENTER: return LineFormatter.centerAlign(str, width);
-			case RIGHT:  return LineFormatter.rightAlign(str, width);
-			default:	 return LineFormatter.leftAlign(str, width);
+			case LEFT:	 return LineFormatter.leftAlign(str, width, fillChar);
+			case CENTER: return LineFormatter.centerAlign(str, width, fillChar);
+			case RIGHT:  return LineFormatter.rightAlign(str, width, fillChar);
+			default:	 return LineFormatter.leftAlign(str, width, fillChar);
 		}
 	}
 	
@@ -257,4 +270,5 @@ public class TextTableRendrer {
 
 	private final TableBlock block;
 	private final int maxWidth;
+	private final char fillChar;
 }

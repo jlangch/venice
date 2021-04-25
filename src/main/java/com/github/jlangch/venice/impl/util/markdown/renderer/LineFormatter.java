@@ -30,7 +30,11 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class LineFormatter {
 
-	public static List<String> leftAlign(final List<String> str, final int width) {
+	public static List<String> leftAlign(
+			final List<String> str, 
+			final int width,
+			final char fill
+	) {
 		if (str == null) {
 			throw new IllegalArgumentException("A str list must not be null!");
 		}	
@@ -38,10 +42,14 @@ public class LineFormatter {
 			throw new IllegalArgumentException("A width must not be negative!");
 		}
 		
-		return str.stream().map(s -> leftAlign(s, width)).collect(Collectors.toList());
+		return str.stream().map(s -> leftAlign(s, width, fill)).collect(Collectors.toList());
 	}
 
-	public static String leftAlign(final String str, final int width) {
+	public static String leftAlign(
+			final String str, 
+			final int width,
+			final char fill
+	) {
 		if (width < 0) {
 			throw new IllegalArgumentException("A width must not be negative!");
 		}
@@ -52,11 +60,15 @@ public class LineFormatter {
 		return delta == 0
 				? s
 				: delta > 0
-					? s + StringUtil.repeat(' ', delta)
+					? s + StringUtil.repeat(fill, delta)
 					: s.substring(0, width);
 	}
 	
-	public static List<String> rightAlign(final List<String> str, final int width) {
+	public static List<String> rightAlign(
+			final List<String> str, 
+			final int width,
+			final char fill
+	) {
 		if (str == null) {
 			throw new IllegalArgumentException("A str list must not be null!");
 		}	
@@ -64,10 +76,14 @@ public class LineFormatter {
 			throw new IllegalArgumentException("A width must not be negative!");
 		}
 		
-		return str.stream().map(s -> rightAlign(s, width)).collect(Collectors.toList());
+		return str.stream().map(s -> rightAlign(s, width, fill)).collect(Collectors.toList());
 	}
 
-	public static String rightAlign(final String str, final int width) {
+	public static String rightAlign(
+			final String str, 
+			final int width,
+			final char fill
+	) {
 		if (width < 0) {
 			throw new IllegalArgumentException("A width must not be negative!");
 		}
@@ -78,11 +94,15 @@ public class LineFormatter {
 		return delta == 0
 				? s
 				: delta > 0
-					? StringUtil.repeat(' ', delta) + s
+					? StringUtil.repeat(fill, delta) + s
 					: s.substring(0, width);
 	}
 	
-	public static List<String> centerAlign(final List<String> str, final int width) {
+	public static List<String> centerAlign(
+			final List<String> str, 
+			final int width,
+			final char fill
+	) {
 		if (str == null) {
 			throw new IllegalArgumentException("A str list must not be null!");
 		}	
@@ -90,10 +110,14 @@ public class LineFormatter {
 			throw new IllegalArgumentException("A width must not be negative!");
 		}
 		
-		return str.stream().map(s -> centerAlign(s, width)).collect(Collectors.toList());
+		return str.stream().map(s -> centerAlign(s, width, fill)).collect(Collectors.toList());
 	}
 	
-	public static String centerAlign(final String str, final int width) {
+	public static String centerAlign(
+			final String str, 
+			final int width,
+			final char fill
+	) {
 		if (width < 0) {
 			throw new IllegalArgumentException("A width must not be negative!");
 		}
@@ -111,13 +135,17 @@ public class LineFormatter {
 			final int leftPad = delta / 2;
 			final int rightPad = delta - leftPad;
 			
-			return StringUtil.repeat(' ', leftPad) 
+			return StringUtil.repeat(fill, leftPad) 
 					+ s 
-					+ StringUtil.repeat(' ', rightPad);
+					+ StringUtil.repeat(fill, rightPad);
 		}
 	}
 	
-	public static List<String> bottomPad(final List<String> lines, final int height) {
+	public static List<String> bottomPad(
+			final List<String> lines, 
+			final int height,
+			final char fill
+	) {
 		final int delta = height - lines.size();
 		if (delta == 0) {
 			return lines;

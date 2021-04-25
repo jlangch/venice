@@ -196,13 +196,13 @@ public class TextTableRendererTest {
 	public void test_105() {
 		final String md5 = 
 			"|:-|:-:|-:|\n" +
-			"|c1...|c2.|c3...|\n" +
-			"|d1...|d2.....|d3...|\n" +
+			"|c1...|c2.|c3..|\n" +
+			"|d1..|d2.....|d3...|\n" +
 			"||e2.||";
 		
 		final String expected =
-			"c1...    c2.    c3...\n" +
-			"d1...  d2.....  d3...\n" +
+			"c1...    c2.     c3..\n" +
+			"d1..   d2.....  d3...\n" +
 			"         e2.";
 
 		
@@ -217,7 +217,6 @@ public class TextTableRendererTest {
 	// -----------------------------------------------------------------------------
 	// Simple table, title, align, no wrap
 	// -----------------------------------------------------------------------------
-
 
 	@Test
 	public void test_201() {
@@ -283,15 +282,15 @@ public class TextTableRendererTest {
 		final String md5 = 
 			"|T1|T2|T3|\n" +
 			"|:-|:-:|-:|\n" +
-			"|c1...|c2.|c3...|\n" +
-			"|d1...|d2.....|d3...|\n" +
+			"|c1..|c2.|c3...|\n" +
+			"|d1...|d2.....|d3..|\n" +
 			"|e1|e2.|e3|";
 		
 		final String expected =
 			"T1       T2        T3\n" +
 			"-----  -------  -----\n" +
-			"c1...    c2.    c3...\n" +
-			"d1...  d2.....  d3...\n" +
+			"c1..     c2.    c3...\n" +
+			"d1...  d2.....   d3..\n" +
 			"e1       e2.       e3";
 
 		
@@ -317,6 +316,141 @@ public class TextTableRendererTest {
 			"d1...  d2.....  d3...\n" +
 			"         e2.";
 
+		
+		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
+		final String rendered = new TextTableRendrer(block, 80).render() ;
+
+		assertEquals(expected, rendered);
+	}
+
+	@Test
+	public void test_206() {
+		final String md5 = 
+			"|T1|T2|T3|\n" +
+			"|:-|:-:|-:|\n" +
+			"|c1###|c2##|c3###|\n" +
+			"|d1###|d2#####|d3###|\n" +
+			"||e2#||";
+		
+		final String expected =
+			"T1...  ..T2...  ...T3\n" +
+			"-----  -------  -----\n" +
+			"c1###  .c2##..  c3###\n" +
+			"d1###  d2#####  d3###\n" +
+			".....  ..e2#..  .....";
+
+		
+		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
+		final String rendered = new TextTableRendrer(block, 80, '.').render() ;
+
+		assertEquals(expected, rendered);
+	}
+	
+	@Test
+	public void test_207() {
+		final String md5 = 
+			"|T1|T2|\n" +
+			"|:-|:-|\n" +
+			"|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed|\n" +
+			"|d1|ipsum dolor sit amet, consetetur sadipscing elitr, sed diam|";
+		
+		final String expected =
+			"T1  T2\n" +
+			"--  ------------------------------------------------------------\n" +
+			"c1  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed\n" +
+			"d1  ipsum dolor sit amet, consetetur sadipscing elitr, sed diam";
+
+		
+		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
+		final String rendered = new TextTableRendrer(block, 80).render() ;
+
+		assertEquals(expected, rendered);
+	}
+
+
+	
+	// -----------------------------------------------------------------------------
+	// Table, title, align, with line wrap
+	// -----------------------------------------------------------------------------
+	
+	@Test
+	public void test_301() {
+		final String md5 = 
+			"|T1|T2|\n" +
+			"|:-|:-|\n" +
+			"|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed|\n" +
+			"|d1|ipsum dolor sit amet, consetetur sadipscing elitr, sed diam|";
+		
+		final String expected =
+			"T1  T2\n" +
+			"--  -------------------------------\n" +
+			"c1  Lorem ipsum dolor sit amet,\n" +
+			"    consetetur sadipscing elitr,\n" +
+			"    sed\n" +
+			"d1  ipsum dolor sit amet,\n" +
+			"    consetetur sadipscing elitr,\n" +
+			"    sed diam";
+
+		
+		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
+		final String rendered = new TextTableRendrer(block, 35).render() ;
+
+		assertEquals(expected, rendered);
+	}
+	
+	@Test
+	public void test_302() {
+		final String md5 = 
+			"|T1|T2|\n" +
+			"|:-|:-|\n" +
+			"|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed|\n" +
+			"|d1|ipsum dolor sit amet, consetetur sadipscing elitr, sed diam|";
+		
+		final String expected =
+			"T1  T2\n" +
+			"--  ----------------------------------------------\n" +
+			"c1  Lorem ipsum dolor sit amet, consetetur\n" +
+			"    sadipscing elitr, sed\n" +
+			"d1  ipsum dolor sit amet, consetetur sadipscing\n" +
+			"    elitr, sed diam";
+
+		
+		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
+		final String rendered = new TextTableRendrer(block, 50).render() ;
+
+		assertEquals(expected, rendered);
+	}
+	
+	@Test
+	public void test_303() {
+		final String md5 = 
+			"|T1|T2|\n" +
+			"|:-|:-|\n" +
+			"|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
+					+ "sed diam nonumy eirmod tempor invidunt ut labore et "
+					+ "dolore magna aliquyam erat, sed diam voluptua. At vero "
+					+ "eos et accusam et justo duo dolores et ea rebum. Stet "
+					+ "clita kasd gubergren, no sea takimata sanctus est "
+					+ "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, "
+					+ "consetetur sadipscing elitr, sed diam nonumy eirmod "
+					+ "tempor invidunt ut labore et dolore magna aliquyam "
+					+ "erat, sed diam voluptua.|\n" +
+			"|d1|At vero eos et accusam et justo duo dolores et ea "
+					+ "rebum. Stet clita kasd gubergren, no sea takimata "
+					+ "sanctus est Lorem ipsum dolor sit amet.|";
+		
+		final String expected =
+			"T1  T2\n" +
+			"--  ----------------------------------------------------------------------------\n" +
+			"c1  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy\n" +
+			"    eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam\n" +
+			"    voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet\n" +
+			"    clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit\n" +
+			"    amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam\n" +
+			"    nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed\n" +
+			"    diam voluptua.\n" +
+			"d1  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" +
+			"    gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		
 		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
 		final String rendered = new TextTableRendrer(block, 80).render() ;
