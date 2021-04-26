@@ -192,7 +192,7 @@ public class REPL {
 		printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
 		venice = new VeniceInterpreter(interceptor);		
-		env = loadEnv(cli, out, err, in, false);		
+		env = loadEnv(cli, terminal, out, err, in, false);		
 		venice.setMacroexpandOnLoad(macroexpand, env);
 		
 		if (isSetupMode(cli)) {
@@ -274,7 +274,7 @@ public class REPL {
 					final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
 					switch(cmd) {
 						case "reload":
-							env = loadEnv(cli, out, err, in, venice.isMacroexpandOnLoad());
+							env = loadEnv(cli, terminal, out, err, in, venice.isMacroexpandOnLoad());
 							printer.println("system", "reloaded");
 							break;
 							
@@ -794,17 +794,25 @@ public class REPL {
 	
 	private Env loadEnv(
 			final CommandLineArgs cli,
+			final Terminal terminal,
 			final PrintStream out,
 			final PrintStream err,
 			final BufferedReader in,
 			final boolean macroexpand
 	) {
 		return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
-					 .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
 					 .setGlobal(new Var(
-								new VncSymbol("*repl-color-theme*"), 
-								new VncKeyword(config.getColorMode().name().toLowerCase()),
-								false))
+								 	new VncSymbol("*ARGV*"), 
+								 	cli.argsAsList(), 
+								 	false))
+					 .setGlobal(new Var(
+								 	new VncSymbol("*repl-term*"), 
+								 	new VncJavaObject(new ReplTerminalInfo(terminal)), 
+								 	false))
+					 .setGlobal(new Var(
+									new VncSymbol("*repl-color-theme*"), 
+									new VncKeyword(config.getColorMode().name().toLowerCase()),
+									false))
 					 .setStdoutPrintStream(out)
 					 .setStderrPrintStream(err)
 					 .setStdinReader(in);

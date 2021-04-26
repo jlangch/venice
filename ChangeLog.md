@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- access to terminal info when running in the REPL. E.g.: `(. *repl-term* :info)`
 
 
 
