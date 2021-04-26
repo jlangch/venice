@@ -13,7 +13,8 @@ and this project adheres to
 
 ### Added
 
-- access to terminal info when running in the REPL. E.g.: `(. *repl-term* :info)`
+- access to REPL info when running in the REPL. 
+  E.g.: `(repl/info)`, `(repl/term-rows)`, `(repl/term-cols)`
 
 
 

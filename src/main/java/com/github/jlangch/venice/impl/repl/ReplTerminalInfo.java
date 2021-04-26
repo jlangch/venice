@@ -38,11 +38,11 @@ public class ReplTerminalInfo {
 	
 	public VncMap info() {
 		return VncOrderedMap.of(
-				new VncKeyword("name"), new VncString(terminal.getName()),
-				new VncKeyword("type"), new VncString(terminal.getType()),
-				new VncKeyword("cols"), new VncLong(terminal.getSize().getColumns()),
-				new VncKeyword("rows"), new VncLong(terminal.getSize().getRows()),
-				new VncKeyword("class"), new VncString(terminal.getClass().getSimpleName()));
+				new VncKeyword("term-name"),  new VncString(terminal.getName()),
+				new VncKeyword("term-type"),  new VncString(terminal.getType()),
+				new VncKeyword("term-cols"),  new VncLong(terminal.getSize().getColumns()),
+				new VncKeyword("term-rows"),  new VncLong(terminal.getSize().getRows()),
+				new VncKeyword("term-class"), new VncKeyword(terminal.getClass().getSimpleName()));
 	}
 	
 	private final Terminal terminal;

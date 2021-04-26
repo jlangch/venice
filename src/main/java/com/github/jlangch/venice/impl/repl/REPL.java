@@ -800,22 +800,28 @@ public class REPL {
 			final BufferedReader in,
 			final boolean macroexpand
 	) {
-		return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
-					 .setGlobal(new Var(
+		final Env env =
+				venice
+					.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
+					.setGlobal(new Var(
 								 	new VncSymbol("*ARGV*"), 
 								 	cli.argsAsList(), 
 								 	false))
-					 .setGlobal(new Var(
+					.setGlobal(new Var(
 								 	new VncSymbol("*repl-term*"), 
 								 	new VncJavaObject(new ReplTerminalInfo(terminal)), 
 								 	false))
-					 .setGlobal(new Var(
+					.setGlobal(new Var(
 									new VncSymbol("*repl-color-theme*"), 
 									new VncKeyword(config.getColorMode().name().toLowerCase()),
 									false))
-					 .setStdoutPrintStream(out)
-					 .setStderrPrintStream(err)
-					 .setStdinReader(in);
+					.setStdoutPrintStream(out)
+					.setStderrPrintStream(err)
+					.setStdinReader(in);
+		
+		ReplFunctions.register(env, terminal);
+		
+		return env;
 	}
 	
 	private void activate(final IInterceptor interceptor) {
