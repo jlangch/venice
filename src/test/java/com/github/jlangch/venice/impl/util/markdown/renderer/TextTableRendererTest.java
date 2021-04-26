@@ -358,7 +358,7 @@ public class TextTableRendererTest {
 
 		
 		final TableBlock block = (TableBlock)Markdown.parse(md5).blocks().get(0);
-		final String rendered = new TextTableRendrer(block, 80, '.').render() ;
+		final String rendered = new TextTableRendrer(block, 80, '.', "  ").render() ;
 
 		assertEquals(expected, rendered);
 	}

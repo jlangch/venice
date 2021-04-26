@@ -1865,8 +1865,11 @@ public class DocGenerator {
 		final DocSection repl = new DocSection("Info", "repl.info");
 		all.addSection(repl);	
 		repl.addItem(getDocItem("repl/info", false));
-		repl.addItem(getDocItem("repl/term-rows", false));
-		repl.addItem(getDocItem("repl/term-cols", false));
+		
+		final DocSection term = new DocSection("Terminal", "repl.terminal");
+		all.addSection(term);	
+		term.addItem(getDocItem("repl/term-rows", false));
+		term.addItem(getDocItem("repl/term-cols", false));
 		
 		return section;
 	}

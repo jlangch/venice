@@ -33,19 +33,21 @@ public class TextTableRendrer {
 
 	public TextTableRendrer(
 			final TableBlock block, 
-			final int maxWidth
+			final int maxTableWidth
 	) {
-		this(block, maxWidth, ' ');
+		this(block, maxTableWidth, ' ', "  ");
 	}
 
 	public TextTableRendrer(
 			final TableBlock block, 
-			final int maxWidth,
-			final char fillChar
+			final int maxTableWidth,
+			final char fillChar,
+			final String colSpacing
 	) {
 		this.block = block;
-		this.maxWidth = maxWidth;
+		this.maxTableWidth = maxTableWidth;
 		this.fillChar = fillChar;
+		this.colSpacing = colSpacing;
 	}
 	
 	public String render() {
@@ -56,7 +58,10 @@ public class TextTableRendrer {
 		
 		final int[] maxColWidths = maxColWidths(cols, headerCells, bodyCells);
 		
-		final int[] effColWidth = layoutColWidths(cols, maxColWidths);
+		final int[] effColWidth = new TableLayouter().layoutColWidths(
+															maxTableWidth, 
+															colSpacing.length(),
+															maxColWidths);
 		
 		final List<String> lines = new ArrayList<>();
 		
@@ -69,10 +74,9 @@ public class TextTableRendrer {
 			lines.addAll(renderBodyRow(cols, effColWidth, bodyCells.get(row)));
 		}
 		
-		return lines
-				.stream()
-				.map(l -> StringUtil.trimRight(l))
-				.collect(Collectors.joining("\n"));
+		return lines.stream()
+					.map(l -> StringUtil.trimRight(l))
+					.collect(Collectors.joining("\n"));
 	}
 	
 	private String renderHeader(
@@ -82,13 +86,14 @@ public class TextTableRendrer {
 	) {
 		final StringBuilder sb = new StringBuilder();
 		for(int col=0; col<cols; col++) {
-			if (col>0) sb.append(COL_SPACING);
+			if (col>0) sb.append(colSpacing);
+			int width = colWidth[col];
 			final String s = headerCells.get(col);
 			sb.append(
 				align(
-					StringUtil.truncate(s, colWidth[col], "."),
+					s.length() <= width ? s : s.substring(0, width),
 					block.format(col),
-					colWidth[col]));
+					width));
 		}
 		return sb.toString();
 	}
@@ -99,7 +104,7 @@ public class TextTableRendrer {
 	) {
 		final StringBuilder sb = new StringBuilder();
 		for(int col=0; col<cols; col++) {
-			if (col>0) sb.append(COL_SPACING);
+			if (col>0) sb.append(colSpacing);
 			sb.append(StringUtil.repeat("-", colWidth[col]));
 		}
 		return sb.toString();
@@ -140,7 +145,7 @@ public class TextTableRendrer {
 		for(int ii=0; ii<height;ii++) {
 			final StringBuilder sb = new StringBuilder();
 			for(int col=0; col<cols; col++) {
-				if (col>0) sb.append(COL_SPACING);
+				if (col>0) sb.append(colSpacing);
 				final String chunk = cellLines.get(col).get(ii);
 				sb.append(chunk);
 			}
@@ -150,45 +155,6 @@ public class TextTableRendrer {
 		return lines;
 	}
 
-	private int[] layoutColWidths(final int cols, final int[] maxColWidths) {
-		final int usableWidth = maxWidth - (cols - 1) * COL_SPACING.length();
-
-		if (sum(maxColWidths) <= usableWidth) {
-			return maxColWidths;
-		}
-		else if (cols == 1) {
-			return new int[] { maxWidth };
-		}
-		else {
-			final int weight[] = new int[cols];
-			
-			// give every column a weight in the range 1..10
-			int totalWeight = 0;
-			for(int col=0; col<cols; col++) {
-				final int w = Math.min(10, Math.max(1, maxColWidths[col] / 10));
-				totalWeight += w;
-				weight[col] = w;
-			}
-							
-
-			final int widths[] = new int[cols];
-
-			int restWidth = usableWidth;
-			for(int col=0; col<cols; col++) {
-				if (col < cols -1) {
-					int width = Math.max(1, usableWidth * weight[col] / totalWeight);
-					width = Math.min(maxColWidths[col], width);
-					widths[col] = width;			
-					restWidth -= width;
-				}
-				else {
-					widths[col] = restWidth;			
-				}
-			}
-			
-			return widths;
-		}
-	}
 
 	private int[] maxColWidths(
 			final int cols, 
@@ -259,16 +225,9 @@ public class TextTableRendrer {
 		}
 	}
 	
-	private int sum(final int[] arr) {
-		int sum = 0;
-		for(int ii=0; ii<arr.length; ii++) sum += arr[ii];
-		return sum;
-	}
 	
-	
-	private static final String COL_SPACING = "  ";
-
 	private final TableBlock block;
-	private final int maxWidth;
+	private final int maxTableWidth;
+	private final String colSpacing;
 	private final char fillChar;
 }
