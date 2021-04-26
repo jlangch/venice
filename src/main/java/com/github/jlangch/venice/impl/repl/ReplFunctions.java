@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 
@@ -45,23 +48,29 @@ public class ReplFunctions {
 			final Terminal terminal,
 			final ReplConfig config
 	) {
-		final VncFunction[] fns = { createReplInfoFn(terminal, config),
-									createTermRowsFn(terminal),
-									createTermColsFn(terminal) };
-		
 		Env e = env;
-		for(VncFunction fn : fns) {
+		for(VncFunction fn : createFunctions(terminal, config)) {
 			e = registerFn(e,fn);
 		}
 		return e;
 	};
+
 	
 	private static Env registerFn(final Env env, final VncFunction fn) {
-		return env.setGlobal(
-					new Var(
-						 	new VncSymbol(fn.getQualifiedName()), 
-						 	fn, 
-						 	false));
+		return env.setGlobal(new Var(new VncSymbol(fn.getQualifiedName()), fn, false));
+	}
+	
+	private static List<VncFunction> createFunctions(
+			final Terminal terminal,
+			final ReplConfig config
+	) {
+		final List<VncFunction> fns = new ArrayList<>();
+		
+		fns.add(createReplInfoFn(terminal, config));
+		fns.add(createTermRowsFn(terminal));
+		fns.add(createTermColsFn(terminal));
+		
+		return fns;
 	}
 	
 	private static VncFunction createReplInfoFn(

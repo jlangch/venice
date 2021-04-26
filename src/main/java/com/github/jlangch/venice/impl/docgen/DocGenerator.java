@@ -41,6 +41,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.repl.ReplFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -67,7 +68,7 @@ public class DocGenerator {
 						"java",   "semver", "excel",  "hexdump",
 						"shell",  "geoip" ));
 		
-		this.env = new VeniceInterpreter(new AcceptAllInterceptor())
+		Env env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
 								preloadedModules, 
 								false, 
@@ -75,6 +76,8 @@ public class DocGenerator {
 								RunMode.DOCGEN)
 							.setStdoutPrintStream(null)
 							.setStderrPrintStream(null);
+		
+		this.env = ReplFunctions.register(env, null, null);
 		
 		this.codeHighlighter = new DocHighlighter(DocColorTheme.getLightTheme());
 	}
@@ -199,6 +202,7 @@ public class DocGenerator {
 		final DocSection java = new DocSection("System\u00A0&\u00A0Java", "system");
 		java.addSection(new DocSection("System", "system"));
 		java.addSection(new DocSection("Java Interop", "javainterop"));
+		java.addSection(new DocSection("REPL", "repl"));
 		content.add(java);
 
 		final DocSection util = new DocSection("Util", "util");
@@ -254,6 +258,7 @@ public class DocGenerator {
 				getTypesSection(),
 				getNamespaceSection(),
 				getJavaInteropSection(),
+				getReplSection(),
 				getMiscellaneousSection());
 	}
 	
@@ -1851,6 +1856,21 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getReplSection() {
+		final DocSection section = new DocSection("REPL", "repl");
+	
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+			
+		final DocSection repl = new DocSection("Info", "repl.info");
+		all.addSection(repl);	
+		repl.addItem(getDocItem("repl/info", false));
+		repl.addItem(getDocItem("repl/term-rows", false));
+		repl.addItem(getDocItem("repl/term-cols", false));
+		
+		return section;
+	}
+	
 	private DocSection getMiscellaneousSection() {
 		final DocSection section = new DocSection("Miscellaneous", "miscellaneous");
 
@@ -2347,7 +2367,7 @@ public class DocGenerator {
 		if (fn != null) {
 			return fn;
 		}
-		
+
 		// functions & macros
 		return getFunction(name);
 	}
