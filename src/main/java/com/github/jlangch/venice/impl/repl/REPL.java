@@ -808,10 +808,6 @@ public class REPL {
 								 	cli.argsAsList(), 
 								 	false))
 					.setGlobal(new Var(
-								 	new VncSymbol("*repl-term*"), 
-								 	new VncJavaObject(new ReplTerminalInfo(terminal)), 
-								 	false))
-					.setGlobal(new Var(
 									new VncSymbol("*repl-color-theme*"), 
 									new VncKeyword(config.getColorMode().name().toLowerCase()),
 									false))
@@ -819,9 +815,7 @@ public class REPL {
 					.setStderrPrintStream(err)
 					.setStdinReader(in);
 		
-		ReplFunctions.register(env, terminal);
-		
-		return env;
+		return ReplFunctions.register(env, terminal, config);
 	}
 	
 	private void activate(final IInterceptor interceptor) {

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.repl;
 
 import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp.Capability;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
@@ -39,36 +40,41 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 public class ReplFunctions {
 
-	public static void register(
+	public static Env register(
 			final Env env,
-			final Terminal terminal
+			final Terminal terminal,
+			final ReplConfig config
 	) {
-		registerFn(env, createReplInfoFn(terminal));
-		registerFn(env, createTermRowsFn(terminal));
-		registerFn(env, createTermColsFn(terminal));
+		final VncFunction[] fns = { createReplInfoFn(terminal, config),
+									createTermRowsFn(terminal),
+									createTermColsFn(terminal) };
+		
+		Env e = env;
+		for(VncFunction fn : fns) {
+			e = registerFn(e,fn);
+		}
+		return e;
+	};
+	
+	private static Env registerFn(final Env env, final VncFunction fn) {
+		return env.setGlobal(
+					new Var(
+						 	new VncSymbol(fn.getQualifiedName()), 
+						 	fn, 
+						 	false));
 	}
 	
-	private static void registerFn(final Env env, final VncFunction fn) {
-		env.setGlobal(
-			new Var(
-				 	new VncSymbol(fn.getQualifiedName()), 
-				 	fn, 
-				 	false));
-	}
-	
-	private static VncFunction createReplInfoFn(final Terminal terminal) {
+	private static VncFunction createReplInfoFn(
+			final Terminal terminal, 
+			final ReplConfig config
+	) {
 		return 
 			new VncFunction(
 					"repl/info",
 					VncFunction
 						.meta()
 						.arglists("(repl/info)")
-						.doc("Returns information on the REPL. \n\n" +
-							 "E.g.: {:term-name \"JLine terminal\"\n" +
-							 "       :term-type \"xterm-256color\"\n" +
-							 "       :term-rows 24\n" +
-							 "       :term-cols 101\n" +
-							 "       :term-class :PosixSysTerminal}")
+						.doc("Returns information on the REPL.")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -76,11 +82,13 @@ public class ReplFunctions {
 	
 					try {
 						return VncOrderedMap.of(
-								new VncKeyword("term-name"),  new VncString(terminal.getName()),
-								new VncKeyword("term-type"),  new VncString(terminal.getType()),
-								new VncKeyword("term-cols"),  new VncLong(terminal.getSize().getColumns()),
-								new VncKeyword("term-rows"),  new VncLong(terminal.getSize().getRows()),
-								new VncKeyword("term-class"), new VncKeyword(terminal.getClass().getName()));
+								new VncKeyword("term-name"),   new VncString(terminal.getName()),
+								new VncKeyword("term-type"),   new VncString(terminal.getType()),
+								new VncKeyword("term-cols"),   new VncLong(terminal.getSize().getColumns()),
+								new VncKeyword("term-rows"),   new VncLong(terminal.getSize().getRows()),
+								new VncKeyword("term-colors"), new VncLong(terminal.getNumericCapability(Capability.max_colors)),
+								new VncKeyword("term-class"),  new VncKeyword(terminal.getClass().getName()),
+								new VncKeyword("color-mode"),  new VncKeyword(config.getColorMode().toString().toLowerCase()));
 					}
 					catch(Exception ex) {
 						throw new VncException("Failed to get the REPL terminal info", ex);
