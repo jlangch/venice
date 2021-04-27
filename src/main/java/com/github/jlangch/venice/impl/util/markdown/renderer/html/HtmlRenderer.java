@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.util.markdown.renderer.html;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,9 +52,11 @@ public class HtmlRenderer {
 			
 			wr.println("<div class=\"md\">");
 			
-			for(Block b : md.blocks().getBlocks()) {
-				render(b, wr);
-			}
+			md.blocks()
+			  .getBlocks()
+			  .stream()
+			  .filter(b -> !b.isEmpty())
+			  .forEach(b -> render(b, wr));
 			
 			wr.println("</div>");
 			
@@ -67,10 +68,7 @@ public class HtmlRenderer {
 	}
 
 	public void render(final Block b, final PrintWriter wr) {
-		if (b.isEmpty()) {
-			return ;
-		}
-		else if (b instanceof TextBlock) {
+		if (b instanceof TextBlock) {
 			render((TextBlock)b, wr);
 		}
 		else if (b instanceof CodeBlock) {
@@ -103,11 +101,9 @@ public class HtmlRenderer {
 	private void render(final ListBlock block, final PrintWriter wr) {
 		wr.println("<div class=\"md-list-block\">");	
 		wr.println("<ul class=\"md-list\">");
-		for(Block b : block.getItems()) {
-			wr.print("<li>" );
-			render(b, wr);
-			wr.println("</li>" );
-		}
+		block.getItems().forEach(b -> { wr.print("<li>" );
+										render(b, wr);
+										wr.println("</li>" ); });
 		wr.println("</ul>");	
 		wr.println("</div>");
 	}
@@ -122,9 +118,9 @@ public class HtmlRenderer {
 			for(int col=0; col<block.cols(); col++) {
 				final TextChunk chunk =  ((TextChunk)block.headerCell(col).get(0));
 				final String header = escape(chunk.getText());
-				final String format = block.format(col).name().toLowerCase();
+				final String alignClass = buildCssAlignmentClass(block.format(col));
 	
-				wr.println("<th class=\"md-align-" + format + "\">" + header + "</th>");
+				wr.println("<th class=\"" + alignClass + "\">" + header + "</th>");
 			}
 			wr.println("</tr>");
 		}
@@ -133,9 +129,9 @@ public class HtmlRenderer {
 			wr.println("<tr>");
 			for(int col=0; col<block.cols(); col++) {
 				final Chunks chunks = block.bodyCell(row, col);
-				final String format = block.format(row).name().toLowerCase();
+				final String alignClass = buildCssAlignmentClass(block.format(col));
 	
-				wr.print("<td class=\"md-align-" + format + "\">");
+				wr.print("<td class=\"" + alignClass + "\">");
 				
 				render(chunks, wr);
 				
@@ -156,12 +152,13 @@ public class HtmlRenderer {
 									  .collect(Collectors.toList());
 		
 		if (!chs.isEmpty()) {
-			render(first(chs), wr);
+			// first
+			render(chs.get(0), wr);
 			
-			for(Chunk c : rest(chs)) {
-				wr.print(" ");
-				render(c, wr);
-			}
+			// rest
+			chs.stream()
+			   .skip(1)
+			   .forEach(c -> { wr.print(" "); render(c, wr); });
 		}
 	}
 
@@ -210,15 +207,7 @@ public class HtmlRenderer {
 		wr.print("<div class=\"md-inline-code\">" + text + "</div");
 	}
 	
-	private List<Chunk> rest(final List<Chunk> chunks) {
-		return chunks.size() > 1
-				? chunks.subList(1, chunks.size())
-				: new ArrayList<>();
-	}
-	
-	private Chunk first(final List<Chunk> chunks) {
-		return chunks.isEmpty()
-				? null
-				: chunks.get(0);
+	private String buildCssAlignmentClass(final TableBlock.Alignment alignment) {
+		return "md-align-" + alignment.name().toLowerCase();
 	}
 }
