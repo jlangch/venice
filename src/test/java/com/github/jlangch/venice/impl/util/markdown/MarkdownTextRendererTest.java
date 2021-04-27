@@ -32,7 +32,7 @@ public class MarkdownTextRendererTest {
 
 	@Test
 	public void test_text_block() {
-		final String md5 = 
+		final String md = 
 				  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
 				+ "sed diam nonumy eirmod tempor invidunt ut labore et "
 				+ "dolore magna aliquyam erat, sed diam voluptua. At vero "
@@ -55,14 +55,14 @@ public class MarkdownTextRendererTest {
 				+ "invidunt ut labore et dolore magna aliquyam erat,\n"
 				+ "sed diam voluptua.";
 		
-		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md));
 
 		assertEquals(expected, rendered);
 	}
 
 	@Test
 	public void test_text_block_2() {
-		final String md5 = 
+		final String md = 
 				  "Lorem ipsum *dolor* sit amet, consetetur sadipscing elitr, "
 				+ "sed diam nonumy eirmod tempor invidunt ut labore et "
 				+ "dolore magna aliquyam erat, sed diam voluptua. At vero "
@@ -87,14 +87,14 @@ public class MarkdownTextRendererTest {
 				+ "labore et dolore magna aliquyam erat, sed diam\n"
 				+ "voluptua.";
 		
-		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md));
 
 		assertEquals(expected, rendered);
 	}
 
 	@Test
 	public void test_code_block() {
-		final String md5 = 
+		final String md = 
 				  "```venice\n"
 				+ "(defmacro\n"
 				+ "  ^{ :arglists '(\"(comment & body)\")\n"
@@ -122,14 +122,14 @@ public class MarkdownTextRendererTest {
 				+ "\n"
 				+ "   comment [& body] nil)\n";
 		
-		final String rendered = Markdown.parse(md5).renderToText(50);
+		final String rendered = Markdown.parse(md).renderToText(50);
 
 		assertEquals(expected, rendered);
 	}
 
 	@Test
 	public void test_list_block() {
-		final String md5 = 
+		final String md = 
 				  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
 				+ "  sed diam nonumy eirmod tempor invidunt ut labore et\n"
 				+ "* At vero eos et accusam et justo duo\n"
@@ -145,14 +145,14 @@ public class MarkdownTextRendererTest {
 				+ "  justo duo dolores et ea\n"
 				+ "  rebum.";
 		
-		final String rendered = Markdown.parse(md5).renderToText(30);
+		final String rendered = Markdown.parse(md).renderToText(30);
 
 		assertEquals(expected, rendered);
 	}
 
 	@Test
 	public void test_table_block() {
-		final String md5 = 
+		final String md = 
 				"|T1|T2|\n" +
 				"|:-|:-|\n" +
 				"|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
@@ -181,7 +181,7 @@ public class MarkdownTextRendererTest {
 				"d1  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" +
 				"    gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		
-		final String rendered = Markdown.parse(md5).renderToText(80);
+		final String rendered = Markdown.parse(md).renderToText(80);
 
 		assertEquals(expected, rendered);
 	}

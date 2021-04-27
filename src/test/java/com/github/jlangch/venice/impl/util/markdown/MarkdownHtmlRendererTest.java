@@ -30,7 +30,7 @@ public class MarkdownHtmlRendererTest {
 
 	@Test
 	public void test_text_block1() {
-		final String md5 = 
+		final String md = 
 						"Lorem ipsum dolor 'sit' amet";
 			
 		final String expected =
@@ -38,29 +38,29 @@ public class MarkdownHtmlRendererTest {
 						+ "<div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div></div>\n"
 						+ "</div>\n";
 
-		final String rendered = Markdown.parse(md5).renderToHtml();
+		final String rendered = Markdown.parse(md).renderToHtml();
 
 		assertEquals(expected, rendered);
 	}
 
 	@Test
 	public void test_text_block2() {
-		final String md5 = 
-						"Lorem *ipsum* dolor **sit** amet";
+		final String md = 
+						"Lorem *ipsum* \\* dolor **sit** amet";
 
 		final String expected =
 						"<div class=\"md\">\n"
-						+ "<div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem</div> <div class=\"md-text-italic\">ipsum</div> <div class=\"md-text-normal\">dolor</div> <div class=\"md-text-bold\">sit</div> <div class=\"md-text-normal\">amet</div></div>\n"
+						+ "<div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem</div> <div class=\"md-text-italic\">ipsum</div> <div class=\"md-text-normal\">* dolor</div> <div class=\"md-text-bold\">sit</div> <div class=\"md-text-normal\">amet</div></div>\n"
 						+ "</div>\n";
 
-		final String rendered = Markdown.parse(md5).renderToHtml();
+		final String rendered = Markdown.parse(md).renderToHtml();
 
 		assertEquals(expected, rendered);
 	}
 	
 	@Test
 	public void test_list_block() {
-		final String md5 = 
+		final String md = 
 						"* Lorem ipsum dolor 'sit' amet\n" +
 						"* Lorem *ipsum* dolor sit amet";
 
@@ -76,14 +76,14 @@ public class MarkdownHtmlRendererTest {
 						+ "</div>\n"
 						+ "</div>\n";
 
-		final String rendered = Markdown.parse(md5).renderToHtml();
+		final String rendered = Markdown.parse(md).renderToHtml();
 
 		assertEquals(expected, rendered);
 	}
 	
 	@Test
 	public void test_code_block() {
-		final String md5 = 
+		final String md = 
 						"```venice\n" +
 						"(do\n" +
 						"  (> 1 100))\n" +
@@ -96,14 +96,14 @@ public class MarkdownHtmlRendererTest {
 						+ "  (&gt; 1 100))</code></div>\n"
 						+ "</div>\n";
 		
-		final String rendered = Markdown.parse(md5).renderToHtml();
+		final String rendered = Markdown.parse(md).renderToHtml();
 
 		assertEquals(expected, rendered);
 	}
 	
 	@Test
 	public void test_table_block() {
-		final String md5 =  
+		final String md =  
 						"|T1|T2|T3|\n" +
 						"|:-|:-:|-:|\n" +
 						"|c1...|c2.|c3...|\n" +
@@ -138,7 +138,7 @@ public class MarkdownHtmlRendererTest {
 						+ "</div>\n"
 						+ "</div>\n";
 
-		final String rendered = Markdown.parse(md5).renderToHtml();
+		final String rendered = Markdown.parse(md).renderToHtml();
 
 		assertEquals(expected, rendered);
 	}
