@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.markdown.renderer;
+package com.github.jlangch.venice.impl.util.markdown.renderer.text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class TextTableRendrer {
 		
 		final int[] maxColWidths = maxColWidths(cols, headerCells, bodyCells);
 		
-		final int[] effColWidth = new TableLayouter().layoutColWidths(
+		final int[] effColWidth = new TextTableLayouter().layoutColWidths(
 															maxTableWidth, 
 															colSpacing.length(),
 															maxColWidths);

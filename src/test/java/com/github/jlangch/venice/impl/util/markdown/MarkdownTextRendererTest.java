@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.util.markdown.renderer.TextRenderer;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
 
 
 public class MarkdownTextRendererTest {

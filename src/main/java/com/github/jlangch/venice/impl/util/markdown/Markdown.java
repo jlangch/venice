@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.util.markdown;
 
 import com.github.jlangch.venice.impl.util.markdown.block.BlockParser;
 import com.github.jlangch.venice.impl.util.markdown.block.Blocks;
+import com.github.jlangch.venice.impl.util.markdown.renderer.html.HtmlRenderer;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
 
 
 public class Markdown {
@@ -37,6 +39,14 @@ public class Markdown {
 	
 	public Blocks blocks() {
 		return blocks;
+	}
+	
+	public String renderToText(final int width) {
+		return new TextRenderer(width).render(this);
+	}
+	
+	public String renderToHtml() {
+		return new HtmlRenderer().render(this);
 	}
 	
 	

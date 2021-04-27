@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextTableRendrer;
 
 
 public class TextTableRendererTest {
