@@ -22,6 +22,12 @@
 package com.github.jlangch.venice.impl.util.markdown.renderer.text;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import com.github.jlangch.venice.impl.util.Tuple2;
 
 public class TextTableLayouter {
 
@@ -39,70 +45,64 @@ public class TextTableLayouter {
 
 		if (Arrays.stream(maxColWidths).sum() <= usableWidth) {
 			// all columns fit within 'maxTableWidth'
+			
 			return maxColWidths;
 		}
 		else if (cols == 1) {
 			// single column -> use up all space available
-			return new int[] { maxTableWidth };
+			
+			return new int[] { Math.min(maxColWidths[0], maxTableWidth) };
 		}
 		else {
+			// more than one column
+			
 			final double weight[] = new double[cols];
 			
-			// give every column a weight in the range 1..10
+			// give every column a weight for its width in the range 1..10
 			for(int col=0; col<cols; col++) {
-				weight[col] = Math.min(10, Math.max(1, maxColWidths[col] / 10));
+				final double weightedWidth = (double)maxColWidths[col] / (double)usableWidth * 10D;
+				weight[col] = clip(weightedWidth, 1D, 10D);
 			}
 			
 			final double totalWeight = Arrays.stream(weight).sum();
 
 			final int widths[] = new int[cols];
 			Arrays.fill(widths, -1);
+			
+			// order columns by primary width ascending and secondary column nr ascending
+			List<Tuple2<Integer,Integer>> colsOrdered = 
+					IntStream.range(0, maxColWidths.length)
+							 .mapToObj(idx -> new Tuple2<Integer,Integer>(idx, maxColWidths[idx]))
+							 .sorted(Comparator
+									 	.comparing((Tuple2<Integer,Integer> t) -> t._2)
+									 	.thenComparing((Tuple2<Integer,Integer> t) -> t._1))
+							 .collect(Collectors.toList());
 
 			int restWidth = usableWidth;
-			while(true) {
-				int col = findMostNarrowColumnNotAssigned(widths, maxColWidths);
-				if (col < 0) break;
-				
-				int unassignedCols = countColumnsNotAssigned(widths);
-				if (unassignedCols == 1) {
+			while(!colsOrdered.isEmpty()) {
+				int col = colsOrdered.get(0)._1;
+
+				if (colsOrdered.size() == 1) {
 					widths[col] = restWidth; // last column fill up
-					break;
 				}
 				else {
-					int width = Math.max(1, (int)((double)restWidth * weight[col] / totalWeight));
-					width = Math.min(maxColWidths[col], width);
+					int width = (int)((double)restWidth * weight[col] / totalWeight);
+					width = clip(width, 1, maxColWidths[col]);
 					widths[col] = width;
 					restWidth -= width;
 				}
+				colsOrdered = colsOrdered.subList(1, colsOrdered.size());
 			}
 			
 			return widths;
 		}
 	}
 	
-	private int countColumnsNotAssigned(final int assignedWidths[]) {
-		int count = 0;
-		for(int col=0; col<assignedWidths.length; col++) {
-			if (assignedWidths[col] < 0) count++;
-		}
-		return count;
+	private int clip(final int value, final int min, final int max) {
+		return Math.min(max, Math.max(min, value));
 	}
-
-	private int findMostNarrowColumnNotAssigned(
-			final int assignedWidths[],
-			final int[] maxColWidths
-	) {
-		int mostNarrowColWidth = Integer.MAX_VALUE;
-		int mostNarrowCol = -1;
-		
-		for(int col=0; col<maxColWidths.length; col++) {
-			int colWidth = maxColWidths[col];
-			if (assignedWidths[col] < 0 && colWidth < mostNarrowColWidth) {
-				mostNarrowColWidth = colWidth;
-				mostNarrowCol = col;
-			}
-		}
-		
-		return mostNarrowCol;
+	
+	private double clip(final double value, final double min, final double max) {
+		return Math.min(max, Math.max(min, value));
 	}
 }

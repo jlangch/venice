@@ -32,7 +32,6 @@ import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextTableRendr
 
 public class TextTableRendererTest {
 
-	
 	// -----------------------------------------------------------------------------
 	// Simple table, no wrap
 	// -----------------------------------------------------------------------------
