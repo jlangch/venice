@@ -51,7 +51,7 @@ public class TextRenderer {
 	 * @param width The max line width. Must be > 0.
 	 * @return The rendered markdown
 	 */
-	public static TextRenderer hardWrap(final int width, final boolean softWrap) {
+	public static TextRenderer hardWrap(final int width) {
 		if (width < 1) {
 			throw new IllegalArgumentException("A wrap width must be positive");
 		}

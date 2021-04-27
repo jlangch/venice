@@ -36,10 +36,6 @@ public class LineWrap {
 			throw new IllegalArgumentException("A maxWidth must be a positive number!");
 		}
 		
-		if (StringUtil.isBlank(text)) {
-			return new ArrayList<>();
-		}
-		
 		return wrap(text, maxWidth, LineWrap::softWrapLine);
 	}
 
@@ -48,22 +44,22 @@ public class LineWrap {
 			throw new IllegalArgumentException("A maxWidth must be a positive number!");
 		}
 		
-		if (StringUtil.isBlank(text)) {
-			return new ArrayList<>();
-		}
-		
 		return wrap(text, maxWidth, LineWrap::hardWrapLine);
 	}
 
 
-	public static List<String> wrap(
+	private static List<String> wrap(
 			final String text, 
 			final int maxWidth,
 			final BiFunction<String, Integer, List<String>> wrapper
-	) {
-		final List<String> lines = new ArrayList<>();
+	) {		
+		if (StringUtil.isBlank(text)) {
+			return new ArrayList<>();
+		}
 
 		final LineReader reader = new LineReader(text);
+		
+		final List<String> lines = new ArrayList<>();
 		while(!reader.eof()) {
 			lines.addAll(
 					wrapper.apply(
@@ -71,7 +67,6 @@ public class LineWrap {
 						maxWidth));		
 			reader.consume();
 		}
-		
 		return lines;
 	}
 
