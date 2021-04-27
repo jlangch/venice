@@ -21,13 +21,14 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.renderer.html;
 
+import static com.github.jlangch.venice.impl.util.StringEscapeUtil.escapeHtml;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
@@ -84,14 +85,12 @@ public class HtmlRenderer {
 
 	private void render(final TextBlock block, final PrintWriter wr) {
 		wr.print("<div class=\"md-text-block\">");
-		
 		render(block.getChunks(), wr);
-		
 		wr.println("</div>");
 	}
 
-	private void render(final CodeBlock block, final PrintWriter wr) {		
-		final String code = escape(String.join("\n", block.getLines()));
+	private void render(final CodeBlock block, final PrintWriter wr) {
+		final String code = escapeHtml(String.join("\n", block.getLines()));
 
 		wr.println("<div class=\"md-code-block\">");
 		wr.print("<code class=\"md-code\">" + code + "</code>");
@@ -99,25 +98,24 @@ public class HtmlRenderer {
 	}
 	
 	private void render(final ListBlock block, final PrintWriter wr) {
-		wr.println("<div class=\"md-list-block\">");	
+		wr.println("<div class=\"md-list-block\">");
 		wr.println("<ul class=\"md-list\">");
 		block.getItems().forEach(b -> { wr.print("<li>" );
 										render(b, wr);
 										wr.println("</li>" ); });
-		wr.println("</ul>");	
+		wr.println("</ul>");
 		wr.println("</div>");
 	}
 	
 	private void render(final TableBlock block, final PrintWriter wr) {
 		wr.println("<div class=\"md-table-block\">");
-		
 		wr.println("<table class=\"md-table\">");
 		
 		if (block.hasHeader()) {
 			wr.println("<tr>");
 			for(int col=0; col<block.cols(); col++) {
 				final TextChunk chunk =  ((TextChunk)block.headerCell(col).get(0));
-				final String header = escape(chunk.getText());
+				final String header = escapeHtml(chunk.getText());
 				final String alignClass = buildCssAlignmentClass(block.format(col));
 	
 				wr.println("<th class=\"" + alignClass + "\">" + header + "</th>");
@@ -132,16 +130,13 @@ public class HtmlRenderer {
 				final String alignClass = buildCssAlignmentClass(block.format(col));
 	
 				wr.print("<td class=\"" + alignClass + "\">");
-				
 				render(chunks, wr);
-				
 				wr.println("</td>");
 			}
 			wr.println("</tr>");
 		}
 
-		wr.println("</table>");
-		
+		wr.println("</table>");		
 		wr.println("</div>");
 	}
 
@@ -175,26 +170,10 @@ public class HtmlRenderer {
 	}
 
 	private void render(final TextChunk chunk, final PrintWriter wr) {
-		final String text = escape(chunk.getText());
+		final String text = escapeHtml(chunk.getText());
+		final String formatClass = buildCssEmphasizeClass(chunk.getFormat());
 		
-		switch(chunk.getFormat()) {
-			case NORMAL: 
-				wr.print("<div class=\"md-text-normal\">" + text + "</div>");
-				break;
-			case ITALIC:
-				wr.print("<div class=\"md-text-italic\">" + text + "</div>");
-				break;
-			case BOLD:
-				wr.print("<div class=\"md-text-bold\">" + text + "</div>");
-				break;
-			case BOLD_ITALIC:
-				wr.print("<div class=\"md-text-bold-italic\">" + text + "</div>");
-				break;
-		}
-	}
-	
-	private String escape(final String s) {
-		return StringEscapeUtil.escapeHtml(s);
+		wr.print("<div class=\"" + formatClass + "\">" + text + "</div>");
 	}
 	
 	private void render(final LineBreakChunk chunk, final PrintWriter wr) {
@@ -202,9 +181,12 @@ public class HtmlRenderer {
 	}
 	
 	private void render(final InlineCodeChunk chunk, final PrintWriter wr) {
-		final String text = escape(chunk.getText());
-		
+		final String text = escapeHtml(chunk.getText());		
 		wr.print("<div class=\"md-inline-code\">" + text + "</div");
+	}
+	
+	private String buildCssEmphasizeClass(final TextChunk.Format format) {
+		return "md-text-" + format.name().replace('_','-').toLowerCase();
 	}
 	
 	private String buildCssAlignmentClass(final TableBlock.Alignment alignment) {

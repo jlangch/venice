@@ -40,45 +40,67 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 public class TextRenderer {
 	
-	private TextRenderer(final int width, final boolean softWrap) {
-		this.width = width;
-		this.softWrap = softWrap;
+	/**
+	 * Creates a renderer without line wraps.
+	 */
+	public TextRenderer() {
 	}
 
 	/**
-	 * Create a text renderer that hard wraps lines at 'width' characters.
+	 * Configures the renderer for hard wraps lines at 'width' characters.
 	 * 
 	 * @param width The max line width. Must be greater than 0.
-	 * @return The rendered markdown
+	 * @return This renderer
 	 */
-	public static TextRenderer hardWrap(final int width) {
+	public TextRenderer hardWrap(final int width) {
 		if (width < 1) {
 			throw new IllegalArgumentException("A wrap width must be positive");
 		}
 		
-		return new TextRenderer(width, false);
+		this.width = width;
+		this.softWrap = false;
+		
+		return this;
 	}
 
 	/**
-	 * Create a text renderer that soft wraps lines at 'width' characters.
+	 * Configures the renderer for soft wraps lines at 'width' characters.
 	 * Tries to wrap at the closest whitespace character and if not possible
 	 * falls back to a hard wrap.
 	 * 
 	 * @param width The max line width. Must be greater than 0.
-	 * @return The rendered markdown
+	 * @return This renderer
 	 */
-	public static TextRenderer softWrap(final int width) {
+	public TextRenderer softWrap(final int width) {
 		if (width < 1) {
 			throw new IllegalArgumentException("A wrap width must be positive");
 		}
 		
-		return new TextRenderer(width, true);
+		
+		this.width = width;
+		this.softWrap = true;
+		
+		return this;
 	}
 
-	public static TextRenderer nowrap() {
-		return new TextRenderer(-1, false);
+	/**
+	 * Configures the renderer without line wraps.
+	 * 
+	 * @return This renderer
+	 */
+	public TextRenderer nowrap() {	
+		this.width = -1;
+		this.softWrap = false;
+		
+		return this;
 	}
 
+	/**
+	 * Renders the markdown
+	 * 
+	 * @param md the markdown
+	 * @return the rendered markdown
+	 */
 	public String render(final Markdown md) {
 		final StringBuilder sb = new StringBuilder();
 
@@ -93,7 +115,7 @@ public class TextRenderer {
 		return sb.toString();
 	}
 
-	public String render(final Block b) {
+	private String render(final Block b) {
 		if (b.isEmpty()) {
 			return "";
 		}
@@ -224,6 +246,6 @@ public class TextRenderer {
 	
 	private static final char BULLET = 'o';
 	
-	private final int width;
-	private final boolean softWrap;
+	private int width = -1;
+	private boolean softWrap = true;
 }

@@ -183,7 +183,7 @@ public class TextTableRendrer {
 	}
 
 	private List<String> toHeaderCellTextLines() {
-		final TextRenderer renderer = TextRenderer.nowrap();
+		final TextRenderer renderer = new TextRenderer().nowrap();
 		
 		final List<String> cols = new ArrayList<>();
 		
@@ -197,7 +197,7 @@ public class TextTableRendrer {
 	}
 
 	private List<List<String>> toBodyCellTextLines() {
-		final TextRenderer renderer = TextRenderer.nowrap();
+		final TextRenderer renderer = new TextRenderer().nowrap();
 		
 		final List<List<String>> cells = new ArrayList<>();
 		

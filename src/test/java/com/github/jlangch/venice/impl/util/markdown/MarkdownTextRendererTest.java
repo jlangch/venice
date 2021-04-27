@@ -25,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
-
 
 public class MarkdownTextRendererTest {
 
@@ -55,7 +53,7 @@ public class MarkdownTextRendererTest {
 				+ "invidunt ut labore et dolore magna aliquyam erat,\n"
 				+ "sed diam voluptua.";
 		
-		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md));
+		final String rendered = Markdown.parse(md).renderToText(50);
 
 		assertEquals(expected, rendered);
 	}
@@ -87,7 +85,7 @@ public class MarkdownTextRendererTest {
 				+ "labore et dolore magna aliquyam erat, sed diam\n"
 				+ "voluptua.";
 		
-		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md));
+		final String rendered = Markdown.parse(md).renderToText(50);
 
 		assertEquals(expected, rendered);
 	}
