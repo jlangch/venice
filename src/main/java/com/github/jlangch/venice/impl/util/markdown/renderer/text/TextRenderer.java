@@ -46,7 +46,7 @@ public class TextRenderer {
 	}
 
 	/**
-	 * Create a text renderer that wraps lines at 'width' characters.
+	 * Create a text renderer that hard wraps lines at 'width' characters.
 	 * 
 	 * @param width The max line width. Must be > 0.
 	 * @return The rendered markdown
@@ -59,6 +59,14 @@ public class TextRenderer {
 		return new TextRenderer(width, false);
 	}
 
+	/**
+	 * Create a text renderer that soft wraps lines at 'width' characters.
+	 * Tries to wrap at the closest whitespace character and if not possible
+	 * falls back to a hard wrap.
+	 * 
+	 * @param width The max line width. Must be > 0.
+	 * @return The rendered markdown
+	 */
 	public static TextRenderer softWrap(final int width) {
 		if (width < 1) {
 			throw new IllegalArgumentException("A wrap width must be positive");
@@ -180,7 +188,11 @@ public class TextRenderer {
 	}
 	
 	private String wrap(final String text, final int maxWidth) {
-		return String.join("\n", LineWrap.wrap(text, maxWidth));
+		return String.join(
+				"\n", 
+				softWrap 
+					? LineWrap.softWrap(text, maxWidth)
+					: LineWrap.hardWrap(text, maxWidth));
 	}
 
 	private String indent(

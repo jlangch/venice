@@ -119,7 +119,7 @@ public class TextTableRendrer {
 		final List<List<String>> cellLines = new ArrayList<>();
 		for(int col=0; col<cols; col++) {
 			cellLines.add(
-				LineWrap.wrap(cells.get(col), colWidth[col]));
+				LineWrap.softWrap(cells.get(col), colWidth[col]));
 		}
 		
 		// fill up cell lines to an equals number of lines

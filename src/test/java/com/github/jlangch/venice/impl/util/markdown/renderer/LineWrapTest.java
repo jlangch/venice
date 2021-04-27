@@ -32,260 +32,260 @@ public class LineWrapTest {
 
 	@Test
 	public void test_hard_wrap_1() {
-		assertEquals(0, LineWrap.wrap(null, 1).size());
+		assertEquals(0, LineWrap.softWrap(null, 1).size());
 		
-		assertEquals(0, LineWrap.wrap("", 1).size());
+		assertEquals(0, LineWrap.softWrap("", 1).size());
 		
-		assertEquals(1, LineWrap.wrap("1", 1).size());
-		assertEquals("1", LineWrap.wrap("1", 1).get(0));
+		assertEquals(1, LineWrap.softWrap("1", 1).size());
+		assertEquals("1", LineWrap.softWrap("1", 1).get(0));
 		
-		assertEquals(2, LineWrap.wrap("12", 1).size());
-		assertEquals("1", LineWrap.wrap("12", 1).get(0));
-		assertEquals("2", LineWrap.wrap("12", 1).get(1));
+		assertEquals(2, LineWrap.softWrap("12", 1).size());
+		assertEquals("1", LineWrap.softWrap("12", 1).get(0));
+		assertEquals("2", LineWrap.softWrap("12", 1).get(1));
 		
-		assertEquals(3, LineWrap.wrap("123", 1).size());
-		assertEquals("1", LineWrap.wrap("123", 1).get(0));
-		assertEquals("2", LineWrap.wrap("123", 1).get(1));
-		assertEquals("3", LineWrap.wrap("123", 1).get(2));
+		assertEquals(3, LineWrap.softWrap("123", 1).size());
+		assertEquals("1", LineWrap.softWrap("123", 1).get(0));
+		assertEquals("2", LineWrap.softWrap("123", 1).get(1));
+		assertEquals("3", LineWrap.softWrap("123", 1).get(2));
 		
-		assertEquals(4, LineWrap.wrap("1234", 1).size());
-		assertEquals("1", LineWrap.wrap("1234", 1).get(0));
-		assertEquals("2", LineWrap.wrap("1234", 1).get(1));
-		assertEquals("3", LineWrap.wrap("1234", 1).get(2));
-		assertEquals("4", LineWrap.wrap("1234", 1).get(3));
+		assertEquals(4, LineWrap.softWrap("1234", 1).size());
+		assertEquals("1", LineWrap.softWrap("1234", 1).get(0));
+		assertEquals("2", LineWrap.softWrap("1234", 1).get(1));
+		assertEquals("3", LineWrap.softWrap("1234", 1).get(2));
+		assertEquals("4", LineWrap.softWrap("1234", 1).get(3));
 	}
 
 	@Test
 	public void test_hard_wrap_2() {
-		assertEquals(0, LineWrap.wrap(null, 2).size());
+		assertEquals(0, LineWrap.softWrap(null, 2).size());
 		
-		assertEquals(0, LineWrap.wrap("", 2).size());
+		assertEquals(0, LineWrap.softWrap("", 2).size());
 		
-		assertEquals(1, LineWrap.wrap("1", 2).size());
-		assertEquals("1", LineWrap.wrap("1", 2).get(0));
+		assertEquals(1, LineWrap.softWrap("1", 2).size());
+		assertEquals("1", LineWrap.softWrap("1", 2).get(0));
 		
-		assertEquals(1, LineWrap.wrap("12", 2).size());
-		assertEquals("12", LineWrap.wrap("12", 2).get(0));
+		assertEquals(1, LineWrap.softWrap("12", 2).size());
+		assertEquals("12", LineWrap.softWrap("12", 2).get(0));
 		
-		assertEquals(2, LineWrap.wrap("123", 2).size());
-		assertEquals("12", LineWrap.wrap("123", 2).get(0));
-		assertEquals("3", LineWrap.wrap("123", 2).get(1));
+		assertEquals(2, LineWrap.softWrap("123", 2).size());
+		assertEquals("12", LineWrap.softWrap("123", 2).get(0));
+		assertEquals("3", LineWrap.softWrap("123", 2).get(1));
 		
-		assertEquals(2, LineWrap.wrap("1234", 2).size());
-		assertEquals("12", LineWrap.wrap("1234", 2).get(0));
-		assertEquals("34", LineWrap.wrap("1234", 2).get(1));
+		assertEquals(2, LineWrap.softWrap("1234", 2).size());
+		assertEquals("12", LineWrap.softWrap("1234", 2).get(0));
+		assertEquals("34", LineWrap.softWrap("1234", 2).get(1));
 	}
 
 	@Test
 	public void test_hard_wrap_3() {
-		assertEquals(0, LineWrap.wrap(null, 3).size());
+		assertEquals(0, LineWrap.softWrap(null, 3).size());
 		
-		assertEquals(0, LineWrap.wrap("", 3).size());
+		assertEquals(0, LineWrap.softWrap("", 3).size());
 		
-		assertEquals(1, LineWrap.wrap("1", 3).size());
-		assertEquals("1", LineWrap.wrap("1", 3).get(0));
+		assertEquals(1, LineWrap.softWrap("1", 3).size());
+		assertEquals("1", LineWrap.softWrap("1", 3).get(0));
 		
-		assertEquals(1, LineWrap.wrap("12", 3).size());
-		assertEquals("12", LineWrap.wrap("12", 3).get(0));
+		assertEquals(1, LineWrap.softWrap("12", 3).size());
+		assertEquals("12", LineWrap.softWrap("12", 3).get(0));
 		
-		assertEquals(1, LineWrap.wrap("123", 3).size());
-		assertEquals("123", LineWrap.wrap("123", 3).get(0));
+		assertEquals(1, LineWrap.softWrap("123", 3).size());
+		assertEquals("123", LineWrap.softWrap("123", 3).get(0));
 		
-		assertEquals(2, LineWrap.wrap("1234", 3).size());
-		assertEquals("123", LineWrap.wrap("1234", 3).get(0));
-		assertEquals("4", LineWrap.wrap("1234", 3).get(1));
+		assertEquals(2, LineWrap.softWrap("1234", 3).size());
+		assertEquals("123", LineWrap.softWrap("1234", 3).get(0));
+		assertEquals("4", LineWrap.softWrap("1234", 3).get(1));
 	}
 
 	@Test
 	public void test_hard_wrap_4() {
-		assertEquals(0, LineWrap.wrap(null, 4).size());
+		assertEquals(0, LineWrap.softWrap(null, 4).size());
 		
-		assertEquals(0, LineWrap.wrap("", 4).size());
+		assertEquals(0, LineWrap.softWrap("", 4).size());
 		
-		assertEquals(1, LineWrap.wrap("1", 4).size());
-		assertEquals("1", LineWrap.wrap("1", 4).get(0));
+		assertEquals(1, LineWrap.softWrap("1", 4).size());
+		assertEquals("1", LineWrap.softWrap("1", 4).get(0));
 		
-		assertEquals(1, LineWrap.wrap("12", 4).size());
-		assertEquals("12", LineWrap.wrap("12", 4).get(0));
+		assertEquals(1, LineWrap.softWrap("12", 4).size());
+		assertEquals("12", LineWrap.softWrap("12", 4).get(0));
 		
-		assertEquals(1, LineWrap.wrap("123", 4).size());
-		assertEquals("123", LineWrap.wrap("123", 4).get(0));
+		assertEquals(1, LineWrap.softWrap("123", 4).size());
+		assertEquals("123", LineWrap.softWrap("123", 4).get(0));
 		
-		assertEquals(1, LineWrap.wrap("1234", 4).size());
-		assertEquals("1234", LineWrap.wrap("1234", 4).get(0));
+		assertEquals(1, LineWrap.softWrap("1234", 4).size());
+		assertEquals("1234", LineWrap.softWrap("1234", 4).get(0));
 	}
 
 	@Test
 	public void test_wrap_with_spaces_1() {
 		// soft wrap
-		assertEquals(1,   LineWrap.wrap(" 1", 4).size());
-		assertEquals("1", LineWrap.wrap(" 1", 4).get(0));
+		assertEquals(1,   LineWrap.softWrap(" 1", 4).size());
+		assertEquals("1", LineWrap.softWrap(" 1", 4).get(0));
 
 		// soft wrap
-		assertEquals(1,   LineWrap.wrap("1 ", 4).size());
-		assertEquals("1", LineWrap.wrap("1 ", 4).get(0));
+		assertEquals(1,   LineWrap.softWrap("1 ", 4).size());
+		assertEquals("1", LineWrap.softWrap("1 ", 4).get(0));
 
 		// soft wrap
-		assertEquals(1,   LineWrap.wrap("     1", 4).size());
-		assertEquals("1", LineWrap.wrap("     1", 4).get(0));
+		assertEquals(1,   LineWrap.softWrap("     1", 4).size());
+		assertEquals("1", LineWrap.softWrap("     1", 4).get(0));
 
 		// soft wrap
-		assertEquals(1,   LineWrap.wrap("1     ", 4).size());
-		assertEquals("1", LineWrap.wrap("1     ", 4).get(0));
+		assertEquals(1,   LineWrap.softWrap("1     ", 4).size());
+		assertEquals("1", LineWrap.softWrap("1     ", 4).get(0));
 		
 		// soft wrap
-		assertEquals(1,   LineWrap.wrap(" 1 ", 4).size());
-		assertEquals("1", LineWrap.wrap(" 1 ", 4).get(0));
+		assertEquals(1,   LineWrap.softWrap(" 1 ", 4).size());
+		assertEquals("1", LineWrap.softWrap(" 1 ", 4).get(0));
 		
 		// soft wrap
-		assertEquals(1,   LineWrap.wrap("   1   ", 4).size());
-		assertEquals("1", LineWrap.wrap("   1   ", 4).get(0));
+		assertEquals(1,   LineWrap.softWrap("   1   ", 4).size());
+		assertEquals("1", LineWrap.softWrap("   1   ", 4).get(0));
 	}
 
 	@Test
 	public void test_wrap_with_spaces_2() {
 		// hard wrap
-		assertEquals(8,    LineWrap.wrap("12 34 56 78", 1).size());
-		assertEquals("1", LineWrap.wrap("12 34 56 78", 1).get(0));
-		assertEquals("2", LineWrap.wrap("12 34 56 78", 1).get(1));
-		assertEquals("3", LineWrap.wrap("12 34 56 78", 1).get(2));
-		assertEquals("4", LineWrap.wrap("12 34 56 78", 1).get(3));
-		assertEquals("5", LineWrap.wrap("12 34 56 78", 1).get(4));
-		assertEquals("6", LineWrap.wrap("12 34 56 78", 1).get(5));
-		assertEquals("7", LineWrap.wrap("12 34 56 78", 1).get(6));
-		assertEquals("8", LineWrap.wrap("12 34 56 78", 1).get(7));
+		assertEquals(8,   LineWrap.softWrap("12 34 56 78", 1).size());
+		assertEquals("1", LineWrap.softWrap("12 34 56 78", 1).get(0));
+		assertEquals("2", LineWrap.softWrap("12 34 56 78", 1).get(1));
+		assertEquals("3", LineWrap.softWrap("12 34 56 78", 1).get(2));
+		assertEquals("4", LineWrap.softWrap("12 34 56 78", 1).get(3));
+		assertEquals("5", LineWrap.softWrap("12 34 56 78", 1).get(4));
+		assertEquals("6", LineWrap.softWrap("12 34 56 78", 1).get(5));
+		assertEquals("7", LineWrap.softWrap("12 34 56 78", 1).get(6));
+		assertEquals("8", LineWrap.softWrap("12 34 56 78", 1).get(7));
 
 		// soft wrap
-		assertEquals(4,    LineWrap.wrap("12 34 56 78", 2).size());
-		assertEquals("12", LineWrap.wrap("12 34 56 78", 2).get(0));
-		assertEquals("34", LineWrap.wrap("12 34 56 78", 2).get(1));
-		assertEquals("56", LineWrap.wrap("12 34 56 78", 2).get(2));
-		assertEquals("78", LineWrap.wrap("12 34 56 78", 2).get(3));
+		assertEquals(4,    LineWrap.softWrap("12 34 56 78", 2).size());
+		assertEquals("12", LineWrap.softWrap("12 34 56 78", 2).get(0));
+		assertEquals("34", LineWrap.softWrap("12 34 56 78", 2).get(1));
+		assertEquals("56", LineWrap.softWrap("12 34 56 78", 2).get(2));
+		assertEquals("78", LineWrap.softWrap("12 34 56 78", 2).get(3));
 
 		// soft wrap
-		assertEquals(4,    LineWrap.wrap("12 34 56 78", 3).size());
-		assertEquals("12", LineWrap.wrap("12 34 56 78", 3).get(0));
-		assertEquals("34", LineWrap.wrap("12 34 56 78", 3).get(1));
-		assertEquals("56", LineWrap.wrap("12 34 56 78", 3).get(2));
-		assertEquals("78", LineWrap.wrap("12 34 56 78", 3).get(3));
+		assertEquals(4,    LineWrap.softWrap("12 34 56 78", 3).size());
+		assertEquals("12", LineWrap.softWrap("12 34 56 78", 3).get(0));
+		assertEquals("34", LineWrap.softWrap("12 34 56 78", 3).get(1));
+		assertEquals("56", LineWrap.softWrap("12 34 56 78", 3).get(2));
+		assertEquals("78", LineWrap.softWrap("12 34 56 78", 3).get(3));
 
 		// soft wrap
-		assertEquals(4,    LineWrap.wrap("12 34 56 78", 4).size());
-		assertEquals("12", LineWrap.wrap("12 34 56 78", 4).get(0));
-		assertEquals("34", LineWrap.wrap("12 34 56 78", 4).get(1));
-		assertEquals("56", LineWrap.wrap("12 34 56 78", 4).get(2));
-		assertEquals("78", LineWrap.wrap("12 34 56 78", 4).get(3));
+		assertEquals(4,    LineWrap.softWrap("12 34 56 78", 4).size());
+		assertEquals("12", LineWrap.softWrap("12 34 56 78", 4).get(0));
+		assertEquals("34", LineWrap.softWrap("12 34 56 78", 4).get(1));
+		assertEquals("56", LineWrap.softWrap("12 34 56 78", 4).get(2));
+		assertEquals("78", LineWrap.softWrap("12 34 56 78", 4).get(3));
 
 		// soft wrap
-		assertEquals(2,       LineWrap.wrap("12 34 56 78", 5).size());
-		assertEquals("12 34", LineWrap.wrap("12 34 56 78", 5).get(0));
-		assertEquals("56 78", LineWrap.wrap("12 34 56 78", 5).get(1));
+		assertEquals(2,       LineWrap.softWrap("12 34 56 78", 5).size());
+		assertEquals("12 34", LineWrap.softWrap("12 34 56 78", 5).get(0));
+		assertEquals("56 78", LineWrap.softWrap("12 34 56 78", 5).get(1));
 
 		// soft wrap
-		assertEquals(2,       LineWrap.wrap("12 34 56 78", 6).size());
-		assertEquals("12 34", LineWrap.wrap("12 34 56 78", 6).get(0));
-		assertEquals("56 78", LineWrap.wrap("12 34 56 78", 6).get(1));
+		assertEquals(2,       LineWrap.softWrap("12 34 56 78", 6).size());
+		assertEquals("12 34", LineWrap.softWrap("12 34 56 78", 6).get(0));
+		assertEquals("56 78", LineWrap.softWrap("12 34 56 78", 6).get(1));
 
 		// soft wrap
-		assertEquals(2,       LineWrap.wrap("12 34 56 78", 7).size());
-		assertEquals("12 34", LineWrap.wrap("12 34 56 78", 7).get(0));
-		assertEquals("56 78", LineWrap.wrap("12 34 56 78", 7).get(1));
+		assertEquals(2,       LineWrap.softWrap("12 34 56 78", 7).size());
+		assertEquals("12 34", LineWrap.softWrap("12 34 56 78", 7).get(0));
+		assertEquals("56 78", LineWrap.softWrap("12 34 56 78", 7).get(1));
 
 		// soft wrap
-		assertEquals(2,          LineWrap.wrap("12 34 56 78", 8).size());
-		assertEquals("12 34 56", LineWrap.wrap("12 34 56 78", 8).get(0));
-		assertEquals("78",       LineWrap.wrap("12 34 56 78", 8).get(1));
+		assertEquals(2,          LineWrap.softWrap("12 34 56 78", 8).size());
+		assertEquals("12 34 56", LineWrap.softWrap("12 34 56 78", 8).get(0));
+		assertEquals("78",       LineWrap.softWrap("12 34 56 78", 8).get(1));
 
 		// soft wrap
-		assertEquals(2,          LineWrap.wrap("12 34 56 78", 9).size());
-		assertEquals("12 34 56", LineWrap.wrap("12 34 56 78", 9).get(0));
-		assertEquals("78",       LineWrap.wrap("12 34 56 78", 9).get(1));
+		assertEquals(2,          LineWrap.softWrap("12 34 56 78", 9).size());
+		assertEquals("12 34 56", LineWrap.softWrap("12 34 56 78", 9).get(0));
+		assertEquals("78",       LineWrap.softWrap("12 34 56 78", 9).get(1));
 
 		// soft wrap
-		assertEquals(2,          LineWrap.wrap("12 34 56 78", 10).size());
-		assertEquals("12 34 56", LineWrap.wrap("12 34 56 78", 10).get(0));
-		assertEquals("78",       LineWrap.wrap("12 34 56 78", 10).get(1));
+		assertEquals(2,          LineWrap.softWrap("12 34 56 78", 10).size());
+		assertEquals("12 34 56", LineWrap.softWrap("12 34 56 78", 10).get(0));
+		assertEquals("78",       LineWrap.softWrap("12 34 56 78", 10).get(1));
 
 		// no wrap
-		assertEquals(1,             LineWrap.wrap("12 34 56 78", 11).size());
-		assertEquals("12 34 56 78", LineWrap.wrap("12 34 56 78", 11).get(0));
+		assertEquals(1,             LineWrap.softWrap("12 34 56 78", 11).size());
+		assertEquals("12 34 56 78", LineWrap.softWrap("12 34 56 78", 11).get(0));
 
 		// no wrap
-		assertEquals(1,             LineWrap.wrap("12 34 56 78", 12).size());
-		assertEquals("12 34 56 78", LineWrap.wrap("12 34 56 78", 12).get(0));
+		assertEquals(1,             LineWrap.softWrap("12 34 56 78", 12).size());
+		assertEquals("12 34 56 78", LineWrap.softWrap("12 34 56 78", 12).get(0));
 
 		// no wrap
-		assertEquals(1,             LineWrap.wrap("12 34 56 78", 13).size());
-		assertEquals("12 34 56 78", LineWrap.wrap("12 34 56 78", 13).get(0));
+		assertEquals(1,             LineWrap.softWrap("12 34 56 78", 13).size());
+		assertEquals("12 34 56 78", LineWrap.softWrap("12 34 56 78", 13).get(0));
 	}
 
 	@Test
 	public void test_wrap_with_spaces_3() {
 		// hard wrap
-		assertEquals(8,    LineWrap.wrap("1234 5678", 1).size());
-		assertEquals("1", LineWrap.wrap("1234 5678", 1).get(0));
-		assertEquals("2", LineWrap.wrap("1234 5678", 1).get(1));
-		assertEquals("3", LineWrap.wrap("1234 5678", 1).get(2));
-		assertEquals("4", LineWrap.wrap("1234 5678", 1).get(3));
-		assertEquals("5", LineWrap.wrap("1234 5678", 1).get(4));
-		assertEquals("6", LineWrap.wrap("1234 5678", 1).get(5));
-		assertEquals("7", LineWrap.wrap("1234 5678", 1).get(6));
-		assertEquals("8", LineWrap.wrap("1234 5678", 1).get(7));
+		assertEquals(8,    LineWrap.softWrap("1234 5678", 1).size());
+		assertEquals("1", LineWrap.softWrap("1234 5678", 1).get(0));
+		assertEquals("2", LineWrap.softWrap("1234 5678", 1).get(1));
+		assertEquals("3", LineWrap.softWrap("1234 5678", 1).get(2));
+		assertEquals("4", LineWrap.softWrap("1234 5678", 1).get(3));
+		assertEquals("5", LineWrap.softWrap("1234 5678", 1).get(4));
+		assertEquals("6", LineWrap.softWrap("1234 5678", 1).get(5));
+		assertEquals("7", LineWrap.softWrap("1234 5678", 1).get(6));
+		assertEquals("8", LineWrap.softWrap("1234 5678", 1).get(7));
 
 		// hard wrap
-		assertEquals(4,    LineWrap.wrap("1234 5678", 2).size());
-		assertEquals("12", LineWrap.wrap("1234 5678", 2).get(0));
-		assertEquals("34", LineWrap.wrap("1234 5678", 2).get(1));
-		assertEquals("56", LineWrap.wrap("1234 5678", 2).get(2));
-		assertEquals("78", LineWrap.wrap("1234 5678", 2).get(3));
+		assertEquals(4,    LineWrap.softWrap("1234 5678", 2).size());
+		assertEquals("12", LineWrap.softWrap("1234 5678", 2).get(0));
+		assertEquals("34", LineWrap.softWrap("1234 5678", 2).get(1));
+		assertEquals("56", LineWrap.softWrap("1234 5678", 2).get(2));
+		assertEquals("78", LineWrap.softWrap("1234 5678", 2).get(3));
 
 		// hard/soft wrap
-		assertEquals(4,     LineWrap.wrap("1234 5678", 3).size());
-		assertEquals("123", LineWrap.wrap("1234 5678", 3).get(0));
-		assertEquals("4",   LineWrap.wrap("1234 5678", 3).get(1));
-		assertEquals("567", LineWrap.wrap("1234 5678", 3).get(2));
-		assertEquals("8",   LineWrap.wrap("1234 5678", 3).get(3));
+		assertEquals(4,     LineWrap.softWrap("1234 5678", 3).size());
+		assertEquals("123", LineWrap.softWrap("1234 5678", 3).get(0));
+		assertEquals("4",   LineWrap.softWrap("1234 5678", 3).get(1));
+		assertEquals("567", LineWrap.softWrap("1234 5678", 3).get(2));
+		assertEquals("8",   LineWrap.softWrap("1234 5678", 3).get(3));
 
 		// soft wrap
-		assertEquals(2,      LineWrap.wrap("1234 5678", 4).size());
-		assertEquals("1234", LineWrap.wrap("1234 5678", 4).get(0));
-		assertEquals("5678", LineWrap.wrap("1234 5678", 4).get(1));
+		assertEquals(2,      LineWrap.softWrap("1234 5678", 4).size());
+		assertEquals("1234", LineWrap.softWrap("1234 5678", 4).get(0));
+		assertEquals("5678", LineWrap.softWrap("1234 5678", 4).get(1));
 
 		// soft wrap
-		assertEquals(2,      LineWrap.wrap("1234 5678", 5).size());
-		assertEquals("1234", LineWrap.wrap("1234 5678", 5).get(0));
-		assertEquals("5678", LineWrap.wrap("1234 5678", 5).get(1));
+		assertEquals(2,      LineWrap.softWrap("1234 5678", 5).size());
+		assertEquals("1234", LineWrap.softWrap("1234 5678", 5).get(0));
+		assertEquals("5678", LineWrap.softWrap("1234 5678", 5).get(1));
 
 		// soft wrap
-		assertEquals(2,      LineWrap.wrap("1234 5678", 6).size());
-		assertEquals("1234", LineWrap.wrap("1234 5678", 6).get(0));
-		assertEquals("5678", LineWrap.wrap("1234 5678", 6).get(1));
+		assertEquals(2,      LineWrap.softWrap("1234 5678", 6).size());
+		assertEquals("1234", LineWrap.softWrap("1234 5678", 6).get(0));
+		assertEquals("5678", LineWrap.softWrap("1234 5678", 6).get(1));
 
 		// soft wrap
-		assertEquals(2,      LineWrap.wrap("1234 5678", 7).size());
-		assertEquals("1234", LineWrap.wrap("1234 5678", 7).get(0));
-		assertEquals("5678", LineWrap.wrap("1234 5678", 7).get(1));
+		assertEquals(2,      LineWrap.softWrap("1234 5678", 7).size());
+		assertEquals("1234", LineWrap.softWrap("1234 5678", 7).get(0));
+		assertEquals("5678", LineWrap.softWrap("1234 5678", 7).get(1));
 
 		// soft wrap
-		assertEquals(2,      LineWrap.wrap("1234 5678", 8).size());
-		assertEquals("1234", LineWrap.wrap("1234 5678", 8).get(0));
-		assertEquals("5678", LineWrap.wrap("1234 5678", 8).get(1));
+		assertEquals(2,      LineWrap.softWrap("1234 5678", 8).size());
+		assertEquals("1234", LineWrap.softWrap("1234 5678", 8).get(0));
+		assertEquals("5678", LineWrap.softWrap("1234 5678", 8).get(1));
 
 		// no wrap
-		assertEquals(1,           LineWrap.wrap("1234 5678", 9).size());
-		assertEquals("1234 5678", LineWrap.wrap("1234 5678", 9).get(0));
+		assertEquals(1,           LineWrap.softWrap("1234 5678", 9).size());
+		assertEquals("1234 5678", LineWrap.softWrap("1234 5678", 9).get(0));
 
 		// no wrap
-		assertEquals(1,           LineWrap.wrap("1234 5678", 10).size());
-		assertEquals("1234 5678", LineWrap.wrap("1234 5678", 10).get(0));
+		assertEquals(1,           LineWrap.softWrap("1234 5678", 10).size());
+		assertEquals("1234 5678", LineWrap.softWrap("1234 5678", 10).get(0));
 
 		// no wrap
-		assertEquals(1,           LineWrap.wrap("1234 5678", 11).size());
-		assertEquals("1234 5678", LineWrap.wrap("1234 5678", 11).get(0));
+		assertEquals(1,           LineWrap.softWrap("1234 5678", 11).size());
+		assertEquals("1234 5678", LineWrap.softWrap("1234 5678", 11).get(0));
 
 		// no wrap
-		assertEquals(1,           LineWrap.wrap("1234 5678", 12).size());
-		assertEquals("1234 5678", LineWrap.wrap("1234 5678", 12).get(0));
+		assertEquals(1,           LineWrap.softWrap("1234 5678", 12).size());
+		assertEquals("1234 5678", LineWrap.softWrap("1234 5678", 12).get(0));
 	}
 	
 
@@ -320,9 +320,9 @@ public class LineWrapTest {
 			"dolor sit amet."
 		};
 
-		assertEquals(wrapped.length, LineWrap.wrap(test, 50).size());
+		assertEquals(wrapped.length, LineWrap.softWrap(test, 50).size());
 		for(int ii=0; ii<wrapped.length; ii++) {
-			assertEquals(wrapped[ii], LineWrap.wrap(test, 50).get(ii));
+			assertEquals(wrapped[ii], LineWrap.softWrap(test, 50).get(ii));
 		}
 	}
 }

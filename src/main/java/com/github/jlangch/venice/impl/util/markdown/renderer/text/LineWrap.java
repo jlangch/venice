@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.markdown.renderer.text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -30,7 +31,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class LineWrap {
 
-	public static List<String> wrap(final String text, final int maxWidth) {
+	public static List<String> softWrap(final String text, final int maxWidth) {
 		if (maxWidth < 1) {
 			throw new IllegalArgumentException("A maxWidth must be a positive number!");
 		}
@@ -39,12 +40,33 @@ public class LineWrap {
 			return new ArrayList<>();
 		}
 		
+		return wrap(text, maxWidth, LineWrap::softWrapLine);
+	}
+
+	public static List<String> hardWrap(final String text, final int maxWidth) {
+		if (maxWidth < 1) {
+			throw new IllegalArgumentException("A maxWidth must be a positive number!");
+		}
+		
+		if (StringUtil.isBlank(text)) {
+			return new ArrayList<>();
+		}
+		
+		return wrap(text, maxWidth, LineWrap::hardWrapLine);
+	}
+
+
+	public static List<String> wrap(
+			final String text, 
+			final int maxWidth,
+			final BiFunction<String, Integer, List<String>> wrapper
+	) {
 		final List<String> lines = new ArrayList<>();
 
 		final LineReader reader = new LineReader(text);
 		while(!reader.eof()) {
 			lines.addAll(
-					wrapLine(
+					wrapper.apply(
 						reader.peek().trim(), 
 						maxWidth));		
 			reader.consume();
@@ -53,7 +75,7 @@ public class LineWrap {
 		return lines;
 	}
 
-	private static List<String> wrapLine(final String line, final int maxWidth) {
+	private static List<String> softWrapLine(final String line, final int maxWidth) {
 		final List<String> lines = new ArrayList<>();
 
 		if (line.length() <= maxWidth) {
@@ -65,21 +87,29 @@ public class LineWrap {
 			String rest = line;
 			
 			while (rest.length() > maxWidth) {
-				int pos = maxWidth;
+				int pos = maxWidth;  // 1 behind the max width pos!
 				
-				while(pos >= minWidth && rest.charAt(pos) != ' ') pos--;
+				while(pos >= minWidth) {
+					if (isWhitespaceChar(rest.charAt(pos))) {
+						break;
+					}
+					else if ((pos>1) && isPunctuationChar(rest.charAt(pos-1))) {
+						break;
+					}
+					pos--;
+				}
 				
 				if (pos >= minWidth) {
-					// soft wrap					
+					// soft wrap
 					final String part = rest.substring(0, pos).trim();
 					rest = rest.substring(pos).trim();
-					lines.add(part); 
+					lines.add(part);
 				}
 				else {
 					// hard wrap
 					final String part = rest.substring(0, maxWidth).trim();
 					rest = rest.substring(maxWidth).trim();
-					lines.add(part); 
+					lines.add(part);
 				}
 			}
 			
@@ -91,4 +121,50 @@ public class LineWrap {
 		return lines;
 	}
 
+	private static List<String> hardWrapLine(final String line, final int maxWidth) {
+		final List<String> lines = new ArrayList<>();
+
+		if (line.length() <= maxWidth) {
+			lines.add(line); 
+		}
+		else {
+			String rest = line;
+			
+			while (rest.length() > maxWidth) {
+				final String part = rest.substring(0, maxWidth).trim();
+				rest = rest.substring(maxWidth).trim();
+				lines.add(part);
+			}
+			
+			if (!rest.isEmpty()) {
+				lines.add(rest);
+			}
+		}
+		
+		return lines;
+	}
+
+	private static boolean isWhitespaceChar(final int ch) {
+		switch (ch) {
+			case ' ': 
+			case '\t': 
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	private static boolean isPunctuationChar(final int ch) {
+		switch (ch) {
+			case '.': 
+			case ':': 
+			case ',': 
+			case ';': 
+			case '!': 
+			case '?': 
+				return true;
+			default:
+				return false;
+		}
+	}
 }
