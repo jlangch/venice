@@ -122,7 +122,7 @@ public class MarkdownTextRendererTest {
 				+ "\n"
 				+ "   comment [& body] nil)\n";
 		
-		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md5));
+		final String rendered = Markdown.parse(md5).renderToText(50);
 
 		assertEquals(expected, rendered);
 	}
@@ -145,7 +145,7 @@ public class MarkdownTextRendererTest {
 				+ "  justo duo dolores et ea\n"
 				+ "  rebum.";
 		
-		final String rendered = TextRenderer.softWrap(30).render(Markdown.parse(md5));
+		final String rendered = Markdown.parse(md5).renderToText(30);
 
 		assertEquals(expected, rendered);
 	}
@@ -181,7 +181,7 @@ public class MarkdownTextRendererTest {
 				"d1  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" +
 				"    gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		
-		final String rendered = TextRenderer.softWrap(80).render(Markdown.parse(md5));
+		final String rendered = Markdown.parse(md5).renderToText(80);
 
 		assertEquals(expected, rendered);
 	}

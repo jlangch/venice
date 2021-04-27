@@ -24,6 +24,9 @@ package com.github.jlangch.venice.impl.util.markdown.renderer.html;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
@@ -49,16 +52,14 @@ public class HtmlRenderer {
 			 PrintWriter wr = new PrintWriter(sw)) {
 			
 			wr.println("<div class=\"md\">");
-			wr.println();
 			
 			for(Block b : md.blocks().getBlocks()) {
 				render(b, wr);
-				wr.println();
 			}
 			
 			wr.println("</div>");
 			
-			return wr.toString();
+			return sw.getBuffer().toString();
 		}
 		catch(IOException ex) {
 			throw new RuntimeException("Failed to render markdown to HTML", ex);
@@ -81,13 +82,10 @@ public class HtmlRenderer {
 		else if (b instanceof TableBlock) {
 			render((TableBlock)b, wr);
 		}
-		else {
-			return;
-		}
 	}
 
 	private void render(final TextBlock block, final PrintWriter wr) {
-		wr.println("<div class=\"md-text-block\">");
+		wr.print("<div class=\"md-text-block\">");
 		
 		render(block.getChunks(), wr);
 		
@@ -98,13 +96,13 @@ public class HtmlRenderer {
 		final String code = escape(String.join("\n", block.getLines()));
 
 		wr.println("<div class=\"md-code-block\">");
-		wr.print("<code>" + code + "</code>");
+		wr.print("<code class=\"md-code\">" + code + "</code>");
 		wr.println("</div>");
 	}
 	
 	private void render(final ListBlock block, final PrintWriter wr) {
 		wr.println("<div class=\"md-list-block\">");	
-		wr.println("<ul>");
+		wr.println("<ul class=\"md-list\">");
 		for(Block b : block.getItems()) {
 			wr.print("<li>" );
 			render(b, wr);
@@ -117,7 +115,7 @@ public class HtmlRenderer {
 	private void render(final TableBlock block, final PrintWriter wr) {
 		wr.println("<div class=\"md-table-block\">");
 		
-		wr.println("<table>");
+		wr.println("<table class=\"md-table\">");
 		
 		if (block.hasHeader()) {
 			wr.println("<tr>");
@@ -152,36 +150,48 @@ public class HtmlRenderer {
 	}
 
 	private void render(final Chunks chunks, final PrintWriter wr) {
-		for(Chunk c : chunks.getChunks()) {
-			if (c.isEmpty()) continue;
+		final List<Chunk> chs = chunks.getChunks()
+									  .stream()
+									  .filter(c -> !c.isEmpty())
+									  .collect(Collectors.toList());
+		
+		if (!chs.isEmpty()) {
+			render(first(chs), wr);
 			
-			if (c instanceof TextChunk) {
-				render((TextChunk)c, wr);
-			}
-			else if (c instanceof LineBreakChunk) {
-				render((LineBreakChunk)c, wr);
-			}
-			else if (c instanceof InlineCodeChunk) {
-				render((InlineCodeChunk)c, wr);
+			for(Chunk c : rest(chs)) {
+				wr.print(" ");
+				render(c, wr);
 			}
 		}
 	}
-	
+
+	private void render(final Chunk c, final PrintWriter wr) {
+		if (c instanceof TextChunk) {
+			render((TextChunk)c, wr);
+		}
+		else if (c instanceof LineBreakChunk) {
+			render((LineBreakChunk)c, wr);
+		}
+		else if (c instanceof InlineCodeChunk) {
+			render((InlineCodeChunk)c, wr);
+		}
+	}
+
 	private void render(final TextChunk chunk, final PrintWriter wr) {
 		final String text = escape(chunk.getText());
 		
 		switch(chunk.getFormat()) {
 			case NORMAL: 
-				wr.println("<div class=\"md-text-normal\">" + text + "</div>");
+				wr.print("<div class=\"md-text-normal\">" + text + "</div>");
 				break;
 			case ITALIC:
-				wr.println("<div class=\"md-text-italic\">" + text + "</div>");
+				wr.print("<div class=\"md-text-italic\">" + text + "</div>");
 				break;
 			case BOLD:
-				wr.println("<div class=\"md-text-bold\">" + text + "</div>");
+				wr.print("<div class=\"md-text-bold\">" + text + "</div>");
 				break;
 			case BOLD_ITALIC:
-				wr.println("<div class=\"md-text-bold-italic\">" + text + "</div>");
+				wr.print("<div class=\"md-text-bold-italic\">" + text + "</div>");
 				break;
 		}
 	}
@@ -198,5 +208,17 @@ public class HtmlRenderer {
 		final String text = escape(chunk.getText());
 		
 		wr.print("<div class=\"md-inline-code\">" + text + "</div");
+	}
+	
+	private List<Chunk> rest(final List<Chunk> chunks) {
+		return chunks.size() > 1
+				? chunks.subList(1, chunks.size())
+				: new ArrayList<>();
+	}
+	
+	private Chunk first(final List<Chunk> chunks) {
+		return chunks.isEmpty()
+				? null
+				: chunks.get(0);
 	}
 }
