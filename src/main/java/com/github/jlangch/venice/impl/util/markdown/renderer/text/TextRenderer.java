@@ -40,10 +40,37 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 public class TextRenderer {
 	
-	public TextRenderer(final int width) {
+	private TextRenderer(final int width, final boolean softWrap) {
 		this.width = width;
+		this.softWrap = softWrap;
 	}
-	
+
+	/**
+	 * Create a text renderer that wraps lines at 'width' characters.
+	 * 
+	 * @param width The max line width. Must be > 0.
+	 * @return The rendered markdown
+	 */
+	public static TextRenderer hardWrap(final int width, final boolean softWrap) {
+		if (width < 1) {
+			throw new IllegalArgumentException("A wrap width must be positive");
+		}
+		
+		return new TextRenderer(width, false);
+	}
+
+	public static TextRenderer softWrap(final int width) {
+		if (width < 1) {
+			throw new IllegalArgumentException("A wrap width must be positive");
+		}
+		
+		return new TextRenderer(width, true);
+	}
+
+	public static TextRenderer nowrap() {
+		return new TextRenderer(-1, false);
+	}
+
 	public String render(final Markdown md) {
 		final StringBuilder sb = new StringBuilder();
 
@@ -100,7 +127,7 @@ public class TextRenderer {
 			}
 		}
 
-		return width <= 0 ? sb.toString() : wrap(sb.toString(), width);
+		return isWrap() ? wrap(sb.toString(), width) : sb.toString();
 	}
 
 	private String render(final TextBlock block) {
@@ -125,10 +152,12 @@ public class TextRenderer {
 			}
 
 			sb.append(
-				indent(
-					wrap(render(b), width-2), 
-					BULLET + " ", 
-					"  "));
+				isWrap()
+					? indent(
+						wrap(render(b), width-2), 
+						BULLET + " ", 
+						"  ")
+					: BULLET + " " + render(b));
 		}
 
 		return sb.toString();
@@ -176,8 +205,13 @@ public class TextRenderer {
 		return String.join("\n", lines);
 	}
 	
+	private boolean isWrap() {
+		return width > 0;
+	}
 
+	
 	private static final char BULLET = 'o';
 	
 	private final int width;
+	private final boolean softWrap;
 }

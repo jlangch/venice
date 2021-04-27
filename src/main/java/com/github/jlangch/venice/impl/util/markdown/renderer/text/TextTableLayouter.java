@@ -45,12 +45,12 @@ public class TextTableLayouter {
 
 		if (Arrays.stream(maxColWidths).sum() <= usableWidth) {
 			// all columns fit within 'maxTableWidth'
-			
+
 			return maxColWidths;
 		}
 		else if (cols == 1) {
 			// single column -> use up all space available
-			
+
 			return new int[] { Math.min(maxColWidths[0], maxTableWidth) };
 		}
 		else {
@@ -63,19 +63,19 @@ public class TextTableLayouter {
 				final double weightedWidth = (double)maxColWidths[col] / (double)usableWidth * 10D;
 				weight[col] = clip(weightedWidth, 1D, 10D);
 			}
-			
+
 			final double totalWeight = Arrays.stream(weight).sum();
 
 			final int widths[] = new int[cols];
 			Arrays.fill(widths, -1);
-			
+
 			// order columns by primary width ascending and secondary column nr ascending
 			List<Tuple2<Integer,Integer>> colsOrdered = 
 					IntStream.range(0, maxColWidths.length)
 							 .mapToObj(idx -> new Tuple2<Integer,Integer>(idx, maxColWidths[idx]))
 							 .sorted(Comparator
-									 	.comparing((Tuple2<Integer,Integer> t) -> t._2)
-									 	.thenComparing((Tuple2<Integer,Integer> t) -> t._1))
+										.comparing((Tuple2<Integer,Integer> t) -> t._2)
+										.thenComparing((Tuple2<Integer,Integer> t) -> t._1))
 							 .collect(Collectors.toList());
 
 			int restWidth = usableWidth;
@@ -93,15 +93,15 @@ public class TextTableLayouter {
 				}
 				colsOrdered = colsOrdered.subList(1, colsOrdered.size());
 			}
-			
+
 			return widths;
 		}
 	}
-	
+
 	private int clip(final int value, final int min, final int max) {
 		return Math.min(max, Math.max(min, value));
 	}
-	
+
 	private double clip(final double value, final double min, final double max) {
 		return Math.min(max, Math.max(min, value));
 	}

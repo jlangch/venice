@@ -42,7 +42,7 @@ public class Markdown {
 	}
 	
 	public String renderToText(final int width) {
-		return new TextRenderer(width).render(this);
+		return TextRenderer.softWrap(width).render(this);
 	}
 	
 	public String renderToHtml() {

@@ -55,7 +55,7 @@ public class MarkdownTextRendererTest {
 				+ "invidunt ut labore et dolore magna aliquyam erat,\n"
 				+ "sed diam voluptua.";
 		
-		final String rendered = new TextRenderer(50).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md5));
 
 		assertEquals(expected, rendered);
 	}
@@ -87,7 +87,7 @@ public class MarkdownTextRendererTest {
 				+ "labore et dolore magna aliquyam erat, sed diam\n"
 				+ "voluptua.";
 		
-		final String rendered = new TextRenderer(50).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md5));
 
 		assertEquals(expected, rendered);
 	}
@@ -122,7 +122,7 @@ public class MarkdownTextRendererTest {
 				+ "\n"
 				+ "   comment [& body] nil)\n";
 		
-		final String rendered = new TextRenderer(50).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(50).render(Markdown.parse(md5));
 
 		assertEquals(expected, rendered);
 	}
@@ -145,7 +145,7 @@ public class MarkdownTextRendererTest {
 				+ "  justo duo dolores et ea\n"
 				+ "  rebum.";
 		
-		final String rendered = new TextRenderer(30).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(30).render(Markdown.parse(md5));
 
 		assertEquals(expected, rendered);
 	}
@@ -181,7 +181,7 @@ public class MarkdownTextRendererTest {
 				"d1  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" +
 				"    gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
 		
-		final String rendered = new TextRenderer(80).render(Markdown.parse(md5));
+		final String rendered = TextRenderer.softWrap(80).render(Markdown.parse(md5));
 
 		assertEquals(expected, rendered);
 	}
