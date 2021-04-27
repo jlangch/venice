@@ -48,7 +48,7 @@ public class TextRenderer {
 	/**
 	 * Create a text renderer that hard wraps lines at 'width' characters.
 	 * 
-	 * @param width The max line width. Must be > 0.
+	 * @param width The max line width. Must be greater than 0.
 	 * @return The rendered markdown
 	 */
 	public static TextRenderer hardWrap(final int width) {
@@ -64,7 +64,7 @@ public class TextRenderer {
 	 * Tries to wrap at the closest whitespace character and if not possible
 	 * falls back to a hard wrap.
 	 * 
-	 * @param width The max line width. Must be > 0.
+	 * @param width The max line width. Must be greater than 0.
 	 * @return The rendered markdown
 	 */
 	public static TextRenderer softWrap(final int width) {

@@ -21,6 +21,11 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.renderer.html;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
@@ -40,99 +45,158 @@ public class HtmlRenderer {
 	}
 	
 	public String render(final Markdown md) {
-		final StringBuilder sb = new StringBuilder();
-
-		for(Block b : md.blocks().getBlocks()) {
-			if (sb.length() > 0) {
-				sb.append("\n\n");
+		try (StringWriter sw = new StringWriter();
+			 PrintWriter wr = new PrintWriter(sw)) {
+			
+			wr.println("<div class=\"md\">");
+			wr.println();
+			
+			for(Block b : md.blocks().getBlocks()) {
+				render(b, wr);
+				wr.println();
 			}
 			
-			sb.append(render(b));
+			wr.println("</div>");
+			
+			return wr.toString();
 		}
-		
-		return sb.toString();
+		catch(IOException ex) {
+			throw new RuntimeException("Failed to render markdown to HTML", ex);
+		}
 	}
 
-	public String render(final Block b) {
+	public void render(final Block b, final PrintWriter wr) {
 		if (b.isEmpty()) {
-			return "";
+			return ;
 		}
 		else if (b instanceof TextBlock) {
-			return render((TextBlock)b);
+			render((TextBlock)b, wr);
 		}
 		else if (b instanceof CodeBlock) {
-			return render((CodeBlock)b);
+			render((CodeBlock)b, wr);
 		}
 		else if (b instanceof ListBlock) {
-			return render((ListBlock)b);
+			render((ListBlock)b, wr);
 		}
 		else if (b instanceof TableBlock) {
-			return render((TableBlock)b);
+			render((TableBlock)b, wr);
 		}
 		else {
-			return "";
+			return;
 		}
 	}
 
-	public String render(final Chunks chunks) {
-		final StringBuilder sb = new StringBuilder();
+	private void render(final TextBlock block, final PrintWriter wr) {
+		wr.println("<div class=\"md-text-block\">");
 		
+		render(block.getChunks(), wr);
+		
+		wr.println("</div>");
+	}
+
+	private void render(final CodeBlock block, final PrintWriter wr) {		
+		final String code = escape(String.join("\n", block.getLines()));
+
+		wr.println("<div class=\"md-code-block\">");
+		wr.print("<code>" + code + "</code>");
+		wr.println("</div>");
+	}
+	
+	private void render(final ListBlock block, final PrintWriter wr) {
+		wr.println("<div class=\"md-list-block\">");	
+		wr.println("<ul>");
+		for(Block b : block.getItems()) {
+			wr.print("<li>" );
+			render(b, wr);
+			wr.println("</li>" );
+		}
+		wr.println("</ul>");	
+		wr.println("</div>");
+	}
+	
+	private void render(final TableBlock block, final PrintWriter wr) {
+		wr.println("<div class=\"md-table-block\">");
+		
+		wr.println("<table>");
+		
+		if (block.hasHeader()) {
+			wr.println("<tr>");
+			for(int col=0; col<block.cols(); col++) {
+				final TextChunk chunk =  ((TextChunk)block.headerCell(col).get(0));
+				final String header = escape(chunk.getText());
+				final String format = block.format(col).name().toLowerCase();
+	
+				wr.println("<th class=\"md-align-" + format + "\">" + header + "</th>");
+			}
+			wr.println("</tr>");
+		}
+
+		for(int row=0; row<block.bodyRows(); row++) {
+			wr.println("<tr>");
+			for(int col=0; col<block.cols(); col++) {
+				final Chunks chunks = block.bodyCell(row, col);
+				final String format = block.format(row).name().toLowerCase();
+	
+				wr.print("<td class=\"md-align-" + format + "\">");
+				
+				render(chunks, wr);
+				
+				wr.println("</td>");
+			}
+			wr.println("</tr>");
+		}
+
+		wr.println("</table>");
+		
+		wr.println("</div>");
+	}
+
+	private void render(final Chunks chunks, final PrintWriter wr) {
 		for(Chunk c : chunks.getChunks()) {
 			if (c.isEmpty()) continue;
 			
-			if (sb.length() > 0) {
-				sb.append(" ");
-			}
-
 			if (c instanceof TextChunk) {
-				sb.append(render((TextChunk)c));
+				render((TextChunk)c, wr);
 			}
 			else if (c instanceof LineBreakChunk) {
-				sb.append(render((LineBreakChunk)c));
+				render((LineBreakChunk)c, wr);
 			}
 			else if (c instanceof InlineCodeChunk) {
-				sb.append(render((InlineCodeChunk)c));
+				render((InlineCodeChunk)c, wr);
 			}
 		}
-
-		return sb.toString();
-	}
-
-	private String render(final TextBlock block) {
-		return render(block.getChunks());
-	}
-
-	private String render(final CodeBlock block) {
-		final StringBuilder sb = new StringBuilder();
-		
-		block.getLines()
-			 .forEach(l -> {sb.append(l); sb.append("\n"); });
-
-		return sb.toString();
 	}
 	
-	private String render(final ListBlock block) {
-		final StringBuilder sb = new StringBuilder();
+	private void render(final TextChunk chunk, final PrintWriter wr) {
+		final String text = escape(chunk.getText());
 		
-		for(Block b : block.getItems()) {
+		switch(chunk.getFormat()) {
+			case NORMAL: 
+				wr.println("<div class=\"md-text-normal\">" + text + "</div>");
+				break;
+			case ITALIC:
+				wr.println("<div class=\"md-text-italic\">" + text + "</div>");
+				break;
+			case BOLD:
+				wr.println("<div class=\"md-text-bold\">" + text + "</div>");
+				break;
+			case BOLD_ITALIC:
+				wr.println("<div class=\"md-text-bold-italic\">" + text + "</div>");
+				break;
 		}
-
-		return sb.toString();
 	}
 	
-	private String render(final TableBlock block) {
-		return "";
+	private String escape(final String s) {
+		return StringEscapeUtil.escapeHtml(s);
 	}
 	
-	private String render(final TextChunk chunk) {
-		return "";
+	private void render(final LineBreakChunk chunk, final PrintWriter wr) {
+		wr.println("<br/>" );
 	}
 	
-	private String render(final LineBreakChunk chunk) {
-		return "";
-	}
-	
-	private String render(final InlineCodeChunk chunk) {
-		return "";
+	private void render(final InlineCodeChunk chunk, final PrintWriter wr) {
+		final String text = escape(chunk.getText());
+		
+		wr.print("<div class=\"md-inline-code\">" + text + "</div");
 	}
 }
