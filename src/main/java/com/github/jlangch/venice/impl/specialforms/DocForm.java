@@ -33,7 +33,10 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -43,7 +46,7 @@ import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.Doc;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class DocForm {
@@ -84,16 +87,16 @@ public class DocForm {
 						 .collect(Collectors.joining()));
 		}
 	}
-	
+
 	private static VncString docForSymbol(final VncSymbol sym, final Env env) {
 		VncVal docVal = SpecialFormsDoc.ns.get(sym); // special form?
 		if (docVal != null) {
-			return Doc.getDoc(docVal);
+			return docForSymbolVal(docVal, env);
 		}
 		else {
 			try {
 				docVal = env.get(sym);
-				return Doc.getDoc(docVal);
+				return docForSymbolVal(docVal, env);
 			}
 			catch(VncException ex) {
 				final String simpleName = sym.getSimpleName();
@@ -120,6 +123,16 @@ public class DocForm {
 		}
 	}
 
+	private static VncString docForSymbolVal(final VncVal symVal, final Env env) {
+		final boolean repl = isREPL(env);		
+
+		// if we run in a REPL use the effective terminal width for rendering
+		final int width = repl ? replTerminalWidth(env) : 80;
+		
+		// TODO: Markdown renderer
+		return getDoc(symVal, width);
+	}
+	
 	private static VncString docForKeyword(final VncKeyword keyword, final Env env) {
 		if (Modules.isValidModule(keyword)) {
 			return docForModule(keyword, env);
@@ -227,18 +240,97 @@ public class DocForm {
 	private static String getColorTheme(final Env env) {
 		// Note: there is a color theme only if we're running in a REPL!
 		
-		final VncVal runMode = env.get(new VncSymbol("*run-mode*"));
-		if (Types.isVncKeyword(runMode)) {
-			final String sRunMode = ((VncKeyword)runMode).getValue();
-			if ("repl".equals(sRunMode)) {
-				final VncVal theme = env.get(new VncSymbol("*repl-color-theme*"));
-				if (Types.isVncKeyword(theme)) {
-					final String sTheme = ((VncKeyword)theme).getValue();
-					return "none".equals(sTheme) ? null : sTheme;
-				}
+		if (isREPL(env)) {
+			final VncVal theme = env.get(new VncSymbol("*repl-color-theme*"));
+			if (Types.isVncKeyword(theme)) {
+				final String sTheme = ((VncKeyword)theme).getValue();
+				return "none".equals(sTheme) ? null : sTheme;
 			}
 		}
 				
 		return null;
+	}
+	
+	private static boolean isREPL(final Env env) {
+		final VncVal runMode = env.get(new VncSymbol("*run-mode*"));
+		if (Types.isVncKeyword(runMode)) {
+			final String sRunMode = ((VncKeyword)runMode).getValue();
+			return ("repl".equals(sRunMode));
+		}
+		
+		return false;
+	}
+	
+	private static int replTerminalWidth(final Env env) {
+		final VncVal fn = env.get(new VncSymbol("repl/term-rows"));
+		if (Types.isVncFunction(fn)) {
+			final VncVal cols = ((VncFunction)fn).applyOf();
+			if (Types.isVncLong(cols)) {
+				return ((VncLong)cols).getIntValue();
+			}
+		}
+		
+		return -1;
+	}
+	
+	private static VncString getDoc(final VncVal val, final int width) {
+		if (val != null && Types.isVncFunction(val)) {
+			final VncFunction fn = (VncFunction)val;
+			final VncList argsList = fn.getArgLists();
+			final VncList examples = fn.getExamples();
+			final VncList seeAlso = fn.getSeeAlso();
+			
+			final StringBuilder sb =  new StringBuilder();
+						
+			sb.append(argsList
+						.stream()
+						.map(s -> toString(s))
+						.collect(Collectors.joining(", ")));
+			
+			sb.append("\n\n");
+			sb.append(toString(fn.getDoc()));
+			
+			if (!examples.isEmpty()) {
+				sb.append("\n\n");
+				sb.append("EXAMPLES:\n");
+				sb.append(examples
+							.stream()
+							.map(s -> toString(s))
+							.map(e -> indent(e, "   "))
+							.collect(Collectors.joining("\n\n")));
+			}
+
+			if (!seeAlso.isEmpty()) {
+				sb.append("\n\n");
+				sb.append("SEE ALSO:\n   ");
+				sb.append(seeAlso
+							.stream()
+							.map(s -> toString(s))
+							.collect(Collectors.joining(", ")));
+			}
+
+			sb.append("\n");
+
+			return new VncString(sb.toString());			
+		}
+				
+		return new VncString("<no documentation available>");			
+	}
+	
+	private static String indent(final String text, final String indent) {
+		if (StringUtil.isBlank(text)) {
+			return text;
+		}
+		else {
+			return StringUtil
+						.splitIntoLines(text)
+						.stream()
+						.map(s -> indent + s)
+						.collect(Collectors.joining("\n"));
+		}
+	}
+	
+	private static String toString(final VncVal val) {
+		return val == Constants.Nil ? "" : ((VncString)val).getValue();
 	}
 }
