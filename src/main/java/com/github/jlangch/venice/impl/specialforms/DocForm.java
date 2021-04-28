@@ -129,7 +129,6 @@ public class DocForm {
 		// if we run in a REPL use the effective terminal width for rendering
 		final int width = repl ? replTerminalWidth(env) : 80;
 		
-		// TODO: Markdown renderer
 		return getDoc(symVal, width);
 	}
 	
@@ -262,7 +261,7 @@ public class DocForm {
 	}
 	
 	private static int replTerminalWidth(final Env env) {
-		final VncVal fn = env.get(new VncSymbol("repl/term-rows"));
+		final VncVal fn = env.get(new VncSymbol("repl/term-cols"));
 		if (Types.isVncFunction(fn)) {
 			final VncVal cols = ((VncFunction)fn).applyOf();
 			if (Types.isVncLong(cols)) {
@@ -288,8 +287,13 @@ public class DocForm {
 						.collect(Collectors.joining(", ")));
 			
 			sb.append("\n\n");
-			sb.append(toString(fn.getDoc()));
 			
+			final String doc = toString(fn.getDoc());
+			sb.append(doc);
+
+			// TODO: enable Markdown renderer
+			//sb.append(Markdown.parse(doc).renderToText(width));
+						
 			if (!examples.isEmpty()) {
 				sb.append("\n\n");
 				sb.append("EXAMPLES:\n");
