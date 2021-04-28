@@ -137,7 +137,7 @@ plugins {
     id 'eclipse'
 
     // https://github.com/johnrengelman/shadow/
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 
 /*
     // https://github.com/kordamp/jdeps-gradle-plugin
