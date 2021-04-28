@@ -23,8 +23,8 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
-import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 
 public class TextBlockParser {
@@ -47,7 +47,7 @@ public class TextBlockParser {
 
 		final TextBlock block = new TextBlock();
 		
-		block.add(new RawChunk(line));
+		addLine(block, line);
 		
 		while(!reader.eof()) {
 			line = reader.peek();
@@ -57,11 +57,12 @@ public class TextBlockParser {
 				break;
 			}
 			else {
-				block.add(new TextChunk(line));
+				addLine(block, line);
 			}
 		}
 		
 		block.parseChunks();
+		
 		return block;
 	}
 	
@@ -70,6 +71,21 @@ public class TextBlockParser {
 		return true;
 	}
 
+	
+	private void addLine(final TextBlock block, final String line) {
+		if (lineEndsWithTwoOrMoreSpaces(line)) {
+			block.add(new RawChunk(StringUtil.trimRight(line)));
+			block.add(new LineBreakChunk());
+		}
+		else {
+			block.add(new RawChunk(line));
+		}
+	}
+	
+	private boolean lineEndsWithTwoOrMoreSpaces(final String line) {
+		return line.matches("^.* {2}$");
+	}
+	
 	
 	private final LineReader reader;
 }
