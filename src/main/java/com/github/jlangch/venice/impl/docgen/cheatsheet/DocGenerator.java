@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen;
+package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.lowagie.text.pdf.PdfReader;
@@ -81,27 +82,12 @@ public class DocGenerator {
 		
 		this.codeHighlighter = new DocHighlighter(DocColorTheme.getLightTheme());
 	}
-
-	public static void main(final String[] args) {
-		final String version = args.length > 0 ? args[0] : "0.0.0";
-		new DocGenerator(true).run(version);
-
-//		System.out.println(
-//			CheatsheetRenderer.parseTemplate().replace("\\n", "\n"));
-	}
 	
 	public static List<DocSection> docInfo() {
 		return new DocGenerator(false).buildDocInfo();
 	}
-
-	private List<DocSection> buildDocInfo() {
-		final List<DocSection> sections = new ArrayList<>();
-		sections.addAll(getLeftSections());
-		sections.addAll(getRightSections());
-		return sections;
-	}
 	
-	private void run(final String version) {
+	public void run(final String version) {
 		try {	
 			System.out.println("Creating cheatsheet V" + version);
 			
@@ -149,6 +135,13 @@ public class DocGenerator {
 		catch(Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private List<DocSection> buildDocInfo() {
+		final List<DocSection> sections = new ArrayList<>();
+		sections.addAll(getLeftSections());
+		sections.addAll(getRightSections());
+		return sections;
 	}
 
 	private List<DocSection> getTOC() {
@@ -2269,10 +2262,17 @@ public class DocGenerator {
 		final VncFunction fn = findFunction(name);
 
 		if (fn != null) {
+			final String description = fn.getDoc() == Constants.Nil 
+										? "" 
+										: ((VncString)fn.getDoc()).getValue();
+			
+			final String descriptionXmlStyled = Markdown.parse(description).renderToHtml();
+			
 			return new DocItem(
 					name, 
 					toStringList(fn.getArgLists(), name, ":arglists"), 
-					fn.getDoc() == Constants.Nil ? "" : ((VncString)fn.getDoc()).getValue(),
+					description,
+					descriptionXmlStyled,
 					runExamples(name, toStringList(fn.getExamples(), name, ":examples"), runExamples, catchEx),
 					createCrossRefs(name, fn),
 					id(name));

@@ -406,7 +406,7 @@ task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
 task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     description="Generate cheatsheet"
 
-    main = 'com.github.jlangch.venice.impl.docgen.DocGenerator'
+    main = 'com.github.jlangch.venice.CheatsheetDocGen'
     
     classpath { 
       [ sourceSets.main.runtimeClasspath,

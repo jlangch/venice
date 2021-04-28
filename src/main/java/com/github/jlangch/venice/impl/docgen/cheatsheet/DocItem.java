@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen;
+package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ public class DocItem {
 			final String name, 
 			final List<String> signatures,
 			final String description,
+			final String descriptionXmlStyled,
 			final List<ExampleOutput> examples,
 			final List<CrossRef> crossRefs,
 			final String id
@@ -42,6 +43,7 @@ public class DocItem {
 		this.altName = name;
 		this.signatures = signatures;
 		this.description = description;
+		this.descriptionXmlStyled = descriptionXmlStyled;
 		this.examples = examples;
 		this.id = id;
 		this.crossRefs = new ArrayList<>();
@@ -52,7 +54,7 @@ public class DocItem {
 	}
 
 	public DocItem(final String name, final String id) {
-		this(name, null, null, null, null, id);
+		this(name, null, null, null, null, null, id);
 	}
 	
 	public String getName() {
@@ -73,6 +75,10 @@ public class DocItem {
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getDescriptionXmlStyled() {
+		return descriptionXmlStyled;
 	}
 	
 	public String getExamples() {
@@ -127,6 +133,7 @@ public class DocItem {
 	
 	private final List<String> signatures;
 	private final String description;
+	private final String descriptionXmlStyled;
 	private final List<ExampleOutput> examples;
 	private final List<CrossRef> crossRefs;
 }

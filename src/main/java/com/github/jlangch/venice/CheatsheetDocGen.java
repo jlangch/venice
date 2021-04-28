@@ -19,25 +19,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen;
+package com.github.jlangch.venice;
 
-public class CodeSnippet {
+import com.github.jlangch.venice.impl.docgen.cheatsheet.DocGenerator;
 
-	public CodeSnippet(final String title, final String code) {
-		this.title = title;
-		this.code = code;
-	}
-	
-	
-	public String getTitle() {
-		return title;
-	}
-	
-	public String getCode() {
-		return code;
+
+public class CheatsheetDocGen {
+
+	public static void main(final String[] args) {
+		final String version = args.length > 0 ? args[0] : "0.0.0";
+		new DocGenerator(true).run(version);
 	}
 
-
-	private final String title;
-	private final String code;
 }
