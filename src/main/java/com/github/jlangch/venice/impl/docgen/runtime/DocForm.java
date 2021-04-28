@@ -69,10 +69,7 @@ public class DocForm {
 		}
 	}
 
-	public static VncString highlight(
-			final VncString form, 
-			final Env env
-	) {
+	public static VncString highlight(final VncString form, final Env env) {
 		final AnsiColorTheme theme = AnsiColorThemes.getTheme(getColorTheme(env));
 
 		if (theme == null) {

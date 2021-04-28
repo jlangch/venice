@@ -532,6 +532,7 @@
                 <div class="detail" id="${= (:id it) }$">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <div class="header">${= (kira/escape-xml (:name it)) }$</div>
+                    
                     ${ (when (not-empty? (:signatures it)) }$
                     <div class="arglists">
                         <div class="arglist">
@@ -541,14 +542,23 @@
                         </div>
                     </div>
                     ${ ) }$
+                    
                     <div class="descr">
+                        ${ (when (not-empty? (:description it)) }$
                         <code>${= (kira/escape-xml (:description it)) }$</code>
+                        ${ ) }$
+                        
+                        ${ (when (not-empty? (:descriptionXmlStyled it)) }$
+                        ${= (:descriptionXmlStyled it) }$
+                        ${ ) }$
                     </div>
+                    
                     ${ (when (not-empty? (:examplesXmlStyled it)) }$
                     <div class="examples">
                         <code>${= (:examplesXmlStyled it) }$</code>
                     </div>
                     ${ ) }$
+                    
                     ${ (when (not-empty? (:crossRefs it)) }$
                     <div class="seealso">
                         <div class="header">SEE ALSO</div>

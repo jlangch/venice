@@ -2266,7 +2266,7 @@ public class DocGenerator {
 										? "" 
 										: ((VncString)fn.getDoc()).getValue();
 			
-			final String descriptionXmlStyled = Markdown.parse(description).renderToHtml();
+			final String descriptionXmlStyled = ""; //Markdown.parse(description).renderToHtml();
 			
 			return new DocItem(
 					name, 
