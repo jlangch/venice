@@ -62,7 +62,11 @@ public class ChunkParser {
 			else if (ch == '\\') {
 				reader.consume();
 				ch = reader.peek();
-				if (ch != EOF) {
+				if (ch == ' ') {
+					reader.consume();
+					sb.append('\u00A0');  // non-breaking space
+				}
+				else if (ch != EOF) {
 					reader.consume();
 					sb.append((char)ch);
 				}
