@@ -87,12 +87,14 @@
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
      :examples (list
           """
-          (-> (crypt/sha512-hash "hello world")
-              (str/bytebuf-to-hex :upper))
+          (let [s (-> (crypt/sha512-hash "hello world")
+                      (str/bytebuf-to-hex :upper))]
+            (str (nfirst s 32) "..." (nlast s 32)))
           """,
           """
-          (-> (crypt/sha512-hash "hello world" "-salt-")
-              (str/bytebuf-to-hex :upper))
+          (let [s (-> (crypt/sha512-hash "hello world" "-salt-")
+                      (str/bytebuf-to-hex :upper))]
+            (str (nfirst s 32) "..." (nlast s 32)))
           """ ) }
 
   crypt/sha512-hash

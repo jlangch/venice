@@ -28,7 +28,10 @@ public class CheatsheetDocGen {
 
 	public static void main(final String[] args) {
 		final String version = args.length > 0 ? args[0] : "0.0.0";
-		new DocGenerator(true).run(version);
+		
+		new DocGenerator()
+				.includeExamples(true)
+				.run(version);
 	}
 
 }

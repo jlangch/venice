@@ -51,7 +51,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.lowagie.text.pdf.PdfReader;
@@ -59,9 +58,7 @@ import com.lowagie.text.pdf.PdfReader;
 
 public class DocGenerator {
 
-	public DocGenerator(final boolean runExamples) {
-		this.runExamples = runExamples;
-		
+	public DocGenerator() {
 		this.preloadedModules
 			.addAll(Arrays.asList(
 						"app",    "xml",    "crypt",  "gradle", 
@@ -84,9 +81,14 @@ public class DocGenerator {
 	}
 	
 	public static List<DocSection> docInfo() {
-		return new DocGenerator(false).buildDocInfo();
+		return new DocGenerator().includeExamples(false).buildDocInfo();
 	}
-	
+
+	public DocGenerator includeExamples(final boolean runExamples) {
+		this.runExamples = runExamples;
+		return this;
+	}
+
 	public void run(final String version) {
 		try {	
 			System.out.println("Creating cheatsheet V" + version);
@@ -2563,6 +2565,7 @@ public class DocGenerator {
 
 	private final Map<String, DocItem> docItems = new HashMap<>();
 	private final Env env;
-	private final boolean runExamples;
 	private final DocHighlighter codeHighlighter;
+	
+	private boolean runExamples = false;
 }
