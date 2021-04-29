@@ -182,7 +182,7 @@ public class HtmlRenderer {
 	
 	private void render(final InlineCodeChunk chunk, final PrintWriter wr) {
 		final String text = escapeHtml(chunk.getText());		
-		wr.print("<div class=\"md-inline-code\">" + text + "</div");
+		wr.print("<div class=\"md-inline-code\">" + text + "</div>");
 	}
 	
 	private String buildCssEmphasizeClass(final TextChunk.Format format) {

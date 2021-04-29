@@ -62,6 +62,5 @@ public class StringEscapeUtil {
 					Tuple2.of("<", "&lt;"),
 					Tuple2.of(">", "&gt;"),
 					Tuple2.of("\"", "&quot;"),
-					Tuple2.of("'", "&apos;"),
-					Tuple2.of("\u00A0", "&nbsp;"));
+					Tuple2.of("'", "&apos;"));
 }

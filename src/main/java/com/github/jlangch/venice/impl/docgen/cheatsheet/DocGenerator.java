@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.lowagie.text.pdf.PdfReader;
@@ -2300,7 +2301,7 @@ public class DocGenerator {
 										? "" 
 										: ((VncString)fn.getDoc()).getValue();
 			
-			final String descriptionXmlStyled = ""; //Markdown.parse(description).renderToHtml();
+			final String descriptionXmlStyled = null; // Markdown.parse(description).renderToHtml();
 			
 			return new DocItem(
 					name, 

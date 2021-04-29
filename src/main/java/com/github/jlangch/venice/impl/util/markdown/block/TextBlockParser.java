@@ -73,8 +73,8 @@ public class TextBlockParser {
 
 	
 	private void addLine(final TextBlock block, final String line) {
-		if (lineEndsWithTwoOrMoreSpaces(line)) {
-			block.add(new RawChunk(StringUtil.trimRight(line)));
+		if (lineEndsLineBreak(line)) {
+			block.add(new RawChunk(line.substring(0, line.length()-2).trim()));
 			block.add(new LineBreakChunk());
 		}
 		else {
@@ -82,8 +82,8 @@ public class TextBlockParser {
 		}
 	}
 	
-	private boolean lineEndsWithTwoOrMoreSpaces(final String line) {
-		return line.matches("^.* {2}$");
+	private boolean lineEndsLineBreak(final String line) {
+		return line.matches("^.*>>$");
 	}
 	
 	
