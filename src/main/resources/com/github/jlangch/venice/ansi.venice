@@ -293,6 +293,20 @@
                 A failed message. Defaults to 'failed'.
           """
      :examples '("""
+                 (let [pb (ansi/progress
+                                 :caption     "Test: "
+                                 :start-msg   "Test started"
+                                 :end-msg     "Test ok"
+                                 :failed-msg  "Test failed")]
+                   (pb 0 :progress)
+                   (sleep 1 :seconds)
+                   (pb 50 :progress)
+                   (sleep 1 :seconds)
+                   (pb 100 :progress)
+                   (sleep 1 :seconds)
+                   (pb 100 :end))
+                 """
+                 """
                  (io/download "https://foo.org/image.png"
                               :binary true
                               :user-agent "Mozilla"
@@ -364,6 +378,22 @@
                 If true ahows the percentage. Defaults to 'false'.
           """
      :examples '("""
+                 (let [pb (ansi/progress-bar
+                                 :caption     "Test: "
+                                 :width        25
+                                 :start-msg   "Test started"
+                                 :end-msg     "Test ok"
+                                 :failed-msg  "Test failed"
+                                 :show-percent true)]
+                   (pb 0 :progress)
+                   (sleep 1 :seconds)
+                   (pb 50 :progress)
+                   (sleep 1 :seconds)
+                   (pb 100 :progress)
+                   (sleep 1 :seconds)
+                   (pb 100 :end))
+                 """
+                 """
                  (io/download "https://foo.org/image.png"
                               :binary true
                               :user-agent "Mozilla"
