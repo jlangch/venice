@@ -67,7 +67,7 @@ public class DocGenerator {
 						"app",    "xml",    "crypt",  "gradle", 
 						"trace",  "ansi",   "maven",  "kira",
 						"java",   "semver", "excel",  "hexdump",
-						"shell",  "geoip" ));
+						"shell",  "geoip"));
 		
 		Env env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -234,6 +234,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
 		extmod.addSection(new DocSection("Shell", "modules.shell"));
 		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
+		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
 		content.add(extmod);
 
 		return content;
@@ -278,7 +279,8 @@ public class DocGenerator {
 				getModuleGradleSection(),
 				getModuleMavenSection(),
 				getModuleTracingSection(),
-				getModuleShellSection());
+				getModuleShellSection(),
+				getModuleAnsiSection());
 	}
 	
 	private List<DocSection> getModulesRightSections() {
@@ -2160,6 +2162,36 @@ public class DocGenerator {
 		final DocSection hexdump = new DocSection("Hexdump", id());
 		all.addSection(hexdump);
 		hexdump.addItem(getDocItem("hexdump/dump", false));
+
+		return section;
+	}
+
+	private DocSection getModuleAnsiSection() {
+		final DocSection section = new DocSection("Ansi", "modules.ansi");
+
+		final DocSection all = new DocSection("(load-module :ansi)", id());
+		section.addSection(all);
+
+		final DocSection colors = new DocSection("Colors", id());
+		all.addSection(colors);
+		colors.addItem(getDocItem("ansi/fg-color", false));
+		colors.addItem(getDocItem("ansi/bg-color", false));
+
+		final DocSection style = new DocSection("Styles", id());
+		all.addSection(style);
+		style.addItem(getDocItem("ansi/style", false));
+		style.addItem(getDocItem("ansi/ansi", false));
+		style.addItem(getDocItem("ansi/with-ansi", false));
+		style.addItem(getDocItem("ansi/without-ansi", false));
+
+		final DocSection cursor = new DocSection("Cursor", id());
+		all.addSection(cursor);
+		cursor.addItem(getDocItem("ansi/without-cursor", false));
+
+		final DocSection progress = new DocSection("Progress", id());
+		all.addSection(progress);
+		progress.addItem(getDocItem("ansi/progress", false));
+		progress.addItem(getDocItem("ansi/progress-bar", false));
 
 		return section;
 	}
