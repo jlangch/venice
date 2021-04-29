@@ -34,18 +34,18 @@ public class TextBlockParser {
 	}
 	
 	public TextBlock parse() {		
+		final TextBlock block = new TextBlock();
+
 		if (reader.eof()) {
-			return new TextBlock();
+			return block;
 		}
 
 		String line = reader.peek();
 		reader.consume();
 
 		if (StringUtil.isBlank(line)) {
-			return new TextBlock();
+			return block;
 		}
-
-		final TextBlock block = new TextBlock();
 		
 		addLine(block, line);
 		
