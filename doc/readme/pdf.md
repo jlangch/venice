@@ -3,8 +3,8 @@
 Venice supports generating PDF files if the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
 libs are on the runtime classpath:
 
- - org.xhtmlrenderer:flying-saucer-core:9.1.20
- - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20
+ - org.xhtmlrenderer:flying-saucer-core:9.1.22
+ - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
  - com.github.librepdf:openpdf:1.3.25
  - com.github.librepdf:pdf-toolbox:1.3.25
  
