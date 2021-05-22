@@ -262,13 +262,17 @@ public class MathFunctionsTest {
 	public void test_even_Q() {
 		final Venice venice = new Venice();
 
-		assertTrue((Boolean)venice.eval("(even? (int 2))"));	
-		assertTrue((Boolean)venice.eval("(even? (int 0))"));	
-		assertFalse((Boolean)venice.eval("(even? (int 1))"));	
+		assertTrue((Boolean)venice.eval("(even? 2I)"));	
+		assertFalse((Boolean)venice.eval("(even? 1I)"));	
+		assertTrue((Boolean)venice.eval("(even? 0I)"));	
+		assertFalse((Boolean)venice.eval("(even? -1I)"));	
+		assertTrue((Boolean)venice.eval("(even? -2I)"));	
 
 		assertTrue((Boolean)venice.eval("(even? 2)"));	
-		assertTrue((Boolean)venice.eval("(even? 0)"));	
 		assertFalse((Boolean)venice.eval("(even? 1)"));	
+		assertTrue((Boolean)venice.eval("(even? 0)"));	
+		assertFalse((Boolean)venice.eval("(even? -1)"));	
+		assertTrue((Boolean)venice.eval("(even? -2)"));	
 		
 		try {
 			venice.eval("(even? 1.0)");
@@ -733,13 +737,17 @@ public class MathFunctionsTest {
 	public void test_odd_Q() {
 		final Venice venice = new Venice();
 
-		assertFalse((Boolean)venice.eval("(odd? (int 2))"));	
-		assertFalse((Boolean)venice.eval("(odd? (int 0))"));	
-		assertTrue((Boolean)venice.eval("(odd? (int 1))"));	
+		assertFalse((Boolean)venice.eval("(odd? 2I)"));	
+		assertTrue((Boolean)venice.eval("(odd? 1I)"));	
+		assertFalse((Boolean)venice.eval("(odd? 0I)"));	
+		assertTrue((Boolean)venice.eval("(odd? -1I)"));	
+		assertFalse((Boolean)venice.eval("(odd? -2I)"));	
 
 		assertFalse((Boolean)venice.eval("(odd? 2)"));	
-		assertFalse((Boolean)venice.eval("(odd? 0)"));	
 		assertTrue((Boolean)venice.eval("(odd? 1)"));	
+		assertFalse((Boolean)venice.eval("(odd? 0)"));	
+		assertTrue((Boolean)venice.eval("(odd? -1)"));	
+		assertFalse((Boolean)venice.eval("(odd? -2)"));	
 		
 		try {
 			venice.eval("(odd? 1.0)");

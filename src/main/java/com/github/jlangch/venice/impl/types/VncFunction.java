@@ -310,9 +310,7 @@ public abstract class VncFunction
 		}
 		
 		public MetaBuilder arglists(final String... arglists) {
-			meta.put(
-				MetaUtil.ARGLIST, 
-				VncList.ofList(Arrays.stream(arglists).map(a -> new VncString(a)).collect(Collectors.toList())));
+			meta.put(MetaUtil.ARGLIST, toVncList(arglists));
 			return this;
 		}
 		
@@ -322,30 +320,22 @@ public abstract class VncFunction
 		}
 		
 		public MetaBuilder examples(final String... examples) { 
-			meta.put(
-				MetaUtil.EXAMPLES, 
-				VncList.ofList(Arrays.stream(examples).map(e -> new VncString(e)).collect(Collectors.toList())));
+			meta.put(MetaUtil.EXAMPLES, toVncList(examples));
 			return this;
 		}
 		
 		public MetaBuilder seeAlso(final String... refs) { 
-			meta.put(
-				MetaUtil.SEE_ALSO, 
-				VncList.ofList(Arrays.stream(refs).map(e -> new VncString(e)).collect(Collectors.toList())));
+			meta.put(MetaUtil.SEE_ALSO, toVncList(refs));
 			return this;
 		}
 		
 		public MetaBuilder functionRefs(final String... refs) { 
-			meta.put(
-				MetaUtil.FUNCTION_REFS, 
-				VncList.ofList(Arrays.stream(refs).map(r -> new VncString(r)).collect(Collectors.toList())));
+			meta.put(MetaUtil.FUNCTION_REFS, toVncList(refs));
 			return this;
 		}
 
 		public MetaBuilder privateFn() { 
-			meta.put(
-				MetaUtil.PRIVATE, 
-				VncBoolean.True);
+			meta.put(MetaUtil.PRIVATE, VncBoolean.True);
 			return this;
 		}
 
@@ -356,7 +346,15 @@ public abstract class VncFunction
 		private final HashMap<VncVal,VncVal> meta = new HashMap<>();
 	}
 	
+	
+	private static VncList toVncList(final String... strings) { 
+		return VncList.ofList(Arrays.stream(strings)
+									.map(r -> new VncString(r))
+									.collect(Collectors.toList()));
+	}
 
+	
+	
     public static final VncKeyword TYPE_FUNCTION = new VncKeyword(":core/function");
     public static final VncKeyword TYPE_MACRO = new VncKeyword(":core/macro");
 

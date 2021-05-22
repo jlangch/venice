@@ -1412,10 +1412,10 @@ public class MathFunctions {
 
 				final VncVal op1 = args.first();
 				if (Types.isVncLong(op1)) {
-					return VncBoolean.of(((VncLong)op1).getValue() % 2L == 1L);
+					return VncBoolean.of(((VncLong)op1).getValue() % 2L != 0L);
 				}
 				else if (Types.isVncInteger(op1)) {
-					return VncBoolean.of(((VncInteger)op1).getValue() % 2 == 1);
+					return VncBoolean.of(((VncInteger)op1).getValue() % 2 != 0);
 				}
 				else {
 					throw new VncException(String.format(
