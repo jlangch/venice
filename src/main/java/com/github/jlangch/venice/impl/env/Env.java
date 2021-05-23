@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -72,7 +73,7 @@ public class Env implements Serializable {
 		else {
 			this.outer = outer;
 			this.level = outer.level() + 1;
-			this.precompiledGlobalSymbols = outer.precompiledGlobalSymbols; 
+			this.precompiledGlobalSymbols = outer.precompiledGlobalSymbols;
 			this.globalSymbols = outer.globalSymbols;
 			this.localSymbols = new ConcurrentHashMap<>();
 		}
@@ -81,7 +82,7 @@ public class Env implements Serializable {
 	private Env(final Map<VncSymbol,Var> precompiledGlobalSymbols) {
 		this.outer = null;
 		this.level = 0;
-		this.precompiledGlobalSymbols = precompiledGlobalSymbols; 
+		this.precompiledGlobalSymbols = precompiledGlobalSymbols;
 		this.globalSymbols = new ConcurrentHashMap<>(256);
 		this.localSymbols = new ConcurrentHashMap<>();
 	}
@@ -394,6 +395,14 @@ public class Env implements Serializable {
 
 	public void removeGlobalSymbol(final VncSymbol sym) {
 		if (precompiledGlobalSymbols != null) {
+			if (precompiledGlobalSymbols.containsKey(sym)) {
+				// Prevent pre-compiled symbols from being altered. This is an 
+				// optimization trade-off!
+				throw new VncException(
+						"The pre-compiled symbol '" + sym.getQualifiedName() + "'"
+							+ " cannot be removed!");
+			}
+			
 			precompiledGlobalSymbols.remove(sym);
 		}		
 		globalSymbols.remove(sym);
@@ -407,11 +416,17 @@ public class Env implements Serializable {
 		}
 		
 		if (precompiledGlobalSymbols != null) {
-			precompiledGlobalSymbols
-				.keySet()
-				.stream()
-				.filter(s -> nsName.equals(s.getNamespace()))
-				.forEach(s -> precompiledGlobalSymbols.remove(s));
+			final Optional<VncSymbol> nsPre = precompiledGlobalSymbols
+												.keySet()
+												.stream()
+												.filter(s -> nsName.equals(s.getNamespace()))
+												.findFirst();
+			if (nsPre.isPresent())  {
+				// Prevent pre-compiled namespaces from being altered. This is an 
+				// optimization trade-off!
+				throw new VncException(
+						"The pre-compiled namespace '" + nsName + "' cannot be removed!");
+			}
 		}	
 
 		globalSymbols
@@ -699,6 +714,7 @@ public class Env implements Serializable {
 			}
 		}	
 	}
+	
 	
 	
 	private static final long serialVersionUID = 9002640180394221858L;
