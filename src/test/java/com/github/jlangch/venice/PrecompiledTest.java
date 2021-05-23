@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -304,7 +305,6 @@ public class PrecompiledTest {
 		es.shutdown();
 	}
 
-
 	@Test
 	public void test_expand_macros() {
 		final Venice venice = new Venice();
@@ -314,4 +314,35 @@ public class PrecompiledTest {
 		assertEquals(4L, venice.eval(precomp));
 	}
 
+	@Test
+	public void test_remove_global_symbol_ok() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                 \n" +
+				"  (ns foo)          \n" +
+				"  (def x 100)       \n" +
+				"  (ns-unmap foo x))";
+
+		// removing foo/x is okay, it's not part of the pre-compiled system symbols
+		final PreCompiled precomp = venice.precompile("test", script, true);
+
+		assertNull(venice.eval(precomp));
+	}
+
+	@Test
+	public void test_remove_global_symbol_fail() {
+		final Venice venice = new Venice();
+
+		// core/+ is a sealed namespace symbol and thus cannot be removed
+		final String script = 
+				"(do                 \n" +
+				"  (ns foo)          \n" +
+				"  (def x 100)       \n" +
+				"  (ns-unmap core +))";
+
+		final PreCompiled precomp = venice.precompile("test", script, true);
+
+		assertThrows(VncException.class, () -> venice.eval(precomp));
+	}
 }

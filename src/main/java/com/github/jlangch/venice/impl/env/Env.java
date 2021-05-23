@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -394,41 +393,26 @@ public class Env implements Serializable {
 	}
 
 	public void removeGlobalSymbol(final VncSymbol sym) {
-		if (precompiledGlobalSymbols != null) {
-			if (precompiledGlobalSymbols.containsKey(sym)) {
-				// Prevent pre-compiled symbols from being altered. This is an 
-				// optimization trade-off!
-				throw new VncException(
-						"The pre-compiled symbol '" + sym.getQualifiedName() + "'"
-							+ " cannot be removed!");
-			}
-			
-			precompiledGlobalSymbols.remove(sym);
-		}		
+		// Do not care about precompiledGlobalSymbols.
+		// Only system namespaces like core, time, ... are part of the pre-compiled 
+		// global symbols, and these namespaces are sealed anyway!
+		// 
+		// The calling VeniceInterpreter is preventing the removal of global
+		// system namespace symbols!
+
 		globalSymbols.remove(sym);
 	}
 	
 	public void removeGlobalSymbolsByNS(final VncSymbol ns) {
+		// Do not care about precompiledGlobalSymbols.
+		// Only system namespaces like core, time, ... are part of the pre-compiled 
+		// global symbols, and these namespaces are sealed anyway!
+		// 
+		// The calling VeniceInterpreter is preventing the removal of global
+		// system namespaces!
+
 		final String nsName = ns.getName();
 		
-		if (Namespaces.isCoreNS(nsName)) {
-			return;
-		}
-		
-		if (precompiledGlobalSymbols != null) {
-			final Optional<VncSymbol> nsPre = precompiledGlobalSymbols
-												.keySet()
-												.stream()
-												.filter(s -> nsName.equals(s.getNamespace()))
-												.findFirst();
-			if (nsPre.isPresent())  {
-				// Prevent pre-compiled namespaces from being altered. This is an 
-				// optimization trade-off!
-				throw new VncException(
-						"The pre-compiled namespace '" + nsName + "' cannot be removed!");
-			}
-		}	
-
 		globalSymbols
 			.keySet()
 			.stream()
