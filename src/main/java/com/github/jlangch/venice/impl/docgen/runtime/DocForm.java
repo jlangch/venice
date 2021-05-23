@@ -181,51 +181,13 @@ public class DocForm {
 			}
 		}
 		else if (tdef instanceof VncCustomTypeDef) {
-			final VncCustomTypeDef typeDef = (VncCustomTypeDef)tdef;
-			final StringBuilder sb = new StringBuilder();
-			
-			sb.append(String.format("Custom type :%s\n", type.getValue()));
-			sb.append("Fields: \n");
-			typeDef.getFieldDefs().forEach(f -> sb.append(String.format(
-																"   %s :%s\n", 
-																f.getName().getValue(),
-																f.getType().getValue())));
-			if (typeDef.getValidationFn() != null) {
-				sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
-			}
-			
-			return new VncString(sb.toString());
+			return new VncString(getDoc(type, (VncCustomTypeDef)tdef));
 		}
 		else if (tdef instanceof VncWrappingTypeDef) {
-			final VncWrappingTypeDef typeDef = (VncWrappingTypeDef)tdef;
-			final StringBuilder sb = new StringBuilder();
-			
-			sb.append(String.format("Custom wrapped type :%s\n", type.getValue()));
-			sb.append(String.format("Base type :%s\n", typeDef.getBaseType().getValue()));
-			if (typeDef.getValidationFn() != null) {
-				sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
-			}
-			
-			return new VncString(sb.toString());
+			return new VncString(getDoc(type, (VncWrappingTypeDef)tdef));
 		}
 		else if (tdef instanceof VncChoiceTypeDef) {
-			final VncChoiceTypeDef typeDef = (VncChoiceTypeDef)tdef;
-			
-			final VncSet types = typeDef.typesOnly();
-			final VncSet values = typeDef.valuesOnly();
-			
-			final StringBuilder sb = new StringBuilder();
-			sb.append(String.format("Custom choice type :%s\n", type.getValue()));
-			if (!types.isEmpty()) {
-				sb.append("Types: \n");
-				typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
-			}
-			if (!values.isEmpty()) {
-				sb.append("Values: \n");
-				typeDef.valuesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
-			}
-			
-			return new VncString(sb.toString());
+			return new VncString(getDoc(type, (VncChoiceTypeDef)tdef));
 		}
 		else {
 			throw new VncException(String.format(
@@ -234,9 +196,63 @@ public class DocForm {
 		}
 	}
 
+	private static String getDoc(
+			final VncKeyword type,
+			final VncCustomTypeDef typeDef
+	) {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append(String.format("Custom type :%s\n", type.getValue()));
+		sb.append("Fields: \n");
+		typeDef.getFieldDefs().forEach(f -> sb.append(String.format(
+															"   %s :%s\n", 
+															f.getName().getValue(),
+															f.getType().getValue())));
+		if (typeDef.getValidationFn() != null) {
+			sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
+		}
+		
+		return sb.toString();
+	}
+
+	private static String getDoc(
+			final VncKeyword type,
+			final VncWrappingTypeDef typeDef
+	) {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append(String.format("Custom wrapped type :%s\n", type.getValue()));
+		sb.append(String.format("Base type :%s\n", typeDef.getBaseType().getValue()));
+		if (typeDef.getValidationFn() != null) {
+			sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
+		}
+		
+		return sb.toString();
+	}
+
+	private static String getDoc(
+			final VncKeyword type,
+			final VncChoiceTypeDef typeDef
+	) {
+		final VncSet types = typeDef.typesOnly();
+		final VncSet values = typeDef.valuesOnly();
+		
+		final StringBuilder sb = new StringBuilder();
+		sb.append(String.format("Custom choice type :%s\n", type.getValue()));
+		if (!types.isEmpty()) {
+			sb.append("Types: \n");
+			typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+		}
+		if (!values.isEmpty()) {
+			sb.append("Values: \n");
+			typeDef.valuesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
+		}
+		
+		return sb.toString();
+	}
+	
 	private static String getColorTheme(final Env env) {
 		// Note: there is a color theme only if we're running in a REPL!
-		
 		if (isREPL(env)) {
 			final VncVal theme = env.get(new VncSymbol("*repl-color-theme*"));
 			if (Types.isVncKeyword(theme)) {

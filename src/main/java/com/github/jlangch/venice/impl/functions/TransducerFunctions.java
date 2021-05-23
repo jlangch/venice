@@ -248,11 +248,10 @@ public class TransducerFunctions {
 					}
 					else if (lists.size() == 1) {
 						// optimized mapper for a single collection
-						final VncSequence seq = coerceToSequence(lists.first())
-													.map(v -> VncFunction.applyWithMeter(
-																fn,
-																VncList.of(v),
-																meterRegistry));
+						VncSequence seq = coerceToSequence(lists.first());
+						seq = meterRegistry.enabled 
+								? seq.map(v -> VncFunction.applyWithMeter(fn, VncList.of(v), meterRegistry))
+								: seq.map(v -> fn.apply(VncList.of(v)));
 						return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 					}
 					else {
@@ -278,7 +277,10 @@ public class TransducerFunctions {
 							}
 
 							if (hasMore) {
-								final VncVal val = VncFunction.applyWithMeter(fn, VncList.ofList(fnArgs), meterRegistry);
+								final VncVal val = VncFunction.applyWithMeter(
+														fn, 
+														VncList.ofList(fnArgs), 
+														meterRegistry);
 								result.add(val);
 							}
 						}
@@ -384,7 +386,11 @@ public class TransducerFunctions {
 					int index = 0;
 
 					for(VncVal v : items) {
-						list.add(VncFunction.applyWithMeter(fn, VncList.of(new VncLong(index++), v), meterRegistry));
+						list.add(
+							VncFunction.applyWithMeter(
+								fn, 
+								VncList.of(new VncLong(index++), v), 
+								meterRegistry));
 					}
 
 					return VncList.ofList(list);
@@ -437,7 +443,7 @@ public class TransducerFunctions {
 											final VncVal result = args.first();
 											final VncVal input = args.second();
 											final VncVal cond = predicate.apply(VncList.of(input));
-											return (!VncBoolean.isFalse(cond) && cond != Nil)
+											return !VncBoolean.isFalseOrNil(cond)
 														? rf.apply(VncList.of(result, input))
 														: result;
 										default:
@@ -454,14 +460,18 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					final VncSequence seq = coerceToSequence(args.second())
-												.filter(v -> {
-														final VncVal keep = VncFunction.applyWithMeter(
-																				predicate,
-																				VncList.of(v),
-																				meterRegistry);
-														return !VncBoolean.isFalse(keep) && keep != Nil;
-													});
+					VncSequence seq = coerceToSequence(args.second());
+					if (meterRegistry.enabled) {
+						seq = seq.filter(v -> !VncBoolean.isFalseOrNil(
+													VncFunction.applyWithMeter(
+														predicate,
+														VncList.of(v),
+														meterRegistry)));
+					}
+					else {
+						seq = seq.filter(v -> !VncBoolean.isFalseOrNil(
+													predicate.apply(VncList.of(v))));
+					}
 					return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 				}
 			}
@@ -578,12 +588,12 @@ public class TransducerFunctions {
 											}
 											else {
 												final VncVal drop = predicate.apply(VncList.of(input));
-												if (VncBoolean.isTrue(drop)) {
-													return result;
-												}
-												else {
+												if (VncBoolean.isFalseOrNil(drop)) {
 													take.set(true);
 													return rf.apply(VncList.of(result, input));
+												}
+												else {
+													return result;
 												}
 											}
 										default:
@@ -602,13 +612,11 @@ public class TransducerFunctions {
 				else {
 					final VncSequence coll = coerceToSequence(args.second());
 
-					return coll.dropWhile(v -> {
-								final VncVal dropItem = VncFunction.applyWithMeter(
+					return coll.dropWhile(v -> !VncBoolean.isFalseOrNil(
+													VncFunction.applyWithMeter(
 															predicate,
 															VncList.of(v),
-															meterRegistry);
-								return !VncBoolean.isFalse(dropItem) && dropItem != Nil;
-							});
+															meterRegistry)));
 				}
 			}
 
@@ -723,11 +731,11 @@ public class TransducerFunctions {
 											final VncVal input = args.second();
 	
 											final VncVal take = predicate.apply(VncList.of(input));
-											if (VncBoolean.isTrue(take)) {
-												return rf.apply(VncList.of(result, input));
+											if (VncBoolean.isFalseOrNil(take)) {
+												return Reduced.reduced(result);
 											}
 											else {
-												return Reduced.reduced(result);
+												return rf.apply(VncList.of(result, input));
 											}
 										default:
 											ArityExceptions.assertArity(this, args, 0, 1, 2);
@@ -746,13 +754,11 @@ public class TransducerFunctions {
 				else {
 					final VncSequence coll = coerceToSequence(args.second());
 
-					return coll.takeWhile(v -> {
-								final VncVal takeItem = VncFunction.applyWithMeter(
+					return coll.takeWhile(v -> !VncBoolean.isFalseOrNil(
+													VncFunction.applyWithMeter(
 															predicate,
 															VncList.of(v),
-															meterRegistry);
-								return !VncBoolean.isFalse(takeItem) && takeItem != Nil;
-							});
+															meterRegistry)));
 				}
 			}
 
@@ -799,9 +805,10 @@ public class TransducerFunctions {
 										case 2:
 											final VncVal result = args.first();
 											final VncVal input = args.second();
-
 											final VncVal val = fn.apply(VncList.of(input));
-											return val == Nil || VncBoolean.isFalse(val) ? result : rf.apply(VncList.of(result, input));
+											return VncBoolean.isFalseOrNil(val) 
+														? result 
+														: rf.apply(VncList.of(result, input));
 										default:
 											ArityExceptions.assertArity(this, args, 0, 1, 2);
 											return Nil;
@@ -935,7 +942,7 @@ public class TransducerFunctions {
 					final VncFunction fn =
 							new VncFunction(createAnonymousFuncName("remove:transducer")) {
 								public VncVal apply(final VncList args) {
-									return VncBoolean.of(!VncBoolean.isTrue(predicate.apply(args)));
+									return VncBoolean.of(VncBoolean.isFalseOrNil(predicate.apply(args)));
 								}
 								private static final long serialVersionUID = -1;
 							};
@@ -943,13 +950,11 @@ public class TransducerFunctions {
 				}
 				else {
 					final VncSequence seq = coerceToSequence(args.second())
-												.filter(v -> {
-														final VncVal keep = VncFunction.applyWithMeter(
+												.filter(v -> VncBoolean.isFalseOrNil(
+																VncFunction.applyWithMeter(
 																				predicate,
 																				VncList.of(v),
-																				meterRegistry);
-														return VncBoolean.isFalse(keep) || keep == Nil;
-													});
+																				meterRegistry)));
 					return (seq instanceof VncLazySeq) ? seq : seq.toVncList();
 				}
 			}
@@ -1322,7 +1327,7 @@ public class TransducerFunctions {
 										final VncVal input = args.second();
 	
 										final VncVal cond = predicate.apply(VncList.of(input));
-										if (!VncBoolean.isFalse(cond) && cond != Nil) {
+										if (!VncBoolean.isFalseOrNil(cond)) {
 											final VncVal haltVal = halt_return_fn != null
 																	? halt_return_fn.apply(
 																			VncList.of(

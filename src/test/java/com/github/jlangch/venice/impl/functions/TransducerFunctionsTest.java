@@ -191,9 +191,16 @@ public class TransducerFunctionsTest {
 				"  (def xf (filter odd?))               \n" +
 				"  (def coll [1 2 3 4 5 6])             \n" +
 				"  (pr-str (transduce xf conj coll)))     ";
+		
+		final String script3 =
+				"(do                                    \n" +
+				"  (def xf (filter #{3 4 5}))           \n" +
+				"  (def coll [1 3 5 7 9])               \n" +
+				"  (pr-str (transduce xf conj coll)))     ";
 
 		assertEquals("9", venice.eval(script1));	
 		assertEquals("[1 3 5]", venice.eval(script2));	
+		assertEquals("[3 5]", venice.eval(script3));	
 	}
 	
 	@Test
@@ -331,9 +338,20 @@ public class TransducerFunctionsTest {
 				"  (def xf (remove odd?))               \n" +
 				"  (def coll [1 2 3 4 5 6])             \n" +
 				"  (pr-str (transduce xf conj coll)))     ";
+		
+		final String script3 =
+				"(do                                    \n" +
+				"  (def xf (remove #{3 5}))             \n" +
+				"  (def coll [1 3 5 7 9])               \n" +
+				"  (pr-str (transduce xf conj coll)))     ";
+		
+		final String script4 =
+				"(pr-str  (transduce (remove #{3 5}) conj [1 3 5 7 9]))";
 
 		assertEquals("12", venice.eval(script1));	
 		assertEquals("[2 4 6]", venice.eval(script2));	
+		assertEquals("[1 7 9]", venice.eval(script3));	
+		assertEquals("[1 7 9]", venice.eval(script4));	
 	}
 	
 	@Test
@@ -932,7 +950,9 @@ public class TransducerFunctionsTest {
 		assertEquals("(2 4 6 8)", venice.eval("(pr-str (filter even? (range 1 10 1)))"));
 		assertEquals("(2 4 6 8)", venice.eval("(pr-str (filter (fn [x] (even? x)) (range 1 10 1)))"));
 		assertEquals("(2 4 6 8)", venice.eval("(pr-str (filter #(even? %) (range 1 10 1)))"));
-	}
+
+		assertEquals("(true -1 0 1 \"\" \"A\" [1])", venice.eval("(pr-str (filter identity [nil false true -1 0 1 \"\" \"A\" [1]]))"));
+}
 	
 	@Test
 	public void test_remove() {
