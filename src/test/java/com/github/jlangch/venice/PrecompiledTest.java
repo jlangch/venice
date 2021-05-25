@@ -315,7 +315,7 @@ public class PrecompiledTest {
 	}
 
 	@Test
-	public void test_remove_global_symbol_ok() {
+	public void test_remove_global_symbol_ok_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
@@ -323,6 +323,22 @@ public class PrecompiledTest {
 				"  (ns foo)          \n" +
 				"  (def x 100)       \n" +
 				"  (ns-unmap foo x))";
+
+		// removing foo/x is okay, it's not part of the pre-compiled system symbols
+		final PreCompiled precomp = venice.precompile("test", script, true);
+
+		assertNull(venice.eval(precomp));
+	}
+
+	@Test
+	public void test_remove_global_symbol_ok_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                 \n" +
+				"  (ns foo)          \n" +
+				"  (def x 100)       \n" +
+				"  (ns-remove foo))";
 
 		// removing foo/x is okay, it's not part of the pre-compiled system symbols
 		final PreCompiled precomp = venice.precompile("test", script, true);

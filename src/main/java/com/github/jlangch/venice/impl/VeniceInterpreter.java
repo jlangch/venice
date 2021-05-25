@@ -137,13 +137,13 @@ public class VeniceInterpreter implements Serializable  {
 		sealedSystemNS.set(true);
 	}
 	
-	public void setMacroexpandOnLoad(final boolean macroexpandOnLoad, final Env env) {
+	public void setMacroExpandOnLoad(final boolean macroExpandOnLoad, final Env env) {
 		// Dynamically turn on/off macroexpand-on-load. The REPL makes use of this.
-		env.setMacroexpandOnLoad(VncBoolean.of(macroexpandOnLoad));		
-		this.macroexpand = macroexpandOnLoad;
+		env.setMacroExpandOnLoad(VncBoolean.of(macroExpandOnLoad));		
+		this.macroexpand = macroExpandOnLoad;
 	}
 	
-	public boolean isMacroexpandOnLoad() {
+	public boolean isMacroExpandOnLoad() {
 		return macroexpand;
 	}
 	
@@ -202,7 +202,7 @@ public class VeniceInterpreter implements Serializable  {
 
 	public Env createEnv(
 			final List<String> preloadedExtensionModules,
-			final boolean macroexpandOnLoad, 
+			final boolean macroExpandOnLoad, 
 			final boolean ansiTerminal,
 			final RunMode runMode
 	) {
@@ -246,7 +246,7 @@ public class VeniceInterpreter implements Serializable  {
 		//     core/load-classpath-file
 		//     core/load-module
 		//     VeniceInterpreter::loadModule(..)
-		setMacroexpandOnLoad(macroexpandOnLoad, env);
+		setMacroExpandOnLoad(macroExpandOnLoad, env);
 
 		// load core module
 		loadModule("core", env, loadedModules);

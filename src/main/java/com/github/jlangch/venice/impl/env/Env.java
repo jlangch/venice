@@ -420,7 +420,7 @@ public class Env implements Serializable {
 			.forEach(s -> globalSymbols.remove(s));
 	}
 
-	public Env getLevelEnv(final int level) {
+	public Env getEnvAtLevel(final int level) {
 		Env env = this;
 		if (env.level == level) {
 			return env;
@@ -475,7 +475,7 @@ public class Env implements Serializable {
 		return this;
 	}
 	
-	public Env setMacroexpandOnLoad(final VncBoolean macroexpandOnLoad) {
+	public Env setMacroExpandOnLoad(final VncBoolean macroexpandOnLoad) {
 		setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"), 
 						  macroexpandOnLoad, 
 						  true));

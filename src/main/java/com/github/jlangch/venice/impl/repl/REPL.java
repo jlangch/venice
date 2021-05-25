@@ -193,7 +193,7 @@ public class REPL {
 		
 		venice = new VeniceInterpreter(interceptor);		
 		env = loadEnv(cli, terminal, out, err, in, false);		
-		venice.setMacroexpandOnLoad(macroexpand, env);
+		venice.setMacroExpandOnLoad(macroexpand, env);
 		
 		if (isSetupMode(cli)) {
 			setupRepl(cli, venice, env, printer);
@@ -274,14 +274,14 @@ public class REPL {
 					final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
 					switch(cmd) {
 						case "reload":
-							env = loadEnv(cli, terminal, out, err, in, venice.isMacroexpandOnLoad());
+							env = loadEnv(cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
 							printer.println("system", "reloaded");
 							break;
 							
 						case "restart":
 							if (restartable) {
 								printer.println("system", "restarting...");
-								ReplRestart.write(venice.isMacroexpandOnLoad());
+								ReplRestart.write(venice.isMacroExpandOnLoad());
 								System.exit(RESTART_EXIT_CODE);
 								return;
 							}
@@ -440,7 +440,7 @@ public class REPL {
 	}
 
 	private void handleMacroExpandCommand(final Env env) {
-		venice.setMacroexpandOnLoad(true, env);
+		venice.setMacroExpandOnLoad(true, env);
 		printer.println("system", "Macro expansion enabled");
 	}
 
@@ -740,7 +740,7 @@ public class REPL {
 		printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
 		printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
 		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
-		printer.println("stdout", "Macro Expansion: " + (venice.isMacroexpandOnLoad() ? "on" : "off"));
+		printer.println("stdout", "Macro Expansion: " + (venice.isMacroExpandOnLoad() ? "on" : "off"));
 		printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
 		printer.println("stdout", "");
 		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
