@@ -29,6 +29,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
@@ -68,7 +69,7 @@ public class HtmlRenderer {
 		}
 	}
 
-	public void render(final Block b, final PrintWriter wr) {
+	private void render(final Block b, final PrintWriter wr) {
 		if (b instanceof TextBlock) {
 			render((TextBlock)b, wr);
 		}
@@ -112,6 +113,7 @@ public class HtmlRenderer {
 		wr.println("<table class=\"md-table\">");
 		
 		if (block.hasHeader()) {
+			wr.println("<thead>");
 			wr.println("<tr>");
 			for(int col=0; col<block.cols(); col++) {
 				final TextChunk chunk =  ((TextChunk)block.headerCell(col).get(0));
@@ -121,8 +123,10 @@ public class HtmlRenderer {
 				wr.println("<th class=\"" + alignClass + "\">" + header + "</th>");
 			}
 			wr.println("</tr>");
+			wr.println("</thead>");
 		}
 
+		wr.println("<tbody>");
 		for(int row=0; row<block.bodyRows(); row++) {
 			wr.println("<tr>");
 			for(int col=0; col<block.cols(); col++) {
@@ -135,6 +139,7 @@ public class HtmlRenderer {
 			}
 			wr.println("</tr>");
 		}
+		wr.println("</tbody>");
 
 		wr.println("</table>");		
 		wr.println("</div>");
@@ -170,7 +175,7 @@ public class HtmlRenderer {
 	}
 
 	private void render(final TextChunk chunk, final PrintWriter wr) {
-		final String text = escapeHtml(chunk.getText());
+		final String text = escapeHtml(mapWhiteSpaces(chunk.getText()));
 		final String formatClass = buildCssEmphasizeClass(chunk.getFormat());
 		
 		wr.print("<div class=\"" + formatClass + "\">" + text + "</div>");
@@ -192,4 +197,14 @@ public class HtmlRenderer {
 	private String buildCssAlignmentClass(final TableBlock.Alignment alignment) {
 		return "md-align-" + alignment.name().toLowerCase();
 	}
+	
+	private String mapWhiteSpaces(final String text) {
+		String s = text;
+		s = StringUtil.replace(s, "\t", "\u00A0\u00A0\u00A0\u00A0", -1, false);
+		s = StringUtil.replace(s, "&nbsp;", "\u00A0", -1, false);
+		s = StringUtil.replace(s, "&ensp;", "\u00A0\u00A0", -1, false);
+		s = StringUtil.replace(s, "&emsp;", "\u00A0\u00A0\u00A0\u00A0", -1, false);
+		return s;
+	}
+
 }
