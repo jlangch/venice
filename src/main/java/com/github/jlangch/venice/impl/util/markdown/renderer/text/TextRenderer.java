@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
@@ -112,7 +113,7 @@ public class TextRenderer {
 			sb.append(render(b));
 		}
 		
-		return sb.toString();
+		return sb.toString().replace("\u00A0", " ");
 	}
 
 	private String render(final Block b) {
@@ -157,7 +158,10 @@ public class TextRenderer {
 			}
 		}
 
-		return isWrap() ? wrap(sb.toString(), width) : sb.toString();
+		String s = sb.toString();
+		s = isWrap() ? wrap(s, width) : s;
+		s = s.replace("\u00A0", " ");
+		return s;
 	}
 
 	private String render(final TextBlock block) {
@@ -168,7 +172,7 @@ public class TextRenderer {
 		final StringBuilder sb = new StringBuilder();
 		
 		block.getLines()
-			 .forEach(l -> {sb.append(l); sb.append("\n"); });
+			 .forEach(l -> { sb.append(l); sb.append("\n"); });
 
 		return sb.toString();
 	}
@@ -198,7 +202,12 @@ public class TextRenderer {
 	}
 	
 	private String render(final TextChunk chunk) {
-		return chunk.getText();
+		String s = chunk.getText();
+		s = StringUtil.replace(s, "\t", "\u00A0\u00A0\u00A0\u00A0", -1, false);
+		s = StringUtil.replace(s, "&nbsp;", "\u00A0", -1, false);
+		s = StringUtil.replace(s, "&ensp;", "\u00A0\u00A0", -1, false);
+		s = StringUtil.replace(s, "&emsp;", "\u00A0\u00A0\u00A0\u00A0", -1, false);
+		return s;
 	}
 	
 	private String render(final LineBreakChunk chunk) {

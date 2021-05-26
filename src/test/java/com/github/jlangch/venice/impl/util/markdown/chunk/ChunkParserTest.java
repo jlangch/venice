@@ -687,40 +687,4 @@ public class ChunkParserTest {
 		assertEquals("a   b", ((InlineCodeChunk)chunks.getChunks().get(0)).getText());
 	}
 
-	
-	
-	// -----------------------------------------------------------------------------
-	// non_breaking space
-	// -----------------------------------------------------------------------------
-
-	@Test
-	public void test_non_breaking_space_1() {
-		Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("\\ "))).parse();
-		
-		assertEquals(1, chunks.size());
-		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("\u00A0", ((TextChunk)chunks.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
-	}
-
-	@Test
-	public void test_non_breaking_space_2() {
-		Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("\\ \\ "))).parse();
-		
-		assertEquals(1, chunks.size());
-		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("\u00A0\u00A0", ((TextChunk)chunks.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
-		}
-
-	@Test
-	public void test_non_breaking_space_3() {
-		Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("\\ __\\ __\\ "))).parse();
-		
-		assertEquals(1, chunks.size());
-		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("\u00A0__\u00A0__\u00A0", ((TextChunk)chunks.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
-	}
-
 }

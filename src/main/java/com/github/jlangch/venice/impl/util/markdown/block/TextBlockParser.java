@@ -74,7 +74,7 @@ public class TextBlockParser {
 	
 	private void addLine(final TextBlock block, final String line) {
 		if (lineEndsLineBreak(line)) {
-			block.add(new RawChunk(line.substring(0, line.length()-2).trim()));
+			block.add(new RawChunk(line.substring(0, line.length()-1).trim()));
 			block.add(new LineBreakChunk());
 		}
 		else {
@@ -83,7 +83,7 @@ public class TextBlockParser {
 	}
 	
 	private boolean lineEndsLineBreak(final String line) {
-		return line.matches("^.*>>$");
+		return line.matches("^.*[¬¶]$");
 	}
 	
 	
