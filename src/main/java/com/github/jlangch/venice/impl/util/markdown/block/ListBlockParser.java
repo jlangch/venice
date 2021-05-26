@@ -44,12 +44,18 @@ public class ListBlockParser {
 		final ListBlock block = new ListBlock();
 
 		TextBlock item = new TextBlock();
+		
+		Boolean ordered = null;
 
 		while (!reader.eof() && !StringUtil.isBlank(reader.peek())) {
 			String line = reader.peek();
 			reader.consume();
 
-			if (ListBlockParser.isBlockStart(line)) {
+			if (isUnorderedItemStart(line)) {
+				if (ordered == null) {
+					ordered = false;
+					block.setOrdered(false);
+				}			
 				if (!item.isEmpty()) {
 					block.addItem(item);
 				}
@@ -58,6 +64,23 @@ public class ListBlockParser {
 				// strip list bullet
 				line = StringUtil.trimLeft(line);
 				line = line.substring(1);
+				line = StringUtil.trimLeft(line);
+				
+				item.add(new RawChunk(line));
+			}
+			else if (isOrderedItemStart(line)) {
+				if (ordered == null) {
+					ordered = true;
+					block.setOrdered(true);
+				}
+				if (!item.isEmpty()) {
+					block.addItem(item);
+				}
+				item = new TextBlock();
+
+				// strip list item number
+				final int pos = line.indexOf('.');
+				line = line.substring(pos+1);
 				line = StringUtil.trimLeft(line);
 				
 				item.add(new RawChunk(line));
@@ -81,7 +104,15 @@ public class ListBlockParser {
 	}
 
 	public static boolean isItemStart(final String line) {
+		return isUnorderedItemStart(line) || isOrderedItemStart(line);
+	}
+
+	private static boolean isUnorderedItemStart(final String line) {
 		return line.matches(" *[*] +[^ ].*");
+	}
+
+	private static boolean isOrderedItemStart(final String line) {
+		return line.matches(" *[0-9]+[.] +[^ ].*");
 	}
 
 	

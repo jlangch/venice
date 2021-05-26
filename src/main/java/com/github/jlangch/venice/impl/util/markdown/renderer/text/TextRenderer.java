@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.markdown.renderer.text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -169,12 +170,10 @@ public class TextRenderer {
 	}
 
 	private String render(final CodeBlock block) {
-		final StringBuilder sb = new StringBuilder();
-		
-		block.getLines()
-			 .forEach(l -> { sb.append(l); sb.append("\n"); });
-
-		return sb.toString();
+		return block.getLines()
+					.stream()
+					.map(l -> CODE_INDENT + l)
+					.collect(Collectors.joining("\n"));
 	}
 	
 	private String render(final ListBlock block) {
@@ -254,6 +253,8 @@ public class TextRenderer {
 
 	
 	private static final char BULLET = 'o';
+	
+	private static final String CODE_INDENT = "\u00A0\u00A0\u00A0\u00A0";
 	
 	private int width = -1;
 	private boolean softWrap = true;

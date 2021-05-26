@@ -108,17 +108,17 @@ public class MarkdownTextRendererTest {
 				+ "```";
 			
 		final String expected =
-				  "(defmacro\n"
-				+ "  ^{ :arglists '(\"(comment & body)\")\n"
-				+ "     :doc \"Ignores body, yields nil\"\n"
-				+ "     :examples '(\n"
-				+ "          \"\"\"\n"
-				+ "          (comment\n"
-				+ "            (println 1)\n"
-				+ "            (println 5))\n"
-				+ "          \"\"\" ) }\n"
-				+ "\n"
-				+ "   comment [& body] nil)\n";
+				    "    (defmacro\n"
+				  + "      ^{ :arglists '(\"(comment & body)\")\n"
+				  + "         :doc \"Ignores body, yields nil\"\n"
+				  + "         :examples '(\n"
+				  + "              \"\"\"\n"
+				  + "              (comment\n"
+				  + "                (println 1)\n"
+				  + "                (println 5))\n"
+				  + "              \"\"\" ) }\n"
+				  + "    \n"
+				  + "       comment [& body] nil)";
 		
 		final String rendered = Markdown.parse(md).renderToText(50);
 

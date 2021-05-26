@@ -53,6 +53,14 @@ public class ListBlock implements Block {
 		return items.get(index);
 	}
 	
+	public boolean isOrdered() {
+		return ordered;
+	}
+	
+	public void setOrdered(final boolean ordered) {
+		this.ordered = ordered;
+	}
+
 	@Override
 	public void parseChunks() {
 		items.forEach(b -> b.parseChunks());
@@ -60,4 +68,5 @@ public class ListBlock implements Block {
 	
 	
 	private List<Block> items = new ArrayList<>();
+	private boolean ordered = false;
 }
