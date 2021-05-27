@@ -393,9 +393,9 @@ public class ConcurrencyFunctions {
 						"(atom x & options)")		
 					.doc(
 						"Creates an atom with the initial value x. \n\n" +
-						"Options: \n" +
-						"  :meta metadata-map \n" +
-						"  :validator validate-fn \n" +
+						"Options: ¶\n" +
+						"&ensp; :meta metadata-map ¶\n" +
+						"&ensp; :validator validate-fn \n\n" +
 						"If metadata-map is supplied, it will become the metadata on the " + 
 						"atom. validate-fn must be nil or a side-effect-free fn of one " + 
 						"argument, which will be passed the intended new state on any state " + 
@@ -695,10 +695,10 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Creates and returns an agent with an initial value of state and " +
 						"zero or more options. \n\n" +
-						"Options: \n" +
-						"  :error-handler handler-fn \n" +
-						"  :error-mode mode-keyword \n" +
-						"  :validator validate-fn \n" +
+						"Options: ¶\n" +
+						"&ensp; :error-handler handler-fn ¶\n" +
+						"&ensp; :error-mode mode-keyword ¶\n" +
+						"&ensp; :validator validate-fn \n\n" +
 						"The handler-fn is called if an action throws an exception. It's a " +
 						"function taking two args the agent and the exception. The " +
 						"mode-keyword may be either :continue (the default) or :fail " +
@@ -779,9 +779,9 @@ public class ConcurrencyFunctions {
 					.arglists("(send-off agent fn args)")		
 					.doc(
 						"Dispatch a potentially blocking action to an agent. Returns " +
-						"the agent immediately. The state of the agent will be set to " +
-						"the value of:\n" + 
-						" (apply action-fn state-of-agent args)")
+						"the agent immediately. \n\n" +
+						"The state of the agent will be set to the value of:¶\n" + 
+						"&ensp `(apply action-fn state-of-agent args)`")
 					.examples(
 						"(do                           \n" +
 						"   (def x (agent 100))        \n" +
@@ -1177,18 +1177,18 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"agent send.\n\n" +
-						"core-pool-size        the number of threads to keep in the pool,\n" +
-						"                      even if they are idle\n" +
-						"maximum-pool-size     the maximum allowed number of threads\n" +
-						"current-pool-size     the current number of threads in the pool\n" +
-						"largest-pool-size     the largest number of threads that have\n" +
-						"                      ever simultaneously been in the pool\n" +
-						"active-thread-count   the approximate number of threads that are\n" +
-						"                      actively executing tasks\n" +
-						"scheduled-task-count  the approximate total number of tasks that\n" +
-						"                      have ever been scheduled for execution\n" +
-						"completed-task-count  the approximate total number of tasks\n" +
-						"                      that have completed execution")
+						"| core-pool-size       |  the number of threads to keep in the pool, " +
+						"                          even if they are idle |\n" +
+						"| maximum-pool-size    |  the maximum allowed number of threads |\n" +
+						"| current-pool-size    |  the current number of threads in the pool |\n" +
+						"| largest-pool-size    |  the largest number of threads that have " +
+						"                          ever simultaneously been in the pool |\n" +
+						"| active-thread-count  |  the approximate number of threads that are " +
+						"                          actively executing tasks |\n" +
+						"| scheduled-task-count |  the approximate total number of tasks that " +
+						"                          have ever been scheduled for execution |\n" +
+						"| completed-task-count |  the approximate total number of tasks " +
+						"                          that have completed execution |")
 					.examples(
 						"(agent-send-thread-pool-info)")
 					.seeAlso("agent", "send")
@@ -1212,18 +1212,18 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"agent send-off.\n\n" +
-						"core-pool-size        the number of threads to keep in the pool,\n" +
-						"                      even if they are idle\n" +
-						"maximum-pool-size     the maximum allowed number of threads\n" +
-						"current-pool-size     the current number of threads in the pool\n" +
-						"largest-pool-size     the largest number of threads that have\n" +
-						"                      ever simultaneously been in the pool\n" +
-						"active-thread-count   the approximate number of threads that are\n" +
-						"                      actively executing tasks\n" +
-						"scheduled-task-count  the approximate total number of tasks that\n" +
-						"                      have ever been scheduled for execution\n" +
-						"completed-task-count  the approximate total number of tasks\n" +
-						"                      that have completed execution")
+						"| core-pool-size       |  the number of threads to keep in the pool, " +
+						"                          even if they are idle |\n" +
+						"| maximum-pool-size    |  the maximum allowed number of threads |\n" +
+						"| current-pool-size    |  the current number of threads in the pool |\n" +
+						"| largest-pool-size    |  the largest number of threads that have " +
+						"                          ever simultaneously been in the pool |\n" +
+						"| active-thread-count  |  the approximate number of threads that are " +
+						"                          actively executing tasks |\n" +
+						"| scheduled-task-count |  the approximate total number of tasks that " +
+						"                          have ever been scheduled for execution |\n" +
+						"| completed-task-count |  the approximate total number of tasks " +
+						"                          that have completed execution |")
 					.examples(
 						"(agent-send-off-thread-pool-info)")
 					.seeAlso("agent", "send-off")
@@ -1360,7 +1360,7 @@ public class ConcurrencyFunctions {
 						"invoke the function in another thread, and will cache the result and " + 
 						"return it on all subsequent calls to deref. If the computation has " + 
 						"not yet finished, calls to deref will block, unless the variant of " + 
-						"deref with timeout is used. \n" +
+						"deref with timeout is used.\n\n" +
 						"Thread local vars will be inherited by the future child thread. Changes " +
 						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
@@ -1645,18 +1645,18 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"the futures.\n\n" +
-						"core-pool-size        the number of threads to keep in the pool,\n" +
-						"                      even if they are idle\n" +
-						"maximum-pool-size     the maximum allowed number of threads\n" +
-						"current-pool-size     the current number of threads in the pool\n" +
-						"largest-pool-size     the largest number of threads that have\n" +
-						"                      ever simultaneously been in the pool\n" +
-						"active-thread-count   the approximate number of threads that are\n" +
-						"                      actively executing tasks\n" +
-						"scheduled-task-count  the approximate total number of tasks that\n" +
-						"                      have ever been scheduled for execution\n" +
-						"completed-task-count  the approximate total number of tasks\n" +
-						"                      that have completed execution")
+						"| core-pool-size       |  the number of threads to keep in the pool, " +
+						"                          even if they are idle |\n" +
+						"| maximum-pool-size    |  the maximum allowed number of threads |\n" +
+						"| current-pool-size    |  the current number of threads in the pool |\n" +
+						"| largest-pool-size    |  the largest number of threads that have " +
+						"                          ever simultaneously been in the pool |\n" +
+						"| active-thread-count  |  the approximate number of threads that are " +
+						"                          actively executing tasks |\n" +
+						"| scheduled-task-count |  the approximate total number of tasks that " +
+						"                          have ever been scheduled for execution |\n" +
+						"| completed-task-count |  the approximate total number of tasks " +
+						"                          that have completed execution |")
 					.examples(
 						"(futures-thread-pool-info)")
 					.seeAlso("future")
@@ -1978,7 +1978,7 @@ public class ConcurrencyFunctions {
 						"twice in succession, the second call would return false " +
 						"(unless the current thread were interrupted again, after " +
 						"the first call had cleared its interrupted status and " +
-						"before the second call had examined it).\n" + 
+						"before the second call had examined it).\n\n" + 
 						"Returns true if the current thread has been interrupted " +
 						"else false.")
 					.examples("(thread-interrupted)")

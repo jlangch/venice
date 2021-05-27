@@ -65,7 +65,7 @@ public class DocGenerator {
 						"app",    "xml",    "crypt",  "gradle", 
 						"trace",  "ansi",   "maven",  "kira",
 						"java",   "semver", "excel",  "hexdump",
-						"shell",  "geoip"));
+						"shell",  "geoip",  "benchmark"));
 		
 		Env env = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -238,6 +238,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Shell", "modules.shell"));
 		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
 		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
+		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
 		content.add(extmod);
 
 		return content;
@@ -283,7 +284,8 @@ public class DocGenerator {
 				getModuleMavenSection(),
 				getModuleTracingSection(),
 				getModuleShellSection(),
-				getModuleAnsiSection());
+				getModuleAnsiSection(),
+				getModuleBenchmarkSection());
 	}
 	
 	private List<DocSection> getModulesRightSections() {
@@ -2077,7 +2079,8 @@ public class DocGenerator {
 		maven.addItem(getDocItem("maven/download", false));
 		maven.addItem(getDocItem("maven/get", false));
 		maven.addItem(getDocItem("maven/uri", false));
-
+		maven.addItem(getDocItem("maven/parse-artefact", false));
+		
 		return section;
 	}
 
@@ -2199,6 +2202,19 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getModuleBenchmarkSection() {
+		final DocSection section = new DocSection("Benchmark", "modules.benchmark");
+
+		final DocSection all = new DocSection("(load-module :benchmark)", id());
+		section.addSection(all);
+
+		final DocSection colors = new DocSection("Utils", id());
+		all.addSection(colors);
+		colors.addItem(getDocItem("bench/benchmark", false));
+
+		return section;
+	}
+
 	private DocSection getModuleExcelSection() {
 		final List<String> footers = Arrays.asList(
 										"Required 3rd party libraries:",
@@ -2297,18 +2313,26 @@ public class DocGenerator {
 		final VncFunction fn = findFunction(name);
 
 		if (fn != null) {
-			final String description = fn.getDoc() == Constants.Nil 
+			final String fnDescr = fn.getDoc() == Constants.Nil 
 										? "" 
 										: ((VncString)fn.getDoc()).getValue();
 			
-			final String descriptionXmlStyled = null; // Markdown.parse(description).renderToHtml();
+			final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
+			
+			final String descrXmlStyled = MARKDOWN_FN_DESCR
+											? Markdown.parse(fnDescr).renderToHtml()
+											: null;
 			
 			return new DocItem(
 					name, 
 					toStringList(fn.getArgLists(), name, ":arglists"), 
-					description,
-					descriptionXmlStyled,
-					runExamples(name, toStringList(fn.getExamples(), name, ":examples"), runExamples, catchEx),
+					descr,
+					descrXmlStyled,
+					runExamples(
+							name, 
+							toStringList(fn.getExamples(), name, ":examples"), 
+							runExamples, 
+							catchEx),
 					createCrossRefs(name, fn),
 					id(name));
 		}
@@ -2549,6 +2573,8 @@ public class DocGenerator {
 		section.getSections().forEach(s -> validateUniqueSectionId(s, ids));
 	}
 	
+	
+	private static final boolean MARKDOWN_FN_DESCR = true;
 
 	private static final List<ExampleOutput> EMPTY_EXAMPLES = 
 			Collections.unmodifiableList(new ArrayList<>());

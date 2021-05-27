@@ -753,11 +753,11 @@ public class SpecialFormsDoc {
 						"Quasi quotes also called syntax quotes (a backquote) supress " +
 						"evaluation of the form that follows it and all the nested forms." +
 						"\n\n" +
-						"unquote:\n" +
+						"unquote:¶\n" +
 						"It is possible to unquote part of the form that is quoted with `~`. " +
 						"Unquoting allows you to evaluate parts of the syntax quoted expression." +
 						"\n\n" +
-						"unquote-splicing:\n" +
+						"unquote-splicing:¶\n" +
 						"Unquote evaluates to a collection of values and inserts the " +
 						"collection into the quoted form. But sometimes you want to " +
 						"unquote a list and insert its elements (not the list) inside " +
@@ -832,7 +832,7 @@ public class SpecialFormsDoc {
 						"'dorun' and 'perf'. The perf macro is built on prof and dorun and " +
 						"provides all for simple Venice profiling.\n\n" +
 						"The profiler reports a function's elapsed time as \"time with children\"! \n\n" +
-						"Profiling recursive functions: \n" +
+						"Profiling recursive functions:¶\n" +
 						"Because the profiler reports \"time with children\" and accumulates the " +
 						"elapsed time across all recursive calls the resulting time for a " +
 						"particular recursive function is higher than the effective time.")
@@ -1252,7 +1252,7 @@ public class SpecialFormsDoc {
 					.doc(
 						"Throws a NotInTailPositionException if the expr is not in " +
 						"tail position otherwise returns nil. \n\n" +
-						"Definition: \n" +
+						"Definition:¶\n" +
 						"The tail position is a position which an expression would " +
 						"return a value from. There are no more forms evaluated after " +
 						"the form in the tail position is evaluated. ")

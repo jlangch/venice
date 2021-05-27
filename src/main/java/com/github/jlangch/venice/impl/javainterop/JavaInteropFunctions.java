@@ -402,14 +402,14 @@ public class JavaInteropFunctions {
 					.arglists("(class-version class)")
 					.doc(
 						"Returns the major version of a Java class.\n\n" +
-						"Java major versions:\n" +
-						"  - Java 8 uses major version 52\n" +
-						"  - Java 9 uses major version 53\n" +
-						"  - Java 10 uses major version 54\n" +
-						"  - Java 11 uses major version 55\n" +
-						"  - Java 12 uses major version 56\n" +
-						"  - Java 13 uses major version 57\n" +
-						"  - Java 14 uses major version 58\n" +
+						"Java major versions:¶\n" +
+						"  - Java 8 uses major version 52¶\n" +
+						"  - Java 9 uses major version 53¶\n" +
+						"  - Java 10 uses major version 54¶\n" +
+						"  - Java 11 uses major version 55¶\n" +
+						"  - Java 12 uses major version 56¶\n" +
+						"  - Java 13 uses major version 57¶\n" +
+						"  - Java 14 uses major version 58¶\n" +
 						"  - Java 15 uses major version 59")
 					.examples("(class-version :com.github.jlangch.venice.Venice)")
 					.seeAlso("class", "class-of", "class-name")
@@ -440,12 +440,12 @@ public class JavaInteropFunctions {
 					.doc(
 						"Returns the Maven version for a loaded JAR's manifest or " +
 						"nil if there is no Maven manifest.\n\n" +
-						"Reads the version from the JAR's Maven 'pom.properties' file at: \n" +
+						"Reads the version from the JAR's Maven 'pom.properties' file at:¶\n" +
 						"  /META-INF/maven/{group-id}/{artefact-id}/pom.properties\n\n" +
-						"A 'pom.properties' may look like: \n" +
-						"  artifactId=xchart\n" +
-						"  groupId=org.knowm.xchart\n" +
-						"  version=3.8.0\n")
+						"A 'pom.properties' may look like:¶\n" +
+						" - artifactId=xchart¶\n" +
+						" - groupId=org.knowm.xchart¶\n" +
+						" - version=3.8.0\n")
 					.examples("(jar-maven-manifest-version :com.github.librepdf :openpdf)")
 					.seeAlso("java-package-version")
 					.build());
@@ -614,7 +614,7 @@ public class JavaInteropFunctions {
 						"(classloader-of x)")
 					.doc(
 						"Returns the classloader of a value or a Java class. \n\n" +
-						"Note: \n" +
+						"Note:¶\n" +
 						"Some Java VM implementations may use 'null' to represent " + 
 						"the  bootstrap class loader. This method will return 'nil' " + 
 						"in such implementations if this class was loaded by the " + 

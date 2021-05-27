@@ -63,11 +63,11 @@ public class CsvFunctions {
 						"Reads CSV-data from a source. The source may be a a string, " + 
 						"a bytebuf, a file, a Java InputStream, or a Java Reader.\n" + 
 						"\n" + 
-						"Options:\n" + 
-						"   :encoding enc - used when reading from a binary data source\n" + 
-						"                   e.g :encoding :utf-8, defaults to :utf-8\n" + 
-						"   :separator val - e.g. \",\", defaults to a comma\n" + 
-						"	:quote val - e.g. \"'\", defaults to a double quote")
+						"Options:\n\n" + 
+						"| :encoding enc  | used when reading from a binary data source " + 
+						"                   e.g :encoding :utf-8, defaults to :utf-8 |\n" + 
+						"| :separator val | e.g. \",\", defaults to a comma |\n" + 
+						"| :quote val     | e.g. \"'\", defaults to a double quote |")
 					.examples(
 					    "(csv/read \"1,\\\"ab\\\",false\")",
 					    "(csv/read \"1:::'ab':false\" :separator \":\" :quote \"'\")") 
@@ -142,11 +142,10 @@ public class CsvFunctions {
 						"Writes data to a writer in CSV format. The writer is a\n" + 
 						"Java java.io.Writer\n" + 
 						"\n" + 
-						"Options:\n" + 
-						"  :separator val - e.g. \",\", defaults to a comma\n" + 
-						"  :quote val - e.g. \"'\", defaults to a double quote\n" + 
-						"  :newline val (:lf (default) or :cr+lf)\n" + 
-						"")
+						"Options:\n\n" + 
+						"| :separator val | e.g. \",\", defaults to a comma |\n" + 
+						"| :quote val     | e.g. \"'\", defaults to a double quote |\n" + 
+						"| :newline val   | :lf (default) or :cr+lf |")
 					.examples(
 					    "(let [file (io/file \"test.csv\")                                       \n" + 
 					    "      fs (. :java.io.FileOutputStream :new file)]                       \n" + 
@@ -202,11 +201,10 @@ public class CsvFunctions {
 						.doc(
 							"Writes data to a string in CSV format.\n" + 
 							"\n" + 
-							"Options:\n" + 
-							"  :separator val - e.g. \",\", defaults to a comma\n" + 
-							"  :quote val - e.g. \"'\", defaults to a double quote\n" + 
-							"  :newline val (:lf (default) or :cr+lf)\n" + 
-							"")
+							"Options:\n\n" + 
+							"| :separator val | e.g. \",\", defaults to a comma |\n" + 
+							"| :quote val     | e.g. \"'\", defaults to a double quote |\n" + 
+							"| :newline val   | :lf (default) or :cr+lf |")
 						.examples(
 							"(csv/write-str [[1 \"AC\" false] [2 \"WS\" true]])",
 						    "(csv/write-str [[1 \"AC\" false] [2 \"WS, '-1'\" true]]\n" + 

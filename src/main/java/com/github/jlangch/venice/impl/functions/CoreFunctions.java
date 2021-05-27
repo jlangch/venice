@@ -1675,7 +1675,7 @@ public class CoreFunctions {
 				    	"(list* a b c args)",
 				    	"(list* a b c d & more)")
 					.doc(
-						"Creates a new list containing the items prepended to the rest, the\n" +
+						"Creates a new list containing the items prepended to the rest, the " +
 						"last of which will be treated as a collection.")
 					.examples(
 						"(list* 1 [2 3])",
@@ -1860,8 +1860,8 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(replace smap coll)")
 					.doc(
-						"Given a map of replacement pairs and a collection, returns a\n" +
-						"collection with any elements that are a key in smap replaced with the\n" +
+						"Given a map of replacement pairs and a collection, returns a " +
+						"collection with any elements that are a key in smap replaced with the " +
 						"corresponding value in smap.")
 					.examples(
 							"(replace {2 :two, 4 :four} [4 2 3 4 5 6 2])",
@@ -2034,20 +2034,20 @@ public class CoreFunctions {
 						"(lazy-seq seed f)",
 						"(lazy-seq head tail-lazy-seq)")
 					.doc(
-						"Creates a new lazy sequence.                                    \n\n" +
-						"  (lazy-seq)                                                      \n" +
-						"     empty lazy sequence                                        \n\n" +
-						"  (lazy-seq f)                                                    \n" +
-						"     (theoretically) infinitely lazy sequence using a repeatedly  \n" +
-						"     invoked supplier function for each next value. The sequence  \n" +
-						"     ends if the supplier returns nil.                          \n\n" +
-						"  (lazy-seq seed f)                                               \n" +
-						"     (theoretically) infinitely lazy sequence with a seed value   \n" +
-						"     and a function to calculate the next value based on the      \n" +
-						"     previous.                                                  \n\n" +
-						"  (lazy-seq head tail-lazy-seq)                                   \n" +
-						"     Constructs lazy sequence of a head element and a lazy        \n" +
-						"     sequence tail supplier.")
+						"Creates a new lazy sequence.\n\n" +
+						"`(lazy-seq)`¶" +
+						"empty lazy sequence\n\n" +
+						"`(lazy-seq f)`¶" +
+						"(theoretically) infinitely lazy sequence using a repeatedly " +
+						"invoked supplier function for each next value. The sequence " +
+						"ends if the supplier returns nil.\n\n" +
+						"`(lazy-seq seed f)`¶\n" +
+						"(theoretically) infinitely lazy sequence with a seed value " +
+						"and a function to calculate the next value based on the " +
+						"previous.\n\n" +
+						"`(lazy-seq head tail-lazy-seq)`¶" +
+						"Constructs lazy sequence of a head element and a lazy " +
+						"sequence tail supplier.")
 					.examples(
 						"; empty lazy sequence  \n" +
 						"(->> (lazy-seq)        \n" +
@@ -2394,8 +2394,8 @@ public class CoreFunctions {
 						"Takes a set of functions and returns a fn that is the juxtaposition " +
 						"of those fns.  The returned fn takes a variable number of args, and " +
 						"returns a vector containing the result of applying each fn to the " +
-						"args (left-to-right).\n" +
-						"((juxt a b c) x) => [(a x) (b x) (c x)]")
+						"args (left-to-right).\n\n" +
+						"`((juxt a b c) x) => [(a x) (b x) (c x)]`")
 					.examples(
 						"((juxt first last) '(1 2 3 4))",
 
@@ -3635,12 +3635,14 @@ public class CoreFunctions {
 						"Returns a collection of the map's keys.\n\n" +
 						"Please note that the functions 'keys' and 'vals' applied " +
 						"to the same map are not guaranteed not return the keys and " +
-						"vals in the same order! \n" +
+						"vals in the same order! \n\n" +
 						"To achieve this, keys and vals can calculated based on the " +
-						"map's entry list: \n" +
-						"   (let [e (entries {:a 1 :b 2 :c 3})]\n" +
-						"     (println (map key e))\n" +
-						"     (println (map val e)))")
+						"map's entry list: \n\n" +
+						"```venice\n" +
+						"(let [e (entries {:a 1 :b 2 :c 3})]\n" +
+						"  (println (map key e))\n" +
+						"  (println (map val e)))\n" +
+						"```")
 					.examples("(keys {:a 1 :b 2 :c 3})")
 					.seeAlso("vals", "entries", "map")
 					.build()
@@ -3692,12 +3694,14 @@ public class CoreFunctions {
 						"Returns a collection of the map's values.\n\n" +
 						"Please note that the functions 'keys' and 'vals' applied " +
 						"to the same map are not guaranteed not return the keys and " +
-						"vals in the same order! \n" +
+						"vals in the same order! \n\n" +
 						"To achieve this, keys and vals can calculated based on the " +
-						"map's entry list: \n" +
-						"   (let [e (entries {:a 1 :b 2 :c 3})]\n" +
-						"     (println (map key e))\n" +
-						"     (println (map val e)))")
+						"map's entry list: \n\n" +
+						"```venice\n" +
+						"(let [e (entries {:a 1 :b 2 :c 3})]\n" +
+						"  (println (map key e))\n" +
+						"  (println (map val e)))\n" +
+						"```")
 					.examples("(vals {:a 1 :b 2 :c 3})")
 					.seeAlso("keys", "entries", "map")
 					.build()
@@ -4301,7 +4305,7 @@ public class CoreFunctions {
 					.arglists("(some pred coll)")
 					.doc(
 						"Returns the first logical true value of (pred x) for any x in coll, " +
-						"else nil. \n" +
+						"else nil. \n\n" +
 						"Stops processing the collection if the first value is found that meets " +
 						"the predicate.")
 					.examples(
@@ -4460,7 +4464,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(count coll)")
 					.doc(
-						"Returns the number of items in the collection. (count nil) returns " +
+						"Returns the number of items in the collection. `(count nil)` returns " +
 						"0. Also works on strings, and Java Collections")
 					.examples(
 						"(count {:a 1 :b 2})",
@@ -4707,7 +4711,7 @@ public class CoreFunctions {
 						"(conj coll x)",
 						"(conj coll x & xs)")
 					.doc(
-						"Returns a new collection with the x, xs 'added'. (conj nil item) " +
+						"Returns a new collection with the x, xs 'added'. `(conj nil item)` " +
 						"returns (item). For list, vectors and ordered maps the values are " +
 						"added at the end. For all other sets and maps the position is undefined.")
 					.examples(
@@ -4845,8 +4849,8 @@ public class CoreFunctions {
 						"(conj! coll x)",
 						"(conj! coll x & xs)")
 					.doc(
-						"Returns a new mutable collection with the x, xs 'added'. (conj! nil item) " +
-						"returns (item). For mutable list the values are added at the end. For all " +
+						"Returns a new mutable collection with the x, xs 'added'. `(conj! nil item)` " +
+						"returns `(item)`. For mutable list the values are added at the end. For all " +
 						"mutable sets and maps the position is undefined.")
 					.examples(
 						"(conj! (mutable-list 1 2 3) 4)",
@@ -4921,7 +4925,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(concat coll)", "(concat coll & colls)")
 					.doc( "Returns a collection of the concatenation of the elements " +
-					"in the supplied colls.")
+						  "in the supplied colls.")
 					.examples(
 					"(concat [1 2])",
 					"(concat [1 2] [4 5 6])",
@@ -4972,7 +4976,7 @@ public class CoreFunctions {
 						"(interleave c1 c2 & colls)")
 					.doc(
 						"Returns a collection of the first item in each coll, then the " +
-						"second etc. \n" +
+						"second etc. \n\n" +
 						"Supports lazy sequences as long at least one collection " +
 						"is not a lazy sequence.")
 					.examples(
@@ -6750,7 +6754,7 @@ public class CoreFunctions {
 						"returns the result of applying f to the first 2 items in coll, then " +
 						"applying f to that result and the 3rd item, etc. If coll contains no " +
 						"items, f must accept no arguments as well, and reduce returns the " +
-						"result of calling f with no arguments.  If coll has only 1 item, it " +
+						"result of calling f with no arguments. If coll has only 1 item, it " +
 						"is returned and f is not called.  If val is supplied, returns the " +
 						"result of applying f to val and the first item in coll, then " +
 						"applying f to that result and the 2nd item, etc. If coll contains no " +
@@ -6911,9 +6915,9 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(merge-with f & maps)")
 					.doc(
-						"Returns a map that consists of the rest of the maps conj-ed onto\n" + 
-						"the first. If a key occurs in more than one map, the mapping(s)\n" + 
-						"from the latter (left-to-right) will be combined with the mapping in\n" + 
+						"Returns a map that consists of the rest of the maps conj-ed onto " + 
+						"the first. If a key occurs in more than one map, the mapping(s) " + 
+						"from the latter (left-to-right) will be combined with the mapping in " + 
 						"the result by calling (f val-in-result val-in-latter).")
 					.examples(
 						"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0})",
@@ -7416,7 +7420,8 @@ public class CoreFunctions {
 					.doc(
 						"Syntax highlighting. Reads the form and returns a list of " +
 						"(token, token-class) tuples. \n\n" +
-						"Token classes: \n" +
+						"Token classes: \n\n" +
+						"```\n"+
 						"   :comment                 ; .... \n" +
 						"   :whitespaces             \"  \", \"\\n\", \"  \\n\"  \n" +
 						"\n" +
@@ -7444,7 +7449,8 @@ public class CoreFunctions {
 						"   :parenthesis-begin       (  \n" +
 						"   :parenthesis-end         )  \n" +
 						"\n" +
-						"   :unknown                 anything that could not be classified")
+						"   :unknown                 anything that could not be classified\n" +
+						"```")
 					.examples(
 						"(highlight \"(+ 10 20)\")",
 						"(highlight \"(if (= 1 2) true false)\")")

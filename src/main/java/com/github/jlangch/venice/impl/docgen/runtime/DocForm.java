@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.markdown.Markdown;
 
 
 public class DocForm {
@@ -127,7 +128,7 @@ public class DocForm {
 		// if we run in a REPL use the effective terminal width for rendering
 		final int width = repl ? replTerminalWidth(env) : 80;
 		
-		return getDoc(symVal, width);
+		return formatDoc(symVal, width);
 	}
 	
 	private static VncString docForKeyword(final VncKeyword keyword, final Env env) {
@@ -286,7 +287,7 @@ public class DocForm {
 		return -1;
 	}
 	
-	private static VncString getDoc(final VncVal val, final int width) {
+	private static VncString formatDoc(final VncVal val, final int width) {
 		if (val != null && Types.isVncFunction(val)) {
 			final VncFunction fn = (VncFunction)val;
 			final VncList argsList = fn.getArgLists();
@@ -302,11 +303,10 @@ public class DocForm {
 			
 			sb.append("\n\n");
 			
-			final String doc = toString(fn.getDoc());
-			sb.append(doc);
-
-			// TODO: enable Markdown renderer
-			//sb.append(Markdown.parse(doc).renderToText(width));
+			final String fnDescr = toString(fn.getDoc());
+			sb.append(MARKDOWN_FN_DESCR
+						? Markdown.parse(fnDescr).renderToText(width)
+						: fnDescr);
 						
 			if (!examples.isEmpty()) {
 				sb.append("\n\n");
@@ -351,4 +351,7 @@ public class DocForm {
 	private static String toString(final VncVal val) {
 		return val == Constants.Nil ? "" : ((VncString)val).getValue();
 	}
+	
+	
+	private static final boolean MARKDOWN_FN_DESCR = true;
 }

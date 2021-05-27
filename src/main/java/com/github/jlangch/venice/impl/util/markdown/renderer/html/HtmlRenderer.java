@@ -100,11 +100,16 @@ public class HtmlRenderer {
 	
 	private void render(final ListBlock block, final PrintWriter wr) {
 		wr.println("<div class=\"md-list-block\">");
-		wr.println("<ul class=\"md-list\">");
-		block.getItems().forEach(b -> { wr.print("<li>" );
+		
+		wr.println(block.isOrdered()
+					? "<ol class=\"md-list\">"
+					: "<ul class=\"md-list\">");
+		
+		block.getItems().forEach(b -> { wr.print("<li>");
 										render(b, wr);
-										wr.println("</li>" ); });
-		wr.println("</ul>");
+										wr.println("</li>"); });
+		
+		wr.println(block.isOrdered() ? "</ol>" : "</ul>");
 		wr.println("</div>");
 	}
 	

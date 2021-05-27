@@ -615,7 +615,7 @@ public class IOFunctions {
 						"Blocks the current thread until the file has been created, deleted, or " + 
 						"modified according to the passed modes {:created, :deleted, :modified}, " +
 						"or the timeout has elapsed. Returns logical false if returning due to " +
-						"timeout, logical true otherwise. \n" +
+						"timeout, logical true otherwise. \n\n" +
 						"Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
 					.examples(
 						"(io/await-for 10 :seconds \"/tmp/data.json\" :created)")
@@ -700,12 +700,12 @@ public class IOFunctions {
 					.doc(
 						"Watch a directory for changes, and call the function event-fn when it " +
 						"does. Calls the optional failure-fn if errors occur. On closing " +
-						"the watcher termination-fn is called. \n" +
+						"the watcher termination-fn is called. \n\n" +
 						"event-fn is a two argument function that receives the path and mode " +
-						"{:created, :deleted, :modified} of the changed file. \n" +
+						"{:created, :deleted, :modified} of the changed file. \n\n" +
 						"failure-fn is a two argument function that receives the watch dir and the " +
-						"failure exception. \n" +
-						"termination-fn is a one argument function receives the watch dir.\n" +
+						"failure exception. \n\n" +
+						"termination-fn is a one argument function receives the watch dir.\n\n" +
 						"Returns a watcher that is activley watching a directory. The watcher is \n" +
 						"a resource which should be closed with io/close-watcher.")
 					.examples(
@@ -1095,14 +1095,14 @@ public class IOFunctions {
 						"Lists all files in a directory that match the glob pattern. " +
 					    "dir must be a file or a string (file path). " +
 					    "Returns files as java.io.File\n\n" +
-					    "Globbing patterns: \n" +
-					    "  *.txt        Matches a path that represents a file name ending in .txt\n" +
-					    "  *.*          Matches file names containing a dot\n" +
-					    "  *.{txt,xml}  Matches file names ending with .txt or .xml\n" +
-					    "  foo.?        Matches file names starting with foo. and a single character extension\n" +
-					    "  /home/*/*    Matches /home/gus/data on UNIX platforms\n" +
-					    "  /home/**     Matches /home/gus and /home/gus/data on UNIX platforms\n" +
-					    "  C:\\\\*        Matches C:\\foo and C:\\bar on the Windows platform (note that the backslash is escaped)\n")
+					    "Globbing patterns: \n\n" +
+					    "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
+					    "| `*.*`         | Matches file names containing a dot |\n" +
+					    "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
+					    "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+					    "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
+					    "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
+					    "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
 					.examples(
 						"(io/list-files-glob \".\" \"sample*.txt\")")
 					.seeAlso("io/list-files", "io/list-file-tree")
@@ -1151,8 +1151,8 @@ public class IOFunctions {
 						"Copies source to dest. Returns nil or throws IOException. " +
 						"Source must be a file or a string (file path), dest must be a file, " +
 						"a string (file path), or an OutputStream.\n\n" +
-						"Options: \n" +
-						"  :replace true/false - e.g if true replace an existing file, defaults to false")
+						"Options: \n\n" +
+						"| :replace true/false | e.g if true replace an existing file, defaults to false |")
 					.seeAlso("io/move-file", "io/delete-file", "io/copy-stream")
 					.build()
 		) {
@@ -1416,8 +1416,8 @@ public class IOFunctions {
 					.doc(
 						"Read all lines from f. f may be a file, a string file path, " +
 						"a Java InputStream, or a Java Reader. \n\n" +
-						"Options: \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\n" +
+						"| :encoding enc | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1502,9 +1502,9 @@ public class IOFunctions {
 						"Reads the content of file f as text (string) or binary (bytebuf). " +
 						"f may be a file, a string file path, a Java InputStream, " +
 						"or a Java Reader. \n\n" +
-						"Options: \n" +
-						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\n" +
+						"| :binary true/false | e.g :binary true, defaults to false |\n" +
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1603,9 +1603,9 @@ public class IOFunctions {
 						"Opens file f, writes content, and then closes f. " +
 						"f may be a file or a string (file path). " +
 						"The content may be a string or a bytebuf.\n\n" +
-						"Options: \n" +
-						"  :append true/false - e.g :append true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\n" +
+						"| :append true/false | e.g :append true, defaults to false |\n" +
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.seeAlso("io/spit-stream", "io/slurp", "io/slurp-lines")
 					.build()
 		) {
@@ -1673,20 +1673,20 @@ public class IOFunctions {
 					.doc(
 						"Downloads the content from the uri and reads it as text (string) " +
 						"or binary (bytebuf). \n\n" +
-						"Options: \n" +
-						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :user-agent agent  - e.g :user-agent \"Mozilla\", defaults to nil \n" +
-						"  :encoding enc      - e.g :encoding :utf-8, defaults to :utf-8\n" +
-						"  :conn-timeout val  - e.g :conn-timeout 10000, \n" +
-						"                           connection timeout in milli seconds. \n" +
-						"                           0 is interpreted as an infinite timeout. \n" +
-						"  :read-timeout val  - e.g :read-timeout 10000, \n" +
-						"                           read timeout in milli seconds. \n" +
-						"                           0 is interpreted as an infinite timeout. \n" +
-						"  :progress-fn fn    - a progress function that takes 2 args \n" +
-						"                           [1] progress (0..100%) \n" +
-						"                           [2] status {:start :progress :end :failed}\n\n" +
-						"If the server returns a 403 (access denied) sending a user-agent\n" +
+						"Options: \n\n" +
+						"| :binary true/false | e.g :binary true, defaults to false |\n" +
+						"| :user-agent agent  | e.g :user-agent \"Mozilla\", defaults to nil |\n" +
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n" +
+						"| :conn-timeout val  | e.g :conn-timeout 10000, " +
+						"                       connection timeout in milli seconds. ¶" +
+						"                       0 is interpreted as an infinite timeout. |\n" +
+						"| :read-timeout val  | e.g :read-timeout 10000, " +
+						"                       read timeout in milli seconds. ¶" +
+						"                       0 is interpreted as an infinite timeout. |\n" +
+						"| :progress-fn fn    | a progress function that takes 2 args ¶" +
+						"                       [1] progress (0..100%) ¶" +
+						"                       [2] status {:start :progress :end :failed}|\n\n" +
+						"If the server returns a 403 (access denied) sending a user-agent " +
 						"may fool the website.")
 					.build()
 		) {
@@ -1884,9 +1884,9 @@ public class IOFunctions {
 						"Slurps binary or string data from a Java InputStream is. " +
 						"Supports the option :binary to either slurp binary or string data. " +
 						"For string data an optional encoding can be specified.\n\n" +
-						"Options: \n" +
-						"  :binary true/false - e.g :binary true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\\n" +
+						"| :binary true/false | e.g :binary true, defaults to false |\n" +
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileInputStream) \n" +
@@ -1946,9 +1946,9 @@ public class IOFunctions {
 						"If content is of type string an optional encoding (defaults to " +
 						"UTF-8) is supported. The stream can optionally be flushed after " +
 						"the operation.\n\n" +
-						"Options: \n" +
-						"  :flush true/false - e.g :flush true, defaults to false \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\\n" +
+						"| :flush true/false | e.g :flush true, defaults to false |\n" +
+						"| :encoding enc     | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileOutputStream) \n" +
