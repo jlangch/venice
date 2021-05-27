@@ -58,6 +58,10 @@ public class TextTableLayouter {
 			
 			final double weight[] = new double[cols];
 			
+			for(int ii=0; ii<maxColWidths.length; ii++) {
+				maxColWidths[ii] = Math.min(usableWidth, maxColWidths[ii]);
+			}
+			
 			// give every column a weight for its width in the range 1..10
 			for(int col=0; col<cols; col++) {
 				final double weightedWidth = (double)maxColWidths[col] / (double)usableWidth * 10D;

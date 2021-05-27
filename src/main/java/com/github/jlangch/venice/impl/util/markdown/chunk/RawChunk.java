@@ -29,7 +29,7 @@ public class RawChunk implements Chunk {
 	}
 
 	public RawChunk(final String text) {
-		this.text = text == null ? "" : text;
+		this.text = text == null ? "" : collapseWhitespaces(text);
 	}
 
 	
@@ -41,6 +41,10 @@ public class RawChunk implements Chunk {
 	
 	public String getText() {
 		return text;
+	}
+
+	private String collapseWhitespaces(final String s) {
+		return s.replaceAll("[ \t]+", " ");
 	}
 
 	

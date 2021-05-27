@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
+import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 
 
@@ -68,10 +69,10 @@ public class TableBlockParser {
 			final List<List<String>> body = cells.subList(2, cells.size());
 
 			final TableBlock block = new TableBlock(
-						cols, 
-						parseAlignments(formatRow), 
-						toChunks(headerRow), 
-						toChunks2(body));
+											cols, 
+											parseAlignments(formatRow), 
+											toChunks(headerRow), 
+											toChunks2(body));
 			block.parseChunks();
 			return block;
 		}
@@ -189,7 +190,7 @@ public class TableBlockParser {
 	
 	private List<Chunks> toChunks(final List<String> list) {
 		return list.stream()
-				   .map(s -> new Chunks().add(new RawChunk(s)))
+				   .map(s -> parseLine(s))
 				   .collect(Collectors.toList());
 	}
 	
@@ -198,6 +199,30 @@ public class TableBlockParser {
 				   .map(l -> toChunks(l))
 				   .collect(Collectors.toList());
 	}
+	
+	private Chunks parseLine(final String line) {
+		final Chunks chunks = new Chunks();
+		
+		if (line.contains("¶")) {
+			final String[] elments = line.split("¶");
+			for(int ii=0; ii<elments.length; ii++) {
+				if (ii>0) {
+					chunks.add(new LineBreakChunk());
+				}
+				chunks.add(new RawChunk(elments[ii].trim()));
+			}
+			
+			if (line.endsWith("¶")) {
+				chunks.add(new LineBreakChunk());
+			}
+		}
+		else {
+			 return chunks.add(new RawChunk(line));
+		}
+		
+		return chunks;
+	}
+
 
 	
 	private static final int EOF = -1;

@@ -179,18 +179,30 @@ public class TextRenderer {
 	private String render(final ListBlock block) {
 		final StringBuilder sb = new StringBuilder();
 		
-		for(Block b : block.getItems()) {
+		final int itemNrDigits = digits(block.size());
+		
+		for(int ii=0; ii<block.size(); ii++) {
+			Block b = block.get(ii);
+			
 			if (sb.length() > 0) {
 				sb.append("\n");
 			}
 
-			sb.append(
-				isWrap()
-					? indent(
-						wrap(render(b), width-2), 
-						BULLET + " ", 
-						"  ")
-					: BULLET + " " + render(b));
+			final String prefix = 
+					block.isOrdered() 
+						? formatListItemNr(ii+1, itemNrDigits) + " "
+						: BULLET + " ";
+
+			if (isWrap()) {
+				sb.append(
+					indent(
+						wrap(render(b), width-prefix.length()), 
+						prefix, 
+						StringUtil.repeat(' ', prefix.length())));
+			}
+			else {
+				sb.append(prefix + render(b));
+			}
 		}
 
 		return sb.toString();
@@ -249,6 +261,15 @@ public class TextRenderer {
 	
 	private boolean isWrap() {
 		return width > 0;
+	}
+	
+	private String formatListItemNr(final int itemNr, final int digits) {
+		final String s = String.format("%d", itemNr);
+		return s + '.' + StringUtil.repeat(' ', Math.max(0, digits-s.length()));
+	}
+	
+	private int digits(final int x) {
+		return (int)Math.log10(x);
 	}
 
 	

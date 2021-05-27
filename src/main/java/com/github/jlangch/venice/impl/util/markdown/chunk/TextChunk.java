@@ -33,7 +33,7 @@ public class TextChunk implements Chunk {
 	}
 
 	public TextChunk(final String text, final Format format) {
-		this.text = text == null ? "" : text;
+		this.text = text == null ? "" : collapseWhitespaces(text);
 		this.format = format == null ? Format.NORMAL : format;
 	}
 
@@ -50,6 +50,9 @@ public class TextChunk implements Chunk {
 		return format;
 	}
 
+	private String collapseWhitespaces(final String s) {
+		return s.replaceAll("[ \t]+", " ");
+	}
 
 	public static enum Format { NORMAL, ITALIC, BOLD, BOLD_ITALIC };
 	

@@ -73,17 +73,22 @@ public class TextBlockParser {
 
 	
 	private void addLine(final TextBlock block, final String line) {
-		if (lineEndsLineBreak(line)) {
-			block.add(new RawChunk(line.substring(0, line.length()-1).trim()));
-			block.add(new LineBreakChunk());
+		if (line.contains("¶")) {
+			final String[] chunks = line.split("¶");
+			for(int ii=0; ii<chunks.length; ii++) {
+				if (ii>0) {
+					block.add(new LineBreakChunk());
+				}
+				block.add(new RawChunk(chunks[ii].trim()));
+			}
+			
+			if (line.endsWith("¶")) {
+				block.add(new LineBreakChunk());
+			}
 		}
 		else {
 			block.add(new RawChunk(line));
 		}
-	}
-	
-	private boolean lineEndsLineBreak(final String line) {
-		return line.matches("^.*[¬¶]$");
 	}
 	
 	
