@@ -107,7 +107,7 @@
   ^{ :arglists '("(crypt/pbkdf2-hash data salt)"
                  "(crypt/pbkdf2-hash data salt iterations key-length)")
      :doc """
-          Hashes a string using PBKDF2. iterations defaults to 1000, \
+          Hashes a string using PBKDF2. iterations defaults to 1000,
           key-length defaults to 256.
           """
      :examples (list
@@ -150,22 +150,22 @@
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
      :doc """
-          Returns a new thread safe function to encrypt a string or a bytebuf \
-          given the algorithm and passphrase. If a string is passed it is \
-          encrypted and returned as a base64 encoded string. If a bytebuf \
+          Returns a new thread safe function to encrypt a string or a bytebuf
+          given the algorithm and passphrase. If a string is passed it is
+          encrypted and returned as a base64 encoded string. If a bytebuf
           is passed the encryped bytebuf is returned.
 
           Supported algorithms: "DES", "3DES", "AES256"
 
           Options:
-            :url-safe enabled
-                The boolean option directs the base64 encoder to emit
-                standard or URL safe base64 encoded strings.
-                If enabled (true) the base64 encoder will emit '-' and '_'
-                instead of the usual '+' and '/' characters.
-                Defaults to false.
-                Note: no padding is added when encoding using the
-                      URL-safe alphabet.
+
+          *:url-safe {true/false}*¶
+          The boolean option directs the base64 encoder to emit
+          standard or URL safe base64 encoded strings.
+          If `true` the base64 encoder will emit '-' and '_'
+          instead of the usual '+' and '/' characters.¶
+          Defaults to false.¶
+          Note: no padding is added when encoding using the URL-safe alphabet.
           """
      :examples (list
           """
@@ -196,12 +196,13 @@
        Supported algorithms: "DES", "3DES", "AES256"
 
        Options:
-         :url-safe enabled
-             The boolean option directs the base64 decoder to decode
-             standard or  URL safe base64 encoded strings.
-             If enabled (true) the base64 decoder will convert '-' and '_'
-             characters back to '+' and '/' before decoding.
-             Defaults to false.
+
+       *:url-safe {true/false}*¶
+       The boolean option directs the base64 decoder to decode
+       standard or  URL safe base64 encoded strings.
+       If enabled (true) the base64 decoder will convert '-' and '_'
+       characters back to '+' and '/' before decoding.¶
+       Defaults to false.
        """
      :examples (list
           """

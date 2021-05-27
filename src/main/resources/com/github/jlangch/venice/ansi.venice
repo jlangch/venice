@@ -147,7 +147,7 @@
 (defn
   ^{ :arglists '("(fg-color code")
      :doc """
-          Defines an extended foreground color from the 256-color extended \
+          Defines an extended foreground color from the 256-color extended
           color set. The code ranges from 0 to 255.
           """
      :examples '("(ansi/fg-color 197)") }
@@ -161,7 +161,7 @@
 (defn
   ^{ :arglists '("(bg-color code")
      :doc """
-          Defines an extended background color from the 256-color extended \
+          Defines an extended background color from the 256-color extended
           color set. The code ranges from 0 to 255.
           """
      :examples '("(ansi/bg-color 197)") }
@@ -197,9 +197,9 @@
 (defn
   ^{ :arglists '("(ansi style)")
      :doc """
-          Output an ANSI escape code using a style key.
-          If *use-ansi* is bound to false, outputs an empty string instead of an \
-          ANSI code.
+          Output an ANSI escape code using a style key.¶
+          If `*use-ansi*` is bound to false, outputs an empty string instead of
+          an ANSI code.
           """
      :examples '(
           """(println (str (ansi/ansi :blue) "foo"))"""
@@ -239,8 +239,8 @@
 (defmacro
   ^{ :arglists '("(with-ansi & forms)")
      :doc """
-          Runs the given forms with the *use-ansi* variable temporarily bound \
-          to true, to enable the production of any ANSI color codes specified \
+          Runs the given forms with the *use-ansi* variable temporarily bound
+          to true, to enable the production of any ANSI color codes specified
           in the forms.
           """
      :examples '(
@@ -255,8 +255,8 @@
 (defmacro
   ^{ :arglists '("(without-ansi & forms)")
      :doc """
-          Runs the given forms with the *use-ansi* variable temporarily bound \
-          to false, to suppress the production of any ANSI color codes \
+          Runs the given forms with the *use-ansi* variable temporarily bound
+          to false, to suppress the production of any ANSI color codes
           specified in the forms.
           """
      :examples '(
@@ -275,22 +275,21 @@
 (defn
   ^{ :arglists '("(progress & options)")
      :doc """
-          Returns a progress handler function that takes two args
-            [1] progress (0..100%)
-            [2] status {:start :progress :end :failed}
-          that renders the progress as a percentage string.
+          Returns a progress handler that renders the progress as a percentage
+          string.
+
+          The returned progress handler takes two args:¶
+          &ensp; - progress (0..100%)¶
+          &ensp; - status {:start :progress :end :failed}
 
           E.g: Download:  54%
 
-          Options:
-            :caption txt
-                A caption text. Defaults to empty.
-            :start-msg msg
-                A start message. Defaults to 'started'.
-            :end-msg msg
-                An end message. Defaults to 'ok'.
-            :failed-msg msg
-                A failed message. Defaults to 'failed'.
+          Progress options:
+
+          | :caption txt    | A caption text. Defaults to empty.      |
+          | :start-msg msg  | A start message. Defaults to 'started'. |
+          | :end-msg msg    | An end message. Defaults to 'ok'.       |
+          | :failed-msg msg | A failed message. Defaults to 'failed'. |
           """
      :examples '("""
                  (let [pb (ansi/progress
@@ -355,27 +354,24 @@
 (defn
   ^{ :arglists '("(progress-bar & options)")
      :doc """
-          Returns a progress handler function that takes two args
-            [1] progress (0..100%)
-            [2] status {:start :progress :end :failed}
-          that renders the progress as a percentage bar.
+          Returns a progress handler that renders a progress bar.
 
-          E.g: Download: [#################        ]
-               Download: [#################        ] 70%
+          The returned progress handler takes two args:¶
+          &ensp;- progress (0..100%)¶
+          &ensp;- status {:start :progress :end :failed}
 
-          Options:
-            :caption txt
-                A caption text. Defaults to empty.
-            :width val
-                The width of the bar in chars. Defaults to 25.
-            :start-msg msg
-                A start message. Defaults to 'started'.
-            :end-msg msg
-                An end message. Defaults to 'ok'.
-            :failed-msg msg
-                A failed message. Defaults to 'failed'.
-            :show-percent {true/false}
-                If true ahows the percentage. Defaults to 'false'.
+          E.g:¶
+          &ensp;- Download: [#################        ]¶
+          &ensp;- Download: [#################        ] 70%
+
+          Progress bar options:
+
+          | :caption txt       | A caption text. Defaults to empty. |
+          | :width val         | The width of the bar in chars. Defaults to 25. |
+          | :start-msg msg     | A start message. Defaults to 'started'. |
+          | :end-msg msg       | An end message. Defaults to 'ok'. |
+          | :failed-msg msg    | A failed message. Defaults to 'failed'. |
+          | :show-percent bool | If true shows the percentage. Defaults to 'false'. |
           """
      :examples '("""
                  (let [pb (ansi/progress-bar

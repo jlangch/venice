@@ -90,10 +90,11 @@
 (defn
   ^{ :arglists '("(xml/parse s)" "(xml/parse s handler)")
      :doc """
-          Parses and loads the XML from the source s with the parser \
-          XMLHandler handler. The source may be an InputSource, an \
+          Parses and loads the XML from the source s with the parser
+          XMLHandler handler. The source may be an InputSource, an
           InputStream, a File, or a string describing an URI.
-          Returns a tree of XML element maps with the keys :tag, \
+
+          Returns a tree of XML element maps with the keys :tag,
           :attrs, and :content.
           """ }
 
@@ -113,7 +114,7 @@
 (defn
   ^{ :arglists '("(xml/parse-str s)" "(xml/parse-str s handler)")
      :doc """
-          Parses an XML from the string s. Returns a tree of XML element \
+          Parses an XML from the string s. Returns a tree of XML element
           maps with the keys :tag, :attrs, and :content.
           """
      :examples (list

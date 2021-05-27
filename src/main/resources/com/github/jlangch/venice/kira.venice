@@ -116,10 +116,11 @@
 (defn
   ^{ :arglists '("(kira/escape-xml val)" "(kira/escape-xml val f)" )
      :doc """
-          Returns an XML escaped string. If the passed data is not of \
-          type string it will be converted first to a string using the \
+          Returns an XML escaped string. If the passed data is not of
+          type string it will be converted first to a string using the
           'str' function.
-          An optional function f transforms the value before being converted \
+
+          An optional function f transforms the value before being converted
           to a string and XML escaped.
           """
      :examples '(
@@ -146,10 +147,11 @@
 (defn
   ^{ :arglists '("(kira/escape-html val)" "(kira/escape-html val f)" )
      :doc """
-          Returns a HTML escaped string. If the passed data is not of \
-          type string it will be converted first to a string using the \
+          Returns a HTML escaped string. If the passed data is not of
+          type string it will be converted first to a string using the
           'str' function.
-          An optional function f transforms the value before being converted \
+
+          An optional function f transforms the value before being converted
           to a string and HTML escaped.
           """
      :examples '(
@@ -176,8 +178,8 @@
 (defmacro
   ^{ :arglists '("(kira/fn args source)" "(kira/fn args source delimiters)" )
      :doc """
-          Compile a template into a function that takes the supplied arguments. \
-          The template source may be a string, or an I/O source such as a File, \
+          Compile a template into a function that takes the supplied arguments.
+          The template source may be a string, or an I/O source such as a File,
           Reader or InputStream.
           """
      :examples '(
@@ -205,8 +207,8 @@
           "(kira/eval source bindings)"
           "(kira/eval source delimiters bindings)" )
      :doc """
-          Evaluate a template using the supplied bindings. The template source \
-          may be a string, or an I/O source such as a File, Reader or \
+          Evaluate a template using the supplied bindings. The template source
+          may be a string, or an I/O source such as a File, Reader or
           InputStream.
           """
      :examples '(

@@ -89,15 +89,15 @@
 (defn
   ^{ :arglists '("(geoip/ip-to-country-loc-resolver geoip-zip location-csv)")
      :doc """
-          Returns a resolve function that resolves an IP address to its \
-          associated country and latitude/longitude location. The resolve \
-          function returns the country and the latitude/longitude or nil \
+          Returns a resolve function that resolves an IP address to its
+          associated country and latitude/longitude location. The resolve
+          function returns the country and the latitude/longitude or nil
           if no data is found.
 
-          The MindMax country geoip-zip may be a bytebuf, a file, \
+          The MindMax country geoip-zip may be a bytebuf, a file,
           a string (file path) or an InputStream.
 
-          The resolver loads the MindMax IPv4 and IPv6 country and the Google \
+          The resolver loads the MindMax IPv4 and IPv6 country and the Google
           country database and caches the data for IP address resolves.
           """
      :examples '(
@@ -135,26 +135,28 @@
 (defn
   ^{ :arglists '("(geoip/ip-to-city-loc-resolver geoip-zip)")
      :doc """
-          Returns a resolve function that resolves IP an address to its \
-          associated city and latitude/longitude location. The resolve \
-          function returns the city and the latitude/longitude or nil \
+          Returns a resolve function that resolves IP an address to its
+          associated city and latitude/longitude location. The resolve
+          function returns the city and the latitude/longitude or nil
           if no data is found.
 
-          The MindMax city geoip-zip may be a bytebuf, a file, \
+          The MindMax city geoip-zip may be a bytebuf, a file,
           a string (file path) or an InputStream.
 
-          The resolver loads the MindMax IPv4 and IPv6 city database and \
+          The resolver loads the MindMax IPv4 and IPv6 city database and
           caches the data for IP address resolves.
 
           As of July 2020 the MaxMind city database has:
-            2'917'097  IPv4 blocks
-              459'294  IPv6 blocks
-              118'189  cities
 
-          Note:
-          The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk. \
-          It takes considerable time to load the data. Preprocessed and ready \
-          to work in the GEO IP modules ~3GB of memory is required. \
+          |       ---: | :---        |
+          |  2'917'097 | IPv4 blocks |
+          |    459'294 | IPv6 blocks |
+          |    118'189 | cities      |
+
+          Note:¶
+          The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk.
+          It takes considerable time to load the data. Preprocessed and ready
+          to work in the GEO IP modules ~3GB of memory is required.¶
           Once the resolver has loaded the data the lookups are very fast.
           """
      :examples '(
@@ -198,27 +200,29 @@
   (defn
     ^{ :arglists '("(geoip/ip-to-city-loc-resolver-mem-optimized geoip-zip)")
        :doc """
-            Returns a resolve function that resolves IP an address to its \
-            associated city and latitude/longitude location. The resolve \
-            function returns the city and the latitude/longitude or nil \
+            Returns a resolve function that resolves IP an address to its
+            associated city and latitude/longitude location. The resolve
+            function returns the city and the latitude/longitude or nil
             if no data is found.
 
-            The MindMax city geoip-zip may be a bytebuf, a file, \
+            The MindMax city geoip-zip may be a bytebuf, a file,
             a string (file path) or an InputStream.
 
-            The resolver loads the MindMax IPv4 and IPv6 city database and \
+            The resolver loads the MindMax IPv4 and IPv6 city database and
             caches the data for IP address resolves.
 
             As of July 2020 the MaxMind city database has:
-              2'917'097  IPv4 blocks
-                459'294  IPv6 blocks
-                118'189  cities
 
-            Note:
-            The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk. \
-            It takes considerable time to load the data. This is a memory \
-            optimized resolver version on the cost of performance.
-            For best performance on the cost of memory use the resolver \
+            |       ---: | :---        |
+            |  2'917'097 | IPv4 blocks |
+            |    459'294 | IPv6 blocks |
+            |    118'189 | cities      |
+
+            Note:¶
+            The MaxMind city IPv4 and IPv6 databases have 220MB of size on disk.
+            It takes considerable time to load the data. This is a memory
+            optimized resolver version on the cost of performance.¶
+            For best performance on the cost of memory use the resolver
             'geoip/ip-to-city-loc-resolver' instead!
             """
        :examples '(
@@ -265,12 +269,12 @@
 (defn
   ^{ :arglists '("(geoip/country-to-location-resolver location-csv)")
      :doc """
-          Returns a resolve function that resolves countries given by a country \
-          2-digit ISO code to its latitude/longitude location. The resolve \
-          function returns the latitude/longitude or nil if the country is \
+          Returns a resolve function that resolves countries given by a country
+          2-digit ISO code to its latitude/longitude location. The resolve
+          function returns the latitude/longitude or nil if the country is
           not supported.
 
-          The resolver loads Google country database and caches the data \
+          The resolver loads Google country database and caches the data
           for location resolves.
           """
      :examples '(
@@ -297,20 +301,22 @@
 (defn
   ^{ :arglists '("(geoip/ip-to-country-resolver geoip-zip)")
      :doc """
-          Returns a resolve function that resolves an IP addresses to its \
-          associated country. The resolve function returns the country \
+          Returns a resolve function that resolves an IP addresses to its
+          associated country. The resolve function returns the country
           information for a given IP address.
 
-          The MindMax country geoip-zip may be a bytebuf, a file, \
+          The MindMax country geoip-zip may be a bytebuf, a file,
           a string (file path) or an InputStream.
 
-          The resolver loads the MindMax IPv4 and IPv6 country databases and \
+          The resolver loads the MindMax IPv4 and IPv6 country databases and
           caches the data for subsequent IP resolves.
 
           As of July 2020 the MaxMind country database has:
-            303'448  IPv4 blocks
-            107'641  IPv6 blocks
-                253  countries
+
+          |     ---: | :---        |
+          |  303'448 | IPv4 blocks |
+          |  107'641 | IPv6 blocks |
+          |      253 | countries   |
           """
      :examples '(
            """
@@ -349,26 +355,32 @@
 (defn
   ^{ :arglists '("(geoip/parse-maxmind-country-ip-db ip-type zip maxmind-countries)")
      :doc """
-          Parses the MaxMind country IP blocks database. Expects a Maxmind \
-          country IP database zip. ip-type is either :IPv4 or :IPv6. The zip \
+          Parses the MaxMind country IP blocks database. Expects a Maxmind
+          country IP database zip. ip-type is either :IPv4 or :IPv6. The zip
           may be a bytebuf, a file, a string (file path) or an InputStream.
 
-          The maxmind-countries are optional and map the geoname-id to country \
+          The maxmind-countries are optional and map the geoname-id to country
           data.
 
-          Returns a trie datastructure with the CIDR address as the key and a \
+          Returns a trie datastructure with the CIDR address as the key and a
           map with country data as the value.
 
           maxmind-countries:
-             { "49518" {:country-iso "RW" :country-name "Rwanda"}
-               "51537" {:country-iso "SO" :country-name "Somalia"} }
+
+          ```
+          { "49518" {:country-iso "RW" :country-name "Rwanda"}
+            "51537" {:country-iso "SO" :country-name "Somalia"} }
+          ```
 
           Return:
-            { 223 [ [(cidr-parse "223.255.254.0/24") {:country-iso "SG"
-                                                      :country-name"Singapore"}]
-                    [(cidr-parse "223.255.255.0/24") {:country-iso "AU"
-                                                      :country-name"Australia"}]
-                  ] }
+
+          ```
+          { 223 [ [(cidr-parse "223.255.254.0/24") {:country-iso "SG"
+                                                    :country-name"Singapore"}]
+                  [(cidr-parse "223.255.255.0/24") {:country-iso "AU"
+                                                    :country-name"Australia"}]
+                ] }
+          ```
           """
      :examples '(
            """
@@ -425,21 +437,24 @@
 (defn
   ^{ :arglists '("(geoip/parse-maxmind-city-ip-db ip-type zip maxmind-cities)")
      :doc """
-          Parses the MaxMind city IP blocks database. Expects a MaxMind \
-          city IP database zip. ip-type is either :IPv4 or :IPv6. The zip may \
+          Parses the MaxMind city IP blocks database. Expects a MaxMind
+          city IP database zip. ip-type is either :IPv4 or :IPv6. The zip may
           be a bytebuf, a file, a string (file path) or an InputStream.
 
-          The maxmind-countries are optional and map the geoname-id to country \
+          The maxmind-countries are optional and map the geoname-id to country
           data.
 
-          Returns a trie datastructure with the CIDR address as the key and a \
+          Returns a trie datastructure with the CIDR address as the key and a
           map with city/country data as the value.
 
           maxmind-cities:
+
+          ```
           { "2643743" {:country-iso "GB" :country-name "England"
                        :region "England"  :city "London"}
             "2661881" {:country-iso "CH" :country-name "Switzerland"
                        :region "Aargau"  :city "Aarau"} }
+          ```
           """
      :examples '(
            """
@@ -503,12 +518,15 @@
 (defn
   ^{ :arglists '("(geoip/parse-maxmind-country-db zip)")
      :doc """
-          Parses the MaxMind country-location CSV file. Returns a map with \
+          Parses the MaxMind country-location CSV file. Returns a map with
           the country geoname-id as key and the country data as value.
 
           Return:
+
+          ```
              { "49518" {:country-iso "RW" :country-name "Rwanda"}
                "51537" {:country-iso "SO" :country-name "Somalia"} }
+          ```
           """
      :examples '(
           """
@@ -541,14 +559,17 @@
 (defn
   ^{ :arglists '("(geoip/parse-maxmind-city-db zip)")
      :doc """
-          Parses the MaxMind city-location CSV file. Returns a map with the \
+          Parses the MaxMind city-location CSV file. Returns a map with the
           city geoname-id as key and the city/country data as value.
 
           Return:
-            { "2643743" {:country-iso "GB" :country-name "England"
-                         :region "England"  :city "London"}
-              "2661881" {:country-iso "CH" :country-name "Switzerland"
-                         :region "Aargau"  :city "Aarau"} }
+
+          ```
+          { "2643743" {:country-iso "GB" :country-name "England"
+                       :region "England"  :city "London"}
+            "2661881" {:country-iso "CH" :country-name "Switzerland"
+                       :region "Aargau"  :city "Aarau"} }
+          ```
           """
      :examples '(
           """
@@ -583,11 +604,11 @@
 (defn
   ^{ :arglists '("(geoip/download-google-country-db-to-csvfile csvfile)")
      :doc """
-          Downloads the Google country GPS database to the given CSV file \
-          location. The database holds a mapping from country to location \
+          Downloads the Google country GPS database to the given CSV file
+          location. The database holds a mapping from country to location
           (latitude/longitude).
 
-          The Google country database URL is defined in the global var \
+          The Google country database URL is defined in the global var
           'geoip/google-country-url'.
           """
      :examples '(
@@ -607,10 +628,10 @@
 (defn
   ^{ :arglists '("(geoip/download-google-country-db)")
      :doc """
-          Downloads the Google country database. The database holds a mapping \
+          Downloads the Google country database. The database holds a mapping
           from country to location (latitude/longitude).
 
-          The Google country database URL is defined in the global var \
+          The Google country database URL is defined in the global var
           'geoip/google-country-url'.
 
           Returns the downloaded CSV data as a bytebuf.
@@ -632,11 +653,11 @@
 (defn
   ^{ :arglists '("(geoip/download-maxmind-db-to-zipfile zipfile type lic-key)")
      :doc """
-          Downloads the MaxMind country or city GEO IP database to the given \
+          Downloads the MaxMind country or city GEO IP database to the given
           ZIP file. The type is either :country or :city.
 
-          The download requires your personal MaxMind license key. The \
-          license to download the free MaxMind GeoLite databases can be \
+          The download requires your personal MaxMind license key. The
+          license to download the free MaxMind GeoLite databases can be
           obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
           """
      :examples '(
@@ -659,11 +680,11 @@
 (defn
   ^{ :arglists '("(geoip/download-maxmind-db type lic-key)")
      :doc """
-          Downloads the MaxMind country or city GEO IP database. Returns the \
+          Downloads the MaxMind country or city GEO IP database. Returns the
           DB as bytebuffer. The type is either :country or :city.
 
-          The download requires your personal MaxMind license key. The \
-          license to download the free MaxMind GeoLite databases can be \
+          The download requires your personal MaxMind license key. The
+          license to download the free MaxMind GeoLite databases can be
           obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
           """
      :examples '(
@@ -687,11 +708,11 @@
 (defn
   ^{ :arglists '("(geoip/build-maxmind-country-db-url lic-key)")
      :doc """
-          Build the URL for the MaxMind country GEO IP database. The download \
+          Build the URL for the MaxMind country GEO IP database. The download
           requires a license key that is sent as part of the URL.
 
-          The download requires your personal MaxMind license key. The \
-          license to download the free MaxMind GeoLite databases can be \
+          The download requires your personal MaxMind license key. The
+          license to download the free MaxMind GeoLite databases can be
           obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
           """
      :examples '(
@@ -715,8 +736,8 @@
      :doc """
           Build the URL for downloading the MaxMind city GEO IP database.
 
-          The download requires your personal MaxMind license key. The \
-          license to download the free MaxMind GeoLite databases can be \
+          The download requires your personal MaxMind license key. The
+          license to download the free MaxMind GeoLite databases can be
           obtained from the MaxMind 'https://www.maxmind.com/en/home' home page.
           """
      :examples '(
@@ -738,7 +759,7 @@
 (defn
   ^{ :arglists '("(map-location-to-numerics loc)")
      :doc """
-          Maps a location to numerical coordinates. A location is given as \
+          Maps a location to numerical coordinates. A location is given as
           a vector of a latitude and a longitude.
 
           Returns a location vector with a numerical latitude and a longitude.

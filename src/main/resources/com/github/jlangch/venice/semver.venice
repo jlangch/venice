@@ -76,7 +76,7 @@
 (defn
   ^{ :arglists '("(semver/valid? v)")
      :doc """
-          Checks if the supplied version map is valid regarding semantic \
+          Checks if the supplied version map is valid regarding semantic
           versioning or not.
           """
      :examples '("""(semver/valid? (semver/parse "1.2.3"))""")
@@ -116,6 +116,8 @@
           Parses string 's' into a semantic version map.
 
           Semantic verioning format:
+
+          ```
              standard
                 version:        1.0.0
                 pre-release:    1.0.0-beta
@@ -130,6 +132,7 @@
                 { :major 1, :minor 3, :patch 5 :pre-release "beta"}
                 { :major 1, :minor 3, :patch 5 :pre-release "beta"}
                 { :major 1, :minor 3, :patch 5 :pre-release "beta" :meta "001"}
+          ```
           """
      :examples '(
           """(semver/parse "1.2.3")"""
@@ -153,7 +156,7 @@
 (defn
   ^{ :arglists '("(semver/version o)")
      :doc """
-          If 'o' is a valid version map, returns the map. Otherwise, it'll \
+          If 'o' is a valid version map, returns the map. Otherwise, it'll
           attempt to parse 'o' and return a version map.
           """
      :examples '(
@@ -169,7 +172,7 @@
 (defn
   ^{ :arglists '("(semver/cmp a b)")
      :doc """
-          Compares versions a and b, returning -1 if a is older than b, 0 if \
+          Compares versions a and b, returning -1 if a is older than b, 0 if
           they're the same version, and 1 if a is newer than b.
           """
      :examples '(

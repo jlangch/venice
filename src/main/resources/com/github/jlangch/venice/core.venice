@@ -42,7 +42,7 @@
   ^{ :arglists '(
           "(assert expr)" "(assert expr message)")
      :doc """
-          Evaluates expr and throws an :com.github.jlangch.venice.AssertionException \
+          Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
           exception if it does not evaluate to logical true.
           """
      :examples '(
@@ -71,12 +71,18 @@
           "(defn name [args*] condition-map? expr*)"
           "(defn name ([args*] condition-map? expr*)+)")
      :doc """
-          Same as (def name (fn name [args*] condition-map? expr*)) or \
-          (def name (fn name ([args*] condition-map? expr*)+))
+          Same as `(def name (fn name [args*] condition-map? expr*))` or
+          `(def name (fn name ([args*] condition-map? expr*)+))`
           """
      :examples '(
           "(defn sum [x y] (+ x y))"
-          "(defn sum [x y] { :pre [(> x 0)] } (+ x y))")
+          "(defn sum [x y] { :pre [(> x 0)] } (+ x y))"
+          """
+          (defn sum
+            ([] 0)
+            ([x] x)
+            ([x y] (+ x y)))
+          """)
      :see-also '("defn-" "fn" "def") }
 
    defn [name & forms]
@@ -90,7 +96,7 @@
   ^{ :arglists '(
           "(defn- name [args*] condition-map? expr*)"
           "(defn- name ([args*] condition-map? expr*)+)")
-     :doc "Same as defn, yielding non-public def"
+     :doc "Same as `defn`, yielding non-public `def`"
      :examples '("(defn- sum [x y] (+ x y))")
      :see-also '("defn" "fn" "def") }
 
@@ -142,10 +148,10 @@
 (defmacro
   ^{ :arglists '("(cond & clauses)")
      :doc """
-          Takes a set of test/expr pairs. It evaluates each test one at a time. \
-          If a test returns logical true, cond evaluates and returns the value \
-          of the corresponding expr and doesn't evaluate any of the other tests \
-          or exprs. (cond) returns nil.
+          Takes a set of test/expr pairs. It evaluates each test one at a time.
+          If a test returns logical true, cond evaluates and returns the value
+          of the corresponding expr and doesn't evaluate any of the other tests
+          or exprs. `(cond)` returns `nil`.
           """
      :examples '(
           """
@@ -171,18 +177,20 @@
   ^{ :arglists '("(condp pred expr & clauses)")
      :doc """
           Takes a binary predicate, an expression, and a set of clauses.
-          Each clause can take the form of either:
-              test-expr result-expr
-              test-expr :>> result-fn
-          Note :>> is an ordinary keyword.
-          For each clause, (pred test-expr expr) is evaluated. If it returns \
-          logical true, the clause is a match. If a binary clause matches, the \
-          result-expr is returned, if a ternary clause matches, its result-fn, \
-          which must be a unary function, is called with the result of the \
-          predicate as its argument, the result of that call being the return \
-          value of condp. A single default expression can follow the clauses, \
-          and its value will be returned if no clause matches. If no default \
-          expression is provided and no clause matches, a VncException \
+
+          Each clause can take the form of either:¶
+          &ensp; `test-expr result-expr`¶
+          &ensp; `test-expr :>> result-fn`¶
+          Note `:>>` is an ordinary keyword.
+
+          For each clause, (pred test-expr expr) is evaluated. If it returns
+          logical true, the clause is a match. If a binary clause matches, the
+          result-expr is returned, if a ternary clause matches, its result-fn,
+          which must be a unary function, is called with the result of the
+          predicate as its argument, the result of that call being the return
+          value of condp. A single default expression can follow the clauses,
+          and its value will be returned if no clause matches. If no default
+          expression is provided and no clause matches, a VncException
           is thrown.
           """
      :examples '(
@@ -227,7 +235,7 @@
 (defmacro
   ^{ :arglists '("(case expr & clauses)")
      :doc """
-          Takes an expression and a set of clauses. Each clause takes the form \
+          Takes an expression and a set of clauses. Each clause takes the form
           of test-constant result-expr
           """
      :examples '(
@@ -265,7 +273,7 @@
           "(if-not test then else)",
           "(if-not test then)")
      :doc """
-          Evaluates test. If logical false, evaluates and returns then \
+          Evaluates test. If logical false, evaluates and returns then
           expression, otherwise else expression, if supplied, else nil.
           """
      :examples '(
@@ -305,7 +313,7 @@
 (defmacro
   ^{ :arglists '("(coalesce args*)")
      :doc """
-          Returns nil if all of its arguments are nil, otherwise it returns \
+          Returns nil if all of its arguments are nil, otherwise it returns
           the first non nil argument. The arguments are evaluated lazy.
           """
      :examples '(
@@ -324,8 +332,8 @@
           "(if-let bindings then)"
           "(if-let bindings then else)")
      :doc """
-          bindings is a vector with 2 elements: binding-form test.
-          If test is true, evaluates then with binding-form bound to the value \
+          bindings is a vector with 2 elements: binding-form test.¶
+          If test is true, evaluates then with binding-form bound to the value
           of test, if not, yields else
           """
      :examples '(
@@ -352,8 +360,8 @@
 (defmacro
   ^{ :arglists '("(when-let bindings & body)")
      :doc """
-          bindings is a vector with 2 elements: binding-form test.
-          If test is true, evaluates the body expressions with binding-form \
+          bindings is a vector with 2 elements: binding-form test.¶
+          If test is true, evaluates the body expressions with binding-form
           bound to the value of test, if not, yields nil
           """
      :examples '(
@@ -392,7 +400,7 @@
 (defmacro
   ^{ :arglists '("(while test & body)")
      :doc """
-          Repeatedly executes body while test expression is true. Presumes some \
+          Repeatedly executes body while test expression is true. Presumes some
           side-effect will cause test to become false/nil. Returns nil.
           """
      :examples '(
@@ -415,8 +423,8 @@
 (defmacro
   ^{ :arglists '("(doto x & forms)")
      :doc """
-          Evaluates x then calls all of the methods and functions with the value \
-          of x supplied at the front of the given arguments. The forms are \
+          Evaluates x then calls all of the methods and functions with the value
+          of x supplied at the front of the given arguments. The forms are
           evaluated in order. Returns x.
           """
      :examples '(
@@ -437,9 +445,9 @@
 (defmacro
   ^{ :arglists '("(-> x & forms)")
      :doc """
-          Threads the x through the forms. Inserts x as the second item in the \
-          first form, making a list of it if it is not a list already.
-          If there are more forms, inserts the first form as the second item in \
+          Threads the x through the forms. Inserts x as the second item in the
+          first form, making a list of it if it is not a list already.¶
+          If there are more forms, inserts the first form as the second item in
           second form, etc.
           """
      :examples '(
@@ -473,9 +481,9 @@
 (defmacro
   ^{ :arglists '("(->> x & forms)")
      :doc """
-          Threads the x through the forms. Inserts x as the last item in the \
-          first form, making a list of it if it is not a list already. If there \
-          are more forms, inserts the first form as the last item in second \
+          Threads the x through the forms. Inserts x as the last item in the
+          first form, making a list of it if it is not a list already. If there
+          are more forms, inserts the first form as the last item in second
           form, etc.
           """
      :examples '(
@@ -521,10 +529,10 @@
 (defmacro
   ^{ :arglists '("(-<> x & forms)")
      :doc """
-          Threads the x through the forms. Inserts x at position of the <> \
-          symbol of the first form, making a list of it if is not a list \
-          already. If there are more forms, inserts the first form at position \
-          of the <> symbol in second form, etc.
+          Threads the x through the forms. Inserts x at position of the `<>`
+          symbol of the first form, making a list of it if is not a list
+          already. If there are more forms, inserts the first form at position
+          of the `<>` symbol in second form, etc.
           """
      :examples '(
           """
@@ -545,9 +553,9 @@
 (defmacro
   ^{ :arglists '("(as-> expr name & forms)")
      :doc """
-          Binds name to expr, evaluates the first form in the lexical context \
-          of that binding, then binds name to that result, repeating for each \
-          successive form, returning the result of the last form. This allows a \
+          Binds name to expr, evaluates the first form in the lexical context
+          of that binding, then binds name to that result, repeating for each
+          successive form, returning the result of the last form. This allows a
           value to thread into any argument position.
           """
      :examples '(
@@ -580,16 +588,19 @@
 (defmacro
   ^{ :arglists '("(cond-> expr & clauses)")
      :doc """
-          Takes an expression and a set of test/form pairs. Threads expr \
-          (via ->) through each form for which the corresponding test \
-          expression is true. Note that, unlike cond branching, cond-> \
-          threading does not short circuit after the first true test \
+          Takes an expression and a set of test/form pairs. Threads expr
+          (via `->`) through each form for which the corresponding test
+          expression is true. Note that, unlike cond branching, `cond->`
+          threading does not short circuit after the first true test
           expression.
 
-          It is useful in situations where you want selectively assoc, \
+          It is useful in situations where you want selectively assoc,
           update, or dissoc something from a map.
-             (cond-> m
-                (some-pred? q)   (assoc :key :value))
+
+          ```venice
+          (cond-> m
+            (some-pred? q)  (assoc :key :value))
+          ```
           """
      :examples '(
           """
@@ -615,10 +626,10 @@
 (defmacro
   ^{ :arglists '("(cond->> expr & clauses)")
      :doc """
-          Takes an expression and a set of test/form pairs. Threads expr \
-          (via ->>) through each form for which the corresponding test \
-          expression is true.  Note that, unlike cond branching, cond->> \
-          threading does not short circuit after the first true test \
+          Takes an expression and a set of test/form pairs. Threads expr
+          (via `->>`) through each form for which the corresponding test
+          expression is true.  Note that, unlike cond branching, `cond->>`
+          threading does not short circuit after the first true test
           expression.
           """
      :examples '(
@@ -645,7 +656,7 @@
 (defmacro
   ^{ :arglists '("(some-> expr & forms)")
      :doc """
-          When expr is not nil, threads it into the first form (via ->), \
+          When expr is not nil, threads it into the first form (via `->`),
           and when that result is not nil, through the next etc.
           """
      :examples '(
@@ -676,7 +687,7 @@
 (defmacro
   ^{ :arglists '("(some->> expr & forms)")
      :doc """
-          When expr is not nil, threads it into the first form (via ->>), \
+          When expr is not nil, threads it into the first form (via `->>`),
           and when that result is not nil, through the next etc.
           """
      :examples '(
@@ -707,11 +718,11 @@
 (defmacro
   ^{ :arglists '("(list-comp seq-exprs body-expr)")
      :doc """
-          List comprehension. Takes a vector of one or more binding-form or \
-          collection-expr pairs, each followed by zero or more modifiers, and \
+          List comprehension. Takes a vector of one or more binding-form or
+          collection-expr pairs, each followed by zero or more modifiers, and
           yields a collection of evaluations of expr.
 
-          Supported modifiers are: :when predicate
+          Supported modifiers are: `:when` predicate
           """
      :examples '(
           "(list-comp [x (range 10)] x)"
@@ -738,11 +749,11 @@
 (defmacro
   ^{ :arglists '("(doseq seq-exprs & body)")
      :doc """
-          Repeatedly executes body (presumably for side-effects) with \
-          bindings and filtering as provided by "list-comp". Does not \
-          retain the head of the sequence. Returns nil.
+          Repeatedly executes body (presumably for side-effects) with
+          bindings and filtering as provided by `list-comp`. Does not
+          retain the head of the sequence. Returns `nil`.
 
-          Supported modifiers are: :when predicate
+          Supported modifiers are: `:when` predicate
           """
      :examples '(
           "(doseq [x (range 10)] (print x))"
@@ -790,6 +801,7 @@
           Performance test with the given expression.
 
           Runs the test in 3 phases:
+
              1. Runs the expr in a warmup phase to allow the HotSpot compiler
                 to do optimizations.
              2. Runs the garbage collector.
@@ -847,16 +859,19 @@
           "(load-file file force)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the file.
-          If the file can not be found on the global load paths and \
-          and the sandbox permits the file is either loaded from the current \
-          working directory if it has a relative path or it is loaded from its \
+
+          If the file can not be found on the global load paths and
+          and the sandbox permits the file is either loaded from the current
+          working directory if it has a relative path or it is loaded from its
           absolute path.
-          With 'force' set to false (the default) the file is only loaded once \
-          and then served from a cache. With 'force' set to true it is always \
+
+          With 'force' set to false (the default) the file is only loaded once
+          and then served from a cache. With 'force' set to true it is always
           loaded physically.
-          The function is restricted to load files with the extension '.venice'. \
+
+          The function is restricted to load files with the extension '.venice'.
           If the file extension is missing '.venice' will be implicitely added.
-          Returns 'true' if the file has been successfully loaded and 'false' if \
+          Returns 'true' if the file has been successfully loaded and 'false' if
           the file has been already loaded. Throws an exception on loading error.
           """
      :examples '(
@@ -894,8 +909,8 @@
           "(load-classpath-file name)",
           "(load-classpath-file name force)")
      :doc """
-          Sequentially read and evaluate the set of forms contained in the \
-          classpath file. The function is restricted to classpath files with \
+          Sequentially read and evaluate the set of forms contained in the
+          classpath file. The function is restricted to classpath files with
           the extension '.venice'.
           """
      :examples '(
@@ -941,9 +956,10 @@
           "(load-module m)",
           "(load-module m force)")
      :doc """
-          Loads a Venice predefined extension module.
-          Returns 'true' if the module has been successfully loaded and 'false' if \
-          the module has been already loaded. Throws an exception on loading error.
+          Loads a Venice predefined extension module.¶
+          Returns `true` if the module has been successfully loaded and `false`
+          if the module has been already loaded. Throws an exception on loading
+          error.
           """
      :examples '(
           """
@@ -987,9 +1003,9 @@
 
 (defmacro
   ^{ :arglists '("(with-sh-env env & forms)")
-     :doc "Sets the environment for use with sh, see sh for details."
+     :doc "Sets the environment for use with `sh`."
      :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""")
-     :see-also '("with-sh-dir") }
+     :see-also '("sh", "with-sh-dir") }
 
   with-sh-env [env & forms]
 
@@ -999,12 +1015,13 @@
 (defmacro
   ^{ :arglists '("(with-sh-throw forms)")
      :doc """
-          If true throws an exception if the spawned shell process returns an \
-          exit code other than 0. If false return the exit code. Defaults to \
-          false. For use with sh, see sh for details. 'with-sh-throw' can be \
+          If true throws an exception if the spawned shell process returns an
+          exit code other than 0. If false return the exit code. Defaults to
+          false. For use with `sh`, see sh for details. `with-sh-throw` can be
           nested.
           """
-     :examples '("""(with-sh-throw (sh "ls" "-l"))""") }
+     :examples '("""(with-sh-throw (sh "ls" "-l"))""")
+     :see-also '("sh") }
 
   with-sh-throw [& forms]
 
@@ -1014,9 +1031,9 @@
 (defmacro
   ^{ :arglists '("(with-out-str & forms)")
      :doc """
-          Evaluates exprs in a context in which *out* is bound to a capturing \
-          output stream. Returns the string created by any nested printing \
-          calls. 'with-out-str' can be nested.
+          Evaluates exprs in a context in which `*out*` is bound to a capturing
+          output stream. Returns the string created by any nested printing
+          calls. `with-out-str` can be nested.
           """
      :examples '("""(with-out-str (println "a string"))""")
      :see-also '("with-err-str") }
@@ -1031,9 +1048,9 @@
 (defmacro
   ^{ :arglists '("(with-err-str & forms)")
      :doc """
-          Evaluates exprs in a context in which *err* is bound to a capturing \
-          output stream. Returns the string created by any nested printing \
-          calls. 'with-err-str' can be nested.
+          Evaluates exprs in a context in which `*err*` is bound to a capturing
+          output stream. Returns the string created by any nested printing
+          calls. `with-err-str` can be nested.
           """
      :examples '("""(with-err-str (println *err* "a string"))""")
      :see-also '("with-out-str") }
@@ -1048,9 +1065,10 @@
 (defmacro
   ^{ :arglists '("(delay & body)")
      :doc """
-          Takes a body of expressions and yields a Delay object that will invoke \
-          the body only the first time it is forced (with force or deref/@), and \
-          will cache the result and return it on all subsequent force calls.
+          Takes a body of expressions and yields a Delay object that will invoke
+          the body only the first time it is forced (with `force` or
+          `deref` / `@`), and will cache the result and return it on all
+          subsequent force calls.
           """
      :examples '(
           """
@@ -1070,11 +1088,11 @@
 (defn
   ^{ :arglists '("(print & xs)", "(print os & xs)")
      :doc """
-          Without output stream prints to the output stream that is the current \
-          value of *out*. With no args, prints the empty string. With one arg x, \
-          prints x.toString(). With more than one arg, prints the concatenation \
-          of the string values of the args with delimiter ' '.
-          With an output stream prints to that output stream.
+          Without output stream prints to the output stream that is the current
+          value of `*out*`. With no args, prints the empty string. With one arg x,
+          prints x.toString(). With more than one arg, prints the concatenation
+          of the string values of the args with delimiter ' '. With an
+          output stream prints to that output stream.¶
           Returns nil.
           """
      :examples '(
@@ -1099,9 +1117,9 @@
 (defn
   ^{ :arglists '("(printf fmt & args)", "(printf os fmt & args)")
      :doc """
-          Without output stream prints formatted output as per format to the \
-          output stream that is the current value of *out*.
-          With an output stream prints to that output stream.
+          Without output stream prints formatted output as per format to the
+          output stream that is the current value of `*out*`.
+          With an output stream prints to that output stream.¶
           Returns nil.
           """
      :examples '(
@@ -1124,12 +1142,11 @@
 (defn
   ^{ :arglists '("(println & xs)", "(println os & xs)")
      :doc """
-          Without output stream prints to the output stream that is the current \
-          value of *out* with a tailing linefeed. With no args, prints the \
-          empty string. With one arg x, prints x.toString(). With more than one \
-          arg, prints the concatenation of the string values of the args with \
-          delimiter ' '.
-          With an output stream prints to that output stream.
+          Without output stream prints to the output stream that is the current
+          value of `*out*` with a tailing linefeed. With no args, prints the
+          empty string. With one arg x, prints x.toString(). With more than one
+          arg, prints the concatenation of the string values of the args with
+          delimiter ' '. With an output stream prints to that output stream.¶
           Returns nil.
           """
      :examples '(
@@ -1156,9 +1173,9 @@
 (defn
   ^{ :arglists '("(newline)", "(newline os)")
      :doc """
-          Without arg writes a platform-specific newline to the output stream \
-          that is the current value of *out*. With arg writes a newline to the \
-          passed output stream.
+          Without arg writes a platform-specific newline to the output stream
+          that is the current value of `*out*`. With arg writes a newline to the
+          passed output stream.¶
           Returns nil.
           """
      :examples '(
@@ -1176,8 +1193,8 @@
 (defn
   ^{ :arglists '("(flush)", "(flush os)")
      :doc """
-          Without arg flushes the output stream that is the current value \
-          of *out*. With arg flushes the passed output stream.
+          Without arg flushes the output stream that is the current value
+          of `*out*`. With arg flushes the passed output stream.¶
           Returns nil.
           """
      :examples '(
@@ -1194,7 +1211,8 @@
 (defn
   ^{ :arglists '("(read-line)")
      :doc """
-          Reads the next line from the stream that is the current value of *in*.
+          Reads the next line from the stream that is the current value of
+          `*in*`.¶
           Returns nil if the end of the stream is reached.
           """
      :see-also '("read-char")  }
@@ -1209,7 +1227,8 @@
 (defn
   ^{ :arglists '("(read-char)")
      :doc """
-          Reads the next char from the stream that is the current value of *in*.
+          Reads the next char from the stream that is the current value of
+          `*in*`.¶
           Returns nil if the of the stream is reached.
           """
      :see-also '("read-line") }
@@ -1225,7 +1244,7 @@
 (defn
   ^{ :arglists '("(complement f)")
      :doc """
-          Takes a fn f and returns a fn that takes the same arguments as f, \
+          Takes a fn f and returns a fn that takes the same arguments as f,
           has the same effects, if any, and returns the opposite truth value.
           """
      :examples '("(complement even?)"
@@ -1275,7 +1294,7 @@
 (defn
   ^{ :arglists '("(rf-any? pred)")
      :doc """
-          Returns a reducing function for a transducer that returns true if the \
+          Returns a reducing function for a transducer that returns true if the
           predicate is true for at least one the items, false otherwise.
           """
      :examples '(
@@ -1294,7 +1313,7 @@
 (defn
   ^{ :arglists '("(rf-every? pred)")
      :doc """
-          Returns a reducing function for a transducer that returns true if the \
+          Returns a reducing function for a transducer that returns true if the
           predicate is true for all the items, false otherwise.
           """
      :examples '(
@@ -1317,7 +1336,7 @@
 (defn
   ^{ :arglists '("(constantly x)")
      :doc """
-          Returns a function that takes any number of arguments and returns \
+          Returns a function that takes any number of arguments and returns
           always the value x.
           """
      :examples '(
@@ -1340,8 +1359,8 @@
      :doc """
           Returns a map with the keys mapped to the corresponding vals.
 
-          To create a list of tuples from two or more lists use
-          (map list '(1 2 3) '(4 5 6)).
+          To create a list of tuples from two or more lists use¶
+          `(map list '(1 2 3) '(4 5 6))`.
           """
      :examples '(
           "(zipmap [:a :b :c :d :e] [1 2 3 4 5])"
@@ -1364,9 +1383,9 @@
      :doc """
           Returns a memoized version of a referentially transparent function.
 
-          Note:
-          Use memoization for expensive calculations. If used with fast \
-          calculations it has the opposite effect and can slow it down \
+          Note:¶
+          Use memoization for expensive calculations. If used with fast
+          calculations it has the opposite effect and can slow it down
           actually!
           """
      :examples '(
@@ -1399,13 +1418,14 @@
 (defn
   ^{ :arglists '("(trampoline f)" "(trampoline f & args)")
      :doc """
-          trampoline can be used to convert algorithms requiring mutual \
-          recursion without stack consumption. Calls f with supplied args, \
-          if any. If f returns a fn, calls that fn with no arguments, and \
-          continues to repeat, until the return value is not a fn, then \
+          trampoline can be used to convert algorithms requiring mutual
+          recursion without stack consumption. Calls f with supplied args,
+          if any. If f returns a fn, calls that fn with no arguments, and
+          continues to repeat, until the return value is not a fn, then
           returns that non-fn value.
-          Note that if you want to return a fn as a final value, you must \
-          wrap it in some data structure and unpack it after trampoline \
+
+          Note that if you want to return a fn as a final value, you must
+          wrap it in some data structure and unpack it after trampoline
           returns.
           """
      :examples '(
@@ -1457,8 +1477,8 @@
 (defn
   ^{ :arglists '("(load-resource res)")
      :doc """
-          Loads a resource from the application archive or the *load-path*. \
-          Returns a bytebuffer or nil if the resource is not found in any \
+          Loads a resource from the application archive or the `*load-path*`.
+          Returns a bytebuffer or nil if the resource is not found in any
           of the two locations.
           """ }
 
@@ -1470,12 +1490,12 @@
 (defn-
   ^{ :arglists '("(walk inner outer form)")
      :doc """
-          Traverses form, an arbitrary data structure. inner and outer are \
-          functions. Applies inner to each element of form, building up a \
+          Traverses form, an arbitrary data structure. inner and outer are
+          functions. Applies inner to each element of form, building up a
           data structure of the same type, then applies outer to the result.
 
-          Do not call this function directly use core/postwalk or \
-          core/prewalk instead.
+          Do not call this function directly use core/postwalk or
+          `core/prewalk` instead.
           """ }
 
   walk [inner outer form]
@@ -1490,7 +1510,7 @@
 (defn
   ^{ :arglists '("(postwalk f form)")
      :doc """
-          Performs a depth-first, post-order traversal of form. Calls f on \
+          Performs a depth-first, post-order traversal of form. Calls f on
           each sub-form, uses f's return value in place of the original.
           """
      :examples '(
@@ -1508,7 +1528,7 @@
 (defn
   ^{ :arglists '("(prewalk f form)")
      :doc """
-          Performs a depth-last, pre-order traversal of form. Calls f on \
+          Performs a depth-last, pre-order traversal of form. Calls f on
           each sub-form, uses f's return value in place of the original.
           """
      :examples '(

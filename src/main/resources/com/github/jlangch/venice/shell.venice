@@ -87,7 +87,7 @@
   ^{ :arglists '("(open url)")
      :doc
         """
-        Opens a file or an url with the associated platform specific \
+        Opens a file or an url with the associated platform specific
         application.
         """
      :examples '(
@@ -125,9 +125,10 @@
         "(pid process-handle)")
      :doc
         """
-        Without argument returns the PID (type long) of this process. With \
-        a process-handle (:java.lang.ProcessHandle) returns the PID for the \
+        Without argument returns the PID (type long) of this process. With
+        a process-handle (:java.lang.ProcessHandle) returns the PID for the
         process represented by the handle.
+
         Requires Java 9+.
         """
      :examples '("(shell/pid)")
@@ -154,8 +155,9 @@
   ^{ :arglists '("(process-handle pid)")
      :doc
         """
-        Returns the process handle (:java.lang.ProcessHandle) for a PID or \
+        Returns the process handle (:java.lang.ProcessHandle) for a PID or
         nil if there is no process.
+
         Requires Java 9+.
         """
      :examples '("(shell/process-handle 4556)")
@@ -180,6 +182,7 @@
      :doc
         """
         Returns true if p is a process handle (:java.lang.ProcessHandle).
+
         Requires Java 9+.
         """ }
 
@@ -227,16 +230,17 @@
         Returns a list of process infos for the processes.
 
         The process info is a map with the keys:
-          :pid                the PID
-          :alive              true if the process is alive else false
-          :arguments          the list of strings of the arguments of the process
-          :command            the executable pathname of the process
-          :command-line       the command line of the process
-          :start-time         the start time of the process
-          :total-cpu-millis   the total cputime accumulated of the process
-          :user               the user of the process.
 
-          Requires Java 9+.
+        | :pid              | the PID |
+        | :alive            | true if the process is alive else false |
+        | :arguments        | the list of strings of the arguments of the process |
+        | :command          | the executable pathname of the process |
+        | :command-line     | the command line of the process |
+        | :start-time       | the start time of the process |
+        | :total-cpu-millis | the total cputime accumulated of the process |
+        | :user             | the user of the process. |
+
+        Requires Java 9+.
         """
      :examples '(
         """
@@ -264,8 +268,9 @@
         "(alive? process-handle)")
      :doc
         """
-        Returns true if the process represented by a PID or a process handle \
+        Returns true if the process represented by a PID or a process handle
         is alive otherwise false.
+
         Requires Java 9+.
         """
      :examples '("(shell/alive? 4556)")
@@ -286,18 +291,19 @@
         "(process-info process-handle)")
      :doc
         """
-        Returns the process info for a process represented by a PID or a \
+        Returns the process info for a process represented by a PID or a
         process handle.
 
         The process info is a map with the keys:
-          :pid                the PID
-          :alive              true if the process is alive else false
-          :arguments          the list of strings of the arguments of the process
-          :command            the executable pathname of the process
-          :command-line       the command line of the process
-          :start-time         the start time of the process
-          :total-cpu-millis   the total cputime accumulated of the process
-          :user               the user of the process.
+
+        | :pid              | the PID |
+        | :alive            | true if the process is alive else false |
+        | :arguments        | the list of strings of the arguments of the process |
+        | :command          | the executable pathname of the process |
+        | :command-line     | the command line of the process |
+        | :start-time       | the start time of the process |
+        | :total-cpu-millis | the total cputime accumulated of the process |
+        | :user             | the user of the process. |
 
         Requires Java 9+.
         """
@@ -345,6 +351,7 @@
      :doc
         """
         Returns the process handle of the current process.
+
         Requires Java 9+.
         """
      :examples '(
@@ -364,8 +371,9 @@
         "(descendant-processes process-handle)")
      :doc
         """
-        Returns the descendants (:java.lang.ProcessHandle) of a process \
+        Returns the descendants (:java.lang.ProcessHandle) of a process
         represented by a PID or a process handle.
+
         Requires Java 9+.
         """
      :examples '(
@@ -392,8 +400,9 @@
         "(parent-process process-handle)")
      :doc
         """
-        Returns the parent (:java.lang.ProcessHandle) of a process represented \
+        Returns the parent (:java.lang.ProcessHandle) of a process represented
         by a PID or a process handle.
+
         Requires Java 9+.
         """
      :examples '(
@@ -420,10 +429,11 @@
         "(kill process-handle)")
      :doc
         """
-        Requests the process to be killed. Returns true if the process is \
-        killed and false if the process stays alive. Returns nil if the \
-        process does not exist. Accepts a PID or a process handle \
+        Requests the process to be killed. Returns true if the process is
+        killed and false if the process stays alive. Returns nil if the
+        process does not exist. Accepts a PID or a process handle
         (:java.lang.ProcessHandle).
+
         Requires Java 9+.
         """
      :examples '(
@@ -443,10 +453,11 @@
         "(kill-forcibly process-handle)")
      :doc
         """
-        Requests the process to be killed forcibly. Returns true if the process \
-        is killed and false if the process stays alive. Returns nil if the \
-        process does not exist. Accepts a PID or a process handle \
+        Requests the process to be killed forcibly. Returns true if the process
+        is killed and false if the process stays alive. Returns nil if the
+        process does not exist. Accepts a PID or a process handle
         (:java.lang.ProcessHandle).
+
         Requires Java 9+.
         """
      :examples '(
@@ -466,10 +477,11 @@
         "(wait-for-process-exit process-handle timeout)")
      :doc
         """
-        Waits until the process with the pid exits. Waits max timeout \
-        seconds. Returns nil if the process exits before reaching the \
-        timeout, else the pid is returned. Accepts a PID or a \
+        Waits until the process with the pid exits. Waits max timeout
+        seconds. Returns nil if the process exits before reaching the
+        timeout, else the pid is returned. Accepts a PID or a
         process handle (:java.lang.ProcessHandle).
+        
         Requires Java 9+.
         """
      :examples '(

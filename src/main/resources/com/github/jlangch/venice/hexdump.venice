@@ -76,12 +76,14 @@
 (defn
   ^{ :arglists '("(dump s & opts)")
      :doc """
-          Prints a hexdump of the given argument to *out*. Optionally supply \
-          byte offset (:offset, default: 0) and size (:size, default: :all) \
-          arguments. Can create hexdump from a collection of values, a \
+          Prints a hexdump of the given argument to *out*. Optionally supply
+          byte offset (:offset, default: 0) and size (:size, default: :all)
+          arguments. Can create hexdump from a collection of values, a
           bytebuf, a java.io.File, or a string representing a path to a file.
 
-          Example: (hexdump/dump (range 100))
+          Example: `(hexdump/dump (range 100))`
+
+          ```
           00000000: 0001 0203 0405 0607 0809 0a0b 0c0d 0e0f  ................
           00000010: 1011 1213 1415 1617 1819 1a1b 1c1d 1e1f  ................
           00000020: 2021 2223 2425 2627 2829 2a2b 2c2d 2e2f   !\"#$%&'()*+,-./
@@ -89,6 +91,7 @@
           00000040: 4041 4243 4445 4647 4849 4a4b 4c4d 4e4f  @ABCDEFGHIJKLMNO
           00000050: 5051 5253 5455 5657 5859 5a5b 5c5d 5e5f  PQRSTUVWXYZ[\\]^_
           00000060: 6061 6263                                `abc
+          ```
           """
      :examples (list
          "(hexdump/dump [0 1 2 3])"

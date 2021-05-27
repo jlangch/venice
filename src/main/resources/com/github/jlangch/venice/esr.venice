@@ -45,13 +45,14 @@
 (defn
   ^{ :arglists '("(esr/create id-number invoice-number)")
      :doc """
-          Creates a 27 digit ESR reference from an identification number and \
+          Creates a 27 digit ESR reference from an identification number and
           an invoice number.
 
           Rules:
-            1) The identification number must have exactly 6 digits.
-            2) The invoice number must have one to N digits
-            3) The length of the identification and the invoice number must
+
+            1. The identification number must have exactly 6 digits.
+            2. The invoice number must have one to N digits
+            3. The length of the identification and the invoice number must
                not exceed 26 digits
           """
      :examples (list
@@ -99,8 +100,9 @@
           Returns true if the ESR reference is valid else false.
 
           Rules:
-            1) The ESR reference must have exactly 27 digits.
-            2) The 27th digit must be the checksum for the first 26 digits
+
+            1. The ESR reference must have exactly 27 digits.
+            2. The 27th digit must be the checksum for the first 26 digits
           """
      :examples (list
           """(esr/valid? "158888000000000001234567892")""" ) }
@@ -118,7 +120,7 @@
 (defn
   ^{ :arglists '("(esr/format esr-ref)")
      :doc """
-          Formats an ESR reference by building blocks of 5 digits separated \
+          Formats an ESR reference by building blocks of 5 digits separated
           by a spaces.
           """
      :examples (list
@@ -141,7 +143,7 @@
 (defn
   ^{ :arglists '("(esr/normalize esr-ref)")
      :doc """
-          Normalize a formatted ESR reference by removing the formatting \
+          Normalize a formatted ESR reference by removing the formatting
           spaces.
           """
      :examples (list

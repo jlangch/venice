@@ -27,7 +27,7 @@
 (defmacro
   ^{ :arglists '("(with-home gradle-dir proj-dir & forms)")
      :doc """
-          Sets the Gradle home and the project directory for all \
+          Sets the Gradle home and the project directory for all
           subsequent forms.
           """
      :examples '(

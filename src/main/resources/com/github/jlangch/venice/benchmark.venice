@@ -141,6 +141,7 @@
            Benchmarks the given expression.
 
            Runs the benchmark in 4 phases:
+
               1. Run the expression in a warm-up phase to allow the
                  JIT compiler to do optimizations
               2. Run the garbage collector to isolate timings from
@@ -149,15 +150,11 @@
               4. Analyzes and prints the benchmark statistics
 
            Options:
-              :chart b        - generate a chart {true/false}, defaults
-                                to false
-                                Saves the chart as 'benchmark.png'
-              :steps n        - the number of steps for the quantization,
-                                defaults to 100
-              :median b       - show the median value in the chart {true/
-                                false}, defaults to false
-              :outliers b     - show the outlier range in the chart {true/
-                                false}, defaults to false
+
+            | :chart b    | If true generates a chart and saves it to 'benchmark.png'. Defaults to false. |
+            | :steps n    | the number of steps for the quantization, defaults to 100 |
+            | :median b   | show the median value in the chart {true/false}, defaults to false |
+            | :outliers b | show the outlier range in the chart {true/false}, defaults to false |
            """
       :examples '(
         "(bench/benchmark (+ 1 2) 120000 10000)",

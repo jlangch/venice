@@ -27,26 +27,29 @@
 (defn
   ^{ :arglists '("(app/build name main-file file-map dest-dir)")
      :doc """
-          Creates a Venice application archive that can be distributed \
+          Creates a Venice application archive that can be distributed
           and executed as a single file.
 
           E.g.:
+
+          ```venice
           (app/build "test"
                      "chart.venice"
                      { "chart.venice" "./foo/chart.venice"
                        "utils.venice" "./foo/utils.venice" }
                      ".")
+          ```
 
-          Loading Venice files works relative to the application. You can \
+          Loading Venice files works relative to the application. You can
           only load files that are in the app archive.
-          If for instances "chart.venice" in the above example requires \
-          "utils.venice" just add (load-file "utils") to "chart.venice".
+          If for instances "chart.venice" in the above example requires
+          "utils.venice" just add `(load-file "utils")` to "chart.venice".
 
-          The app can be run from the command line as:
-          > java -jar venice-1.7.17.jar -app test.zip
+          The app can be run from the command line as:¶
+          `> java -jar venice-1.9.19.jar -app test.zip`
 
-          Or with additional Java libraries (all JARs in 'libs' dir):
-          > java -cp "libs/*" com.github.jlangch.venice.Launcher -app test.zip
+          Or with additional Java libraries (all JARs in 'libs' dir):¶
+          `> java -cp "libs/*" com.github.jlangch.venice.Launcher -app test.zip`
           """ }
 
   app/build [name main-file file-map dest-dir]

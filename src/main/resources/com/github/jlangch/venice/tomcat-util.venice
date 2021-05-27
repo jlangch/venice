@@ -116,7 +116,7 @@
 (defn
   ^{ :arglists '("(version tc-home)")
      :doc """
-          Returns the Tomcat version for the Tomcat installation at the given path. \
+          Returns the Tomcat version for the Tomcat installation at the given path.
           Throws an exception if there is not a Tomcat installation at the path.
           """
      :examples '(
@@ -142,8 +142,8 @@
 (defn
   ^{ :arglists '("(get-pid tc-home)")
      :doc """
-          Returns the pid of a running Tomcat process for the Tomcat \
-          installation at the given path. Returns nil if Tomcat is not \
+          Returns the pid of a running Tomcat process for the Tomcat
+          installation at the given path. Returns nil if Tomcat is not
           running.
           """
      :examples '(
@@ -162,7 +162,7 @@
 (defn
   ^{ :arglists '("(running? tc-home)")
      :doc """
-          Returns true if the Tomcat process is running for the Tomcat \
+          Returns true if the Tomcat process is running for the Tomcat
           installation.
           """
      :examples '("(tc-util/running? \"/Users/tools/apache-tomcat-9.0.26\")") }
@@ -199,7 +199,7 @@
 (defn
   ^{ :arglists '("(clean tc-home)")
      :doc """
-          Cleans a non running Tomcat installation. Removes the log files, \
+          Cleans a non running Tomcat installation. Removes the log files,
           the work directory and the javamelody directory if they exist.
           """
      :examples '(
@@ -250,11 +250,11 @@
           "(stop tc-home)",
           "(stop tc-home timeout)")
      :doc """
-          Stops Tomcat for the given Tomcat installation if its running. If a \
-          the Tomcat process is still running after timeout seconds after the \
-          shutdown has been requested the process is killed. The timeout \
-          defaults to 20s. If timeout is 0 it waits as long the process is \
-          running. If the timeout is -1 it returns immediately after the \
+          Stops Tomcat for the given Tomcat installation if its running. If a
+          the Tomcat process is still running after timeout seconds after the
+          shutdown has been requested the process is killed. The timeout
+          defaults to 20s. If timeout is 0 it waits as long the process is
+          running. If the timeout is -1 it returns immediately after the
           shutdown has been requested.
           """
      :examples '(
@@ -306,7 +306,7 @@
 (defn
   ^{ :arglists '("(deploy-war tc-home war)")
      :doc """
-          Deploys a WAR file to a Tomcat installation. Throws an exception if \
+          Deploys a WAR file to a Tomcat installation. Throws an exception if
           the WAR does not exist or Tomcat is running.
           """
      :examples '(
@@ -344,15 +344,13 @@
   ^{ :arglists '("(install install-dir tc-version & options)")
      :doc """
           Installs Tomcat to {install-dir}/{tc-version}.
+
           Options:
-            :remove-unix-files true/false
-                Removes the Unix scripts. Defaults to false.
-            :remove-windows-files true/false
-                Removes the Windows scripts. Defaults to false.
-            :remove-system-webapps true/false
-                Removes the system web apps. Defaults to false.
-            :show-progress true/false
-                If true show download progress. Defaults to false.
+
+          | :remove-unix-files true/false     | Removes the Unix scripts. Defaults to false. |
+          | :remove-windows-files true/false  | Removes the Windows scripts. Defaults to false. |
+          | :remove-system-webapps true/false | Removes the system web apps. Defaults to false. |
+          | :show-progress true/false         | If true show download progress. Defaults to false. |
           """
      :examples '(
           "(tc-util/install \"/Users/tools\" \"9.0.34\" :remove-system-webapps true)") }
@@ -445,8 +443,8 @@
 (defn
   ^{ :arglists '("(parse-access-log log entry-parser)")
      :doc """
-          Parses a Tomcat access log file. The entry-parser parses a log entry \
-          text line to a map with the keys :ip, :timestamp, :url, :status, \
+          Parses a Tomcat access log file. The entry-parser parses a log entry
+          text line to a map with the keys :ip, :timestamp, :url, :status,
           :bytes, and :millis.
           """
      :examples '(

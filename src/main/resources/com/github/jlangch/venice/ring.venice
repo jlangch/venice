@@ -70,9 +70,9 @@
 
 (defn
   ^{ :doc """
-          Returns the value of the specified request parameter. If the request \
-          did not include a parameter of the specified name, this method returns \
-          nil. If there are multiple parameters with the same name, this method \
+          Returns the value of the specified request parameter. If the request
+          did not include a parameter of the specified name, this method returns
+          nil. If there are multiple parameters with the same name, this method
           returns the first parameter in the request.
           """ }
 
@@ -91,9 +91,9 @@
 
 (defn
   ^{ :doc """
-          Returns the value of the specified request header. If the request \
-          did not include a header of the specified name, this method returns \
-          nil. If there are multiple header with the same name, this method \
+          Returns the value of the specified request header. If the request
+          did not include a header of the specified name, this method returns
+          nil. If there are multiple header with the same name, this method
           returns the first header in the request.
           """  }
 
@@ -112,7 +112,7 @@
 
 (defn
   ^{ :doc """
-          Returns all 'Accept' header mime-types of the request as a set. \
+          Returns all 'Accept' header mime-types of the request as a set.
           Strips off the ratings
           """ }
 
@@ -224,7 +224,7 @@
 
 (defn
   ^{ :doc """
-          Turns handler debug flag on the request on/off and then calls \
+          Turns handler debug flag on the request on/off and then calls
           the handler with the modified request.
           """ }
 
@@ -248,7 +248,7 @@
 
 (defn
   ^{ :doc """
-          Increments the number requests, stores it in the attribute \
+          Increments the number requests, stores it in the attribute
           'request-counter' in the session, and then calls the handler.
           """ }
 
@@ -265,10 +265,11 @@
 
 (defn
   ^{ :doc """
-          Adds the session to the request. If a new session is created \
-          the given timeout is set as the MaxInactiveInterval. If a \
+          Adds the session to the request. If a new session is created
+          the given timeout is set as the MaxInactiveInterval. If a
           timeout is not given the session will never timeout.
-          Adds the session to the request and then calls the handler \
+
+          Adds the session to the request and then calls the handler
           with the modified request.
           """ }
 
@@ -338,7 +339,7 @@
 
 (defn
   ^{ :doc """
-          Compile the routes and return a function that calls the handler \
+          Compile the routes and return a function that calls the handler
           matching the URI.
           """ }
 
@@ -400,7 +401,7 @@
 
 (defn-
   ^{ :doc """
-          Looks up a header in a Ring response (or request) case insensitively, \
+          Looks up a header in a Ring response (or request) case insensitively,
           returning the header map entry, or nil if not present.
           """  }
 
@@ -416,6 +417,7 @@
 (defn-
   ^{ :doc """
           Gets the character encoding of a Ring response.
+          
           E.g.: Content-Type: text/html; charset=utf-8
           """ }
 

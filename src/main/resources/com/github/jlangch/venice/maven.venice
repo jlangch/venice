@@ -39,13 +39,12 @@
         """
         Parses a Maven artefact like 'com/vaadin:vaadin-client:8.7.2'
 
-        [1]  (maven/parse-artefact artefact)
-             returns a vector with group-id, artefact-id, and version
-        [2]  (maven/parse-artefact artefact file-suffix)
-             returns a vector with group-id, artefact-id, version and
-             file name
-        [3]  (maven/parse-artefact artefact file-suffix repo)
-             returns a vector with the Maven download URI and the file name
+        1. (maven/parse-artefact artefact)¶
+           returns a vector with group-id, artefact-id, and version
+        2. (maven/parse-artefact artefact file-suffix)¶
+           returns a vector with group-id, artefact-id, version and file name
+        3. (maven/parse-artefact artefact file-suffix repo)¶
+           returns a vector with the Maven download URI and the file name
         """
      :examples '(
         """
@@ -85,18 +84,18 @@
 (defn
   ^{ :arglists '("(maven/download artefact options*)")
      :doc """
-          Downloads an artefact in the format 'group-id:artefact-id:version' \
-          from a Maven repository. Can download any combination of the jar, \
+          Downloads an artefact in the format 'group-id:artefact-id:version'
+          from a Maven repository. Can download any combination of the jar,
           sources, or pom artefacts to a directory.
 
           Options:
-            :jar {true,false}       download the jar, defaults to true
-            :sources {true,false}   download the sources, defaults to false
-            :pom {true,false}       download the pom, defaults to false
-            :dir path               download dir, defaults to "."
-            :repo maven-repo        a maven repo, defaults to "https://repo1.maven.org/maven2"
-            :silent {true,false}    if silent is true does not show a progress bar,
-                                    defaults to true
+
+          | :jar {true,false}     | download the jar, defaults to true |
+          | :sources {true,false} | download the sources, defaults to false |
+          | :pom {true,false}     | download the pom, defaults to false |
+          | :dir path             | download dir, defaults to "." |
+          | :repo maven-repo      | a maven repo, defaults to "https://repo1.maven.org/maven2" |
+          | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
           """
      :examples '(
           """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
@@ -134,14 +133,16 @@
 (defn
   ^{ :arglists '("(maven/get artefact type options*)")
      :doc """
-          Downloads artefact in the format 'group-id:artefact-id:version' \
-          from a Maven repository. The artefact type 'type' is one of \
+          Downloads artefact in the format 'group-id:artefact-id:version'
+          from a Maven repository. The artefact type 'type' is one of
           {:jar, :sources, :pom}.
+
           Returns the artefact as byte buffer.
 
           Options:
-            :repo maven-repo       a maven repo, defaults to "https://repo1.maven.org/maven2"
-            :silent {true,false}   if silent is true does not show a progress bar, defaults to true
+
+          | :repo maven-repo     | a maven repo, defaults to "https://repo1.maven.org/maven2" |
+          | :silent {true,false} | if silent is true does not show a progress bar, defaults to true |
           """
      :examples '(
           """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar)"""
@@ -163,12 +164,14 @@
 (defn
   ^{ :arglists '("(maven/uri artefact type options*)")
      :doc """
-          Returns an URI for an artefact in the format 'group-id:artefact-id:version' \
+          Returns an URI for an artefact in the format 'group-id:artefact-id:version'
           from a Maven repository.
+
           The artefact type 'type' is one of {:jar, :sources, :pom}
 
           Options:
-            :repo maven-repo   a maven repo, defaults to "https://repo1.maven.org/maven2"
+
+          | :repo maven-repo | a maven repo, defaults to "https://repo1.maven.org/maven2" |
           """
      :examples '(
           """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar)"""
