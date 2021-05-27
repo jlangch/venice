@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 
 
@@ -66,7 +67,7 @@ public class ListBlockParser {
 				line = line.substring(1);
 				line = StringUtil.trimLeft(line);
 				
-				item.add(new RawChunk(line));
+				addLine(item, line);
 			}
 			else if (isOrderedItemStart(line)) {
 				if (ordered == null) {
@@ -83,7 +84,7 @@ public class ListBlockParser {
 				line = line.substring(pos+1);
 				line = StringUtil.trimLeft(line);
 				
-				item.add(new RawChunk(line));
+				addLine(item, line);
 			}
 			else {
 				line = StringUtil.trimLeft(line);
@@ -115,6 +116,24 @@ public class ListBlockParser {
 		return line.matches(" *[0-9]+[.] +[^ ].*");
 	}
 
+	private void addLine(final TextBlock block, final String line) {
+		if (line.contains("¶")) {
+			final String[] chunks = line.split("¶");
+			for(int ii=0; ii<chunks.length; ii++) {
+				if (ii>0) {
+					block.add(new LineBreakChunk());
+				}
+				block.add(new RawChunk(chunks[ii].trim()));
+			}
+			
+			if (line.endsWith("¶")) {
+				block.add(new LineBreakChunk());
+			}
+		}
+		else {
+			block.add(new RawChunk(line));
+		}
+	}
 	
 	private final LineReader reader;
 }
