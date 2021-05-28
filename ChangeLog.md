@@ -18,7 +18,9 @@ and this project adheres to
 
 ### Changed
 
-- migrated documentation to markdown for more flexibility
+- migrated the documentation to markdown for more flexibility. This produces
+  nicer documentation for the Venice cheatsheet and the REPL online text
+  documentation through the `doc` function (e.g. `(doc filter)`) 
 
 
 
