@@ -9,12 +9,16 @@ and this project adheres to
 
 
 
-## [1.9.19] - 2021-04-xx
+## [1.9.19] - 2021-06-xx
 
 ### Added
 
 - access to REPL info when running in the REPL. 
   E.g.: `(repl/info)`, `(repl/term-rows)`, `(repl/term-cols)`
+
+### Changed
+
+- migrated documentation to markdown for more flexibility
 
 
 

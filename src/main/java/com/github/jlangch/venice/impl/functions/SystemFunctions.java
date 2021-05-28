@@ -182,8 +182,8 @@ public class SystemFunctions {
 						"(format-milli-time time & options)")
 					.doc(
 						"Formats a time given in milliseconds as long or double. \n\n" +
-						"Options: \n" +
-						"  :precision p - e.g :precision 4 (defaults to 3)")
+						"Options: \n\\n" +
+						"| :precision p | e.g :precision 4 (defaults to 3)|")
 					.examples(
 						"(format-milli-time 203)",
 						"(format-milli-time 20389.0 :precision 2)",
@@ -235,8 +235,8 @@ public class SystemFunctions {
 						"(format-micro-time time & options)")
 					.doc(
 						"Formats a time given in microseconds as long or double. \n\n" +
-						"Options: \n" +
-						"  :precision p - e.g :precision 4 (defaults to 3)")
+						"Options: \n\\n" +
+						"| :precision p | e.g :precision 4 (defaults to 3)|")
 					.examples(
 						"(format-micro-time 203)",
 						"(format-micro-time 20389.0 :precision 2)",
@@ -295,8 +295,8 @@ public class SystemFunctions {
 						"(format-nano-time time & options)")
 					.doc(
 						"Formats a time given in nanoseconds as long or double. \n\n" +
-						"Options: \n" +
-						"  :precision p - e.g :precision 4 (defaults to 3)")
+						"Options: \n\n" +
+						"| :precision p | e.g :precision 4 (defaults to 3)|")
 					.examples(
 						"(format-nano-time 203)",
 						"(format-nano-time 20389.0 :precision 2)",
@@ -358,7 +358,7 @@ public class SystemFunctions {
 						"(sleep n)",
 						"(sleep n time-unit)")
 					.doc(
-						"Sleep for the time n. The default time unit is milliseconds \n" +
+						"Sleep for the time n. The default time unit is milliseconds.¶" +
 						"Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
 					.examples(
 						"(sleep 30)",
@@ -484,10 +484,10 @@ public class SystemFunctions {
 					.arglists("(ip-private? addr)")
 					.doc(
 						"Returns true if the IP address is private. \n\n" +
-						"IP addresses reserved for private networks: \n" +
-						"  192.168.0.0 - 192.168.255.255\n" +
-						"  172.16.0.0 - 172.31.255.255\n" +
-						"  10.0.0.0 - 10.255.255.255")
+						"IPv4 addresses reserved for private networks:\n\n" +
+						" * 192.168.0.0 - 192.168.255.255\n" +
+						" * 172.16.0.0 - 172.31.255.255\n" +
+						" * 10.0.0.0 - 10.255.255.255\n")
 					.examples("(ip-private? \"192.168.170.181\")")
 					.build()
 		) {
@@ -886,7 +886,7 @@ public class SystemFunctions {
 					.doc(
 						"Defines the exit code that is used if the Java VM exits. " +
 						"Defaults to 0. \n\n" +
-						"Note: \n" +
+						"Note:¶" +
 						"The exit code is only used when the Venice launcher has been" +
 						"used to run a script file, a command line script, a Venice app " +
 						"archive, or the REPL.")

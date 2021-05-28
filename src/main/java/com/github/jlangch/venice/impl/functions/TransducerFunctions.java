@@ -77,17 +77,17 @@ public class TransducerFunctions {
 						"xf to init and the first item in coll, then applying xf to " +
 						"that result and the 2nd item, etc. If coll contains no items, " +
 						"returns init and f is not called.\n\n"+
-						"Transformations            Reductions\n" +
-						"---------------------      ------------------\n" +
-						"map       map-indexed      rf-first\n" +
-						"filter    flatten          rf-last\n" +
-						"drop      drop-while       rf-any?\n" +
-						"take      take-while       rf-every?\n" +
-						"keep      remove           conj, +, max, min\n" +
-						"dedupe    distinct\n" +
-						"sorted    reverse\n" +
-						"halt-when\n" +
-						"")
+						"```\n" +
+						"Transformations            Reductions            Control   \n" +
+						"----------------------     ------------------    --------- \n" +
+						"map        map-indexed     rf-first              halt-when \n" +
+						"filter     flatten         rf-last                         \n" +
+						"drop       drop-while      rf-any?                         \n" +
+						"take       take-while      rf-every?                       \n" +
+						"keep       remove          conj, +, max, min               \n" +
+						"dedupe     distinct                                        \n" +
+						"sorted     reverse                                         \n" +
+						"```")
 					.examples(
 						"(transduce (map #(+ % 3)) + [1 2 3 4])",
 						
@@ -187,7 +187,7 @@ public class TransducerFunctions {
 					.doc(
 						"Applys f to the set of first items of each coll, followed by applying " +
 						"f to the set of second items in each coll, until any one of the colls " +
-						"is exhausted. Any remaining items in other colls are ignored. " +
+						"is exhausted. Any remaining items in other colls are ignored.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(map inc [1 2 3 4])",
@@ -302,7 +302,7 @@ public class TransducerFunctions {
 					.doc(
 						"Retruns a collection of applying f to 0 and the first item of " +
 						"coll, followed by applying f to 1 and the second item of coll, etc. " +
-						"until coll is exhausted. " +
+						"until coll is exhausted.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples(
 						"(map-indexed (fn [idx val] [idx val]) [:a :b :c])",
@@ -408,7 +408,7 @@ public class TransducerFunctions {
 					.arglists("(filter predicate coll)")
 					.doc(
 						"Returns a collection of the items in coll for which " +
-						"(predicate item) returns logical true. " +
+						"(predicate item) returns logical true.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(filter even? [1 2 3 4 5 6 7])",
@@ -486,7 +486,7 @@ public class TransducerFunctions {
 					.meta()
 					.arglists("(drop n coll)")
 					.doc(
-						"Returns a collection of all but the first n items in coll. " +
+						"Returns a collection of all but the first n items in coll.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples("(drop 3 [1 2 3 4 5])", "(drop 10 [1 2 3 4 5])")
 					.build()
@@ -551,7 +551,7 @@ public class TransducerFunctions {
 					.arglists("(drop-while predicate coll)")
 					.doc(
 						"Returns a list of the items in coll starting from the " +
-						"first item for which (predicate item) returns logical false. " +
+						"first item for which (predicate item) returns logical false.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples("(drop-while neg? [-2 -1 0 1 2 3])")
 					.build()
@@ -631,7 +631,7 @@ public class TransducerFunctions {
 					.arglists("(take n coll)")
 					.doc(
 						"Returns a collection of the first n items in coll, or all items if " +
-						"there are fewer than n. " +
+						"there are fewer than n.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples(
 						"(take 3 [1 2 3 4 5])",
@@ -699,7 +699,7 @@ public class TransducerFunctions {
 					.arglists("(take-while predicate coll)")
 					.doc(
 						"Returns a list of successive items from coll while " +
-						"(predicate item) returns logical true. " +
+						"(predicate item) returns logical true.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples("(take-while neg? [-2 -1 0 1 2 3])")
 					.build()
@@ -774,7 +774,7 @@ public class TransducerFunctions {
 					.doc(
 						"Returns a sequence of the non-nil results of (f item). Note, " +
 						"this means false return values will be included. f must be " +
-						"free of side-effects. " +
+						"free of side-effects.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(keep even? (range 1 4))",
@@ -841,7 +841,7 @@ public class TransducerFunctions {
 					.meta()
 					.arglists("(dedupe coll)")
 					.doc(
-						"Returns a collection with all consecutive duplicates removed. " +
+						"Returns a collection with all consecutive duplicates removed.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples(
 						"(dedupe [1 2 2 2 3 4 4 2 3])",
@@ -922,7 +922,7 @@ public class TransducerFunctions {
 					.arglists("(remove predicate coll)")
 					.doc(
 						"Returns a collection of the items in coll for which " +
-						"(predicate item) returns logical false. " +
+						"(predicate item) returns logical false.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(remove even? [1 2 3 4 5 6 7])",
@@ -969,7 +969,7 @@ public class TransducerFunctions {
 					.meta()
 					.arglists("(distinct coll)")
 					.doc(
-						"Returns a collection with all duplicates removed. " +
+						"Returns a collection with all duplicates removed.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples(
 						"(distinct [1 2 3 4 2 3 4])",
@@ -1042,7 +1042,7 @@ public class TransducerFunctions {
 					.arglists("(sorted cmp coll)")
 					.doc(
 						"Returns a sorted collection using the compare function cmp. " +
-						"The compare function takes two arguments and returns -1, 0, or 1. " +
+						"The compare function takes two arguments and returns -1, 0, or 1.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples(
 						"(sorted compare [4 2 1 5 6 3])",
@@ -1111,7 +1111,7 @@ public class TransducerFunctions {
 					.meta()
 					.arglists("(reverse coll)")
 					.doc(
-						"Returns a collection of the items in coll in reverse order. " +
+						"Returns a collection of the items in coll in reverse order.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples(
 						"(reverse [1 2 3 4 5 6])",
@@ -1197,7 +1197,7 @@ public class TransducerFunctions {
 					.doc(
 						"Takes any nested combination of collections (lists, vectors, " +
 						"etc.) and returns their contents as a single, flat sequence. " +
-						"(flatten nil) returns an empty list. " +
+						"(flatten nil) returns an empty list.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(flatten [])",
@@ -1277,7 +1277,7 @@ public class TransducerFunctions {
 						"for an input. When retf is supplied it must be a fn of 2 arguments - " +
 						"it will be passed the (completed) result so far and the input that " +
 						"triggered the predicate, and its return value (if it does not throw " +
-						"an exception) will be the return value of the  If retf " +
+						"an exception) will be the return value of the transducer. If retf " +
 						"is not supplied, the input that triggered the predicate will be " +
 						"returned. If the predicate never returns true the transduction is " +
 						"unaffected.")

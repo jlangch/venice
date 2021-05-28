@@ -142,18 +142,18 @@ public class RegexFunctions {
 					.arglists("(regex/matches pattern str)")		
 					.doc(
 						"Returns the matches, if any, for the matcher with the pattern of a " + 
-						"string, using java.util.regex.Matcher.matches(). \n" +
+						"string, using java.util.regex.Matcher.matches().¶" +
 						"If the matcher's pattern matches the entire region sequence returns a " +
 						"list with the entire region sequence and the matched groups otherwise " +
 						"returns an empty list. \n\n" +
-						"Returns matching info as meta data on the region and the groups: \n" +
-						"Region meta data: \n" +
-						"   :start       start pos of the overall group\n" +
-						"   :end         end pos of the overall group\n" +
-						"   :group-count the number of matched elements groups\n" +
-						"Group meta data: \n" +
-						"   :start       start pos of the element group\n" +
-						"   :end         end pos of the element group\n")
+						"Returns matching info as meta data on the region and the groups. \n\n" +
+						"Region meta data: \n\n" +
+						"| :start       | start pos of the overall group        |\n" +
+						"| :end         | end pos of the overall group          |\n" +
+						"| :group-count | the number of matched elements groups |\n\n" +
+						"Group meta data: \n\n" +
+						"| :start | start pos of the element group |\n" +
+						"| :end   | end pos of the element group   |\n")
 					.examples(
 						";; Entire region sequence matched \n" +
 						"(regex/matches \"hello, (.*)\" \"hello, world\")",

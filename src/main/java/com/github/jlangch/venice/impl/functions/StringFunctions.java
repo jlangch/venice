@@ -439,9 +439,9 @@ public class StringFunctions {
 						"Replaces the first occurrance of search in s. The search arg may be a" +
 						"string or a regex pattern. If the search arg is of type string the " +
 						"options :ignore-case and :nfirst are supported.\n\n" +
-						"Options: \n" +
-							"  :ignore-case true/false - e.g :ignore-case true, defaults to false \n" +
-							"  :nfirst n - e.g :nfirst 2, defaults to 1")
+						"Options: \n\n" +
+						"| :ignore-case b | if true ignores case, defaults to false |\n" +
+						"| :nfirst n      | e.g :nfirst 2, defaults to 1 |\n")
 					.examples(
 						"(str/replace-first \"ab-cd-ef-ab-cd\" \"ab\" \"XYZ\")",
 						"(str/replace-first \"AB-CD-EF-AB-CD\" \"ab\" \"XYZ\" :ignore-case true)",
@@ -492,10 +492,9 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/replace-last s search replacement & options)")
 					.doc(
-						"Replaces the last occurrance of search in s\n\n" +
-						"Options: \n" +
-						"  :ignore-case true/false - e.g :ignore-case true, defaults to false")
-					.doc("Replaces the last occurrance of search in s")
+						"Replaces the last occurrance of search in s.\n\n" +
+						"Options: \n\n" +
+						"| :ignore-case b | if true ignores case, defaults to false |\n")
 					.examples(
 						"(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")",
 						"(str/replace-last \"foo.JPG\" \".jpg\" \".png\" :ignore-case true)")
@@ -726,7 +725,7 @@ public class StringFunctions {
 						"Returns the 0 based row/column position within a string based on " +
 						"absolute character position. Returns a map with the keys " + 
 						"'row' and 'col'.\n\n" +
-						"Note: CR & LF count as one each regarding the absolute position.")
+						"Note: CR & LF count together as one each regarding the absolute position.")
 					.examples(
 						"(str/pos \"abcdefghij\" 4)",
 						"(str/pos \"ab\ncdefghij\" 6)")
@@ -1190,7 +1189,7 @@ public class StringFunctions {
 					.doc(
 						"Expands a string to the max lenght len. Fills up with the fill" +
 						"string if the string needs to be expanded. The fill string is " +
-						"added to the start or end of the string depending on the mode" +
+						"added to the start or end of the string depending on the mode " +
 						":start, :end. The mode defaults to :end")
 					.examples(
 						"(str/expand \"abcdefghij\" 8 \".\")",
@@ -1621,9 +1620,9 @@ public class StringFunctions {
 						.arglists("(str/lorem-ipsum & options)")
 						.doc(
 							"Creates an arbitrary length Lorem Ipsum text. \n\n" +
-							"Options: \n" +
-							"  :chars n - returns n characters (limited to " + LoremIpsum.getMaxChars() + ") \n" +
-							"  :paragraphs n - returns n paragraphs (limited to " + LoremIpsum.getMaxParagraphs())
+							"Options: \n\n" +
+							"| :chars n      | returns n characters (limited to " + LoremIpsum.getMaxChars() + ") |\n" +
+							"| :paragraphs n | returns n paragraphs (limited to " + LoremIpsum.getMaxParagraphs() + ") |\n")
 						.examples
 							("(str/lorem-ipsum :chars 250)",
 							 "(str/lorem-ipsum :paragraphs 1)")
@@ -1664,8 +1663,8 @@ public class StringFunctions {
 						"(str/bytebuf-to-hex data :upper)")
 					.doc(
 						"Converts byte data to a hex string using the hexadecimal digits: " +
-						"0123456789abcdef. \n" +
-						"If the :upper options is passed the hex digits 0123456789ABCDEF " +
+						"`0123456789abcdef`. ¶" +
+						"If the :upper options is passed the hex digits `0123456789ABCDEF` " +
 						"are used.")
 					.examples(
 						"(str/bytebuf-to-hex (bytebuf [0 1 2 3 4 5 6]))")
@@ -1731,8 +1730,8 @@ public class StringFunctions {
 						"(str/format-bytebuf data delimiter & options)")
 					.doc(
 						"Formats a bytebuffer. \n\n" +
-						"Options \n" +
-						"  :prefix0x - prefix with 0x")
+						"Options \n\n" +
+						"| :prefix0x | prefix with 0x |")
 					.examples(
 						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) nil)",
 						"(str/format-bytebuf (bytebuf [0 34 67 -30 -1]) \"\")",
@@ -1887,7 +1886,7 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/escape-html s)")
-					.doc("HTML escape. Escapes &, <, >, \", ', and the non blocking space U+00A0")
+					.doc("HTML escape. Escapes `&`, `<`, `>`, `\"`, `'`, and the non blocking space `U+00A0`")
 					.examples("(str/escape-html \"1 2 3 & < > \\\" ' \\u00A0\")")
 					.build()
 		) {
@@ -1913,7 +1912,7 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/escape-xml s)")
-					.doc("XML escape. Escapes &, <, >, \", '")
+					.doc("XML escape. Escapes `&`, `<`, `>`, `\"`, `'`")
 					.examples("(str/escape-xml \"1 2 3 & < > \\\" '\")")
 					.build()
 		) {

@@ -498,10 +498,12 @@ public class MathFunctions {
 					.meta()
 					.arglists("(sgn x)")
 					.doc(
-						"sgn function for a number. \n" +
-						"   -1 if x < 0             \n" +
-						"    0 if x = 0             \n" +
-						"    1 if x > 0            ")
+						"sgn function for a number. \n\n" +
+						"```\n" +
+						"-1 if x < 0 \n" +
+						" 0 if x = 0 \n" +
+						" 1 if x > 0 \n" +
+						"```")
 					.examples(
 						"(sgn -10)",
 						"(sgn 0)",
@@ -1128,7 +1130,7 @@ public class MathFunctions {
 						"(rand-long max)")
 					.doc(
 						"Without argument returns a random long between 0 and MAX_LONG. " +
-						"With argument max returns a random long between 0 and max exclusive.\n" +
+						"With argument max returns a random long between 0 and max exclusive.\n\n" +
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG).")
 					.examples(
@@ -1165,7 +1167,7 @@ public class MathFunctions {
 						"(rand-double max)")
 					.doc(
 						"Without argument returns a double between 0.0 and 1.0. " +
-						"With argument max returns a random double between 0.0 and max.\n" +
+						"With argument max returns a random double between 0.0 and max.\n\n" +
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG).")
 					.examples(
@@ -1205,7 +1207,7 @@ public class MathFunctions {
 						"Without argument returns a Gaussion distributed double value with " +
 						"mean 0.0 and standard deviation 1.0. " +
 						"With argument mean and stddev returns a Gaussion distributed double " +
-						"value with the given mean and standard deviation.\n" +
+						"value with the given mean and standard deviation.\n\n" +
 						"This function is based on a cryptographically strong random number " +
 						"generator (RNG)")
 					.examples(

@@ -77,44 +77,46 @@ public class ShellFunctions {
 					.arglists("(sh & args)")		
 					.doc(
 						"Launches a new sub-process.\n\n" +
-						"Options are\n" + 
-						"  :in        may be given followed by input source as InputStream,\n" + 
-						"             Reader, File, ByteBuf, or String, to be fed to the\n" + 
-						"             sub-process's stdin.\n" + 
-						"  :in-enc    option may be given followed by a String, used as a\n" + 
-						"             character encoding name (for example \"UTF-8\" or\n" + 
-						"             \"ISO-8859-1\") to convert the input string specified\n" + 
-						"             by the :in option to the sub-process's stdin. Defaults\n" + 
-						"             to UTF-8. If the :in option provides a byte array,\n" + 
-						"             then the bytes are passed unencoded, and this option\n" + 
-						"             is ignored.\n" + 
-						"  :out-enc   option may be given followed by :bytes or a String. If\n" + 
-						"             a String is given, it will be used as a character\n" + 
-						"             encoding name (for example \"UTF-8\" or \"ISO-8859-1\")\n" + 
-						"             to convert the sub-process's stdout to a String which is\n" + 
-						"             returned. If :bytes is given, the sub-process's stdout\n" + 
-						"             will be stored in a Bytebuf and returned. Defaults to\n" + 
-						"             UTF-8.\n" + 
-						"  :out-fn    a function with a single string argument that receives\n" + 
-						"             line by line from the process' stdout. If passed the \n" + 
-						"             :out value in the return map will be empty.\n" + 
-						"  :err-fn    a function with a single string argument that receives\n" + 
-						"             line by line from the process' stderr. If passed the \n" + 
-						"             :err value in the return map will be empty.\n" + 
-						"  :env       override the process env with a map.\n" + 
-						"  :dir       override the process dir with a String or java.io.File.\n" + 
-						"  :throw-ex  If true throw an exception if the exit code is not equal\n" + 
-						"             to zero, if false returns the exit code. Defaults to\n" + 
-						"             false. It's recommended to use (with-sh-throw (sh \"foo\"))\n" + 
-						"             instead.\n" + 
+						"Options:\n\n" + 
+						"| :in       | may be given followed by input source as InputStream, " + 
+						"              Reader, File, ByteBuf, or String, to be fed to the " + 
+						"              sub-process's stdin. |\n" + 
+						"| :in-enc   | option may be given followed by a String, used as a " + 
+						"              character encoding name (for example \"UTF-8\" or " + 
+						"              \"ISO-8859-1\") to convert the input string specified " + 
+						"              by the :in option to the sub-process's stdin. Defaults " + 
+						"              to \"UTF-8\". If the :in option provides a byte array, " + 
+						"              then the bytes are passed unencoded, and this option " + 
+						"              is ignored. |\n" + 
+						"| :out-enc  | option may be given followed by :bytes or a String. If " + 
+						"              a String is given, it will be used as a character " + 
+						"              encoding name (for example \"UTF-8\" or \"ISO-8859-1\") " + 
+						"              to convert the sub-process's stdout to a String which is " + 
+						"              returned. If :bytes is given, the sub-process's stdout " + 
+						"              will be stored in a Bytebuf and returned. Defaults to " + 
+						"              UTF-8. |\n" + 
+						"| :out-fn   | a function with a single string argument that receives " + 
+						"              line by line from the process' stdout. If passed the " + 
+						"              :out value in the return map will be empty. |\n" + 
+						"| :err-fn   | a function with a single string argument that receives " + 
+						"              line by line from the process' stderr. If passed the " + 
+						"              :err value in the return map will be empty. |\n" + 
+						"| :env      | override the process env with a map. |\n" + 
+						"| :dir      | override the process dir with a String or java.io.File. |\n" + 
+						"| :throw-ex | If true throw an exception if the exit code is not equal " + 
+						"              to zero, if false returns the exit code. Defaults to " + 
+						"              false. It's recommended to use " + 
+						"              `(with-sh-throw (sh \"foo\"))` instead. |\n" + 
 						"\n" +
-						"You can bind :env, :dir for multiple operations using with-sh-env or\n" + 
+						"You can bind :env, :dir for multiple operations using with-sh-env or " + 
 						"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
 						"\n" +
-						"sh returns a map of\n" + 
+						"sh returns a map of\n\n" +
+						"```\n" +
 						"  :exit => sub-process's exit code\n" + 
 						"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
-						"  :err  => sub-process's stderr (String via platform default encoding)")
+						"  :err  => sub-process's stderr (String via platform default encoding)\n" +
+						"```")
 					.examples(
 						"(println (sh \"ls\" \"-l\"))",
 						"(println (sh \"ls\" \"-l\" \"/tmp\"))", 
@@ -229,7 +231,7 @@ public class ShellFunctions {
 					.arglists("(sh/pwd)")
 					.doc(
 						"Returns the current working directory.\n\n" +
-						"Note: \n" +
+						"Note: ¶" +
 						"You can't change the current working directory of the Java VM but " +
 						"if you were to launch another process using (sh & args) you can " +
 						"specify the working directory for the new spawned process.")

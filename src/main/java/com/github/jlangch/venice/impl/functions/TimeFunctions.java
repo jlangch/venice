@@ -869,7 +869,7 @@ public class TimeFunctions {
 					.meta()
 					.arglists("(time/period from to unit)")
 					.doc(
-						"Returns the period interval of two dates in the specified unit.\n" +
+						"Returns the period interval of two dates in the specified unit.¶" +
 						"Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}")
 					.examples(
 						"(time/period (time/local-date) (time/plus (time/local-date) :days 3) :days)",
@@ -1186,7 +1186,7 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/hour date)")
-					.doc("Returns the hour of the date 1..24")
+					.doc("Returns the hour of the date 0..23")
 					.examples(
 						"(time/hour (time/local-date))",
 						"(time/hour (time/local-date-time))",

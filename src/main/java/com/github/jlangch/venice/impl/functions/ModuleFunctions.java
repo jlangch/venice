@@ -182,9 +182,9 @@ public class ModuleFunctions {
 					.doc(
 						"Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
 						"or nil if the file does not exist. \n\n" +
-						"Options: \n" +
-						"  :binary true/false - e.g :binary true, defaults to true \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\n" +
+						"| :binary b   | e.g :binary true, defaults to true |\n" +
+						"| :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.build()
 		) {
 			@Override

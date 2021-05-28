@@ -74,13 +74,11 @@ public class JsonFunctions {
 						"(json/write-str val & options)")		
 					.doc(
 						"Writes the val to a JSON string.\n\n" +
-						"Options are: \n" +
-						"  :pretty boolean \n" + 
-						"      Enables/disables pretty printing. \n" +
-						"      Defaults to false. \n" +
-						"  :decimal-as-double boolean \n" + 
-						"      If true emit a decimal as double else as string. \n" +
-						"      Defaults to false.")
+						"Options: \n\n" +
+						"| :pretty b            | Enables/disables pretty printing. " +
+						"                         Defaults to false. |\n" +
+						"| :decimal-as-double b | If true emit a decimal as double else as string. " +
+						"                         Defaults to false. |")
 					.examples(
 						"(json/write-str {:a 100 :b 100})",
 						"(json/write-str {:a 100 :b 100} :pretty true)")
@@ -123,16 +121,14 @@ public class JsonFunctions {
 					.arglists(
 						"(json/spit out val & options)")		
 					.doc(
-						"Spits the JSON converted val to the output.\n" +
+						"Spits the JSON converted val to the output. " +
 						"out maybe a file, a Java OutputStream, or a Java Writer. \n\n" +
-						"Options are: \n" +
-						"  :pretty boolean \n" + 
-						"      Enables/disables pretty printing. \n" +
-						"      Defaults to false. \n" +
-						"  :decimal-as-double boolean \n" + 
-						"      If true emit a decimal as double else as string. \n" +
-						"      Defaults to false. \n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\n" +
+						"| :pretty b            | Enables/disables pretty printing. " +
+						"                         Defaults to false. |\n" +
+						"| :decimal-as-double b | If true emit a decimal as double else as string. " +
+						"                         Defaults to false. |\n" +
+						"| :encoding e          | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.examples(
 						"(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
 						"  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
@@ -220,21 +216,18 @@ public class JsonFunctions {
 					.arglists("(json/read-str s & options)")		
 					.doc(
 						"Reads a JSON string and returns it as a Venice datatype.\n\n" + 
-						"Options are: \n" +
-						"  :key-fn fn \n" + 
-						"      Single-argument function called on JSON property names; \n" +
-						"      return value will replace the property names in the output. \n" +
-						"      Default is 'identity', use 'keyword' to get keyword \n" +
-						"      properties. \n" +
-						"  :value-fn fn \n" + 
-						"      Function to transform values in JSON objects in\n" + 
-						"      the output. For each JSON property, value-fn is called with\n" + 
-						"      two arguments: the property name (transformed by key-fn) and\n" + 
-						"      the value. The return value of value-fn will replace the value\n" + 
-						"      in the output. The default value-fn returns the value unchanged.\n" + 
-						"  :decimal boolean \n" + 
-						"      If true use BigDecimal for decimal numbers instead of Double.\n" + 
-						"      Default is false.")
+						"Options: \n\n" +
+						"| :key-fn fn   | Single argument function called on JSON property names; " +
+						"                 return value will replace the property names in the output. " +
+						"                 Default is 'identity', use 'keyword' to get keyword " +
+						"                 properties. |\n" +
+						"| :value-fn fn | Function to transform values in JSON objects in " + 
+						"                 the output. For each JSON property, value-fn is called with " + 
+						"                 two arguments: the property name (transformed by key-fn) and " + 
+						"                 the value. The return value of value-fn will replace the value " + 
+						"                 in the output. The default value-fn returns the value unchanged. |\n" + 
+						"| :decimal b   | If true use BigDecimal for decimal numbers instead of Double. " + 
+						"                 Default is false. |")
 					.examples(
 						"(json/read-str (json/write-str {:a 100 :b 100}))",
 						"(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)",
@@ -285,24 +278,21 @@ public class JsonFunctions {
 					.meta()
 					.arglists("(json/slurp in & options)")		
 					.doc(
-						"Slurps a JSON string from the input and returns it as a Venice datatype.\n" +
+						"Slurps a JSON string from the input and returns it as a Venice datatype." +
 						"in maybe a file, a Java InputStream, or a Java Reader. \n\n" +
-						"Options are: \n" +
-						"  :key-fn fn  \n" + 
-						"      Single-argument function called on JSON property names; \n" +
-						"      return value will replace the property names in the output. \n" +
-						"      Default is 'identity', use 'keyword' to get keyword \n" +
-						"      properties. \n" +
-						"  :value-fn fn \n" + 
-						"      Function to transform values in JSON objects in\n" + 
-						"      the output. For each JSON property, value-fn is called with\n" + 
-						"      two arguments: the property name (transformed by key-fn) and\n" + 
-						"      the value. The return value of value-fn will replace the value\n" + 
-						"      in the output. The default value-fn returns the value unchanged.\n" + 
-						"  :decimal boolean \n" + 
-						"      If true use BigDecimal for decimal numbers instead of Double.\n" + 
-						"      Default is false.\n" +
-						"  :encoding enc - e.g :encoding :utf-8, defaults to :utf-8")
+						"Options: \n\n" +
+						"| :key-fn fn   | Single-argument function called on JSON property names; " +
+						"                 return value will replace the property names in the output. " +
+						"                 Default is 'identity', use 'keyword' to get keyword " +
+						"                 properties. |\n" +
+						"| :value-fn fn | Function to transform values in JSON objects in " + 
+						"                 the output. For each JSON property, value-fn is called with " + 
+						"                 two arguments: the property name (transformed by key-fn) and " + 
+						"                 the value. The return value of value-fn will replace the value " + 
+						"                 in the output. The default value-fn returns the value unchanged. |\n" + 
+						"| :decimal b   | If true use BigDecimal for decimal numbers instead of Double. " + 
+						"                 Default is false. |\n" +
+						"| :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.examples(
 						"(let [json (json/write-str {:a 100 :b 100})             \n" +
 						"      data (bytebuf-from-string json :utf-8)            \n" +

@@ -76,7 +76,7 @@ public class ZipFunctions {
 					.doc(
 						"Creates a zip containing the entries. An entry is given by a " +
 						"name and data. The entry data may be nil, a bytebuf, a file, " +
-						"a string (file path), or an InputStream. " +
+						"a string (file path), or an InputStream.¶" +
 						"An entry name with a trailing '/' creates a directory. " +
 						"Returns the zip as bytebuf.")
 					.examples(
@@ -176,7 +176,7 @@ public class ZipFunctions {
 						"Appends entries to an existing zip file f. Overwrites existing " +
 						"entries. An entry is given by a name and data. The entry data " +
 						"may be nil, a bytebuf, a file, a string (file path), or an " +
-						"InputStream." +
+						"InputStream.¶" +
 						"An entry name with a trailing '/' creates a directory. ")
 					.examples(
 						"  (let [data (bytebuf-from-string \"abc\" :utf-8)]                  \n" +
@@ -626,23 +626,25 @@ public class ZipFunctions {
 						"Zips files and directories recursively. Does not zip hidden " +
 						"files and does not follow symbolic links. The zip-file my be " +
 						"a file, a string (file path) or an OutputStream. \n\n" +
-						"Options: \n" +
-						"  :filter-fn fn      - a predicate function that filters the files \n" +
-						"                       to be added to the zip. \n" +
-						"  :mapper-fn fn      - a mapper function that can map the file content \n" +
-						"                       of a file before it gets zipped. Returns nil or \n" +
-						"                       a :java.io.InputStream. The real file is used \n" +
-						"                       when nil is returned. \n" +
-						"  :silent true/false - if false prints the added entries to *out*, \n" +
-						"                       defaults to false\n\n" +
-						"Example: \n" +
-						"  venice> (io/zip-file :silent false \"test.zip\" \"dirA\" \"dirB\")\n" +
-						"  Output:\n" +
-						"    adding: dirA/\n" +
-						"    adding: dirA/a1.png\n" +
-						"    adding: dirA/a2.png\n" +
-						"    adding: dirB/\n" +
-						"    adding: dirB/b1.png")
+						"Options:\n\n" +
+						"| :filter-fn fn | a predicate function that filters the files " +
+						"                  to be added to the zip. |\n" +
+						"| :mapper-fn fn | a mapper function that can map the file content " +
+						"                  of a file before it gets zipped. Returns nil or " +
+						"                  a :java.io.InputStream. The real file is used " +
+						"                  when nil is returned. |\n" +
+						"| :silent b     | if false prints the added entries to *out*, " +
+						"                  defaults to false |\n\n" +
+						"Example: \n\n" +
+						"```\n" +
+						"venice> (io/zip-file :silent false \"test.zip\" \"dirA\" \"dirB\")\n" +
+						"Output:\n" +
+						"  adding: dirA/\n" +
+						"  adding: dirA/a1.png\n" +
+						"  adding: dirA/a2.png\n" +
+						"  adding: dirB/\n" +
+						"  adding: dirB/b1.png\n" +
+						"```")
 					.examples(
 						"; zip files\n" +
 						"(io/zip-file \"test.zip\" \"a.txt\" \"x/b.txt\")",
@@ -746,34 +748,36 @@ public class ZipFunctions {
 						"value of *out*. f may be a bytebuf, a file, a string (file path), " +
 						"or an InputStream. Returns nil in print mode otherwise returns " +
 						"a list with attributes for each zip file entry. \n\n" +
-						"Options: \n" +
-						"  :verbose true/false - print verbose output, defaults to false \n" +
-						"  :print true/false - print the entries to *out*, defaults to true\n\n" +
-						"Example: \n" +
-						"  venice> (io/zip-list \"test.zip\")\n" +
-						"    Length         Date/Time Name\n" +
-						"  --------  ---------------- -------------\n" +
-						"         0  2021-01-05 10:32 dirA/\n" +
-						"    309977  2021-01-05 10:32 dirA/a1.png\n" +
-						"    309977  2021-01-05 10:32 dirA/a2.png\n" +
-						"         0  2021-01-05 10:32 dirB/\n" +
-						"    309977  2021-01-05 10:32 dirB/b1.png\n" +
-						"  --------  ---------------- -------------\n" +
-						"    929931                   5 files\n" +
-						"  => nil\n\n" +
-						"  venice> (io/zip-list :verbose true \"test.zip\")\n" +
-						"    Length  Method      Size  Cmpr         Date/Time    CRC-32  Name\n" +
-						"  --------  ------  --------  ----  ----------------  --------  -------------\n" +
-						"         0  Stored         0    0%  2021-01-05 10:32  00000000  dirA/\n" +
-						"    309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirA/a1.png\n" +
-						"    309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirA/a2.png\n" +
-						"         0  Stored         0    0%  2021-01-05 10:32  00000000  dirB/\n" +
-						"    309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirB/b1.png\n" +
-						"  --------  ------  --------  ----  ----------------  --------  -------------\n" +
-						"    929931    null    893073    4%                              5 files\n" +
-						"  => nil\n\n" +
-						"  venice> (io/zip-list :print false \"test.zip\")\n" +
-						"  => ({:size 0 :method \"Stored\" :name \"dirA/\" ...} ...)")
+						"Options: \n\n" +
+						"| :verbose b | if true print verbose output, defaults to false |\n" +
+						"| :print b   | if true print the entries to *out*, defaults to true |\n\n" +
+						"Example: \n\n" +
+						"```\n" +
+						"venice> (io/zip-list \"test.zip\")\n" +
+						"  Length         Date/Time Name\n" +
+						"--------  ---------------- -------------\n" +
+						"       0  2021-01-05 10:32 dirA/\n" +
+						"  309977  2021-01-05 10:32 dirA/a1.png\n" +
+						"  309977  2021-01-05 10:32 dirA/a2.png\n" +
+						"       0  2021-01-05 10:32 dirB/\n" +
+						"  309977  2021-01-05 10:32 dirB/b1.png\n" +
+						"--------  ---------------- -------------\n" +
+						"  929931                   5 files\n" +
+						"=> nil\n\n" +
+						"venice> (io/zip-list :verbose true \"test.zip\")\n" +
+						"  Length  Method      Size  Cmpr         Date/Time    CRC-32  Name\n" +
+						"--------  ------  --------  ----  ----------------  --------  -------------\n" +
+						"       0  Stored         0    0%  2021-01-05 10:32  00000000  dirA/\n" +
+						"  309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirA/a1.png\n" +
+						"  309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirA/a2.png\n" +
+						"       0  Stored         0    0%  2021-01-05 10:32  00000000  dirB/\n" +
+						"  309977  Defl:N    297691    4%  2021-01-05 10:32  C7F24B5C  dirB/b1.png\n" +
+						"--------  ------  --------  ----  ----------------  --------  -------------\n" +
+						"  929931    null    893073    4%                              5 files\n" +
+						"=> nil\n\n" +
+						"venice> (io/zip-list :print false \"test.zip\")\n" +
+						"=> ({:size 0 :method \"Stored\" :name \"dirA/\" ...} ...)\n" +
+						"```")
 					.examples(
 						"(io/zip-list \"test-file.zip\")",
 						"(io/zip-list :verbose true \"test-file.zip\")")

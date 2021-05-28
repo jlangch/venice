@@ -67,10 +67,9 @@ import com.lowagie.text.pdf.PdfReader;
 
 
 public class PdfFunctions {
-
 	
-	private static String BLACK = "#000000";
-
+	private static final String BLACK = "#000000";
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// PDF
@@ -85,9 +84,9 @@ public class PdfFunctions {
 						"(pdf/render xhtml & options)")		
 					.doc(
 						"Renders a PDF.\n\n" + 
-						"Options: \n" + 
-						"  :base-url url        - a base url. E.g.: \"classpath:/\"\n" + 
-						"  :resources resmap    - a resource map for dynamic resources\n") 
+						"Options: \n\n" + 
+						"| :base-url url     | a base url for resources . E.g.: \"classpath:/\"  |\n" + 
+						"| :resources resmap | a resource map for dynamic resources              |\n") 
 					.examples(
 						"(pdf/render xhtml :base-url \"classpath:/\")",							
 						"(pdf/render xhtml \n" +
@@ -136,19 +135,19 @@ public class PdfFunctions {
 					.doc(
 						"Adds a watermark text to the pages of a PDF. The passed PDF pdf is " +
 						"a bytebuf. Returns the new PDF as a bytebuf.\n\n" +
-						"Options: \n" +
-						"  :text s              - watermark text (string), defaults to \"WATERMARK\" \n" +
-						"  :font-size n         - font size in pt (double), defaults to 24.0 \n" +
-						"  :font-char-spacing n - font character spacing (double), defaults to 0.0 \n" +
-						"  :color s             - font color (HTML color string), defaults to " + BLACK + "\n" +
-						"  :opacity n           - opacity 0.0 ... 1.0 (double), defaults to 0.4 \n" +
-						"  :outline-color s     - font outline color (HTML color string), defaults to " + BLACK + "\n" +
-						"  :outline-opacity n   - outline opacity 0.0 ... 1.0 (double), defaults to 0.8 \n" +
-						"  :outline-witdh n     - outline width  0.0 ... 10.0 (double), defaults to 0.5 \n" +
-						"  :angle n             - angle 0.0 ... 360.0 (double), defaults to 45.0 \n" +
-						"  :over-content b      - print text over the content (boolean), defaults to true \n" +
-						"  :skip-top-pages n    - the number of top pages to skip (long), defaults to 0 \n" +
-						"  :skip-bottom-pages n - the number of bottom pages to skip (long), defaults to 0")
+						"Options: \n\n" +
+						"| :text s              | watermark text (string), defaults to \"WATERMARK\" |\n" +
+						"| :font-size n         | font size in pt (double), defaults to 24.0 |\n" +
+						"| :font-char-spacing n | font character spacing (double), defaults to 0.0 |\n" +
+						"| :color s             | font color (HTML color string), defaults to " + BLACK + " |\n" +
+						"| :opacity n           | opacity 0.0 ... 1.0 (double), defaults to 0.4 |\n" +
+						"| :outline-color s     | font outline color (HTML color string), defaults to " + BLACK + " |\n" +
+						"| :outline-opacity n   | outline opacity 0.0 ... 1.0 (double), defaults to 0.8 |\n" +
+						"| :outline-witdh n     | outline width  0.0 ... 10.0 (double), defaults to 0.5 |\n" +
+						"| :angle n             | angle 0.0 ... 360.0 (double), defaults to 45.0 |\n" +
+						"| :over-content b      | print text over the content (boolean), defaults to true |\n" +
+						"| :skip-top-pages n    | the number of top pages to skip (long), defaults to 0 |\n" +
+						"| :skip-bottom-pages n | the number of bottom pages to skip (long), defaults to 0 |\n")
 					.examples(
 						"(pdf/watermark pdf :text \"CONFIDENTIAL\" :font-size 64 :font-char-spacing 10.0)",							
 						"(let [watermark { :text \"CONFIDENTIAL\"      \n" +
@@ -472,10 +471,10 @@ public class PdfFunctions {
 						"Creates a PDF from simple text. The tool process line-feeds '\\n' " +
 						"and form-feeds. To start a new page just insert a form-feed " +
 						"marker \"<form-feed>\".\n\n" +
-						"Options: \n" +
-						"  :font-size n      - font size in pt (double), defaults to 9.0\n" +
-						"  :font-weight n    - font weight (0...1000) (long), defaults to 200\n" +
-						"  :font-monospace b - monospaced font (true/false) (boolean), defaults to false")
+						"Options: \n\n" +
+						"| :font-size n      | font size in pt (double), defaults to 9.0 |\n" +
+						"| :font-weight n    | font weight (0...1000) (long), defaults to 200 |\n" +
+						"| :font-monospace b | if true use monospaced font, defaults to false |\n")
 					.examples(
 						"(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
 						"     (io/spit \"text.pdf\"))                  ")
@@ -698,4 +697,5 @@ public class PdfFunctions {
 					.add(pdf_pages)
 					.add(pdf_text_to_pdf)
 					.toMap();	
+
 }
