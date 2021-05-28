@@ -53,10 +53,10 @@ public class TextTableRendrer {
 	public String render() {
 		final int cols = block.cols();
 		
-		final List<String> headerCells = toHeaderCellTextLines();
-		final List<List<String>> bodyCells = toBodyCellTextLines();
+		final List<String> headerCells = TextTableUtil.toHeaderCellTextLines(block);
+		final List<List<String>> bodyCells = TextTableUtil.toBodyCellTextLines(block);
 		
-		final int[] maxColWidths = maxColWidths(cols, headerCells, bodyCells);
+		final int[] maxColWidths = TextTableUtil.maxColWidths(block, headerCells, bodyCells);
 		
 		final int[] effColWidth = new TextTableLayouter().layoutColWidths(
 															maxTableWidth, 
@@ -153,63 +153,6 @@ public class TextTableRendrer {
 		}
 		
 		return lines;
-	}
-
-
-	private int[] maxColWidths(
-			final int cols, 
-			final List<String> headerCells,
-			final List<List<String>> bodyCells
-	) {
-		int[] widths = new int[block.cols()];
-
-		for(int ii=0; ii<block.cols(); ii++) {
-			widths[ii] = 0;
-		}
-		
-		// header
-		for(int ii=0; ii<cols; ii++) {
-			widths[ii] = Math.max(widths[ii], headerCells.get(ii).length());
-		}
-		
-		// body
-		bodyCells.forEach(row -> {
-			for(int ii=0; ii<cols; ii++) {
-				widths[ii] = Math.max(widths[ii], row.get(ii).length());
-			}
-		});
-		
-		return widths;
-	}
-
-	private List<String> toHeaderCellTextLines() {
-		final TextRenderer renderer = new TextRenderer().nowrap();
-		
-		final List<String> cols = new ArrayList<>();
-		
-		for(int col=0; col<block.cols(); col++) {
-			cols.add(block.hasHeader() 
-						? renderer.render(block.headerCell(col))
-						: "");
-		}
-		
-		return cols;
-	}
-
-	private List<List<String>> toBodyCellTextLines() {
-		final TextRenderer renderer = new TextRenderer().nowrap();
-		
-		final List<List<String>> cells = new ArrayList<>();
-		
-		for(int row=0; row<block.bodyRows(); row++) {
-			final List<String> cols = new ArrayList<>();
-			for(int col=0; col<block.cols(); col++) {
-				cols.add(renderer.render(block.bodyCell(row, col)));
-			}
-			cells.add(cols);
-		}
-		
-		return cells;
 	}
 	
 	private String align(

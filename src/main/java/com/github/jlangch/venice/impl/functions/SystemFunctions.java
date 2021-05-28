@@ -182,8 +182,8 @@ public class SystemFunctions {
 						"(format-milli-time time & options)")
 					.doc(
 						"Formats a time given in milliseconds as long or double. \n\n" +
-						"Options: \n\\n" +
-						"| :precision p | e.g :precision 4 (defaults to 3)|")
+						"Options: \n\n" +
+						"| :precision p | e.g :precision 4 (defaults to 3)|\n")
 					.examples(
 						"(format-milli-time 203)",
 						"(format-milli-time 20389.0 :precision 2)",

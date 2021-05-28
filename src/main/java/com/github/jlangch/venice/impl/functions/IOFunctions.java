@@ -698,16 +698,16 @@ public class IOFunctions {
 						"(io/watch-dir dir event-fn failure-fn)",		
 						"(io/watch-dir dir event-fn failure-fn termination-fn)")		
 					.doc(
-						"Watch a directory for changes, and call the function event-fn when it " +
-						"does. Calls the optional failure-fn if errors occur. On closing " +
-						"the watcher termination-fn is called. \n\n" +
-						"event-fn is a two argument function that receives the path and mode " +
+						"Watch a directory for changes, and call the function `event-fn` when it " +
+						"does. Calls the optional `failure-fn` if errors occur. On closing " +
+						"the watcher `termination-fn` is called. \n\n" +
+						"`event-fn` is a two argument function that receives the path and mode " +
 						"{:created, :deleted, :modified} of the changed file. \n\n" +
-						"failure-fn is a two argument function that receives the watch dir and the " +
+						"`failure-fn` is a two argument function that receives the watch dir and the " +
 						"failure exception. \n\n" +
-						"termination-fn is a one argument function receives the watch dir.\n\n" +
-						"Returns a watcher that is activley watching a directory. The watcher is \n" +
-						"a resource which should be closed with io/close-watcher.")
+						"`termination-fn` is a one argument function that receives the watch dir.\n\n" +
+						"Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
+						"a resource which should be closed with `(io/close-watcher w)`.")
 					.examples(
 						"(do                                                           \n" +
 					    "  (defn log [msg] (locking log (println msg)))                \n" +
@@ -1152,7 +1152,7 @@ public class IOFunctions {
 						"Source must be a file or a string (file path), dest must be a file, " +
 						"a string (file path), or an OutputStream.\n\n" +
 						"Options: \n\n" +
-						"| :replace true/false | e.g if true replace an existing file, defaults to false |")
+						"| :replace true/false | e.g if true replace an existing file, defaults to false |\n")
 					.seeAlso("io/move-file", "io/delete-file", "io/copy-stream")
 					.build()
 		) {
@@ -1417,7 +1417,7 @@ public class IOFunctions {
 						"Read all lines from f. f may be a file, a string file path, " +
 						"a Java InputStream, or a Java Reader. \n\n" +
 						"Options: \n\n" +
-						"| :encoding enc | e.g :encoding :utf-8, defaults to :utf-8 |")
+						"| :encoding enc | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1504,7 +1504,7 @@ public class IOFunctions {
 						"or a Java Reader. \n\n" +
 						"Options: \n\n" +
 						"| :binary true/false | e.g :binary true, defaults to false |\n" +
-						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |")
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1605,7 +1605,7 @@ public class IOFunctions {
 						"The content may be a string or a bytebuf.\n\n" +
 						"Options: \n\n" +
 						"| :append true/false | e.g :append true, defaults to false |\n" +
-						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |")
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.seeAlso("io/spit-stream", "io/slurp", "io/slurp-lines")
 					.build()
 		) {
@@ -1884,9 +1884,9 @@ public class IOFunctions {
 						"Slurps binary or string data from a Java InputStream is. " +
 						"Supports the option :binary to either slurp binary or string data. " +
 						"For string data an optional encoding can be specified.\n\n" +
-						"Options: \n\\n" +
+						"Options: \n\n" +
 						"| :binary true/false | e.g :binary true, defaults to false |\n" +
-						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |")
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileInputStream) \n" +
@@ -1946,9 +1946,9 @@ public class IOFunctions {
 						"If content is of type string an optional encoding (defaults to " +
 						"UTF-8) is supported. The stream can optionally be flushed after " +
 						"the operation.\n\n" +
-						"Options: \n\\n" +
+						"Options: \n\n" +
 						"| :flush true/false | e.g :flush true, defaults to false |\n" +
-						"| :encoding enc     | e.g :encoding :utf-8, defaults to :utf-8 |")
+						"| :encoding enc     | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileOutputStream) \n" +

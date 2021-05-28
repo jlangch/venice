@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextTableUtil;
 
 
 public class HtmlRenderer {
@@ -130,6 +131,11 @@ public class HtmlRenderer {
 			wr.println("</tr>");
 			wr.println("</thead>");
 		}
+		
+		// If we got two columns only and the first column has less than 25 chars
+		// prevent wrapping words at '-' or ' ' char like ":throw-ex" or ":border-bottom s"
+		final int[] colWitdhs = TextTableUtil.maxColWidths(block);
+		final boolean noWrapFirstCol = (block.cols() == 2 && colWitdhs[0] < 25);
 
 		wr.println("<tbody>");
 		for(int row=0; row<block.bodyRows(); row++) {
@@ -139,7 +145,17 @@ public class HtmlRenderer {
 				final String alignClass = buildCssAlignmentClass(block.format(col));
 	
 				wr.print("<td class=\"" + alignClass + "\">");
+				
+				if (col==0 && noWrapFirstCol) {
+					wr.print("<div style=\"display: inline-block; white-space: pre;\">");					
+				}
+				
 				render(chunks, wr);
+				
+				if (col==0 && noWrapFirstCol) {
+					wr.print("</div>");					
+				}
+				
 				wr.println("</td>");
 			}
 			wr.println("</tr>");
