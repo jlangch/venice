@@ -60,7 +60,7 @@ public class TextTableLayouter {
 				return new int[] { maxColWidths[0], usableWidth - maxColWidths[0] };
 			}
 			else if (maxColWidths[1] < usableWidth / 3) {
-				return new int[] { maxColWidths[1], usableWidth - maxColWidths[1] };
+				return new int[] { usableWidth - maxColWidths[1], maxColWidths[1]};
 			}
 			else {
 				return new int[] { usableWidth / 2, usableWidth - usableWidth / 2 };
