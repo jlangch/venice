@@ -53,8 +53,21 @@ public class TextTableLayouter {
 
 			return new int[] { Math.min(maxColWidths[0], maxTableWidth) };
 		}
+		else if (cols == 2) {
+			// two columns
+
+			if (maxColWidths[0] < usableWidth / 3) {
+				return new int[] { maxColWidths[0], usableWidth - maxColWidths[0] };
+			}
+			else if (maxColWidths[1] < usableWidth / 3) {
+				return new int[] { maxColWidths[1], usableWidth - maxColWidths[1] };
+			}
+			else {
+				return new int[] { usableWidth / 2, usableWidth - usableWidth / 2 };
+			}
+		}
 		else {
-			// more than one column
+			// more than two columns
 			
 			final double weight[] = new double[cols];
 			
