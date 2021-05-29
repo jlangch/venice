@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.chunk;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -236,44 +239,30 @@ public class ChunkParser {
 	private Chunks parseTextChunk(final String text) {		
 		final Chunks chunks = new Chunks();
 		
-//		int pos = 0;
-//		while(true) {
-//			int urlPosStart = text.indexOf("(http:", pos);
-//
-//			if (urlPosStart < 0) {
-//				chunks.add(new TextChunk(collapseWhitespaces(text.substring(pos))));
-//				break;
-//			}
-//			
-//			int urlPosEnd = text.indexOf(")", urlPosStart);
-//			
-//			if (urlPos > 0) {
-//				chunks.add(new TextChunk(collapseWhitespaces(text.substring(pos, urlPos))));
-//				
-//			}
-//
-//		}
-//		
-//		if (text.contains("(http:")) {
-//			final int posStart = text.indexOf("(http:");
-//			final int posEnd = text.indexOf(")", posStart);
-//			
-//			if (posEnd < 0) {
-//				chunks.add(new TextChunk(collapseWhitespaces(text)));
-//			}
-//			else {
-//				if (posStart > 0 ) {
-//					chunks.add(new TextChunk(collapseWhitespaces(text.substring(0, posStart))));
-//				}
-//				chunks.add(new UrlChunk(text.substring(posStart+1, posEnd)));
-//				if (posEnd < text.length()-1) {
-//					chunks.add(new TextChunk(collapseWhitespaces(text.substring(posEnd))));
-//				}
-//			}
-//		}
-//		else {
-			chunks.add(new TextChunk(collapseWhitespaces(text)));
-//		}
+		final Pattern p = Pattern.compile("\\[.*?\\]\\(http[s]?://.*?\\)"); // non-greedy pattern
+		final Matcher m = p.matcher(text);
+		
+		int lastEndPos = 0;
+		
+		while (m.find()) {
+			final int startPos = m.start();
+			final int endPos = m.end();
+			final String urlRef = m.group();
+			final String caption = urlRef.substring(urlRef.indexOf("[")+1, urlRef.indexOf("]"));
+			final String url = urlRef.substring(urlRef.indexOf("(")+1, urlRef.indexOf(")"));
+
+			if (startPos > lastEndPos) {
+				chunks.add(new TextChunk(collapseWhitespaces(text.substring(lastEndPos, startPos))));
+			}
+			
+			chunks.add(new UrlChunk(caption, url));
+			
+			lastEndPos = endPos;
+		}
+
+		if (lastEndPos < text.length()) {
+			chunks.add(new TextChunk(collapseWhitespaces(text.substring(lastEndPos, text.length()))));
+		}
 		
 		return chunks;
 	}

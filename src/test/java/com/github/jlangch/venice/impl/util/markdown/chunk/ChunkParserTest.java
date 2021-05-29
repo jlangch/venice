@@ -253,6 +253,26 @@ public class ChunkParserTest {
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 	}
 
+	@Test
+	public void test_url_1() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google](http://google.com)"))).parse();
+		
+		assertEquals(1, chunks.size());
+		assertTrue(chunks.getChunks().get(0) instanceof UrlChunk);
+		assertEquals("Google", ((UrlChunk)chunks.getChunks().get(0)).getCaption());
+		assertEquals("http://google.com", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
+	}
+
+	@Test
+	public void test_url_2() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google](https://google.com)"))).parse();
+		
+		assertEquals(1, chunks.size());
+		assertTrue(chunks.getChunks().get(0) instanceof UrlChunk);
+		assertEquals("Google", ((UrlChunk)chunks.getChunks().get(0)).getCaption());
+		assertEquals("https://google.com", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
+	}
+
 	
 	
 	// -----------------------------------------------------------------------------
@@ -599,7 +619,67 @@ public class ChunkParserTest {
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 	}
 
-	
+	@Test
+	public void test_url_mixed_1() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google1](http://google1.com) [Google2](http://google2.com)"))).parse();
+		
+		assertEquals(2, chunks.size());
+		
+		assertTrue(chunks.getChunks().get(0) instanceof UrlChunk);
+		assertEquals("Google1", ((UrlChunk)chunks.getChunks().get(0)).getCaption());
+		assertEquals("http://google1.com", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof UrlChunk);
+		assertEquals("Google2", ((UrlChunk)chunks.getChunks().get(1)).getCaption());
+		assertEquals("http://google2.com", ((UrlChunk)chunks.getChunks().get(1)).getUrl());
+	}
+
+	@Test
+	public void test_url_mixed_2() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google1](http://google1.com) --- [Google2](http://google2.com)"))).parse();
+		
+		assertEquals(3, chunks.size());
+		
+		assertTrue(chunks.getChunks().get(0) instanceof UrlChunk);
+		assertEquals("Google1", ((UrlChunk)chunks.getChunks().get(0)).getCaption());
+		assertEquals("http://google1.com", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
+		assertEquals("---", ((TextChunk)chunks.getChunks().get(1)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(1)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(2) instanceof UrlChunk);
+		assertEquals("Google2", ((UrlChunk)chunks.getChunks().get(2)).getCaption());
+		assertEquals("http://google2.com", ((UrlChunk)chunks.getChunks().get(2)).getUrl());
+	}
+
+	@Test
+	public void test_url_mixed_3() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("-[Google1](http://google1.com) --- [Google2](http://google2.com)-"))).parse();
+		
+		assertEquals(5, chunks.size());
+		
+		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
+		assertEquals("-", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof UrlChunk);
+		assertEquals("Google1", ((UrlChunk)chunks.getChunks().get(1)).getCaption());
+		assertEquals("http://google1.com", ((UrlChunk)chunks.getChunks().get(1)).getUrl());
+		
+		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
+		assertEquals("---", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(3) instanceof UrlChunk);
+		assertEquals("Google2", ((UrlChunk)chunks.getChunks().get(3)).getCaption());
+		assertEquals("http://google2.com", ((UrlChunk)chunks.getChunks().get(3)).getUrl());
+		
+		assertTrue(chunks.getChunks().get(4) instanceof TextChunk);
+		assertEquals("-", ((TextChunk)chunks.getChunks().get(4)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(4)).getFormat());
+	}
+
 	
 	// -----------------------------------------------------------------------------
 	// Collapse whitespaces
