@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.UrlChunk;
 import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextTableUtil;
 
 
@@ -193,6 +194,9 @@ public class HtmlRenderer {
 		else if (c instanceof InlineCodeChunk) {
 			render((InlineCodeChunk)c, wr);
 		}
+		else if (c instanceof UrlChunk) {
+			render((UrlChunk)c, wr);
+		}
 	}
 
 	private void render(final TextChunk chunk, final PrintWriter wr) {
@@ -209,6 +213,23 @@ public class HtmlRenderer {
 	private void render(final InlineCodeChunk chunk, final PrintWriter wr) {
 		final String text = escapeHtml(chunk.getText());		
 		wr.print("<div class=\"md-inline-code\">" + text + "</div>");
+	}
+	
+	private void render(final UrlChunk chunk, final PrintWriter wr) {
+		final String url = chunk.getUrl();
+
+		if (StringUtil.indexOneCharOf(url, "<>'\" ", 0) >= 0) {
+			// invalid URL -> render as simple text
+			render(new TextChunk(url), wr);
+		}
+		else if (chunk.getCaption().isEmpty()) {
+			final String caption = escapeHtml(chunk.getUrl());
+			wr.print("<a class=\"md-url\" href=\"" + url + "\">" + caption + "</a>");
+		}
+		else {
+			final String caption = escapeHtml(chunk.getCaption());
+			wr.print("<a class=\"md-url\" href=\"" + url + "\">" + caption + "</a>");
+		}
 	}
 	
 	private String buildCssEmphasizeClass(final TextChunk.Format format) {

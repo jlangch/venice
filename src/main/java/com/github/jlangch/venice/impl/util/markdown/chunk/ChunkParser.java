@@ -56,7 +56,7 @@ public class ChunkParser {
 			int ch = reader.peek();
 			
 			if (ch == EOF) {
-				chunks.add(new TextChunk(collapseWhitespaces(sb.toString())));
+				chunks.add(parseTextChunk(sb.toString()));
 				break;
 			}
 			else if (ch == '\\') {
@@ -68,7 +68,7 @@ public class ChunkParser {
 				}
 			}
 			else if (ch == '*') {
-				chunks.add(new TextChunk(collapseWhitespaces(sb.toString())));
+				chunks.add(parseTextChunk(sb.toString()));
 				sb = new StringBuilder();
 
 				reader.consume(); // "*" consumed
@@ -101,7 +101,7 @@ public class ChunkParser {
 				}
 			}
 			else if (ch == '`') {
-				chunks.add(new TextChunk(collapseWhitespaces(sb.toString())));
+				chunks.add(parseTextChunk(sb.toString()));
 				sb = new StringBuilder();
 
 				reader.consume();
@@ -231,6 +231,51 @@ public class ChunkParser {
 			
 			ch = reader.peek();
 		}	
+	}
+
+	private Chunks parseTextChunk(final String text) {		
+		final Chunks chunks = new Chunks();
+		
+//		int pos = 0;
+//		while(true) {
+//			int urlPosStart = text.indexOf("(http:", pos);
+//
+//			if (urlPosStart < 0) {
+//				chunks.add(new TextChunk(collapseWhitespaces(text.substring(pos))));
+//				break;
+//			}
+//			
+//			int urlPosEnd = text.indexOf(")", urlPosStart);
+//			
+//			if (urlPos > 0) {
+//				chunks.add(new TextChunk(collapseWhitespaces(text.substring(pos, urlPos))));
+//				
+//			}
+//
+//		}
+//		
+//		if (text.contains("(http:")) {
+//			final int posStart = text.indexOf("(http:");
+//			final int posEnd = text.indexOf(")", posStart);
+//			
+//			if (posEnd < 0) {
+//				chunks.add(new TextChunk(collapseWhitespaces(text)));
+//			}
+//			else {
+//				if (posStart > 0 ) {
+//					chunks.add(new TextChunk(collapseWhitespaces(text.substring(0, posStart))));
+//				}
+//				chunks.add(new UrlChunk(text.substring(posStart+1, posEnd)));
+//				if (posEnd < text.length()-1) {
+//					chunks.add(new TextChunk(collapseWhitespaces(text.substring(posEnd))));
+//				}
+//			}
+//		}
+//		else {
+			chunks.add(new TextChunk(collapseWhitespaces(text)));
+//		}
+		
+		return chunks;
 	}
 
 	private Chunk parseInlineCode(final CharacterReader reader) {		

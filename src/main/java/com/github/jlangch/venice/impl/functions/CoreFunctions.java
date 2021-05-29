@@ -6708,8 +6708,8 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(filter-kv f map)")
 					.doc(
-						"Returns a map with entries for which the predicate (f key value) returns " +
-						"logical true. f is a function with two arguments.")
+						"Returns a map with entries for which the predicate `(f key value)` " +
+						"returns logical true. f is a function with two arguments.")
 					.examples(
 						"(filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3})",
 						"(filter-kv (fn [k v] (= v 2)) {:a 1 :b 2 :c 3})")
@@ -7002,7 +7002,7 @@ public class CoreFunctions {
 					.arglists("(seq coll)")
 					.doc(
 						"Returns a seq on the collection. If the collection is " +
-						"empty, returns nil. (seq nil) returns nil. seq also works on " +
+						"empty, returns nil. `(seq nil)` returns nil. seq also works on " +
 						"Strings and converts Java streams to lists.")
 					.examples(
 						"(seq nil)",

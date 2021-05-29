@@ -23,27 +23,32 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 
-public class InlineCodeChunk implements Chunk {
+public class UrlChunk implements Chunk {
 
-	public InlineCodeChunk() {
-		this("");
+	public UrlChunk() {
+		this("", "");
 	}
 
-	public InlineCodeChunk(final String text) {
-		this.text = StringUtil.trimToEmpty(text);
+	public UrlChunk(final String caption, final String url) {
+		this.caption = StringUtil.trimToEmpty(caption);
+		this.url = StringUtil.trimToEmpty(url);
 	}
 
 
 	@Override
 	public boolean isEmpty() {
-		return text.isEmpty();
+		return url.isEmpty();
 	}
 	
+	public String getCaption() {
+		return caption;
+	}
 	
-	public String getText() {
-		return text;
+	public String getUrl() {
+		return url;
 	}
 
 	
-	private final String text;
+	private final String caption;
+	private final String url;
 }

@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.UrlChunk;
 
 
 public class TextRenderer {
@@ -157,6 +158,9 @@ public class TextRenderer {
 			else if (c instanceof InlineCodeChunk) {
 				sb.append(render((InlineCodeChunk)c));
 			}
+			else if (c instanceof UrlChunk) {
+				sb.append(render((UrlChunk)c));
+			}
 		}
 
 		String s = sb.toString();
@@ -227,6 +231,17 @@ public class TextRenderer {
 	
 	private String render(final InlineCodeChunk chunk) {
 		return chunk.getText();
+	}
+	
+	private String render(final UrlChunk chunk) {
+		if (chunk.isEmpty()) {
+			return "";
+		}
+		else {
+			return chunk.getCaption().isEmpty()
+				? chunk.getUrl()
+				: chunk.getCaption() + " (" + chunk.getUrl() + ")";
+		}
 	}
 	
 	private String wrap(final String text, final int maxWidth) {

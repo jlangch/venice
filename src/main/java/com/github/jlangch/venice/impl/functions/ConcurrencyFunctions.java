@@ -81,7 +81,7 @@ public class ConcurrencyFunctions {
 						"Dereferences an atom, a future or a promise object. When applied to an " + 
 						"atom, returns its current state. When applied to a future, " +
 						"will block if computation is not complete. The variant taking a " +
-						"timeout can be used for futures and will return timeout-val " + 
+						"timeout can be used for futures and will return `timeout-val` " + 
 						"if the timeout (in milliseconds) is reached before a value " + 
 						"is available. If a future is deref'd and the waiting thread is " + 
 						"interrupted the futures are cancelled.")
@@ -861,8 +861,8 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(set-error-handler! agent handler-fn)")		
 					.doc(
-						"Sets the error-handler of an agent to handler-fn. If an action " + 
-						"being run by the agent throws an exception handler-fn will be " +
+						"Sets the error-handler of an agent to `handler-fn`. If an action " + 
+						"being run by the agent throws an exception `handler-fn` will be " +
 						"called with two arguments: the agent and the exception.")
 					.examples(
 						"(do                                          \n" +
@@ -905,7 +905,7 @@ public class ConcurrencyFunctions {
 					.arglists("(agent-error agent)")		
 					.doc(
 						"Returns the exception thrown during an asynchronous action of the " + 
-						"agent if the agent is failed. Returns nil if the agent is not " + 
+						"agent if the agent is failed. Returns `nil` if the agent is not " + 
 						"failed.")
 					.examples(
 						"(do                                              \n" +
