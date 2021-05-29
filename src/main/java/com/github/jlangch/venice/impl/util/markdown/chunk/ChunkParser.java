@@ -239,7 +239,7 @@ public class ChunkParser {
 	private Chunks parseTextChunk(final String text) {		
 		final Chunks chunks = new Chunks();
 		
-		final Pattern p = Pattern.compile("\\[.*?\\]\\(http[s]?://.*?\\)"); // non-greedy pattern
+		final Pattern p = Pattern.compile("\\[.*?\\]\\(http[s]?://.*?\\)"); // non-greedy pattern: *?
 		final Matcher m = p.matcher(text);
 		
 		int lastEndPos = 0;
@@ -291,8 +291,7 @@ public class ChunkParser {
 	}
 	
 	private String collapseWhitespaces(final String str) {
-		return str.trim()
-				  .replaceAll("\t", " ")
+		return str.replaceAll("\t", " ")
 				  .replaceAll(" +", " ");
 	}
 

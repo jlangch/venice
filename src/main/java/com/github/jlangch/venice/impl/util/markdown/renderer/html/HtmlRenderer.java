@@ -26,8 +26,6 @@ import static com.github.jlangch.venice.impl.util.StringEscapeUtil.escapeHtml;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
@@ -168,20 +166,10 @@ public class HtmlRenderer {
 	}
 
 	private void render(final Chunks chunks, final PrintWriter wr) {
-		final List<Chunk> chs = chunks.getChunks()
-									  .stream()
-									  .filter(c -> !c.isEmpty())
-									  .collect(Collectors.toList());
-		
-		if (!chs.isEmpty()) {
-			// first
-			render(chs.get(0), wr);
-			
-			// rest
-			chs.stream()
-			   .skip(1)
-			   .forEach(c -> { wr.print(" "); render(c, wr); });
-		}
+		chunks.getChunks()
+			  .stream()
+			  .filter(c -> !c.isEmpty())
+			  .forEach(c -> { render(c, wr); });
 	}
 
 	private void render(final Chunk c, final PrintWriter wr) {
@@ -207,7 +195,7 @@ public class HtmlRenderer {
 	}
 	
 	private void render(final LineBreakChunk chunk, final PrintWriter wr) {
-		wr.println("<br/>" );
+		wr.print("<br/>" );
 	}
 	
 	private void render(final InlineCodeChunk chunk, final PrintWriter wr) {

@@ -595,9 +595,15 @@ public class ChunkParserTest {
 		final Chunks chunks = new ChunkParser(new Chunks()
 													.add(new RawChunk(" `abc*xxx*def` "))).parse();
 		
-		assertEquals(1, chunks.size());
-		assertTrue(chunks.getChunks().get(0) instanceof InlineCodeChunk);
-		assertEquals("abc*xxx*def", ((InlineCodeChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(3, chunks.size());
+		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(0)).getText());
+
+		assertTrue(chunks.getChunks().get(1) instanceof InlineCodeChunk);
+		assertEquals("abc*xxx*def", ((InlineCodeChunk)chunks.getChunks().get(1)).getText());
+
+		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(2)).getText());
 	}
 
 	@Test
@@ -608,20 +614,20 @@ public class ChunkParserTest {
 		assertEquals(3, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals("a ", ((TextChunk)chunks.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 
 		assertTrue(chunks.getChunks().get(1) instanceof InlineCodeChunk);
 		assertEquals("abc*xxx*def", ((InlineCodeChunk)chunks.getChunks().get(1)).getText());
 		
 		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
-		assertEquals("b", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(" b", ((TextChunk)chunks.getChunks().get(2)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 	}
 
 	@Test
 	public void test_url_mixed_1() {
-		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google1](http://google1.com) [Google2](http://google2.com)"))).parse();
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google1](http://google1.com)[Google2](http://google2.com)"))).parse();
 		
 		assertEquals(2, chunks.size());
 		
@@ -645,7 +651,7 @@ public class ChunkParserTest {
 		assertEquals("http://google1.com", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
 		
 		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
-		assertEquals("---", ((TextChunk)chunks.getChunks().get(1)).getText());
+		assertEquals(" --- ", ((TextChunk)chunks.getChunks().get(1)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(1)).getFormat());
 		
 		assertTrue(chunks.getChunks().get(2) instanceof UrlChunk);
@@ -668,7 +674,7 @@ public class ChunkParserTest {
 		assertEquals("http://google1.com", ((UrlChunk)chunks.getChunks().get(1)).getUrl());
 		
 		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
-		assertEquals("---", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(" --- ", ((TextChunk)chunks.getChunks().get(2)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 		
 		assertTrue(chunks.getChunks().get(3) instanceof UrlChunk);
@@ -693,7 +699,7 @@ public class ChunkParserTest {
 		assertEquals(1, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a b", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(" a b ", ((TextChunk)chunks.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 	}
 
@@ -705,7 +711,7 @@ public class ChunkParserTest {
 		assertEquals(1, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a b", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(" a b ", ((TextChunk)chunks.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 	}
 
@@ -717,7 +723,7 @@ public class ChunkParserTest {
 		assertEquals(1, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a b", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(" a b ", ((TextChunk)chunks.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 	}
 
@@ -726,11 +732,19 @@ public class ChunkParserTest {
 		final Chunks chunks = new ChunkParser(new Chunks()
 													.add(new RawChunk("\t *a\t \tb* \t "))).parse();
 		
-		assertEquals(1, chunks.size());
+		assertEquals(3, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a b", ((TextChunk)chunks.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.ITALIC, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
+		assertEquals("a b", ((TextChunk)chunks.getChunks().get(1)).getText());
+		assertEquals(TextChunk.Format.ITALIC, ((TextChunk)chunks.getChunks().get(1)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 	}
 
 	@Test
@@ -738,11 +752,19 @@ public class ChunkParserTest {
 		final Chunks chunks = new ChunkParser(new Chunks()
 													.add(new RawChunk("\t **a\t \tb** \t "))).parse();
 		
-		assertEquals(1, chunks.size());
+		assertEquals(3, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a b", ((TextChunk)chunks.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.BOLD, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
+		assertEquals("a b", ((TextChunk)chunks.getChunks().get(1)).getText());
+		assertEquals(TextChunk.Format.BOLD, ((TextChunk)chunks.getChunks().get(1)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 	}
 
 	@Test
@@ -750,11 +772,19 @@ public class ChunkParserTest {
 		final Chunks chunks = new ChunkParser(new Chunks()
 													.add(new RawChunk("\t ***a\t \tb*** \t "))).parse();
 		
-		assertEquals(1, chunks.size());
+		assertEquals(3, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a b", ((TextChunk)chunks.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.BOLD_ITALIC, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
+		assertEquals("a b", ((TextChunk)chunks.getChunks().get(1)).getText());
+		assertEquals(TextChunk.Format.BOLD_ITALIC, ((TextChunk)chunks.getChunks().get(1)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 	}
 
 	@Test
@@ -762,10 +792,10 @@ public class ChunkParserTest {
 		final Chunks chunks = new ChunkParser(new Chunks()
 													.add(new RawChunk(" a ***b   c*** d  *e* "))).parse();
 		
-		assertEquals(4, chunks.size());
+		assertEquals(5, chunks.size());
 		
 		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
-		assertEquals("a", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(" a ", ((TextChunk)chunks.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
 		
 		assertTrue(chunks.getChunks().get(1) instanceof TextChunk);
@@ -773,12 +803,16 @@ public class ChunkParserTest {
 		assertEquals(TextChunk.Format.BOLD_ITALIC, ((TextChunk)chunks.getChunks().get(1)).getFormat());
 		
 		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
-		assertEquals("d", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(" d ", ((TextChunk)chunks.getChunks().get(2)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 		
 		assertTrue(chunks.getChunks().get(3) instanceof TextChunk);
 		assertEquals("e", ((TextChunk)chunks.getChunks().get(3)).getText());
 		assertEquals(TextChunk.Format.ITALIC, ((TextChunk)chunks.getChunks().get(3)).getFormat());
+		
+		assertTrue(chunks.getChunks().get(4) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(4)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(4)).getFormat());
 	}
 
 	@Test
@@ -786,10 +820,19 @@ public class ChunkParserTest {
 		final Chunks chunks = new ChunkParser(new Chunks()
 													.add(new RawChunk(" `a   b` "))).parse();
 		
-		assertEquals(1, chunks.size());
+		assertEquals(3, chunks.size());
 
-		assertTrue(chunks.getChunks().get(0) instanceof InlineCodeChunk);
-		assertEquals("a b", ((InlineCodeChunk)chunks.getChunks().get(0)).getText());
+		
+		assertTrue(chunks.getChunks().get(0) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(0)).getFormat());
+
+		assertTrue(chunks.getChunks().get(1) instanceof InlineCodeChunk);
+		assertEquals("a b", ((InlineCodeChunk)chunks.getChunks().get(1)).getText());
+		
+		assertTrue(chunks.getChunks().get(2) instanceof TextChunk);
+		assertEquals(" ", ((TextChunk)chunks.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)chunks.getChunks().get(2)).getFormat());
 	}
 
 }

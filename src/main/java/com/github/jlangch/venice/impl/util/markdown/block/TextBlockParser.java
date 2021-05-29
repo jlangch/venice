@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
@@ -40,27 +43,22 @@ public class TextBlockParser {
 			return block;
 		}
 
-		String line = reader.peek();
-		reader.consume();
-
-		if (StringUtil.isBlank(line)) {
-			return block;
-		}
-		
-		addLine(block, line);
+		List<String> lines = new ArrayList<>();
 		
 		while(!reader.eof()) {
-			line = reader.peek();
+			String line = reader.peek();
 			reader.consume();
 			
 			if (StringUtil.isBlank(line)) {
 				break;
 			}
 			else {
-				addLine(block, line);
+				lines.add(line);
 			}
 		}
 		
+		addLine(block, String.join(" ", lines));
+
 		block.parseChunks();
 		
 		return block;
@@ -79,7 +77,7 @@ public class TextBlockParser {
 				if (ii>0) {
 					block.add(new LineBreakChunk());
 				}
-				block.add(new RawChunk(chunks[ii].trim()));
+				block.add(new RawChunk(chunks[ii]));
 			}
 			
 			if (line.endsWith("¶")) {

@@ -63,13 +63,10 @@ public class TextBlockParserTest {
 
 		TextBlock text = (TextBlock)blocks.get(0); 
 	
-		assertEquals(2, text.getChunks().size());
+		assertEquals(1, text.getChunks().size());
 
-		assertEquals("Lorem ipsum dolor", ((TextChunk)text.getChunks().get(0)).getText());
+		assertEquals("Lorem ipsum dolor sit amet, consetetur", ((TextChunk)text.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text.getChunks().get(0)).getFormat());
-		
-		assertEquals("sit amet, consetetur", ((TextChunk)text.getChunks().get(1)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text.getChunks().get(1)).getFormat());
 	}
 
 	@Test
@@ -121,25 +118,19 @@ public class TextBlockParserTest {
 
 		TextBlock text1 = (TextBlock)blocks.get(0); 
 	
-		assertEquals(2, text1.getChunks().size());
+		assertEquals(1, text1.getChunks().size());
 
-		assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
+		assertEquals("Lorem ipsum dolor sit amet, consetetur.", ((TextChunk)text1.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
-		
-		assertEquals("sit amet, consetetur.", ((TextChunk)text1.getChunks().get(1)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(1)).getFormat());
 
 		// block 2
 
 		TextBlock text2 = (TextBlock)blocks.get(1); 
 	
-		assertEquals(2, text2.getChunks().size());
+		assertEquals(1, text2.getChunks().size());
 
-		assertEquals("At vero eos et accusam et", ((TextChunk)text2.getChunks().get(0)).getText());
+		assertEquals("At vero eos et accusam et justo duo.", ((TextChunk)text2.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text2.getChunks().get(0)).getFormat());
-		
-		assertEquals("justo duo.", ((TextChunk)text2.getChunks().get(1)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text2.getChunks().get(1)).getFormat());
 	}
 
 	@Test
@@ -182,13 +173,13 @@ public class TextBlockParserTest {
 		assertTrue(text1.getChunks().get(4) instanceof TextChunk);
 		assertTrue(text1.getChunks().get(5) instanceof LineBreakChunk);
 
-		assertEquals("Lorem", ((TextChunk)text1.getChunks().get(0)).getText());
+		assertEquals("Lorem ", ((TextChunk)text1.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
 
-		assertEquals("ipsum", ((TextChunk)text1.getChunks().get(2)).getText());
+		assertEquals(" ipsum ", ((TextChunk)text1.getChunks().get(2)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
 
-		assertEquals("dolor", ((TextChunk)text1.getChunks().get(4)).getText());
+		assertEquals(" dolor ", ((TextChunk)text1.getChunks().get(4)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(4)).getFormat());
 	}
 
@@ -223,14 +214,18 @@ public class TextBlockParserTest {
 
 		TextBlock text1 = (TextBlock)blocks.get(0); 
 	
-		assertEquals(3, text1.getChunks().size());
+		assertEquals(4, text1.getChunks().size());
 
 		assertTrue(text1.getChunks().get(0) instanceof TextChunk);
 		assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
-		assertTrue(text1.getChunks().get(2) instanceof LineBreakChunk);
+		assertTrue(text1.getChunks().get(2) instanceof TextChunk);
+		assertTrue(text1.getChunks().get(3) instanceof LineBreakChunk);
 
 		assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+
+		assertEquals(" ", ((TextChunk)text1.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
 	}
 
 }

@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
+import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 
@@ -121,13 +122,10 @@ public class ListBlockParserTest {
 		assertEquals(1, ((ListBlock)blocks.get(0)).size());
 		
 		TextBlock block = ((TextBlock)((ListBlock)blocks.get(0)).get(0)); 
-		assertEquals(2, block.getChunks().size());
-		assertEquals("item 1", ((TextChunk)block.getChunks().get(0)).getText());
+		assertEquals(1, block.getChunks().size());
+		assertEquals("item 1 lorem ispum", ((TextChunk)block.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block.getChunks().get(0)).getFormat());
-		assertEquals("lorem ispum", ((TextChunk)block.getChunks().get(1)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block.getChunks().get(1)).getFormat());
 	}
-
 
 	@Test
 	public void test_list_block_unordered_long_2() {
@@ -145,18 +143,46 @@ public class ListBlockParserTest {
 		assertEquals(2, ((ListBlock)blocks.get(0)).size());
 		
 		TextBlock block1 = ((TextBlock)((ListBlock)blocks.get(0)).get(0)); 
-		assertEquals(2, block1.getChunks().size());
-		assertEquals("item 1", ((TextChunk)block1.getChunks().get(0)).getText());
+		assertEquals(1, block1.getChunks().size());
+		assertEquals("item 1 lorem ispum 1", ((TextChunk)block1.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block1.getChunks().get(0)).getFormat());
-		assertEquals("lorem ispum 1", ((TextChunk)block1.getChunks().get(1)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block1.getChunks().get(1)).getFormat());
 		
 		TextBlock block2 = ((TextBlock)((ListBlock)blocks.get(0)).get(1)); 
-		assertEquals(2, block2.getChunks().size());
+		assertEquals(1, block2.getChunks().size());
+		assertEquals("item 2 lorem ispum 2", ((TextChunk)block2.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block2.getChunks().get(0)).getFormat());
+	}
+
+	@Test
+	public void test_list_block_unordered_long_3() {
+		final String md = "* item 1¶\n" +
+	                      "  lorem ispum 1\n" +
+	                      "* item 2¶\n" +
+	                      "  lorem ispum 2";
+		
+		Blocks blocks = new BlockParser(md).parse();
+		
+		assertEquals(1, blocks.size());
+		
+		assertTrue(blocks.get(0) instanceof ListBlock);
+		assertFalse(((ListBlock)blocks.get(0)).isOrdered());
+		assertEquals(2, ((ListBlock)blocks.get(0)).size());
+		
+		TextBlock block1 = ((TextBlock)((ListBlock)blocks.get(0)).get(0)); 
+		assertEquals(3, block1.getChunks().size());
+		assertEquals("item 1", ((TextChunk)block1.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block1.getChunks().get(0)).getFormat());
+		assertTrue(block1.getChunks().get(1) instanceof LineBreakChunk);
+		assertEquals("lorem ispum 1", ((TextChunk)block1.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block1.getChunks().get(2)).getFormat());
+		
+		TextBlock block2 = ((TextBlock)((ListBlock)blocks.get(0)).get(1)); 
+		assertEquals(3, block2.getChunks().size());
 		assertEquals("item 2", ((TextChunk)block2.getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block2.getChunks().get(0)).getFormat());
-		assertEquals("lorem ispum 2", ((TextChunk)block2.getChunks().get(1)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block2.getChunks().get(1)).getFormat());
+		assertTrue(block2.getChunks().get(1) instanceof LineBreakChunk);
+		assertEquals("lorem ispum 2", ((TextChunk)block2.getChunks().get(2)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block2.getChunks().get(2)).getFormat());
 	}
 
 	

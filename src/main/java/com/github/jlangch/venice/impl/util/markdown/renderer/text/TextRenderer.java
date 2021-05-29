@@ -145,10 +145,6 @@ public class TextRenderer {
 		for(Chunk c : chunks.getChunks()) {
 			if (c.isEmpty()) continue;
 			
-			if (sb.length() > 0) {
-				sb.append(" ");
-			}
-
 			if (c instanceof TextChunk) {
 				sb.append(render((TextChunk)c));
 			}

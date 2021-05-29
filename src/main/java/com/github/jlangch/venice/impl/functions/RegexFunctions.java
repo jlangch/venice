@@ -56,7 +56,9 @@ public class RegexFunctions {
 					VncFunction
 						.meta()
 						.arglists("(regex/pattern s)")		
-						.doc("Returns an instance of java.util.regex.Pattern.")
+						.doc(
+							"Returns an instance of `java.util.regex.Pattern`.\n\n"  +
+							"JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
 						.examples("(regex/pattern \"[0-9]+\")")
 						.seeAlso("regex/matcher", "regex/matches", "regex/find", "regex/find-all")
 						.build()
@@ -80,8 +82,9 @@ public class RegexFunctions {
 					.meta()
 					.arglists("(regex/matcher pattern str)")		
 					.doc(
-						"Returns an instance of java.util.regex.Matcher. The pattern can be " +
-						"either a string or a pattern created by (regex/pattern s)")
+						"Returns an instance of `java.util.regex.Matcher`.¶" +
+						"The pattern can be either a string or a pattern created by `(regex/pattern s)`.\n\n" +
+						"JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
 					.examples(
 						"(regex/matcher \"[0-9]+\" \"100\")",
 						"(let [p (regex/pattern \"[0-9]+\")] \n" +
@@ -142,7 +145,7 @@ public class RegexFunctions {
 					.arglists("(regex/matches pattern str)")		
 					.doc(
 						"Returns the matches, if any, for the matcher with the pattern of a " + 
-						"string, using java.util.regex.Matcher.matches().¶" +
+						"string, using `java.util.regex.Matcher.matches()`.¶" +
 						"If the matcher's pattern matches the entire region sequence returns a " +
 						"list with the entire region sequence and the matched groups otherwise " +
 						"returns an empty list. \n\n" +
@@ -153,7 +156,8 @@ public class RegexFunctions {
 						"| :group-count | the number of matched elements groups |\n\n" +
 						"Group meta data: \n\n" +
 						"| :start | start pos of the element group |\n" +
-						"| :end   | end pos of the element group   |\n")
+						"| :end   | end pos of the element group   |\n\n" +
+						"JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
 					.examples(
 						";; Entire region sequence matched \n" +
 						"(regex/matches \"hello, (.*)\" \"hello, world\")",
@@ -233,7 +237,7 @@ public class RegexFunctions {
 					.doc(
 						"Attempts to find the next subsequence that matches the pattern. " +
 						"If the match succeeds then more information can be obtained via " +
-						"the regex/group function")
+						"the `regex/group` function")
 					.examples(
 						"(let [m (regex/matcher \"[0-9]+\" \"100\")] \n" +
 						"  (regex/find? m))",
@@ -270,7 +274,7 @@ public class RegexFunctions {
 					.arglists("(regex/find matcher)")		
 					.doc(
 						"Returns the next regex match or nil if there is no further match. \n\n" +
-						"To get the positional data for the matched group use 'regex/find+'.")
+						"To get the positional data for the matched group use `(regex/find+ matcher)`.")
 					.examples(
 						"(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
 						"  (println (regex/find m))  \n" +

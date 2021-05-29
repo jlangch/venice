@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.github.jlangch.venice.impl.reader.LineReader;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
@@ -41,59 +45,84 @@ public class ListBlockParser {
 		if (!ListBlockParser.isBlockStart(reader.peek())) {
 			return new ListBlock();
 		}
-
-		final ListBlock block = new ListBlock();
-
-		TextBlock item = new TextBlock();
 		
-		Boolean ordered = null;
-
+		// parse into lines
+		final List<String> lines = new ArrayList<>();	
 		while (!reader.eof() && !StringUtil.isBlank(reader.peek())) {
 			String line = reader.peek();
 			reader.consume();
+			lines.add(line);
+		}
 
-			if (isUnorderedItemStart(line)) {
-				if (ordered == null) {
-					ordered = false;
-					block.setOrdered(false);
-				}			
-				if (!item.isEmpty()) {
-					block.addItem(item);
+		// parse into items (an item may have 1..N lines)
+		final List<List<String>> items = new ArrayList<>();
+		List<String> itemLines = new ArrayList<>();	
+		for(String line : lines) {
+			if (isUnorderedItemStart(line) || isOrderedItemStart(line)) {
+				if (!itemLines.isEmpty()) {
+					items.add(itemLines);
+					itemLines = new ArrayList<>();
 				}
-				item = new TextBlock();
-
-				// strip list bullet
-				line = StringUtil.trimLeft(line);
-				line = line.substring(1);
-				line = StringUtil.trimLeft(line);
-				
-				addLine(item, line);
-			}
-			else if (isOrderedItemStart(line)) {
-				if (ordered == null) {
-					ordered = true;
-					block.setOrdered(true);
-				}
-				if (!item.isEmpty()) {
-					block.addItem(item);
-				}
-				item = new TextBlock();
-
-				// strip list item number
-				final int pos = line.indexOf('.');
-				line = line.substring(pos+1);
-				line = StringUtil.trimLeft(line);
-				
-				addLine(item, line);
-			}
-			else {
-				line = StringUtil.trimLeft(line);
-				item.add(new RawChunk(line));
-			}
+			}			
+			itemLines.add(line);
+		}
+		if (!itemLines.isEmpty()) {
+			items.add(itemLines);
 		}
 		
-		if (!item.isEmpty()) {
-			block.addItem(item);
+
+		final ListBlock block = new ListBlock();
+
+		// list type
+		block.setOrdered(isOrderedItemStart(items.get(0).get(0)));
+		
+		for(List<String> itemLines_ : items) {
+			String first = itemLines_.get(0);
+			
+			if (isUnorderedItemStart(first)) {
+				// strip list bullet
+				first = StringUtil.trimLeft(first);
+				first = first.substring(1);
+				first = StringUtil.trimLeft(first);
+				
+				String text = first;
+				
+				if (itemLines_.size() > 1) {
+					final List<String> rest = itemLines_
+												.subList(1, itemLines_.size())
+												.stream()
+												.map(l -> StringUtil.trimLeft(l))
+												.collect(Collectors.toList());
+					text = text + " " + String.join(" ", rest);
+				}
+
+				TextBlock item = new TextBlock();
+				addLine(item, StringUtil.trimRight(text));
+				
+				block.addItem(item);
+			}		
+			else if (isOrderedItemStart(first)) {
+				// strip list item number
+				final int pos = first.indexOf('.');
+				first = first.substring(pos+1);
+				first = StringUtil.trimLeft(first);
+				
+				String text = first;
+
+				if (itemLines_.size() > 1) {
+					final List<String> rest = itemLines_
+												.subList(1, itemLines_.size())
+												.stream()
+												.map(l -> StringUtil.trimLeft(l))
+												.collect(Collectors.toList());
+					text = text + " " + String.join(" ", rest);
+				}
+
+				TextBlock item = new TextBlock();
+				addLine(item, StringUtil.trimRight(text));
+				
+				block.addItem(item);
+			}			
 		}
 		
 		block.parseChunks();

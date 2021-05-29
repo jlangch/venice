@@ -2464,10 +2464,12 @@ public class DocGenerator {
 	}
 
 	private String getCrossRefDescr(final String descr) {
-		final int posLF = descr.indexOf('\n');
+		String crossRefDescr = Markdown.parse(descr).renderToText(CROSSREF_MAX_LEN * 2);
+		
+		int posLF = crossRefDescr.indexOf('\n');
 		
 		// the crossref description text is built from the first line only
-		String s = (posLF == -1) ? descr.trim() : descr.substring(0, posLF).trim();
+		String s = (posLF == -1) ? crossRefDescr.trim() : crossRefDescr.substring(0, posLF).trim();
 
 		// limit to at most CROSSREF_MAX_LEN chars
 		if (s.length() > CROSSREF_MAX_LEN) {
