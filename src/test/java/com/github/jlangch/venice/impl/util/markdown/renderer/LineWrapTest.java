@@ -119,15 +119,16 @@ public class LineWrapTest {
 	public void test_wrap_with_spaces_1() {
 		// soft wrap
 		assertEquals(1,   LineWrap.softWrap(" 1", 4).size());
-		assertEquals("1", LineWrap.softWrap(" 1", 4).get(0));
+		assertEquals(" 1", LineWrap.softWrap(" 1", 4).get(0));
 
 		// soft wrap
 		assertEquals(1,   LineWrap.softWrap("1 ", 4).size());
 		assertEquals("1", LineWrap.softWrap("1 ", 4).get(0));
 
 		// soft wrap
-		assertEquals(1,   LineWrap.softWrap("     1", 4).size());
-		assertEquals("1", LineWrap.softWrap("     1", 4).get(0));
+		assertEquals(2,   LineWrap.softWrap("     1", 4).size());
+		assertEquals("", LineWrap.softWrap("     1", 4).get(0));
+		assertEquals("1", LineWrap.softWrap("     1", 4).get(1));
 
 		// soft wrap
 		assertEquals(1,   LineWrap.softWrap("1     ", 4).size());
@@ -135,11 +136,11 @@ public class LineWrapTest {
 		
 		// soft wrap
 		assertEquals(1,   LineWrap.softWrap(" 1 ", 4).size());
-		assertEquals("1", LineWrap.softWrap(" 1 ", 4).get(0));
+		assertEquals(" 1", LineWrap.softWrap(" 1 ", 4).get(0));
 		
 		// soft wrap
 		assertEquals(1,   LineWrap.softWrap("   1   ", 4).size());
-		assertEquals("1", LineWrap.softWrap("   1   ", 4).get(0));
+		assertEquals("   1", LineWrap.softWrap("   1   ", 4).get(0));
 	}
 
 	@Test
