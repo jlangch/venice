@@ -18,9 +18,11 @@ and this project adheres to
 
 ### Changed
 
+- JLine dependency to version 3.19.0
+- OpenPDf dependency to version 1.3.26
 - migrated the documentation to markdown for more flexibility. This produces
-  nicer documentation for the Venice cheatsheet and the REPL documentation
-  in a terminal through the `doc` function (e.g. `(doc filter)`) 
+  nicer documentation for the Venice HTML/PDF cheatsheet and the for REPL 
+  documentation in a terminal through the `doc` function (e.g. `(doc filter)`) 
 
 
 

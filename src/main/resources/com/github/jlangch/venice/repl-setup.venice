@@ -28,7 +28,7 @@
 (load-module :ansi)
 
 
-(def lib-jansi "org.fusesource.jansi:jansi:2.1.0")
+(def lib-jansi "org.fusesource.jansi:jansi:2.3.2")
 
 (def libs-min [ lib-jansi ])
 
@@ -39,8 +39,8 @@
                 "javax.annotation:javax.annotation-api:1.3.2",
                 "org.xhtmlrenderer:flying-saucer-core:9.1.22",
                 "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22",
-                "com.github.librepdf:openpdf:1.3.25",
-                "com.github.librepdf:pdf-toolbox:1.3.25" ])
+                "com.github.librepdf:openpdf:1.3.26",
+                "com.github.librepdf:pdf-toolbox:1.3.26" ])
 
 (def fonts-base-url "https://github.com/")
 

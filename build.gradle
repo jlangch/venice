@@ -624,7 +624,7 @@ dependencies {
     // Cheatsheet generation
     compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.22'
     compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22'
-    compileOnly 'com.github.librepdf:openpdf:1.3.25'
+    compileOnly 'com.github.librepdf:openpdf:1.3.26'
     
     // Excel support
     compileOnly 'org.apache.poi:poi:4.1.2'
@@ -639,5 +639,5 @@ dependencies {
       
     // runtime dependencies (repackaged)
     implementation 'io.vavr:vavr:0.10.3'
-    implementation 'org.jline:jline:3.19.0'
+    implementation 'org.jline:jline:3.20.0'
 }
