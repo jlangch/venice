@@ -145,7 +145,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(fg-color code")
+  ^{ :arglists '("(fg-color code)")
      :doc """
           Defines an extended foreground color from the 256-color extended
           color set. The code ranges from 0 to 255.
@@ -159,7 +159,7 @@
 
 
 (defn
-  ^{ :arglists '("(bg-color code")
+  ^{ :arglists '("(bg-color code)")
      :doc """
           Defines an extended background color from the 256-color extended
           color set. The code ranges from 0 to 255.
