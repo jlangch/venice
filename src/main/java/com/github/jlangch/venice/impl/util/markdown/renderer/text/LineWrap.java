@@ -63,7 +63,7 @@ public class LineWrap {
 		while(!reader.eof()) {
 			lines.addAll(
 					wrapper.apply(
-						reader.peek().trim(), 
+						StringUtil.trimRight(reader.peek()), 
 						maxWidth));		
 			reader.consume();
 		}
