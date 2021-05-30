@@ -83,7 +83,18 @@ public class ReplFunctions {
 					VncFunction
 						.meta()
 						.arglists("(repl/info)")
-						.doc("Returns information on the REPL.")
+						.doc(
+							"Returns information on the REPL.\n\n" +
+							"E.g.: \n\n" +
+							"```\n" +
+							"{ :term-name \"JLine terminal\" \n" +
+							"  :term-type \"xterm-256color\" \n" +
+							"  :term-cols 80 \n" +
+							"  :term-rows 24 \n" +
+							"  :term-colors 256 \n" +
+							"  :term-class :org.repackage.org.jline.terminal.impl.PosixSysTerminal \n" +
+							"  :color-mode :light }")
+						.seeAlso("repl/term-rows", "repl/term-cols")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -116,6 +127,7 @@ public class ReplFunctions {
 						.meta()
 						.arglists("(repl/term-rows)")
 						.doc("Returns number of rows in the REPL terminal.")
+						.seeAlso("repl/term-cols", "repl/info")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -136,6 +148,7 @@ public class ReplFunctions {
 						.meta()
 						.arglists("(repl/term-cols)")
 						.doc("Returns number of columns in the REPL terminal.")
+						.seeAlso("repl/term-rows", "repl/info")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
