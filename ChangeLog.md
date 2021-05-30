@@ -9,7 +9,7 @@ and this project adheres to
 
 
 
-## [1.9.19] - 2021-06-xx
+## [1.9.19] - 2021-05-30
 
 ### Added
 
@@ -20,9 +20,9 @@ and this project adheres to
 
 - JLine dependency to version 3.19.0
 - OpenPDf dependency to version 1.3.26
-- migrated the documentation to markdown for more flexibility. This produces
-  nicer documentation for the Venice HTML/PDF cheatsheet and the for REPL 
-  documentation in a terminal through the `doc` function (e.g. `(doc filter)`) 
+- migrated the documentation to markdown for more flexibility when rendering to
+  the Venice HTML/PDF cheatsheet or for REPL documentation in a terminal through 
+  the `doc` function (e.g. `(doc filter)`) 
 
 
 
