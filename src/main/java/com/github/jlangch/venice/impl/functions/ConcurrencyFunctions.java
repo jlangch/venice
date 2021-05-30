@@ -1177,18 +1177,18 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"agent send.\n\n" +
-						"| core-pool-size       |  the number of threads to keep in the pool, " +
-						"                          even if they are idle |\n" +
-						"| maximum-pool-size    |  the maximum allowed number of threads |\n" +
-						"| current-pool-size    |  the current number of threads in the pool |\n" +
-						"| largest-pool-size    |  the largest number of threads that have " +
-						"                          ever simultaneously been in the pool |\n" +
-						"| active-thread-count  |  the approximate number of threads that are " +
-						"                          actively executing tasks |\n" +
-						"| scheduled-task-count |  the approximate total number of tasks that " +
-						"                          have ever been scheduled for execution |\n" +
-						"| completed-task-count |  the approximate total number of tasks " +
-						"                          that have completed execution |")
+						"| *core-pool-size*       |  the number of threads to keep in the pool, " +
+						"                            even if they are idle |\n" +
+						"| *maximum-pool-size*    |  the maximum allowed number of threads |\n" +
+						"| *current-pool-size*    |  the current number of threads in the pool |\n" +
+						"| *largest-pool-size*    |  the largest number of threads that have " +
+						"                            ever simultaneously been in the pool |\n" +
+						"| *active-thread-count*  |  the approximate number of threads that are " +
+						"                            actively executing tasks |\n" +
+						"| *scheduled-task-count* |  the approximate total number of tasks that " +
+						"                            have ever been scheduled for execution |\n" +
+						"| *completed-task-count* |  the approximate total number of tasks " +
+						"                            that have completed execution |")
 					.examples(
 						"(agent-send-thread-pool-info)")
 					.seeAlso("agent", "send")
@@ -1212,18 +1212,18 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"agent send-off.\n\n" +
-						"| core-pool-size       |  the number of threads to keep in the pool, " +
-						"                          even if they are idle |\n" +
-						"| maximum-pool-size    |  the maximum allowed number of threads |\n" +
-						"| current-pool-size    |  the current number of threads in the pool |\n" +
-						"| largest-pool-size    |  the largest number of threads that have " +
-						"                          ever simultaneously been in the pool |\n" +
-						"| active-thread-count  |  the approximate number of threads that are " +
-						"                          actively executing tasks |\n" +
-						"| scheduled-task-count |  the approximate total number of tasks that " +
-						"                          have ever been scheduled for execution |\n" +
-						"| completed-task-count |  the approximate total number of tasks " +
-						"                          that have completed execution |")
+						"| *core-pool-size*       |  the number of threads to keep in the pool, " +
+						"                            even if they are idle |\n" +
+						"| *maximum-pool-size*    |  the maximum allowed number of threads |\n" +
+						"| *current-pool-size*    |  the current number of threads in the pool |\n" +
+						"| *largest-pool-size*    |  the largest number of threads that have " +
+						"                            ever simultaneously been in the pool |\n" +
+						"| *active-thread-count*  |  the approximate number of threads that are " +
+						"                            actively executing tasks |\n" +
+						"| *scheduled-task-count* |  the approximate total number of tasks that " +
+						"                            have ever been scheduled for execution |\n" +
+						"| *completed-task-count* |  the approximate total number of tasks " +
+						"                            that have completed execution |")
 					.examples(
 						"(agent-send-off-thread-pool-info)")
 					.seeAlso("agent", "send-off")
@@ -1645,18 +1645,18 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"the futures.\n\n" +
-						"| core-pool-size       |  the number of threads to keep in the pool, " +
-						"                          even if they are idle |\n" +
-						"| maximum-pool-size    |  the maximum allowed number of threads |\n" +
-						"| current-pool-size    |  the current number of threads in the pool |\n" +
-						"| largest-pool-size    |  the largest number of threads that have " +
-						"                          ever simultaneously been in the pool |\n" +
-						"| active-thread-count  |  the approximate number of threads that are " +
-						"                          actively executing tasks |\n" +
-						"| scheduled-task-count |  the approximate total number of tasks that " +
-						"                          have ever been scheduled for execution |\n" +
-						"| completed-task-count |  the approximate total number of tasks " +
-						"                          that have completed execution |")
+						"| *core-pool-size*       |  the number of threads to keep in the pool, " +
+						"                            even if they are idle |\n" +
+						"| *maximum-pool-size*    |  the maximum allowed number of threads |\n" +
+						"| *current-pool-size*    |  the current number of threads in the pool |\n" +
+						"| *largest-pool-size*    |  the largest number of threads that have " +
+						"                            ever simultaneously been in the pool |\n" +
+						"| *active-thread-count*  |  the approximate number of threads that are " +
+						"                            actively executing tasks |\n" +
+						"| *scheduled-task-count* |  the approximate total number of tasks that " +
+						"                            have ever been scheduled for execution |\n" +
+						"| *completed-task-count* |  the approximate total number of tasks " +
+						"                            that have completed execution |")
 					.examples(
 						"(futures-thread-pool-info)")
 					.seeAlso("future")
