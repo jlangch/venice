@@ -58,7 +58,8 @@
         (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1"
                               ".jar"
                               "https://repo1.maven.org/maven2")
-        """ ) }
+        """ )
+     :see-also '("maven/download", "maven/get", "maven/uri") }
 
   maven/parse-artefact
 
@@ -103,7 +104,8 @@
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :jar false :sources true)"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true)"""
           """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" ) }
+          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" )
+     :see-also '("maven/get", "maven/uri", "maven/parse-artefact") }
 
   maven/download [artefact & options]
 
@@ -148,7 +150,8 @@
           """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar)"""
           """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :silent false)"""
           """(maven/get "org.knowm.xchart:xchart:3.6.1" :sources)"""
-          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" ) }
+          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" )
+     :see-also '("maven/download", "maven/uri", "maven/parse-artefact") }
 
   maven/get [artefact type & options]
 
@@ -175,7 +178,8 @@
           """
      :examples '(
           """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar)"""
-          """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" ) }
+          """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" )
+     :see-also '("maven/download", "maven/get", "maven/parse-artefact") }
 
   maven/uri [artefact type & options]
 

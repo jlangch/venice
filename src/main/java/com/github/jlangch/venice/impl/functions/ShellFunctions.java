@@ -105,11 +105,13 @@ public class ShellFunctions {
 						"| :dir      | override the process dir with a String or java.io.File. |\n" + 
 						"| :throw-ex | If true throw an exception if the exit code is not equal " + 
 						"              to zero, if false returns the exit code. Defaults to " + 
-						"              false. It's recommended to use " + 
-						"              `(with-sh-throw (sh \"foo\"))` instead. |\n" + 
+						"              false.¶" +
+						"              It's recommended to use¶" + 
+						"              &emsp; `(with-sh-throw (sh \"ls\" \"-l\"))` ¶" +
+						"              instead. |\n" + 
 						"\n" +
-						"You can bind :env, :dir for multiple operations using with-sh-env or " + 
-						"with-sh-dir. with-sh-throw is binds :throw-ex as true.\n" + 
+						"You can bind :env, :dir for multiple operations using `with-sh-env` or " + 
+						"`with-sh-dir`. `with-sh-throw` is binds :throw-ex as true.\n" + 
 						"\n" +
 						"sh returns a map of\n\n" +
 						"```\n" +
@@ -148,6 +150,7 @@ public class ShellFunctions {
 						
 						";; windows\n" +
 						"(println (sh \"cmd\" \"/c dir 1>&2\"))")
+					.seeAlso("with-sh-throw", "with-sh-dir", "with-sh-env" )
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {

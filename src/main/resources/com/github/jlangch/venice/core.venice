@@ -994,7 +994,7 @@
   ^{ :arglists '("(with-sh-dir dir & forms)")
      :doc "Sets the directory for use with sh, see sh for details."
      :examples '("""(with-sh-dir "/tmp" (sh "ls" "-l"))""")
-     :see-also '("with-sh-env") }
+     :see-also '("sh", "with-sh-env", "with-sh-throw") }
 
   with-sh-dir [dir & forms]
 
@@ -1005,7 +1005,7 @@
   ^{ :arglists '("(with-sh-env env & forms)")
      :doc "Sets the environment for use with `sh`."
      :examples '("""(with-sh-env {"NAME" "foo"} (sh "ls" "-l"))""")
-     :see-also '("sh", "with-sh-dir") }
+     :see-also '("sh", "with-sh-dir", "with-sh-throw") }
 
   with-sh-env [env & forms]
 
@@ -1015,13 +1015,15 @@
 (defmacro
   ^{ :arglists '("(with-sh-throw forms)")
      :doc """
-          If true throws an exception if the spawned shell process returns an
-          exit code other than 0. If false return the exit code. Defaults to
-          false. For use with `sh`, see sh for details. `with-sh-throw` can be
+          Shell commands executed within a `with-sh-throw` context throw an
+          exception if the spawned shell process returns an exit code other
+          than 0.
+
+          For use with `sh`, see sh for details. `with-sh-throw` can be
           nested.
           """
      :examples '("""(with-sh-throw (sh "ls" "-l"))""")
-     :see-also '("sh") }
+     :see-also '("sh", "with-sh-env", "with-sh-dir") }
 
   with-sh-throw [& forms]
 
