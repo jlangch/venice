@@ -28,6 +28,7 @@ and this project adheres to
 
 - JLine dependency to version 3.19.0
 - OpenPDf dependency to version 1.3.26
+- JAnsi dependency to version 2.3.2
 - migrated the documentation to markdown for more flexibility when rendering to
   the Venice HTML/PDF cheatsheet or for REPL documentation in a terminal through 
   the `doc` function (e.g. `(doc filter)`) 
