@@ -988,8 +988,8 @@ public class IOFunctions {
 						"(io/list-files dir filter-fn)")
 					.doc(
 						"Lists files in a directory. dir must be a file or a string (file path). " +
-						"filter-fn is an optional filter that filters the files found. The filter " +
-						"gets a java.io.File as argument. Returns files as java.io.File")
+						"`filter-fn` is an optional filter that filters the files found. The filter " +
+						"gets a `java.io.File` as argument. Returns files as `java.io.File`")
 					.examples(
 						"(io/list-files \"/tmp\")",
 						"(io/list-files \"/tmp\" #(io/file-ext? % \".log\"))")
@@ -1041,9 +1041,9 @@ public class IOFunctions {
 						"(io/list-file-tree dir filter-fn)")
 					.doc(
 						"Lists all files in a directory tree. dir must be a file or a " +
-						"string (file path). filter-fn is an optional filter that filters " + 
-						"the files found. The filter gets a java.io.File as argument. " +
-						"Returns files as java.io.File")
+						"string (file path). `filter-fn` is an optional filter that filters " + 
+						"the files found. The filter gets a `java.io.File` as argument. " +
+						"Returns files as `java.io.File`")
 					.examples(
 						"(io/list-file-tree \"/tmp\")",
 						"(io/list-file-tree \"/tmp\" #(io/file-ext? % \".log\"))")
@@ -1094,7 +1094,7 @@ public class IOFunctions {
 					.doc(
 						"Lists all files in a directory that match the glob pattern. " +
 					    "dir must be a file or a string (file path). " +
-					    "Returns files as java.io.File\n\n" +
+					    "Returns files as `java.io.File`\n\n" +
 					    "Globbing patterns: \n\n" +
 					    "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
 					    "| `*.*`         | Matches file names containing a dot |\n" +
@@ -1148,9 +1148,9 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/copy-file source dest & options)")
 					.doc(
-						"Copies source to dest. Returns nil or throws IOException. " +
+						"Copies source to dest. Returns nil or throws a VncException. " +
 						"Source must be a file or a string (file path), dest must be a file, " +
-						"a string (file path), or an OutputStream.\n\n" +
+						"a string (file path), or an `java.io.OutputStream`.\n\n" +
 						"Options: \n\n" +
 						"| :replace true/false | e.g if true replace an existing file, defaults to false |\n")
 					.seeAlso("io/move-file", "io/delete-file", "io/copy-stream")
@@ -1237,7 +1237,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/move-file source target)")
 					.doc(
-						"Moves source to target. Returns nil or throws IOException. " +
+						"Moves source to target. Returns nil or throws a VncException. " +
 						"Source and target must be a file or a string (file path).")
 					.seeAlso("io/copy-file", "io/delete-file")
 					.build()
@@ -1349,7 +1349,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/tmp-dir)")
-					.doc("Returns the tmp dir as a java.io.File.")
+					.doc("Returns the tmp dir as a `java.io.File`.")
 					.examples("(io/tmp-dir)")
 					.seeAlso("io/user-dir", "io/user-home-dir", "io/temp-dir")
 					.build()
@@ -1392,7 +1392,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/user-home-dir)")
-					.doc("Returns the user's home dir as a java.io.File.")
+					.doc("Returns the user's home dir as a `java.io.File`.")
 					.seeAlso("io/user-dir", "io/tmp-dir")
 					.build()
 		) {
@@ -1415,7 +1415,7 @@ public class IOFunctions {
 					.arglists("(io/slurp-lines f & options)")
 					.doc(
 						"Read all lines from f. f may be a file, a string file path, " +
-						"a Java InputStream, or a Java Reader. \n\n" +
+						"a `java.io.InputStream`, or a `java.io.Reader`. \n\n" +
 						"Options: \n\n" +
 						"| :encoding enc | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
@@ -1500,8 +1500,8 @@ public class IOFunctions {
 					.arglists("(io/slurp f & options)")
 					.doc(
 						"Reads the content of file f as text (string) or binary (bytebuf). " +
-						"f may be a file, a string file path, a Java InputStream, " +
-						"or a Java Reader. \n\n" +
+						"f may be a file, a string file path, a `java.io.InputStream`, " +
+						"or a `java.io.Reader`. \n\n" +
 						"Options: \n\n" +
 						"| :binary true/false | e.g :binary true, defaults to false |\n" +
 						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
@@ -1678,16 +1678,18 @@ public class IOFunctions {
 						"| :user-agent agent  | e.g :user-agent \"Mozilla\", defaults to nil |\n" +
 						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n" +
 						"| :conn-timeout val  | e.g :conn-timeout 10000, " +
-						"                       connection timeout in milli seconds. ¶" +
+						"                       connection timeout in milliseconds. ¶" +
 						"                       0 is interpreted as an infinite timeout. |\n" +
 						"| :read-timeout val  | e.g :read-timeout 10000, " +
-						"                       read timeout in milli seconds. ¶" +
+						"                       read timeout in milliseconds. ¶" +
 						"                       0 is interpreted as an infinite timeout. |\n" +
 						"| :progress-fn fn    | a progress function that takes 2 args ¶" +
 						"                       [1] progress (0..100%) ¶" +
 						"                       [2] status {:start :progress :end :failed}|\n\n" +
-						"If the server returns a 403 (access denied) sending a user-agent " +
-						"may fool the website.")
+						"Note:¶" +
+						"If the server returns the HTTP response status code 403 (Access Denied) " +
+						"sending a user agent like \"Mozilla\" may fool the website and solve the " +
+						"problem.")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1799,9 +1801,9 @@ public class IOFunctions {
 				"io/internet-avail?",
 				VncFunction
 					.meta()
-					.arglists("(io/internet-avail?)", "(internet-avail? url)")
+					.arglists("(io/internet-avail?)", "(io/internet-avail? url)")
 					.doc("Checks if an internet connection is present for a given url. "
-							+ "Defaults to URL http://www.google.com.")
+							+ "Defaults to URL *http://www.google.com*.")
 					.examples(
 						"(io/internet-avail? \"http://www.google.com\")")
 					.build()
@@ -1836,8 +1838,8 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/copy-strean in-stream out-stream)")
 					.doc(
-						"Copies input stream to an output stream. Returns nil or throws IOException. " +
-						"Input and output must be a java.io.InputStream and java.io.OutputStream.")
+						"Copies the input stream to the output stream. Returns nil or throws a VncException. " +
+						"Input and output must be a `java.io.InputStream` and `java.io.OutputStream`.")
 					.seeAlso("io/copy-file")
 					.build()
 		) {
@@ -1881,7 +1883,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/slurp-stream is & options)")
 					.doc(
-						"Slurps binary or string data from a Java InputStream is. " +
+						"Slurps binary or string data from a `java.io.InputStream` is. " +
 						"Supports the option :binary to either slurp binary or string data. " +
 						"For string data an optional encoding can be specified.\n\n" +
 						"Options: \n\n" +
@@ -1942,7 +1944,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/spit-stream os content & options)")
 					.doc(
-						"Writes content (string or bytebuf) to the Java OutputStream os. " +
+						"Writes content (string or bytebuf) to the `java.io.OutputStream` os. " +
 						"If content is of type string an optional encoding (defaults to " +
 						"UTF-8) is supported. The stream can optionally be flushed after " +
 						"the operation.\n\n" +
@@ -2014,7 +2016,7 @@ public class IOFunctions {
 					VncFunction
 						.meta()
 						.arglists("(io/uri-stream uri)")
-						.doc("Returns a Java InputStream from the uri.")
+						.doc("Returns a `java.io.InputStream` from the uri.")
 						.examples(
 							"(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" + 
 							"    (io/slurp-stream :binary false :encoding :utf-8))             ")
@@ -2046,7 +2048,7 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists("(io/bytebuf-in-stream)")
-					.doc("Returns a Java InputStream from a bytebuf.")
+					.doc("Returns a `java.io.InputStream` from a bytebuf.")
 					.examples(
 						"(io/bytebuf-in-stream (bytebuf [97 98 99]))")
 					.build()
@@ -2075,7 +2077,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/wrap-os-with-buffered-writer os encoding?)")
 					.doc(
-						"Wraps an OutputStream os with a BufferedWriter using an optional " +
+						"Wraps a `java.io.OutputStream` os with a `java.io.BufferedWriter` using an optional " +
 						"encoding (defaults to :utf-8).")
 					.examples(
 						"(do                                                         \n" +
@@ -2116,7 +2118,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/wrap-os-with-print-writer os encoding?)")
 					.doc(
-						"Wraps an OutputStream os with a PrintWriter using an optional " +
+						"Wraps an `java.io.OutputStream` os with a `java.io.PrintWriter` using an optional " +
 						"encoding (defaults to :utf-8).")
 					.examples(
 						"(do                                                      \n" +
@@ -2157,7 +2159,7 @@ public class IOFunctions {
 						.arglists(
 							"(io/wrap-is-with-buffered-reader is encoding?)")
 						.doc(
-							"Wraps an InputStream is with a BufferedReader using an optional " +
+							"Wraps an `java.io.InputStream` is with a `java.io.BufferedReader` using an optional " +
 							"encoding (defaults to :utf-8).")
 						.examples(
 							"(do                                                                          \n" +
@@ -2208,7 +2210,7 @@ public class IOFunctions {
 						"(io/buffered-reader is encoding?)",
 						"(io/buffered-reader rdr)")
 					.doc(
-						"Creates a BufferedReader from an InputStream is with optional " +
+						"Creates a `java.io.BufferedReader` from a `java.io.InputStream` is with optional " +
 						"encoding (defaults to :utf-8), from a Reader or from a string.")
 					.examples(
 						"(do                                                                          \n" +
@@ -2272,7 +2274,7 @@ public class IOFunctions {
 						"(io/buffered-writer os encoding?)",
 						"(io/buffered-writer wr)")
 					.doc(
-						"Creates a BufferedWriter from an OutputStream os with optional " +
+						"Creates a `java.io.BufferedWriter` from a `java.io.OutputStream` os with optional " +
 						"encoding (defaults to :utf-8) or from a Writer.")
 					.examples()
 					.seeAlso("io/buffered-reader")
@@ -2360,12 +2362,12 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/temp-file prefix suffix)")
 					.doc(
-						"Creates an empty temp file with prefix and suffix.")
+						"Creates an empty temp file with the given prefix and suffix.")
 					.examples(
 						"(do \n" +
-						"   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-						"        (io/spit file \"123456789\" :append true) \n" +
-						"        (io/slurp file :binary false :remove true)) \n" +
+						"  (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+						"    (io/spit file \"123456789\" :append true) \n" +
+						"    (io/slurp file :binary false :remove true)) \n" +
 						")")
 					.seeAlso("io/temp-dir")
 					.build()
