@@ -188,20 +188,20 @@ total and average time for the function's calls:
 -----------------------------------------------
 Metrics: loop
 -----------------------------------------------
-user/_test  [       1]:  7968.68 ms            
-user/sum    [     100]:  7967.66 ms    79.68 ms
-+           [10000000]:   659.78 ms       65 ns
-<           [10000100]:   557.23 ms       55 ns
-inc         [10000000]:   554.08 ms       55 ns
+user/_test  [       1]:  7509.04 ms            
+user/sum    [     100]:  7508.21 ms    75.08 ms
++           [10000000]:   551.81 ms       55 ns
+inc         [10000000]:   530.40 ms       53 ns
+<           [10000100]:   493.70 ms       49 ns
 -----------------------------------------------
 ```
 
 Analysis loop-recur performance:
 
-* `(sum 100000)` takes 79.7ms
-* the functions `<`, `inc` and `+` take 100'000 * 175ns = 17.5ms
-* the loop-recur overhead is (79.7ms - 17.5ms) / 100'000 = 622ns
-* every loop-recur iteration takes 620ns to process the `if` logic, initiate a new 
+* `(sum 100000)` takes 75.1ms
+* the functions `<`, `inc` and `+` take 100'000 * 157ns = 15.7ms
+* the loop-recur overhead is (75.1ms - 15.7ms) / 100'000 = 594ns
+* every loop-recur iteration takes 594ns to process the `if` logic, initiate a new 
   iteration, and setup the local environment with the loop variables.
 
 **Profiler overhead**
@@ -274,11 +274,11 @@ Metrics with upfront macro expansion:
 --------------------------------------------
 Metrics: fibonacci
 --------------------------------------------
-user/_test  [    1]:    10.57 ms            
-user/fib    [  100]:    10.43 ms   104.33 us
-==          [10000]:   930.48 us       93 ns
-+           [ 4900]:   603.90 us      123 ns
-dec         [ 4900]:   404.78 us       82 ns
+user/_test  [    1]:    10.37 ms            
+user/fib    [  100]:    10.29 ms   102.86 us
+==          [10000]:   827.60 us       82 ns
++           [ 4900]:   597.74 us      121 ns
+dec         [ 4900]:   434.54 us       88 ns
 --------------------------------------------
 ```
 

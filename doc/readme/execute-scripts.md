@@ -107,9 +107,8 @@ The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
 Expanding macros ahead of evaluation can speed up the execution by 
 a factor of 3 to 10.
 
-Upfront macro expansion can be activated with the command line option `-macroexpand`
-
-Macro expansion works for executing scripts or files.
+Upfront macro expansion can be activated with the command line option `-macroexpand` 
+and works for executing scripts or files.
 
 
 **Example**
