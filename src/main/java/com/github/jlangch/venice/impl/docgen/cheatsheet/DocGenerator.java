@@ -1392,6 +1392,7 @@ public class DocGenerator {
 		thlocal.addItem(getDocItem("thread-local"));
 		thlocal.addItem(getDocItem("thread-local?"));
 		thlocal.addItem(getDocItem("thread-local-clear"));
+		thlocal.addItem(getDocItem("thread-local-map"));
 		thlocal.addItem(getDocItem("assoc"));
 		thlocal.addItem(getDocItem("dissoc"));
 		thlocal.addItem(getDocItem("get"));

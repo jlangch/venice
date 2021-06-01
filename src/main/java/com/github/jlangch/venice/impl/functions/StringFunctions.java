@@ -946,7 +946,10 @@ public class StringFunctions {
 					.arglists(
 						"(str/format format args*)",
 						"(str/format locale format args*)")
-					.doc("Returns a formatted string using the specified format string and arguments.")
+					.doc(
+						"Returns a formatted string using the specified format string and arguments.¶" +
+						"Venice uses the Java format syntax.\n\n" +
+						"JavaDoc: [Format Syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax)")
 					.examples(
 						"(str/format \"value: %.4f\" 1.45)",
 						"(str/format (. :java.util.Locale :new \"de\" \"DE\") \"value: %.4f\" 1.45)",
