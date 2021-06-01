@@ -960,4 +960,22 @@ public class ConcurrencyFunctionsTest {
 		assertNotNull((String)venice.eval("(thread-name)"));
 	}
 
+	@Test
+	public void test_thread_local_clear() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                        \n" +
+				" (thread-local :a 1 :b 2)                                  \n" +
+				" (thread-local-clear)                                      \n" +
+				" (let [m (thread-local-map)]                               \n" +
+				"   (assert (= :unknown (get (thread-local) :a :unknown)))  \n" +
+				"   (assert (= :unknown (get (thread-local) :b :unknown)))  \n" +
+				"   (assert (some? (get (thread-local) :*in*)))             \n" +
+				"   (assert (some? (get (thread-local) :*out*)))            \n" +
+				"   (assert (some? (get (thread-local) :*err*)))))          \n";
+
+		venice.eval(script);
+	}
+
 }

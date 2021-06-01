@@ -26,7 +26,9 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespace;
@@ -189,10 +191,22 @@ public class ThreadLocalMap {
 		get().nsCurr = ns;
 	}
 
-	public static void clearValues() {
+	public static void clearValues(final boolean preserveSystemValues) {
 		try {
-			// clear all values except the system values
-			get().values.clear();
+			if (preserveSystemValues) {
+				final Map<VncKeyword, VncVal> values = get().values;
+				
+				// clear all values except the system values
+				final Set<VncKeyword> keys = new HashSet<>(values.keySet());
+				keys.remove(new VncKeyword("*in*"));
+				keys.remove(new VncKeyword("*out*"));
+				keys.remove(new VncKeyword("*err*"));
+				
+				keys.forEach(k -> values.remove(k));
+			}
+			else {
+				get().values.clear();
+			}
 		}
 		catch(Exception ex) {
 			// do not care

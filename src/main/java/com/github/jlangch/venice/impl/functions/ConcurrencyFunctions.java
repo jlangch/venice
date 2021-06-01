@@ -1798,15 +1798,23 @@ public class ConcurrencyFunctions {
 					.arglists("(thread-local)")		
 					.doc("Creates a new thread-local accessor")
 					.examples(
-						"(assoc! (thread-local) :a 1)",
-						"(get (thread-local) :a 100)",
-						"(thread-local :a 1 :b 2)", 
-						"(thread-local { :a 1 :b 2 })",
 						"(do \n" +
-						"   (thread-local-clear) \n" +
-						"   (assoc! (thread-local) :a 1 :b 2) \n" +
-						"   (dissoc! (thread-local) :a) \n" +
-						"   (get (thread-local) :b 100))")
+						"  (assoc! (thread-local) :a 1) \n" +
+						"  (get (thread-local) :a))",
+						"(do \n" +
+						"  (assoc! (thread-local) :a 1) \n" +
+						"  (get (thread-local) :b 999))",
+						"(do \n" +
+						"  (thread-local :a 1 :b 2) \n" +
+						"  (get (thread-local) :a))",
+						"(do \n" +
+						"  (thread-local { :a 1 :b 2 }) \n" +
+						"  (get (thread-local) :a))",
+						"(do \n" +
+						"  (thread-local-clear) \n" +
+						"  (assoc! (thread-local) :a 1 :b 2) \n" +
+						"  (dissoc! (thread-local) :a) \n" +
+						"  (get (thread-local) :a 999))")
 					.seeAlso(
 						"thread-local-clear", 
 						"thread-local-map", 
@@ -1863,7 +1871,7 @@ public class ConcurrencyFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
-				new VncThreadLocal().clear();
+				new VncThreadLocal().clear(true); // preserve system values!
 				return this;
 			}
 			
@@ -1876,12 +1884,18 @@ public class ConcurrencyFunctions {
 				VncFunction
 					.meta()
 					.arglists("(thread-local-map)")		
-					.doc("Returns a snaphost of the thread local vars as a map")
+					.doc(
+						"Returns a snaphost of the thread local vars as a map.\n\n" +
+						"Note:¶" +
+						"The returned map is a copy of the current thread local vars. Thus \n" +
+						"modifying this map is not modifying the thread local vars! \n" +
+						"Use `assoc!` and `dissoc!` for that purpose!")
 					.examples(
 						"(do \n" +
+						"  (thread-local-clear) \n" +
 						"  (thread-local :a 1 :b 2) \n" +
 						"  (thread-local-map))")
-					.seeAlso("thread-local", "get")
+					.seeAlso("thread-local", "get", "assoc!", "dissoc!")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

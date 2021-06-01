@@ -99,7 +99,10 @@ public class VncThreadLocal extends VncVal {
 
 	public VncThreadLocal assoc(final VncVal... kvs) {
 		for (int ii=0; ii<kvs.length-1; ii+=2) {
-			set(Coerce.toVncKeyword(kvs[ii]), kvs[ii+1]);
+			final VncKeyword key = Coerce.toVncKeyword(kvs[ii]);
+			if (!isSystemKey(key)) {
+				set(key, kvs[ii+1]);
+			}
 		}
 		return this;
 	}
@@ -107,7 +110,10 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal assoc(final VncList mvs) {
 		VncList kv = mvs;
 		while(!kv.isEmpty()) {
-			set(Coerce.toVncKeyword(kv.first()), kv.second());
+			final VncKeyword key = Coerce.toVncKeyword(kv.first());
+			if (!isSystemKey(key)) {
+				set(key, kv.second());
+			}
 			kv = kv.drop(2);
 		}
 		return this;
@@ -115,25 +121,33 @@ public class VncThreadLocal extends VncVal {
 
 	public VncThreadLocal dissoc(final VncList lst) {
 		for (VncVal v : lst) {
-			remove(Coerce.toVncKeyword(v));
+			final VncKeyword key = Coerce.toVncKeyword(v);
+			if (!isSystemKey(key)) {
+				remove(key);
+			}
 		}
 		return this;
 	}
 
 	public VncThreadLocal dissoc(final VncKeyword... ks) {
 		for (int ii=0; ii<ks.length; ii++) {
-			remove(ks[ii]);
+			if (!isSystemKey(ks[ii])) {
+				remove(ks[ii]);
+			}
 		}
 		return this;
 	}
 
-	public VncThreadLocal clear() {
-		ThreadLocalMap.clearValues();
+	public VncThreadLocal clear(final boolean preserveSystemValues) {
+		ThreadLocalMap.clearValues(preserveSystemValues);
 		return this;
 	}
 
 	public static VncMap toMap() {
-		return new VncHashMap(ThreadLocalMap.getValues());
+		return new VncHashMap(ThreadLocalMap.getValues())
+						.dissoc(new VncKeyword("*in*"))
+						.dissoc(new VncKeyword("*out*"))
+						.dissoc(new VncKeyword("*err*"));
 	}
 	
 	@Override 
@@ -151,6 +165,11 @@ public class VncThreadLocal extends VncVal {
 		return "ThreadLocal";
 	}
 	
+	private static boolean isSystemKey(final VncKeyword key) {
+		return "*in*".equals(key.getSimpleName())
+			   || "*out*".equals(key.getSimpleName())
+			   || "*err*".equals(key.getSimpleName());
+	}
 
 	public static final VncKeyword TYPE = new VncKeyword(":core/thread-local");
 
