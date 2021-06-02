@@ -1871,6 +1871,7 @@ public class ConcurrencyFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
+				
 				new VncThreadLocal().clear(true); // preserve system values!
 				return this;
 			}
@@ -1900,6 +1901,7 @@ public class ConcurrencyFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
+				
 				return VncThreadLocal.toMap();
 			}
 			
@@ -1930,6 +1932,7 @@ public class ConcurrencyFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
+				
 				return new VncLong(Thread.currentThread().getId());
 			}
 			
@@ -1949,6 +1952,7 @@ public class ConcurrencyFunctions {
 		) {		
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
+				
 				return new VncString(Thread.currentThread().getName());
 			}
 			
@@ -1973,6 +1977,7 @@ public class ConcurrencyFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
+				
 				return VncBoolean.of(Thread.currentThread().isInterrupted());
 			}
 			
@@ -2001,6 +2006,7 @@ public class ConcurrencyFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
+				
 				return VncBoolean.of(Thread.interrupted());
 			}
 			

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -100,7 +101,12 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal assoc(final VncVal... kvs) {
 		for (int ii=0; ii<kvs.length-1; ii+=2) {
 			final VncKeyword key = Coerce.toVncKeyword(kvs[ii]);
-			if (!isSystemKey(key)) {
+			if (isSystemKey(key)) {
+				throw new VncException(String.format(
+						"The %s value must be added/modifed on the thread local vars!",
+						key));
+			}
+			else {
 				set(key, kvs[ii+1]);
 			}
 		}
@@ -111,7 +117,12 @@ public class VncThreadLocal extends VncVal {
 		VncList kv = mvs;
 		while(!kv.isEmpty()) {
 			final VncKeyword key = Coerce.toVncKeyword(kv.first());
-			if (!isSystemKey(key)) {
+			if (isSystemKey(key)) {
+				throw new VncException(String.format(
+						"The %s value must be added/modifed on the thread local vars!",
+						key));
+			}
+			else {
 				set(key, kv.second());
 			}
 			kv = kv.drop(2);
@@ -122,7 +133,12 @@ public class VncThreadLocal extends VncVal {
 	public VncThreadLocal dissoc(final VncList lst) {
 		for (VncVal v : lst) {
 			final VncKeyword key = Coerce.toVncKeyword(v);
-			if (!isSystemKey(key)) {
+			if (isSystemKey(key)) {
+				throw new VncException(String.format(
+						"The %s value must be removed from the thread local vars!",
+						key));
+			}
+			else {
 				remove(key);
 			}
 		}
@@ -131,7 +147,12 @@ public class VncThreadLocal extends VncVal {
 
 	public VncThreadLocal dissoc(final VncKeyword... ks) {
 		for (int ii=0; ii<ks.length; ii++) {
-			if (!isSystemKey(ks[ii])) {
+			if (isSystemKey(ks[ii])) {
+				throw new VncException(String.format(
+						"The %s value must be removed from the thread local vars!",
+						ks[ii]));
+			}
+			else {
 				remove(ks[ii]);
 			}
 		}
@@ -144,6 +165,7 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public static VncMap toMap() {
+		// do not disclose *in*, *out*, *err*
 		return new VncHashMap(ThreadLocalMap.getValues())
 						.dissoc(new VncKeyword("*in*"))
 						.dissoc(new VncKeyword("*out*"))
