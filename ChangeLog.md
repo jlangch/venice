@@ -9,11 +9,14 @@ and this project adheres to
 
 
 
-## [1.9.20] - 2021-06-xx
+## [1.9.20] - 2021-06-02
 
 ### Added
 
 - improvements to the online and cheatsheet documentation.
+- prevention of redirecting stdin, stdout, and stderr streams explicitly. Any
+  redirection attempt to change thread the local vars (:*in*, :*out*, :*err*) throws
+  an exception.
 
 
 
@@ -23,6 +26,7 @@ and this project adheres to
 
 - access to REPL info when running in the REPL. 
   E.g.: `(repl/info)`, `(repl/term-rows)`, `(repl/term-cols)`
+
 
 ### Changed
 

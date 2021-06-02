@@ -372,7 +372,7 @@
         <div class="main">
             <div class="title">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.19</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.20</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -2769,7 +2769,7 @@
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
                                      --><!-- 
-                                     --><div class="alias"><a href="#1367">repl/info</a></div><!--
+                                     --><div class="alias"><a href="#1369">repl/info</a></div><!--
                                      --><!--
                                      --><!--
                                   --></div>
@@ -2781,10 +2781,10 @@
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
                                      --><!-- 
-                                     --><div class="alias"><a href="#1368">repl/term-rows</a></div><!--
+                                     --><div class="alias"><a href="#1367">repl/term-rows</a></div><!--
                                      --><!--
                                      --><!-- 
-                                     --><div class="alias"><a href="#1369">repl/term-cols</a></div><!--
+                                     --><div class="alias"><a href="#1368">repl/term-cols</a></div><!--
                                      --><!--
                                      --><!--
                                   --></div>
@@ -4299,6 +4299,9 @@
                                      --><!--
                                      --><!-- 
                                      --><div class="alias"><a href="#1567">thread-local-clear</a></div><!--
+                                     --><!--
+                                     --><!-- 
+                                     --><div class="alias"><a href="#1568">thread-local-map</a></div><!--
                                      --><!--
                                      --><!-- 
                                      --><div class="alias"><a href="#1325">assoc</a></div><!--
@@ -6978,7 +6981,7 @@ public class Example {
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.ZonedDateTime</span> <span style="color: #E9967A">:now</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T14:47:40.277+02:00[Europe/Zurich]
+=&gt; 2021-06-02T21:14:16.899+02:00[Europe/Zurich]
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.lang.Math</span> <span style="color: #E9967A">:min</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
@@ -7826,31 +7829,31 @@ public class Example {
 <table class="md-table">
 <tbody>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">core-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">core-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the number of threads to keep in the pool, even if they are idle</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">maximum-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">maximum-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the maximum allowed number of threads</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">current-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">current-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the current number of threads in the pool</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">largest-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">largest-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the largest number of threads that have ever simultaneously been in the pool</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">active-thread-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">active-thread-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate number of threads that are actively executing tasks</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">scheduled-task-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">scheduled-task-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate total number of tasks that have ever been scheduled for execution</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">completed-task-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">completed-task-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate total number of tasks that have completed execution</div></td>
 </tr>
 </tbody>
@@ -7912,31 +7915,31 @@ public class Example {
 <table class="md-table">
 <tbody>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">core-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">core-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the number of threads to keep in the pool, even if they are idle</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">maximum-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">maximum-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the maximum allowed number of threads</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">current-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">current-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the current number of threads in the pool</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">largest-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">largest-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the largest number of threads that have ever simultaneously been in the pool</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">active-thread-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">active-thread-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate number of threads that are actively executing tasks</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">scheduled-task-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">scheduled-task-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate total number of tasks that have ever been scheduled for execution</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">completed-task-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">completed-task-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate total number of tasks that have completed execution</div></td>
 </tr>
 </tbody>
@@ -8190,7 +8193,7 @@ public class Example {
                     <div class="arglists">
                         <div class="arglist">
                            
-                           <code>(bg-color code</code>
+                           <code>(bg-color code)</code>
                            
                         </div>
                     </div>
@@ -8226,7 +8229,7 @@ public class Example {
                     <div class="arglists">
                         <div class="arglist">
                            
-                           <code>(fg-color code</code>
+                           <code>(fg-color code)</code>
                            
                         </div>
                     </div>
@@ -12833,7 +12836,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span>
-=&gt; function anonymous-c1d03eed-2043-4fa0-bcbf-6c258dc68eb6 {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-a6e44edf-8943-4b02-8050-2d9d1c4990f2 {visibility :public, ns &quot;core&quot;}
 
 <span style="color: #404040">(</span><span style="color: #4169E1">filter</span> <span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 3)</code>
@@ -14121,7 +14124,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">current-time-millis</span><span style="color: #404040">)</span>
-=&gt; 1622378875915</code>
+=&gt; 1622661273058</code>
                     </div>
                     
                     
@@ -16112,11 +16115,11 @@ public class Example {
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                     
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (0 68 74 3)
+=&gt; (90 90 31 15)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (74 76 54 13)</code>
+=&gt; (55 80 17 69)</code>
                     </div>
                     
                     
@@ -16153,7 +16156,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">10</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2431 598 521 262 244 208 233 209 213 209)</code>
+=&gt; (3966 1135 861 518 470 410 415 393 411 359)</code>
                     </div>
                     
                     
@@ -21367,31 +21370,31 @@ Worker2</span>
 <table class="md-table">
 <tbody>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">core-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">core-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the number of threads to keep in the pool, even if they are idle</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">maximum-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">maximum-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the maximum allowed number of threads</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">current-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">current-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the current number of threads in the pool</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">largest-pool-size</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">largest-pool-size</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the largest number of threads that have ever simultaneously been in the pool</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">active-thread-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">active-thread-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate number of threads that are actively executing tasks</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">scheduled-task-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">scheduled-task-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate total number of tasks that have ever been scheduled for execution</div></td>
 </tr>
 <tr>
-<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">completed-task-count</div></div></td>
+<td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-italic">completed-task-count</div></div></td>
 <td class="md-align-left"><div class="md-text-normal">the approximate total number of tasks that have completed execution</div></td>
 </tr>
 </tbody>
@@ -21458,9 +21461,9 @@ Worker2</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker2
-Worker1
-Worker0</span>
+<span style="color: #808080">Worker0
+Worker2
+Worker1</span>
 =&gt; nil</code>
                     </div>
                     
@@ -24122,7 +24125,7 @@ alpha: true</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Creates a BufferedReader from an InputStream is with optional encoding (defaults to :utf-8), from a Reader or from a string.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Creates a </div><div class="md-inline-code">java.io.BufferedReader</div><div class="md-text-normal"> from a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal"> is with optional encoding (defaults to :utf-8), from a Reader or from a string.</div></div>
 </div>
 
                         
@@ -24157,7 +24160,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1680">io/buffered−writer</a></div>
-                            <div class="descr">Creates a BufferedWriter from an OutputStream os with optional encoding (defaults to :utf-8) or from a Writer.</div>
+                            <div class="descr">Creates a java.io.BufferedWriter from a java.io.OutputStream os with optional encoding (defaults to :utf-8) or from a Writer.</div>
                         </div>
                         
                     </div>
@@ -24187,7 +24190,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Creates a BufferedWriter from an OutputStream os with optional encoding (defaults to :utf-8) or from a Writer.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Creates a </div><div class="md-inline-code">java.io.BufferedWriter</div><div class="md-text-normal"> from a </div><div class="md-inline-code">java.io.OutputStream</div><div class="md-text-normal"> os with optional encoding (defaults to :utf-8) or from a Writer.</div></div>
 </div>
 
                         
@@ -24201,7 +24204,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1678">io/buffered−reader</a></div>
-                            <div class="descr">Creates a BufferedReader from an InputStream is with optional encoding (defaults to :utf-8), from a Reader or from a string.</div>
+                            <div class="descr">Creates a java.io.BufferedReader from a java.io.InputStream is with optional encoding (defaults to :utf-8), from a Reader or from a string.</div>
                         </div>
                         
                     </div>
@@ -24229,7 +24232,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Returns a Java InputStream from a bytebuf.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Returns a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal"> from a bytebuf.</div></div>
 </div>
 
                         
@@ -24343,7 +24346,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Copies source to dest. Returns nil or throws IOException. Source must be a file or a string (file path), dest must be a file, a string (file path), or an OutputStream.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Copies source to dest. Returns nil or throws a VncException. Source must be a file or a string (file path), dest must be a file, a string (file path), or an </div><div class="md-inline-code">java.io.OutputStream</div><div class="md-text-normal">.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Options: </div></div>
 <div class="md-table-block">
 <table class="md-table">
@@ -24368,7 +24371,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1701">io/move−file</a></div>
-                            <div class="descr">Moves source to target. Returns nil or throws IOException. Source and target must be a file or a string (file path).</div>
+                            <div class="descr">Moves source to target. Returns nil or throws a VncException. Source and target must be a file or a string (file path).</div>
                         </div>
                          
                         <div class="crossref">
@@ -24378,7 +24381,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1668">io/copy−stream</a></div>
-                            <div class="descr">Copies input stream to an output stream. Returns nil or throws IOException. Input and output must be a java.io.InputStream and java.io.Outpu ...</div>
+                            <div class="descr">Copies the input stream to the output stream. Returns nil or throws a VncException. Input and output must be a java.io.InputStream ...</div>
                         </div>
                         
                     </div>
@@ -24406,7 +24409,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Copies input stream to an output stream. Returns nil or throws IOException. Input and output must be a java.io.InputStream and java.io.OutputStream.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Copies the input stream to the output stream. Returns nil or throws a VncException. Input and output must be a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal"> and </div><div class="md-inline-code">java.io.OutputStream</div><div class="md-text-normal">.</div></div>
 </div>
 
                         
@@ -24420,7 +24423,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1667">io/copy−file</a></div>
-                            <div class="descr">Copies source to dest. Returns nil or throws IOException. Source must be a file or a string (file path), dest must be a file, a string ...</div>
+                            <div class="descr">Copies source to dest. Returns nil or throws a VncException. Source must be a file or a string (file path), dest must be a file, a ...</div>
                         </div>
                         
                     </div>
@@ -24504,12 +24507,12 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1667">io/copy−file</a></div>
-                            <div class="descr">Copies source to dest. Returns nil or throws IOException. Source must be a file or a string (file path), dest must be a file, a string ...</div>
+                            <div class="descr">Copies source to dest. Returns nil or throws a VncException. Source must be a file or a string (file path), dest must be a file, a ...</div>
                         </div>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1701">io/move−file</a></div>
-                            <div class="descr">Moves source to target. Returns nil or throws IOException. Source and target must be a file or a string (file path).</div>
+                            <div class="descr">Moves source to target. Returns nil or throws a VncException. Source and target must be a file or a string (file path).</div>
                         </div>
                         
                     </div>
@@ -24650,11 +24653,11 @@ line 2</span>
 </tr>
 <tr>
 <td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:conn-timeout val</div></div></td>
-<td class="md-align-left"><div class="md-text-normal">e.g :conn-timeout 10000, connection timeout in milli seconds.</div><br/><div class="md-text-normal">0 is interpreted as an infinite timeout.</div></td>
+<td class="md-align-left"><div class="md-text-normal">e.g :conn-timeout 10000, connection timeout in milliseconds.</div><br/><div class="md-text-normal">0 is interpreted as an infinite timeout.</div></td>
 </tr>
 <tr>
 <td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:read-timeout val</div></div></td>
-<td class="md-align-left"><div class="md-text-normal">e.g :read-timeout 10000, read timeout in milli seconds.</div><br/><div class="md-text-normal">0 is interpreted as an infinite timeout.</div></td>
+<td class="md-align-left"><div class="md-text-normal">e.g :read-timeout 10000, read timeout in milliseconds.</div><br/><div class="md-text-normal">0 is interpreted as an infinite timeout.</div></td>
 </tr>
 <tr>
 <td class="md-align-left"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:progress-fn fn</div></div></td>
@@ -24663,7 +24666,7 @@ line 2</span>
 </tbody>
 </table>
 </div>
-<div class="md-text-block"><div class="md-text-normal">If the server returns a 403 (access denied) sending a user-agent may fool the website.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Note:</div><br/><div class="md-text-normal">If the server returns the HTTP response status code 403 (Access Denied) sending a user agent like &quot;Mozilla&quot; may fool the website and solve the problem.</div></div>
 </div>
 
                         
@@ -25860,7 +25863,7 @@ line 2</span>
                            
                            <code>(io/internet-avail?)</code>
                            
-                           <code>(internet-avail? url)</code>
+                           <code>(io/internet-avail? url)</code>
                            
                         </div>
                     </div>
@@ -25871,7 +25874,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Checks if an internet connection is present for a given url. Defaults to URL http://www.google.com.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Checks if an internet connection is present for a given url. Defaults to URL </div><div class="md-text-italic">http://www.google.com</div><div class="md-text-normal">.</div></div>
 </div>
 
                         
@@ -25909,7 +25912,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Lists all files in a directory tree. dir must be a file or a string (file path). filter-fn is an optional filter that filters the files found. The filter gets a java.io.File as argument. Returns files as java.io.File</div></div>
+<div class="md-text-block"><div class="md-text-normal">Lists all files in a directory tree. dir must be a file or a string (file path). </div><div class="md-inline-code">filter-fn</div><div class="md-text-normal"> is an optional filter that filters the files found. The filter gets a </div><div class="md-inline-code">java.io.File</div><div class="md-text-normal"> as argument. Returns files as </div><div class="md-inline-code">java.io.File</div></div>
 </div>
 
                         
@@ -25964,7 +25967,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Lists files in a directory. dir must be a file or a string (file path). filter-fn is an optional filter that filters the files found. The filter gets a java.io.File as argument. Returns files as java.io.File</div></div>
+<div class="md-text-block"><div class="md-text-normal">Lists files in a directory. dir must be a file or a string (file path). </div><div class="md-inline-code">filter-fn</div><div class="md-text-normal"> is an optional filter that filters the files found. The filter gets a </div><div class="md-inline-code">java.io.File</div><div class="md-text-normal"> as argument. Returns files as </div><div class="md-inline-code">java.io.File</div></div>
 </div>
 
                         
@@ -26017,7 +26020,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Lists all files in a directory that match the glob pattern. dir must be a file or a string (file path). Returns files as java.io.File</div></div>
+<div class="md-text-block"><div class="md-text-normal">Lists all files in a directory that match the glob pattern. dir must be a file or a string (file path). Returns files as </div><div class="md-inline-code">java.io.File</div></div>
 <div class="md-text-block"><div class="md-text-normal">Globbing patterns: </div></div>
 <div class="md-table-block">
 <table class="md-table">
@@ -26263,7 +26266,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Moves source to target. Returns nil or throws IOException. Source and target must be a file or a string (file path).</div></div>
+<div class="md-text-block"><div class="md-text-normal">Moves source to target. Returns nil or throws a VncException. Source and target must be a file or a string (file path).</div></div>
 </div>
 
                         
@@ -26277,7 +26280,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1667">io/copy−file</a></div>
-                            <div class="descr">Copies source to dest. Returns nil or throws IOException. Source must be a file or a string (file path), dest must be a file, a string ...</div>
+                            <div class="descr">Copies source to dest. Returns nil or throws a VncException. Source must be a file or a string (file path), dest must be a file, a ...</div>
                         </div>
                          
                         <div class="crossref">
@@ -26310,7 +26313,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a Java InputStream, or a Java Reader. </div></div>
+<div class="md-text-block"><div class="md-text-normal">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal">, or a </div><div class="md-inline-code">java.io.Reader</div><div class="md-text-normal">. </div></div>
 <div class="md-text-block"><div class="md-text-normal">Options: </div></div>
 <div class="md-table-block">
 <table class="md-table">
@@ -26339,12 +26342,12 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1670">io/slurp−lines</a></div>
-                            <div class="descr">Read all lines from f. f may be a file, a string file path, a Java InputStream, or a Java Reader.</div>
+                            <div class="descr">Read all lines from f. f may be a file, a string file path, a java.io.InputStream, or a java.io.Reader.</div>
                         </div>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1672">io/slurp−stream</a></div>
-                            <div class="descr">Slurps binary or string data from a Java InputStream is. Supports the option :binary to either slurp binary or string data. For string ...</div>
+                            <div class="descr">Slurps binary or string data from a java.io.InputStream is. Supports the option :binary to either slurp binary or string data. For ...</div>
                         </div>
                          
                         <div class="crossref">
@@ -26377,7 +26380,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Read all lines from f. f may be a file, a string file path, a Java InputStream, or a Java Reader. </div></div>
+<div class="md-text-block"><div class="md-text-normal">Read all lines from f. f may be a file, a string file path, a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal">, or a </div><div class="md-inline-code">java.io.Reader</div><div class="md-text-normal">. </div></div>
 <div class="md-text-block"><div class="md-text-normal">Options: </div></div>
 <div class="md-table-block">
 <table class="md-table">
@@ -26402,12 +26405,12 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1669">io/slurp</a></div>
-                            <div class="descr">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a Java InputStream, or a Java Reader.</div>
+                            <div class="descr">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a java.io.InputStream, or a ...</div>
                         </div>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1672">io/slurp−stream</a></div>
-                            <div class="descr">Slurps binary or string data from a Java InputStream is. Supports the option :binary to either slurp binary or string data. For string ...</div>
+                            <div class="descr">Slurps binary or string data from a java.io.InputStream is. Supports the option :binary to either slurp binary or string data. For ...</div>
                         </div>
                          
                         <div class="crossref">
@@ -26440,7 +26443,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Slurps binary or string data from a Java InputStream is. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Slurps binary or string data from a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal"> is. Supports the option :binary to either slurp binary or string data. For string data an optional encoding can be specified.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Options: </div></div>
 <div class="md-table-block">
 <table class="md-table">
@@ -26481,12 +26484,12 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1669">io/slurp</a></div>
-                            <div class="descr">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a Java InputStream, or a Java Reader.</div>
+                            <div class="descr">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a java.io.InputStream, or a ...</div>
                         </div>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1670">io/slurp−lines</a></div>
-                            <div class="descr">Read all lines from f. f may be a file, a string file path, a Java InputStream, or a Java Reader.</div>
+                            <div class="descr">Read all lines from f. f may be a file, a string file path, a java.io.InputStream, or a java.io.Reader.</div>
                         </div>
                          
                         <div class="crossref">
@@ -26548,17 +26551,17 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1673">io/spit−stream</a></div>
-                            <div class="descr">Writes content (string or bytebuf) to the Java OutputStream os. If content is of type string an optional encoding (defaults to UTF-8) ...</div>
+                            <div class="descr">Writes content (string or bytebuf) to the java.io.OutputStream os. If content is of type string an optional encoding (defaults to UTF-8) ...</div>
                         </div>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1669">io/slurp</a></div>
-                            <div class="descr">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a Java InputStream, or a Java Reader.</div>
+                            <div class="descr">Reads the content of file f as text (string) or binary (bytebuf). f may be a file, a string file path, a java.io.InputStream, or a ...</div>
                         </div>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1670">io/slurp−lines</a></div>
-                            <div class="descr">Read all lines from f. f may be a file, a string file path, a Java InputStream, or a Java Reader.</div>
+                            <div class="descr">Read all lines from f. f may be a file, a string file path, a java.io.InputStream, or a java.io.Reader.</div>
                         </div>
                         
                     </div>
@@ -26586,7 +26589,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Writes content (string or bytebuf) to the Java OutputStream os. If content is of type string an optional encoding (defaults to UTF-8) is supported. The stream can optionally be flushed after the operation.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Writes content (string or bytebuf) to the </div><div class="md-inline-code">java.io.OutputStream</div><div class="md-text-normal"> os. If content is of type string an optional encoding (defaults to UTF-8) is supported. The stream can optionally be flushed after the operation.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Options: </div></div>
 <div class="md-table-block">
 <table class="md-table">
@@ -26654,7 +26657,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Creates an empty temp file with prefix and suffix.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Creates an empty temp file with the given prefix and suffix.</div></div>
 </div>
 
                         
@@ -26663,9 +26666,9 @@ line 2</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
-   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">file</span> <span style="color: #404040">(</span><span style="color: #4169E1">io/temp-file</span> <span style="color: #2E8B57">&quot;test-&quot;</span>, <span style="color: #2E8B57">&quot;.txt&quot;</span><span style="color: #404040">)</span><span style="color: #404040">]</span> 
-        <span style="color: #404040">(</span><span style="color: #4169E1">io/spit</span> <span style="color: #404040">file</span> <span style="color: #2E8B57">&quot;123456789&quot;</span> <span style="color: #E9967A">:append</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span> 
-        <span style="color: #404040">(</span><span style="color: #4169E1">io/slurp</span> <span style="color: #404040">file</span> <span style="color: #E9967A">:binary</span> <span style="color: #E9967A">false</span> <span style="color: #E9967A">:remove</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">file</span> <span style="color: #404040">(</span><span style="color: #4169E1">io/temp-file</span> <span style="color: #2E8B57">&quot;test-&quot;</span>, <span style="color: #2E8B57">&quot;.txt&quot;</span><span style="color: #404040">)</span><span style="color: #404040">]</span> 
+    <span style="color: #404040">(</span><span style="color: #4169E1">io/spit</span> <span style="color: #404040">file</span> <span style="color: #2E8B57">&quot;123456789&quot;</span> <span style="color: #E9967A">:append</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span> 
+    <span style="color: #404040">(</span><span style="color: #4169E1">io/slurp</span> <span style="color: #404040">file</span> <span style="color: #E9967A">:binary</span> <span style="color: #E9967A">false</span> <span style="color: #E9967A">:remove</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span><span style="color: #404040">)</span> 
 <span style="color: #404040">)</span>
 =&gt; &quot;123456789&quot;</code>
                     </div>
@@ -26705,7 +26708,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Returns the tmp dir as a java.io.File.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Returns the tmp dir as a </div><div class="md-inline-code">java.io.File</div><div class="md-text-normal">.</div></div>
 </div>
 
                         
@@ -27207,7 +27210,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Returns a Java InputStream from the uri.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Returns a </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal"> from the uri.</div></div>
 </div>
 
                         
@@ -27291,7 +27294,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Returns the user&apos;s home dir as a java.io.File.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Returns the user&apos;s home dir as a </div><div class="md-inline-code">java.io.File</div><div class="md-text-normal">.</div></div>
 </div>
 
                         
@@ -27397,7 +27400,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Wraps an InputStream is with a BufferedReader using an optional encoding (defaults to :utf-8).</div></div>
+<div class="md-text-block"><div class="md-text-normal">Wraps an </div><div class="md-inline-code">java.io.InputStream</div><div class="md-text-normal"> is with a </div><div class="md-inline-code">java.io.BufferedReader</div><div class="md-text-normal"> using an optional encoding (defaults to :utf-8).</div></div>
 </div>
 
                         
@@ -27424,7 +27427,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1678">io/buffered−reader</a></div>
-                            <div class="descr">Creates a BufferedReader from an InputStream is with optional encoding (defaults to :utf-8), from a Reader or from a string.</div>
+                            <div class="descr">Creates a java.io.BufferedReader from a java.io.InputStream is with optional encoding (defaults to :utf-8), from a Reader or from a string.</div>
                         </div>
                         
                     </div>
@@ -27452,7 +27455,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Wraps an OutputStream os with a BufferedWriter using an optional encoding (defaults to :utf-8).</div></div>
+<div class="md-text-block"><div class="md-text-normal">Wraps a </div><div class="md-inline-code">java.io.OutputStream</div><div class="md-text-normal"> os with a </div><div class="md-inline-code">java.io.BufferedWriter</div><div class="md-text-normal"> using an optional encoding (defaults to :utf-8).</div></div>
 </div>
 
                         
@@ -27479,7 +27482,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1676">io/wrap−os−with−print−writer</a></div>
-                            <div class="descr">Wraps an OutputStream os with a PrintWriter using an optional encoding (defaults to :utf-8).</div>
+                            <div class="descr">Wraps an java.io.OutputStream os with a java.io.PrintWriter using an optional encoding (defaults to :utf-8).</div>
                         </div>
                         
                     </div>
@@ -27507,7 +27510,7 @@ line 2</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Wraps an OutputStream os with a PrintWriter using an optional encoding (defaults to :utf-8).</div></div>
+<div class="md-text-block"><div class="md-text-normal">Wraps an </div><div class="md-inline-code">java.io.OutputStream</div><div class="md-text-normal"> os with a </div><div class="md-inline-code">java.io.PrintWriter</div><div class="md-text-normal"> using an optional encoding (defaults to :utf-8).</div></div>
 </div>
 
                         
@@ -27533,7 +27536,7 @@ line 2</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1677">io/wrap−os−with−buffered−writer</a></div>
-                            <div class="descr">Wraps an OutputStream os with a BufferedWriter using an optional encoding (defaults to :utf-8).</div>
+                            <div class="descr">Wraps a java.io.OutputStream os with a java.io.BufferedWriter using an optional encoding (defaults to :utf-8).</div>
                         </div>
                         
                     </div>
@@ -28342,10 +28345,10 @@ venice&gt; (io/zip-list :print false &quot;test.zip&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">java-package-version</span> <span style="color: #E9967A">:java.lang.String</span><span style="color: #404040">)</span>
-=&gt; {:implementation-title &quot;Java Runtime Environment&quot; :implementation-vendor &quot;AdoptOpenJDK&quot; :implementation-version &quot;1.8.0_282&quot; :specification-title &quot;Java Platform API Specification&quot; :specification-vendor &quot;Oracle Corporation&quot; :specification-version &quot;1.8&quot;}
+=&gt; {:implementation-title &quot;Java Runtime Environment&quot; :implementation-vendor &quot;AdoptOpenJDK&quot; :implementation-version &quot;1.8.0_292&quot; :specification-title &quot;Java Platform API Specification&quot; :specification-vendor &quot;Oracle Corporation&quot; :specification-version &quot;1.8&quot;}
 
 <span style="color: #404040">(</span><span style="color: #4169E1">java-package-version</span> <span style="color: #404040">(</span><span style="color: #4169E1">class</span> <span style="color: #E9967A">:java.lang.String</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; {:implementation-title &quot;Java Runtime Environment&quot; :implementation-vendor &quot;AdoptOpenJDK&quot; :implementation-version &quot;1.8.0_282&quot; :specification-title &quot;Java Platform API Specification&quot; :specification-vendor &quot;Oracle Corporation&quot; :specification-version &quot;1.8&quot;}</code>
+=&gt; {:implementation-title &quot;Java Runtime Environment&quot; :implementation-vendor &quot;AdoptOpenJDK&quot; :implementation-version &quot;1.8.0_292&quot; :specification-title &quot;Java Platform API Specification&quot; :specification-vendor &quot;Oracle Corporation&quot; :specification-version &quot;1.8&quot;}</code>
                     </div>
                     
                     
@@ -28465,7 +28468,7 @@ venice&gt; (io/zip-list :print false &quot;test.zip&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">java-version</span><span style="color: #404040">)</span>
-=&gt; &quot;1.8.0_282&quot;</code>
+=&gt; &quot;1.8.0_292&quot;</code>
                     </div>
                     
                     
@@ -28517,7 +28520,7 @@ venice&gt; (io/zip-list :print false &quot;test.zip&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">java-version-info</span><span style="color: #404040">)</span>
-=&gt; {:version &quot;1.8.0_282&quot; :vendor &quot;AdoptOpenJDK&quot; :vm-version &quot;25.282-b08&quot; :vm-name &quot;OpenJDK 64-Bit Server VM&quot; :vm-vendor &quot;AdoptOpenJDK&quot;}</code>
+=&gt; {:version &quot;1.8.0_292&quot; :vendor &quot;AdoptOpenJDK&quot; :vm-version &quot;25.292-b10&quot; :vm-name &quot;OpenJDK 64-Bit Server VM&quot; :vm-vendor &quot;AdoptOpenJDK&quot;}</code>
                     </div>
                     
                     
@@ -29751,7 +29754,7 @@ Hello Bob</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">rand-long</span><span style="color: #404040">)</span>                                       
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                                                   
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (1148395974622228816 3696224592114499718 7342338563538467283 3776673757281611988)
+=&gt; (1517064061550966214 4483975512793617825 726026638773900355 5786312772332830452)
 
 <span style="color: #808080">; lazy sequence with a constant value                           </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">(</span><span style="color: #4169E1">constantly</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                                  
@@ -32017,7 +32020,7 @@ out</span>
           <span style="color: #E9967A">:else</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #E9967A">25</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 4.30ms</span>
+<span style="color: #808080">Elapsed time: 8.49ms</span>
 =&gt; 75025</code>
                     </div>
                     
@@ -32768,7 +32771,7 @@ out</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>
-=&gt; 567277481608673</code>
+=&gt; 37698248471556</code>
                     </div>
                     
                     
@@ -35200,7 +35203,7 @@ ns yyy: ()</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">pid</span><span style="color: #404040">)</span>
-=&gt; &quot;91309&quot;</code>
+=&gt; &quot;10006&quot;</code>
                     </div>
                     
                     
@@ -36508,10 +36511,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span><span style="color: #404040">)</span>
-=&gt; 0.6820193902798484
+=&gt; 0.9850442673998969
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span> <span style="color: #E9967A">100.0</span><span style="color: #404040">)</span>
-=&gt; 65.905854871042</code>
+=&gt; 68.48656561857273</code>
                     </div>
                     
                     
@@ -36551,10 +36554,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span><span style="color: #404040">)</span>
-=&gt; -0.3706134931267079
+=&gt; -0.09361640430104082
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span> <span style="color: #E9967A">0.0</span> <span style="color: #E9967A">5.0</span><span style="color: #404040">)</span>
-=&gt; 5.214770458248735</code>
+=&gt; -0.33806780996447316</code>
                     </div>
                     
                     
@@ -36594,10 +36597,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span><span style="color: #404040">)</span>
-=&gt; 5533771115362895076
+=&gt; 1707091559139252945
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 91</code>
+=&gt; 19</code>
                     </div>
                     
                     
@@ -36962,7 +36965,7 @@ true</span>
 <span style="color: #808080">;; sliding window (width 3) average</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">partition</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">10</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">30</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
      <span style="color: #404040">(</span><span style="color: #4169E1">map</span> <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">window</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">/</span> <span style="color: #404040">(</span><span style="color: #4169E1">reduce</span> <span style="color: #404040">+</span> <span style="color: #404040">window</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">count</span> <span style="color: #404040">window</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (11 18 25 21 21 14 18 11)</code>
+=&gt; (14 12 11 15 16 12 12 15)</code>
                     </div>
                     
                     
@@ -38098,12 +38101,12 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">5</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (5 3 1 6 7)
+=&gt; (7 2 6 8 4)
 
 <span style="color: #808080">;; compare with repeat, which only calls the &apos;rand-long&apos;</span>
 <span style="color: #808080">;; function once, repeating the value five times. </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">repeat</span> <span style="color: #E9967A">5</span> <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (0 0 0 0 0)</code>
+=&gt; (7 7 7 7 7)</code>
                     </div>
                     
                     
@@ -38132,7 +38135,7 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                 
                  
                 
-                <div class="detail" id="1367">
+                <div class="detail" id="1369">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <div class="header">repl/info</div>
                     
@@ -38152,6 +38155,15 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                         
                         <div class="md">
 <div class="md-text-block"><div class="md-text-normal">Returns information on the REPL.</div></div>
+<div class="md-text-block"><div class="md-text-normal">E.g.: </div></div>
+<div class="md-code-block">
+<code class="md-code">{ :term-name &quot;JLine terminal&quot;
+  :term-type &quot;xterm-256color&quot;
+  :term-cols 80
+  :term-rows 24
+  :term-colors 256
+  :term-class :org.repackage.org.jline.terminal.impl.PosixSysTerminal
+  :color-mode :light }</code></div>
 </div>
 
                         
@@ -38160,11 +38172,26 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     
                     
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1367">repl/term−rows</a></div>
+                            <div class="descr">Returns number of rows in the REPL terminal.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1368">repl/term−cols</a></div>
+                            <div class="descr">Returns number of columns in the REPL terminal.</div>
+                        </div>
+                        
+                    </div>
+                    
                 </div>
                 
                  
                 
-                <div class="detail" id="1369">
+                <div class="detail" id="1368">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <div class="header">repl/term-cols</div>
                     
@@ -38192,11 +38219,26 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     
                     
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1367">repl/term−rows</a></div>
+                            <div class="descr">Returns number of rows in the REPL terminal.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1369">repl/info</a></div>
+                            <div class="descr">Returns information on the REPL.</div>
+                        </div>
+                        
+                    </div>
+                    
                 </div>
                 
                  
                 
-                <div class="detail" id="1368">
+                <div class="detail" id="1367">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <div class="header">repl/term-rows</div>
                     
@@ -38223,6 +38265,21 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     
                     
+                    
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1368">repl/term−cols</a></div>
+                            <div class="descr">Returns number of columns in the REPL terminal.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1369">repl/info</a></div>
+                            <div class="descr">Returns information on the REPL.</div>
+                        </div>
+                        
+                    </div>
                     
                 </div>
                 
@@ -40010,9 +40067,13 @@ E.g.: { :major 1, :minor 3, :patch 5 }
 <div class="md-text-block"><div class="md-text-normal">You can bind :env, :dir for multiple operations using </div><div class="md-inline-code">with-sh-env</div><div class="md-text-normal"> or </div><div class="md-inline-code">with-sh-dir</div><div class="md-text-normal">. </div><div class="md-inline-code">with-sh-throw</div><div class="md-text-normal"> is binds :throw-ex as true.</div></div>
 <div class="md-text-block"><div class="md-text-normal">sh returns a map of</div></div>
 <div class="md-code-block">
-<code class="md-code">  :exit =&gt; sub-process&apos;s exit code
-  :out  =&gt; sub-process&apos;s stdout (as Bytebuf or String)
-  :err  =&gt; sub-process&apos;s stderr (String via platform default encoding)</code></div>
+<code class="md-code">:exit =&gt; sub-process&apos;s exit code
+:out  =&gt; sub-process&apos;s stdout (as Bytebuf or String)
+:err  =&gt; sub-process&apos;s stderr (String via platform default encoding)</code></div>
+<div class="md-text-block"><div class="md-text-normal">E.g.:</div></div>
+<div class="md-code-block">
+<code class="md-code">(sh &quot;uname&quot; &quot;-r&quot;)
+=&gt; {:err &quot;&quot; :out &quot;20.5.0\n&quot; :exit 0}</code></div>
 </div>
 
                         
@@ -41096,13 +41157,13 @@ E.g.: { :major 1, :minor 3, :patch 5 }
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (5 1 2 6 4 3)
+=&gt; (2 1 6 4 3 5)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-=&gt; [4 6 3 5 1 2]
+=&gt; [3 4 5 1 6 2]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #2E8B57">&quot;abcdef&quot;</span><span style="color: #404040">)</span>
-=&gt; (&quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;f&quot; &quot;e&quot; &quot;d&quot;)</code>
+=&gt; (&quot;f&quot; &quot;b&quot; &quot;d&quot; &quot;c&quot; &quot;a&quot; &quot;e&quot;)</code>
                     </div>
                     
                     
@@ -43106,7 +43167,8 @@ line3&quot;</span> <span style="color: #E9967A">:lf</span><span style="color: #4
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Returns a formatted string using the specified format string and arguments.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Returns a formatted string using the specified format string and arguments.</div><br/><div class="md-text-normal">Venice uses the Java format syntax.</div></div>
+<div class="md-text-block"><div class="md-text-normal">JavaDoc: </div><a class="md-url" href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax">Format Syntax</a></div>
 </div>
 
                         
@@ -43126,11 +43188,11 @@ line3&quot;</span> <span style="color: #E9967A">:lf</span><span style="color: #4
 <span style="color: #404040">(</span><span style="color: #4169E1">str/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Locale</span> <span style="color: #E9967A">:new</span> <span style="color: #2E8B57">&quot;de&quot;</span> <span style="color: #2E8B57">&quot;CH&quot;</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;value: %,d&quot;</span> <span style="color: #E9967A">2345000</span><span style="color: #404040">)</span>
 =&gt; &quot;value: 2&apos;345&apos;000&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">str/format</span> <span style="color: #404040">[</span> <span style="color: #2E8B57">&quot;de&quot;</span><span style="color: #404040">]</span> <span style="color: #2E8B57">&quot;value: %.4f&quot;</span> <span style="color: #E9967A">1.45</span><span style="color: #404040">)</span>
-=&gt; &quot;value: 1,4500&quot;
+<span style="color: #404040">(</span><span style="color: #4169E1">str/format</span> <span style="color: #404040">[</span> <span style="color: #2E8B57">&quot;de&quot;</span><span style="color: #404040">]</span> <span style="color: #2E8B57">&quot;value: %,.2f&quot;</span> <span style="color: #E9967A">100000.45</span><span style="color: #404040">)</span>
+=&gt; &quot;value: 100.000,45&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">str/format</span> <span style="color: #404040">[</span> <span style="color: #2E8B57">&quot;de&quot;</span> <span style="color: #2E8B57">&quot;DE&quot;</span><span style="color: #404040">]</span> <span style="color: #2E8B57">&quot;value: %.4f&quot;</span> <span style="color: #E9967A">1.45</span><span style="color: #404040">)</span>
-=&gt; &quot;value: 1,4500&quot;
+<span style="color: #404040">(</span><span style="color: #4169E1">str/format</span> <span style="color: #404040">[</span> <span style="color: #2E8B57">&quot;de&quot;</span> <span style="color: #2E8B57">&quot;DE&quot;</span><span style="color: #404040">]</span> <span style="color: #2E8B57">&quot;value: %,.2f&quot;</span> <span style="color: #E9967A">100000.45</span><span style="color: #404040">)</span>
+=&gt; &quot;value: 100.000,45&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">str/format</span> <span style="color: #404040">[</span> <span style="color: #2E8B57">&quot;de&quot;</span> <span style="color: #2E8B57">&quot;DE&quot;</span><span style="color: #404040">]</span> <span style="color: #2E8B57">&quot;value: %,d&quot;</span> <span style="color: #E9967A">2345000</span><span style="color: #404040">)</span>
 =&gt; &quot;value: 2.345.000&quot;</code>
@@ -45644,24 +45706,32 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">assoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
-=&gt; ThreadLocal
-
-<span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 100
-
-<span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; ThreadLocal
-
-<span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span> <span style="color: #404040">{</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span> <span style="color: #404040">}</span><span style="color: #404040">)</span>
-=&gt; ThreadLocal
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">assoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+=&gt; 1
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
-   <span style="color: #404040">(</span><span style="color: #4169E1">thread-local-clear</span><span style="color: #404040">)</span> 
-   <span style="color: #404040">(</span><span style="color: #4169E1">assoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> 
-   <span style="color: #404040">(</span><span style="color: #4169E1">dissoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span><span style="color: #404040">)</span> 
-   <span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2</code>
+  <span style="color: #404040">(</span><span style="color: #4169E1">assoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">999</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+=&gt; 999
+
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+=&gt; 1
+
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span> <span style="color: #404040">{</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span> <span style="color: #404040">}</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+=&gt; 1
+
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">thread-local-clear</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">assoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">dissoc!</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">get</span> <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span><span style="color: #404040">)</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">999</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+=&gt; 999</code>
                     </div>
                     
                     
@@ -45676,7 +45746,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                          
                         <div class="crossref">
                             <div class="name"><a href="#1568">thread−local−map</a></div>
-                            <div class="descr">Returns a snaphost of the thread local vars as a map</div>
+                            <div class="descr">Returns a snaphost of the thread local vars as a map.</div>
                         </div>
                          
                         <div class="crossref">
@@ -45739,6 +45809,72 @@ line3&quot;</span><span style="color: #404040">)</span>
                         <div class="crossref">
                             <div class="name"><a href="#1569">thread−local</a></div>
                             <div class="descr">Creates a new thread-local accessor</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1484">dissoc!</a></div>
+                            <div class="descr">Dissociates keys from a mutable map, returns the map</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                 
+                
+                <div class="detail" id="1568">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <div class="header">thread-local-map</div>
+                    
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(thread-local-map)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="descr">
+                        
+                        
+                        
+                        <div class="md">
+<div class="md-text-block"><div class="md-text-normal">Returns a snaphost of the thread local vars as a map.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Note:</div><br/><div class="md-text-normal">The returned map is a copy of the current thread local vars. Thus modifying this map is not modifying the thread local vars! Use </div><div class="md-inline-code">assoc!</div><div class="md-text-normal"> and </div><div class="md-inline-code">dissoc!</div><div class="md-text-normal"> for that purpose!</div></div>
+</div>
+
+                        
+                    </div>
+                    
+                    
+                    <div class="examples">
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">thread-local-clear</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">thread-local</span> <span style="color: #E9967A">:a</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:b</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> 
+  <span style="color: #404040">(</span><span style="color: #4169E1">thread-local-map</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+=&gt; {:a 1 :b 2}</code>
+                    </div>
+                    
+                    
+                    
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1569">thread−local</a></div>
+                            <div class="descr">Creates a new thread-local accessor</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1480">get</a></div>
+                            <div class="descr">Returns the value mapped to key, not-found or nil if key not present.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#1485">assoc!</a></div>
+                            <div class="descr">Associates key/vals with a mutable map, returns the map</div>
                         </div>
                          
                         <div class="crossref">
@@ -45948,7 +46084,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">100</span> <span style="color: #E9967A">200</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 7.96µs</span>
+<span style="color: #808080">Elapsed time: 12.52µs</span>
 =&gt; 300</code>
                     </div>
                     
@@ -46077,7 +46213,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span>
-=&gt; Sun May 30 14:48:01 CEST 2021</code>
+=&gt; Wed Jun 02 21:14:38 CEST 2021</code>
                     </div>
                     
                     
@@ -46151,13 +46287,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 30
+=&gt; 2
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 30
+=&gt; 2
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 30</code>
+=&gt; 2</code>
                     </div>
                     
                     
@@ -46194,13 +46330,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :SUNDAY
+=&gt; :WEDNESDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :SUNDAY
+=&gt; :WEDNESDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :SUNDAY</code>
+=&gt; :WEDNESDAY</code>
                     </div>
                     
                     
@@ -46237,13 +46373,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 150
+=&gt; 153
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 150
+=&gt; 153
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 150</code>
+=&gt; 153</code>
                     </div>
                     
                     
@@ -46317,13 +46453,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-01
+=&gt; 2021-06-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-01
+=&gt; 2021-06-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-01</code>
+=&gt; 2021-06-01</code>
                     </div>
                     
                     
@@ -46362,19 +46498,19 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;30-05-2021&quot;
+=&gt; &quot;02-06-2021&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-05-30T14:48:02.182CEST&quot;
+=&gt; &quot;2021-06-02T21:14:39.725CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-05-30T14:48:02.192+02:00&quot;
+=&gt; &quot;2021-06-02T21:14:39.737+02:00&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-05-30T14:48:02.202CEST&quot;
+=&gt; &quot;2021-06-02T21:14:39.748CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-05-30T14:48:02.212+02:00&quot;</code>
+=&gt; &quot;2021-06-02T21:14:39.759+02:00&quot;</code>
                     </div>
                     
                     
@@ -46463,10 +46599,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 14
+=&gt; 21
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 14</code>
+=&gt; 21</code>
                     </div>
                     
                     
@@ -46503,13 +46639,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-31
+=&gt; 2021-06-30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-31
+=&gt; 2021-06-30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-31</code>
+=&gt; 2021-06-30</code>
                     </div>
                     
                     
@@ -46636,10 +46772,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 28
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/length-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 31
+=&gt; 30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/length-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 31</code>
+=&gt; 30</code>
                     </div>
                     
                     
@@ -46727,7 +46863,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30
+=&gt; 2021-06-02
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01
@@ -46739,7 +46875,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30</code>
+=&gt; 2021-06-02</code>
                     </div>
                     
                     
@@ -46824,7 +46960,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T14:48:01.410
+=&gt; 2021-06-02T21:14:38.620
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00
@@ -46842,7 +46978,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T14:48:01.474</code>
+=&gt; 2021-06-02T21:14:38.730</code>
                     </div>
                     
                     
@@ -46993,13 +47129,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-05-28
+=&gt; 2021-05-31
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-05-28T14:48:02.392
+=&gt; 2021-05-31T21:14:39.972
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-05-28T14:48:02.402+02:00[Europe/Zurich]</code>
+=&gt; 2021-05-31T21:14:39.983+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -47039,10 +47175,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 48
+=&gt; 14
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 48</code>
+=&gt; 14</code>
                     </div>
                     
                     
@@ -47079,13 +47215,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 5
+=&gt; 6
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 5
+=&gt; 6
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 5</code>
+=&gt; 6</code>
                     </div>
                     
                     
@@ -47239,13 +47375,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-06-01
+=&gt; 2021-06-04
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-06-01T14:48:02.362
+=&gt; 2021-06-04T21:14:39.937
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-06-01T14:48:02.372+02:00[Europe/Zurich]</code>
+=&gt; 2021-06-04T21:14:39.948+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -47285,10 +47421,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1
+=&gt; 39
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1</code>
+=&gt; 39</code>
                     </div>
                     
                     
@@ -47325,7 +47461,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1622325600000</code>
+=&gt; 1622584800000</code>
                     </div>
                     
                     
@@ -47364,13 +47500,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T22:00:15.333
+=&gt; 2021-06-02T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T22:00:15.333
+=&gt; 2021-06-02T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2021-06-02T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -47619,7 +47755,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T14:48:01.514+02:00[Europe/Zurich]
+=&gt; 2021-06-02T21:14:38.800+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -47637,10 +47773,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T14:48:01.574+02:00[Europe/Zurich]
+=&gt; 2021-06-02T21:14:38.886+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T12:48:01.585Z[UTC]
+=&gt; 2021-06-02T19:14:38.900Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -47658,7 +47794,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T00:00Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-05-30T12:48:01.653Z[UTC]</code>
+=&gt; 2021-06-02T19:14:38.983Z[UTC]</code>
                     </div>
                     
                     
@@ -47864,7 +48000,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">total-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;1114.0MB&quot;</code>
+=&gt; &quot;1303.5MB&quot;</code>
                     </div>
                     
                     
@@ -48032,8 +48168,8 @@ line3&quot;</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">trace/trace-var</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
   <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">TRACE t47227: (core/+ 1 2)
-TRACE t47227: | =&gt; 3</span>
+<span style="color: #808080">TRACE t47255: (core/+ 1 2)
+TRACE t47255: | =&gt; 3</span>
 =&gt; 3
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>
@@ -48047,12 +48183,12 @@ TRACE t47227: | =&gt; 3</span>
   <span style="color: #404040">(</span><span style="color: #4169E1">trace/trace-var</span> <span style="color: #404040">bar</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">bar</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">TRACE t47256: (user/bar 5)
-TRACE t47257: | (user/foo 5)
-TRACE t47258: | | (core/+ 5 2)
-TRACE t47258: | | | =&gt; 7
-TRACE t47257: | | =&gt; 7
-TRACE t47256: | =&gt; 7</span>
+<span style="color: #808080">TRACE t47284: (user/bar 5)
+TRACE t47285: | (user/foo 5)
+TRACE t47286: | | (core/+ 5 2)
+TRACE t47286: | | | =&gt; 7
+TRACE t47285: | | =&gt; 7
+TRACE t47284: | =&gt; 7</span>
 =&gt; 7</code>
                     </div>
                     
@@ -48898,7 +49034,7 @@ sorted     reverse</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">used-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;40.2MB&quot;</code>
+=&gt; &quot;40.3MB&quot;</code>
                     </div>
                     
                     
@@ -48945,7 +49081,7 @@ sorted     reverse</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">uuid</span><span style="color: #404040">)</span>
-=&gt; &quot;57a4657e-3801-42cf-8195-80e449ef46b3&quot;</code>
+=&gt; &quot;ba6b6fd0-43d0-4842-9d6a-0938c92dac70&quot;</code>
                     </div>
                     
                     
