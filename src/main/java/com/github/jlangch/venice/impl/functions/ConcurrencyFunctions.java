@@ -699,12 +699,12 @@ public class ConcurrencyFunctions {
 						"&ensp; :error-handler handler-fn ¶\n" +
 						"&ensp; :error-mode mode-keyword ¶\n" +
 						"&ensp; :validator validate-fn \n\n" +
-						"The handler-fn is called if an action throws an exception. It's a " +
+						"The `handler-fn` is called if an action throws an exception. It's a " +
 						"function taking two args the agent and the exception. The " +
 						"mode-keyword may be either :continue (the default) or :fail " +
-						"The validate-fn must be nil or a side-effect-free fn of one " + 
+						"The `validate-fn` must be nil or a side-effect-free fn of one " + 
 						"argument, which will be passed the intended new state on any state " + 
-						"change. If the new state is unacceptable, the validate-fn should " + 
+						"change. If the new state is unacceptable, the `validate-fn` should " + 
 						"return false or throw an exception.")
 					.examples(
 						"(do                         \n" +
@@ -735,9 +735,9 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(send agent action-fn args)")		
 					.doc(
-						"Dispatch an action to an agent. Returns the agent immediately." +
-						"The state of the agent will be set to the value of:\n" + 
-						" (apply action-fn state-of-agent args)")
+						"Dispatch an action to an agent. Returns the agent immediately.\n\n" +
+						"The state of the agent will be set to the value of:¶\n" + 
+						"&ensp; `(apply action-fn state-of-agent args)`")
 					.examples(
 						"(do                           \n" +
 						"   (def x (agent 100))        \n" +
@@ -779,9 +779,9 @@ public class ConcurrencyFunctions {
 					.arglists("(send-off agent fn args)")		
 					.doc(
 						"Dispatch a potentially blocking action to an agent. Returns " +
-						"the agent immediately. \n\n" +
+						"the agent immediately.\n\n" +
 						"The state of the agent will be set to the value of:¶\n" + 
-						"&ensp `(apply action-fn state-of-agent args)`")
+						"&ensp; `(apply action-fn state-of-agent args)`")
 					.examples(
 						"(do                           \n" +
 						"   (def x (agent 100))        \n" +

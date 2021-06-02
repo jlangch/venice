@@ -84,9 +84,9 @@ public class TransducerFunctions {
 						"filter     flatten         rf-last                         \n" +
 						"drop       drop-while      rf-any?                         \n" +
 						"take       take-while      rf-every?                       \n" +
-						"keep       remove          conj, +, max, min               \n" +
-						"dedupe     distinct                                        \n" +
-						"sorted     reverse                                         \n" +
+						"keep       remove          conj                            \n" +
+						"dedupe     distinct        +, *, ...                       \n" +
+						"sorted     reverse         max, min                        \n" +
 						"```")
 					.examples(
 						"(transduce (map #(+ % 3)) + [1 2 3 4])",
