@@ -85,10 +85,12 @@ public class TransducerFunctions {
 						"drop       drop-while      rf-any?                         \n" +
 						"take       take-while      rf-every?                       \n" +
 						"keep       remove          conj                            \n" +
-						"dedupe     distinct        +, *, ...                       \n" +
+						"dedupe     distinct        +, *                            \n" +
 						"sorted     reverse         max, min                        \n" +
 						"```")
 					.examples(
+						"(transduce identity + [1 2 3 4])",
+						
 						"(transduce (map #(+ % 3)) + [1 2 3 4])",
 						
 						"(transduce identity max [1 2 3])",
