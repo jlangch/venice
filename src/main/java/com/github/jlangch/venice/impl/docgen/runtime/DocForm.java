@@ -280,7 +280,15 @@ public class DocForm {
 		if (Types.isVncFunction(fn)) {
 			final VncVal cols = ((VncFunction)fn).applyOf();
 			if (Types.isVncLong(cols)) {
-				return ((VncLong)cols).getIntValue();
+				final int termWidth = ((VncLong)cols).getIntValue();
+				if (termWidth <= 100) {
+					return termWidth;
+				}
+				else {
+					// shrink the terminal width used by the doc a bit
+					// for wide terminals as the UNIX man tool is doing
+					return 100 + (termWidth - 100) / 2;
+				}
 			}
 		}
 		
