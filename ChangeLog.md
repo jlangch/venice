@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- improvements to the online and cheatsheet documentation.
 
 
 
