@@ -41,7 +41,7 @@ public class CodeBlockParser {
 		if (CodeBlockParser.isBlockStart(line)) {
 			reader.consume();
 		
-			final int indent = parseIndent(line);
+			final int indentLen = parseIndent(line);
 			final String language = parseLanguage(line);
 			
 			final CodeBlock block = new CodeBlock(language);
@@ -54,7 +54,7 @@ public class CodeBlockParser {
 					break;
 				}
 				else {
-					block.addLine(removeIndent(StringUtil.trimRight(line), indent));
+					block.addLine(removeIndent(StringUtil.trimRight(line), indentLen));
 				}
 			}
 			
@@ -87,8 +87,7 @@ public class CodeBlockParser {
 			return line;
 		}
 		else {
-			final int lineIndent = Math.min(parseIndent(line), indent);
-			
+			final int lineIndent = Math.min(parseIndent(line), indent);		
 			return lineIndent == 0 ? line : line.substring(lineIndent);
 		}
 	}

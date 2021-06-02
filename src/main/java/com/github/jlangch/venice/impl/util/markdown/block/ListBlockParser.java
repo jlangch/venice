@@ -58,7 +58,10 @@ public class ListBlockParser {
 		final List<List<String>> items = new ArrayList<>();
 		List<String> itemLines = new ArrayList<>();	
 		for(String line : lines) {
-			if (isUnorderedItemStart(line) || isOrderedItemStart(line)) {
+			if (isEmptyItem(line)) {
+				continue; // skip empty items
+			}
+			if (isItemStart(line)) {
 				if (!itemLines.isEmpty()) {
 					items.add(itemLines);
 					itemLines = new ArrayList<>();
@@ -121,7 +124,9 @@ public class ListBlockParser {
 				TextBlock item = new TextBlock();
 				addLine(item, StringUtil.trimRight(text));
 				
-				block.addItem(item);
+				if (!item.isEmpty()) {
+					block.addItem(item);
+				}
 			}			
 		}
 		
@@ -135,6 +140,10 @@ public class ListBlockParser {
 
 	public static boolean isItemStart(final String line) {
 		return isUnorderedItemStart(line) || isOrderedItemStart(line);
+	}
+
+	public static boolean isEmptyItem(final String line) {
+		return line.matches(" *[*] *") || line.matches(" *[0-9]+[.] *");
 	}
 
 	private static boolean isUnorderedItemStart(final String line) {

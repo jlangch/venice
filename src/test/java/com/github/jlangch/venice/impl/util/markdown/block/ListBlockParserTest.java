@@ -102,6 +102,30 @@ public class ListBlockParserTest {
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block2.getChunks().get(0)).getFormat());
 	}
 
+	@Test
+	public void test_list_block_unordered_4() {
+		final String md = " * item 1 \n" +
+						  " *    \n" +
+						  " * item 2 ";
+		
+		Blocks blocks = new BlockParser(md).parse();
+		
+		assertEquals(1, blocks.size());
+		assertTrue(blocks.get(0) instanceof ListBlock);
+		assertFalse(((ListBlock)blocks.get(0)).isOrdered());
+		assertEquals(2, ((ListBlock)blocks.get(0)).size());
+		
+		TextBlock block1 = ((TextBlock)((ListBlock)blocks.get(0)).get(0)); 
+		assertEquals(1, block1.getChunks().size());
+		assertEquals("item 1", ((TextChunk)block1.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block1.getChunks().get(0)).getFormat());
+			
+		TextBlock block2 = ((TextBlock)((ListBlock)blocks.get(0)).get(1)); 
+		assertEquals(1, block2.getChunks().size());
+		assertEquals("item 2", ((TextChunk)block2.getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block2.getChunks().get(0)).getFormat());
+	}
+
 
 	
 	// -----------------------------------------------------------------------------

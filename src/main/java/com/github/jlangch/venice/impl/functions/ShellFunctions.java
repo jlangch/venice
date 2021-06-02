@@ -115,9 +115,14 @@ public class ShellFunctions {
 						"\n" +
 						"sh returns a map of\n\n" +
 						"```\n" +
-						"  :exit => sub-process's exit code\n" + 
-						"  :out  => sub-process's stdout (as Bytebuf or String)\n" + 
-						"  :err  => sub-process's stderr (String via platform default encoding)\n" +
+						":exit => sub-process's exit code\n" + 
+						":out  => sub-process's stdout (as Bytebuf or String)\n" + 
+						":err  => sub-process's stderr (String via platform default encoding)\n" +
+						"```\n\n" +
+						"E.g.:\n\n" +
+						"```\n" +
+						"(sh \"uname\" \"-r\") \n" + 
+						"=> {:err \"\" :out \"20.5.0\\n\" :exit 0}\n" +
 						"```")
 					.examples(
 						"(println (sh \"ls\" \"-l\"))",
