@@ -175,8 +175,9 @@ public class DocGenerator {
 		functions.addSection(new DocSection("Macros", "macros"));
 		functions.addSection(new DocSection("Special Forms", "specialforms"));
 		functions.addSection(new DocSection("Transducers", "transducers"));
-		functions.addSection(new DocSection("Namespace", "namespace"));
+		functions.addSection(new DocSection("Namespaces", "namespace"));
 		functions.addSection(new DocSection("Types", "types"));
+		functions.addSection(new DocSection("Exceptions", "functions.exception"));
 		content.add(functions);
 		
 		final DocSection concurrency = new DocSection("Concurrency", "concurrency");
@@ -1021,9 +1022,12 @@ public class DocGenerator {
 		all.addSection(test);
 		test.addItem(getDocItem("fn?"));
 
-		final DocSection ex = new DocSection("Exception", "functions.exception");
+		final DocSection ex = new DocSection("Exceptions", "functions.exception");
 		all.addSection(ex);
+		ex.addItem(getDocItem("try", true, true));
+		ex.addItem(getDocItem("try-with", true, true));
 		ex.addItem(getDocItem("throw"));
+		ex.addItem(getDocItem("ex"));
 
 		final DocSection misc = new DocSection("Misc", "functions.misc");
 		all.addSection(misc);

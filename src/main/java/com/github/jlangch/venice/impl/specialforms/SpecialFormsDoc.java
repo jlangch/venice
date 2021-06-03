@@ -965,10 +965,14 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists(
-						"(try expr)",
-						"(try expr (catch exClass exSym expr))",
-						"(try expr (catch exClass exSym expr) (finally expr))")
-					.doc("Exception handling: try - catch - finally ")
+						"(try expr*)",
+						"(try expr* (catch exClass exSym expr)*)",
+						"(try expr* (catch exClass exSym expr)* (finally expr))")
+					.doc(
+						"Exception handling: try - catch - finally \n\n" +
+						"Note:¶\n" +
+						"The finally block is just for side effects, like closing resources. " +
+						"It never returns a value!")
 					.examples(
 						"(try (throw))",
 						
@@ -977,7 +981,7 @@ public class SpecialFormsDoc {
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
-						"   (catch :java.lang.Exception ex -100))    ",
+						"   (catch :java.lang.Exception e -100))     ",
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
@@ -985,22 +989,22 @@ public class SpecialFormsDoc {
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
-						"   (catch :java.lang.Exception ex -100)    \n" +
+						"   (catch :java.lang.Exception e -100)     \n" +
 						"   (finally (println \"...finally\")))       ",
 						
 						"(do                                                  \n" +
 						"   (import :java.lang.RuntimeException)              \n" +
 						"   (try                                              \n" +
-						"      (throw (. :RuntimeException :new \"message\")) \n" +
-						"      (catch :RuntimeException ex (:message ex))))   \n",
+						"      (throw (ex :RuntimeException \"message\"))     \n" +
+						"      (catch :RuntimeException e (:message e))))     \n",
 						
-						"(do                                                   \n" +
-						"   (try                                               \n" +
-						"      (throw [1 2 3])                                 \n" +
-						"      (catch :ValueException ex (str (:value ex)))    \n" +
-						"      (catch :RuntimeException ex \"runtime ex\")     \n" +
+						"(do                                                  \n" +
+						"   (try                                              \n" +
+						"      (throw [1 2 3])                                \n" +
+						"      (catch :ValueException e (str (:value e)))     \n" +
+						"      (catch :RuntimeException e \"runtime e\")      \n" +
 						"      (finally (println \"...finally\"))))             ")
-					.seeAlso("try-with")
+					.seeAlso("try-with", "throw", "ex")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1012,12 +1016,14 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists(
-						"(try-with [bindings*] expr)",
-						"(try-with [bindings*] expr (catch :java.lang.Exception ex expr))",
-						"(try-with [bindings*] expr (catch :java.lang.Exception ex expr) (finally expr))")		
-					.doc("try-with resources allows the declaration of resources to be used in a try block "
-							+ "with the assurance that the resources will be closed after execution "
-							+ "of that block. The resources declared must implement the Closeable or ")
+						"(try-with [bindings*] expr*)",
+						"(try-with [bindings*] expr* (catch exClass exSym expr)*)",
+						"(try-with [bindings*] expr* (catch exClass exSym expr)* (finally expr))")		
+					.doc(
+						"try-with resources allows the declaration of resources to be used in a try block " +
+						"with the assurance that the resources will be closed after execution " +
+						"of that block. The resources declared must implement the Closeable or " +
+						"AutoCloseable interface.")
 					.examples(
 						"(do                                                   \n" +
 						"   (import :java.io.FileInputStream)                  \n" +
@@ -1025,7 +1031,7 @@ public class SpecialFormsDoc {
 						"        (io/spit file \"123456789\" :append true)     \n" +
 						"        (try-with [is (. :FileInputStream :new file)] \n" +
 						"           (io/slurp-stream is :binary false))))        ")
-					.seeAlso("try")
+					.seeAlso("try", "throw", "ex")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

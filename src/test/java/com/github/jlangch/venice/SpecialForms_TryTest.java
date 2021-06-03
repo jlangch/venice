@@ -24,6 +24,8 @@ package com.github.jlangch.venice;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.function.Supplier;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.util.CapturingPrintStream;
@@ -499,6 +501,24 @@ public class SpecialForms_TryTest {
 		assertEquals("100101-200201", ps.getOutput());
 	}
 
+	
+	@Test
+	public void test_try_finally_Java() {
+		Supplier<Long> fx = () -> {
+									try {
+										return 100L;
+									}
+									catch(Exception ex) {
+										return 200L;
+									}
+									finally {
+										@SuppressWarnings("unused")
+										final long a = 300L;
+										// a return statement is not allowed
+									} };
+		
+		assertEquals(100L, fx.get());
+	}
 	
 	// ---------------------------------------------------------------
 	// try - throw - finally

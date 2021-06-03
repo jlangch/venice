@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1132,6 +1133,66 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 -1 true)"));	
 		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 2 true -1)"));	
 		assertFalse((Boolean)venice.eval("((every-pred number? pos?) 1 -1 true 2 3)"));	
+	}
+	
+	@Test
+	public void test_ex() {
+		final Venice venice = new Venice();
+
+		// (ex :RuntimeException)
+		final String script1 =
+				"(do                                              \n" +
+				"   (import :java.lang.Exception)                 \n" +
+				"   (import :java.lang.RuntimeException)          \n" +
+				"   (try                                          \n" +
+				"     (throw (ex :RuntimeException))              \n" +
+				"     (catch :Exception e \"caugth exception\")))   ";
+
+		assertEquals("caugth exception", venice.eval(script1));
+
+		
+		// (ex :RuntimeException "msg")
+		final String script2 =
+				"(do                                              \n" +
+				"   (import :java.lang.Exception)                 \n" +
+				"   (import :java.lang.RuntimeException)          \n" +
+				"   (try                                          \n" +
+				"     (throw (ex :RuntimeException \"#test\"))    \n" +
+				"     (catch :Exception e (:message e))))           ";
+
+		assertEquals("#test", venice.eval(script2));
+
+		
+		// (ex :VncException "msg" cause)
+		final String script3 =
+				"(do                                                              \n" +
+				"   (import :java.lang.Exception)                                 \n" +
+				"   (import :java.io.IOException)                                 \n" +
+				"   (try                                                          \n" +
+				"      (throw (ex :IOException \"#test1\"))                       \n" +
+				"      (catch :Exception e                                        \n" +
+				"             (throw (ex :VncException \"#test2\" (:cause e))))))   ";
+
+		try {
+			venice.eval(script3);
+			
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("#test2", ex.getMessage());
+			
+			final Throwable cause = ex.getCause();
+			if (cause == null) {
+				fail("Expected an exception cause.");
+			}
+			if (!"java.io.IOException".equals(cause.getClass().getName())) {
+				fail("Expected an exception cause of type java.io.IOException");
+			}
+			assertEquals("#test1", cause.getMessage());		
+		}
+		catch(Exception ex) {
+			fail("Expected VncException instead of " + ex.getClass().getSimpleName());
+		}
 	}
 	
 	@Test
