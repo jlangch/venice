@@ -107,7 +107,7 @@ public class CoreFunctions {
 	// Errors/Exceptions
 	///////////////////////////////////////////////////////////////////////////
 
-	public static VncFunction throw_ex =
+	public static VncFunction throw_ =
 		new VncFunction(
 				"throw",
 				VncFunction
@@ -190,7 +190,7 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction create_ex =
+	public static VncFunction ex =
 		new VncFunction(
 				"ex",
 				VncFunction
@@ -7644,8 +7644,8 @@ public class CoreFunctions {
 	public static Map<VncVal, VncVal> ns =
 			new VncHashMap
 				.Builder()
-				.add(throw_ex)
-				.add(create_ex)
+				.add(throw_)
+				.add(ex)
 
 				.add(nil_Q)
 				.add(some_Q)

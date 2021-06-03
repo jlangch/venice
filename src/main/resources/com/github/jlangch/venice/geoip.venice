@@ -702,7 +702,7 @@
   (case type
     :country (io/download (geoip/build-maxmind-country-db-url lic-key) :binary true)
     :city    (io/download (geoip/build-maxmind-city-db-url lic-key) :binary true)
-    (throw (venice-exception (str "Invalid DB type " type "!")))))
+    (throw (ex :VncException (str "Invalid DB type " type "!")))))
 
 
 (defn

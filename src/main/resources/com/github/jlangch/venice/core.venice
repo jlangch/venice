@@ -53,16 +53,14 @@
 
   ([expr]
     `(if-not ~expr
-       (throw (. :com.github.jlangch.venice.AssertionException
-                 :new
-                 (str "Assert failed: " (pr-str '~expr))))
+       (throw (ex :com.github.jlangch.venice.AssertionException
+                  (str "Assert failed: " (pr-str '~expr))))
        true))
 
   ([expr message]
     `(if-not ~expr
-       (throw (. :com.github.jlangch.venice.AssertionException
-                 :new
-                 (str "Assert failed (" ~message "): " (pr-str '~expr))))
+       (throw (ex :com.github.jlangch.venice.AssertionException
+                  (str "Assert failed (" ~message "): " (pr-str '~expr))))
        true)))
 
 
@@ -217,8 +215,8 @@
                        (split-at (if (== :>> (second args)) 3 2) args)
                        n (count clause)]
                  (cond
-                  (== 0 n) `(throw (. :VncException :new
-                                      (str "No matching condp clause: " ~expr)))
+                  (== 0 n) `(throw (ex :VncException
+                                       (str "No matching condp clause: " ~expr)))
                   (== 1 n) a
                   (== 2 n) `(if (~pred ~a ~expr)
                               ~b
@@ -520,7 +518,7 @@
             (map? form) (count-pos (mapcat concat form))
             :otherwise 0)]
     (cond
-      (not (== c 1))   (throw (. :VncException :new "-<> macro: one position per form is required."))
+      (not (== c 1))   (throw (ex :VncException "-<> macro: one position per form is required."))
       (symbol? form)   `(~form ~x)
       (vector? form)   (substitute-pos form)
       (map? form)      (apply hash-map (mapcat substitute-pos form))
@@ -1223,7 +1221,7 @@
 
   (try
     (. *in* :readLine)
-    (catch :java.io.IOException e (. :VncException :new (:message e)))))
+    (catch :java.io.IOException e (ex :VncException (:message e)))))
 
 
 (defn
@@ -1240,7 +1238,7 @@
   (try
     (let [ch (. *in* :read)]
       (if (= -1I ch) nil (char ch)))
-    (catch :java.io.IOException e (. :VncException :new (:message e)))))
+    (catch :java.io.IOException e (ex :VncException (:message e)))))
 
 
 (defn
@@ -1452,28 +1450,6 @@
           ret))))
   ([f & args]
      (trampoline #(apply f args))))
-
-
-(defn
-  ^{ :arglists '("(runtime-exception msg)" "(runtime-exception msg ex)")
-     :doc "Creates a java.lang.RuntimeException"
-     :examples '("""(throw (runtime-exception "test"))""") }
-
-   runtime-exception
-
-   ([msg] (. :RuntimeException :new msg))
-   ([msg ex] (. :RuntimeException :new msg ex)))
-
-
-(defn
-  ^{ :arglists '("(venice-exception msg)" "(venice-exception msg ex)")
-     :doc "Creates a com.github.jlangch.venice.VncException"
-     :examples '("""(throw (venice-exception "test"))""") }
-
-   venice-exception
-
-   ([msg] (. :VncException :new msg))
-   ([msg ex] (. :VncException :new msg ex)))
 
 
 (defn

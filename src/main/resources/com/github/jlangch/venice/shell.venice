@@ -53,7 +53,7 @@
   require-mac-or-linux []
 
   (when-not (or (os-type? :mac-osx) (os-type? :linux))
-    (throw (venice-exception "Can only run on Mac OSX or Linux!"))))
+    (throw (ex :VncException "Can only run on Mac OSX or Linux!"))))
 
 
 (defn
@@ -67,7 +67,7 @@
   require-java-9+ []
 
   (when (< (java-major-version) 9)
-    (throw (venice-exception "Can only run on a Java VM 9+!"))))
+    (throw (ex :VncException "Can only run on a Java VM 9+!"))))
 
 
 (defn
@@ -112,7 +112,7 @@
   open-macos-app [name & args]
 
   (when-not (os-type? :mac-osx)
-    (throw (venice-exception "Can only open a Mac OSX applicaton on Mac OSX!")))
+    (throw (ex :VncException "Can only open a Mac OSX applicaton on Mac OSX!")))
 
   (if (empty? args)
     (sh "/usr/bin/open" "-a" name)

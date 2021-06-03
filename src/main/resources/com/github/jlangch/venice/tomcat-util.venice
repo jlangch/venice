@@ -109,8 +109,7 @@
   validate-installed [tc-home]
 
   (when-not (installed? tc-home)
-    (throw (venice-exception
-              (str "Tomcat is not installed at " tc-home)))))
+    (throw (ex :VncException (str "Tomcat is not installed at " tc-home)))))
 
 
 (defn
@@ -209,7 +208,7 @@
 
   (validate-installed tc-home)
   (when (running? tc-home)
-    (throw (venice-exception "Tomcat running!")))
+    (throw (ex :VncException "Tomcat running!")))
   (println "Cleaning Tomcat...")
   (clean-logs tc-home)
   (io/delete-file-tree (io/file tc-home "javamelody"))
@@ -320,15 +319,13 @@
         target-war (io/file tc-home "webapps" war-name)]
 
     (when-not (io/exists-file? source-war)
-      (throw (venice-exception
-               (str "The WAR " source-war " does not exist!"))))
+      (throw (ex :VncException (str "The WAR " source-war " does not exist!"))))
 
     (when-not (io/file-ext? source-war ".war")
-      (throw (venice-exception (str "Not a WAR file: " source-war))))
+      (throw (ex :VncException (str "Not a WAR file: " source-war))))
 
     (when (running? tc-home)
-      (throw (venice-exception
-               "Tomcat is running. Please stop it before deploying!")))
+      (throw (ex :VncException "Tomcat is running. Please stop it before deploying!")))
 
     (clean tc-home)
     (io/delete-file target-war)
@@ -366,11 +363,11 @@
         show-progress    (:show-progress options false)]
 
     (when-not (io/exists-dir? install-base-dir)
-      (throw (venice-exception (str
+      (throw (ex :VncException (str
         "The Tomcat install directory " install-base-dir
         " does not exist! Please create it first."))))
     (when (io/exists-dir? tc-dir)
-      (throw (venice-exception (str
+      (throw (ex :VncException (str
         "The Tomcat version " tc-version " is already installed!"))))
 
     (println (str "Downloading Tomcat " tc-version " ..."))
@@ -435,8 +432,8 @@
 
   (validate-installed tc-home)
   (when (running? tc-home)
-    (throw (venice-exception
-             "Tomcat is running. Please stop it before uninstalling!")))
+    (throw (ex :VncException 
+               "Tomcat is running. Please stop it before uninstalling!")))
   (io/delete-file-tree tc-home))
 
 
@@ -467,7 +464,7 @@
                         (filter not-empty?))
     (vector? log)  (->> (map #(entry-parser %) log)
                         (filter not-empty?))
-    :else          (throw (venice-exception "Invalid log data type!"))))
+    :else          (throw (ex :VncException "Invalid log data type!"))))
 
 
 (defn default-access-log-entry-parser []
