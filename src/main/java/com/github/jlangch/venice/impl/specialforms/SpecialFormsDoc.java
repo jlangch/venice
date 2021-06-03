@@ -966,10 +966,11 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists(
 						"(try expr*)",
-						"(try expr* (catch exClass exSym expr)*)",
-						"(try expr* (catch exClass exSym expr)* (finally expr))")
+						"(try expr* (catch exClass exSym expr*)*)",
+						"(try expr* (catch exClass exSym expr*)* (finally expr*))")
 					.doc(
 						"Exception handling: try - catch - finally \n\n" +
+						"`(try)` without any expression returns `nil`.\n\n" +
 						"Note:¶\n" +
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!")
@@ -1017,8 +1018,8 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists(
 						"(try-with [bindings*] expr*)",
-						"(try-with [bindings*] expr* (catch exClass exSym expr)*)",
-						"(try-with [bindings*] expr* (catch exClass exSym expr)* (finally expr))")		
+						"(try-with [bindings*] expr* (catch exClass exSym expr*)*)",
+						"(try-with [bindings*] expr* (catch exClass exSym expr*)* (finally expr))")		
 					.doc(
 						"try-with resources allows the declaration of resources to be used in a try block " +
 						"with the assurance that the resources will be closed after execution " +
