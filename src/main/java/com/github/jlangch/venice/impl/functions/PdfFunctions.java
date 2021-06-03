@@ -240,10 +240,10 @@ public class PdfFunctions {
 						"\n" +
 						"(do \n" +
 			            "  (load-module :maven) \n" +
-			            "  (maven/download \"com.github.librepdf:flying-saucer-core:9.1.20\") \n" +
-			            "  (maven/download \"com.github.librepdf:lying-saucer-pdf-openpdf:9.1.20\") \n" +
-			            "  (maven/download \"com.github.librepdf:openpdf:1.3.17\") \n" +
-			            "  (maven/download \"com.github.librepdf:pdf-toolbox:1.3.17\")) \n");
+			            "  (maven/download \"com.github.librepdf:flying-saucer-core:9.1.22\") \n" +
+			            "  (maven/download \"com.github.librepdf:lying-saucer-pdf-openpdf:9.1.22\") \n" +
+			            "  (maven/download \"com.github.librepdf:openpdf:1.3.26\") \n" +
+			            "  (maven/download \"com.github.librepdf:pdf-toolbox:1.3.26\")) \n");
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;

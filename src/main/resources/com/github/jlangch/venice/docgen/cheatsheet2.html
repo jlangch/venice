@@ -452,11 +452,9 @@
                     </table>
                     ${ ) }$
                      
-                    ${ (when-not (empty? (:footers s1)) }$
+                    ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
-                      ${ (doseq [p (:footers s1)] }$
-                      <div>${= (kira/escape-xml p) }$</div>
-                      ${ ) }$
+                      ${= (:footerXmlStyled s1) }$
                     </div>
                     ${ ) }$                 
                 </div>
@@ -488,11 +486,9 @@
                     </table>
                     ${ ) }$
                     
-                    ${ (when-not (empty? (:footers s1)) }$
+                    ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
-                      ${ (doseq [p (:footers s1)] }$
-                      <div>${= (kira/escape-xml p) }$</div>
-                      ${ ) }$
+                      ${= (:footerXmlStyled s1) }$
                     </div>
                     ${ ) }$                 
                 </div>
@@ -530,11 +526,9 @@
                     </table>
                     ${ ) }$
                     
-                    ${ (when-not (empty? (:footers s1)) }$
+                    ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
-                      ${ (doseq [p (:footers s1)] }$
-                      <div>${= (kira/escape-xml p) }$</div>
-                      ${ ) }$
+                      ${= (:footerXmlStyled s1) }$
                     </div>
                     ${ ) }$                 
                 </div>
@@ -566,11 +560,9 @@
                     </table>
                     ${ ) }$
                     
-                    ${ (when-not (empty? (:footers s1)) }$
+                    ${ (when-not (empty? (:footerXmlStyled s1)) }$
                     <div class="footer">
-                      ${ (doseq [p (:footers s1)] }$
-                      <div>${= (kira/escape-xml p) }$</div>
-                      ${ ) }$
+                      ${= (:footerXmlStyled s1) }$
                     </div>
                     ${ ) }$                 
                 </div>

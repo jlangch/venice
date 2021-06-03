@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.docgen.cheatsheet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.util.markdown.Markdown;
+
 
 public class DocSection {
 	
@@ -42,25 +44,9 @@ public class DocSection {
 		if (header != null) {
 			this.headers.add(header);
 		}
-		if (footer != null) {
-			this.footers.add(footer);
-		}
-	}
-	
-	public DocSection(
-			final String title, 
-			final String id, 
-			final List<String> headers, 
-			final List<String> footers
-	) {
-		this.title = title;
-		this.id = id;
-		if (headers != null) {
-			this.headers.addAll(headers);
-		}
-		if (footers != null) {
-			this.footers.addAll(footers);
-		}
+		this.footerXmlStyled = footer == null 
+									? null 
+									: Markdown.parse(footer).renderToHtml();
 	}
 	
 	
@@ -76,8 +62,8 @@ public class DocSection {
 		return headers;
 	}
 	
-	public List<String> getFooters() {
-		return footers;
+	public String getFooterXmlStyled() {
+		return footerXmlStyled;
 	}
 	
 	public void addSection(final DocSection section) {
@@ -118,7 +104,7 @@ public class DocSection {
 	private final String title;
 	private final String id;
 	private final List<String> headers = new ArrayList<>();
-	private final List<String> footers = new ArrayList<>();
+	private final String footerXmlStyled;
 	
 	private final List<DocSection> sections = new ArrayList<>();	
 	private final List<DocItem> items = new ArrayList<>();

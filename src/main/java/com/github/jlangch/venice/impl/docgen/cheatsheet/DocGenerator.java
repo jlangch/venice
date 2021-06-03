@@ -214,8 +214,8 @@ public class DocGenerator {
 
 		final DocSection documents = new DocSection("Documents", "miscellaneous");
 		documents.addSection(new DocSection("JSON", "miscellaneous.json"));
-		documents.addSection(new DocSection("PDF", "miscellaneous.pdf"));
-		documents.addSection(new DocSection("PDF Tools", "miscellaneous.pdftools"));
+		documents.addSection(new DocSection("PDF", "pdf.pdf"));
+		documents.addSection(new DocSection("PDF Tools", "pdf.pdftools"));
 		documents.addSection(new DocSection("CSV", "miscellaneous.csv"));
 		documents.addSection(new DocSection("XML", "modules.xml"));
 		documents.addSection(new DocSection("Excel", "modules.excel"));
@@ -257,7 +257,8 @@ public class DocGenerator {
 				getNamespaceSection(),
 				getJavaInteropSection(),
 				getReplSection(),
-				getMiscellaneousSection());
+				getPdfSection(),
+				getAppSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -271,7 +272,7 @@ public class DocGenerator {
 				getIOSection(),
 				getIOFileSection(),
 				getIOZipSection(),
-				getAppSection());
+				getMiscellaneousSection());
 	}
 
 	private List<DocSection> getModulesLeftSections() {
@@ -1875,9 +1876,40 @@ public class DocGenerator {
 		return section;
 	}
 	
+	private DocSection getPdfSection() {
+		final String footer = "Required PDF 3rd party libraries:\n\n" +
+							  "* com.github.librepdf:flying-saucer-core:9.1.22\n" +
+							  "* com.github.librepdf:lying-saucer-pdf-openpdf:9.1.22\n" +
+							  "* com.github.librepdf:openpdf:1.3.26\n" +
+							  "* com.github.librepdf:pdf-toolbox:1.3.26\n";
+
+		final DocSection section = new DocSection("PDF", "pdf", null, footer);
+
+		
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection pdf = new DocSection("PDF", "pdf.pdf");
+		all.addSection(pdf);
+		pdf.addItem(getDocItem("pdf/render", false));
+		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
+		pdf.addItem(getDocItem("pdf/available?", false));
+		pdf.addItem(getDocItem("pdf/check-required-libs", false));
+		
+		final DocSection pdf_tools = new DocSection("PDF Tools", "pdf.pdftools");
+		all.addSection(pdf_tools);
+		pdf_tools.addItem(getDocItem("pdf/merge", false));
+		pdf_tools.addItem(getDocItem("pdf/copy", false));
+		pdf_tools.addItem(getDocItem("pdf/pages"));
+		pdf_tools.addItem(getDocItem("pdf/watermark", false));
+
+		return section;
+	}
+	
 	private DocSection getMiscellaneousSection() {
 		final DocSection section = new DocSection("Miscellaneous", "miscellaneous");
 
+		
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 		
@@ -1888,20 +1920,6 @@ public class DocGenerator {
 		json.addItem(getDocItem("json/spit"));
 		json.addItem(getDocItem("json/slurp"));
 		json.addItem(getDocItem("json/pretty-print"));
-		
-		final DocSection pdf = new DocSection("PDF", "miscellaneous.pdf");
-		all.addSection(pdf);
-		pdf.addItem(getDocItem("pdf/render", false));
-		pdf.addItem(getDocItem("pdf/text-to-pdf", false));
-		pdf.addItem(getDocItem("pdf/available?", false));
-		pdf.addItem(getDocItem("pdf/check-required-libs", false));
-		
-		final DocSection pdf_tools = new DocSection("PDF Tools", "miscellaneous.pdftools");
-		all.addSection(pdf_tools);
-		pdf_tools.addItem(getDocItem("pdf/merge", false));
-		pdf_tools.addItem(getDocItem("pdf/copy", false));
-		pdf_tools.addItem(getDocItem("pdf/pages"));
-		pdf_tools.addItem(getDocItem("pdf/watermark", false));
 
 		final DocSection csv = new DocSection("CSV", "miscellaneous.csv");
 		all.addSection(csv);
@@ -2217,18 +2235,17 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleExcelSection() {
-		final List<String> footers = Arrays.asList(
-										"Required 3rd party libraries:",
-										IDENT_ENUM + "org.apache.poi:poi:4.1.2",
-										IDENT_ENUM + "org.apache.poi:ooxml:4.1.2",
-										IDENT_ENUM + "org.apache.poi:ooxml-schemas:4.1.2",
-										IDENT_ENUM + "commons-codec:commons-codec:1.15",
-										IDENT_ENUM + "org.apache.commons:commons-collections:4.4.4",
-										IDENT_ENUM + "org.apache.commons:commons-compress:1.20",
-										IDENT_ENUM + "org.apache.commons:commons-math3:3.6.1",
-										IDENT_ENUM + "org.apache.xmlbeans:xmlbeans:3.1.0");
+		final String footer = "Required 3rd party libraries:\n\n" +
+							  "* org.apache.poi:poi:4.1.2\n" +
+							  "* org.apache.poi:ooxml:4.1.2\n" +
+							  "* org.apache.poi:ooxml-schemas:4.1.2\n" +
+							  "* commons-codec:commons-codec:1.15\n" +
+							  "* org.apache.commons:commons-collections:4.4.4\n" +
+							  "* org.apache.commons:commons-compress:1.20\n" +
+							  "* org.apache.commons:commons-math3:3.6.1\n" +
+							  "* org.apache.xmlbeans:xmlbeans:3.1.0\n";
 
-		final DocSection section = new DocSection("Excel", "modules.excel", null, footers);
+		final DocSection section = new DocSection("Excel", "modules.excel", null, footer);
 
 		final DocSection all = new DocSection("(load-module :excel)", id());
 		section.addSection(all);
