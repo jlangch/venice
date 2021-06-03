@@ -17,7 +17,7 @@ Flying Saucer documentation is available in the user guide, linked from their we
 
 The PDF generation workflow is built on two steps:
 
-1. Build the document's XHTML representation. The XHTML can be easily produced by Venice's Kira template engine
+1. Build the document's CSS styled XHTML representation. The XHTML can be easily produced by Venice's Kira template engine
 
 2. Generate the PDF from the XHTML
 
