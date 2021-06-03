@@ -240,8 +240,8 @@ public class PdfFunctions {
 						"\n" +
 						"(do \n" +
 			            "  (load-module :maven) \n" +
-			            "  (maven/download \"com.github.librepdf:flying-saucer-core:9.1.22\") \n" +
-			            "  (maven/download \"com.github.librepdf:lying-saucer-pdf-openpdf:9.1.22\") \n" +
+			            "  (maven/download \"org.xhtmlrenderer:flying-saucer-core:9.1.22\") \n" +
+			            "  (maven/download \"org.xhtmlrenderer:lying-saucer-pdf-openpdf:9.1.22\") \n" +
 			            "  (maven/download \"com.github.librepdf:openpdf:1.3.26\") \n" +
 			            "  (maven/download \"com.github.librepdf:pdf-toolbox:1.3.26\")) \n");
 			}

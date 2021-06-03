@@ -1877,9 +1877,9 @@ public class DocGenerator {
 	}
 	
 	private DocSection getPdfSection() {
-		final String footer = "Required PDF 3rd party libraries:\n\n" +
-							  "* com.github.librepdf:flying-saucer-core:9.1.22\n" +
-							  "* com.github.librepdf:lying-saucer-pdf-openpdf:9.1.22\n" +
+		final String footer = "Required 3rd party libraries:\n\n" +
+							  "* org.xhtmlrenderer:flying-saucer-core:9.1.22\n" +
+							  "* org.xhtmlrenderer:lying-saucer-pdf-openpdf:9.1.22\n" +
 							  "* com.github.librepdf:openpdf:1.3.26\n" +
 							  "* com.github.librepdf:pdf-toolbox:1.3.26\n";
 
