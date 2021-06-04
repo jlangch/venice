@@ -112,8 +112,19 @@ public class CoreFunctions {
 				"throw",
 				VncFunction
 					.meta()
-					.arglists("(throw)", "(throw x)")
-					.doc("Throws exception with an optional value x")
+					.arglists("(throw)", "(throw val)", "(throw ex)")
+					.doc(
+						"Throws an exception.\n\n" +
+						"`(throw)`¶\n" +
+						"Throws a :ValueException with `nil` as its value.\n" +
+						"\n" +
+						"`(throw val)`¶\n" +
+						"With *val* as a Venice value throws a :ValueException with *val* as its value.¶\n" +
+						"E.g: `(throw [1 2 3])`\n" +
+						"\n" +
+						"`(throw ex)`¶\n" +
+						"With a *ex* as an exception type throws the exception.¶\n" +
+						"E.g: `(throw (ex :VncException \"invalid data\"))`")
 					.examples(
 						"(do                                                      \n" +
 						"   (try                                                  \n" +
@@ -149,7 +160,7 @@ public class CoreFunctions {
 						"(do                                                     \n" +
 						"   (import :java.lang.RuntimeException)                 \n" +
 						"   (try                                                 \n" +
-						"      (throw (. :RuntimeException :new \"#test\"))      \n" +
+						"      (throw (ex :RuntimeException \"#test\"))          \n" +
 						"      (catch :RuntimeException e                        \n" +
 						"             \"caught ~(:message e)\")))                  ",
 
@@ -158,7 +169,7 @@ public class CoreFunctions {
 						"   (import :java.lang.RuntimeException)                            \n" +
 						"   (import :java.io.IOException)                                   \n" +
 						"   (try                                                            \n" +
-						"      (throw (. :IOException :new \"#test\"))                      \n" +
+						"      (throw (ex :IOException \"#test\"))                          \n" +
 						"      (catch :RuntimeException e                                   \n" +
 					    "             \"caught ~(:message (:cause e))\")))                    ")
 					.seeAlso("ex", "try", "try-with")

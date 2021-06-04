@@ -976,13 +976,13 @@ public class SpecialFormsDoc {
 						"It never returns a value!")
 					.examples(
 						"(try                                      \n" +
-						"   (throw \"test message\")               \n" +
+						"   (throw \"test\")                       \n" +
 						"   (catch :ValueException e               \n" +
 						"          \"caught ~(:value e)\"))          ",
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
-						"   (catch :java.lang.Exception e -100))     ",
+						"   (catch :java.lang.Exception e -100))      ",
 												
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
@@ -993,7 +993,7 @@ public class SpecialFormsDoc {
 						"   (import :java.lang.RuntimeException)              \n" +
 						"   (try                                              \n" +
 						"      (throw (ex :RuntimeException \"message\"))     \n" +
-						"      (catch :RuntimeException e (:message e))))     \n",
+						"      (catch :RuntimeException e (:message e))))       ",
 						
 						"(do                                                  \n" +
 						"   (try                                              \n" +
@@ -1017,7 +1017,7 @@ public class SpecialFormsDoc {
 						"(try-with [bindings*] expr* (catch exClass exSym expr*)*)",
 						"(try-with [bindings*] expr* (catch exClass exSym expr*)* (finally expr))")		
 					.doc(
-						"try-with resources allows the declaration of resources to be used in a try block " +
+						"try-with-resources allows the declaration of resources to be used in a try block " +
 						"with the assurance that the resources will be closed after execution " +
 						"of that block. The resources declared must implement the Closeable or " +
 						"AutoCloseable interface.")
