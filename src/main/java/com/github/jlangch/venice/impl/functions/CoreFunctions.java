@@ -158,7 +158,6 @@ public class CoreFunctions {
 						"               :finally)))                                ",
 
 						"(do                                                     \n" +
-						"   (import :java.lang.RuntimeException)                 \n" +
 						"   (try                                                 \n" +
 						"      (throw (ex :RuntimeException \"#test\"))          \n" +
 						"      (catch :RuntimeException e                        \n" +
@@ -166,7 +165,6 @@ public class CoreFunctions {
 
 						";; Venice wraps thrown checked exceptions with a RuntimeException! \n" +
 						"(do                                                                \n" +
-						"   (import :java.lang.RuntimeException)                            \n" +
 						"   (import :java.io.IOException)                                   \n" +
 						"   (try                                                            \n" +
 						"      (throw (ex :IOException \"#test\"))                          \n" +
@@ -214,7 +212,13 @@ public class CoreFunctions {
 						"Creates an exception of type *class* with an optional *message* and " +
 						"an optional *cause* exception. \n\n" +
 						"The *class* must be a subclass of :java.lang.Exception¶\n" +
-						"The *cause* must be an instance of :java.lang.Throwable")
+						"The *cause* must be an instance of :java.lang.Throwable\n\n" +
+						"The exception types \n\n" +
+						"  * :java.lang.Exception \n" +
+						"  * :java.lang.RuntimeException \n" +
+						"  * :com.github.jlangch.venice.VncException \n\n" +
+						"are imported implicitly so its alias :Exception, :RuntimeException, and " +
+						":VncException can be used.")
 					.examples(
 						"(do                                                      \n" +
 						"   (try                                                  \n" +
@@ -222,15 +226,12 @@ public class CoreFunctions {
 						"      (catch :VncException e \"caught :VncException\")))   ",
 
 						"(do                                                      \n" +
-						"   (import :java.lang.Exception)                         \n" +
-						"   (import :java.lang.RuntimeException)                  \n" +
 						"   (try                                                  \n" +
 						"      (throw (ex :RuntimeException \"#test\"))           \n" +
 						"      (catch :Exception e                                \n" +
 						"             \"msg: ~(:message e)\")))                     ",
 
 						"(do                                                                  \n" +
-						"   (import :java.lang.Exception)                                     \n" +
 						"   (import :java.io.IOException)                                     \n" +
 						"   (defn throw-ex-with-cause []                                      \n" +
 						"     (try                                                            \n" +
@@ -265,12 +266,23 @@ public class CoreFunctions {
 				}
 				else if (args.size() == 1) {
 					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(args.first(), new VncKeyword("new"), args.second()), 
+							VncList.of(
+								args.first(), 
+								new VncKeyword("new"), 
+								args.second() == Constants.Nil
+									? Constants.Nil
+									: new VncString(args.second().toString())), 
 							Namespaces.getCurrentNamespace().getJavaImports());	
 				}
 				else {
 					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(args.first(), new VncKeyword("new"), args.second(), args.third()), 
+							VncList.of(
+								args.first(), 
+								new VncKeyword("new"), 
+								args.second() == Constants.Nil
+									? Constants.Nil
+									: new VncString(args.second().toString()), 
+								args.third()), 
 							Namespaces.getCurrentNamespace().getJavaImports());	
 				}
 			}

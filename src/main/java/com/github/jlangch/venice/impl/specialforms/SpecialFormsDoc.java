@@ -971,7 +971,13 @@ public class SpecialFormsDoc {
 					.doc(
 						"Exception handling: try - catch - finally \n\n" +
 						"`(try)` without any expression returns `nil`.\n\n" +
-						"Note:¶\n" +
+						"The exception types \n\n" +
+						"  * :java.lang.Exception \n" +
+						"  * :java.lang.RuntimeException \n" +
+						"  * :com.github.jlangch.venice.VncException \n\n" +
+						"are imported implicitly so its alias :Exception, :RuntimeException, and " +
+						":VncException can be used.\n\n" +
+						"**Note:**¶\n" +
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!")
 					.examples(
@@ -982,15 +988,14 @@ public class SpecialFormsDoc {
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
-						"   (catch :java.lang.Exception e -100))      ",
+						"   (catch :Exception e -100))                ",
 												
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
-						"   (catch :java.lang.Exception e -100)     \n" +
+						"   (catch :Exception e -100)               \n" +
 						"   (finally (println \"...finally\")))       ",
 						
 						"(do                                                  \n" +
-						"   (import :java.lang.RuntimeException)              \n" +
 						"   (try                                              \n" +
 						"      (throw (ex :RuntimeException \"message\"))     \n" +
 						"      (catch :RuntimeException e (:message e))))       ",
