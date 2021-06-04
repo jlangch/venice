@@ -9,7 +9,7 @@ and this project adheres to
 
 
 
-## [1.9.21] - 2021-06-xx
+## [1.9.21] - 2021-06-04
 
 ### Added
 
@@ -25,7 +25,7 @@ and this project adheres to
 
 - improvements to the online and cheatsheet documentation.
 - prevention of redirecting stdin, stdout, and stderr streams explicitly. Any
-  redirection attempt to change thread the local vars (:*in*, :*out*, :*err*) throws
+  redirection attempt by changing thread the local vars (:*in*, :*out*, :*err*) throws
   an exception.
 
 
