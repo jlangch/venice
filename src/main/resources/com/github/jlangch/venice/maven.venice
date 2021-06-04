@@ -195,7 +195,7 @@
     :jar     ".jar"
     :sources "-sources.jar"
     :pom     ".pom"
-    (throw (. :VncException :new "Invalid artefact type ~{type}"))))
+    (throw (ex :VncException "Invalid artefact type ~{type}"))))
 
 (defn- maven/progress-bar [silent]
   (if silent

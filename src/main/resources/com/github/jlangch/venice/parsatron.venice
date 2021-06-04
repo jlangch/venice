@@ -131,7 +131,7 @@
 ;; -----------------------------------------------------------------------------
 ;; util
 (defn fail [message]
-  (. :VncException :new message))
+  (ex :VncException message))
 
 (defn digit? [c]
   (str/digit? c))

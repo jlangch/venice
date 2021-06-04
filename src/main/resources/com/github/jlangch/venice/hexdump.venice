@@ -67,11 +67,11 @@
                                          (ascii-lines vals)
                                          (repeat "\n"))]
                       (map #(apply str %) parts-seq))
-    :else           (throw (. :VncException :new
-                              """
-                              Can only hexdump a sequential collection, an \
-                              io/file or a string representing a path to a file.
-                              """))))
+    :else           (throw (ex :VncException
+                               """
+                               Can only hexdump a sequential collection, an \
+                               io/file or a string representing a path to a file.
+                               """))))
 
 (defn
   ^{ :arglists '("(dump s & opts)")

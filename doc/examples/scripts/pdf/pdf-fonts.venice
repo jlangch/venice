@@ -33,8 +33,8 @@
         "fonts/SourceCodePro-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
-                   (throw (. :VncException :new
-                             "Font classpath resource '~{r}' not found!"))))))
+                   (throw (ex :VncException
+                              "Font classpath resource '~{r}' not found!"))))))
 
 
   (def text (str/lorem-ipsum :paragraphs 1))

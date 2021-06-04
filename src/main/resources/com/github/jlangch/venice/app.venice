@@ -55,8 +55,8 @@
   app/build [name main-file file-map dest-dir]
 
   (when-not (io/exists-dir? dest-dir)
-    (throw (. :VncException :new
-              (str "The dest-dir '" dest-dir "' does not exist."))))
+    (throw (ex :VncException
+               (str "The dest-dir '" dest-dir "' does not exist."))))
 
   (-<> (json/write-str { :manifest-version "1.0"
                          :app-name name
@@ -77,14 +77,14 @@
   app/manifest [app]
 
   (when-not (io/exists-file? app)
-    (throw (. :VncException :new
-              (str "The app archive '" app "' does not exist."))))
+    (throw (ex :VncException
+               (str "The app archive '" app "' does not exist."))))
 
   (try
     (-<> (io/unzip app "MANIFEST.MF")
          (bytebuf-to-string <> :utf-8)
          (json/read-str <> :key-fn keyword))
     (catch :Exception ex
-      (throw (. :VncException :new
-                (str "Failed to load manifest from the app archive '" app "'")
-                ex)))))
+      (throw (ex :VncException
+                 (str "Failed to load manifest from the app archive '" app "'")
+                 ex)))))

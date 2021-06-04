@@ -144,7 +144,7 @@
             (. :generateSecret spec)
             (. :getEncoded)))
       (catch :Exception ex
-             (throw (. :VncException :new "Failed to compute PBKDF2 hash." ex))))))
+             (throw (ex :VncException "Failed to compute PBKDF2 hash." ex))))))
 
 
 (defn
@@ -281,9 +281,9 @@
         (. md :update (to-bytes data))
         (. md :digest))
       (catch :Exception ex
-             (throw (. :VncException :new
-                       (str "Failed to compute " algorithm " hash.")
-                       ex))))))
+             (throw (ex :VncException
+                        (str "Failed to compute " algorithm " hash.")
+                        ex))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -297,15 +297,15 @@
 (defmulti create-encrypt-fn (fn [algorithm passphrase url-safe] (name algorithm)))
 
 (defmethod create-encrypt-fn :default [algorithm passphrase url-safe]
-  (throw (. :VncException :new
-            (str "Invalid cipher alogorithm '" algorithm "'"))))
+  (throw (ex :VncException
+             (str "Invalid cipher alogorithm '" algorithm "'"))))
 
 
 (defmulti create-decrypt-fn (fn [algorithm passphrase url-safe] (name algorithm)))
 
 (defmethod create-decrypt-fn :default [algorithm passphrase url-safe]
-  (throw (. :VncException :new
-            (str "Invalid cipher alogorithm '" algorithm "'"))))
+  (throw (ex :VncException
+             (str "Invalid cipher alogorithm '" algorithm "'"))))
 
 
 (defn- cipher-encrypt [cipher data url-safe]
@@ -317,10 +317,10 @@
                              (. cipher :doFinal <>)
                              (base64-encode <> url-safe))
         (bytebuf? data) (. cipher :doFinal data)
-        :else           (throw (. :VncException :new
-                                  "Invalid datatype for data."))))
+        :else           (throw (ex :VncException
+                                   "Invalid datatype for data."))))
   (catch :Exception ex
-    (throw (. :VncException :new "Failed to encrypt data." ex)))))
+    (throw (ex :VncException "Failed to encrypt data." ex)))))
 
 
 (defn- cipher-decrypt [cipher data url-safe]
@@ -332,10 +332,10 @@
                              (. cipher :doFinal <>)
                              (bytebuf-to-string <> :UTF-8))
         (bytebuf? data) (. cipher :doFinal data)
-        :else           (throw (. :VncException :new
-                                  "Invalid datatype for data."))))
+        :else           (throw (ex :VncException
+                                   "Invalid datatype for data."))))
   (catch :Exception ex
-    (throw (. :VncException :new "Failed to decrypt data." ex)))))
+    (throw (ex :VncException "Failed to decrypt data." ex)))))
 
 
 

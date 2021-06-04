@@ -167,7 +167,7 @@
     (list 'if (first clauses)
           (if (rest clauses)
               (second clauses)
-              (throw "cond requires an even number of forms"))
+              (throw (ex :VncException "cond requires an even number of forms")))
           (cons 'cond (rest (rest clauses))))))
 
 

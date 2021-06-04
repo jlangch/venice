@@ -160,8 +160,8 @@
   (case type
     :xls  (. :ExcelBuilder :createXls)
     :xlsx (. :ExcelBuilder :createXlsx)
-    (throw (. :VncException :new
-              (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
+    (throw (ex :VncException
+               (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
 
 
 (defn
@@ -871,8 +871,7 @@
                                         (string? x)  (. builder :colorHtml x)
                                         (keyword? x) (. builder :color (x colors))
                                         (long? x)    (. builder :color x))
-                                        :else        (. :VncException :new
-                                                        "Invalid font color"))
+                                        :else        (ex :VncException "Invalid font color"))
 
       (. builder :end)
       builder)))
@@ -969,7 +968,7 @@
           (string? x)  (. builder :bgColorHtml x)
           (keyword? x) (. builder :bgColor (x colors))
           (long? x)    (. builder :bgColor x))
-          :else        (. :VncException :new "Invalid style bg color"))
+          :else        (ex :VncException "Invalid style bg color"))
       (when-let [x (:wrap-text options)]
         (. builder :wrapText))
       (when-let [x (:h-align options)]
@@ -977,19 +976,19 @@
           :left     (. builder :hAlignLeft)
           :center   (. builder :hAlignCenter)
           :right    (. builder :hAlignRight)
-          (throw    (. :VncException :new
-                    (str "Invalid horizontal alignment "
-                         align
-                         ". Use one of :left, :center, or :right")))))
+          (throw    (ex :VncException 
+                        (str "Invalid horizontal alignment "
+                             align
+                            ". Use one of :left, :center, or :right")))))
       (when-let [x (:v-align options)]
         (case align
           :top      (. builder :vAlignTop)
           :midddle  (. builder :vAlignMiddle)
           :bottom   (. builder :hAlignBottom)
-          (throw    (. :VncException :new
-                    (str "Invalid vertical alignment "
-                         align
-                         ". Use one of :top, :middle, or :bottom")))))
+          (throw    (ex :VncException
+                        (str "Invalid vertical alignment "
+                             align
+                             ". Use one of :top, :middle, or :bottom")))))
       (when-let [x (:rotation options)]
         (. builder :rotation x))
       (when-let [x (:border-top options)]
@@ -1090,10 +1089,10 @@
          (cond
            (keyword? x) (. builder :colMapper x)
            (string? x)  (. builder :colMapper x)
-           :else        (throw (. :VncException :new
-                                  (str "A column field must be either a keyword "
-                                       "or a string acting as a key to get the "
-                                       "column's value from the row data map")))))
+           :else        (throw (ex :VncException
+                                   (str "A column field must be either a keyword "
+                                        "or a string acting as a key to get the "
+                                        "column's value from the row data map")))))
       (when-let [x (:data-field options)]   (. builder :colMapper x)) ;; compatibility
       (when-let [x (:width options)]        (. builder :widthInPoints x))
       (when-let [x (:hidden options)]       (. builder :hidden x))
@@ -1105,19 +1104,19 @@
           (nil? x)    nil
           (string? x) (. builder :footerTextValue x)
           (number? x) (. builder :footerNumberValue x)
-          :else       (throw (. :VncException :new
-                                (str "An explicit column footer value must be "
-                                     "nil, a string, or a number")))))
+          :else       (throw (ex :VncException
+                                 (str "An explicit column footer value must be "
+                                      "nil, a string, or a number")))))
       (when-let [x (:footer-aggregate options)]
         (case x
           :min  (. builder :footerMin)
           :max  (. builder :footerMax)
           :avg  (. builder :footerAverage)
           :sum  (. builder :footerSum)
-          (throw (. :VncException :new
-                    (str "Invalid aggregate mode "
-                         x
-                         ". Use one of :min, :max, :avg, or :sum")))))
+          (throw (ex :VncException
+                     (str "Invalid aggregate mode "
+                          x
+                          ". Use one of :min, :max, :avg, or :sum")))))
 
       (. builder :end)
       builder)))
@@ -1155,8 +1154,8 @@
     (bytebuf? source)                   (. :ExcelReader :open source)
     (instance-of? :File source)         (. :ExcelReader :open source)
     (instance-of? :InputStream source)  (. :ExcelReader :open source)
-    :else (throw (. :VncException :new
-                    (str "Invalid Excel open source " (type source) )))))
+    :else (throw (ex :VncException
+                     (str "Invalid Excel open source " (type source) )))))
 
 
 (defn
@@ -1223,8 +1222,8 @@
   (cond
     (string? s)  (. wbook :getSheet s)
     (long? s)    (. wbook :getSheetAt s)
-    :else (throw (. :VncException :new
-                    (str "Invalid Excel sheet reference type " (type s))))))
+    :else (throw (ex :VncException
+                     (str "Invalid Excel sheet reference type " (type s))))))
 
 
 (defn

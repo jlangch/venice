@@ -92,17 +92,17 @@
 
 (defn check-required-libs []
   (when-not (exists-class? :org.apache.catalina.startup.Tomcat)
-    (throw (. :VncException :new
-              """
-              The Tomcat libraries are not on the classpath!
+    (throw (ex :VncException
+               """
+               The Tomcat libraries are not on the classpath!
 
-              ---------------------------------------------------------------------
-              (do
-                (load-module :maven)
-                (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.34")
-                (maven/download "javax.annotation-api-1.3.2.jar"))
-              ---------------------------------------------------------------------
-              """))))
+               ---------------------------------------------------------------------
+               (do
+                 (load-module :maven)
+                 (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.34")
+                 (maven/download "javax.annotation-api-1.3.2.jar"))
+               ---------------------------------------------------------------------
+               """))))
 
 
 ;; ---------------------------------------------------------------------------
@@ -191,8 +191,8 @@
                      (. :setBaseDir base-dir))
         service (. tomcat :getService)]
     (when-not (io/exists-dir? resources-dir)
-      (throw (. :RuntimeException :new
-                (str "The resources dir " base-dir " does not exist"))))
+      (throw (ex :RuntimeException
+                 (str "The resources dir " base-dir " does not exist"))))
     (if (:executor? options true)
       (tc/create-executored-connectors tc/create-connector service options)
       (tc/create-connector service options))

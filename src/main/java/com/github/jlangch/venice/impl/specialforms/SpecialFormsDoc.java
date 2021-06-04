@@ -975,19 +975,15 @@ public class SpecialFormsDoc {
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!")
 					.examples(
-						"(try (throw))",
-						
 						"(try                                      \n" +
-						"   (throw \"test message\"))                ",
+						"   (throw \"test message\")               \n" +
+						"   (catch :ValueException e               \n" +
+						"          \"caught ~(:value e)\"))          ",
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
 						"   (catch :java.lang.Exception e -100))     ",
-						
-						"(try                                       \n" +
-						"   (throw 100)                             \n" +
-						"   (finally (println \"...finally\")))       ",
-						
+												
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
 						"   (catch :java.lang.Exception e -100)     \n" +
@@ -1002,8 +998,8 @@ public class SpecialFormsDoc {
 						"(do                                                  \n" +
 						"   (try                                              \n" +
 						"      (throw [1 2 3])                                \n" +
-						"      (catch :ValueException e (str (:value e)))     \n" +
-						"      (catch :RuntimeException e \"runtime e\")      \n" +
+						"      (catch :ValueException e (:value e))           \n" +
+						"      (catch :RuntimeException e \"runtime ex\")     \n" +
 						"      (finally (println \"...finally\"))))             ")
 					.seeAlso("try-with", "throw", "ex")
 					.build()

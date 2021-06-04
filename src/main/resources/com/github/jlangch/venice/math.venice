@@ -49,9 +49,10 @@
      (int? x)         (. :java.math.BigInteger :valueOf (long x))
      (string? x)      (. :java.math.BigInteger :new x)
      (double? x)      (. :java.math.BigInteger :valueOf (long x))
-     :else (throw (str/format
-                      "Invalid parameter (%s) to create a new big integer"
-                      (type x)))))
+     :else (throw (ex :VncException 
+                      (str/format
+                        "Invalid parameter (%s) to create a new big integer"
+                        (type x))))))
 
 
 (defn
