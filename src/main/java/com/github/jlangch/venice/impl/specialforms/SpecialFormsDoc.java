@@ -974,7 +974,7 @@ public class SpecialFormsDoc {
 						"The exception types \n\n" +
 						"  * :java.lang.Exception \n" +
 						"  * :java.lang.RuntimeException \n" +
-						"  * :com.github.jlangch.venice.VncException \n\n" +
+						"  * :com.github.jlangch.venice.VncException \n" +
 						"  * :com.github.jlangch.venice.ValueException \n\n" +
 						"are imported implicitly so its alias :Exception, :RuntimeException, " +
 						":VncException, and :ValueException can be used without an import of " +
