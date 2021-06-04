@@ -214,7 +214,7 @@ public class CoreFunctions {
 						"Creates an exception of type *class* with an optional *message* and " +
 						"an optional *cause* exception. \n\n" +
 						"The *class* must be a subclass of :java.lang.Exception¶\n" +
-						"The *cause* must be a subtype of :java.lang.Throwable")
+						"The *cause* must be an instance of :java.lang.Throwable")
 					.examples(
 						"(do                                                      \n" +
 						"   (try                                                  \n" +
