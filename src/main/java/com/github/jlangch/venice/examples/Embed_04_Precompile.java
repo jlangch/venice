@@ -27,6 +27,7 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
 
+
 public class Embed_04_Precompile {
     
 	public static void main(final String[] args) {
