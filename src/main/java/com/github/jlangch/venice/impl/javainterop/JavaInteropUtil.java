@@ -86,11 +86,18 @@ public class JavaInteropUtil {
 				final Object[] methodArgs = isDelayOrAgentClass(className) 
 												? copyToJavaMethodArgs(params)
 												: convertToJavaMethodArgs(params);
-												
-				return JavaInteropUtil.convertToVncVal(
-						JavaInterop
-							.getInterceptor()
-							.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
+							
+				if (Exception.class.isAssignableFrom(targetClass)) {
+					// bypass sandbox for instantiating exceptions, always allowed
+					return JavaInteropUtil.convertToVncVal(
+							ReflectionAccessor.invokeConstructor(targetClass, methodArgs));
+				}
+				else {
+					return JavaInteropUtil.convertToVncVal(
+							JavaInterop
+								.getInterceptor()
+								.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
+				}
 			}
 			else if ("class".equals(methodName)) {			
 				// get class (. :java.util.String :class)

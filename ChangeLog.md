@@ -13,7 +13,9 @@ and this project adheres to
 
 ### Added
 
-- improvements to the exception handling.
+- improvements to the exception handling. The new function `ex` simplifies 
+  the creation of exceptions and plays well with the full restricted 
+  sandbox. E.g.: `(throw (ex :VncException "test"))`
 
 
 
