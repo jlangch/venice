@@ -11,11 +11,19 @@ try - catch - finally
    (import :java.io.IOException)
   
    (try
-      (throw (. :RuntimeException :new "a message"))
-      (catch :IOException ex (:message ex))
-      (catch :RuntimeException ex (:message ex))
+      (throw (ex :RuntimeException "a message"))
+      (catch :IOException e "IOException msg: ~(:message e)")
+      (catch :RuntimeException e "RuntimeException msg: ~(:message e)")
       (finally (println "... finally."))))
+      
+   ;; output:
+   ;;
+   ;; ... finally.
+   ;; => "RuntimeException msg: a message"
 ```
+
+Note:
+The finally block is just for side effects, like closing resources. It never returns a value!
 
 Throw, catch, and finally blocks may contain multiple
 expressions:
@@ -27,15 +35,22 @@ expressions:
   
    (try
       (println "try...")
-      (throw (. :RuntimeException :new "a message"))
-      (catch :IOException ex 
+      (throw (ex :RuntimeException "a message"))
+      (catch :IOException e 
          (println "caught IOException")
-         (:message ex))
-      (catch :RuntimeException ex 
+         "IOException msg: ~(:message e)")
+      (catch :RuntimeException e
          (println "caught RuntimeException")
-         (:message ex))
+         "RuntimeException msg: ~(:message e)")
       (finally 
          (println "... finally."))))
+      
+   ;; output:
+   ;;
+   ;; try...
+   ;; caught RuntimeException
+   ;; ... finally.
+   ;; => "RuntimeException msg: a message"
 ```
 
 Any Venice data can be thrown resulting in a ValueException:
@@ -44,7 +59,7 @@ Any Venice data can be thrown resulting in a ValueException:
 (do
    (try
       (throw [1 2 3])  ; ValueException
-      (catch :ValueException ex (pr-str (:value ex)))))
+      (catch :ValueException e (:value e))))
 ```
 
 
