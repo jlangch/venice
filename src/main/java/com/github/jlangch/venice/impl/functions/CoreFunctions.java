@@ -253,7 +253,8 @@ public class CoreFunctions {
 				
 				if (!Exception.class.isAssignableFrom(clazz)) {
 					throw new VncException(String.format(
-							"Function 'ex' expects a class arg with subtype of :java.lang.Exception!",
+							"Function 'ex' expects a class arg with subtype of "
+							+ ":java.lang.Exception! Got '%s' instead.",
 							Types.getType(args.first())));
 				}
 
