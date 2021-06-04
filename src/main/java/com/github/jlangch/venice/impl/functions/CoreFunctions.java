@@ -40,10 +40,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;

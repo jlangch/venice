@@ -98,7 +98,7 @@ public class SpecialForms_TryTest {
 		try {
 			venice.eval(lisp);
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals(null, ex.getValue());
 			return;
 		}
@@ -121,7 +121,7 @@ public class SpecialForms_TryTest {
 		try {
 			venice.eval(lisp, Parameters.of("*out*", ps));
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals(null, ex.getValue());
 			assertEquals("100200", ps.getOutput());
 			return;
@@ -141,7 +141,7 @@ public class SpecialForms_TryTest {
 		try {
 			venice.eval(lisp);
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals("test message", ex.getValue());
 			return;
 		}
@@ -164,7 +164,7 @@ public class SpecialForms_TryTest {
 		try {
 			venice.eval(lisp, Parameters.of("*out*", ps));
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals("test message", ex.getValue());
 			assertEquals("100200", ps.getOutput());
 			return;
@@ -312,7 +312,7 @@ public class SpecialForms_TryTest {
 			
 			fail("Expected JavaValueException");
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals(Long.valueOf(100), ex.getValue());
 		}
 	}
@@ -541,7 +541,7 @@ public class SpecialForms_TryTest {
 			
 			fail("Expected JavaValueException");
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals(Long.valueOf(100), ex.getValue());
 			assertEquals("300", ps.getOutput());
 		}
@@ -566,7 +566,7 @@ public class SpecialForms_TryTest {
 			
 			fail("Expected JavaValueException");
 		}
-		catch(JavaValueException ex) {
+		catch(ValueException ex) {
 			assertEquals(Long.valueOf(100), ex.getValue());
 			assertEquals("300400", ps.getOutput());
 		}

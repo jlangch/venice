@@ -83,4 +83,5 @@ public class Embed_10_CustomSandbox {
         // => FAIL (static method) with Sandbox SecurityException
         venice.eval("(. :java.lang.System :exit 0)"); 
     }
+    
 }

@@ -36,4 +36,5 @@ public class Embed_09_StrictSandbox {
         // => FAIL (Venice IO function) with Sandbox SecurityException
         venice.eval("(println 100)"); 
     }
+    
 }

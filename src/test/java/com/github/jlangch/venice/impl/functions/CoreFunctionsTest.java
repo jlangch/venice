@@ -1193,6 +1193,16 @@ public class CoreFunctionsTest {
 		catch(Exception ex) {
 			fail("Expected VncException instead of " + ex.getClass().getSimpleName());
 		}
+
+
+		// (ex :ValueException 100)
+		final String script4 =
+				"(do                                             \n" +
+				"   (try                                         \n" +
+				"      (throw 100)                               \n" +
+				"      (catch :ValueException e (:value e))))    ";
+
+		assertEquals(100L, venice.eval(script4));
 	}
 	
 	@Test

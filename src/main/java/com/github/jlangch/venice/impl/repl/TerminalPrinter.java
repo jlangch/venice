@@ -25,9 +25,10 @@ import java.util.function.Consumer;
 
 import org.jline.terminal.Terminal;
 
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.ValueException;
+import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class TerminalPrinter {
@@ -87,7 +88,7 @@ public class TerminalPrinter {
 		try {
 			if (ex instanceof ValueException) {
 				print(colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
-				println(colorID, "Thrown value: " + Printer.pr_str(((ValueException)ex).getValue(), false));			
+				println(colorID, "Thrown value: " + Printer.pr_str((VncVal)((ValueException)ex).getValue(), false));			
 			}
 			else if (ex instanceof VncException) {
 				if (printJavaEx) {

@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.SandboxedCallable;
-import com.github.jlangch.venice.impl.ValueException;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -431,7 +430,9 @@ public class Venice {
 		}
 		catch(ValueException ex) {
 			// convert the Venice value to a Java value
-			throw new JavaValueException(ex.getValue().convertToJavaObject());
+			final Object value = ex.getValue();			
+			throw new ValueException(
+					value instanceof VncVal ? ((VncVal)value).convertToJavaObject() : value);
 		}
 		catch(RuntimeException ex) {
 			throw ex;

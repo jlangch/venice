@@ -29,8 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.JavaValueException;
 import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
@@ -798,7 +798,7 @@ public class ConcurrencyFunctionsTest {
 				"        (deref f))                               \n" +
 				") ";
 
-		assertThrows(JavaValueException.class, () -> venice.eval(script));
+		assertThrows(ValueException.class, () -> venice.eval(script));
 	}
 
 	@Test

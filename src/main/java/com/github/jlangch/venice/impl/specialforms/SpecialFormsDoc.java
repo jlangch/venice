@@ -975,8 +975,10 @@ public class SpecialFormsDoc {
 						"  * :java.lang.Exception \n" +
 						"  * :java.lang.RuntimeException \n" +
 						"  * :com.github.jlangch.venice.VncException \n\n" +
-						"are imported implicitly so its alias :Exception, :RuntimeException, and " +
-						":VncException can be used.\n\n" +
+						"  * :com.github.jlangch.venice.ValueException \n\n" +
+						"are imported implicitly so its alias :Exception, :RuntimeException, " +
+						":VncException, and :ValueException can be used without an import of " +
+						"the class.\n\n" +
 						"**Note:**¶\n" +
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!")

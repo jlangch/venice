@@ -27,7 +27,8 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class Embed_03_StdOutRedirection {
-    public static void main(final String[] args) {
+   
+	public static void main(final String[] args) {
         final Venice venice = new Venice();
 
         // case 1: redirect stdout/stderr to the <null> device
@@ -53,4 +54,5 @@ public class Embed_03_StdOutRedirection {
            System.out.println("stderr: " + ps_err.getOutput());
         }
     }
+	
 }

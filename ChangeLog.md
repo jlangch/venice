@@ -15,6 +15,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- a problem with the `ValueException` class regarding introducing Java modules
+
 
 
 ## [1.9.21] - 2021-06-04

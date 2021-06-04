@@ -27,7 +27,8 @@ import com.github.jlangch.venice.Venice;
 
 
 public class Embed_02_PassingParameters {
-    public static void main(final String[] args) {
+    
+	public static void main(final String[] args) {
         final Venice venice = new Venice();
 
         // returns a long: 10
@@ -56,4 +57,5 @@ public class Embed_02_PassingParameters {
                         "(. :java.awt.Point :new x y)", 
                         Parameters.of("x", 100, "y", 200)));
     }
+	
 }

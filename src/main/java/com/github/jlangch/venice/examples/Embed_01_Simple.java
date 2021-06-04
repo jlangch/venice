@@ -26,7 +26,8 @@ import com.github.jlangch.venice.VncException;
 
 
 public class Embed_01_Simple {
-    public static void main(final String[] args) {
+    
+	public static void main(final String[] args) {
         try {
            final Venice venice = new Venice();  
            System.out.println(venice.eval("(+ 1 1)"));
@@ -38,4 +39,5 @@ public class Embed_01_Simple {
            ex.printStackTrace();
         }
     }
+	
 }

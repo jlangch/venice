@@ -27,7 +27,8 @@ import com.github.jlangch.venice.Venice;
 
 
 public class Embed_08_JavaInterop {
-    public static void main(final String[] args) {
+    
+	public static void main(final String[] args) {
         final Venice venice = new Venice();
         
         // qualified classes
@@ -42,4 +43,5 @@ public class Embed_08_JavaInterop {
         System.out.println(val);
         System.out.println(ts);
     }
+	
 }

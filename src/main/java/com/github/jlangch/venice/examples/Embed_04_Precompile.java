@@ -28,7 +28,8 @@ import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
 
 public class Embed_04_Precompile {
-    public static void main(final String[] args) {
+    
+	public static void main(final String[] args) {
         final Venice venice = new Venice();
 
         // turn up-front macro expansion on
@@ -48,4 +49,5 @@ public class Embed_04_Precompile {
                      precompiled, 
                      Parameters.of("x", ii))));
     }
+	
 }

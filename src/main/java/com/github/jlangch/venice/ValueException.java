@@ -19,31 +19,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class ValueException extends VncException {
 		
-	public ValueException(final String fnName, final VncVal value) {
-		super(String.format("%s value thrown from %s", Types.getType(value), fnName));
+	public ValueException(final String fnName, final Object value) {
+		super(String.format("%s value thrown from %s", type(value), fnName));
 		this.value = value;
 	}
 
-	public ValueException(final VncVal value, final Throwable cause) {
+	public ValueException(final Object value) {
+		this.value = value;
+	}
+
+	public ValueException(final Object value, final Throwable cause) {
 		super(cause);
 		this.value = value;
 	}
 	
-	public VncVal getValue() { 
+	public Object getValue() { 
 		return value; 
+	}
+	
+	private static String type(final Object value) {
+		if (value == null) {
+			return "nil";
+		}
+		else if (value instanceof VncVal) {
+			return Types.getType((VncVal)value).toString();
+		}
+		else {
+			return ":" + value.getClass().getName();
+		}
 	}
 	
 	
 	private static final long serialVersionUID = -7070216020647646364L;
 
-	private final VncVal value;
+	private final Object value;
 }
