@@ -45,13 +45,13 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.GenSym;
+import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.reader.Reader;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
@@ -177,7 +177,7 @@ public class CoreFunctions {
 				ArityExceptions.assertArity(this, args, 0, 1);
 
 				if (args.isEmpty()) {
-					throw new ValueException("throw", Constants.Nil);
+					throw new ValueException("throw", Nil);
 				}
 				else if (Types.isVncJavaObject(args.first())) {
 					final Object obj = ((VncJavaObject)args.first()).getDelegate();
@@ -248,13 +248,13 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2, 3);
 
-				final Class<?> clazz = JavaInteropUtil.toClass(
-											args.first(), 
-											Namespaces.getCurrentNamespace().getJavaImports());
+				final JavaImports javaImports = Namespaces.getCurrentNamespace().getJavaImports();
+				
+				final Class<?> clazz = JavaInteropUtil.toClass(args.first(), javaImports);
 				
 				if (!Exception.class.isAssignableFrom(clazz)) {
 					throw new VncException(
-							"Function 'ex' expects a class arg with subtype of :java.lang.Exception!");
+							"Function 'ex' expects a 'class' arg as a subtype of :java.lang.Exception!");
 				}
 
 				// No sandbox checking for creating an exception!
@@ -262,28 +262,27 @@ public class CoreFunctions {
 				if (args.size() == 1) {
 					return JavaInteropUtil.applyJavaAccess(
 							VncList.of(args.first(), new VncKeyword("new")), 
-							Namespaces.getCurrentNamespace().getJavaImports());	
-				}
-				else if (args.size() == 1) {
-					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(
-								args.first(), 
-								new VncKeyword("new"), 
-								args.second() == Constants.Nil
-									? Constants.Nil
-									: new VncString(args.second().toString())), 
-							Namespaces.getCurrentNamespace().getJavaImports());	
+							javaImports);	
 				}
 				else {
+					final VncVal msg = args.second();
+					final VncVal cause = args.third();
+
+					// cause must be a nil or a string
+					if (msg != Nil && !Types.isVncString(msg)) {
+						throw new VncException(
+								"Function 'ex' expects a 'message' arg of type string!");
+					}
+
+					// cause must be an exception
+					if (cause != Nil && !Types.isVncJavaObject(cause, Exception.class)) {
+						throw new VncException(
+								"Function 'ex' expects a 'cause' arg of type :java.lang.Exception!");
+					}
+					
 					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(
-								args.first(), 
-								new VncKeyword("new"), 
-								args.second() == Constants.Nil
-									? Constants.Nil
-									: new VncString(args.second().toString()), 
-								args.third()), 
-							Namespaces.getCurrentNamespace().getJavaImports());	
+							VncList.of(args.first(), new VncKeyword("new"), msg, cause), 
+							javaImports);
 				}
 			}
 
@@ -1673,7 +1672,7 @@ public class CoreFunctions {
 					final int scale = scaling ? Coerce.toVncLong(args.second()).getIntValue() : 0;
 					final RoundingMode roundingMode = args.size() < 3 ? null : VncBigDecimal.toRoundingMode((VncString)args.nth(2));
 
-					if (arg == Constants.Nil) {
+					if (arg == Nil) {
 						final BigDecimal dec = BigDecimal.ZERO;
 						return new VncBigDecimal(!scaling ? dec : dec.setScale(scale, roundingMode));
 					}
@@ -1732,7 +1731,7 @@ public class CoreFunctions {
 				else {
 					final VncVal arg = args.first();
 
-					if (arg == Constants.Nil) {
+					if (arg == Nil) {
 						return new VncBigInteger(BigInteger.ZERO);
 					}
 					else if (VncBoolean.isFalse(arg)) {
@@ -5660,7 +5659,7 @@ public class CoreFunctions {
 				final int n = Coerce.toVncLong(args.first()).getValue().intValue();
 				final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
 				final VncSequence padseq = args.size() == 4
-						                    ? args.third() == Constants.Nil
+						                    ? args.third() == Nil
 						                    		? VncList.empty() 
 						                    		: Coerce.toVncSequence(args.third())
 						                    : null;

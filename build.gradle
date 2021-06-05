@@ -185,11 +185,16 @@ def getCheckedOutGitCommitHash() {
     }
 }
 
+
 compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     options.encoding = 'UTF-8'
     options.compilerArgs = [ '-parameters' ]
+    
+    doLast {
+        println "Java: ${JavaVersion.current()}"
+    }
 }
 
 compileTestJava {
