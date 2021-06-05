@@ -37,7 +37,7 @@ and this project adheres to
 
 - improvements to the online and cheatsheet documentation.
 - prevention of redirecting stdin, stdout, and stderr streams explicitly. Any
-  redirection attempt by changing thread the local vars (:*in*, :*out*, :*err*) throws
+  redirection attempt by changing the thread local vars (:*in*, :*out*, :*err*) throws
   an exception.
 
 
