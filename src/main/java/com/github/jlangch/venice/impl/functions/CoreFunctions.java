@@ -179,16 +179,14 @@ public class CoreFunctions {
 				if (args.isEmpty()) {
 					throw new ValueException("throw", Nil);
 				}
-				else if (Types.isVncJavaObject(args.first())) {
-					final Object obj = ((VncJavaObject)args.first()).getDelegate();
-					if (obj instanceof RuntimeException) {
-						throw (RuntimeException)obj;
-					}
-					else if (obj instanceof Exception) {
-						throw new RuntimeException((Exception)obj);
+				else if (Types.isVncJavaObject(args.first(), Exception.class)) {
+					final Exception ex = (Exception)((VncJavaObject)args.first()).getDelegate();
+					if (ex instanceof RuntimeException) {
+						throw (RuntimeException)ex;
 					}
 					else {
-						throw new RuntimeException(obj.toString());
+						// wrap it with a RuntimeException
+						throw new RuntimeException(ex);
 					}
 				}
 				else {
@@ -231,6 +229,12 @@ public class CoreFunctions {
 						"      (catch :Exception e                                \n" +
 						"             \"msg: ~(:message e)\")))                     ",
 
+						"(do                                                      \n" +
+						"   (try                                                  \n" +
+						"      (throw (ex :ValueException 100))                   \n" +
+						"      (catch :ValueException e                           \n" +
+						"             \"value: ~(:value e)\")))                     ",
+
 						"(do                                                                  \n" +
 						"   (import :java.io.IOException)                                     \n" +
 						"   (defn throw-ex-with-cause []                                      \n" +
@@ -250,9 +254,8 @@ public class CoreFunctions {
 
 				final JavaImports javaImports = Namespaces.getCurrentNamespace().getJavaImports();
 				
-				final Class<?> clazz = JavaInteropUtil.toClass(args.first(), javaImports);
-				
-				if (!Exception.class.isAssignableFrom(clazz)) {
+				final Class<?> excClass = JavaInteropUtil.toClass(args.first(), javaImports);			
+				if (!Exception.class.isAssignableFrom(excClass)) {
 					throw new VncException(
 							"Function 'ex' expects a 'class' arg as a subtype of :java.lang.Exception!");
 				}
@@ -268,21 +271,26 @@ public class CoreFunctions {
 					final VncVal msg = args.second();
 					final VncVal cause = args.third();
 
-					// cause must be a nil or a string
-					if (msg != Nil && !Types.isVncString(msg)) {
-						throw new VncException(
-								"Function 'ex' expects a 'message' arg of type string!");
-					}
-
-					// cause must be an exception
+					// the cause must be nil or an exception
 					if (cause != Nil && !Types.isVncJavaObject(cause, Exception.class)) {
 						throw new VncException(
 								"Function 'ex' expects a 'cause' arg of type :java.lang.Exception!");
 					}
-					
-					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(args.first(), new VncKeyword("new"), msg, cause), 
-							javaImports);
+
+					if (ValueException.class.isAssignableFrom(excClass)) {
+						return new VncJavaObject(new ValueException(msg));
+					}
+					else {
+						// the message must be a nil or a string
+						if (msg != Nil && !Types.isVncString(msg)) {
+							throw new VncException(
+									"Function 'ex' expects a 'message' arg of type string!");
+						}
+	
+						return JavaInteropUtil.applyJavaAccess(
+									VncList.of(args.first(), new VncKeyword("new"), msg, cause), 
+									javaImports);
+					}
 				}
 			}
 
