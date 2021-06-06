@@ -1925,7 +1925,7 @@ public class VeniceInterpreter implements Serializable  {
 				result = evaluateBody(getTryBody(args), env, true);
 			} 
 			catch (Throwable th) {
-				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(args, th);
+				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, th);
 				if (catchBlock == null) {
 					throw th;
 				}
@@ -1974,7 +1974,7 @@ public class VeniceInterpreter implements Serializable  {
 					result = evaluateBody(getTryBody(args), env, true);
 				} 
 				catch (Throwable th) {
-					final CatchBlock catchBlock = findCatchBlockMatchingThrowable(args, th);
+					final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, th);
 					if (catchBlock == null) {
 						throw th;
 					}
@@ -2036,6 +2036,7 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private CatchBlock findCatchBlockMatchingThrowable(
+			final Env env,
 			final VncList blocks, 
 			final Throwable th
 	) {
@@ -2046,7 +2047,7 @@ public class VeniceInterpreter implements Serializable  {
 				final VncList block = ((VncList)b);
 				final VncVal catchSym = block.first();
 				if (Types.isVncSymbol(catchSym) && ((VncSymbol)catchSym).getName().equals("catch")) {
-					if (isCatchBlockMatchingThrowable(block, th)) {
+					if (isCatchBlockMatchingThrowable(env, block, th)) {
 						return new CatchBlock(
 									Coerce.toVncSymbol(block.third()), 
 									block.slice(3));
@@ -2059,11 +2060,12 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private boolean isCatchBlockMatchingThrowable(
+		final Env env,
 		final VncList block, 
 		final Throwable th
 	) {
-		final VncVal selector = block.second();
-		
+		final VncVal selector = evaluate(block.second(), env);
+
 		// Selector: exception class => (catch :RuntimeExceptiom e (..))
 		if (Types.isVncString(selector)) {
 			final String className = resolveClassName(((VncString)selector).getValue());
@@ -2073,8 +2075,8 @@ public class VeniceInterpreter implements Serializable  {
 		}
 
 		// Selector: predicate => (catch predicate-fn e (..))
-		else if (Types.isIVncFunction(selector)) {
-			final IVncFunction predicate = (IVncFunction)selector;
+		else if (Types.isVncFunction(selector)) {
+			final VncFunction predicate = (VncFunction)selector;
 			
 			if (th instanceof ValueException) {
 				final VncVal exVal = getValueExceptionValue((ValueException)th);				
@@ -2087,9 +2089,10 @@ public class VeniceInterpreter implements Serializable  {
 			}
 		}
 		
-		// Selector: list => (catch [key1 value1] e (..))
+		// Selector: list => (catch [key1 value1, ...] e (..))
 		else if (Types.isVncSequence(selector)) {
 			if (th instanceof ValueException) {
+				
 				final VncVal exVal = getValueExceptionValue((ValueException)th);
 				if (Types.isVncMap(exVal)) {
 					final VncMap exValMap = (VncMap)exVal;

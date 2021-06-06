@@ -39,6 +39,7 @@ import java.util.TreeMap;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
@@ -1140,46 +1141,46 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		// (ex :RuntimeException)
-		final String script1 =
+		final String script =
 				"(do                                                     \n" +
 				"   (try                                                 \n" +
 				"     (throw (ex :RuntimeException))                     \n" +
 				"     (catch :RuntimeException e \"caugth exception\")))   ";
 
-		assertEquals("caugth exception", venice.eval(script1));
+		assertEquals("caugth exception", venice.eval(script));
 	}
 	
 	@Test
 	public void test_ex_catch_converted_checked_exception() {
 		final Venice venice = new Venice();
 
-		final String script2 =
+		final String script =
 				"(do                                              \n" +
 				"   (try                                          \n" +
 				"     (throw (ex :Exception \"#test\"))           \n" +
 				"     (catch :RuntimeException e (:message e))))    ";
 
-		assertEquals("java.lang.Exception: #test", venice.eval(script2));
+		assertEquals("java.lang.Exception: #test", venice.eval(script));
 	}
 	
 	@Test
 	public void test_ex_catch_basetype() {
 		final Venice venice = new Venice();
 
-		final String script2 =
+		final String script =
 				"(do                                              \n" +
 				"   (try                                          \n" +
 				"     (throw (ex :RuntimeException \"#test\"))    \n" +
 				"     (catch :Exception e (:message e))))           ";
 
-		assertEquals("#test", venice.eval(script2));
+		assertEquals("#test", venice.eval(script));
 	}
 	
 	@Test
 	public void test_ex_with_cause() {
 		final Venice venice = new Venice();
 
-		final String script3 =
+		final String script =
 				"(do                                                              \n" +
 				"   (import :java.io.IOException)                                 \n" +
 				"   (try                                                          \n" +
@@ -1188,7 +1189,7 @@ public class CoreFunctionsTest {
 				"             (throw (ex :VncException \"#test2\" (:cause e))))))   ";
 
 		try {
-			venice.eval(script3);
+			venice.eval(script);
 			
 			fail("Expected VncException");
 		}
@@ -1214,13 +1215,129 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		// (ex :ValueException 100)
-		final String script4 =
+		final String script =
 				"(do                                             \n" +
 				"   (try                                         \n" +
 				"      (throw 100)                               \n" +
 				"      (catch :ValueException e (:value e))))    ";
 
-		assertEquals(100L, venice.eval(script4));
+		assertEquals(100L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_predicate_1a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (try                                  \n" +
+				"      (throw 100)                        \n" +
+				"      (catch #(long? %) e (:value e))))    ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_predicate_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (try                                  \n" +
+				"      (throw 100)                        \n" +
+				"      (catch #(int? %) e (:value e))))    ";
+
+		try {
+			venice.eval(script);
+			
+			fail("Expected ValueException");
+		}
+		catch(ValueException ex) {
+			assertEquals(100L, ex.getValue());
+		}
+	}
+	
+	@Test
+	public void test_ex_selector_predicate_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (try                                  \n" +
+				"      (throw 100)                        \n" +
+				"      (catch #(= 100 %) e (:value e))))    ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_list_1a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                               \n" +
+				"   (try                            \n" +
+				"      (throw {:a 100, :b 200})     \n" +
+				"      (catch [:a 100] e            \n" +
+				"         (pr-str (:value e)))))    ";
+
+		assertEquals("{:a 100 :b 200}", venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_list_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                               \n" +
+				"   (try                            \n" +
+				"      (throw {:a 100, :b 200})     \n" +
+				"      (catch [:a 200] e            \n" +
+				"         (pr-str (:value e)))))    ";
+
+		try {
+			venice.eval(script);
+			
+			fail("Expected ValueException");
+		}
+		catch(ValueException ex) {
+			assertEquals("{a=100, b=200}", ex.getValue().toString());
+		}
+	}
+
+	@Test
+	public void test_ex_selector_list_2a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                \n" +
+				"   (try                            \n" +
+				"      (throw {:a 100, :b 200})     \n" +
+				"      (catch [:a 100 :b 200] e     \n" +
+				"          (pr-str (:value e)))))     ";
+
+		assertEquals("{:a 100 :b 200}", venice.eval(script));
+	}
+
+	@Test
+	public void test_ex_selector_list_2b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                \n" +
+				"   (try                            \n" +
+				"      (throw {:a 100, :b 200})     \n" +
+				"      (catch [:a 100 :b 201] e     \n" +
+				"          (pr-str (:value e)))))     ";
+
+		try {
+			venice.eval(script);
+			
+			fail("Expected ValueException");
+		}
+		catch(ValueException ex) {
+			assertEquals("{a=100, b=200}", ex.getValue().toString());
+		}
 	}
 	
 	@Test
