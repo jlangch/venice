@@ -119,7 +119,8 @@ public class CoreFunctions {
 						"Throws a :ValueException with `nil` as its value.\n" +
 						"\n" +
 						"`(throw val)`¶\n" +
-						"With *val* as a Venice value throws a :ValueException with *val* as its value.¶\n" +
+						"With *val* as a Venice value throws a :ValueException with *val* " +
+						"as its value.¶\n" +
 						"E.g: `(throw [1 2 3])`\n" +
 						"\n" +
 						"`(throw ex)`¶\n" +
@@ -215,8 +216,9 @@ public class CoreFunctions {
 						"  * :java.lang.Exception \n" +
 						"  * :java.lang.RuntimeException \n" +
 						"  * :com.github.jlangch.venice.VncException \n\n" +
-						"are imported implicitly so its alias :Exception, :RuntimeException, and " +
-						":VncException can be used.")
+						"  * :com.github.jlangch.venice.ValueException \n\n" +
+						"are imported implicitly so its alias :Exception, :RuntimeException, " +
+						":VncException, and :ValueException can be used.")
 					.examples(
 						"(do                                                      \n" +
 						"   (try                                                  \n" +
@@ -236,10 +238,9 @@ public class CoreFunctions {
 						"             \"value: ~(:value e)\")))                     ",
 
 						"(do                                                                  \n" +
-						"   (import :java.io.IOException)                                     \n" +
 						"   (defn throw-ex-with-cause []                                      \n" +
 						"     (try                                                            \n" +
-						"        (throw (ex :IOException \"IO failure\"))                     \n" +
+						"        (throw (ex :java.io.IOException \"IO failure\"))             \n" +
 						"        (catch :Exception e                                          \n" +
 						"               (throw (ex :VncException \"failure\" (:cause e))))))  \n" +
 						"   (try                                                              \n" +

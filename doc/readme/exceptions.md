@@ -3,11 +3,20 @@
 
 ## Exceptions
 
-try - catch - finally
+A few exception types are imported implicitly to simplify its usage:
+
+  * `:java.lang.Exception`
+  * `:java.lang.RuntimeException`
+  * `:com.github.jlangch.venice.VncException`
+  * `:com.github.jlangch.venice.ValueException`
+
+
+
+
+**try - catch - finally**
 
 ```clojure
 (do
-   (import :java.lang.RuntimeException)
    (import :java.io.IOException)
   
    (try
@@ -22,15 +31,13 @@ try - catch - finally
    ;; => "RuntimeException msg: a message"
 ```
 
-Note:
+*Note:*
 The finally block is just for side effects, like closing resources. It never returns a value!
 
-Throw, catch, and finally blocks may contain multiple
-expressions:
+Throw, catch, and finally blocks may contain multiple expressions:
 
 ```clojure
 (do
-   (import :java.lang.RuntimeException)
    (import :java.io.IOException)
   
    (try
@@ -53,7 +60,7 @@ expressions:
    ;; => "RuntimeException msg: a message"
 ```
 
-Any Venice data can be thrown resulting in a ValueException:
+Any Venice data can be thrown resulting in a `:ValueException`:
 
 ```clojure
 (do
@@ -63,7 +70,7 @@ Any Venice data can be thrown resulting in a ValueException:
 ```
 
 
-try-with resources
+**try-with resources**
 
 ```clojure
 (do
