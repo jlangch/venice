@@ -21,36 +21,37 @@
  */
 package com.github.jlangch.venice;
 
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class ValueException extends VncException {
-		
-	public ValueException(final String fnName, final Object value) {
-		super(String.format("%s value thrown from %s", type(value), fnName));
-		this.value = value;
-	}
 
 	public ValueException(final Object value) {
 		this.value = value;
+		this.type = type(value);
 	}
 
 	public ValueException(final Object value, final Throwable cause) {
 		super(cause);
 		this.value = value;
+		this.type = type(value);
 	}
 	
 	public Object getValue() { 
 		return value; 
 	}
 	
+	public String getType() { 
+		return type; 
+	}
+	
 	private static String type(final Object value) {
 		if (value == null) {
-			return "nil";
+			return Constants.Nil.getType().toString();
 		}
 		else if (value instanceof VncVal) {
-			return Types.getType((VncVal)value).toString();
+			return ((VncVal)value).getType().toString();
 		}
 		else {
 			return ":" + value.getClass().getName();
@@ -61,4 +62,5 @@ public class ValueException extends VncException {
 	private static final long serialVersionUID = -7070216020647646364L;
 
 	private final Object value;
+	private final String type;
 }

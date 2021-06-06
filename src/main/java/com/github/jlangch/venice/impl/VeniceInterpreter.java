@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.NotInTailPositionException;
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
@@ -2038,14 +2039,16 @@ public class VeniceInterpreter implements Serializable  {
 			final VncList blocks, 
 			final Throwable th
 	) {
+		// (catch ex-class ex-sym expr*)
+		
 		for(VncVal b : blocks) {
 			if (Types.isVncList(b)) {
 				final VncList block = ((VncList)b);
-				final VncVal first = block.first();
-				if (Types.isVncSymbol(first) && ((VncSymbol)first).getName().equals("catch")) {
+				final VncVal catchSym = block.first();
+				if (Types.isVncSymbol(catchSym) && ((VncSymbol)catchSym).getName().equals("catch")) {
 					if (isCatchBlockMatchingThrowable(block, th)) {
 						return new CatchBlock(
-									Coerce.toVncSymbol(block.nth(2)), 
+									Coerce.toVncSymbol(block.third()), 
 									block.slice(3));
 					}
 				}
@@ -2059,10 +2062,60 @@ public class VeniceInterpreter implements Serializable  {
 		final VncList block, 
 		final Throwable th
 	) {
-		final String className = resolveClassName(((VncString)block.second()).getValue());
-		final Class<?> targetClass = ReflectionAccessor.classForName(className);
+		final VncVal selector = block.second();
 		
-		return targetClass.isAssignableFrom(th.getClass());
+		// Selector: exception class => (catch :RuntimeExceptiom e (..))
+		if (Types.isVncString(selector)) {
+			final String className = resolveClassName(((VncString)selector).getValue());
+			final Class<?> targetClass = ReflectionAccessor.classForName(className);
+			
+			return targetClass.isAssignableFrom(th.getClass());
+		}
+
+		// Selector: predicate => (catch predicate-fn e (..))
+		else if (Types.isIVncFunction(selector)) {
+			final IVncFunction predicate = (IVncFunction)selector;
+			
+			if (th instanceof ValueException) {
+				final VncVal exVal = getValueExceptionValue((ValueException)th);				
+				final VncVal result = predicate.apply(VncList.of(exVal));
+				return VncBoolean.isTrue(result);
+			}
+			else {
+				final VncVal result = predicate.apply(VncList.of(Nil));
+				return VncBoolean.isTrue(result);
+			}
+		}
+		
+		// Selector: list => (catch [key1 value1] e (..))
+		else if (Types.isVncSequence(selector)) {
+			if (th instanceof ValueException) {
+				final VncVal exVal = getValueExceptionValue((ValueException)th);
+				if (Types.isVncMap(exVal)) {
+					final VncMap exValMap = (VncMap)exVal;
+					
+					VncSequence seq = (VncSequence)selector;
+					while (!seq.isEmpty()) {
+						final VncVal key = seq.first();
+						final VncVal val = seq.second();
+						
+						if (!Types._equal_strict_Q(val, exValMap.get(key))) {
+							return false;
+						}
+						
+						seq = seq.drop(2);
+					}
+					
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
+		else {
+			return false;
+		}
 	}
 	
 	private VncList findFirstFinallyBlock(final VncList blocks) {
@@ -2270,6 +2323,15 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 	
+	private VncVal getValueExceptionValue(final ValueException ex) {
+		final Object val_ = ex.getValue();
+		
+		return val_== null 
+				? Nil
+				: val_ instanceof VncVal 
+					? (VncVal)val_ 
+					: new VncJavaObject(val_);
+	}
 
 	/**
 	 * Resolves a class name.

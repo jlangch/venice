@@ -178,7 +178,7 @@ public class CoreFunctions {
 				ArityExceptions.assertArity(this, args, 0, 1);
 
 				if (args.isEmpty()) {
-					throw new ValueException("throw", Nil);
+					throw new ValueException(Nil);
 				}
 				else if (Types.isVncJavaObject(args.first(), Exception.class)) {
 					final Exception ex = (Exception)((VncJavaObject)args.first()).getDelegate();
@@ -191,7 +191,7 @@ public class CoreFunctions {
 					}
 				}
 				else {
-					throw new ValueException("throw", args.first());
+					throw new ValueException(args.first());
 				}
 			}
 
