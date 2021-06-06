@@ -200,7 +200,27 @@ Exception predicate selector:
 
 ## Custom Exceptions
 
-to be added
+Venice *Custom Types* are a perfect fit for custom exceptions. Throw an instance
+of a custom type as a :ValueException and define a `catch` clause with a predicate.
+
+
+Example:
+
+```clojure
+(do
+   (deftype :my-exception1 [message :string, position :long])
+   
+   (deftype :my-exception2 [message :string]) 
+   
+   (try
+      (throw (my-exception1. 0 0))
+      
+      (catch my-exception1? e 
+         (println (:value e)))
+         
+      (catch my-exception2? e 
+         (println (:value e)))))
+```
 
 
 
