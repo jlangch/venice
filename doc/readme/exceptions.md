@@ -28,10 +28,10 @@ Create exceptions using the function `ex` :
    ;; create an unchecked RuntimeException
    (ex :RuntimeException "exception message")
   
-   ;; create an checked IOException
+   ;; create a checked IOException
    (ex :IOException "exception message")
    
-   ;; create an Venice exception
+   ;; create a Venice exception
    (ex :VncException "exception message")
    
    ;; create an exception with a cause
@@ -60,6 +60,10 @@ suitable:
 
 ## try - catch - finally
 
+`catch` clauses within a `try` can catch any Java exception:
+
+The first catch clause that matches the thrown exception will execute.
+
 ```clojure
 (do
    (import :java.io.IOException)
@@ -68,6 +72,7 @@ suitable:
       (throw (ex :RuntimeException "a message"))
       (catch :IOException e "IOException, msg: ~(:message e)")
       (catch :RuntimeException e "RuntimeException, msg: ~(:message e)")
+      (catch :VncException e "VncException, msg: ~(:message e)")
       (finally (println "... finally."))))
       
 ;; output:
@@ -136,8 +141,61 @@ Any Venice data can be thrown resulting in a `:ValueException`:
 
 ## Selectors
 
-to be added
+The first catch clause whose selector matches the thrown exception will execute.
 
+A selector can be:
+
+  * a class name: (e.g., :RuntimeException, :java.text.ParseException), matches 
+    any instance of that class
+
+  * a key-values vector: (e.g., [key val & kvs]), matches any instance of 
+    :ValueException where the exception's value meets the expression 
+    `(and (= (get ex-value key) val) ...)`
+
+  * a predicate: (a function of one argument like `map?`, `set?`), matches any 
+    instance of :ValueException where the predicate applied to the exception's 
+    value returns `true`
+    
+
+***Examples***
+
+Exception class name selector:
+
+```clojure
+(do
+   (try
+      (throw (ex :RuntimeException "a message"))
+      (catch :RuntimeException e
+         (println "RuntimeException, msg: ~(:message e)"))))
+```
+
+
+Exception key-values selector:
+
+```clojure
+(do
+   (try
+      (throw {:a 100, :b 200})
+      (catch [:a 100] e
+         (println "ValueException, value: ~(:value e)"))
+      (catch [:a 100, :b 200] e
+         (println "ValueException, value: ~(:value e)"))))
+```
+
+
+Exception predicate selector:
+
+```clojure
+(do
+   (try
+      (throw {:a 100, :b 200})
+      (catch long? e
+         (println "ValueException, value: ~(:value e)"))
+      (catch map? e
+         (println "ValueException, value: ~(:value e)"))
+      (catch #(= 100 (:a %)) e
+         (println "ValueException, value: ~(:value e)"))))
+```
 
 
 ## Custom Exceptions

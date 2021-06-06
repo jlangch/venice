@@ -28,12 +28,13 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class ValueException extends VncException {
 
 	public ValueException(final Object value) {
+		super("");
 		this.value = value;
 		this.type = type(value);
 	}
 
 	public ValueException(final Object value, final Throwable cause) {
-		super(cause);
+		super("", cause);
 		this.value = value;
 		this.type = type(value);
 	}

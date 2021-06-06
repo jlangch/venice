@@ -88,7 +88,7 @@ public class TerminalPrinter {
 		try {
 			if (ex instanceof ValueException) {
 				print(colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
-				println(colorID, "Thrown value: " + Printer.pr_str((VncVal)((ValueException)ex).getValue(), false));			
+				println(colorID, "\nThrown value: " + Printer.pr_str((VncVal)((ValueException)ex).getValue(), false));			
 			}
 			else if (ex instanceof VncException) {
 				if (printJavaEx) {
