@@ -1141,32 +1141,35 @@ public class CoreFunctionsTest {
 
 		// (ex :RuntimeException)
 		final String script1 =
-				"(do                                              \n" +
-				"   (import :java.lang.Exception)                 \n" +
-				"   (import :java.lang.RuntimeException)          \n" +
-				"   (try                                          \n" +
-				"     (throw (ex :RuntimeException))              \n" +
-				"     (catch :Exception e \"caugth exception\")))   ";
+				"(do                                                     \n" +
+				"   (try                                                 \n" +
+				"     (throw (ex :RuntimeException))                     \n" +
+				"     (catch :RuntimeException e \"caugth exception\")))   ";
 
 		assertEquals("caugth exception", venice.eval(script1));
+	}
+	
+	@Test
+	public void test_ex_catch_basetype() {
+		final Venice venice = new Venice();
 
-		
 		// (ex :RuntimeException "msg")
 		final String script2 =
 				"(do                                              \n" +
-				"   (import :java.lang.Exception)                 \n" +
-				"   (import :java.lang.RuntimeException)          \n" +
 				"   (try                                          \n" +
 				"     (throw (ex :RuntimeException \"#test\"))    \n" +
 				"     (catch :Exception e (:message e))))           ";
 
 		assertEquals("#test", venice.eval(script2));
+	}
+	
+	@Test
+	public void test_ex_with_cause() {
+		final Venice venice = new Venice();
 
-		
 		// (ex :VncException "msg" cause)
 		final String script3 =
 				"(do                                                              \n" +
-				"   (import :java.lang.Exception)                                 \n" +
 				"   (import :java.io.IOException)                                 \n" +
 				"   (try                                                          \n" +
 				"      (throw (ex :IOException \"#test1\"))                       \n" +
@@ -1193,7 +1196,11 @@ public class CoreFunctionsTest {
 		catch(Exception ex) {
 			fail("Expected VncException instead of " + ex.getClass().getSimpleName());
 		}
-
+	}
+	
+	@Test
+	public void test_ex_ValueException() {
+		final Venice venice = new Venice();
 
 		// (ex :ValueException 100)
 		final String script4 =

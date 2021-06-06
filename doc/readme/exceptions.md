@@ -21,14 +21,14 @@ A few exception types are imported implicitly to simplify its usage:
   
    (try
       (throw (ex :RuntimeException "a message"))
-      (catch :IOException e "IOException msg: ~(:message e)")
-      (catch :RuntimeException e "RuntimeException msg: ~(:message e)")
+      (catch :IOException e "IOException, msg: ~(:message e)")
+      (catch :RuntimeException e "RuntimeException, msg: ~(:message e)")
       (finally (println "... finally."))))
       
-   ;; output:
-   ;;
-   ;; ... finally.
-   ;; => "RuntimeException msg: a message"
+;; output:
+;;
+;; ... finally.
+;; => "RuntimeException msg: a message"
 ```
 
 *Note:*
@@ -45,19 +45,19 @@ Throw, catch, and finally blocks may contain multiple expressions:
       (throw (ex :RuntimeException "a message"))
       (catch :IOException e 
          (println "caught IOException")
-         "IOException msg: ~(:message e)")
+         "IOException, msg: ~(:message e)")
       (catch :RuntimeException e
          (println "caught RuntimeException")
-         "RuntimeException msg: ~(:message e)")
+         "RuntimeException, msg: ~(:message e)")
       (finally 
          (println "... finally."))))
       
-   ;; output:
-   ;;
-   ;; try...
-   ;; caught RuntimeException
-   ;; ... finally.
-   ;; => "RuntimeException msg: a message"
+;; output:
+;;
+;; try...
+;; caught RuntimeException
+;; ... finally.
+;; => "RuntimeException msg: a message"
 ```
 
 Any Venice data can be thrown resulting in a `:ValueException`:
@@ -67,6 +67,10 @@ Any Venice data can be thrown resulting in a `:ValueException`:
    (try
       (throw [1 2 3])  ; ValueException
       (catch :ValueException e (:value e))))
+      
+;; output:
+;;
+;; => [1 2 3]
 ```
 
 
@@ -79,7 +83,7 @@ Any Venice data can be thrown resulting in a `:ValueException`:
    (let [file (io/temp-file "test-", ".txt")]
       (io/spit file "123456789" :append true)
       (try-with [is (. :FileInputStream :new file)]
-        (io/slurp-stream is :binary false))))
+         (io/slurp-stream is :binary false))))
 ```
 
 
