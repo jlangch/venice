@@ -1150,10 +1150,22 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_ex_catch_converted_checked_exception() {
+		final Venice venice = new Venice();
+
+		final String script2 =
+				"(do                                              \n" +
+				"   (try                                          \n" +
+				"     (throw (ex :Exception \"#test\"))           \n" +
+				"     (catch :RuntimeException e (:message e))))    ";
+
+		assertEquals("java.lang.Exception: #test", venice.eval(script2));
+	}
+	
+	@Test
 	public void test_ex_catch_basetype() {
 		final Venice venice = new Venice();
 
-		// (ex :RuntimeException "msg")
 		final String script2 =
 				"(do                                              \n" +
 				"   (try                                          \n" +
@@ -1167,7 +1179,6 @@ public class CoreFunctionsTest {
 	public void test_ex_with_cause() {
 		final Venice venice = new Venice();
 
-		// (ex :VncException "msg" cause)
 		final String script3 =
 				"(do                                                              \n" +
 				"   (import :java.io.IOException)                                 \n" +

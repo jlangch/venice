@@ -3,7 +3,15 @@
 
 ## Exceptions
 
-A few exception types are imported implicitly to simplify its usage:
+Exception handling is offered by many programming languages to handle the 
+runtime errors so that the normal flow of the application can be maintained. 
+Venice's exception handling is built on Java exceptions thus providing 
+seamless interoperability with existing Java code.
+
+All exceptions in Venice are *unchecked*. If checked exceptions are caught
+by Venice they are immediately converted to a runtime exception.
+
+A few exception types are imported implicitly to simplify usage:
 
   * `:java.lang.Exception`
   * `:java.lang.RuntimeException`
