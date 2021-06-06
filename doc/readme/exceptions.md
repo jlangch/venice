@@ -213,7 +213,7 @@ Example:
    (deftype :my-exception2 [message :string]) 
    
    (try
-      (throw (my-exception1. 0 0))
+      (throw (my-exception1. "error" 100))
       
       (catch my-exception1? e 
          (println (:value e)))
