@@ -19,9 +19,46 @@ A few exception types are imported implicitly to simplify usage:
   * `:com.github.jlangch.venice.ValueException`
 
 
+Create exceptions using the function `ex` :
+
+```clojure
+(do
+   (import :java.io.IOException)
+
+   ;; create an unchecked RuntimeException
+   (ex :RuntimeException "exception message")
+  
+   ;; create an checked IOException
+   (ex :IOException "exception message")
+   
+   ;; create an Venice exception
+   (ex :VncException "exception message")
+   
+   ;; create an exception with a cause
+   (let [cause (ex :RuntimeException "exception message")]
+     (ex :VncException "exception message" cause))
+```
+
+*Note:*
+Prefer using the `ex` function over Java interop to create exceptions! `ex` 
+works even with a full restricted sandbox where as the Java interop variant 
+requires a specifically configured sandbox.
+
+Create exceptions with arbitrary arguments using Java interop  if `ex` is not 
+suitable:
+
+```clojure
+(do
+   (import :java.text.ParseException)
+
+   ;; public ParseException(String s, int errorOffset)
+   (. :ParseException :new "Expected '['" 1000)
+```
 
 
-**try - catch - finally**
+
+
+## try - catch - finally
 
 ```clojure
 (do
@@ -82,7 +119,8 @@ Any Venice data can be thrown resulting in a `:ValueException`:
 ```
 
 
-**try-with resources**
+
+## try-with resources
 
 ```clojure
 (do
@@ -93,6 +131,19 @@ Any Venice data can be thrown resulting in a `:ValueException`:
       (try-with [is (. :FileInputStream :new file)]
          (io/slurp-stream is :binary false))))
 ```
+
+
+
+## Selectors
+
+to be added
+
+
+
+## Custom Exceptions
+
+to be added
+
 
 
 ## Stack traces
