@@ -1262,10 +1262,10 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                      \n" +
-				"   (try                                  \n" +
-				"      (throw 100)                        \n" +
-				"      (catch #(= 100 %) e (:value e))))    ";
+				"(do                                       \n" +
+				"   (try                                   \n" +
+				"      (throw 100)                         \n" +
+				"      (catch #(= 100 %) e (:value e))))      ";
 
 		assertEquals(100L, venice.eval(script));
 	}
@@ -1275,7 +1275,7 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                               \n" +
+				"(do                                \n" +
 				"   (try                            \n" +
 				"      (throw {:a 100, :b 200})     \n" +
 				"      (catch [:a 100] e            \n" +
@@ -1289,7 +1289,7 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                               \n" +
+				"(do                                \n" +
 				"   (try                            \n" +
 				"      (throw {:a 100, :b 200})     \n" +
 				"      (catch [:a 200] e            \n" +
