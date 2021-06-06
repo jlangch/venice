@@ -1245,6 +1245,19 @@ public class CoreFunctionsTest {
 				"(do                                      \n" +
 				"   (try                                  \n" +
 				"      (throw 100)                        \n" +
+				"      (catch long? e (:value e))))         ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_predicate_1c() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (try                                  \n" +
+				"      (throw 100)                        \n" +
 				"      (catch #(int? %) e (:value e))))    ";
 
 		try {
@@ -1268,6 +1281,38 @@ public class CoreFunctionsTest {
 				"      (catch #(= 100 %) e (:value e))))      ";
 
 		assertEquals(100L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_predicate_3a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"   (deftype :my-exception-1 [x :long, y :long])       \n" +
+				"   (deftype :my-exception-2 [a :long, b :long])       \n" +
+				"   (try                                               \n" +
+				"      (throw (my-exception-1. 0 0))                   \n" +
+				"      (catch my-exception-1? e (pr-str (:value e)))   \n" +
+				"      (catch my-exception-2? e (pr-str (:value e)))))   ";
+
+		assertEquals("{:custom-type* :user/my-exception-1 :x 0 :y 0}", venice.eval(script));
+	}
+	
+	@Test
+	public void test_ex_selector_predicate_3b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                    \n" +
+				"   (deftype :my-exception-1 [x :long, y :long])        \n" +
+				"   (deftype :my-exception-2 [a :long, b :long])        \n" +
+				"   (try                                                \n" +
+				"      (throw (my-exception-2. 0 0))                    \n" +
+				"      (catch my-exception-1? e (pr-str (:value e)))    \n" +
+				"      (catch my-exception-2? e (pr-str (:value e)))))   ";
+
+		assertEquals("{:custom-type* :user/my-exception-2 :a 0 :b 0}", venice.eval(script));
 	}
 	
 	@Test
