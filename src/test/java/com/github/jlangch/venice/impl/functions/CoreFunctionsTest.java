@@ -1284,7 +1284,7 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
-	public void test_ex_selector_predicate_3a() {
+	public void test_ex_selector_predicate_customtype_3a() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -1300,7 +1300,7 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
-	public void test_ex_selector_predicate_3b() {
+	public void test_ex_selector_predicate_customtype_3b() {
 		final Venice venice = new Venice();
 
 		final String script =

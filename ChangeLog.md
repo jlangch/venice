@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- exception selectors for try-catch blocks
 
 ### Fixed
 
