@@ -966,8 +966,8 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists(
 						"(try expr*)",
-						"(try expr* (catch exClass exSym expr*)*)",
-						"(try expr* (catch exClass exSym expr*)* (finally expr*))")
+						"(try expr* (catch selector ex-sym expr*)*)",
+						"(try expr* (catch selector ex-sym expr*)* (finally expr*))")
 					.doc(
 						"Exception handling: try - catch - finally \n\n" +
 						"`(try)` without any expression returns `nil`.\n\n" +
@@ -977,8 +977,8 @@ public class SpecialFormsDoc {
 						"  * :com.github.jlangch.venice.VncException \n" +
 						"  * :com.github.jlangch.venice.ValueException \n\n" +
 						"are imported implicitly so its alias :Exception, :RuntimeException, " +
-						":VncException, and :ValueException can be used without an import of " +
-						"the class.\n\n" +
+						":VncException, and :ValueException can be used as selector without " +
+						"an import of the class.\n\n" +
 						"**Note:**¶\n" +
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!")
@@ -1007,7 +1007,39 @@ public class SpecialFormsDoc {
 						"      (throw [1 2 3])                                \n" +
 						"      (catch :ValueException e (:value e))           \n" +
 						"      (catch :RuntimeException e \"runtime ex\")     \n" +
-						"      (finally (println \"...finally\"))))             ")
+						"      (finally (println \"...finally\"))))             ",
+					
+						";; key-value selector:                                       \n" +
+						"(do                                                          \n" +
+						"   (try                                                      \n" +
+						"      (throw {:a 100, :b 200})                               \n" +
+						"      (catch [:a 100] e                                      \n" +
+						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
+						"      (catch [:a 100, :b 200] e                              \n" +
+						"         (println \"ValueException, value: ~(:value e)\"))))   ",
+					
+						";; predicate selector:                                       \n" +
+						"(do                                                          \n" +
+						"   (try                                                      \n" +
+						"      (throw {:a 100, :b 200})                               \n" +
+						"      (catch long? e                                         \n" +
+						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
+						"      (catch map? e                                          \n" +
+						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
+						"      (catch #(= 100 (:a %)) e                               \n" +
+						"         (println \"ValueException, value: ~(:value e)\"))))   ",
+					
+						";; predicate selector with custom types:                       \n" +
+						"(do                                                            \n" +
+						"   (deftype :my-exception1 [message :string, position :long])  \n" +
+						"   (deftype :my-exception2 [message :string])                  \n" +
+						"                                                               \n" +
+						"   (try                                                        \n" +
+						"      (throw (my-exception1. \"error\" 100))                   \n" +
+						"      (catch my-exception1? e                                  \n" +
+						"         (println (:value e)))                                 \n" +
+						"      (catch my-exception2? e                                  \n" +
+						"         (println (:value e)))))                                 ")
 					.seeAlso("try-with", "throw", "ex")
 					.build()
 		) {
@@ -1021,8 +1053,8 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists(
 						"(try-with [bindings*] expr*)",
-						"(try-with [bindings*] expr* (catch exClass exSym expr*)*)",
-						"(try-with [bindings*] expr* (catch exClass exSym expr*)* (finally expr))")		
+						"(try-with [bindings*] expr* (catch selector ex-sym expr*)*)",
+						"(try-with [bindings*] expr* (catch selector ex-sym expr*)* (finally expr))")		
 					.doc(
 						"try-with-resources allows the declaration of resources to be used in a try block " +
 						"with the assurance that the resources will be closed after execution " +

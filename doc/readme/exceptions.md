@@ -110,7 +110,8 @@ Throw, catch, and finally blocks may contain multiple expressions:
 ;; => "RuntimeException msg: a message"
 ```
 
-Any Venice data can be thrown resulting in a `:ValueException`:
+Any Venice data can be thrown resulting in a `:ValueException` with the data 
+as the exception's value:
 
 ```clojure
 (do
@@ -145,7 +146,7 @@ The first catch clause whose selector matches the thrown exception will execute.
 
 A selector can be:
 
-  * a class name: (e.g., :RuntimeException, :java.text.ParseException), matches 
+  * a class: (e.g., :RuntimeException, :java.text.ParseException), matches 
     any instance of that class
 
   * a key-values vector: (e.g., [key val & kvs]), matches any instance of 
@@ -157,9 +158,9 @@ A selector can be:
     value returns `true`
     
 
-***Examples***
+***Selector Examples***
 
-Exception class name selector:
+Class selector:
 
 ```clojure
 (do
@@ -170,7 +171,7 @@ Exception class name selector:
 ```
 
 
-Exception key-values selector:
+key-value selector:
 
 ```clojure
 (do
@@ -183,7 +184,7 @@ Exception key-values selector:
 ```
 
 
-Exception predicate selector:
+Predicate selector:
 
 ```clojure
 (do
