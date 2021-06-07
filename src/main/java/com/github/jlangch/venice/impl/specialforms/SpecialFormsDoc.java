@@ -1026,7 +1026,7 @@ public class SpecialFormsDoc {
 						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
 						"      (catch map? e                                          \n" +
 						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
-						"      (catch #(= 100 (:a %)) e                               \n" +
+						"      (catch #(and (map? %) (= 100 (:a %))) e                \n" +
 						"         (println \"ValueException, value: ~(:value e)\"))))   ",
 					
 						";; predicate selector with custom types:                       \n" +

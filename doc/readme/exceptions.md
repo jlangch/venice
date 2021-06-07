@@ -194,7 +194,7 @@ Predicate selector:
          (println "ValueException, value: ~(:value e)"))
       (catch map? e
          (println "ValueException, value: ~(:value e)"))
-      (catch #(= 100 (:a %)) e
+      (catch #(and (map? %) (= 100 (:a %))) e
          (println "ValueException, value: ~(:value e)"))))
 ```
 
