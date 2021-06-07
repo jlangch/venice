@@ -34,6 +34,7 @@ public class Functions {
 	
 	static {
 		functions.putAll(CoreFunctions.ns);
+		functions.putAll(ExceptionFunctions.ns);
 		functions.putAll(BytebufFunctions.ns);
 		functions.putAll(TransducerFunctions.ns);
 		functions.putAll(ModuleFunctions.ns);

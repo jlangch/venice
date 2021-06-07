@@ -40,14 +40,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
-import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.GenSym;
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
@@ -102,201 +99,6 @@ import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
 
 public class CoreFunctions {
-
-	///////////////////////////////////////////////////////////////////////////
-	// Errors/Exceptions
-	///////////////////////////////////////////////////////////////////////////
-
-	public static VncFunction throw_ =
-		new VncFunction(
-				"throw",
-				VncFunction
-					.meta()
-					.arglists("(throw)", "(throw val)", "(throw ex)")
-					.doc(
-						"Throws an exception.\n\n" +
-						"`(throw)`¶\n" +
-						"Throws a :ValueException with `nil` as its value.\n" +
-						"\n" +
-						"`(throw val)`¶\n" +
-						"With *val* as a Venice value throws a :ValueException with *val* " +
-						"as its value.¶\n" +
-						"E.g: `(throw [1 2 3])`\n" +
-						"\n" +
-						"`(throw ex)`¶\n" +
-						"With a *ex* as an exception type throws the exception.¶\n" +
-						"E.g: `(throw (ex :VncException \"invalid data\"))`")
-					.examples(
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (+ 100 200)                                        \n" +
-						"      (catch :Exception e                                \n" +
-						"             \"caught ~(:message e)\")))                   ",
-
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (+ 100 200)                                        \n" +
-						"      (throw)                                            \n" +
-						"      (catch :ValueException e                           \n" +
-						"             \"caught ~(pr-str (:value e))\")))            ",
-
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (+ 100 200)                                        \n" +
-						"      (throw 100)                                        \n" +
-						"      (catch :ValueException e                           \n" +
-						"             \"caught ~(:value e)\")))                     ",
-
-						";; The finally block is just for side effects, like     \n" +
-						";; closing resources. It never returns a value!         \n" +
-						"(do                                                     \n" +
-						"   (try                                                 \n" +
-						"      (+ 100 200)                                       \n" +
-						"      (throw [100 {:a 3}])                              \n" +
-						"      (catch :ValueException e                          \n" +
-						"             \"caught ~(:value e)\")                    \n" +
-						"      (finally (println \"#finally\")                   \n" +
-						"               :finally)))                                ",
-
-						"(do                                                     \n" +
-						"   (try                                                 \n" +
-						"      (throw (ex :RuntimeException \"#test\"))          \n" +
-						"      (catch :RuntimeException e                        \n" +
-						"             \"caught ~(:message e)\")))                  ",
-
-						";; Venice wraps thrown checked exceptions with a RuntimeException! \n" +
-						"(do                                                                \n" +
-						"   (import :java.io.IOException)                                   \n" +
-						"   (try                                                            \n" +
-						"      (throw (ex :IOException \"#test\"))                          \n" +
-						"      (catch :RuntimeException e                                   \n" +
-					    "             \"caught ~(:message (:cause e))\")))                    ")
-					.seeAlso("ex", "try", "try-with")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 0, 1);
-
-				if (args.isEmpty()) {
-					throw new ValueException(Nil);
-				}
-				else if (Types.isVncJavaObject(args.first(), Exception.class)) {
-					final Exception ex = (Exception)((VncJavaObject)args.first()).getDelegate();
-					if (ex instanceof RuntimeException) {
-						throw (RuntimeException)ex;
-					}
-					else {
-						// wrap it with a RuntimeException
-						throw new RuntimeException(ex);
-					}
-				}
-				else {
-					throw new ValueException(args.first());
-				}
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction ex =
-		new VncFunction(
-				"ex",
-				VncFunction
-					.meta()
-					.arglists(
-						"(ex class)", 
-						"(ex class message)", 
-						"(ex class message cause)")
-					.doc(
-						"Creates an exception of type *class* with an optional *message* and " +
-						"an optional *cause* exception. \n\n" +
-						"The *class* must be a subclass of :java.lang.Exception¶\n" +
-						"The *cause* must be an instance of :java.lang.Throwable\n\n" +
-						"The exception types \n\n" +
-						"  * :java.lang.Exception \n" +
-						"  * :java.lang.RuntimeException \n" +
-						"  * :com.github.jlangch.venice.VncException \n\n" +
-						"  * :com.github.jlangch.venice.ValueException \n\n" +
-						"are imported implicitly so its alias :Exception, :RuntimeException, " +
-						":VncException, and :ValueException can be used.")
-					.examples(
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (throw (ex :VncException))                         \n" +
-						"      (catch :VncException e \"caught :VncException\")))   ",
-
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (throw (ex :RuntimeException \"#test\"))           \n" +
-						"      (catch :Exception e                                \n" +
-						"             \"msg: ~(:message e)\")))                     ",
-
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (throw (ex :ValueException 100))                   \n" +
-						"      (catch :ValueException e                           \n" +
-						"             \"value: ~(:value e)\")))                     ",
-
-						"(do                                                                  \n" +
-						"   (defn throw-ex-with-cause []                                      \n" +
-						"     (try                                                            \n" +
-						"        (throw (ex :java.io.IOException \"IO failure\"))             \n" +
-						"        (catch :Exception e                                          \n" +
-						"               (throw (ex :VncException \"failure\" (:cause e))))))  \n" +
-						"   (try                                                              \n" +
-						"      (throw-ex-with-cause)                                          \n" +
-						"      (catch :Exception e                                            \n" +
-						"             \"msg: ~(:message e), cause: ~(:message (:cause e))\")))  ")
-					.seeAlso("throw", "try", "try-with")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1, 2, 3);
-
-				final JavaImports javaImports = Namespaces.getCurrentNamespace().getJavaImports();
-				
-				final Class<?> excClass = JavaInteropUtil.toClass(args.first(), javaImports);			
-				if (!Exception.class.isAssignableFrom(excClass)) {
-					throw new VncException(
-							"Function 'ex' expects a 'class' arg as a subtype of :java.lang.Exception!");
-				}
-
-				// No sandbox checking for creating an exception!
-				
-				if (args.size() == 1) {
-					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(args.first(), new VncKeyword("new")), 
-							javaImports);	
-				}
-				else {
-					final VncVal msg = args.second();
-					final VncVal cause = args.third();
-
-					// the cause must be nil or an exception
-					if (cause != Nil && !Types.isVncJavaObject(cause, Exception.class)) {
-						throw new VncException(
-								"Function 'ex' expects a 'cause' arg of type :java.lang.Exception!");
-					}
-
-					if (ValueException.class.isAssignableFrom(excClass)) {
-						return new VncJavaObject(new ValueException(msg));
-					}
-					else {
-						// the message must be a nil or a string
-						if (msg != Nil && !Types.isVncString(msg)) {
-							throw new VncException(
-									"Function 'ex' expects a 'message' arg of type string!");
-						}
-	
-						return JavaInteropUtil.applyJavaAccess(
-									VncList.of(args.first(), new VncKeyword("new"), msg, cause), 
-									javaImports);
-					}
-				}
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
 
 		
 	///////////////////////////////////////////////////////////////////////////
@@ -7674,8 +7476,6 @@ public class CoreFunctions {
 	public static Map<VncVal, VncVal> ns =
 			new VncHashMap
 				.Builder()
-				.add(throw_)
-				.add(ex)
 
 				.add(nil_Q)
 				.add(some_Q)

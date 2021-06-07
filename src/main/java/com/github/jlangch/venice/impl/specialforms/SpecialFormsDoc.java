@@ -986,7 +986,7 @@ public class SpecialFormsDoc {
 						"(try                                      \n" +
 						"   (throw \"test\")                       \n" +
 						"   (catch :ValueException e               \n" +
-						"          \"caught ~(:value e)\"))          ",
+						"          \"caught ~(ex-value e)\"))        ",
 						
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
@@ -1000,34 +1000,34 @@ public class SpecialFormsDoc {
 						"(do                                                  \n" +
 						"   (try                                              \n" +
 						"      (throw (ex :RuntimeException \"message\"))     \n" +
-						"      (catch :RuntimeException e (:message e))))       ",
+						"      (catch :RuntimeException e (ex-message e))))     ",
 						
 						"(do                                                  \n" +
 						"   (try                                              \n" +
 						"      (throw [1 2 3])                                \n" +
-						"      (catch :ValueException e (:value e))           \n" +
+						"      (catch :ValueException e (ex-value e))         \n" +
 						"      (catch :RuntimeException e \"runtime ex\")     \n" +
 						"      (finally (println \"...finally\"))))             ",
 					
-						";; key-value selector:                                       \n" +
-						"(do                                                          \n" +
-						"   (try                                                      \n" +
-						"      (throw {:a 100, :b 200})                               \n" +
-						"      (catch [:a 100] e                                      \n" +
-						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
-						"      (catch [:a 100, :b 200] e                              \n" +
-						"         (println \"ValueException, value: ~(:value e)\"))))   ",
+						";; key-value selector:                                         \n" +
+						"(do                                                            \n" +
+						"   (try                                                        \n" +
+						"      (throw {:a 100, :b 200})                                 \n" +
+						"      (catch [:a 100] e                                        \n" +
+						"         (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"      (catch [:a 100, :b 200] e                                \n" +
+						"         (println \"ValueException, value: ~(ex-value e)\"))))   ",
 					
-						";; predicate selector:                                       \n" +
-						"(do                                                          \n" +
-						"   (try                                                      \n" +
-						"      (throw {:a 100, :b 200})                               \n" +
-						"      (catch long? e                                         \n" +
-						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
-						"      (catch map? e                                          \n" +
-						"         (println \"ValueException, value: ~(:value e)\"))   \n" +
-						"      (catch #(and (map? %) (= 100 (:a %))) e                \n" +
-						"         (println \"ValueException, value: ~(:value e)\"))))   ",
+						";; predicate selector:                                         \n" +
+						"(do                                                            \n" +
+						"   (try                                                        \n" +
+						"      (throw {:a 100, :b 200})                                 \n" +
+						"      (catch long? e                                           \n" +
+						"         (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"      (catch map? e                                            \n" +
+						"         (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"      (catch #(and (map? %) (= 100 (:a %))) e                  \n" +
+						"         (println \"ValueException, value: ~(ex-value e)\"))))   ",
 					
 						";; predicate selector with custom types:                       \n" +
 						"(do                                                            \n" +

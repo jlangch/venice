@@ -177,7 +177,7 @@ public class DocGenerator {
 		functions.addSection(new DocSection("Transducers", "transducers"));
 		functions.addSection(new DocSection("Namespaces", "namespace"));
 		functions.addSection(new DocSection("Types", "types"));
-		functions.addSection(new DocSection("Exceptions", "functions.exception"));
+		functions.addSection(new DocSection("Exceptions", "exceptions"));
 		content.add(functions);
 		
 		final DocSection concurrency = new DocSection("Concurrency", "concurrency");
@@ -254,6 +254,7 @@ public class DocGenerator {
 				getFunctionsSection(),
 				getMacrosSection(),
 				getSpecialFormsSection(),
+				getExceptionsSection(),
 				getTypesSection(),
 				getNamespaceSection(),
 				getJavaInteropSection(),
@@ -1022,13 +1023,6 @@ public class DocGenerator {
 		all.addSection(test);
 		test.addItem(getDocItem("fn?"));
 
-		final DocSection ex = new DocSection("Exceptions", "functions.exception");
-		all.addSection(ex);
-		ex.addItem(getDocItem("try", true, true));
-		ex.addItem(getDocItem("try-with", true, true));
-		ex.addItem(getDocItem("throw"));
-		ex.addItem(getDocItem("ex"));
-
 		final DocSection misc = new DocSection("Misc", "functions.misc");
 		all.addSection(misc);
 		misc.addItem(getDocItem("nil?"));
@@ -1076,6 +1070,37 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getExceptionsSection() {
+		final DocSection section = new DocSection("Exceptions", "exceptions");
+
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection block = new DocSection("Throw/Catch", "exceptions.block");
+		all.addSection(block);
+		block.addItem(getDocItem("try", true, true));
+		block.addItem(getDocItem("try-with", true, true));
+		block.addItem(getDocItem("throw", true, true));
+		
+		final DocSection type = new DocSection("Create", "exceptions.type");
+		all.addSection(type);
+		type.addItem(getDocItem("ex", true, true));
+		type.addItem(getDocItem("ex?", true, true));
+		type.addItem(getDocItem("ex-venice?", true, true));
+
+		final DocSection util = new DocSection("Util", "exceptions.util");
+		all.addSection(util);
+		util.addItem(getDocItem("ex-message", true, true));
+		util.addItem(getDocItem("ex-cause", true, true));
+		util.addItem(getDocItem("ex-value", true, true));
+
+		final DocSection stacktrace = new DocSection("Stacktrace", "exceptions.stacktrace");
+		all.addSection(stacktrace);
+		stacktrace.addItem(getDocItem("ex-venice-stacktrace", true, true));
+		stacktrace.addItem(getDocItem("ex-java-stacktrace", true, true));
+		
+		return section;
+	}
 
 	private DocSection getSystemSection() {
 		final DocSection section = new DocSection("System", "system");
@@ -2604,9 +2629,6 @@ public class DocGenerator {
 			Collections.unmodifiableList(new ArrayList<>());
 	
 	private static final int CROSSREF_MAX_LEN = 145;
-	private static final char NON_BLOCKING_SPACE = '\u00a0';
-	private static final char BULLET = '\u2022';
-	private static final String IDENT_ENUM = StringUtil.repeat(NON_BLOCKING_SPACE, 4) + BULLET + NON_BLOCKING_SPACE;
 	
 	private final Map<String,String> idMap = new HashMap<>();
 	
