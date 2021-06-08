@@ -14,7 +14,7 @@ and this project adheres to
 ### Added
 
 - exception selectors for `catch` clauses in try-catch blocks
-- utility functions to acess message, cause, and stacktraces
+- utility functions to access message, cause, and stacktraces
   of an exception
 
 ### Fixed
