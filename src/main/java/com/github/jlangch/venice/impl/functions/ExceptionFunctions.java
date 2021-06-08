@@ -23,6 +23,9 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 
 import com.github.jlangch.venice.ValueException;
@@ -34,12 +37,14 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.util.StackFrame;
 
 
 public class ExceptionFunctions {
@@ -392,22 +397,60 @@ public class ExceptionFunctions {
 				"ex-venice-stacktrace",
 				VncFunction
 					.meta()
-					.arglists("(ex-venice-stacktrace x)")
+					.arglists(
+						"(ex-venice-stacktrace x)",
+						"(ex-venice-stacktrace x format)")
 					.doc(
 						"Returns the Venice stacktrace for an exception or nil if the " +
-						"exception is not a venice exception")
+						"exception is not a venice exception.\n\n" +
+						"The optional format (:string or :list) controls the format of the " +
+						"returned stacktrace. The default format is :string.")
 					.examples(
 						"(ex-venice-stacktrace (ex :ValueException [10 20]))",
 						"(ex-venice-stacktrace (ex :RuntimeException))")
-					.seeAlso("ex", "ex-java-stacktrace")
+					.seeAlso(
+						"ex", "ex-java-stacktrace")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
+				ArityExceptions.assertArity(this, args, 1, 2);
 
-				if (Types.isVncJavaObject(args.first(), Throwable.class)) {
-					final Throwable ex = (Throwable)((VncJavaObject)args.first()).getDelegate();
+				final boolean listFormat = Types.isVncKeyword(args.second()) 
+												&& "list".equals(((VncKeyword)args.second()).getSimpleName());
+				
+				if (Types.isVncJavaObject(args.first(), VncException.class)) {
+					final VncException ex = (VncException)((VncJavaObject)args.first()).getDelegate();
 					
+					if (listFormat) {
+						VncList list = VncList.empty();
+						
+						for(StackFrame s : ex.getCallStack()) {
+							list = list.addAtEnd(
+									VncHashMap.of(
+										new VncKeyword("fn"),   new VncString(s.getFnName()),
+										new VncKeyword("file"), new VncString(s.getFile()),
+										new VncKeyword("line"), new VncLong(s.getLine()),
+										new VncKeyword("col"),  new VncLong(s.getCol())));
+						};
+						
+						return list;
+					}
+					else {
+						try (StringWriter sw = new StringWriter();
+							 PrintWriter pw = new PrintWriter(sw)
+						) {
+							ex.printVeniceStackTrace(pw);
+							pw.flush();
+							return new VncString(sw.toString());
+						}
+						catch(IOException e) {
+							throw new VncException(
+									"Function 'ex-venice-stacktrace' failed to create stacktrace!",
+									e);
+						}
+					}
+				}
+				else if (Types.isVncJavaObject(args.first(), Throwable.class)) {
 					return Nil;
 				}
 				else {
@@ -424,21 +467,57 @@ public class ExceptionFunctions {
 					"ex-java-stacktrace",
 					VncFunction
 						.meta()
-						.arglists("(ex-java-stacktrace x)")
+						.arglists(
+							"(ex-java-stacktrace x)", 
+							"(ex-java-stacktrace x format)")
 						.doc(
-							"Returns the Java stacktrace for an exception")
+							"Returns the Java stacktrace for an exception.\n\n" +
+							"The optional format (:string or :list) controls the format of the " +
+							"returned stacktrace. The default format is :string.")
 						.examples(
 							"(ex-java-stacktrace (ex :RuntimeException))")
-						.seeAlso("ex", "ex-venice-stacktrace")
+						.seeAlso(
+							"ex", "ex-venice-stacktrace")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
-					ArityExceptions.assertArity(this, args, 1);
+					ArityExceptions.assertArity(this, args, 1, 2);
 
 					if (Types.isVncJavaObject(args.first(), Throwable.class)) {
 						final Throwable ex = (Throwable)((VncJavaObject)args.first()).getDelegate();
+
+						final boolean listFormat = Types.isVncKeyword(args.second()) 
+													&& "list".equals(((VncKeyword)args.second()).getSimpleName());
 						
-						return Nil;
+						if (listFormat) {
+							VncList list = VncList.empty();
+							
+							for(StackTraceElement s : ex.getStackTrace()) {
+								list = list.addAtEnd(
+										VncHashMap.of(
+											new VncKeyword("class"),  new VncString(s.getClassName()),
+											new VncKeyword("method"), new VncString(s.getMethodName()),
+											new VncKeyword("file"),   new VncString(s.getFileName()),
+											new VncKeyword("line"),   new VncLong(s.getLineNumber()),
+											new VncKeyword("native"), VncBoolean.of(s.isNativeMethod())));
+							}
+							
+							return list;
+						}
+						else {
+							try (StringWriter sw = new StringWriter();
+								 PrintWriter pw = new PrintWriter(sw)
+							) {
+								ex.printStackTrace(pw);
+								pw.flush();
+								return new VncString(sw.toString());
+							}
+							catch(IOException e) {
+								throw new VncException(
+										"Function 'ex-java-stacktrace' failed to create stacktrace!",
+										e);
+							}
+						}
 					}
 					else {
 						throw new VncException(
