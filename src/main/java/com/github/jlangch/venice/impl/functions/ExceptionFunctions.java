@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
@@ -42,9 +44,9 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.util.StackFrame;
 
 
 public class ExceptionFunctions {
@@ -406,8 +408,9 @@ public class ExceptionFunctions {
 						"The optional format (:string or :list) controls the format of the " +
 						"returned stacktrace. The default format is :string.")
 					.examples(
-						"(ex-venice-stacktrace (ex :ValueException [10 20]))",
-						"(ex-venice-stacktrace (ex :RuntimeException))")
+						"(println (ex-venice-stacktrace (ex :ValueException [10 20])))",
+						"(println (ex-venice-stacktrace (ex :RuntimeException \"message\")))",
+						"(println (ex-venice-stacktrace (ex :ValueException [10 20]) :list))")
 					.seeAlso(
 						"ex", "ex-java-stacktrace")
 					.build()
@@ -422,18 +425,15 @@ public class ExceptionFunctions {
 					final VncException ex = (VncException)((VncJavaObject)args.first()).getDelegate();
 					
 					if (listFormat) {
-						VncList list = VncList.empty();
-						
-						for(StackFrame s : ex.getCallStack()) {
-							list = list.addAtEnd(
-									VncHashMap.of(
-										new VncKeyword("fn"),   new VncString(s.getFnName()),
-										new VncKeyword("file"), new VncString(s.getFile()),
-										new VncKeyword("line"), new VncLong(s.getLine()),
-										new VncKeyword("col"),  new VncLong(s.getCol())));
-						};
-						
-						return list;
+						return VncList.ofList(
+								ex.getCallStack()
+								  .stream()
+								  .map(s -> VncOrderedMap.of(
+												new VncKeyword("fn"),   new VncString(s.getFnName()),
+												new VncKeyword("file"), new VncString(s.getFile()),
+												new VncKeyword("line"), new VncLong(s.getLine()),
+												new VncKeyword("col"),  new VncLong(s.getCol())))
+								  .collect(Collectors.toList()));
 					}
 					else {
 						try (StringWriter sw = new StringWriter();
@@ -475,7 +475,8 @@ public class ExceptionFunctions {
 							"The optional format (:string or :list) controls the format of the " +
 							"returned stacktrace. The default format is :string.")
 						.examples(
-							"(ex-java-stacktrace (ex :RuntimeException))")
+							"(println (ex-java-stacktrace (ex :RuntimeException \"message\")))",
+							"(println (ex-java-stacktrace (ex :VncException \"message\") :list))")
 						.seeAlso(
 							"ex", "ex-venice-stacktrace")
 						.build()
@@ -487,22 +488,19 @@ public class ExceptionFunctions {
 						final Throwable ex = (Throwable)((VncJavaObject)args.first()).getDelegate();
 
 						final boolean listFormat = Types.isVncKeyword(args.second()) 
-													&& "list".equals(((VncKeyword)args.second()).getSimpleName());
+													 && "list".equals(((VncKeyword)args.second()).getSimpleName());
 						
 						if (listFormat) {
-							VncList list = VncList.empty();
-							
-							for(StackTraceElement s : ex.getStackTrace()) {
-								list = list.addAtEnd(
-										VncHashMap.of(
-											new VncKeyword("class"),  new VncString(s.getClassName()),
-											new VncKeyword("method"), new VncString(s.getMethodName()),
-											new VncKeyword("file"),   new VncString(s.getFileName()),
-											new VncKeyword("line"),   new VncLong(s.getLineNumber()),
-											new VncKeyword("native"), VncBoolean.of(s.isNativeMethod())));
-							}
-							
-							return list;
+							return VncList.ofList(
+									Stream
+									  .of(ex.getStackTrace())
+									  .map(s -> VncOrderedMap.of(
+													new VncKeyword("class"),  new VncString(s.getClassName()),
+													new VncKeyword("method"), new VncString(s.getMethodName()),
+													new VncKeyword("file"),   new VncString(s.getFileName()),
+													new VncKeyword("line"),   new VncLong(s.getLineNumber()),
+													new VncKeyword("native"), VncBoolean.of(s.isNativeMethod())))
+									  .collect(Collectors.toList()));
 						}
 						else {
 							try (StringWriter sw = new StringWriter();

@@ -1084,22 +1084,22 @@ public class DocGenerator {
 		
 		final DocSection create = new DocSection("Create", "exceptions.create");
 		all.addSection(create);
-		create.addItem(getDocItem("ex", true, true));
+		create.addItem(getDocItem("ex"));
 		
 		final DocSection test = new DocSection("Test", "exceptions.test");
 		all.addSection(test);
-		test.addItem(getDocItem("ex?", true, true));
-		test.addItem(getDocItem("ex-venice?", true, true));
+		test.addItem(getDocItem("ex?"));
+		test.addItem(getDocItem("ex-venice?"));
 
 		final DocSection util = new DocSection("Util", "exceptions.util");
 		all.addSection(util);
-		util.addItem(getDocItem("ex-message", true, true));
-		util.addItem(getDocItem("ex-cause", true, true));
-		util.addItem(getDocItem("ex-value", true, true));
+		util.addItem(getDocItem("ex-message"));
+		util.addItem(getDocItem("ex-cause"));
+		util.addItem(getDocItem("ex-value"));
 
 		final DocSection stacktrace = new DocSection("Stacktrace", "exceptions.stacktrace");
 		all.addSection(stacktrace);
-		stacktrace.addItem(getDocItem("ex-venice-stacktrace", false, true));
+		stacktrace.addItem(getDocItem("ex-venice-stacktrace"));
 		stacktrace.addItem(getDocItem("ex-java-stacktrace", false, true));
 		
 		return section;
