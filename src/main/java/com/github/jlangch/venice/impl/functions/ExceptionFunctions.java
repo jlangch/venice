@@ -149,20 +149,24 @@ public class ExceptionFunctions {
 					.meta()
 					.arglists(
 						"(ex class)", 
-						"(ex class message)", 
-						"(ex class message cause)")
+						"(ex class args*)")
 					.doc(
-						"Creates an exception of type *class* with an optional *message* and " +
-						"an optional *cause* exception. \n\n" +
+						"Creates an exception of type *class* with optional *args*\n\n" +
 						"The *class* must be a subclass of :java.lang.Exception¶\n" +
-						"The *cause* must be an instance of :java.lang.Throwable\n\n" +
 						"The exception types \n\n" +
 						"  * :java.lang.Exception \n" +
 						"  * :java.lang.RuntimeException \n" +
 						"  * :com.github.jlangch.venice.VncException \n" +
 						"  * :com.github.jlangch.venice.ValueException \n\n" +
 						"are imported implicitly so its alias :Exception, :RuntimeException, " +
-						":VncException, and :ValueException can be used.")
+						":VncException, and :ValueException can be used.\n\n" +
+						"All exceptions in Venice are *unchecked*.\n\n" +
+						"**Checked vs unchecked exceptions **\n\n" +
+						"If *checked* exceptions are thrown in Venice they are immediately wrapped " +
+						"in a runtime exception before being thrown!¶" +
+						"If Venice catches a *checked* exception from a Java interop call " +
+						"it wraps it in a :RuntimeException before handling it by the catch block " +
+						"selectors!")
 					.examples(
 						"(do                                                      \n" +
 						"   (try                                                  \n" +
@@ -195,7 +199,7 @@ public class ExceptionFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1, 2, 3);
+				ArityExceptions.assertMinArity(this, args, 1);
 
 				final JavaImports javaImports = Namespaces.getCurrentNamespace().getJavaImports();
 				
@@ -205,38 +209,12 @@ public class ExceptionFunctions {
 							"Function 'ex' expects a 'class' arg as a subtype of :java.lang.Exception!");
 				}
 
+					
 				// No sandbox checking for creating an exception!
-				
-				if (args.size() == 1) {
-					return JavaInteropUtil.applyJavaAccess(
-							VncList.of(args.first(), new VncKeyword("new")), 
-							javaImports);	
-				}
-				else {
-					final VncVal msg = args.second();
-					final VncVal cause = args.third();
-
-					// the cause must be nil or an exception
-					if (cause != Nil && !Types.isVncJavaObject(cause, Exception.class)) {
-						throw new VncException(
-								"Function 'ex' expects a 'cause' arg of type :java.lang.Exception!");
-					}
-
-					if (ValueException.class.isAssignableFrom(excClass)) {
-						return new VncJavaObject(new ValueException(msg));
-					}
-					else {
-						// the message must be a nil or a string
-						if (msg != Nil && !Types.isVncString(msg)) {
-							throw new VncException(
-									"Function 'ex' expects a 'message' arg of type string!");
-						}
-	
-						return JavaInteropUtil.applyJavaAccess(
-									VncList.of(args.first(), new VncKeyword("new"), msg, cause), 
-									javaImports);
-					}
-				}
+				final VncList newExArgs = VncList
+											.of(args.first(), new VncKeyword("new"))
+											.addAllAtEnd(args.rest());				
+				return JavaInteropUtil.applyJavaAccess(newExArgs, javaImports);	
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -382,7 +360,9 @@ public class ExceptionFunctions {
 						return Nil;
 					}
 					else {
-						return value instanceof VncVal ? (VncVal)value : JavaInteropUtil.convertToVncVal(value);
+						return value instanceof VncVal 
+								? (VncVal)value 
+								: JavaInteropUtil.convertToVncVal(value);
 					}
 				}
 				else {

@@ -24,6 +24,7 @@ package com.github.jlangch.venice;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
@@ -171,6 +172,30 @@ public class SpecialForms_TryTest {
 		}
 
 		fail("Expected JavaValueException");
+	}
+
+	@Test
+	public void test_try_throw_checked_1a() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(try                                            \n" +
+				"  (throw (ex :java.io.IOException \"test\"))    \n" +
+				"  (catch :Exception e e))                         ";
+
+		assertEquals(RuntimeException.class, venice.eval(lisp).getClass());
+	}
+
+	@Test
+	public void test_try_throw_checked_1b() {
+		final Venice venice = new Venice();
+
+		final String lisp = 
+				"(try                                            \n" +
+				"  (throw (ex :java.io.IOException \"test\"))    \n" +
+				"  (catch :Exception e (:cause e)))                ";
+
+		assertEquals(IOException.class, venice.eval(lisp).getClass());
 	}
 
 	

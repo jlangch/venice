@@ -8,9 +8,6 @@ runtime errors so that the normal flow of the application can be maintained.
 Venice's exception handling is built on Java exceptions thus providing 
 seamless interoperability with existing Java code.
 
-All exceptions in Venice are *unchecked*. If checked exceptions are caught
-by Venice they are immediately converted to a runtime exception.
-
 A few exception types are imported implicitly to simplify usage:
 
   * `:java.lang.Exception`
@@ -24,12 +21,18 @@ Create exceptions using the function `ex` :
 ```clojure
 (do
    (import :java.io.IOException)
+   (import :java.text.ParseException)
 
    ;; create an unchecked RuntimeException
    (ex :RuntimeException "exception message")
   
-   ;; create a checked IOException
+   ;; create a checked IOException. Will be wrapped with a :RuntimeException 
+   ;; when throwing it!
    (ex :IOException "exception message")
+   
+   ;; create a checked ParseException. Will be wrapped with a :RuntimeException 
+   ;; public ParseException(String s, int errorOffset)
+   (. :ParseException :new "Expected '['" 1000)
    
    ;; create a Venice exception
    (ex :VncException "exception message")
@@ -44,8 +47,7 @@ Prefer using the `ex` function over Java interop to create exceptions! `ex`
 works even with a full restricted sandbox where as the Java interop variant 
 requires a specifically configured sandbox.
 
-Create exceptions with arbitrary arguments using Java interop  if `ex` is not 
-suitable:
+Create exceptions using Java interop:
 
 ```clojure
 (do
@@ -53,8 +55,25 @@ suitable:
 
    ;; public ParseException(String s, int errorOffset)
    (. :ParseException :new "Expected '['" 1000)
+   
+      
+   ;; create an exception with a cause
+   (let [cause (ex :RuntimeException "exception message")]
+     (. :VncException :new "exception message" cause)))
+   
 ```
 
+
+## checked vs unchecked exceptions
+
+All exceptions in Venice are *unchecked*. 
+
+If *checked* exceptions are thrown in Venice they are immediately wrapped 
+in a runtime exception before being thrown! 
+
+If Venice catches a *checked* exception from a Java interop call
+it wraps it in a :RuntimeException before handling it by the catch block
+selectors!
 
 
 
@@ -66,13 +85,10 @@ The first catch clause that matches the thrown exception will execute.
 
 ```clojure
 (do
-   (import :java.io.IOException)
-  
    (try
       (throw (ex :RuntimeException "a message"))
-      (catch :IOException e "IOException, msg: ~(:message e)")
-      (catch :RuntimeException e "RuntimeException, msg: ~(:message e)")
       (catch :VncException e "VncException, msg: ~(:message e)")
+      (catch :RuntimeException e "RuntimeException, msg: ~(:message e)")
       (finally (println "... finally."))))
       
 ;; output:
@@ -93,9 +109,6 @@ Throw, catch, and finally blocks may contain multiple expressions:
    (try
       (println "try...")
       (throw (ex :RuntimeException "a message"))
-      (catch :IOException e 
-         (println "caught IOException")
-         "IOException, msg: ~(:message e)")
       (catch :RuntimeException e
          (println "caught RuntimeException")
          "RuntimeException, msg: ~(:message e)")
@@ -164,6 +177,8 @@ Class selector:
 (do
    (try
       (throw (ex :RuntimeException "a message"))
+      (catch :VncException e
+         (println "VncException, msg: ~(:message e)"))
       (catch :RuntimeException e
          (println "RuntimeException, msg: ~(:message e)"))))
 ```
@@ -199,7 +214,7 @@ Predicate selector:
 
 ## Custom Exceptions
 
-Venice *Custom Types* are a perfect fit for custom exceptions. Throw an instance
+Venice *Custom Types* are a perfect match for custom exceptions. Throw an instance
 of a custom type as a :ValueException and define a `catch` clause with a predicate.
 
 
@@ -207,16 +222,13 @@ Example:
 
 ```clojure
 (do
-   (deftype :my-exception1 [message :string, position :long])
-   
+   (deftype :my-exception1 [message :string, position :long]) 
    (deftype :my-exception2 [message :string]) 
    
    (try
-      (throw (my-exception1. "error" 100))
-      
+      (throw (my-exception1. "error" 100))      
       (catch my-exception1? e 
-         (println (:value e)))
-         
+         (println (:value e)))         
       (catch my-exception2? e 
          (println (:value e)))))
 ```

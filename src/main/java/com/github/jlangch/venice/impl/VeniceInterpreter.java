@@ -1924,13 +1924,27 @@ public class VeniceInterpreter implements Serializable  {
 			try {
 				result = evaluateBody(getTryBody(args), env, true);
 			} 
-			catch (Throwable th) {
-				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, th);
+			catch (RuntimeException ex) {
+				// unchecked exceptions
+				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, ex);
 				if (catchBlock == null) {
-					throw th;
+					throw ex;
 				}
 				else {
-					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));			
+					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));			
+					return evaluateBody(catchBlock.getBody(), env, false);
+				}
+			}
+			catch (Exception ex) {
+				// checked exceptions
+				final RuntimeException wrappedEx = new RuntimeException(ex);
+
+				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, wrappedEx);
+				if (catchBlock == null) {
+					throw ex;
+				}
+				else {
+					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
 					return evaluateBody(catchBlock.getBody(), env, false);
 				}
 			}

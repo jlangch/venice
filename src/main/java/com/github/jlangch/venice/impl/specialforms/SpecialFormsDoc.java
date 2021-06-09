@@ -990,7 +990,13 @@ public class SpecialFormsDoc {
 						"    exception's value returns true\n\n" +
 						"**Note:**¶\n" +
 						"The finally block is just for side effects, like closing resources. " +
-						"It never returns a value!")
+						"It never returns a value!\n\n" +
+						"**Note:**¶\n" +
+						"All exceptions in Venice are *unchecked*. If *checked* exceptions are thrown " +
+						"in Venice they are immediately wrapped in a :RuntimeException before being " +
+						"thrown! If Venice catches a *checked* exception from a Java interop call " +
+						"it wraps it in a :RuntimeException before handling it by the catch block " +
+						"selectors!")
 					.examples(
 						"(try                                      \n" +
 						"   (throw \"test\")                       \n" +
