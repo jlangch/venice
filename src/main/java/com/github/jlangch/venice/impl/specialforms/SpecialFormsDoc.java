@@ -979,6 +979,15 @@ public class SpecialFormsDoc {
 						"are imported implicitly so its alias :Exception, :RuntimeException, " +
 						":VncException, and :ValueException can be used as selector without " +
 						"an import of the class.\n\n" +
+						"**Selectors**\n\n" +
+						"  * a class: (e.g., :RuntimeException, :java.text.ParseException), " +
+						"    matches any instance of that class\n" +
+						"  * a key-values vector: (e.g., [key val & kvs]), matches any instance " +
+						"    of :ValueException where the exception's value meets the expression " +
+						"    `(and (= (get ex-value key) val) ...)`\n" +
+						"  * a predicate: (a function of one argument like map?, set?), matches " +
+						"    any instance of :ValueException where the predicate applied to the " +
+						"    exception's value returns true\n\n" +
 						"**Note:**¶\n" +
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!")
@@ -997,37 +1006,33 @@ public class SpecialFormsDoc {
 						"   (catch :Exception e -100)               \n" +
 						"   (finally (println \"...finally\")))       ",
 						
-						"(do                                                  \n" +
-						"   (try                                              \n" +
-						"      (throw (ex :RuntimeException \"message\"))     \n" +
-						"      (catch :RuntimeException e (ex-message e))))     ",
+						"(try                                              \n" +
+						"   (throw (ex :RuntimeException \"message\"))     \n" +
+						"   (catch :RuntimeException e (ex-message e)))     ",
 						
-						"(do                                                  \n" +
-						"   (try                                              \n" +
-						"      (throw [1 2 3])                                \n" +
-						"      (catch :ValueException e (ex-value e))         \n" +
-						"      (catch :RuntimeException e \"runtime ex\")     \n" +
-						"      (finally (println \"...finally\"))))             ",
+						"(try                                              \n" +
+						"   (throw [1 2 3])                                \n" +
+						"   (catch :ValueException e (ex-value e))         \n" +
+						"   (catch :RuntimeException e \"runtime ex\")     \n" +
+						"   (finally (println \"...finally\")))             ",
 					
-						";; key-value selector:                                         \n" +
-						"(do                                                            \n" +
-						"   (try                                                        \n" +
-						"      (throw {:a 100, :b 200})                                 \n" +
-						"      (catch [:a 100] e                                        \n" +
-						"         (println \"ValueException, value: ~(ex-value e)\"))   \n" +
-						"      (catch [:a 100, :b 200] e                                \n" +
-						"         (println \"ValueException, value: ~(ex-value e)\"))))   ",
+						";; key-value selector:                                      \n" +
+						"(try                                                        \n" +
+						"   (throw {:a 100, :b 200})                                 \n" +
+						"   (catch [:a 100] e                                        \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"   (catch [:a 100, :b 200] e                                \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\")))   ",
 					
-						";; predicate selector:                                         \n" +
-						"(do                                                            \n" +
-						"   (try                                                        \n" +
-						"      (throw {:a 100, :b 200})                                 \n" +
-						"      (catch long? e                                           \n" +
-						"         (println \"ValueException, value: ~(ex-value e)\"))   \n" +
-						"      (catch map? e                                            \n" +
-						"         (println \"ValueException, value: ~(ex-value e)\"))   \n" +
-						"      (catch #(and (map? %) (= 100 (:a %))) e                  \n" +
-						"         (println \"ValueException, value: ~(ex-value e)\"))))   ",
+						";; predicate selector:                                      \n" +
+						"(try                                                        \n" +
+						"   (throw {:a 100, :b 200})                                 \n" +
+						"   (catch long? e                                           \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"   (catch map? e                                            \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"   (catch #(and (map? %) (= 100 (:a %))) e                  \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))))   ",
 					
 						";; predicate selector with custom types:                       \n" +
 						"(do                                                            \n" +

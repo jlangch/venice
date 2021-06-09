@@ -142,8 +142,6 @@ as the exception's value:
 
 ## Selectors
 
-The first catch clause whose selector matches the thrown exception will execute.
-
 A selector can be:
 
   * a class: (e.g., :RuntimeException, :java.text.ParseException), matches 
