@@ -42,7 +42,7 @@ Create exceptions using the function `ex` :
      (ex :VncException "exception message" cause))
 ```
 
-*Note:*
+**Note:**
 Prefer using the `ex` function over Java Interop to create exceptions! `ex` 
 works even with a full restricted sandbox where as the Java Interop variant 
 requires a specifically configured sandbox.
@@ -96,8 +96,8 @@ The first catch clause that matches the thrown exception will execute.
 ;; => "RuntimeException msg: a message"
 ```
 
-*Note:*
-The finally block is just for side effects, like closing resources. It never returns a value!
+**Note:**
+The *finally* block is just for side effects, like closing resources. It never returns a value!
 
 Throw, catch, and finally blocks may contain multiple expressions:
 
@@ -161,7 +161,9 @@ A selector can be:
 
   * a key-values vector: (e.g., [key val & kvs]), matches any instance of 
     :ValueException where the exception's value meets the expression 
-    `(and (= (get ex-value key) val) ...)`
+    `(and (= (get ex-value key) val) ...)`. To match a specific exception cause
+    type use the selector `[:cause-type :java.io.IOException]` 
+    
 
   * a predicate: (a function of one argument like `map?`, `set?`), matches any 
     instance of :ValueException where the predicate applied to the exception's 
@@ -201,6 +203,7 @@ key-value selector matching exception cause type (Venice 1.9.23+):
 ```clojure
 (do
    (try
+      ;; note: Venice wraps any checked exception with a :RuntimeException
       (throw (ex :java.io.IOException "test"))
       (catch [:cause-type :java.io.IOException] e
          (println "IOException, message: ~(:message (:cause e))"))
