@@ -2105,13 +2105,33 @@ public class VeniceInterpreter implements Serializable  {
 		
 		// Selector: list => (catch [key1 value1, ...] e (..))
 		else if (Types.isVncSequence(selector)) {
-			if (th instanceof ValueException) {
-				
+			VncSequence seq = (VncSequence)selector;
+			
+			// (catch [:cause :IOException, ...] e (..))
+			if (seq.first().equals(CAUSE_TYPE_SELECTOR_KEY) && Types.isVncKeyword(seq.second())) {
+				final Throwable cause = th.getCause();
+				if (cause != null) {
+					final VncKeyword classRef = (VncKeyword)seq.second();
+					final String className = resolveClassName(classRef.getSimpleName());
+					final Class<?> targetClass = ReflectionAccessor.classForName(className);
+					
+					if (!targetClass.isAssignableFrom(cause.getClass())) {
+						return false;
+					}
+					
+					if (seq.size() == 2) {
+						return true; // no more key/val pairs
+					}
+				}
+				seq = seq.drop(2);
+			}
+			
+			// (catch [key1 value1, ...] e (..))
+			if (th instanceof ValueException) {				
 				final VncVal exVal = getValueExceptionValue((ValueException)th);
 				if (Types.isVncMap(exVal)) {
 					final VncMap exValMap = (VncMap)exVal;
 					
-					VncSequence seq = (VncSequence)selector;
 					while (!seq.isEmpty()) {
 						final VncVal key = seq.first();
 						final VncVal val = seq.second();
@@ -2432,6 +2452,7 @@ public class VeniceInterpreter implements Serializable  {
 	private static final long serialVersionUID = -8130740279914790685L;
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
+	private static final VncKeyword CAUSE_TYPE_SELECTOR_KEY = new VncKeyword(":cause-type");
 		
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;

@@ -1008,7 +1008,7 @@ public class SpecialFormsDoc {
 												
 						"(try                                       \n" +
 						"   (throw 100)                             \n" +
-						"   (catch :Exception e -100)               \n" +
+						"   (catch :ValueException e (ex-value e))  \n" +
 						"   (finally (println \"...finally\")))       ",
 						
 						"(try                                              \n" +
@@ -1020,7 +1020,7 @@ public class SpecialFormsDoc {
 						"   (catch :ValueException e (ex-value e))         \n" +
 						"   (catch :RuntimeException e \"runtime ex\")     \n" +
 						"   (finally (println \"...finally\")))             ",
-					
+						
 						";; key-value selector:                                      \n" +
 						"(try                                                        \n" +
 						"   (throw {:a 100, :b 200})                                 \n" +
@@ -1028,6 +1028,14 @@ public class SpecialFormsDoc {
 						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
 						"   (catch [:a 100, :b 200] e                                \n" +
 						"      (println \"ValueException, value: ~(ex-value e)\")))   ",
+						
+						";; key-value selector (exception cause):                           \n" +
+						"(try                                                               \n" +
+						"   (throw (ex :java.io.IOException \"failure\"))                   \n" +
+						"   (catch [:cause-type :java.io.IOException] e                     \n" +
+						"      (println \"IOException, msg: ~(ex-message (ex-cause e))\"))  \n" +
+						"   (catch :RuntimeException e                                      \n" +
+						"      (println \"RuntimeException, msg: ~(ex-message e)\")))         ",
 					
 						";; predicate selector:                                      \n" +
 						"(try                                                        \n" +

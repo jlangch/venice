@@ -71,42 +71,37 @@ public class ExceptionFunctions {
 						"With a *ex* as an exception type throws the exception.¶\n" +
 						"E.g: `(throw (ex :VncException \"invalid data\"))`")
 					.examples(
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (+ 100 200)                                        \n" +
-						"      (catch :Exception e                                \n" +
-						"             \"caught ~(ex-message e)\")))                 ",
+						"(try                                                  \n" +
+						"   (+ 100 200)                                        \n" +
+						"   (catch :Exception e                                \n" +
+						"          \"caught ~(ex-message e)\"))                  ",
 
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (+ 100 200)                                        \n" +
-						"      (throw)                                            \n" +
-						"      (catch :ValueException e                           \n" +
-						"             \"caught ~(pr-str (ex-value e))\")))          ",
+						"(try                                                  \n" +
+						"   (+ 100 200)                                        \n" +
+						"   (throw)                                            \n" +
+						"   (catch :ValueException e                           \n" +
+						"          \"caught ~(pr-str (ex-value e))\"))          ",
 
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (+ 100 200)                                        \n" +
-						"      (throw 100)                                        \n" +
-						"      (catch :ValueException e                           \n" +
-						"             \"caught ~(ex-value e)\")))                   ",
+						"(try                                                  \n" +
+						"   (+ 100 200)                                        \n" +
+						"   (throw 100)                                        \n" +
+						"   (catch :ValueException e                           \n" +
+						"          \"caught ~(ex-value e)\"))                   ",
 
-						";; The finally block is just for side effects, like     \n" +
-						";; closing resources. It never returns a value!         \n" +
-						"(do                                                     \n" +
-						"   (try                                                 \n" +
-						"      (+ 100 200)                                       \n" +
-						"      (throw [100 {:a 3}])                              \n" +
-						"      (catch :ValueException e                          \n" +
-						"             \"caught ~(ex-value e)\")                  \n" +
-						"      (finally (println \"#finally\")                   \n" +
-						"               :finally)))                                ",
+						";; The finally block is just for side effects, like  \n" +
+						";; closing resources. It never returns a value!      \n" +
+						"(try                                                 \n" +
+						"   (+ 100 200)                                       \n" +
+						"   (throw [100 {:a 3}])                              \n" +
+						"   (catch :ValueException e                          \n" +
+						"          \"caught ~(ex-value e)\")                  \n" +
+						"   (finally (println \"#finally\")                   \n" +
+						"            :finally))                                ",
 
-						"(do                                                     \n" +
-						"   (try                                                 \n" +
-						"      (throw (ex :RuntimeException \"#test\"))          \n" +
-						"      (catch :RuntimeException e                        \n" +
-						"             \"caught ~(ex-message e)\")))                ",
+						"(try                                                 \n" +
+						"   (throw (ex :RuntimeException \"#test\"))          \n" +
+						"   (catch :RuntimeException e                        \n" +
+						"          \"caught ~(ex-message e)\"))                ",
 
 						";; Venice wraps thrown checked exceptions with a RuntimeException! \n" +
 						"(do                                                                \n" +
@@ -168,29 +163,26 @@ public class ExceptionFunctions {
 						"it wraps it in a :RuntimeException before handling it by the catch block " +
 						"selectors.")
 					.examples(
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (throw (ex :VncException))                         \n" +
-						"      (catch :VncException e \"caught :VncException\")))   ",
+						"(try                                                  \n" +
+						"   (throw (ex :VncException))                         \n" +
+						"   (catch :VncException e \"caught :VncException\"))   ",
 
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (throw (ex :RuntimeException \"#test\"))           \n" +
-						"      (catch :Exception e                                \n" +
-						"             \"msg: ~(ex-message e)\")))                   ",
+						"(try                                                  \n" +
+						"   (throw (ex :RuntimeException \"#test\"))           \n" +
+						"   (catch :Exception e                                \n" +
+						"          \"msg: ~(ex-message e)\"))                   ",
 
-						"(do                                                      \n" +
-						"   (try                                                  \n" +
-						"      (throw (ex :ValueException 100))                   \n" +
-						"      (catch :ValueException e                           \n" +
-						"             \"value: ~(ex-value e)\")))                     ",
+						"(try                                                  \n" +
+						"   (throw (ex :ValueException 100))                   \n" +
+						"   (catch :ValueException e                           \n" +
+						"          \"value: ~(ex-value e)\"))                     ",
 
 						"(do                                                                         \n" +
 						"   (defn throw-ex-with-cause []                                             \n" +
-						"     (try                                                                   \n" +
-						"        (throw (ex :java.io.IOException \"I/O failure\"))                    \n" +
-						"        (catch :Exception e                                                 \n" +
-						"               (throw (ex :VncException \"failure\" (ex-cause e))))))       \n" +
+						"      (try                                                                  \n" +
+						"         (throw (ex :java.io.IOException \"I/O failure\"))                  \n" +
+						"         (catch :Exception e                                                \n" +
+						"                (throw (ex :VncException \"failure\" (ex-cause e))))))      \n" +
 						"   (try                                                                     \n" +
 						"      (throw-ex-with-cause)                                                 \n" +
 						"      (catch :Exception e                                                   \n" +

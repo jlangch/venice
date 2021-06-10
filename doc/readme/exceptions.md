@@ -196,6 +196,19 @@ key-value selector:
 ```
 
 
+key-value selector matching exception cause type (Venice 1.9.23+):
+
+```clojure
+(do
+   (try
+      (throw (ex :java.io.IOException "test"))
+      (catch [:cause-type :java.io.IOException] e
+         (println "IOException, message: ~(:message (:cause e))"))
+      (catch :RuntimeException  e
+         (println "RuntimeException, message: ~(:message e)"))))
+```
+
+
 Predicate selector:
 
 ```clojure

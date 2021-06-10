@@ -324,4 +324,18 @@ public class ExceptionFunctionsTest {
 		}
 	}
 
+	@Test
+	public void test_ex_selector_list_with_cause() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(try                                                      \n" +
+				"   (throw (ex :java.io.IOException \"test\"))             \n" +
+				"   (catch [:cause-type :java.io.IOException] e            \n" +
+				"      \"IOException, message: ~(:message (:cause e))\")   \n" +
+				"   (catch :RuntimeException  e                            \n" +
+				"     \"RuntimeException, message: ~(:message e)\")))";
+
+		assertEquals("IOException, message: test", venice.eval(script));
+	}
 }
