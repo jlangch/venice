@@ -13,7 +13,8 @@ and this project adheres to
 
 ### Added
 
-- ...
+- added an exception catch selector for exception cause types 
+  in try-catch blocks
 
 
 
