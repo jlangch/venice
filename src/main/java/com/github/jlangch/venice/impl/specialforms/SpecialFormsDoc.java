@@ -988,15 +988,14 @@ public class SpecialFormsDoc {
 						"  * a predicate: (a function of one argument like map?, set?), matches " +
 						"    any instance of :ValueException where the predicate applied to the " +
 						"    exception's value returns true\n\n" +
-						"**Note:**¶\n" +
+						"**Notes:**\n\n" +
 						"The finally block is just for side effects, like closing resources. " +
 						"It never returns a value!\n\n" +
-						"**Note:**¶\n" +
 						"All exceptions in Venice are *unchecked*. If *checked* exceptions are thrown " +
 						"in Venice they are immediately wrapped in a :RuntimeException before being " +
 						"thrown! If Venice catches a *checked* exception from a Java interop call " +
 						"it wraps it in a :RuntimeException before handling it by the catch block " +
-						"selectors!")
+						"selectors.")
 					.examples(
 						"(try                                      \n" +
 						"   (throw \"test\")                       \n" +

@@ -160,13 +160,13 @@ public class ExceptionFunctions {
 						"  * :com.github.jlangch.venice.ValueException \n\n" +
 						"are imported implicitly so its alias :Exception, :RuntimeException, " +
 						":VncException, and :ValueException can be used.\n\n" +
-						"All exceptions in Venice are *unchecked*.\n\n" +
 						"**Checked vs unchecked exceptions **\n\n" +
+						"All exceptions in Venice are *unchecked*.\n\n" +
 						"If *checked* exceptions are thrown in Venice they are immediately wrapped " +
-						"in a runtime exception before being thrown!¶" +
-						"If Venice catches a *checked* exception from a Java interop call " +
+						"in a :RuntimeException before being thrown!¶" +
+						"If Venice catches a *checked* exception from a Java Interop call " +
 						"it wraps it in a :RuntimeException before handling it by the catch block " +
-						"selectors!")
+						"selectors.")
 					.examples(
 						"(do                                                      \n" +
 						"   (try                                                  \n" +

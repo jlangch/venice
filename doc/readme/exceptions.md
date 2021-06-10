@@ -43,8 +43,8 @@ Create exceptions using the function `ex` :
 ```
 
 *Note:*
-Prefer using the `ex` function over Java interop to create exceptions! `ex` 
-works even with a full restricted sandbox where as the Java interop variant 
+Prefer using the `ex` function over Java Interop to create exceptions! `ex` 
+works even with a full restricted sandbox where as the Java Interop variant 
 requires a specifically configured sandbox.
 
 Create exceptions using Java interop:
@@ -56,7 +56,6 @@ Create exceptions using Java interop:
    ;; public ParseException(String s, int errorOffset)
    (. :ParseException :new "Expected '['" 1000)
    
-      
    ;; create an exception with a cause
    (let [cause (ex :RuntimeException "exception message")]
      (. :VncException :new "exception message" cause)))
@@ -71,7 +70,7 @@ All exceptions in Venice are *unchecked*.
 If *checked* exceptions are thrown in Venice they are immediately wrapped 
 in a runtime exception before being thrown! 
 
-If Venice catches a *checked* exception from a Java interop call
+If Venice catches a *checked* exception from a Java Interop call
 it wraps it in a :RuntimeException before handling it by the catch block
 selectors!
 
