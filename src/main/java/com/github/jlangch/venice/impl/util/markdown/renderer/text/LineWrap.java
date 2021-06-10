@@ -152,7 +152,7 @@ public class LineWrap {
 	private static boolean isPunctuationChar(final int ch) {
 		switch (ch) {
 			case '.': 
-			case ':': 
+			//case ':': 
 			case ',': 
 			case ';': 
 			case '!': 

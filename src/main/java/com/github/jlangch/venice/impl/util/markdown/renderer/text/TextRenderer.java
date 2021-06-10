@@ -190,8 +190,8 @@ public class TextRenderer {
 
 			final String prefix = 
 					block.isOrdered() 
-						? formatListItemNr(ii+1, itemNrDigits) + " "
-						: BULLET + " ";
+						? LIST_INDENT + formatListItemNr(ii+1, itemNrDigits) + " "
+						: LIST_INDENT + BULLET + " ";
 
 			if (isWrap()) {
 				sb.append(
@@ -286,7 +286,8 @@ public class TextRenderer {
 	
 	private static final char BULLET = 'o';
 	
-	private static final String CODE_INDENT = "\u00A0\u00A0\u00A0\u00A0";
+	private static final String CODE_INDENT = "\u00A0\u00A0\u00A0";
+	private static final String LIST_INDENT = "\u00A0\u00A0";
 	
 	private int width = -1;
 	private boolean softWrap = true;

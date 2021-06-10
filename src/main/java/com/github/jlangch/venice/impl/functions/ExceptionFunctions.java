@@ -146,16 +146,16 @@ public class ExceptionFunctions {
 						"(ex class)", 
 						"(ex class args*)")
 					.doc(
-						"Creates an exception of type *class* with optional *args*\n\n" +
-						"The *class* must be a subclass of :java.lang.Exception¶\n" +
-						"The exception types \n\n" +
+						"Creates an exception of type *class* with optional *args*. " +
+						"The *class* must be a subclass of :java.lang.Exception\n\n" +
+						"The exception types:\n\n" +
 						"  * :java.lang.Exception \n" +
 						"  * :java.lang.RuntimeException \n" +
 						"  * :com.github.jlangch.venice.VncException \n" +
 						"  * :com.github.jlangch.venice.ValueException \n\n" +
 						"are imported implicitly so its alias :Exception, :RuntimeException, " +
 						":VncException, and :ValueException can be used.\n\n" +
-						"**Checked vs unchecked exceptions **\n\n" +
+						"**Checked vs unchecked exceptions**\n\n" +
 						"All exceptions in Venice are *unchecked*.\n\n" +
 						"If *checked* exceptions are thrown in Venice they are immediately wrapped " +
 						"in a :RuntimeException before being thrown!¶" +
