@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -120,7 +121,7 @@ public class Venice {
 		//       macros can execute code while being expanded. Thus we need
 		//       to have a safe sandbox in-place if macros are misused to
 		//       execute code at expansion time.
-		final VeniceInterpreter venice = new VeniceInterpreter(
+		final IVeniceInterpreter venice = new VeniceInterpreter(
 												new RejectAllInterceptor());
 		
 		final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
@@ -174,7 +175,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+			final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 			final Env env = addParams(getPrecompiledEnv(), params);
 
@@ -272,7 +273,7 @@ public class Venice {
 		return runWithSandbox( () -> {
 			ThreadLocalMap.clear();
 
-			final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+			final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 			final Env env = createEnv(venice, macroexpand, params);
 			
@@ -318,7 +319,7 @@ public class Venice {
 	}
 	
 	private Env createEnv(
-			final VeniceInterpreter venice, 
+			final IVeniceInterpreter venice, 
 			final boolean macroexpand, 
 			final Map<String,Object> params
 	) {

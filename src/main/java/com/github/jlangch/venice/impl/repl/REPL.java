@@ -54,6 +54,7 @@ import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.SymbolNotFoundException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -449,7 +450,7 @@ public class REPL {
 	}
 
 	private void handleSetupCommand(
-			final VeniceInterpreter venice, 
+			final IVeniceInterpreter venice, 
 			final Env env, 
 			final SetupMode setupMode,
 			final TerminalPrinter printer
@@ -941,7 +942,7 @@ public class REPL {
 	
 	private void setupRepl(
 			final CommandLineArgs cli,
-			final VeniceInterpreter venice,
+			final IVeniceInterpreter venice,
 			final Env env,
 			final TerminalPrinter printer
 	) {
@@ -1174,7 +1175,7 @@ public class REPL {
 
 	private ReplConfig config;
 	private IInterceptor interceptor;
-	private VeniceInterpreter venice;
+	private IVeniceInterpreter venice;
 	private Env env;
 	private TerminalPrinter printer;
 	private ReplHighlighter highlighter;

@@ -115,7 +115,7 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  *   +----------------+-------------------------------------------+---------------+
  * </pre>
  */
-public class VeniceInterpreter implements Serializable  {
+public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 	public VeniceInterpreter(final IInterceptor interceptor) {
 		if (interceptor == null) {
@@ -129,26 +129,30 @@ public class VeniceInterpreter implements Serializable  {
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
 	}
 	
+	@Override
 	public void initNS() {
 		nsRegistry.clear();
 		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
 	
+	@Override
 	public void sealSystemNS() {
 		sealedSystemNS.set(true);
 	}
 	
+	@Override
 	public void setMacroExpandOnLoad(final boolean macroExpandOnLoad, final Env env) {
 		// Dynamically turn on/off macroexpand-on-load. The REPL makes use of this.
 		env.setMacroExpandOnLoad(VncBoolean.of(macroExpandOnLoad));		
 		this.macroexpand = macroExpandOnLoad;
 	}
 	
+	@Override
 	public boolean isMacroExpandOnLoad() {
 		return macroexpand;
 	}
 	
-	// read
+	@Override
 	public VncVal READ(final String script, final String filename) {
 		if (meterRegistry.enabled) {
 			final long nanos = System.nanoTime();
@@ -161,6 +165,7 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
+	@Override
 	public VncVal EVAL(final VncVal ast, final Env env) {
 		if (meterRegistry.enabled) {
 			final long nanos = System.nanoTime();
@@ -173,10 +178,12 @@ public class VeniceInterpreter implements Serializable  {
 		}
 	}
 
+	@Override
 	public VncVal MACROEXPAND(final VncVal ast, final Env env) {
 		return macroexpand_all(new CallFrame("macroexpand-all", ast.getMeta()), ast, env);
 	}
 
+	@Override
 	public VncVal RE(
 			final String script, 
 			final String name, 
@@ -189,10 +196,12 @@ public class VeniceInterpreter implements Serializable  {
 		return EVAL(ast, env);
 	}
 
+	@Override
 	public String PRINT(final VncVal exp) {
 		return Printer.pr_str(exp, true);
 	}
 		
+	@Override
 	public Env createEnv(
 			final boolean macroexpandOnLoad, 
 			final boolean ansiTerminal, 
@@ -201,6 +210,7 @@ public class VeniceInterpreter implements Serializable  {
 		return createEnv(null, macroexpandOnLoad, ansiTerminal, runMode);
 	}
 
+	@Override
 	public Env createEnv(
 			final List<String> preloadedExtensionModules,
 			final boolean macroExpandOnLoad, 
@@ -261,12 +271,14 @@ public class VeniceInterpreter implements Serializable  {
 		return env;
 	}
 	
+	@Override
 	public List<String> getAvailableModules() {
 		final List<String> modules = new ArrayList<>(Modules.VALID_MODULES);
 		modules.removeAll(Arrays.asList("core", "test", "http", "jackson"));
 		Collections.sort(modules);
 		return modules;
 	}
+	
 	
 	private void loadModule(
 			final String module, 
@@ -1230,7 +1242,7 @@ public class VeniceInterpreter implements Serializable  {
 												? Coerce.toVncFunction(evaluate(args.third(), env))
 												: null;
 
-			return DefTypeForm.defineCustomType(type, fields, validationFn, this::RE, env);
+			return DefTypeForm.defineCustomType(type, fields, validationFn, this, env);
 		}
 	}
 
@@ -1254,7 +1266,7 @@ public class VeniceInterpreter implements Serializable  {
 						type, 
 						baseType, 
 						validationFn, 
-						this::RE, 
+						this, 
 						env,
 						wrappableTypes);
 		}
@@ -1266,7 +1278,7 @@ public class VeniceInterpreter implements Serializable  {
 			final VncKeyword type = Coerce.toVncKeyword(evaluate(args.first(), env));
 			final VncList choiceVals = args.rest();
 
-			return DefTypeForm.defineCustomChoiceType(type, choiceVals, this::RE, env);
+			return DefTypeForm.defineCustomChoiceType(type, choiceVals, this, env);
 		}
 	}
 
@@ -2361,13 +2373,13 @@ public class VeniceInterpreter implements Serializable  {
 	}
 	
 	private VncVal getValueExceptionValue(final ValueException ex) {
-		final Object val_ = ex.getValue();
+		final Object val = ex.getValue();
 		
-		return val_== null 
+		return val == null 
 				? Nil
-				: val_ instanceof VncVal 
-					? (VncVal)val_ 
-					: new VncJavaObject(val_);
+				: val instanceof VncVal 
+					? (VncVal)val 
+					: new VncJavaObject(val);
 	}
 
 	/**

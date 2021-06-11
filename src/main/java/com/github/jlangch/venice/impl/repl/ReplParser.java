@@ -27,13 +27,13 @@ import org.jline.reader.SyntaxError;
 import org.jline.reader.impl.DefaultParser;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReplParser extends DefaultParser {
 	
-	public ReplParser(final VeniceInterpreter venice) {
+	public ReplParser(final IVeniceInterpreter venice) {
 		this.venice = venice;
 		
 		setQuoteChars(new char[] { '"'});
@@ -76,7 +76,7 @@ public class ReplParser extends DefaultParser {
 	}
 
 	
-	private final VeniceInterpreter venice;
+	private final IVeniceInterpreter venice;
 	
 	private boolean eof = false;
 }

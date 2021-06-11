@@ -29,13 +29,17 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
-import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ReplCompleter implements Completer {
 	
-	public ReplCompleter(final VeniceInterpreter venice, final Env env, final List<File> loadPaths) {
+	public ReplCompleter(
+			final IVeniceInterpreter venice, 
+			final Env env, 
+			final List<File> loadPaths
+	) {
 		this.venice = venice;
 		this.env = env;
 		this.filePathCompleter = new FilePathCompleter(loadPaths);
@@ -75,7 +79,7 @@ public class ReplCompleter implements Completer {
     }
     
     
-    private final VeniceInterpreter venice;
+    private final IVeniceInterpreter venice;
 	private final Env env;
 	private final FilePathCompleter filePathCompleter;
 }

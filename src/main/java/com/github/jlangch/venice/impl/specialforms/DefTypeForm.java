@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Namespaces;
-import com.github.jlangch.venice.impl.ReadEvalFunction;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -61,7 +61,7 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final VncVector fields,
 			final VncFunction validationFn,
-			final ReadEvalFunction interpreter,
+			final IVeniceInterpreter interpreter,
 			final Env env
 	) {											
 		if (fields.isEmpty() || ((fields.size() % 2) != 0)) {
@@ -108,7 +108,7 @@ public class DefTypeForm {
 			final VncKeyword type,
 			final VncKeyword baseType,
 			final VncFunction validationFn,
-			final ReadEvalFunction interpreter,
+			final IVeniceInterpreter interpreter,
 			final Env env,
 			final CustomWrappableTypes wrappableTypes
 	) {
@@ -144,7 +144,7 @@ public class DefTypeForm {
 	public static VncVal defineCustomChoiceType(
 			final VncKeyword type,
 			final VncList choiceVals,
-			final ReadEvalFunction interpreter,
+			final IVeniceInterpreter interpreter,
 			final Env env
 	) {
 		final VncKeyword qualifiedType = qualifyMainTypeWithCurrentNS(type, "deftype-or");
@@ -494,14 +494,14 @@ public class DefTypeForm {
 	private static void createBuildAndCheckFn(
 			final String qualifiedTypeName,
 			final int builderNumArgs,
-			final ReadEvalFunction interpreter,
+			final IVeniceInterpreter interpreter,
 			final Env env
 	) {
-		final String typeBuildFn = createBuildTypeFn(qualifiedTypeName, builderNumArgs);
-		final String typeCheckFn = createCheckTypeFn(qualifiedTypeName);
+		final String typeBuildFnSource = createBuildTypeFn(qualifiedTypeName, builderNumArgs);
+		final String typeCheckFnSource = createCheckTypeFn(qualifiedTypeName);
 		
-		interpreter.eval(typeBuildFn, "custom-types", env);
-		interpreter.eval(typeCheckFn, "custom-types", env);
+		interpreter.RE(typeBuildFnSource, "custom-types", env);
+		interpreter.RE(typeCheckFnSource, "custom-types", env);
 	}
 
 	private static String createBuildTypeFn(final String qualifiedTypeName, final int builderNumArgs) {

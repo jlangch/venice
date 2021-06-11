@@ -45,6 +45,7 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
@@ -156,7 +157,7 @@ public class CustomREPL {
 
 		final TerminalPrinter printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 		
 		final Env env = loadEnv(venice, cli, out, err, in);
 		
@@ -216,7 +217,7 @@ public class CustomREPL {
 	}
 
 	private Env loadEnv(
-			final VeniceInterpreter venice,
+			final IVeniceInterpreter venice,
 			final CommandLineArgs cli,
 			final PrintStream out,
 			final PrintStream err,
@@ -241,7 +242,7 @@ public class CustomREPL {
 	}
 	
 	private void handleSetupCommand(
-			final VeniceInterpreter venice, 
+			final IVeniceInterpreter venice, 
 			final Env env, 
 			final SetupMode setupMode,
 			final TerminalPrinter printer
@@ -309,7 +310,7 @@ public class CustomREPL {
 	}
 	
 	private boolean runApp(
-			final VeniceInterpreter venice, 
+			final IVeniceInterpreter venice, 
 			final Env env, 
 			final TerminalPrinter printer
 	) {
@@ -339,7 +340,7 @@ public class CustomREPL {
 	
 	private void setupRepl(
 			final CommandLineArgs cli,
-			final VeniceInterpreter venice,
+			final IVeniceInterpreter venice,
 			final Env env,
 			final TerminalPrinter printer
 	) {

@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
@@ -266,7 +267,7 @@ public class Launcher {
 			final String name,
 			final File appArchive
 	) {
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 			
 		final Env env = createEnv(
 							venice,
@@ -287,7 +288,7 @@ public class Launcher {
 			final String script,
 			final String name
 	) {
-		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 		
 		final Env env = createEnv(
 							venice, 
@@ -300,7 +301,7 @@ public class Launcher {
 	}
 	
 	private static Env createEnv(
-			final VeniceInterpreter venice,
+			final IVeniceInterpreter venice,
 			final boolean macroexpand, 
 			final RunMode runMode,
 			final List<Var> vars

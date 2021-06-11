@@ -21,13 +21,43 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.List;
+
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-@FunctionalInterface
-public interface ReadEvalFunction {
+public interface IVeniceInterpreter {
 
-	   VncVal eval(String script, String name, Env env);
+	void initNS();
+	
+	void sealSystemNS();
+	
+	void setMacroExpandOnLoad(boolean macroExpandOnLoad, Env env);
+	
+	boolean isMacroExpandOnLoad();
+
+	VncVal READ(String script, String filename);
+
+	VncVal EVAL(VncVal ast, Env env);
+
+	VncVal MACROEXPAND(VncVal ast, Env env);
+
+	VncVal RE(String script, String name, Env env);
+
+	String PRINT(VncVal exp);
+
+	Env createEnv(
+			boolean macroexpandOnLoad, 
+			boolean ansiTerminal, 
+			RunMode runMode);
+
+	Env createEnv(
+			List<String> preloadedExtensionModules,
+			boolean macroExpandOnLoad, 
+			boolean ansiTerminal, 
+			RunMode runMode);
+
+	List<String> getAvailableModules();
 
 }
