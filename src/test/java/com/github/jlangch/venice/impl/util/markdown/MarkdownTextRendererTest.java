@@ -108,17 +108,17 @@ public class MarkdownTextRendererTest {
 				+ "```";
 			
 		final String expected =
-				    "    (defmacro\n"
-				  + "      ^{ :arglists '(\"(comment & body)\")\n"
-				  + "         :doc \"Ignores body, yields nil\"\n"
-				  + "         :examples '(\n"
-				  + "              \"\"\"\n"
-				  + "              (comment\n"
-				  + "                (println 1)\n"
-				  + "                (println 5))\n"
-				  + "              \"\"\" ) }\n"
-				  + "    \n"
-				  + "       comment [& body] nil)";
+				    "   (defmacro\n"
+				  + "     ^{ :arglists '(\"(comment & body)\")\n"
+				  + "        :doc \"Ignores body, yields nil\"\n"
+				  + "        :examples '(\n"
+				  + "             \"\"\"\n"
+				  + "             (comment\n"
+				  + "               (println 1)\n"
+				  + "               (println 5))\n"
+				  + "             \"\"\" ) }\n"
+				  + "   \n"
+				  + "      comment [& body] nil)";
 		
 		final String rendered = Markdown.parse(md).renderToText(50);
 
@@ -126,7 +126,7 @@ public class MarkdownTextRendererTest {
 	}
 
 	@Test
-	public void test_list_block() {
+	public void test_list_block() {   // FIXME
 		final String md = 
 				  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
 				+ "  sed diam nonumy eirmod tempor invidunt ut labore et\n"
@@ -134,16 +134,16 @@ public class MarkdownTextRendererTest {
 				+ "  dolores et ea rebum.";
 				
 		final String expected =
-				  "o Lorem ipsum dolor sit amet,\n"
-				+ "  consetetur sadipscing elit\n"
-				+ "  sed\n"
-				+ "  diam nonumy eirmod tempor\n"
-				+ "  invidunt ut labore et\n"
-				+ "o At vero eos et accusam et\n"
-				+ "  justo duo dolores et ea\n"
-				+ "  rebum.";
+				  "  o Lorem ipsum dolor sit amet,\n"
+				+ "    consetetur sadipscing elit\n"
+				+ "    sed\n"
+				+ "    diam nonumy eirmod tempor\n"
+				+ "    invidunt ut labore et\n"
+				+ "  o At vero eos et accusam et\n"
+				+ "    justo\n"
+				+ "    duo dolores et ea rebum.";
 		
-		final String rendered = Markdown.parse(md).renderToText(30);
+		final String rendered = Markdown.parse(md).renderToText(32);
 
 		assertEquals(expected, rendered);
 	}
