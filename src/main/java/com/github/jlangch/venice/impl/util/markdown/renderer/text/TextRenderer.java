@@ -43,6 +43,14 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.UrlChunk;
 
 public class TextRenderer {
 	
+	private TextRenderer(
+			final int width,
+			final boolean softWrap
+	) {
+		this.width = width;
+		this.softWrap = softWrap;
+	}
+	
 	/**
 	 * Creates a renderer without line wraps.
 	 */
@@ -118,7 +126,7 @@ public class TextRenderer {
 		return sb.toString().replace("\u00A0", " ");
 	}
 
-	private String render(final Block b) {
+	public String render(final Block b) {
 		if (b.isEmpty()) {
 			return "";
 		}
@@ -193,10 +201,12 @@ public class TextRenderer {
 						? LIST_INDENT + formatListItemNr(ii+1, itemNrDigits) + " "
 						: LIST_INDENT + BULLET + " ";
 
+			final int blockWidth = width-prefix.length();
+			
 			if (isWrap()) {
 				sb.append(
 					indent(
-						wrap(render(b), width-prefix.length()), 
+						new TextRenderer(blockWidth, softWrap).render(b),
 						prefix, 
 						StringUtil.repeat(' ', prefix.length())));
 			}

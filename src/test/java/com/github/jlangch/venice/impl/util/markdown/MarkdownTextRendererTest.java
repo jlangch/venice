@@ -126,7 +126,26 @@ public class MarkdownTextRendererTest {
 	}
 
 	@Test
-	public void test_list_block() {   // FIXME
+	public void test_list_block_1() {   // FIXME
+		final String md = 
+				  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
+				+ "  sed diam nonumy eirmod tempor invidunt ut labore et";
+				
+		final String expected =
+				// 1         11        21        31
+				// +---------+---------+---------+---------+
+				  "  o Lorem ipsum dolor sit amet,\n"
+				+ "    consetetur sadipscing elit\n"
+				+ "    sed diam nonumy eirmod\n"
+				+ "    tempor invidunt ut labore et";
+		
+		final String rendered = Markdown.parse(md).renderToText(32);
+
+		assertEquals(expected, rendered);
+	}
+
+	@Test
+	public void test_list_block_2() {   // FIXME
 		final String md = 
 				  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
 				+ "  sed diam nonumy eirmod tempor invidunt ut labore et\n"
@@ -136,12 +155,11 @@ public class MarkdownTextRendererTest {
 		final String expected =
 				  "  o Lorem ipsum dolor sit amet,\n"
 				+ "    consetetur sadipscing elit\n"
-				+ "    sed\n"
-				+ "    diam nonumy eirmod tempor\n"
-				+ "    invidunt ut labore et\n"
+				+ "    sed diam nonumy eirmod\n"
+				+ "    tempor invidunt ut labore et\n"
 				+ "  o At vero eos et accusam et\n"
-				+ "    justo\n"
-				+ "    duo dolores et ea rebum.";
+				+ "    justo duo dolores et ea\n"
+				+ "    rebum.";
 		
 		final String rendered = Markdown.parse(md).renderToText(32);
 

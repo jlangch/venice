@@ -16,6 +16,10 @@ and this project adheres to
 - added an exception catch selector for exception cause types 
   in try-catch blocks
 
+### Fixed
+
+- a markdown rendering problem for text mode with list items
+
 
 
 ## [1.9.22] - 2021-06-08
