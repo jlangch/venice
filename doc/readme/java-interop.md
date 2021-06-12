@@ -172,26 +172,48 @@ a Java Dynamic Proxy:
    (swing-gui "Test"))
 ```
 
-Venice 1.9.3 provides a few helper functions to simplify using Java Dynamic Proxies 
+Venice provides a few helper functions to simplify using Java Dynamic Proxies 
 with Java functional interfaces:
 
-- `java.lang.Runnable` -> `(as-runnable f)`
-- `java.util.concurrent.Callable` -> `(as-callable f)`
-- `java.util.function.Predicate` -> `(as-predicate f)`
-- `java.util.function.Function` -> `(as-function f)`
-- `java.util.function.Consumer` -> `(as-consumer f)`
-- `java.util.function.Supplier` -> `(as-supplier f)`
-- `java.util.function.BiPredicate` -> `(as-bipredicate f)`
-- `java.util.function.BiFunction` -> `(as-bifunction f)`
-- `java.util.function.BiConsumer` -> `(as-biconsumer f)`
-- `java.util.function.BinaryOperator` -> `(as-binaryoperator f)`
+- [java.lang.Runnable](https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html) -> `(as-runnable f)`
+- [java.util.concurrent.Callable](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html) -> `(as-callable f)`
+- [java.util.function.Predicate](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html) -> `(as-predicate f)`
+- [java.util.function.Function](https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html) -> `(as-function f)`
+- [java.util.function.Consumer](https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html) -> `(as-consumer f)`
+- [java.util.function.Supplier](https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html) -> `(as-supplier f)`
+- [java.util.function.BiPredicate](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiPredicate.html) -> `(as-bipredicate f)`
+- [java.util.function.BiFunction](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html) -> `(as-bifunction f)`
+- [java.util.function.BiConsumer](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiConsumer.html) -> `(as-biconsumer f)`
+- [java.util.function.BinaryOperator](https://docs.oracle.com/javase/8/docs/api/java/util/function/BinaryOperator.html) -> `(as-binaryoperator f)`
 
 
-Examples:
+**Example 1:**
 
-Instead of `(proxify :java.lang.Runnable { :run #(sleep 10) })` use `(as-runnable #(sleep 10))`
+Instead of 
 
-Instead of `(proxify :java.util.function.Function { :apply #(+ % 1) })` use `(as-function #(+ % 1))`
+```clojure
+(proxify :java.lang.Runnable { :run #(sleep 10) })
+```
+
+use
+
+```clojure
+(as-runnable #(sleep 10))
+```
+ 
+**Example 2:**
+
+Instead of 
+
+```clojure
+(proxify :java.util.function.Function { :apply #(+ % 1) })
+```
+
+use 
+
+```clojure
+(as-function #(+ % 1))
+```
 
 
 
@@ -209,7 +231,7 @@ Instead of `(proxify :java.util.function.Function { :apply #(+ % 1) })` use `(as
         (. :collect (. :Collectors :toList))))
 ```
 
-With Venice 1.9.3+ this can be simplified to:
+This can be simplified to:
 
 ```clojure
 (do
