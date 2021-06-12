@@ -271,4 +271,7 @@ Exception in thread "main" VncException: / by zero
     at: user/fn1 (user: line 5, col 5)
 ```
 
+## Railway Oriented Programming
 
+[Scott Wlaschin ROP]()
+[Example in Clojure](https://medium.com/appsflyer/railway-oriented-programming-clojure-and-exception-handling-why-and-how-89d75cc94c58)
