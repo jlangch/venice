@@ -271,4 +271,15 @@ Exception in thread "main" VncException: / by zero
     at: user/fn1 (user: line 5, col 5)
 ```
 
+## Railway Oriented Programming
 
+*Railway oriented programming (ROP)* is a functional approach to sequentially executing 
+functions without handling errors with exceptions. Functions in ROP can only return either 
+a success or a failure. 
+
+
+[Scott Wlaschin ROP Intro](https://fsharpforfunandprofit.com/rop/)
+
+[Scott Wlaschin ROP Video NDC London 2014](https://vimeo.com/113707214)
+
+[ROP in Clojure](https://medium.com/appsflyer/railway-oriented-programming-clojure-and-exception-handling-why-and-how-89d75cc94c58)
