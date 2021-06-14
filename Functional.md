@@ -29,6 +29,8 @@
 
 [Functional Programming - Ross Olsen](https://www.youtube.com/watch?v=0if71HOyVjY)
 
+[Wie man Computern das Ableiten beibringt](https://youtu.be/EyhL1DNrSME)
+
 [Project Euler](https://projecteuler.net/)
 
 [The Most Beautiful Program Ever Written](https://www.youtube.com/watch?v=OyfBQmvr2Hc)

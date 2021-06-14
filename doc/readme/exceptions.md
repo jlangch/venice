@@ -273,9 +273,8 @@ Exception in thread "main" VncException: / by zero
 
 ## Railway Oriented Programming
 
-*Railway oriented programming (ROP)* is a functional approach to sequentially executing 
-functions without handling errors with exceptions. Functions in ROP can only return either 
-a success or a failure. 
+*Railway oriented programming (ROP)* is a functional approach to the error handling
+for sequentially executing functions.  
 
 
 [Scott Wlaschin ROP Intro](https://fsharpforfunandprofit.com/rop/)
