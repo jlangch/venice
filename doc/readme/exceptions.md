@@ -32,7 +32,7 @@ Create exceptions using the function `ex` :
    
    ;; create a checked ParseException. Will be wrapped with a :RuntimeException 
    ;; public ParseException(String s, int errorOffset)
-   (. :ParseException :new "Expected '['" 1000)
+   (ex :ParseException "Expected '['" 1000)
    
    ;; create a Venice exception
    (ex :VncException "exception message")
