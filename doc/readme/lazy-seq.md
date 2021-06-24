@@ -81,6 +81,7 @@ Single elements of a lazy sequence can be realized with one of the functions
 
 (second (cons -1 (lazy-seq 0 #(+ % 1)))) ; => 0 
  ```
+ 
 
 Realizing a lazy sequence to a list is done by applying the `doall` function. 
 
@@ -109,6 +110,11 @@ Realizing finite lazy sequences
      (doall))              ; realize the 2 elements
      
 ; => (30 40)
+```
+
+
+```clojure
+(interleave [:a :b :c] (lazy-seq 1 inc))  ; => (:a 1 :b 2 :c 3)
 ```
 
 Realizing finite lazy sequences built from a functions returning `nil` to end the sequence

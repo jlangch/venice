@@ -1998,6 +1998,8 @@ public class CoreFunctions {
 						"(->> (lazy-seq 2 #(+ % 2))                                \n" +
 						"     (take 10)                                            \n" +
 						"     (doall))",
+						"; lazy sequence as value producing function               \n" +
+						"(interleave [:a :b :c] (lazy-seq 1 inc))",
 						"; lazy sequence with a mapping                         \n" +
 						"(->> (lazy-seq 1 (fn [x] (do (println \"realized\" x)  \n" +
 						"                             (inc x))))                \n" +
@@ -2021,6 +2023,7 @@ public class CoreFunctions {
 						"      (swap! counter dec)                              \n" +
 						"      (if (pos? @counter) @counter nil))               \n" +
 						"   (doall (lazy-seq generate)))")
+					.seeAlso("doall", "lazy-seq?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2079,6 +2082,7 @@ public class CoreFunctions {
 					.arglists("(lazy-seq? obj)")
 					.doc("Returns true if obj is a lazyseq")
 					.examples("(lazy-seq? (lazy-seq rand-long))")
+					.seeAlso("lazy-seq")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4910,7 +4914,7 @@ public class CoreFunctions {
 						"is not a lazy sequence.")
 					.examples(
 						"(interleave [:a :b :c] [1 2])",
-						"(interleave [:a :b :c] (lazy-seq 1 #(+ % 1)))")
+						"(interleave [:a :b :c] (lazy-seq 1 inc))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -6493,6 +6497,7 @@ public class CoreFunctions {
 						"     (doall))",
 						"(->> (lazy-seq #(rand-long 100))  \n" +
 						"     (doall 4))")
+					.seeAlso("lazy-seq")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
