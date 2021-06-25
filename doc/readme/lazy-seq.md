@@ -127,6 +127,8 @@ Realizing finite lazy sequences built from a functions returning `nil` to end th
 ; => (3 4 5)
 ```
 
+Implicitly realizing elements of a lazy sequence
+
 ```clojure
 (doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
 ; => (1 2 3 4 5)
