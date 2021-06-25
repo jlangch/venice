@@ -42,7 +42,8 @@ is defined as a keyword and the fields are tuples of name and type.
                    imaginary :long])
  ```
  
-Venice implicitly creates a builder function suffixed with a '.'
+Venice implicitly creates a builder function suffixed with a dot
+character.
   
 ```clojure
 (complex. 200 300)
