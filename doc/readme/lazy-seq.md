@@ -112,6 +112,7 @@ Realizing finite lazy sequences
 ; => (30 40)
 ```
 
+Implicitly realizing elements of a lazy sequence
 
 ```clojure
 (interleave [:a :b :c] (lazy-seq 1 inc))  ; => (:a 1 :b 2 :c 3)
@@ -126,8 +127,6 @@ Realizing finite lazy sequences built from a functions returning `nil` to end th
      (doall))
 ; => (3 4 5)
 ```
-
-Implicitly realizing elements of a lazy sequence
 
 ```clojure
 (doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
