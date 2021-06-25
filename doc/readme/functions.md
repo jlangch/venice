@@ -30,7 +30,8 @@
    
    (add 1 2)
    (mul 3 4)
-   (let [f (fn [x y] (- x y))] (f 5 3)))
+   (let [f (fn [x y] (- x y))] 
+      (f 5 3)))
 ```
 
 
