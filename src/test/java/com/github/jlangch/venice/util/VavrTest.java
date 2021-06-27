@@ -29,11 +29,21 @@ import java.util.List;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.Stream;
 import io.vavr.collection.Vector;
 
 
 public class VavrTest {
+
+	@Test
+	public void testZip() {
+		Vector<String> vec = Vector.of("a", "b", "c");
+		
+		Vector<Tuple2<String, Integer>> zipped = vec.zip(Vector.of(0, 1, 2));
+		
+		assertEquals(3, zipped.size());
+	}
 
 	@Test @Disabled
 	public void testPerformance() {

@@ -174,21 +174,23 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		final ArrayList<VncVal> list = new ArrayList<>(len);		
+		final VncVal[] values = new VncVal[len];
+		int idx = 0;
+		
 		if (len > 0) {
-			list.add(mapper.apply(first));
+			values[idx++] = mapper.apply(first);
 			if (len > 1) {
-				list.add(mapper.apply(second));
+				values[idx++] = mapper.apply(second);
 				if (len > 2) {
-					list.add(mapper.apply(third));
+					values[idx++] = mapper.apply(third);
 					if (len > 3) {
-						list.add(mapper.apply(fourth));
+						values[idx++] = mapper.apply(fourth);
 					}
 				}
 			}
 		}
 		
-		return VncList.ofList(list, getMeta()); 
+		return VncTinyList.ofArr(values, getMeta()); 
 	}
 
 	@Override
@@ -452,7 +454,7 @@ public class VncTinyList extends VncList {
 					for(int ii=0; ii<otherLen; ii++) vals[ii] = list.nth(ii);
 				}
 				for(int ii=0; ii<len; ii++) vals[ii+otherLen] = nth(ii);
-				return VncList.of(vals);
+				return VncTinyList.of(vals);
 			}
 		}
 		
@@ -484,7 +486,7 @@ public class VncTinyList extends VncList {
 				final VncVal[] vals = new VncVal[otherLen + len];
 				for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
 				for(int ii=0; ii<otherLen; ii++) vals[ii+len] = list.nth(ii);
-				return VncList.of(vals);
+				return VncTinyList.of(vals);
 			}
 		}
 
@@ -500,7 +502,7 @@ public class VncTinyList extends VncList {
 		final VncVal[] vals = new VncVal[len];
 		for(int ii=0; ii<len; ii++) vals[ii] = nth(ii);
 		vals[idx] = val;
-		return VncList.of(vals);
+		return VncTinyList.of(vals);
 	}
 	
 	@Override
@@ -513,11 +515,13 @@ public class VncTinyList extends VncList {
 			return emptyWithMeta();
 		}
 		else {
-			final VncVal[] vals = new VncVal[len-1];
-			
-			for(int ii=0; ii<idx; ii++) vals[ii] = nth(ii);
-			for(int ii=idx+1; ii<len; ii++) vals[ii-1] = nth(ii);
-			return VncTinyList.ofArr(vals, getMeta());
+			switch (idx) {
+				case 0:	return new VncTinyList(len-1, second, third, fourth, Nil, getMeta());
+				case 1:	return new VncTinyList(len-1, first, third, fourth, Nil, getMeta());
+				case 2:	return new VncTinyList(len-1, first, second, fourth, Nil, getMeta());
+				case 3:	return new VncTinyList(len-1, first, second, third, Nil, getMeta());
+				default: throw new IllegalStateException("List length out of range");
+			}
 		}
 	}
 
