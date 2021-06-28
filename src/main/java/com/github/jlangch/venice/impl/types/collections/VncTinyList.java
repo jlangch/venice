@@ -155,21 +155,30 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList filter(final Predicate<? super VncVal> predicate) {
-		final ArrayList<VncVal> list = new ArrayList<>(len);		
+		final VncVal[] values = new VncVal[len];
+		int idx = 0;
+		
 		if (len > 0) {
-			if (predicate.test(first)) list.add(first);
+			if (predicate.test(first)) values[idx++] = first;
 			if (len > 1) {
-				if (predicate.test(second)) list.add(second);
+				if (predicate.test(second)) values[idx++] = second;
 				if (len > 2) {
-					if (predicate.test(third)) list.add(third);
+					if (predicate.test(third)) values[idx++] = third;
 					if (len > 3) {
-						if (predicate.test(fourth)) list.add(fourth);
+						if (predicate.test(fourth)) values[idx++] = fourth;
 					}
 				}
 			}
 		}
-		
-		return VncList.ofList(list, getMeta()); 
+
+		switch (idx) {
+			case 0:	return EMPTY;
+			case 1:	return new VncTinyList(1, values[0], Nil,       Nil,       Nil,       getMeta());
+			case 2:	return new VncTinyList(2, values[0], values[1], Nil,       Nil,       getMeta());
+			case 3:	return new VncTinyList(3, values[0], values[1], values[2], Nil,       getMeta());
+			case 4:	return new VncTinyList(4, values[0], values[1], values[2], values[3], getMeta());
+			default: throw new IllegalStateException("Length out of range");
+		}
 	}
 
 	@Override
@@ -318,8 +327,12 @@ public class VncTinyList extends VncList {
 		else if (n >= len) {
 			return EMPTY;
 		}
-		else {
-			return slice(n);
+		
+		switch(n) {
+			case 1:	return new VncTinyList(len-1, second, third,  fourth, Nil, getMeta());
+			case 2:	return new VncTinyList(len-2, third,  fourth, Nil,    Nil, getMeta());
+			case 3:	return new VncTinyList(len-3, fourth, Nil,    Nil,    Nil, getMeta());
+			default: return EMPTY;
 		}
 	}
 	
@@ -338,7 +351,19 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList take(final int n) {
-		return slice(0, n);
+		if (n <= 0) {
+			return EMPTY;
+		}
+		else if (n >= len) {
+			return this;
+		}
+		
+		switch(n) {
+			case 1:	return new VncTinyList(1, first, Nil,    Nil,   Nil, getMeta());
+			case 2:	return new VncTinyList(2, first, second, Nil,   Nil, getMeta());
+			case 3:	return new VncTinyList(3, first, second, third, Nil, getMeta());
+			default: return this;
+		}
 	}
 	
 	@Override
@@ -370,7 +395,7 @@ public class VncTinyList extends VncList {
 	public VncList shuffle() {
 		final List<VncVal> list = getJavaList();
 		Collections.shuffle(list);
-		return VncTinyList.ofAll(list, getMeta());
+		return VncList.ofList(list, getMeta());
 	}
 
 	@Override
@@ -391,20 +416,18 @@ public class VncTinyList extends VncList {
 	
 	@Override
 	public VncList slice(final int start) {
-		if (start < 0) {
-			 throw new IllegalStateException("List index out of range");
+		if (start <= 0) {
+			return this;
 		}
 		else if (start >= len) {
 			return EMPTY;
 		}
-		else if (start == 0) {
-			return this;
-		}
-		else {
-			final int len_ = len - start;
-			final VncVal[] vals = new VncVal[len_];
-			for(int ii=0; ii<len_; ii++) vals[ii] = nth(ii+start);
-			return VncTinyList.ofArr(vals, getMeta());
+		
+		switch(start) {
+			case 1:	return new VncTinyList(len-1, second, third,  fourth, Nil, getMeta());
+			case 2:	return new VncTinyList(len-2, third,  fourth, Nil,    Nil, getMeta());
+			case 3:	return new VncTinyList(len-3, fourth, Nil,    Nil,    Nil, getMeta());
+			default: return EMPTY;
 		}
 	}
 	
