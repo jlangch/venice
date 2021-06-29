@@ -663,6 +663,7 @@ public class DocGenerator {
 		list_access.addItem(getDocItem("butlast"));
 		list_access.addItem(getDocItem("nfirst"));
 		list_access.addItem(getDocItem("nlast"));
+		list_access.addItem(getDocItem("sublist"));
 		list_access.addItem(getDocItem("some"));
 
 		final DocSection list_modify = new DocSection("Modify", "collections.lists.modify");

@@ -3857,12 +3857,117 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_sublist_tiny() {
+		final Venice venice = new Venice();
+
+		assertEquals("(0 1 2)", venice.eval("(str (sublist '(0 1 2) 0))"));
+		assertEquals("(1 2)",   venice.eval("(str (sublist '(0 1 2) 1))"));
+		assertEquals("(2)",     venice.eval("(str (sublist '(0 1 2) 2))"));
+		assertEquals("()",      venice.eval("(str (sublist '(0 1 2) 3))"));
+		
+		assertEquals("(0 1 2)", venice.eval("(str (sublist '(0 1 2) 0 3))"));		
+		assertEquals("(1 2)",   venice.eval("(str (sublist '(0 1 2) 1 3))"));		
+		assertEquals("(2)",     venice.eval("(str (sublist '(0 1 2) 2 3))"));		
+		assertEquals("()",      venice.eval("(str (sublist '(0 1 2) 3 3))"));		
+		
+		assertEquals("(0 1)",   venice.eval("(str (sublist '(0 1 2) 0 2))"));		
+		assertEquals("(1)",     venice.eval("(str (sublist '(0 1 2) 1 2))"));		
+		assertEquals("()",      venice.eval("(str (sublist '(0 1 2) 2 2))"));		
+		
+		assertEquals("(0)",     venice.eval("(str (sublist '(0 1 2) 0 1))"));		
+		assertEquals("()",      venice.eval("(str (sublist '(0 1 2) 1 1))"));		
+	}
+
+	@Test
+	public void test_sublist() {
+		final Venice venice = new Venice();
+
+		assertEquals("(0 1 2 3 4 5)", venice.eval("(str (sublist '(0 1 2 3 4 5) 0))"));		
+		assertEquals("(2 3 4 5)",     venice.eval("(str (sublist '(0 1 2 3 4 5) 2))"));		
+		assertEquals("(4 5)",         venice.eval("(str (sublist '(0 1 2 3 4 5) 4))"));		
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 6))"));		
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 7))"));		
+
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 0 0))"));		
+		assertEquals("(0)",           venice.eval("(str (sublist '(0 1 2 3 4 5) 0 1))"));		
+		assertEquals("(0 1)",         venice.eval("(str (sublist '(0 1 2 3 4 5) 0 2))"));		
+		assertEquals("(0 1 2)",       venice.eval("(str (sublist '(0 1 2 3 4 5) 0 3))"));		
+		assertEquals("(0 1 2 3)",     venice.eval("(str (sublist '(0 1 2 3 4 5) 0 4))"));		
+		assertEquals("(0 1 2 3 4)",   venice.eval("(str (sublist '(0 1 2 3 4 5) 0 5))"));		
+		assertEquals("(0 1 2 3 4 5)", venice.eval("(str (sublist '(0 1 2 3 4 5) 0 6))"));		
+		assertEquals("(0 1 2 3 4 5)", venice.eval("(str (sublist '(0 1 2 3 4 5) 0 7))"));		
+
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 1 1))"));		
+		assertEquals("(1)",           venice.eval("(str (sublist '(0 1 2 3 4 5) 1 2))"));		
+		assertEquals("(1 2)",         venice.eval("(str (sublist '(0 1 2 3 4 5) 1 3))"));		
+		assertEquals("(1 2 3)",       venice.eval("(str (sublist '(0 1 2 3 4 5) 1 4))"));		
+		assertEquals("(1 2 3 4)",     venice.eval("(str (sublist '(0 1 2 3 4 5) 1 5))"));		
+		assertEquals("(1 2 3 4 5)",   venice.eval("(str (sublist '(0 1 2 3 4 5) 1 6))"));		
+		assertEquals("(1 2 3 4 5)",   venice.eval("(str (sublist '(0 1 2 3 4 5) 1 7))"));		
+
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 5 5))"));		
+		assertEquals("(5)",           venice.eval("(str (sublist '(0 1 2 3 4 5) 5 6))"));		
+		assertEquals("(5)",           venice.eval("(str (sublist '(0 1 2 3 4 5) 5 7))"));		
+
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 6 6))"));		
+		assertEquals("()",            venice.eval("(str (sublist '(0 1 2 3 4 5) 6 7))"));		
+	}
+	
+	@Test
+	public void test_subvec_tiny() {
+		final Venice venice = new Venice();
+
+		assertEquals("[0 1 2]", venice.eval("(str (subvec [0 1 2] 0))"));
+		assertEquals("[1 2]",   venice.eval("(str (subvec [0 1 2] 1))"));
+		assertEquals("[2]",     venice.eval("(str (subvec [0 1 2] 2))"));
+		assertEquals("[]",      venice.eval("(str (subvec [0 1 2] 3))"));
+		
+		assertEquals("[0 1 2]", venice.eval("(str (subvec [0 1 2] 0 3))"));		
+		assertEquals("[1 2]",   venice.eval("(str (subvec [0 1 2] 1 3))"));		
+		assertEquals("[2]",     venice.eval("(str (subvec [0 1 2] 2 3))"));		
+		assertEquals("[]",      venice.eval("(str (subvec [0 1 2] 3 3))"));		
+		
+		assertEquals("[0 1]",   venice.eval("(str (subvec [0 1 2] 0 2))"));		
+		assertEquals("[1]",     venice.eval("(str (subvec [0 1 2] 1 2))"));		
+		assertEquals("[]",      venice.eval("(str (subvec [0 1 2] 2 2))"));		
+		
+		assertEquals("[0]",     venice.eval("(str (subvec [0 1 2] 0 1))"));		
+		assertEquals("[]",      venice.eval("(str (subvec [0 1 2] 1 1))"));		
+	}
+
+	@Test
 	public void test_subvec() {
 		final Venice venice = new Venice();
 
-		assertEquals("[3 4 5]", venice.eval("(str (subvec [0 1 2 3 4 5] 3))"));		
-		assertEquals("[0 1 2]", venice.eval("(str (subvec [0 1 2 3 4 5] 0 3))"));		
-		assertEquals("[2 3 4]", venice.eval("(str (subvec [0 1 2 3 4 5] 2 5))"));		
+		assertEquals("[0 1 2 3 4 5]", venice.eval("(str (subvec [0 1 2 3 4 5] 0))"));		
+		assertEquals("[2 3 4 5]",     venice.eval("(str (subvec [0 1 2 3 4 5] 2))"));		
+		assertEquals("[4 5]",         venice.eval("(str (subvec [0 1 2 3 4 5] 4))"));		
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 6))"));		
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 7))"));		
+
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 0 0))"));		
+		assertEquals("[0]",           venice.eval("(str (subvec [0 1 2 3 4 5] 0 1))"));		
+		assertEquals("[0 1]",         venice.eval("(str (subvec [0 1 2 3 4 5] 0 2))"));		
+		assertEquals("[0 1 2]",       venice.eval("(str (subvec [0 1 2 3 4 5] 0 3))"));		
+		assertEquals("[0 1 2 3]",     venice.eval("(str (subvec [0 1 2 3 4 5] 0 4))"));		
+		assertEquals("[0 1 2 3 4]",   venice.eval("(str (subvec [0 1 2 3 4 5] 0 5))"));		
+		assertEquals("[0 1 2 3 4 5]", venice.eval("(str (subvec [0 1 2 3 4 5] 0 6))"));		
+		assertEquals("[0 1 2 3 4 5]", venice.eval("(str (subvec [0 1 2 3 4 5] 0 7))"));		
+
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 1 1))"));		
+		assertEquals("[1]",           venice.eval("(str (subvec [0 1 2 3 4 5] 1 2))"));		
+		assertEquals("[1 2]",         venice.eval("(str (subvec [0 1 2 3 4 5] 1 3))"));		
+		assertEquals("[1 2 3]",       venice.eval("(str (subvec [0 1 2 3 4 5] 1 4))"));		
+		assertEquals("[1 2 3 4]",     venice.eval("(str (subvec [0 1 2 3 4 5] 1 5))"));		
+		assertEquals("[1 2 3 4 5]",   venice.eval("(str (subvec [0 1 2 3 4 5] 1 6))"));		
+		assertEquals("[1 2 3 4 5]",   venice.eval("(str (subvec [0 1 2 3 4 5] 1 7))"));		
+
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 5 5))"));		
+		assertEquals("[5]",           venice.eval("(str (subvec [0 1 2 3 4 5] 5 6))"));		
+		assertEquals("[5]",           venice.eval("(str (subvec [0 1 2 3 4 5] 5 7))"));		
+
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 6 6))"));		
+		assertEquals("[]",            venice.eval("(str (subvec [0 1 2 3 4 5] 6 7))"));		
 	}
 
 	@Test
