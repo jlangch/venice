@@ -2144,6 +2144,18 @@ public class CoreFunctionsTest {
 		assertEquals("(0 1 2 3 4)",venice.eval(script));					
 	}
 
+
+	@Test
+	public void test_lazy_seq_realize_implicit() {
+		final Venice venice = new Venice();
+
+		final String script1 = "(pr-str (interleave [:a :b :c] (lazy-seq 1 inc))))";				
+		assertEquals("(:a 1 :b 2 :c 3)",venice.eval(script1));					
+
+		final String script2 = "(pr-str (interleave (lazy-seq 1 inc) [:a :b :c])))";				
+		assertEquals("(1 :a 2 :b 3 :c)",venice.eval(script2));					
+	}
+
 	@Test
 	public void test_lazy_seq_doall_1() {
 		final Venice venice = new Venice();
@@ -3933,6 +3945,13 @@ public class CoreFunctionsTest {
 		
 		assertEquals("[0]",     venice.eval("(str (subvec [0 1 2] 0 1))"));		
 		assertEquals("[]",      venice.eval("(str (subvec [0 1 2] 1 1))"));		
+	}
+
+	@Test
+	public void test_sublist_lazyseq() {
+		final Venice venice = new Venice();
+
+		assertEquals("(4 5 6 7)", venice.eval("(str (doall (sublist (lazy-seq 1 inc) 3 7)))"));
 	}
 
 	@Test

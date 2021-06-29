@@ -1765,20 +1765,29 @@ public class CoreFunctions {
 					.examples(
 						"(subvec [1 2 3 4 5 6] 2)",
 						"(subvec [1 2 3 4 5 6] 2 3)")
+					.seeAlso("sublist")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2, 3);
 
-				final VncVector vec = Coerce.toVncVector(args.first());
-				final int from = Coerce.toVncLong(args.second()).getIntValue();
-				final Integer to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)).getIntValue() : null;
+				final VncSequence seq = Coerce.toVncSequence(args.first());				
 
-				if (from >= vec.size()) {
-					return VncVector.empty();
+				if (seq instanceof VncLazySeq) {
+					throw new VncException(
+							"Function 'subvec' requires a vector but got a lazy-seq!");
 				}
 				else {
-					return to == null ? vec.slice(from) : vec.slice(from, to);
+					final VncVector vec = Coerce.toVncVector(seq);
+					final int from = Coerce.toVncLong(args.second()).getIntValue();
+					final Integer to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)).getIntValue() : null;
+
+					if (from >= vec.size()) {
+						return VncVector.empty();
+					}
+					else {
+						return to == null ? vec.slice(from) : vec.slice(from, to);
+					}
 				}
 			}
 
@@ -1794,24 +1803,42 @@ public class CoreFunctions {
 					.doc(
 						"Returns a list of the items in list from start (inclusive) "+
 						"to end (exclusive). If end is not supplied, defaults to " +
-						"(count list)")
+						"(count list).\n\n" +
+						"`sublist` accepts a lazy-seq if both start and end is given.")
 					.examples(
 						"(sublist '(1 2 3 4 5 6) 2)",
-						"(sublist '(1 2 3 4 5 6) 2 3)")
+						"(sublist '(1 2 3 4 5 6) 2 3)",
+						"(doall (sublist (lazy-seq 1 inc) 3 7))")
+					.seeAlso("subvec")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2, 3);
 
-				final VncList list = Coerce.toVncList(args.first());
+				final VncSequence seq = Coerce.toVncSequence(args.first());				
+
 				final int from = Coerce.toVncLong(args.second()).getIntValue();
 				final Integer to = args.size() > 2 ? Coerce.toVncLong(args.nth(2)).getIntValue() : null;
 
-				if (from >= list.size()) {
-					return VncList.empty();
+				if (seq instanceof VncLazySeq) {
+					final VncLazySeq lazySeq = (VncLazySeq)seq;
+					if (to == null) {
+						throw new VncException(
+								"Function 'sublist' requires start and end if a lazy-seq is passed!");
+					}
+					else {
+						return lazySeq.slice(from, to);
+					}
 				}
 				else {
-					return to == null ? list.slice(from) : list.slice(from, to);
+					final VncList list = Coerce.toVncList(seq);				
+	
+					if (from >= list.size()) {
+						return VncList.empty();
+					}
+					else {
+						return to == null ? list.slice(from) : list.slice(from, to);
+					}
 				}
 			}
 
