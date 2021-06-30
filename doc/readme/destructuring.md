@@ -93,10 +93,26 @@ The destructured collection must not be of same size as the number of binding na
    (def line [[5 10] [10 20]])
    (let [[[a b :as group1] [c d :as group2]] line]
       (println a b group1)
-      (println c d group2))
+      (println c d group2)))
       ;=> 5 10 [5 10]
       ;=> 10 20 [10 20])
-)
+```
+
+
+### Lazy sequences
+
+```clojure
+(do
+   (let [[x y & z] (lazy-seq 1 inc)]
+      (println x y (doall (take 5 z)))))
+      ;=> 1 2 (3 4 5 6 7)
+```
+
+```clojure
+(do
+   (let [[x _ y _ z] (lazy-seq 1 inc)]
+      (println x y z)))
+      ;=> 1 3 5
 ```
 
 
