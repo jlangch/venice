@@ -87,15 +87,7 @@ public class Destructuring {
 		else if (Types.isVncSequence(symVal)) {
 			// sequential destructuring	
 			
-			if (Types.isVncLazySeq(bindVal)) {
-				throw new VncException(
-						String.format(
-								"Invalid sequential destructuring bind value type %s. Expected list, "
-									+ "vector, or string. %s",
-								Types.getType(bindVal),
-								ErrorMessage.buildErrLocation(bindVal)));
-			}
-			else if (Types.isVncSequence(bindVal)) {
+			if (Types.isVncSequence(bindVal)) {
 				sequential_list_destructure((VncSequence)symVal, (VncSequence)bindVal, bindings);
 			}
 			else if (Types.isVncString(bindVal)) {
