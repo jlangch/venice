@@ -1430,11 +1430,14 @@ public class DocGenerator {
 		thlocal.addItem(getDocItem("assoc"));
 		thlocal.addItem(getDocItem("dissoc"));
 		thlocal.addItem(getDocItem("get"));
+		thlocal.addItem(getDocItem("binding"));
+		thlocal.addItem(getDocItem("def-dynamic"));
 
 		final DocSection threads = new DocSection("Threads", "concurrency.threads");
 		all.addSection(threads);
 		threads.addItem(getDocItem("thread-id"));
 		threads.addItem(getDocItem("thread-name"));
+		threads.addItem(getDocItem("thread-daemon?"));
 		threads.addItem(getDocItem("thread-interrupted?"));
 		threads.addItem(getDocItem("thread-interrupted"));
 

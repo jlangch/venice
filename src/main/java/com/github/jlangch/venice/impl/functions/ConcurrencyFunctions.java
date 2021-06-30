@@ -1939,6 +1939,27 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction thread_daemon_Q = 
+		new VncFunction(
+				"thread-daemon?", 
+				VncFunction
+					.meta()
+					.arglists("(thread-daemon?)")		
+					.doc(
+						"Returns true if this Thread is a daemon thread else false.")
+					.examples("(thread-daemon?)")
+					.seeAlso("thread-name")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+				
+				return VncBoolean.of(Thread.currentThread().isDaemon());
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction thread_name = 
 		new VncFunction(
 				"thread-name", 
@@ -2094,6 +2115,7 @@ public class ConcurrencyFunctions {
 					.add(force)
 					
 					.add(thread_id)
+					.add(thread_daemon_Q)
 					.add(thread_name)
 					.add(thread_interrupted_Q)
 					.add(thread_interrupted)
