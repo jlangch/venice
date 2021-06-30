@@ -13,7 +13,12 @@ and this project adheres to
 
 ### Added
 
-- ... 
+- ...
+
+### Fixed
+
+- destructuring with lazy sequences. All destructuring features are now
+  supported with lazy sequences.
 
 
 
