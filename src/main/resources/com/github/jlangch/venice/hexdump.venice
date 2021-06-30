@@ -76,7 +76,7 @@
 (defn
   ^{ :arglists '("(dump s & opts)")
      :doc """
-          Prints a hexdump of the given argument to *out*. Optionally supply
+          Prints a hexdump of the given argument to `*out*`. Optionally supply
           byte offset (:offset, default: 0) and size (:size, default: :all)
           arguments. Can create hexdump from a collection of values, a
           bytebuf, a java.io.File, or a string representing a path to a file.
