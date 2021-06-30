@@ -266,7 +266,11 @@ public class VncHashMap extends VncMap {
 	@Override public TypeRank typeRank() {
 		return TypeRank.HASHMAP;
 	}
-	
+
+	public static VncMap empty() {
+		return EMPTY;
+	}
+
 	@Override
 	public int compareTo(final VncVal o) {
 		if (o == Constants.Nil) {
