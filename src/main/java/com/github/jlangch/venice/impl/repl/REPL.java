@@ -450,9 +450,16 @@ public class REPL {
 
 	private void handleColorModeCommand(final ColorMode mode) {
 		config.switchColorMode(mode);
+		
 		if (highlighter != null) {
 			highlighter.reloadColors();
 		}
+		
+		env.setGlobal(new Var(
+				new VncSymbol("*repl-color-theme*"), 
+				new VncKeyword(mode.name().toLowerCase()),
+				true));
+
 	}
 	
 	private void handleMacroExpandCommand(final Env env) {
@@ -826,7 +833,7 @@ public class REPL {
 					.setGlobal(new Var(
 									new VncSymbol("*repl-color-theme*"), 
 									new VncKeyword(config.getColorMode().name().toLowerCase()),
-									false))
+									true))
 					.setStdoutPrintStream(out)
 					.setStderrPrintStream(err)
 					.setStdinReader(in);

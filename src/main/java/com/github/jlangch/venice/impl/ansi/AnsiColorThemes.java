@@ -62,7 +62,7 @@ public class AnsiColorThemes {
 	}
 	
 	public static AnsiColorTheme getTheme(final String name) {
-		switch(StringUtil.trimToEmpty(name)) {
+		switch(StringUtil.trimToEmpty(name).toLowerCase()) {
 			case "light": return getLightTheme();
 			case "dark":  return getDarkTheme();
 			default:      return null;
