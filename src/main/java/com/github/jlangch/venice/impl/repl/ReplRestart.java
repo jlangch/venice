@@ -55,14 +55,16 @@ public class ReplRestart {
 	) {
 		try {
 			final List<String> lines = new ArrayList<>();
-			
+
+			lines.add(format(LocalDateTime.now()));
+
 			if (macroEpxandOnLoad) {
-				lines.add(format(LocalDateTime.now()));
 				lines.add("-macropexand");
 			}
 
 			if (mode != null) {
-				lines.add("ColorMode." + mode.name());
+				final ColorMode cm = mode == null ? ColorMode.None : mode;
+				lines.add("ColorMode." + cm.name());
 			}
 
 			Files.write(

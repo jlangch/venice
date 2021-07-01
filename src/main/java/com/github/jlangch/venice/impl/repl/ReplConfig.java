@@ -169,11 +169,11 @@ public class ReplConfig {
 	public void switchColorMode(final ColorMode mode) {
 		switch(mode) {
 			case Light:	
-				this.colorMode = ColorMode.Light;
+				colorMode = ColorMode.Light;
 				break;
 			
 			case Dark:
-				this.colorMode = ColorMode.Dark;
+				colorMode = ColorMode.Dark;
 				break;
 	
 			case None:
