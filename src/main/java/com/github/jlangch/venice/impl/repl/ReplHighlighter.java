@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 public class ReplHighlighter implements Highlighter {
 
 	public ReplHighlighter(final ReplConfig config) {
+		this.config = config;
 		this.theme = getAnsiColorTheme(config.getColorMode());
 	}
 	
@@ -47,6 +48,10 @@ public class ReplHighlighter implements Highlighter {
 	
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	public void reloadColors() {
+		theme = getAnsiColorTheme(config.getColorMode());
 	}
 	
 	@Override
@@ -94,6 +99,7 @@ public class ReplHighlighter implements Highlighter {
 
 	
 	
-	private final AnsiColorTheme theme;
+	private final ReplConfig config;
+	private AnsiColorTheme theme;
 	private boolean enabled = true;
 }

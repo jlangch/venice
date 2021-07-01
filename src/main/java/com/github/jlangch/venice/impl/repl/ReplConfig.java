@@ -166,6 +166,22 @@ public class ReplConfig {
 		}	
 	}
 
+	public void switchColorMode(final ColorMode mode) {
+		switch(mode) {
+			case Light:	
+				this.colorMode = ColorMode.Light;
+				break;
+			
+			case Dark:
+				this.colorMode = ColorMode.Dark;
+				break;
+	
+			case None:
+			default:
+				break;
+		}
+	}
+	
 	public String getConfigSource() {
 		return configSource;
 	}
@@ -346,7 +362,7 @@ public class ReplConfig {
 														"prompt");
 
 	private final String configSource;
-	private final ColorMode colorMode;
+	private ColorMode colorMode;
 	private final String loadFile;
 	private final String prompt;
 	private final String secondaryPrompt;

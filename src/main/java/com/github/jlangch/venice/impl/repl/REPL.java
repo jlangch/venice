@@ -411,6 +411,8 @@ public class REPL {
 				case "?":           handleHelpCommand(); break;
 				case "help":        handleHelpCommand(); break;
 				case "config":      handleConfigCommand(); break;
+				case "dark":        handleColorModeCommand(ColorMode.Dark); break;
+				case "light":       handleColorModeCommand(ColorMode.Light); break;
 				case "restartable": handleRestartableCommand(); break;
 				case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
 				case "setup-ext":   handleSetupCommand(venice, env, Extended, printer); break;
@@ -440,6 +442,11 @@ public class REPL {
 		printer.println("stdout", ReplConfig.getDefaultClasspathConfig());
 	}
 
+	private void handleColorModeCommand(final ColorMode mode) {
+		config.switchColorMode(mode);
+		highlighter.reloadColors();
+	}
+	
 	private void handleMacroExpandCommand(final Env env) {
 		venice.setMacroExpandOnLoad(true, env);
 		printer.println("system", "Macro expansion enabled");
@@ -1100,6 +1107,8 @@ public class REPL {
 			"               note: the REPL launcher script must support\n" +
 			"                     REPL restarting.\n" +
 			"  !, !?, !help help\n" +
+			"  !dark        switch to dark Venice color theme\n" +
+			"  !light       switch to light Venice color theme\n" +
 			"  !info        show REPL setup context data\n" +
 			"  !config      show a sample REPL config\n" +
 			"  !classpath   show the REPL classpath\n" +
