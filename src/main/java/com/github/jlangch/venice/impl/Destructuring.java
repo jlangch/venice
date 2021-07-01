@@ -88,16 +88,33 @@ public class Destructuring {
 			// sequential destructuring	
 			
 			if (Types.isVncSequence(bindVal)) {
-				sequential_list_destructure((VncSequence)symVal, (VncSequence)bindVal, bindings);
+				sequential_list_destructure(
+						(VncSequence)symVal, 
+						(VncSequence)bindVal,
+						bindVal,
+						bindings);
 			}
 			else if (Types.isVncString(bindVal)) {
-				sequential_string_destructure((VncSequence)symVal, (VncString)bindVal, bindings);
+				// turn into a list destructuring
+				sequential_list_destructure(
+						(VncSequence)symVal, 
+						((VncString)bindVal).toVncList(),
+						(VncString)bindVal, 
+						bindings);
 			}
 			else if (Types.isVncMapEntry(bindVal)) {
-				sequential_list_destructure((VncSequence)symVal, ((VncMapEntry)bindVal).toVector(), bindings);
+				sequential_list_destructure(
+						(VncSequence)symVal, 
+						((VncMapEntry)bindVal).toVector(), 
+						bindVal,
+						bindings);
 			}
 			else if (bindVal == Nil) {
-				sequential_list_destructure((VncSequence)symVal, VncList.empty(), bindings);
+				sequential_list_destructure(
+						(VncSequence)symVal, 
+						VncList.empty(), 
+						bindVal,
+						bindings);
 			}
 			else {
 				throw new VncException(
@@ -161,6 +178,7 @@ public class Destructuring {
 	private static void sequential_list_destructure(
 			final VncSequence symVals, 
 			final VncSequence bindVals,
+			final VncVal originalBindVal,
 			final List<Var> bindings
 	) {
 		// [[x y] [10 20]]
@@ -204,7 +222,7 @@ public class Destructuring {
 				// [[:as all] [10 20 30]]
 				final VncSymbol sym = (VncSymbol)symValsRest.first();
 				symValsRest = symValsRest.rest();
-				bindings.add(new Var(sym, bindVals)); // bind the original values
+				bindings.add(new Var(sym, originalBindVal)); // bind the original values
 			}
 			else if (Types.isVncSequence(symVal)) {
 				// nested destructuring
@@ -217,61 +235,6 @@ public class Destructuring {
 				final VncVal bindVal = bindValsRest.isEmpty() ? VncHashMap.empty() : bindValsRest.first();
 				bindValsRest = bindValsRest.rest();
 				associative_map_destructure((VncMap)symVal, (VncMap)bindVal, bindings);
-			}
-		}
-	}
-
-	private static void sequential_string_destructure(
-			final VncSequence symVals, 
-			final VncString bindVals,
-			final List<Var> bindings
-	) {
-		// [[x y] "abcde"]
-		// [[x _ y _ z] "abcde"]
-		// [[x y & z] "abcde"]
-		// [[x y :as all] "abcde"]
-		// [[x y & z :as all] "abcde"]
-
-		
-		VncSequence symValsRest = symVals;
-		VncSequence bindValsRest = bindVals.toVncList();
-		
-		while(!symValsRest.isEmpty()) {
-			final VncVal symVal = symValsRest.first();
-			symValsRest = symValsRest.rest();
-			
-			if (Types.isVncSymbol(symVal)) {
-				final String symName = ((VncSymbol)symVal).getName();
-
-				if (symName.equals("_")) {
-					// skip
-					bindValsRest = bindValsRest.rest();
-				}
-				else if (symName.equals("&")) {
-					final VncSymbol sym = (VncSymbol)symValsRest.first();
-					symValsRest = symValsRest.rest();
-					final VncVal bindVal = bindValsRest.isEmpty() ? VncList.empty() : bindValsRest;
-					bindValsRest = VncList.empty();
-					bindings.add(new Var(sym, bindVal));
-				}
-				else {
-					final VncSymbol sym = (VncSymbol)symVal;
-					final VncVal bindVal = bindValsRest.first();
-					bindValsRest = bindValsRest.rest();
-					bindings.add(new Var(sym, bindVal));
-				}
-			}
-			else if (isAsKeyword(symVal)) {
-				final VncSymbol sym = (VncSymbol)symValsRest.first();
-				symValsRest = symValsRest.rest();
-				bindings.add(new Var(sym, bindVals)); // bind the original values
-			}
-			else {
-				throw new VncException(
-						String.format(
-								"Invalid sequential string destructuring symbol type %s. %s",
-								Types.getType(symVal),
-								ErrorMessage.buildErrLocation(symVal)));
 			}
 		}
 	}
@@ -380,16 +343,20 @@ public class Destructuring {
 			}
 			else if (Types.isVncVector(symValName)) {
 				// nested sequential destructuring
+				final VncSequence nestedBindVals = (VncSequence)bindVals.get(symVals.get(symValName));
 				sequential_list_destructure(
 						(VncVector)symValName, 
-						(VncSequence)bindVals.get(symVals.get(symValName)),
+						nestedBindVals,
+						nestedBindVals,
 						local_bindings);
 			}
 			else if (Types.isVncList(symValName)) {
 				// nested sequential destructuring
+				final VncSequence nestedBindVals = (VncSequence)bindVals.get(symVals.get(symValName));
 				sequential_list_destructure(
 						(VncList)symValName, 
-						(VncSequence)bindVals.get(symVals.get(symValName)),
+						nestedBindVals,
+						nestedBindVals,
 						local_bindings);
 			}
 			else if (Types.isVncSymbol(symValName)) {
