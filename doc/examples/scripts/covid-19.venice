@@ -37,13 +37,18 @@
       { :name "Sweden"       :iso "SWE"  :style { :color :x-dark-gray  }}
       { :name "Greece"       :iso "GRC"  :style { :color :x-dark-pink  }}
       { :name "Spain"        :iso "ESP"  :style { :color :x-dark-green }}
-      { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }} ])
+      { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }}
+      ;;{ :name "India"        :iso "IND"  :style { :color :x-brown      }}
+      ;;{ :name "Croatia"      :iso "HRV"  :style { :color :x-brown      }}
+      { :name "Portugal"     :iso "PRT"  :style { :color :x-brown      }}
+      ;;{ :name "Slovenia"     :iso "SVN"  :style { :color :x-brown      }}
+      { :name "US"           :iso "USA"  :style { :color :x-black      }} ])
 
   ;; the interval length in days to calculate the moving average
   (def sample-days 7)
 
   ;; the start/end date for the cases
-  (def start-date (time/local-date 2021 1 1))
+  (def start-date (time/local-date 2021 4 1))
   (def end-date nil)
 
   ;; chart rendering
