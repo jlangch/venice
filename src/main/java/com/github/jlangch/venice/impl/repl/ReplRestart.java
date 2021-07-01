@@ -26,9 +26,11 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.temporal.ChronoUnit;
+
+import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 
 
 public class ReplRestart {
@@ -47,7 +49,10 @@ public class ReplRestart {
 		}
 	}
 	
-	public static void write(final boolean macroEpxandOnLoad) {
+	public static void write(
+			final boolean macroEpxandOnLoad, 
+			final ColorMode mode
+	) {
 		try {
 			final List<String> lines = new ArrayList<>();
 			
@@ -55,7 +60,11 @@ public class ReplRestart {
 				lines.add(format(LocalDateTime.now()));
 				lines.add("-macropexand");
 			}
-			
+
+			if (mode != null) {
+				lines.add("ColorMode." + mode.name());
+			}
+
 			Files.write(
 					RESTART_FILE.toPath(), 
 					lines, 
@@ -92,6 +101,23 @@ public class ReplRestart {
 		}
 		catch(Exception ex) {
 			return false;
+		}
+	}
+	
+	public ColorMode getColorMode() {
+		try {
+			if (lines.stream().anyMatch(s -> s.trim().equals("ColorMode.Light"))) {
+				return ColorMode.Light;
+			}
+			else if (lines.stream().anyMatch(s -> s.trim().equals("ColorMode.Dark"))) {
+				return ColorMode.Dark;
+			}
+			else {
+				return ColorMode.None;
+			}
+		}
+		catch(Exception ex) {
+			return ColorMode.None;
 		}
 	}
 

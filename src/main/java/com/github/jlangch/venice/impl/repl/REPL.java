@@ -111,6 +111,10 @@ public class REPL {
 					final ReplRestart restart = ReplRestart.read();
 					if (!restart.oudated()) {
 						macroexpand |= restart.hasMacroExpand();
+						
+						if (restart.getColorMode() != ColorMode.None) {
+							config.switchColorMode(restart.getColorMode());
+						}
 					}
 				}
 				finally {
@@ -282,7 +286,9 @@ public class REPL {
 						case "restart":
 							if (restartable) {
 								printer.println("system", "restarting...");
-								ReplRestart.write(venice.isMacroExpandOnLoad());
+								ReplRestart.write(
+									venice.isMacroExpandOnLoad(),
+									config.getColorMode());
 								System.exit(RESTART_EXIT_CODE);
 								return;
 							}
@@ -444,7 +450,9 @@ public class REPL {
 
 	private void handleColorModeCommand(final ColorMode mode) {
 		config.switchColorMode(mode);
-		highlighter.reloadColors();
+		if (highlighter != null) {
+			highlighter.reloadColors();
+		}
 	}
 	
 	private void handleMacroExpandCommand(final Env env) {
