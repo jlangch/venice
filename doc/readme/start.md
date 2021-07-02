@@ -5,7 +5,7 @@ Welcome to Venice!
 Venice can run on any operating system for which a Java VM is available, 
 like Linux, MacOSX, or Windows.
 
-Setup Venice on a [local machine](#venice-local-setup) or use a [Venice GitPod workspace](#venice-gitpod-workspace) without requiring any local installation.
+Setup Venice on a [local machine](#venice-local-setup) or use a [Venice Gitpod workspace](#venice-gitpod-workspace) without requiring any local installation.
  
 
 
@@ -128,13 +128,13 @@ foo> repl.bat
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/repl/repl-setup.png" width="500">
 
 
-## Venice GitPod workspace 
+## Venice Gitpod workspace 
 
-### Start a REPL from a Venice GitPod workspace
+### Start a REPL from a Venice Gitpod workspace
 
-A Venice REPL can be run without local installation in a [GitPod](https://gitpod.io/) workspace. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
+A Venice REPL can be run without local installation in a [Gitpod](https://gitpod.io/) workspace. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
 
-Just fire up a Venice GitPod workspace in your browser by clicking this button: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice). It opens the URL _https://gitpod.io/#https://github.com/jlangch/venice_. GitPod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it.
+Just fire up a Venice Gitpod workspace in your browser by clicking this button: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice). It opens the URL _https://gitpod.io/#https://github.com/jlangch/venice_. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it.
 
 Wait until the workspace has been built ...
 

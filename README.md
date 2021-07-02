@@ -33,7 +33,7 @@ can easily add it as standalone .jar to your classpath.
 
 Venice requires Java 8 or newer.
 
-Want to try Venice in a REPL? [Test it on GitPod](https://github.com/jlangch/venice/blob/master/doc/readme/start.md#venice-gitpod-workspace)
+Want to try Venice in a REPL? [Test it on Gitpod](https://github.com/jlangch/venice/blob/master/doc/readme/start.md#venice-gitpod-workspace)
 
 
 
