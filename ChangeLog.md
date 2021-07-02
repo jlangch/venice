@@ -16,6 +16,8 @@ and this project adheres to
 - color mode switching to the REPL. The REPL commands `!lightmode` and
   `!darkmode` switch Venice's color mode to adapt to the REPL's 
   terminal color mode.
+  
+- VS code settings for Venice source code syntax highlighting
 
 ### Fixed
 
