@@ -10,8 +10,8 @@
     "stdout": "\u001b[38;5;243m",
     "stderr": "\u001b[38;5;199m",
     "error": "\u001b[38;5;196m",
-    "system": "\u001b[48;5;35m\u001b[38;5;15m",
-    "interrupt": "\u001b[48;5;196m\u001b[38;5;15m"
+    "system": "\u001b[48;5;35m\u001b[38;5;231m",
+    "interrupt": "\u001b[48;5;196m\u001b[38;5;231m"
   },
 
   "colors-darkmode": {
@@ -20,8 +20,8 @@
     "stdout": "\u001b[38;5;246m",
     "stderr": "\u001b[38;5;202m",
     "error": "\u001b[38;5;196m",
-    "system": "\u001b[48;5;35m\u001b[38;5;15m",
-    "interrupt": "\u001b[48;5;196m\u001b[38;5;15m"
+    "system": "\u001b[48;5;35m\u001b[38;5;231m",
+    "interrupt": "\u001b[48;5;196m\u001b[38;5;231m"
   },
     
   "syntax-highlighting": {
