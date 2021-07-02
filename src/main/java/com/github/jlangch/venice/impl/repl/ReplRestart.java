@@ -29,8 +29,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReplRestart {
@@ -42,7 +44,12 @@ public class ReplRestart {
 	
 	public static ReplRestart read() {
 		try {
-			return new ReplRestart(Files.readAllLines(RESTART_FILE.toPath()));
+			return new ReplRestart(
+					Files.readAllLines(RESTART_FILE.toPath())
+					     .stream()
+					     .map(s -> StringUtil.trimToNull(s))
+					     .filter(s -> s != null)
+					     .collect(Collectors.toList()));
 		}
 		catch(Exception ex) {
 			return new ReplRestart(new ArrayList<>());
@@ -63,8 +70,7 @@ public class ReplRestart {
 			}
 
 			if (mode != null) {
-				final ColorMode cm = mode == null ? ColorMode.None : mode;
-				lines.add("ColorMode." + cm.name());
+				lines.add("ColorMode." + mode.name());
 			}
 
 			Files.write(
@@ -99,7 +105,7 @@ public class ReplRestart {
 
 	public boolean hasMacroExpand() {
 		try {
-			return lines.stream().anyMatch(s -> s.trim().equals("-macropexand"));
+			return lines.stream().anyMatch(s -> s.equals("-macropexand"));
 		}
 		catch(Exception ex) {
 			return false;
@@ -108,10 +114,10 @@ public class ReplRestart {
 	
 	public ColorMode getColorMode() {
 		try {
-			if (lines.stream().anyMatch(s -> s.trim().equals("ColorMode.Light"))) {
+			if (lines.stream().anyMatch(s -> s.equals("ColorMode.Light"))) {
 				return ColorMode.Light;
 			}
-			else if (lines.stream().anyMatch(s -> s.trim().equals("ColorMode.Dark"))) {
+			else if (lines.stream().anyMatch(s -> s.equals("ColorMode.Dark"))) {
 				return ColorMode.Dark;
 			}
 			else {

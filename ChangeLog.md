@@ -17,7 +17,8 @@ and this project adheres to
   `!darkmode` switch Venice's color mode to adapt to the REPL's 
   terminal color mode.
   
-- VS code settings for Venice source code syntax highlighting
+- VS code settings for Venice source code syntax highlighting for editing
+  on _Gitpod_
 
 ### Fixed
 
