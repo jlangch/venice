@@ -4,7 +4,7 @@
 ### Run a script
 
 ```text
-foo> java -jar venice-1.9.23.jar -script "(+ 1 1)"
+foo> java -jar venice-1.9.24.jar -script "(+ 1 1)"
 => 2
 ```
 
@@ -26,7 +26,7 @@ File "script.venice":
 run:
 
 ```text
-foo> java -jar venice-1.9.23.jar -file script.venice
+foo> java -jar venice-1.9.24.jar -file script.venice
 => 19.634954084936208
 ```
 
@@ -45,7 +45,7 @@ File "script.venice":
 run:
 
 ```text
-foo> java -jar venice-1.9.23.jar -file script.venice 3
+foo> java -jar venice-1.9.24.jar -file script.venice 3
 => 4
 ```
 
@@ -87,7 +87,7 @@ Files:
 /users/foo/venice
 ├── script.venice
 ├── bin
-│   └── venice-1.9.23.jar
+│   └── venice-1.9.24.jar
 └── scripts
     └── test.venice
 ```
@@ -96,7 +96,7 @@ Run:
 
 ```text
 foo> cd /users/foo/venice
-foo> java -jar bin/venice-1.9.23.jar -file script.venice -loadpath "/users/foo/venice/scripts"
+foo> java -jar bin/venice-1.9.24.jar -file script.venice -loadpath "/users/foo/venice/scripts"
 ```
 
 The script loads "test.venice" from "/users/foo/venice/scripts/test.venice".
@@ -116,7 +116,7 @@ and works for executing scripts or files.
 Run a script without upfront macro expansion:
 
 ```text
-foo> java -jar venice-1.9.23.jar -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
+foo> java -jar venice-1.9.24.jar -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
 Elapsed time: 271,66 ms
 => 0
 ```
@@ -124,7 +124,7 @@ Elapsed time: 271,66 ms
 Run a scrip with upfront macro expansion:
     
 ```text
-foo> java -jar venice-1.9.23.jar -macroexpand -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
+foo> java -jar venice-1.9.24.jar -macroexpand -script "(time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) (range -10000 10001))))"
 Elapsed time: 26,35 ms
 => 0
 ```
