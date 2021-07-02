@@ -1,5 +1,8 @@
 {
     "files.associations": {
         "*.venice": "clojure"
-    }
+    },
+    
+    "workbench.colorTheme": "Default Dark+"
+    
 }
