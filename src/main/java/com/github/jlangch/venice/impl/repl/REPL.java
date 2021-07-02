@@ -417,8 +417,10 @@ public class REPL {
 				case "?":           handleHelpCommand(); break;
 				case "help":        handleHelpCommand(); break;
 				case "config":      handleConfigCommand(); break;
-				case "dark":        handleColorModeCommand(ColorMode.Dark); break;
-				case "light":       handleColorModeCommand(ColorMode.Light); break;
+				case "dark":   		handleColorModeCommand(ColorMode.Dark); break;
+				case "darkmode":    handleColorModeCommand(ColorMode.Dark); break;
+				case "light":    	handleColorModeCommand(ColorMode.Light); break;
+				case "lightmode":   handleColorModeCommand(ColorMode.Light); break;
 				case "restartable": handleRestartableCommand(); break;
 				case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
 				case "setup-ext":   handleSetupCommand(venice, env, Extended, printer); break;
@@ -929,9 +931,13 @@ public class REPL {
 		if (ansiTerminal) {
 			switch(config.getColorMode()) {
 				case Light:
-					return "Using Ansi terminal (light color mode turned on)";
+					return "Using Ansi terminal (light color mode turned on)\n"
+							+ "Use the commands !lightmode or !darkmode to adapt "
+							+ "to the terminal's colors";
 				case Dark:
-					return "Using Ansi terminal (dark color mode turned on)";
+					return "Using Ansi terminal (dark color mode turned on)\n"
+							+ "Use the commands !lightmode or !darkmode to adapt "
+							+ "to the terminal's colors";
 				case None:
 				default:
 					return "Using Ansi terminal (colors turned off, turn on with option '-colors')";
@@ -1122,8 +1128,8 @@ public class REPL {
 			"               note: the REPL launcher script must support\n" +
 			"                     REPL restarting.\n" +
 			"  !, !?, !help help\n" +
-			"  !dark        switch to dark Venice color theme\n" +
-			"  !light       switch to light Venice color theme\n" +
+			"  !darkmode    switch to Venice's dark color theme\n" +
+			"  !lightmode   switch to Venice's light color theme\n" +
 			"  !info        show REPL setup context data\n" +
 			"  !config      show a sample REPL config\n" +
 			"  !classpath   show the REPL classpath\n" +

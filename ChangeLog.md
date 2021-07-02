@@ -13,7 +13,9 @@ and this project adheres to
 
 ### Added
 
-- ...
+- color mode switching to the REPL. The REPL commands `!lightmode` and
+  `!darkmode` switch Venice's color mode to adapt to the REPL's 
+  terminal color mode.
 
 ### Fixed
 
