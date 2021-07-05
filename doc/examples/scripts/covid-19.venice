@@ -62,7 +62,7 @@
   ;; country population REST URL
   (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
 
-  (defn tee [f x] (f x) x)
+  (defn tee [f! x] (f! x) x)
 
 
   ;;; I/O functions ------------------------------------------------------------
@@ -73,7 +73,7 @@
     (xchart/write-to-file chart :png dpi file)
     file)
 
-  (defn process-log [country-name]
+  (defn log-process-country [country-name]
     (println "Processing data for" country-name "..."))
 
   (defn load-country-html-data [country-name]
@@ -154,7 +154,7 @@
 
   (defn aggregate-country-data [country-data start end]
     (->> country-data
-         (tee #(process-log (:name %)))
+         (tee #(log-process-country (:name %)))
          (add-country-population)
          (add-country-html-data)
          (add-country-cases)
