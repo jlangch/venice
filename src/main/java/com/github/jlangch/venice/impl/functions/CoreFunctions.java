@@ -1607,12 +1607,14 @@ public class CoreFunctions {
 						"Creates a new list containing the items prepended to the rest, the " +
 						"last of which will be treated as a collection.")
 					.examples(
-						"(list* 1 [2 3])",
+						"(list* 1 '(2 3))",
 						"(list* 1 2 3 [4])",
+						"(list* 1 2 3 '(4 5))",
 						"(list* '(1 2) 3 [4])",
 						"(list* nil)",
 						"(list* nil [2 3])",
 						"(list* 1 2 nil)")
+					.seeAlso("cons")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1727,7 +1729,56 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	static public boolean vector_Q(VncVal mv) {
+	public static VncFunction new_vector_ASTERISK =
+		new VncFunction(
+				"vector*",
+				VncFunction
+					.meta()
+					.arglists(
+				    	"(vector* args)",
+				    	"(vector* a args)",
+				    	"(vector* a b args)",
+				    	"(vector* a b c args)",
+				    	"(vector* a b c d & more)")
+					.doc(
+						"Creates a new vector containing the items prepended to the rest, the " +
+						"last of which will be treated as a collection.")
+					.examples(
+						"(vector* 1 [2 3])",
+						"(vector* 1 2 3 [4])",
+						"(vector* 1 2 3 '(4 5))",
+						"(vector* '[1 2] 3 [4])",
+						"(vector* nil)",
+						"(vector* nil [2 3])",
+						"(vector* 1 2 nil)")
+					.seeAlso("cons")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				if (args.size() == 1 && args.first() == Nil) {
+					return Nil;
+				}
+				else if (args.last() == Nil) {
+					return args.butlast();
+				}
+				else if (!Types.isVncSequence(args.last())) {
+					throw new VncException(String.format(
+							"Function 'vector*' does not allow %s as last argument",
+							Types.getType(args.last())));
+				}
+				else {
+					return VncVector.empty()
+								.addAllAtEnd(args.butlast())
+								.addAllAtEnd((VncSequence)args.last());
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static boolean vector_Q(VncVal mv) {
 		return Types.isVncVector(mv);
 	}
 
@@ -4633,7 +4684,7 @@ public class CoreFunctions {
 						"    ([a b] (cons a (fn [] (fib b (+ a b))))))    \n" +
 						"                                                 \n" +
 						"    (doall (take 6 (fib))))                        ")
-					.seeAlso("conj")
+					.seeAlso("conj", "list*")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7601,6 +7652,7 @@ public class CoreFunctions {
 				.add(new_mutable_list)
 				.add(mutable_list_Q)
 				.add(new_vector)
+				.add(new_vector_ASTERISK)
 				.add(vector_Q)
 				.add(new_mutable_vector)
 				.add(mutable_vector_Q)
