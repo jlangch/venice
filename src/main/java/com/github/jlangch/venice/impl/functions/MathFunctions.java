@@ -298,19 +298,19 @@ public class MathFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
-				if (Types.isVncLong(arg)) {
+				if (arg instanceof VncLong) {
 					return new VncLong(((VncLong)arg).getValue() + 1L);
 				}
-				else if (Types.isVncInteger(arg)) {
+				else if (arg instanceof VncInteger) {
 					return new VncInteger(((VncInteger)arg).getValue() + 1);
 				}
-				else if (Types.isVncDouble(arg)) {
+				else if (arg instanceof VncDouble) {
 					return new VncDouble(((VncDouble)arg).getValue() + 1D);
 				}
-				else if (Types.isVncBigDecimal(arg)) {
+				else if (arg instanceof VncBigDecimal) {
 					return new VncBigDecimal(((VncBigDecimal)arg).getValue().add(BigDecimal.ONE));
 				}
-				else if (Types.isVncBigInteger(arg)) {
+				else if (arg instanceof VncBigInteger) {
 					return new VncBigInteger(((VncBigInteger)arg).getValue().add(BigInteger.ONE));
 				}
 				else {
@@ -341,19 +341,19 @@ public class MathFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 
 				final VncVal arg = args.first();
-				if (Types.isVncLong(arg)) {
+				if (arg instanceof VncLong) {
 					return new VncLong(((VncLong)arg).getValue() - 1L);
 				}
-				else if (Types.isVncInteger(arg)) {
+				else if (arg instanceof VncInteger) {
 					return new VncInteger(((VncInteger)arg).getValue() - 1);
 				}
-				else if (Types.isVncDouble(arg)) {
+				else if (arg instanceof VncDouble) {
 					return new VncDouble(((VncDouble)arg).getValue() - 1D);
 				}
-				else if (Types.isVncBigDecimal(arg)) {
+				else if (arg instanceof VncBigDecimal) {
 					return new VncBigDecimal(((VncBigDecimal)arg).getValue().subtract(BigDecimal.ONE));
 				}
-				else if (Types.isVncBigInteger(arg)) {
+				else if (arg instanceof VncBigInteger) {
 					return new VncBigInteger(((VncBigInteger)arg).getValue().subtract(BigInteger.ONE));
 				}
 				else {
