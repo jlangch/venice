@@ -1614,7 +1614,7 @@ public class CoreFunctions {
 						"(list* nil)",
 						"(list* nil [2 3])",
 						"(list* 1 2 nil)")
-					.seeAlso("cons")
+					.seeAlso("cons", "conj", "vector*")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1751,7 +1751,7 @@ public class CoreFunctions {
 						"(vector* nil)",
 						"(vector* nil [2 3])",
 						"(vector* 1 2 nil)")
-					.seeAlso("cons")
+					.seeAlso("cons", "conj", "list*")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4684,7 +4684,7 @@ public class CoreFunctions {
 						"    ([a b] (cons a (fn [] (fib b (+ a b))))))    \n" +
 						"                                                 \n" +
 						"    (doall (take 6 (fib))))                        ")
-					.seeAlso("conj", "list*")
+					.seeAlso("conj", "list*", "vector*")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4774,7 +4774,7 @@ public class CoreFunctions {
 						"(conj {:a 1 :b 2} (map-entry :c 3))",
 						"(conj)",
 						"(conj 4)")
-					.seeAlso("cons", "into")
+					.seeAlso("cons", "into", "list*", "vector*")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
