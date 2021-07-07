@@ -383,7 +383,7 @@ public class VncTinyList extends VncList {
 	public VncList reverse() {
 		switch(len) {
 			case 0:	return this;
-			case 1:	return new VncTinyList(1, first, Nil,    Nil,   Nil,    getMeta());
+			case 1:	return this;
 			case 2:	return new VncTinyList(2, second, first, Nil,   Nil,    getMeta());
 			case 3:	return new VncTinyList(3, third, second, first, Nil,    getMeta());
 			case 4:	return new VncTinyList(4, fourth, third, second, first, getMeta());
@@ -393,9 +393,14 @@ public class VncTinyList extends VncList {
 	
 	@Override 
 	public VncList shuffle() {
-		final List<VncVal> list = getJavaList();
-		Collections.shuffle(list);
-		return VncList.ofList(list, getMeta());
+		if (len <= 1) {
+			return this;
+		}
+		else {
+			final List<VncVal> list = getJavaList();
+			Collections.shuffle(list);
+			return VncList.ofList(list, getMeta());
+		}
 	}
 
 	@Override

@@ -416,7 +416,7 @@ public class VncTinyVector extends VncVector {
 	public VncVector reverse() {
 		switch(len) {
 			case 0:	return this;
-			case 1:	return new VncTinyVector(1, first, Nil,    Nil,   Nil,    getMeta());
+			case 1:	return this;
 			case 2:	return new VncTinyVector(2, second, first, Nil,   Nil,    getMeta());
 			case 3:	return new VncTinyVector(3, third, second, first, Nil,    getMeta());
 			case 4:	return new VncTinyVector(4, fourth, third, second, first, getMeta());
@@ -426,9 +426,14 @@ public class VncTinyVector extends VncVector {
 	
 	@Override 
 	public VncVector shuffle() {
-		final List<VncVal> list = getJavaList();
-		Collections.shuffle(list);
-		return VncVector.ofList(list, getMeta());
+		if (len <= 1) {
+			return this;
+		}
+		else {
+			final List<VncVal> list = getJavaList();
+			Collections.shuffle(list);
+			return VncVector.ofList(list, getMeta());
+		}
 	}
 
 	@Override
