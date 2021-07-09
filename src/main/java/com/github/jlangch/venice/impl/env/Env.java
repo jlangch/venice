@@ -168,7 +168,7 @@ public class Env implements Serializable {
 			return getGlobalVar(sym) != null;
 		}
 		else {
-			final VncVal v = findLocalVar(sym);
+			final Var v = findLocalVar(sym);
 			return v != null ? true : getGlobalVar(sym) != null;
 		}
 	}
@@ -547,9 +547,9 @@ public class Env implements Serializable {
 			return glob == null ? defaultVal : glob.getVal();
 		}
 		else {
-			final VncVal local = findLocalVar(sym);
+			final Var local = findLocalVar(sym);
 			if (local != null) {
-				return local;
+				return local.getVal();
 			}
 			else {
 				final Var glob = getGlobalVar(sym);
@@ -558,15 +558,15 @@ public class Env implements Serializable {
 		}
 	}
 	
-	private VncVal findLocalVar(final VncSymbol sym) {
+	private Var findLocalVar(final VncSymbol sym) {
 		Var v = this.localSymbols.get(sym);
-		if (v != null) return v.getVal();
+		if (v != null) return v;
 
 		// descend through the env levels
 		Env env = this.outer;		
 		while(env != null) {
 			v = env.localSymbols.get(sym);
-			if (v != null) return v.getVal();
+			if (v != null) return v;
 			env = env.outer;
 		}
 		
