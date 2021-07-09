@@ -298,6 +298,16 @@ public class MathFunctionsTest {
 		assertEquals(new BigInteger("4"), venice.eval("(inc 3N)"));
 	}
 
+
+	@Test
+	public void test_inc2() {
+		final Venice venice = new Venice();
+		
+		final Object res = venice.eval("(inc (- 1 2))");
+
+		assertEquals(0L, res);
+	}
+
 	@Test
 	public void test_long() {
 		final Venice venice = new Venice();

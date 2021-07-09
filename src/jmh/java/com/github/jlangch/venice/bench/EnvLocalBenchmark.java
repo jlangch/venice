@@ -47,9 +47,9 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class EnvBenchmark {
+public class EnvLocalBenchmark {
 	
-	public EnvBenchmark() {
+	public EnvLocalBenchmark() {
 		for(int ii=0; ii<10; ii++) {
 			env.setLocal(new Var(new VncSymbol("s-" + ii), new VncLong(ii)));
 		}
