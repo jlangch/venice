@@ -548,12 +548,36 @@ public class Env implements Serializable {
 		}
 		else {
 			final Var local = findLocalVar(sym);
-			if (local != null) {
-				return local.getVal();
+		
+			if (globalVarLookupOptimization) {
+				if (local != null) {
+					if (local instanceof GlobalRefVar) {
+						final Var glob = getGlobalVar(sym);
+						return glob == null ? defaultVal : glob.getVal();
+					}
+					else {
+						return local.getVal();
+					}
+				}
+				else {
+					final Var glob = getGlobalVar(sym);
+					if (glob != null) {
+						localSymbols.put(sym, new GlobalRefVar(sym));
+						return glob.getVal();
+					}
+					else {
+						return defaultVal;
+					}
+				}
 			}
 			else {
-				final Var glob = getGlobalVar(sym);
-				return glob == null ? defaultVal : glob.getVal();
+				if (local != null) {
+					return local.getVal();
+				}
+				else {
+					final Var glob = getGlobalVar(sym);
+					return glob == null ? defaultVal : glob.getVal();
+				}
 			}
 		}
 	}
@@ -707,6 +731,8 @@ public class Env implements Serializable {
 	private final boolean failOnShadowingGlobalVars = false; 
 
 	private final boolean failOnPrivateSymbolAccess = true; 
+
+	private final boolean globalVarLookupOptimization = true; 
 
 	private final Env outer;
 	private final int level;
