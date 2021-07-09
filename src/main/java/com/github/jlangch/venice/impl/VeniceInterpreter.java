@@ -363,7 +363,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final int numArgs = args.size();
 						if (numArgs == 2 || numArgs == 3) {
 							final VncVal cond = evaluate(args.first(), env);
-							orig_ast = (VncBoolean.isFalse(cond) || cond == Nil) 
+							orig_ast = VncBoolean.isFalseOrNil(cond) 
 											? args.third()   // eval false slot form (nil if not available)
 											: args.second(); // eval true slot form
 							tailPosition = true;
@@ -717,8 +717,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								interceptor.validateVeniceFunction(fnName);	
 								interceptor.validateMaxExecutionTime();
 							}
+							
+							final Thread currThread = Thread.currentThread();
 	
-							checkInterrupted(fnName);
+							checkInterrupted(currThread, fnName);
 	
 							final CallStack callStack = ThreadLocalMap.getCallStack();
 	
@@ -743,7 +745,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								}
 								finally {
 									callStack.pop();
-									checkInterrupted(fnName);
+									checkInterrupted(currThread, fnName);
 									if (checkSandbox) {
 										interceptor.validateMaxExecutionTime();
 									}
@@ -2318,6 +2320,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		switch(argCount) {
 			case 0:
 				break;
+				
 			case 1:
 				// [1][2] calculate and bind the single new value
 				recur_env.setLocal(
@@ -2325,14 +2328,17 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						recursionPoint.getLoopBindingName(0), 
 						evaluate(args.first(), env, false)));
 				break;
+				
 			case 2:
 				// [1] calculate the new values
 				final VncVal v1 = evaluate(args.first(), env, false);
 				final VncVal v2 = evaluate(args.second(), env, false);
+				
 				// [2] bind the new values
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
 				recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
 				break;
+				
 			default:
 				// [1] calculate new values
 				final VncVal[] newValues = new VncVal[argCount];
@@ -2403,7 +2409,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 	
 	private void checkInterrupted(final String fnName) {
-		if (Thread.currentThread().isInterrupted()) {
+		checkInterrupted(Thread.currentThread(), fnName);
+	}
+	
+	private void checkInterrupted(final Thread thread, final String fnName) {
+		if (thread.isInterrupted()) {
 			throw new com.github.jlangch.venice.InterruptedException(
 						"Interrupted while processing function " + fnName);
 		}
