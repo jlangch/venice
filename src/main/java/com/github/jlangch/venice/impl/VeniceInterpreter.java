@@ -46,6 +46,7 @@ import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
+import com.github.jlangch.venice.impl.env.ComputedVar;
 import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.ReservedSymbols;
@@ -234,6 +235,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		// set Venice version
 		env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
 
+		// set current namespace
+		env.setGlobal(new ComputedVar(new VncSymbol("*ns*"), () -> Namespaces.getCurrentNS(), false));
+		
 		// set system newline
 		env.setGlobal( new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 

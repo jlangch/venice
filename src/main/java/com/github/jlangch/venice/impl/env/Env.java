@@ -299,7 +299,7 @@ public class Env implements Serializable {
 		final VncSymbol sym = localVar.getName();
 		
 		if (sym.getName().equals(Namespaces.NS_CURRENT_NAME)) {
-			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
+			throw new VncException(String.format("Rejected setting var %s", sym.getName()));
 		}
 
 		if (failOnShadowingGlobalVars) {
@@ -325,13 +325,9 @@ public class Env implements Serializable {
 
 	public Env setGlobal(final Var val) {
 		final VncSymbol sym = val.getName();
-		
-		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
-			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
-		}
 
 		if (ReservedSymbols.isSpecialForm(sym.getName())) {
-			throw new VncException(String.format("Internal error setting var %s with name of a special form", sym.getName()));
+			throw new VncException(String.format("Rejected setting var %s with name of a special form", sym.getName()));
 		}
 
 		final Var v = getGlobalVar(sym);
@@ -605,9 +601,9 @@ public class Env implements Serializable {
 	private Var getGlobalVar(final VncSymbol sym) {
 		final String name = sym.getName();
 
-		if (name.equals(Namespaces.NS_CURRENT_NAME)) {
-			return new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS());
-		}
+//		if (name.equals(Namespaces.NS_CURRENT_NAME)) {
+//			return new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS());
+//		}
 
 		Var v = null;
 
