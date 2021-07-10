@@ -331,7 +331,11 @@ public class Env implements Serializable {
 		final VncSymbol sym = val.getName();
 
 		if (ReservedSymbols.isSpecialForm(sym.getName())) {
-			throw new VncException(String.format("Rejected setting var %s with name of a special form", sym.getName()));
+			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+				throw new VncException(String.format(
+							"Rejected setting var %s with name of a special form", 
+							sym.getName()));
+			}
 		}
 
 		final Var v = getGlobalVar(sym);

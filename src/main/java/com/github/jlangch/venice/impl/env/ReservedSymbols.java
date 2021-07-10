@@ -26,7 +26,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
 public class ReservedSymbols {
@@ -46,10 +49,12 @@ public class ReservedSymbols {
 
 	public static void validateNotReservedSymbol(final VncSymbol symbol) {
 		if (symbol != null && isReserved(symbol)) {
-			throw new SecurityException(
-					String.format(
-							"Reserved symbol '%s'. Redefinition is not allowed.", 
-							symbol.getName()));
+			try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+				throw new VncException(
+						String.format(
+								"Reserved symbol '%s'. Redefinition is not allowed.", 
+								symbol.getName()));
+			}
 		}
 	}
 
