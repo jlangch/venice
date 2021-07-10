@@ -14,6 +14,7 @@ and this project adheres to
 ### Added
 
 - function `vector*`
+- optimizations to global var lookup
 
 
 

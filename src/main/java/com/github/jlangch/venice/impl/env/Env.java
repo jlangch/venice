@@ -67,14 +67,14 @@ public class Env implements Serializable {
 			this.level = 0;
 			this.precompiledGlobalSymbols = null; 
 			this.globalSymbols = new ConcurrentHashMap<>(1024);
-			this.localSymbols = new ConcurrentHashMap<>();
+			this.localSymbols = new ConcurrentHashMap<>(64);
 		}
 		else {
 			this.outer = outer;
 			this.level = outer.level() + 1;
 			this.precompiledGlobalSymbols = outer.precompiledGlobalSymbols;
 			this.globalSymbols = outer.globalSymbols;
-			this.localSymbols = new ConcurrentHashMap<>();
+			this.localSymbols = new ConcurrentHashMap<>(64);
 		}
 	}
 	
@@ -83,7 +83,7 @@ public class Env implements Serializable {
 		this.level = 0;
 		this.precompiledGlobalSymbols = precompiledGlobalSymbols;
 		this.globalSymbols = new ConcurrentHashMap<>(256);
-		this.localSymbols = new ConcurrentHashMap<>();
+		this.localSymbols = new ConcurrentHashMap<>(64);
 	}
 
 	public Env copyGlobalToPrecompiledSymbols() {
@@ -324,13 +324,18 @@ public class Env implements Serializable {
 	}
 
 	public Env setGlobal(final Var val) {
-		if (val.getName().equals(Namespaces.NS_CURRENT_SYMBOL)) {
-			throw new VncException(String.format("Internal error setting var %s", val.getName().getName()));
+		final VncSymbol sym = val.getName();
+		
+		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
+			throw new VncException(String.format("Internal error setting var %s", sym.getName()));
 		}
 
-		final Var v = getGlobalVar(val.getName());
+		if (ReservedSymbols.isSpecialForm(sym.getName())) {
+			throw new VncException(String.format("Internal error setting var %s with name of a special form", sym.getName()));
+		}
+
+		final Var v = getGlobalVar(sym);
 		if (v != null && !v.isOverwritable()) {
-			final VncSymbol sym = val.getName();
 			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
 				throw new VncException(String.format(
 							"The existing global var '%s' must not be overwritten!", 
@@ -338,7 +343,7 @@ public class Env implements Serializable {
 			}
 		}
 		
-		setGlobalVar(val.getName(), val);
+		setGlobalVar(sym, val);
 
 		return this;
 	}
@@ -604,15 +609,10 @@ public class Env implements Serializable {
 			return new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS());
 		}
 
-		if (ReservedSymbols.isSpecialForm(name)) {
-			return null;
-		}
-				
-
 		Var v = null;
 
 		final boolean qualified = sym.hasNamespace();
-		if (qualified && name.startsWith("core/")) {
+		if (qualified && "core".equals(sym.getNamespace())) {
 			// core/test
 			v = getGlobalVarRaw(new VncSymbol(name.substring(5)));
 		}
