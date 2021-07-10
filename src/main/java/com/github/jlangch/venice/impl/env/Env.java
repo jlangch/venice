@@ -584,11 +584,11 @@ public class Env implements Serializable {
 	}
 	
 	private Var findLocalVar(final VncSymbol sym) {
-		Var v = this.localSymbols.get(sym);
+		Var v = localSymbols.get(sym);
 		if (v != null) return v;
 
 		// descend through the env levels
-		Env env = this.outer;		
+		Env env = outer;		
 		while(env != null) {
 			v = env.localSymbols.get(sym);
 			if (v != null) return v;
@@ -599,31 +599,28 @@ public class Env implements Serializable {
 	}
 	
 	private Var getGlobalVar(final VncSymbol sym) {
-		final String name = sym.getName();
-
-//		if (name.equals(Namespaces.NS_CURRENT_NAME)) {
-//			return new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS());
-//		}
-
 		Var v = null;
 
 		final boolean qualified = sym.hasNamespace();
-		if (qualified && "core".equals(sym.getNamespace())) {
-			// core/test
-			v = getGlobalVarRaw(new VncSymbol(name.substring(5)));
+		if (qualified) {
+			final VncSymbol s = "core".equals(sym.getNamespace())
+									? new VncSymbol(sym.getSimpleName())
+									: sym;
+			v = getGlobalVarRaw(s);
 		}
 		else {
-			if (!qualified) {
-				final VncSymbol ns = Namespaces.getCurrentNS();
-				if (!Namespaces.isCoreNS(ns)) {
-					final VncSymbol qualifiedKey = new VncSymbol(ns.getName(), name, Constants.Nil);
-					// curr-ns/test
-					v = getGlobalVarRaw(qualifiedKey);
-				}
+			final VncSymbol currNS = Namespaces.getCurrentNS();
+			if (!Namespaces.isCoreNS(currNS)) {
+				// 1st: lookup for current namespace
+				final VncSymbol s = new VncSymbol(
+											currNS.getName(), 
+											sym.getSimpleName(), 
+											Constants.Nil);
+				v = getGlobalVarRaw(s);
 			}
-	
+				
 			if (v == null) {
-				// test
+				// 2nd: lookup for core namespace
 				v = getGlobalVarRaw(sym);
 			}
 		}
@@ -697,12 +694,12 @@ public class Env implements Serializable {
 		return new BufferedReader(new InputStreamReader(new NullInputStream()));
 	}
 
-	private void rejectPrivateSymbolAccess(final VncSymbol sym, final Var envVar) {
-		final VncSymbol envSym = envVar.getName();
-		if (envSym.isPrivate()) {
+	private void rejectPrivateSymbolAccess(final VncSymbol sym, final Var globalVar) {
+		final VncSymbol globalVarSym = globalVar.getName();
+		if (globalVarSym.isPrivate()) {
 			// note: global symbols without namespace belong to the "core" namespace
 			final String currNS = Namespaces.getCurrentNS().getName();
-			final String symNS = envSym.hasNamespace() ? envSym.getNamespace() : "core";
+			final String symNS = globalVarSym.hasNamespace() ? globalVarSym.getNamespace() : "core";
 			if (!currNS.equals(symNS)) {
 				final CallStack callStack = ThreadLocalMap.getCallStack();
 				
@@ -711,7 +708,7 @@ public class Env implements Serializable {
 							"Illegal access of private symbol '%s/%s' "
 								+ "accessed from namespace '%s'.\n%s", 
 							symNS,
-							envSym.getSimpleName(),
+							globalVarSym.getSimpleName(),
 							currNS,
 							callStack.toString()));
 				}
