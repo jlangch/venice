@@ -298,11 +298,15 @@ public class Env implements Serializable {
 	public Env setLocal(final Var localVar) {
 		final VncSymbol sym = localVar.getName();
 		
-		if (sym.getName().equals(Namespaces.NS_CURRENT_NAME)) {
-			throw new VncException(String.format("Rejected setting var %s", sym.getName()));
+		if (ReservedSymbols.isReserved(sym)) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+				throw new VncException(String.format(
+							"Rejected setting local var with name '%s'. Use another name, please.", 
+							sym.getName()));
+			}
 		}
 
-		if (failOnShadowingGlobalVars) {
+		if (!allowShadowingGlobalVars) {
 			final Var globVar = getGlobalVar(sym);
 	
 			// check shadowing of a global non function var by a local var
@@ -721,7 +725,7 @@ public class Env implements Serializable {
 	private static final long serialVersionUID = 9002640180394221858L;
 	
 	// Note: Clojure allows shadowing global vars by local vars
-	private final boolean failOnShadowingGlobalVars = false; 
+	private final boolean allowShadowingGlobalVars = true; 
 
 	private final boolean failOnPrivateSymbolAccess = true; 
 
