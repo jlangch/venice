@@ -680,7 +680,7 @@ public class SpecialFormsDoc {
 						"      (println x))       \n" +
 						"   (println x)))           ",
 						"(def-dynamic ^{:private true} x 100)")
-					.seeAlso("def", "defonce")
+					.seeAlso("binding", "def", "defonce")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -699,7 +699,15 @@ public class SpecialFormsDoc {
 						"      (println x)        \n" +
 						"      (binding [x 200]   \n" +
 						"         (println x))    \n" +
-						"      (println x)))        ")
+						"      (println x)))        ",
+						";; binding-introduced bindings are thread-locally mutable: \n" +
+						"(binding [x 1]                                             \n" +
+						"  (set! x 2)                                               \n" +
+						"  x)                                                         ",
+						";; binding can use qualified names : \n" +
+						"(binding [user/x 1]                  \n" +
+						"  user/x)                              ")
+					.seeAlso("def-dynamic", "let")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -891,7 +899,7 @@ public class SpecialFormsDoc {
 						"     (println \"height: \" height)      \n" +
 						"     (println \"title: \" title)        \n" +
 						"     (println \"styles: \" styles))       ")
-					.seeAlso("if-let", "when-let")
+					.seeAlso("if-let", "when-let", "binding")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
