@@ -401,6 +401,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									throw new VncException("let requires an even number of forms in the binding vector!");					
 								}
 							}
+							if (sym instanceof VncSymbol) {
+								final VncSymbol s = (VncSymbol)sym;
+								if (s.hasNamespace()) {
+									try (WithCallStack cs = new WithCallStack(new CallFrame(s.getQualifiedName(), s.getMeta()))) {
+										throw new VncException("Can't use qualified symbols with let!");					
+									}
+								}
+							}
 							final VncVal val = evaluate(bindingsIter.next(), env);
 							env.addLocalVars(Destructuring.destructure(sym, val));
 						}
