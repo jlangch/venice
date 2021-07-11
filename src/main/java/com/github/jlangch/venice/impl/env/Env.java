@@ -111,13 +111,13 @@ public class Env implements Serializable {
 	 * 
 	 * @param sym a symbol
 	 * @return the value
-	 * @throws VncException if the symbol does not exist.
+	 * @throws SymbolNotFoundException if the symbol does not exist.
 	 */
 	public VncVal get(final VncSymbol sym) {
 		final VncVal val = getOrElse(sym, null);
 		if (val != null) return val;
 
-		try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+		try (WithCallStack cs = new WithCallStack(callframe(sym))) {
 			throw new SymbolNotFoundException(
 					String.format("Symbol '%s' not found.", sym.getQualifiedName()),
 					sym.getQualifiedName()); 
@@ -192,7 +192,10 @@ public class Env implements Serializable {
 				final VncSymbol ns = Namespaces.getCurrentNS();
 				
 				if (!Namespaces.isCoreNS(ns)) {
-					final VncSymbol qualifiedKey = new VncSymbol(ns.getName(), name, Constants.Nil);
+					final VncSymbol qualifiedKey = new VncSymbol(
+														ns.getName(), 
+														name, 
+														Constants.Nil);
 					final Var v = getGlobalVarRaw(qualifiedKey);
 					if (v != null) {
 						return Namespaces.getCurrentNS().getName();
@@ -299,7 +302,7 @@ public class Env implements Serializable {
 		final VncSymbol sym = localVar.getName();
 		
 		if (ReservedSymbols.isReserved(sym)) {
-			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+			try (WithCallStack cs = new WithCallStack(callframe(sym))) {
 				throw new VncException(String.format(
 							"Rejected setting local var with name '%s'. Use another name, please.", 
 							sym.getName()));
@@ -314,7 +317,7 @@ public class Env implements Serializable {
 			// e.g.:   (do (defonce x 1) (let [x 10 y 20] (+ x y)))
 			//         (let [+ 10] (core/+ + 20))
 			if (globVar != null && !globVar.isOverwritable() && Types.isVncFunction(globVar.getVal())) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(callframe(sym))) {
 					throw new VncException(String.format(
 								"The global var '%s' must not be shadowed by a local var!", 
 								sym.getQualifiedName()));
@@ -331,7 +334,7 @@ public class Env implements Serializable {
 		final VncSymbol sym = val.getName();
 
 		if (ReservedSymbols.isSpecialForm(sym.getName())) {
-			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+			try (WithCallStack cs = new WithCallStack(callframe(sym))) {
 				throw new VncException(String.format(
 							"Rejected setting var %s with name of a special form", 
 							sym.getName()));
@@ -340,7 +343,7 @@ public class Env implements Serializable {
 
 		final Var v = getGlobalVar(sym);
 		if (v != null && !v.isOverwritable()) {
-			try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+			try (WithCallStack cs = new WithCallStack(callframe(sym))) {
 				throw new VncException(String.format(
 							"The existing global var '%s' must not be overwritten!", 
 							sym.getQualifiedName()));
@@ -527,19 +530,13 @@ public class Env implements Serializable {
 	}
 	
 	private DynamicVar findGlobalDynamicVar(final VncSymbol sym) {
-		if (sym.equals(Namespaces.NS_CURRENT_SYMBOL)) {
-			throw new VncException(String.format(
-						"%s can not be used as a dynamic var", 
-						sym.getQualifiedName()));
-		}
-
 		final Var dv = getGlobalVar(sym);
 		if (dv != null) {
 			if (dv instanceof DynamicVar) {
 				return (DynamicVar)dv;
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(sym.getQualifiedName(), sym.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(callframe(sym))) {
 					throw new VncException(String.format(
 								"The var '%s' is not defined as dynamic", 
 								sym.getQualifiedName()));
@@ -670,10 +667,6 @@ public class Env implements Serializable {
 		
 		all.putAll(globalSymbols);
 		
-		all.put(
-			Namespaces.NS_CURRENT_SYMBOL, 
-			new Var(Namespaces.NS_CURRENT_SYMBOL, Namespaces.getCurrentNS()));
-		
 		return all;
 	}
 
@@ -724,6 +717,9 @@ public class Env implements Serializable {
 		}	
 	}
 	
+	private CallFrame callframe(final VncSymbol sym) {
+		return new CallFrame(sym.getQualifiedName(), sym.getMeta());
+	}
 	
 	
 	private static final long serialVersionUID = 9002640180394221858L;
