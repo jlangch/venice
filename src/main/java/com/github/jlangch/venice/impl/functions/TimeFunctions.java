@@ -55,8 +55,9 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.TimeUtil;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 
@@ -1895,10 +1896,11 @@ public class TimeFunctions {
 			return (Locale)((VncJavaObject)locale).getDelegate();
 		}
 
-		throw new VncException(String.format(
-				"The type %s does not define a Locale. %s",
-				Types.getType(locale),
-				ErrorMessage.buildErrLocation(locale)));
+		try (WithCallStack cs = new WithCallStack(new CallFrame("coerce", locale.getMeta()))) {
+			throw new VncException(String.format(
+					"The type %s does not define a Locale.",
+					Types.getType(locale)));
+		}
 	}
 
 	private static DateTimeFormatter getDateTimeFormatter(final VncVal fmt) {
@@ -1912,10 +1914,11 @@ public class TimeFunctions {
 			return (DateTimeFormatter)((VncJavaObject)fmt).getDelegate();
 		}
 		else {
-			throw new VncException(String.format(
-					"Function 'time/format' does not allow %s as format parameter. %s",
-					Types.getType(fmt),
-					ErrorMessage.buildErrLocation(fmt)));
+			try (WithCallStack cs = new WithCallStack(new CallFrame("time/format", fmt.getMeta()))) {
+				throw new VncException(String.format(
+					"Function 'time/format' does not allow %s as format parameter.",
+					Types.getType(fmt)));
+			}
 		}
 	}
 
@@ -1925,10 +1928,11 @@ public class TimeFunctions {
 			return (DateTimeFormatter)ReflectionAccessor.getStaticField(DateTimeFormatter.class, fmtName).getValue();
 		}
 		catch(Exception ex) {
-			throw new VncException(String.format(
-					"'%s' is not a predefined DateTimeFormatter. %s",
-					fmtName,
-					ErrorMessage.buildErrLocation(fmt)));
+			try (WithCallStack cs = new WithCallStack(new CallFrame("coerce", fmt.getMeta()))) {
+				throw new VncException(String.format(
+						"'%s' is not a predefined DateTimeFormatter.",
+						fmtName));
+			}
 		}
 	}
 

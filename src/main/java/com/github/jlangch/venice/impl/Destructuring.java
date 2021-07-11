@@ -40,7 +40,8 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
 public class Destructuring {
@@ -117,12 +118,13 @@ public class Destructuring {
 						bindings);
 			}
 			else {
-				throw new VncException(
-						String.format(
-								"Invalid sequential destructuring bind value type %s. Expected list, "
-									+ "vector, or string. %s",
-								Types.getType(bindVal),
-								ErrorMessage.buildErrLocation(bindVal)));
+				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", bindVal.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"Invalid sequential destructuring bind value type %s. Expected list, "
+										+ "vector, or string.",
+									Types.getType(bindVal)));
+				}
 			}
 		}
 		else if (Types.isVncMap(symVal)) {			
@@ -132,28 +134,31 @@ public class Destructuring {
 				associative_map_destructure((VncMap)symVal, (VncMap)bindVal, bindings);
 			}
 			else if (Types.isVncVector(bindVal)) {
-				throw new VncException(
-						String.format(
-								"Associative destructuring on vector is not yet implemented. %s",
-								ErrorMessage.buildErrLocation(bindVal)));
+				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", bindVal.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"Associative destructuring on vector is not yet implemented."));
+				}
 			}
 			else if (bindVal == Nil) {
 				associative_map_destructure((VncMap)symVal, new VncHashMap(), bindings);
 			}
 			else {
-				throw new VncException(
-						String.format(
-								"Invalid associative destructuring bind value type %s. Expected map. %s",
-								Types.getType(bindVal),
-								ErrorMessage.buildErrLocation(bindVal)));
+				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", bindVal.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"Invalid associative destructuring bind value type %s. Expected map.",
+									Types.getType(bindVal)));
+				}
 			}
 		}
 		else {
-			throw new VncException(
-					String.format(
-							"Invalid destructuring sym value type %s. Expected symbol. %s",
-							Types.getType(symVal),
-							ErrorMessage.buildErrLocation(symVal)));
+			try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symVal.getMeta()))) {
+				throw new VncException(
+						String.format(
+								"Invalid destructuring sym value type %s. Expected symbol.",
+								Types.getType(symVal)));
+			}
 		}
 				
 		return bindings;
@@ -268,11 +273,12 @@ public class Destructuring {
 					}
 				}
 				else {
-					throw new VncException(
-							String.format(
-									"Invalid associative destructuring with :keys symbol type %s. Expected vector. %s",
-									Types.getType(symbol),
-									ErrorMessage.buildErrLocation(symbol)));
+					try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symbol.getMeta()))) {
+						throw new VncException(
+									String.format(
+											"Invalid associative destructuring with :keys symbol type %s. Expected vector.",
+											Types.getType(symbol)));
+					}
 				}					
 			}
 			else if (symValName.equals(KEYWORD_SYMS)) {
@@ -285,11 +291,12 @@ public class Destructuring {
 					}
 				}
 				else {
-					throw new VncException(
-							String.format(
-									"Invalid associative destructuring with :syms symbol type %s. Expected vector. %s",
-									Types.getType(symbol),
-									ErrorMessage.buildErrLocation(symbol)));
+					try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symbol.getMeta()))) {
+						throw new VncException(
+									String.format(
+											"Invalid associative destructuring with :syms symbol type %s. Expected vector.",
+											Types.getType(symbol)));
+					}
 				}					
 			}
 			else if (symValName.equals(KEYWORD_STRS)) {
@@ -302,11 +309,12 @@ public class Destructuring {
 					}
 				}
 				else {
-					throw new VncException(
-							String.format(
-									"Invalid associative destructuring with :strs symbol type %s. Expected vector. %s",
-									Types.getType(symbol),
-									ErrorMessage.buildErrLocation(symbol)));
+					try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symbol.getMeta()))) {
+						throw new VncException(
+								String.format(
+										"Invalid associative destructuring with :strs symbol type %s. Expected vector.",
+										Types.getType(symbol)));
+					}
 				}					
 			}
 			else if (symValName.equals(KEYWORD_OR)) {
@@ -365,11 +373,12 @@ public class Destructuring {
 				local_bindings.add(new Var((VncSymbol)symValName, v));								
 			}
 			else {
-				throw new VncException(
-						String.format(
-								"Invalid associative destructuring name type %s. %s",
-								Types.getType(symValName),
-								ErrorMessage.buildErrLocation(symValName)));
+				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symValName.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"Invalid associative destructuring name type %s. %s",
+									Types.getType(symValName)));
+				}
 			}
 		}
 
