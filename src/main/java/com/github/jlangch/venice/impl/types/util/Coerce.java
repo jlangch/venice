@@ -58,7 +58,8 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
 public class Coerce {
@@ -68,10 +69,11 @@ public class Coerce {
 			return (IDeref)val;
 		}
 		else if (Types.isVncVal(val)) {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to IDeref. %s", 
-					Types.getType((VncVal)val),
-					ErrorMessage.buildErrLocation((VncVal)val)));
+			try (WithCallStack cs = new WithCallStack(callframe((VncVal)val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to IDeref. %s", 
+						Types.getType((VncVal)val)));
+			}
 		}
 		else {
 			throw new VncException(String.format(
@@ -85,10 +87,11 @@ public class Coerce {
 			return (VncAtom)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to atom. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to atom.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -97,10 +100,11 @@ public class Coerce {
 			return (VncVolatile)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to volatile. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to volatile.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -109,10 +113,11 @@ public class Coerce {
 			return (VncThreadLocal)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to thread-local. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to thread-local.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -121,10 +126,11 @@ public class Coerce {
 			return (VncKeyword)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to keyword. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to keyword.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -133,10 +139,11 @@ public class Coerce {
 			return (VncSymbol)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to symbol. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to symbol.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -146,21 +153,23 @@ public class Coerce {
 		}
 		else if (Types.isIVncFunction(val)) {
 			if (((IVncFunction)val).isMacro()) {
-				throw new VncException(String.format(
-						"Cannot coerce a macro to a function. The macro '%s' can " +
-						"not be passed as an argument if a function is expected. %s",
-						((VncFunction)val).getQualifiedName(),
-						ErrorMessage.buildErrLocation(val)));
+				try (WithCallStack cs = new WithCallStack(callframe(val))) {
+					throw new VncException(String.format(
+							"Cannot coerce a macro to a function. The macro '%s' can " +
+							"not be passed as an argument if a function is expected.",
+							((VncFunction)val).getQualifiedName()));
+				}
 			}
 			else {
 				return (IVncFunction)val;
 			}
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to function. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to function.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -169,10 +178,11 @@ public class Coerce {
 			return (VncFunction)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to function. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to function.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -184,10 +194,11 @@ public class Coerce {
 			return (VncFunction)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to function. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to function.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -196,10 +207,11 @@ public class Coerce {
 			return (VncMultiFunction)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to multi function. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to multi function.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -208,10 +220,11 @@ public class Coerce {
 			return (VncString)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to string. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to string.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -220,10 +233,11 @@ public class Coerce {
 			return (VncChar)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to char. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to char.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -232,10 +246,11 @@ public class Coerce {
 			return (VncBoolean)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to boolean. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to boolean.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -244,10 +259,11 @@ public class Coerce {
 			return (VncInteger)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to int. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to int.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -256,10 +272,11 @@ public class Coerce {
 			return (VncLong)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to long. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to long.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -268,10 +285,11 @@ public class Coerce {
 			return (VncDouble)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to double. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to double.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -280,10 +298,11 @@ public class Coerce {
 			return (VncBigDecimal)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to big-decimal. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to big-decimal.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -292,10 +311,11 @@ public class Coerce {
 			return (VncBigInteger)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to big-integer. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to big-integer.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -304,10 +324,11 @@ public class Coerce {
 			return (VncByteBuffer)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to bytebuf. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to bytebuf.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -316,10 +337,11 @@ public class Coerce {
 			return (VncCollection)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to collection. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to collection.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -328,10 +350,11 @@ public class Coerce {
 			return (VncSequence)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to a sequential collection. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to a sequential collection.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -343,10 +366,11 @@ public class Coerce {
 			return ((VncSequence)val).toVncList();
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to list. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to list.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -358,10 +382,11 @@ public class Coerce {
 			return ((VncSequence)val).toVncVector();
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to vector. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to vector.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -373,10 +398,11 @@ public class Coerce {
 			return VncMutableList.ofAll((VncSequence)val, Constants.Nil);
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to mutable-list. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to mutable-list.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -388,10 +414,11 @@ public class Coerce {
 			return VncMutableVector.ofAll((VncSequence)val, Constants.Nil);
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to mutable-vector. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to mutable-vector.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -400,10 +427,11 @@ public class Coerce {
 			return (VncMap)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to map. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to map.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -415,10 +443,11 @@ public class Coerce {
 			return new VncHashMap(((VncMap)val).getJavaMap());
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to hash-map. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to hash-map.s", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -430,10 +459,11 @@ public class Coerce {
 			return new VncMutableMap(((VncMap)val).getJavaMap());
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to mutable-map. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to mutable-map.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -442,10 +472,11 @@ public class Coerce {
 			return (VncSet)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to set. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to set.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -454,10 +485,11 @@ public class Coerce {
 			return (VncHashSet)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to set. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to set.", 
+						Types.getType(val)));
+			}
 		}
 	}
 
@@ -466,10 +498,11 @@ public class Coerce {
 			return (VncSortedSet)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to sorted set. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to sorted set.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -481,10 +514,11 @@ public class Coerce {
 			return VncMutableSet.ofAll((VncSet)val, Constants.Nil);
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to mutable-set. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to mutable-set.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -493,10 +527,11 @@ public class Coerce {
 			return (VncStack)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to stack. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to stack.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -505,10 +540,11 @@ public class Coerce {
 			return (VncQueue)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to queue. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to queue.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -517,10 +553,11 @@ public class Coerce {
 			return (VncJavaObject)val;
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to java-object. %s", 
-					Types.getType(val),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to java-object.", 
+						Types.getType(val)));
+			}
 		}
 	}
 	
@@ -533,11 +570,17 @@ public class Coerce {
 			return (T)((VncJavaObject)val).getDelegate();
 		}
 		else {
-			throw new VncException(String.format(
-					"Cannot coerce value of type %s to java-object of type %s. %s", 
-					Types.getType(val),
-					type.getName(),
-					ErrorMessage.buildErrLocation(val)));
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to java-object of type %s.", 
+						Types.getType(val),
+						type.getName()));
+			}
 		}
+	}
+	
+	
+	private static CallFrame callframe(final VncVal val) {
+		return new CallFrame("coerce", val.getMeta());
 	}
 }
