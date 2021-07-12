@@ -42,10 +42,9 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.EmptyIterator;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
-import com.github.jlangch.venice.impl.util.StreamUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.EmptyIterator;
+import com.github.jlangch.venice.impl.util.StreamUtil;
 
 //	Benchmark                       Mode  Cnt  Score   Error  Units
 //	VncTinyVectorBenchmark.append   avgt    3  9.900 ± 0.762  ns/op
@@ -265,10 +264,9 @@ public class VncTinyVector extends VncVector {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= len) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a vector of size %d. %s", 
+						"nth: index %d out of range for a vector of size %d.", 
 						idx, 
-						len,
-						isEmpty() ? "" : ErrorMessage.buildErrLocation(first)));
+						len));
 		}
 
 		switch(idx) {

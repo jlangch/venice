@@ -38,7 +38,6 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncMutableMap extends VncMap {
@@ -64,9 +63,8 @@ public class VncMutableMap extends VncMap {
 	public static VncMutableMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() % 2 != 0)) {
 			throw new VncException(String.format(
-					"mutable-map: create requires an even number of list items. Got %d items. %s", 
-					lst.size(),
-					ErrorMessage.buildErrLocation(lst)));
+					"mutable-map: create requires an even number of list items. Got %d items.", 
+					lst.size()));
 		}
 		
 		return new VncMutableMap().assoc(lst);
@@ -75,9 +73,8 @@ public class VncMutableMap extends VncMap {
 	public static VncMutableMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length % 2 != 0)) {
 			throw new VncException(String.format(
-					"mutable-map: create requires an even number of items. Got %d items. %s", 
-					mvs.length,
-					ErrorMessage.buildErrLocation(mvs[0])));
+					"mutable-map: create requires an even number of items. Got %d items.", 
+					mvs.length));
 		}
 		
 		return new VncMutableMap().assoc(mvs);
@@ -163,8 +160,7 @@ public class VncMutableMap extends VncMap {
 	public VncMutableMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					"mutable-map: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs[0])));
+					"mutable-map: assoc requires an even number of items."));
 		}
 		
 		for (int i=0; i<mvs.length-1; i+=2) {
@@ -177,8 +173,7 @@ public class VncMutableMap extends VncMap {
 	public VncMutableMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
-					"mutable-map: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs)));
+					"mutable-map: assoc requires an even number of items."));
 		}	
 
 		VncSequence kv = mvs;

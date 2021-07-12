@@ -40,7 +40,6 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
@@ -234,8 +233,7 @@ public class VncTinyList extends VncList {
 			throw new VncException(String.format(
 						"nth: index %d out of range for a list of size %d. %s", 
 						idx, 
-						len,
-						isEmpty() ? "" : ErrorMessage.buildErrLocation(first)));
+						len));
 		}
 
 		switch(idx) {

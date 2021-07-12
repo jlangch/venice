@@ -44,7 +44,6 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncVector extends VncSequence implements IVncFunction {
@@ -209,10 +208,9 @@ public class VncVector extends VncSequence implements IVncFunction {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a vector of size %d. %s", 
-						idx, 
-						size(),
-						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
+							"nth: index %d out of range for a vector of size %d.", 
+							idx, 
+							size()));
 		}
 
 		return value.get(idx);

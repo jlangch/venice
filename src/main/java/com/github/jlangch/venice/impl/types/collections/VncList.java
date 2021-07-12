@@ -39,7 +39,6 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncList extends VncSequence {
@@ -187,10 +186,9 @@ public class VncList extends VncSequence {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= value.size()) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a list of size %d. %s", 
+						"nth: index %d out of range for a list of size %d.", 
 						idx, 
-						size(),
-						isEmpty() ? "" : ErrorMessage.buildErrLocation(value.get(0))));
+						size()));
 		}
 
 		return value.get(idx);

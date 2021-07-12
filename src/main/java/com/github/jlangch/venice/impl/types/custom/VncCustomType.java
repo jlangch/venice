@@ -40,7 +40,6 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncCustomType extends VncMap {
@@ -156,8 +155,7 @@ public class VncCustomType extends VncMap {
 	public VncMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					":core/custom-type: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs[0])));
+					":core/custom-type: assoc requires an even number of items."));
 		}
 		
 		VncMap tmp = values;
@@ -172,8 +170,7 @@ public class VncCustomType extends VncMap {
 	public VncCustomType assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
-					":core/custom-type: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs)));
+					":core/custom-type: assoc requires an even number of items."));
 		}	
 
 		VncMap map = values;

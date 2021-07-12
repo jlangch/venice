@@ -37,7 +37,6 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncSortedMap extends VncMap {
@@ -75,9 +74,8 @@ public class VncSortedMap extends VncMap {
 	public static VncSortedMap ofAll(final VncSequence lst) {
 		if (lst != null && (lst.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"sorted-map: create requires an even number of list items. Got %d items. %s",
-					lst.size(),
-					ErrorMessage.buildErrLocation(lst)));
+					"sorted-map: create requires an even number of list items. Got %d items.",
+					lst.size()));
 		}
 
 		return new VncSortedMap().assoc(lst);
@@ -86,9 +84,8 @@ public class VncSortedMap extends VncMap {
 	public static VncSortedMap ofAll(final VncVector vec) {
 		if (vec != null && (vec.size() %2 != 0)) {
 			throw new VncException(String.format(
-					"sorted-map: create requires an even number of vector items. Got %d items. %s", 
-					vec.size(),
-					ErrorMessage.buildErrLocation(vec)));
+					"sorted-map: create requires an even number of vector items. Got %d items.", 
+					vec.size()));
 		}
 
 		return new VncSortedMap().assoc(vec);
@@ -97,9 +94,8 @@ public class VncSortedMap extends VncMap {
 	public static VncSortedMap of(final VncVal... mvs) {
 		if (mvs != null && (mvs.length %2 != 0)) {
 			throw new VncException(String.format(
-					"sorted-map: create requires an even number of items. Got %d items. %s", 
-					mvs.length,
-					ErrorMessage.buildErrLocation(mvs[0])));
+					"sorted-map: create requires an even number of items. Got %d items.", 
+					mvs.length));
 		}
 		
 		return new VncSortedMap().assoc(mvs);
@@ -190,8 +186,7 @@ public class VncSortedMap extends VncMap {
 	public VncSortedMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					"sorted-map: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs[0])));
+					"sorted-map: assoc requires an even number of items."));
 		}
 		
 		io.vavr.collection.TreeMap<VncVal,VncVal> tmp = value;
@@ -205,8 +200,7 @@ public class VncSortedMap extends VncMap {
 	public VncSortedMap assoc(final VncSequence mvs) {
 		if (mvs.size() %2 != 0) {
 			throw new VncException(String.format(
-					"sorted-map: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs)));
+					"sorted-map: assoc requires an even number of items."));
 		}	
 
 		io.vavr.collection.TreeMap<VncVal,VncVal> map = value;

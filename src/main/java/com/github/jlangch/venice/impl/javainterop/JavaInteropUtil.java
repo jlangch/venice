@@ -59,7 +59,9 @@ import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
@@ -146,10 +148,12 @@ public class JavaInteropUtil {
 									.onGetStaticField(new Invoker(), targetClass, methodName));
 					}
 					else {
-						throw new JavaMethodInvocationException(String.format(
-								"No matching public static method or field found: '%s' for target '%s'",
-								methodName,
-								targetClass));
+						try (WithCallStack cs = new WithCallStack(new CallFrame(".", args))) {
+							throw new JavaMethodInvocationException(String.format(
+									"No matching public static method or field found: '%s' for target '%s'",
+									methodName,
+									targetClass));
+						}
 					}
 				}
 				else {
@@ -189,10 +193,12 @@ public class JavaInteropUtil {
 									.onGetInstanceField(new Invoker(), target, targetFormalType, methodName));
 					}
 					else {
-						throw new JavaMethodInvocationException(String.format(
-								"No matching public instance method or field found: '%s' for target '%s'",
-								methodName,
-								target.getClass()));
+						try (WithCallStack cs = new WithCallStack(new CallFrame(".", args.getMeta()))) {
+							throw new JavaMethodInvocationException(String.format(
+									"No matching public instance method or field found: '%s' for target '%s'",
+									methodName,
+									target.getClass()));
+						}
 					}
 				}
 			}
@@ -216,22 +222,24 @@ public class JavaInteropUtil {
 									ErrorMessage.buildErrLocation(args)));
 						}
 
-						throw new JavaMethodInvocationException(
-								String.format(
-									"%s. %s", 
-									ex.getMessage(),
-									ErrorMessage.buildErrLocation(args)),
-								cause);
+						try (WithCallStack cs = new WithCallStack(new CallFrame(".", args.getMeta()))) {
+							throw new JavaMethodInvocationException(
+									String.format(
+										"%s.", 
+										ex.getMessage()),
+									cause);
+						}
 					}
 				}
 			}
 			
 			// else
-			throw new JavaMethodInvocationException(
-					String.format(
-						"%s. %s", 
-						ex.getMessage(),
-						ErrorMessage.buildErrLocation(args)));
+			try (WithCallStack cs = new WithCallStack(new CallFrame(".", args.getMeta()))) {
+				throw new JavaMethodInvocationException(
+						String.format(
+							"%s.", 
+							ex.getMessage()));
+			}
 		}
 		catch(SecurityException ex) {
 			throw new SecurityException(String.format(
@@ -240,11 +248,12 @@ public class JavaInteropUtil {
 					ErrorMessage.buildErrLocation(args)));
 		}
 		catch(RuntimeException ex) {
-			throw new JavaMethodInvocationException(
-						String.format(
-							"JavaInterop failure. %s", 
-							ErrorMessage.buildErrLocation(args)),
-						ex);
+			try (WithCallStack cs = new WithCallStack(new CallFrame(".", args.getMeta()))) {
+				throw new JavaMethodInvocationException(
+							String.format(
+								"JavaInterop failure."),
+							ex);
+			}
 		}
 	}
 	
@@ -265,7 +274,9 @@ public class JavaInteropUtil {
 			}
 		}
 		catch(RuntimeException ex) {
-			throw new VncException(ex.getMessage(), ex);
+			try (WithCallStack cs = new WithCallStack(new CallFrame("resolve-class-name", val.getMeta()))) {
+				throw new VncException(ex.getMessage(), ex);
+			}
 		}
 	}
 	

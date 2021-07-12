@@ -32,13 +32,12 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.ErrorMessage;
 
 
 public class VncJavaMap extends VncMap implements IVncJavaObject {
@@ -158,8 +157,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public VncJavaMap assoc(final VncVal... mvs) {
 		if (mvs.length %2 != 0) {
 			throw new VncException(String.format(
-					"java-map: assoc requires an even number of items. %s", 
-					ErrorMessage.buildErrLocation(mvs[0])));
+					"java-map: assoc requires an even number of items."));
 		}
 		
 		for (int i=0; i<mvs.length-1; i+=2) {
@@ -172,6 +170,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	@Override
 	public VncJavaMap assoc(final VncSequence mvs) {
+		if (mvs.size() %2 != 0) {
+			throw new VncException(String.format(
+					"java-map: assoc requires an even number of items."));
+		}	
+
 		VncSequence kv = mvs;
 		while(!kv.isEmpty()) {
 			value.put(
