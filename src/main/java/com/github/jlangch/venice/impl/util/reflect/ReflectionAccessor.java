@@ -164,19 +164,7 @@ public class ReflectionAccessor {
 			return invokeMatchingMethod(methodName, methods, targetFormalType, target, args);
 		}
 		catch (JavaMethodInvocationException ex) {
-			final String errMsg = 
-					String.format(
-						"No matching public instance method found: %s(%s) for target '%s'%s",
-						methodName,
-						formatArgTypes(args),
-						target == null 
-							? "<null>" 
-							: target.getClass().getName(),
-						targetFormalType == null 
-							? "" 
-							: String.format(" as formal type '%s'", targetFormalType.getName()));
-			
-			throw new JavaMethodInvocationException(errMsg);
+			throw ex;
 		}
 		catch (Exception ex) {
 			if (targetFormalType == null) {
@@ -213,15 +201,16 @@ public class ReflectionAccessor {
 	
 				return invokeMatchingMethod(methodName, methods, null, null, args);
 			}
-			catch (JavaMethodInvocationException ex) {				
-				final String errMsg = 
-								String.format(
-									"No matching public static method found: %s(%s) for target class %s",
-									methodName,
-									formatArgTypes(args),
-									clazz.getName());
-				
-				throw new JavaMethodInvocationException(errMsg);
+			catch (JavaMethodInvocationException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				throw new JavaMethodInvocationException(
+						String.format(
+								"Failed to invoke static method '%s' on class '%s'",
+								methodName,
+								clazz.getName()),
+						ex);
 			}
 		}
 	}
@@ -455,8 +444,30 @@ public class ReflectionAccessor {
 				}
 			}
 		}
+		
+		if (target == null) {
+			final String errMsg = 
+					String.format(
+						"No matching public static method found: %s(%s) for target class '%s'",
+						methodName,
+						formatArgTypes(args),
+						methods.get(0).getDeclaringClass());
 
-		throw new JavaMethodInvocationException("No matching method found");
+			throw new JavaMethodInvocationException(errMsg);
+		}
+		else {
+			final String errMsg = 
+					String.format(
+						"No matching public instance method found: %s(%s) for target object '%s'%s",
+						methodName,
+						formatArgTypes(args),
+						target.getClass().getName(),
+						targetFormalType == null 
+							? "" 
+							: String.format(" as formal type '%s'", targetFormalType.getName()));
+
+			throw new JavaMethodInvocationException(errMsg);
+		}
 	}
 	
 	private static ReturnValue invoke(final Method method, final Object target, final Object[] args) {

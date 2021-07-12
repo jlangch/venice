@@ -64,6 +64,13 @@ public class JavaInteropTest {
 		assertEquals(null, venice.eval("(. jobj :getString)", symbols()));
 		assertEquals("abc", venice.eval("(do (. jobj :setString \"abc\") (. jobj :getString))", symbols()));
 	}
+
+	@Test
+	public void testStringAsCharSequence() {
+		final Venice venice = new Venice();
+		
+		assertEquals("def", venice.eval("(do (. jobj :setCharSequence \"def\") (. jobj :getString))", symbols()));
+	}
 	
 	@Test
 	public void testBooleanAccessor() {

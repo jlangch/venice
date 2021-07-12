@@ -43,6 +43,9 @@ public class JavaObject {
 	public void setString(String _String) {
 		this._String = _String;
 	}
+	public void setCharSequence(CharSequence _CharSequence) {
+		this._String = _CharSequence.toString();
+	}
 	public boolean isPrimitiveBoolean() {
 		return _primitiveBoolean;
 	}
