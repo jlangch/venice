@@ -827,22 +827,25 @@ public class Zipper {
 				}
 			}
 		}
-    }
-	
-    private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-    	final File destFile = new File(destinationDir, zipEntry.getName());
-         
-    	final String destDirPath = destinationDir.getCanonicalPath();
-    	final String destFilePath = destFile.getCanonicalPath();
-         
-    	if (!destFilePath.startsWith(destDirPath + File.separator)) {
-    		throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
-    	}
-    	
-    	return destFile;
-    }
-    
-    private static String normalizeAndValidateEntryName(final String entryName) {
+	}
+
+	private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		final File destFile = new File(destinationDir, zipEntry.getName());
+
+		final String destDirPath = destinationDir.getCanonicalPath();
+		final String destFilePath = destFile.getCanonicalPath();
+
+		// Sanitize zip entry name
+		// A zip entry name my contain malicious  ".." elements resulting the
+		// entry to be written outside of 'destDirPath'!
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+
+		return destFile;
+	}
+
+	private static String normalizeAndValidateEntryName(final String entryName) {
 		if (StringUtil.isEmpty(entryName)) {
 			throw new IllegalArgumentException("A 'entryName' must not be null or empty");
 		}
