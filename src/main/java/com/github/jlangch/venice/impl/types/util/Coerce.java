@@ -71,7 +71,7 @@ public class Coerce {
 		else if (Types.isVncVal(val)) {
 			try (WithCallStack cs = new WithCallStack(callframe((VncVal)val))) {
 				throw new VncException(String.format(
-						"Cannot coerce value of type %s to IDeref. %s", 
+						"Cannot coerce value of type %s to IDeref.", 
 						Types.getType((VncVal)val)));
 			}
 		}

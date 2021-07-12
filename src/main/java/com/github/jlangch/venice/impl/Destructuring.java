@@ -376,7 +376,7 @@ public class Destructuring {
 				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symValName.getMeta()))) {
 					throw new VncException(
 							String.format(
-									"Invalid associative destructuring name type %s. %s",
+									"Invalid associative destructuring name type %s.",
 									Types.getType(symValName)));
 				}
 			}

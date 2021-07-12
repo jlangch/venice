@@ -231,7 +231,7 @@ public class VncTinyList extends VncList {
 	public VncVal nth(final int idx) {
 		if (idx < 0 || idx >= len) {
 			throw new VncException(String.format(
-						"nth: index %d out of range for a list of size %d. %s", 
+						"nth: index %d out of range for a list of size %d.", 
 						idx, 
 						len));
 		}
