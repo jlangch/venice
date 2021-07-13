@@ -162,7 +162,7 @@ public class CallbackPrintStream extends PrintStream {
 	@Override
 	public void println(final String s) {
 		synchronized (this) {
-			sb.append(s).append("\n");		
+			sb.append(s).append(System.lineSeparator());		
 			if (autoFlush) flush();
 		}
 	}
