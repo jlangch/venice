@@ -53,69 +53,7 @@ public class CapturingPrintStream extends PrintStream {
 		
 		this.limit = limit;
 	}
-
-	/**
-	 * Creates a new {@link CapturingPrintStream} with the system's default
-	 * capturing limit.
-	 * 
-	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
-	 * if the bytes written to the stream exceed the specified limit. 
-	 * 
-	 * @return a {@link CapturingPrintStream}
-	 * 
-	 * @deprecated Use: {@code new CapturingPrintStream()}
-	 */
-	public static CapturingPrintStream create() {
-		return new CapturingPrintStream();
-	}
 	
-	/**
-	 * Creates a new {@link CapturingPrintStream} with the given capturing limit.
-	 * 
-	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
-	 * if the bytes written to the stream exceed the specified limit. 
-	 * 
-	 * @param limit A capturing limit
-	 * @return a {@link CapturingPrintStream}
-	 * 
-	 * @deprecated Use: {@code new CapturingPrintStream(limit)}
-	 */
-	public static CapturingPrintStream create(final int limit) {
-		return new CapturingPrintStream(limit);
-	}
-	
-	/**
-	 * Creates a new {@link CapturingPrintStream} with the default capturing 
-	 * limit of 10MB.
-	 * 
-	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
-	 * if the bytes written to the stream exceed the specified limit. 
-	 * 
-	 * @param encoding A charset encoding
-	 * @return a {@link CapturingPrintStream}
-	 * 
-	 * @deprecated Use: {@code new CapturingPrintStream()}
-	 */
-	public static CapturingPrintStream create(final String encoding) {
-		return new CapturingPrintStream();
-	}
-	
-	/**
-	 * Creates a new {@link CapturingPrintStream} with the given capturing limit.
-	 * 
-	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
-	 * if the bytes written to the stream exceed the specified limit. 
-	 * 
-	 * @param encoding A charset encoding
-	 * @param limit A capturing limit
-	 * @return a {@link CapturingPrintStream}
-	 * 
-	 * @deprecated Use: {@code new CapturingPrintStream(limit)}
-	 */
-	public static CapturingPrintStream create(final String encoding, final int limit) {
-		return new CapturingPrintStream(limit);
-	}
-
 	@Override
 	public PrintStream append(final CharSequence csq) {
 		print(csq == null ? "null" : csq.toString());
