@@ -15,6 +15,9 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- `CapturingPrintStream` to use the the system-dependent line separator string.
 
 
 ## [1.9.25] - 2021-07-12

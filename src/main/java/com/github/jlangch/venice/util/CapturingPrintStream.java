@@ -167,7 +167,7 @@ public class CapturingPrintStream extends PrintStream {
 	@Override
 	public void println(final String s) {
 		appendToBuffer(s);
-		appendToBuffer("\n");
+		appendToBuffer(System.lineSeparator());
 	}
 
 	@Override
