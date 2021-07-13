@@ -1040,7 +1040,7 @@
 
   with-out-str [& forms]
 
-  `(binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
+  `(binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :new)]
      (do ~@forms)
      (. *out* :getOutput)))
 
@@ -1057,7 +1057,7 @@
 
   with-err-str [& forms]
 
-  `(binding [*err* (. :com.github.jlangch.venice.util.CapturingPrintStream :create)]
+  `(binding [*err* (. :com.github.jlangch.venice.util.CapturingPrintStream :new)]
      (do ~@forms)
      (. *err* :getOutput)))
 

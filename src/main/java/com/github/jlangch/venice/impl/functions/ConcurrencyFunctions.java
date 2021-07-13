@@ -156,6 +156,7 @@ public class ConcurrencyFunctions {
 						}
 						catch(ExecutionException ex) {
 							if (ex.getCause() != null) {
+								// just unwrap SecurityException and VncException
 								if (ex.getCause() instanceof SecurityException) {
 									throw (SecurityException)ex.getCause();
 								}

@@ -43,7 +43,7 @@ public class ReplJLineLogHandler extends Handler {
 	}
 
 	@Override
-	public void close() throws SecurityException {
+	public void close() {
 	}
 
 	private final TerminalPrinter printer;

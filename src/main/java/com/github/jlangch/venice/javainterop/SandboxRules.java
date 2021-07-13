@@ -608,7 +608,6 @@ public class SandboxRules {
 				"class:" + BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
 				
 				"class:" + BASE + ".impl.VeniceInterpreter$1",
-				"class:" + BASE + ".impl.ValueException:*",
 				"class:" + BASE + ".impl.types.collections.VncVector",
 
 				"class:" + BASE + ".impl.types.concurrent.Delay:*",

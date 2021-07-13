@@ -53,6 +53,7 @@ public class CapturingPrintStream extends PrintStream {
 		
 		this.limit = limit;
 	}
+
 	
 	@Override
 	public PrintStream append(final CharSequence csq) {
