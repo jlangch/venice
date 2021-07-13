@@ -596,6 +596,7 @@ public class SandboxRules {
 				"class:" + BASE + ".*Exception:*",
 				"class:" + BASE + ".*Error:*",				
 				
+				"class:" + BASE + ".impl.repl.ReplPrintStream:*",
 				"class:" + BASE + ".util.CapturingPrintStream:*",
 				"class:" + BASE + ".util.CallbackPrintStream:*",
 				"class:" + BASE + ".util.*XMLHandler*:*",
