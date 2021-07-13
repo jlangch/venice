@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
 
 

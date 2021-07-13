@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util;
 
 import java.io.PrintStream;
 
+import com.github.jlangch.venice.SecurityException;
 
 /**
  * Captures the output written to this {@link java.io.PrintStream}.

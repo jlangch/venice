@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;

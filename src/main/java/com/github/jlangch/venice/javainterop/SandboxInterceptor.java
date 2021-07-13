@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.CompiledSandboxRules;
 import com.github.jlangch.venice.impl.util.StringUtil;
 

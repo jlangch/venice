@@ -35,6 +35,7 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 

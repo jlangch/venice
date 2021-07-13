@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;

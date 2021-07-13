@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;

@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import com.github.jlangch.venice.SecurityException;
+
 
 public class ValueFilterInterceptor extends Interceptor {
 

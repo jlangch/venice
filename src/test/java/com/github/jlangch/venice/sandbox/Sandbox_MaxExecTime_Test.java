@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.javainterop.Interceptor;

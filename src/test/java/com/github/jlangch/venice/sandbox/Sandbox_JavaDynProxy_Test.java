@@ -31,6 +31,8 @@ import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
+import com.github.jlangch.venice.SecurityException;
+
 
 public class Sandbox_JavaDynProxy_Test {
 	

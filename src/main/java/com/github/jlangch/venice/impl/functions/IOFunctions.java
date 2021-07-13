@@ -70,6 +70,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;

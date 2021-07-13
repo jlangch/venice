@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.NotInTailPositionException;
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
@@ -239,7 +240,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		env.setGlobal(new ComputedVar(new VncSymbol("*ns*"), () -> Namespaces.getCurrentNS(), false));
 		
 		// set system newline
-		env.setGlobal( new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
+		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 
 		// ansi terminal (set when run from a REPL in an ASNI terminal)
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
@@ -726,7 +727,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							// validate function call allowed by sandbox
 							if (checkSandbox) {
-								interceptor.validateVeniceFunction(fnName);	
+								try (WithCallStack cs = new WithCallStack(new CallFrame(fnName, a0.getMeta()))) {
+									interceptor.validateVeniceFunction(fnName);	
+								}
 								interceptor.validateMaxExecutionTime();
 							}
 							

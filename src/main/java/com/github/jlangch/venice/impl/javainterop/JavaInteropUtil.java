@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.JavaMethodInvocationException;
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;

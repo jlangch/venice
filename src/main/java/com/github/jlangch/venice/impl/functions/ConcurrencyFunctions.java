@@ -38,6 +38,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;

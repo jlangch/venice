@@ -13,7 +13,10 @@ and this project adheres to
 
 ### Added
 
-- ...
+- a Venice `com.github.jlangch.venice.SecurityException` that is thrown by the 
+  sandbox instead of a `java.lang.SecurityException` to indicate a sandbox 
+  violation. This allows Venice to pass a more user friendly Venice stacktrace 
+  with the exception
 
 ### Fixed
 
