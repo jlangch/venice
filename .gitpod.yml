@@ -1,4 +1,4 @@
 tasks:
   - init: ./gradlew --warning-mode all clean shadowJar
-    command: cd ..; mkdir repl; cd repl; java -jar ../venice/build/libs/venice-*.jar -setup -colors-darkmode; ./repl.sh
+    command: ./gitpod-init-repl.sh
     name: REPL
