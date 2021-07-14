@@ -1,4 +1,4 @@
 tasks:
   - init: ./gradlew --warning-mode all clean shadowJar
-    command: chmod a+x ./gitpod-init-repl.sh; ./gitpod-init-repl.sh
+    command: ./gitpod-init-repl.sh
     name: REPL
