@@ -110,6 +110,8 @@ public class VncException extends RuntimeException {
 		if (getCause() != null) {
 			final Throwable cause = getCause();
 			if (cause instanceof VncException) {
+				pw.println();
+				pw.println();
 				printVeniceCauseStackTrace(pw, cause);
 			}
 			else {
