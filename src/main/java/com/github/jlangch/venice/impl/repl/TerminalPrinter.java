@@ -54,17 +54,20 @@ public class TerminalPrinter {
 			final Consumer<Terminal> fn
 	) {
 		final String color = getColor(colorID);
-		if (color != null) {
-			terminal.writer().print(color);
+		if (color == null) {
+			fn.accept(terminal);
+			terminal.flush();
 		}
-		
-		fn.accept(terminal);
-		
-		if (color != null) {
-			terminal.writer().print(ReplConfig.ANSI_RESET);
+		else {
+			try {
+				terminal.writer().print(color);
+				fn.accept(terminal);
+			}
+			finally {
+				terminal.writer().print(ReplConfig.ANSI_RESET);
+				terminal.flush();
+			}
 		}
-		
-		terminal.flush();
 	}
 	
 	public void println() {
@@ -87,15 +90,25 @@ public class TerminalPrinter {
 	) {
 		try {
 			if (ex instanceof ValueException) {
-				print(colorID, t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));		
-				println(colorID, "\nThrown value: " + Printer.pr_str((VncVal)((ValueException)ex).getValue(), false));			
+				print(
+					colorID, 
+					t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));
+				println(
+					colorID, 
+					"\nThrown value: " + Printer.pr_str(
+											(VncVal)((ValueException)ex).getValue(), 
+											false));			
 			}
 			else if (ex instanceof VncException) {
 				if (printJavaEx) {
-					print(colorID, t -> ex.printStackTrace(t.writer()));			
+					print(
+						colorID, 
+						t -> ex.printStackTrace(t.writer()));			
 				}
 				else {
-					print(colorID, t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+					print(
+						colorID, 
+						t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
 				}
 			}
 			else {
