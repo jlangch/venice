@@ -22,6 +22,11 @@ and this project adheres to
 
 - `CapturingPrintStream` to use the the system-dependent line separator string.
 
+### Changed
+
+- VAVR dependency to version 0.10.4
+
+
 
 ## [1.9.25] - 2021-07-12
 
