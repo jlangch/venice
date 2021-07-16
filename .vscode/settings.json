@@ -3,6 +3,6 @@
         "*.venice": "clojure"
     },
     
-    "workbench.colorTheme": "Default Dark+"
+    "workbench.colorTheme": "Tomorrow Night Blue"
     
 }
