@@ -697,7 +697,6 @@ public class SandboxRules {
 					Arrays.asList(
 						"crypt",
 						"kira",
-						"math",
 						"xml")));
 	
 

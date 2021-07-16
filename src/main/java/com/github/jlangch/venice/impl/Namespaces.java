@@ -116,6 +116,6 @@ public class Namespaces {
 							"xchart", "kira", "parsatron",
 							"tc", "ring", 
 							"http", "jackson",
-							"math", "webdav", "maven")));
+							"webdav", "maven")));
 
 }
