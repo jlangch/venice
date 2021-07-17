@@ -77,7 +77,16 @@ public class DefTypeForm {
 												  .getName());
 			validateCustomTypeNameUnqualified(fname);
 
+			boolean nillable = false;
 			VncKeyword ftype = Coerce.toVncKeyword(fieldIter.next());
+			if (ftype.getSimpleName().endsWith("?")) {
+				nillable = true;
+				String ftypeSimpleName = ftype.getSimpleName();
+				ftype = new VncKeyword(
+								ftype.getNamespace(), 
+								ftypeSimpleName.substring(0, ftypeSimpleName.length()-1),
+								ftype.getMeta());
+			}
 			ftype = qualifyBaseType(ftype, env);
 					
 			fieldDefs.add(
@@ -85,7 +94,7 @@ public class DefTypeForm {
 						fname, 
 						ftype, 
 						new VncInteger(fieldNr++),
-						false));
+						nillable));
 		}
 		
 
@@ -422,6 +431,10 @@ public class DefTypeForm {
 
 		final VncKeyword argType = Types.getType(arg);
 		if (Types.isInstanceOf(fieldDef.getType(), arg)) {
+			return;
+		}
+		
+		if (fieldDef.isNillable() && arg == Constants.Nil) {
 			return;
 		}
 		

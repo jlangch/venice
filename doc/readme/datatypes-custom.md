@@ -82,6 +82,15 @@ The field type :any is representing any type:
   (def y (named. "seq" [1 2])))
 ```
 
+Field types allow `nil` values if they are suffixed with a '?':
+
+```clojure
+(do
+  (deftype :complex [real      :long
+                     imaginary :long?])
+  (complex. 200 nil))
+ ```
+
 
 Modify fields with `assoc`:
 

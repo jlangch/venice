@@ -44,6 +44,32 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
+	public void test_deftype_nillable_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long?]) \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("{:custom-type* :user/complex :real 100 :imaginary 200}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_nillable_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long?]) \n" +
+				"  (def x (complex. 100 nil))                        \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("{:custom-type* :user/complex :real 100 :imaginary nil}", venice.eval(script));					
+	}
+
+	@Test
 	public void test_deftype_assoc_1() {
 		final Venice venice = new Venice();
 
@@ -69,6 +95,34 @@ public class SpecialFormsTest_deftype {
 				"  (pr-str y))                                         ";
 
 		assertEquals("{:custom-type* :user/complex :real 110 :imaginary 220}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_assoc_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long?]) \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (def y (assoc x :real 110 :imaginary nil))        \n" +
+				"  (pr-str y))                                         ";
+
+		assertEquals("{:custom-type* :user/complex :real 110 :imaginary nil}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_assoc_4() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long?]) \n" +
+				"  (def x (complex. 100 200))                        \n" +
+				"  (def y (assoc x :imaginary nil))                  \n" +
+				"  (pr-str y))                                         ";
+
+		assertEquals("{:custom-type* :user/complex :real 100 :imaginary nil}", venice.eval(script));					
 	}
 
 	@Test

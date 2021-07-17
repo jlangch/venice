@@ -43,6 +43,13 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		this(parse(v), meta); 
 	}
 
+	public VncKeyword(final String namespace, final String simpleName, final VncVal meta) {
+		this(namespace, 
+			 simpleName, 
+			 namespace == null ? simpleName : namespace + "/" + simpleName, 
+			 meta); 
+	}
+
 	private VncKeyword(final String namespace, final String simpleName, final String qualifiedName, final VncVal meta) { 
 		super(qualifiedName, meta);
 

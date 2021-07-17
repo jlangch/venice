@@ -17,6 +17,7 @@ and this project adheres to
   sandbox instead of a `java.lang.SecurityException` to indicate a sandbox 
   violation. This allows Venice to pass a more user friendly Venice stacktrace 
   with the exception
+- support for nillable types to `deftype`
 
 ### Fixed
 
