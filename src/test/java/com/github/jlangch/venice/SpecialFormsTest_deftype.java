@@ -412,6 +412,19 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
+	public void test_deftype_validation_FAILED_4() {
+		final String script =
+				"(do                                                        \n" +
+				"  (deftype :complex                                        \n" +
+				"           [real :long, foo/imaginary :long])              \n" +
+				"  (def x (complex. -100 200))                              \n" +
+				"  (pr-str [(:real x) (:imaginary x)]))                     ";
+
+		// field names must not be qualified
+		assertThrows(VncException.class, () -> new Venice().eval(script));
+	}
+	
+	@Test
 	public void test_deftype_ns_hijack_1() {
 		final String script =
 				"(do                                                      \n" +

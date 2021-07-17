@@ -29,11 +29,13 @@ public class VncCustomTypeFieldDef  {
 	public VncCustomTypeFieldDef(
 			final VncKeyword name,
 			final VncKeyword type,
-			final VncInteger index
+			final VncInteger index,
+			final boolean nillable
 	) {
 		this.name = name;
 		this.type = type;
 		this.index = index;
+		this.nillable = nillable;
 	}
 	
 		
@@ -48,9 +50,14 @@ public class VncCustomTypeFieldDef  {
 	public VncInteger getIndex() {
 		return index;
 	}
+	
+	public boolean isNillable() {
+		return nillable;
+	}
 
 
 	private final VncKeyword name;
 	private final VncKeyword type;
 	private final VncInteger index;
+	private final boolean nillable;
 }

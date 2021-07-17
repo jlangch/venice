@@ -71,15 +71,21 @@ public class DefTypeForm {
 		final List<VncCustomTypeFieldDef> fieldDefs = new ArrayList<>();
 		final Iterator<VncVal> fieldIter = fields.iterator();
 		int fieldNr = 0;
-		while(fieldIter.hasNext()) {		
+		while(fieldIter.hasNext()) {
+			final VncKeyword fname = new VncKeyword(
+											Coerce.toVncSymbol(fieldIter.next())
+												  .getName());
+			validateCustomTypeNameUnqualified(fname);
+
+			VncKeyword ftype = Coerce.toVncKeyword(fieldIter.next());
+			ftype = qualifyBaseType(ftype, env);
+					
 			fieldDefs.add(
 				new VncCustomTypeFieldDef(
-					new VncKeyword(
-						Coerce.toVncSymbol(fieldIter.next()).getName()), 
-					qualifyBaseType(
-						Coerce.toVncKeyword(fieldIter.next()),
-						env), 
-					new VncInteger(fieldNr++)));
+						fname, 
+						ftype, 
+						new VncInteger(fieldNr++),
+						false));
 		}
 		
 
@@ -532,6 +538,14 @@ public class DefTypeForm {
 		if (name.endsWith(".")) {
 			throw new VncException(String.format(
 					"A custom type %s name must not end with '.'.", 
+					name)); 
+		}
+	}
+	
+	private static void validateCustomTypeNameUnqualified(final VncKeyword name) {
+		if (name.hasNamespace()) {
+			throw new VncException(String.format(
+					"A custom type field name %s name must not have a namespace.", 
 					name)); 
 		}
 	}
