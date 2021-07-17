@@ -208,7 +208,9 @@ public class DocForm {
 		typeDef.getFieldDefs().forEach(f -> sb.append(String.format(
 															"   %s :%s\n", 
 															f.getName().getValue(),
-															f.getType().getValue())));
+															f.isNillable()
+																? f.getType().getValue() + "?"
+																: f.getType().getValue())));
 		if (typeDef.getValidationFn() != null) {
 			sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
 		}
