@@ -353,7 +353,7 @@ public class ReflectionAccessor {
 		if (target == null) {
 			throw new JavaMethodInvocationException(
 					String.format(
-							"Failed to check for available instance metho '%s' on <null> target",
+							"Failed to check for available instance method '%s' on <null> target",
 							methodName));
 		}
 		
