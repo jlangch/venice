@@ -224,4 +224,38 @@ public class TraceModuleTest {
 		assertFalse((Boolean)venice.eval(script3));
 	}
 
+	@Test
+	public void test_tee_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                          \n" +
+				"  (load-module :trace)                       \n" +
+				"  (with-out-str                              \n" +
+				"    (-> 5                                    \n" +
+				"       (+ 3)                                 \n" +
+				"       (/ 2)                                 \n" +
+				"       (trace/tee-> #(print \"trace:\" %))   \n" +
+				"       (- 1))))                                ";
+
+		assertEquals("trace: 4", venice.eval(script));
+	}
+
+	@Test
+	public void test_tee_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"  (load-module :trace)                        \n" +
+				"  (with-out-str                               \n" +
+				"    (->> 5                                    \n" +
+				"        (+ 3)                                 \n" +
+				"        (/ 32)                                \n" +
+				"        (trace/tee->> #(print \"trace:\" %))  \n" +
+				"        (- 1))))                                ";
+
+		assertEquals("trace: 4", venice.eval(script));
+	}
+
 }

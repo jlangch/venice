@@ -36,6 +36,7 @@ and this project adheres to
 - function `vector*`
 - optimizations to global var lookup
 - callstack info to error messages where it was missing
+- tee functions to the tracing module
 
 
 

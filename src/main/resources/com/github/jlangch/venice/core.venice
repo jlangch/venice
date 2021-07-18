@@ -961,14 +961,14 @@
           """
      :examples '(
           """
-          (load-module :math)
+          (load-module :trace)
           """,
           """
           (do
-            (load-module :math)
+            (load-module :trace)
             ; reload the module
-            (ns-remove math)
-            (load-module :math true))
+            (ns-remove trace)
+            (load-module :trace true))
           """) }
 
   load-module

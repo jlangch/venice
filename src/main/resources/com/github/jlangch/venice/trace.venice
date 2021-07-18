@@ -198,3 +198,45 @@
       (when-let [delegate (-> f meta :traced)]
         (set! (symbol n) delegate)
         :untraced))))
+
+
+(defn
+  ^{ :arglists '( "(tee-> x f!)" )
+     :doc "Allows to branch off values passed through the forms of a `->` macro"
+     :examples '(
+          """
+          (do
+            (-> 5
+                (+ 3)
+                (trace/tee-> #(println "trace:" %))
+                (/ 2)
+                (trace/tee-> #(println "trace:" %))
+                (- 1)))
+          """)
+     :see-also '(
+        "trace/tee->>" ) }
+
+  tee-> [x f!]
+
+  (f! x) x)
+
+
+(defn
+  ^{ :arglists '( "(tee->> x f!)" )
+     :doc "Allows to branch off values passed through the form of a `->>` macro"
+     :examples '(
+          """
+          (do
+            (->> 5
+                 (+ 3)
+                 (trace/tee->> #(println "trace:" %))
+                 (/ 32)
+                 (trace/tee->> #(println "trace:" %))
+                 (- 1)))
+          """)
+     :see-also '(
+        "trace/tee->" ) }
+
+  tee->> [f! x]
+
+  (f! x) x)
