@@ -53,71 +53,79 @@ public class TerminalPrinter {
 			final String colorID,
 			final Consumer<Terminal> fn
 	) {
-		final String color = getColor(colorID);
-		if (color == null) {
-			fn.accept(terminal);
-			terminal.flush();
-		}
-		else {
-			try {
-				terminal.writer().print(color);
+		synchronized (lock) {
+			final String color = getColor(colorID);
+			if (color == null) {
 				fn.accept(terminal);
-			}
-			finally {
-				terminal.writer().print(ReplConfig.ANSI_RESET);
 				terminal.flush();
+			}
+			else {
+				try {
+					terminal.writer().print(color);
+					fn.accept(terminal);
+				}
+				finally {
+					terminal.writer().print(ReplConfig.ANSI_RESET);
+					terminal.flush();
+				}
 			}
 		}
 	}
 	
 	public void println() {
-		terminal.writer().println();
-		terminal.flush();
+		synchronized (lock) {
+			terminal.writer().println();
+			terminal.flush();
+		}
 	}
 	
 	public void println(
 			final String colorID,
 			final String text
 	) {
-		print(colorID, t -> t.writer().print(text));
-		terminal.writer().println();
-		terminal.flush();
+		synchronized (lock) {
+			print(colorID, t -> t.writer().print(text));
+			terminal.writer().println();
+			terminal.flush();
+		}
 	}
 	
 	public void printex(
 			final String colorID,
 			final Throwable ex
 	) {
-		try {
-			if (ex instanceof ValueException) {
-				print(
-					colorID, 
-					t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));
-				println(
-					colorID, 
-					"\nThrown value: " + Printer.pr_str(
-											(VncVal)((ValueException)ex).getValue(), 
-											false));			
-			}
-			else if (ex instanceof VncException) {
-				if (printJavaEx) {
+		synchronized (lock) {
+			try {
+				if (ex instanceof ValueException) {
 					print(
 						colorID, 
-						t -> ex.printStackTrace(t.writer()));			
+						t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));
+					println(
+						colorID, 
+						"\nThrown value: " + Printer.pr_str(
+												(VncVal)((ValueException)ex).getValue(), 
+												false));			
+				}
+				else if (ex instanceof VncException) {
+					if (printJavaEx) {
+						print(
+							colorID, 
+							t -> ex.printStackTrace(t.writer()));			
+					}
+					else {
+						print(
+							colorID, 
+							t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+					}
 				}
 				else {
-					print(
-						colorID, 
-						t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
+					print(colorID, t -> ex.printStackTrace(t.writer()));			
 				}
 			}
-			else {
-				print(colorID, t -> ex.printStackTrace(t.writer()));			
+			catch(Throwable e) {
+				System.out.println("Internal REPL error while printing exception.");
+				e.printStackTrace();
 			}
-		}
-		catch(Throwable e) {
-			System.out.println("Internal REPL error while printing exception.");
-			e.printStackTrace();
 		}
 	}
 	
@@ -126,6 +134,7 @@ public class TerminalPrinter {
 	}
 	
 	
+	private final Object lock = new Object();
 	private final Terminal terminal;
 	private final boolean ansiTerminal;
 	private final ReplConfig config;

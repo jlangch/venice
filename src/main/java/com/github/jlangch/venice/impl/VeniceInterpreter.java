@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
@@ -73,7 +72,6 @@ import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -655,9 +653,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								evaluate(args.first(), env), 
 								env);
 
-				case "macroexpand-info": 
-					return macroexpand_info_(new CallFrame("macroexpand-info", a0.getMeta()), args, env);
-
 				case "doc": // (doc sym)
 					return doc_(new CallFrame("doc", a0.getMeta()), args, env);
 
@@ -722,7 +717,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							// function
 							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 							final String fnName = fn.getQualifiedName();
-	
+							
 							final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
 	
 							// validate function call allowed by sandbox
@@ -756,6 +751,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								// invoke function with a new call frame
 								try {
 									callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
+						
+									// -------------------------------------------------
+									// Debugging breakpoint for functions
+									// -------------------------------------------------
+									
 									return fn.apply(fnArgs);
 								}
 								finally {
@@ -928,14 +928,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	 
 		if (expandedMacros > 0) {
-			macroExpandCount.addAndGet(expandedMacros);
 			if (meterRegistry.enabled) {
 				meterRegistry.record("macroexpand", System.nanoTime() - nanos);
 			}
-		}
-		
-		if (expandedMacrosCounter != null) {
-			expandedMacrosCounter.addAndGet(expandedMacros);
 		}
 
 		return ast_;
@@ -1067,18 +1062,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			// remember the original namespace
 			final Namespace original_ns = Namespaces.getCurrentNamespace();
 			try {
-				final VncVal expanded = prewalk.applyOf(handler, form);
-			
-				// the number of expanded macros in this 'macroexpand-all' run
-				final int count = expandedMacroCounter.get(); 
-				if (count == 0) {
-					macroExpandAllCount.incrementAndGet();
-				}
-				else {
-					macroExpandAllCount.incrementAndGet();
-					macroExpandAllCountEffective.incrementAndGet();
-				}
-				return expanded;
+				return prewalk.applyOf(handler, form);
 			}
 			finally {
 				// set the original namespace back
@@ -1617,18 +1601,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			specialFormCallValidation("inspect");
 			final VncSymbol sym = Coerce.toVncSymbol(evaluate(args.first(), env));
 			return Inspector.inspect(env.get(sym));
-		}
-	}
-
-	private VncVal macroexpand_info_(final CallFrame callframe, final VncList args, final Env env) {
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			return VncHashMap.of(
-					new VncKeyword("macroexpand-count"),
-					new VncLong(macroExpandCount.get()),
-					new VncKeyword("macroexpand-all-count"),
-					new VncLong(macroExpandAllCount.get()),
-					new VncKeyword("macroexpand-all-count-effective"),
-					new VncLong(macroExpandAllCountEffective.get()));
 		}
 	}
 	
@@ -2503,9 +2475,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
 	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
-	private final AtomicLong macroExpandAllCountEffective = new AtomicLong(0L);
-	private final AtomicLong macroExpandAllCount = new AtomicLong(0L);
-	private final AtomicLong macroExpandCount = new AtomicLong(0L);
 	
 	private volatile boolean macroexpand = false;
 }

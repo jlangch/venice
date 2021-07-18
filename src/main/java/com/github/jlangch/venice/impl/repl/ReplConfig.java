@@ -362,7 +362,7 @@ public class ReplConfig {
 														"prompt");
 
 	private final String configSource;
-	private ColorMode colorMode;
+	private volatile ColorMode colorMode;
 	private final String loadFile;
 	private final String prompt;
 	private final String secondaryPrompt;

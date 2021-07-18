@@ -62,8 +62,6 @@
   ;; country population REST URL
   (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
 
-  (defn tee [f! x] (f! x) x)
-
 
   ;;; I/O functions ------------------------------------------------------------
 
@@ -153,8 +151,8 @@
          (assoc country-data :cases)))
 
   (defn aggregate-country-data [country-data start end]
+    (log-process-country (:name country-data))
     (->> country-data
-         (tee #(log-process-country (:name %)))
          (add-country-population)
          (add-country-html-data)
          (add-country-cases)
