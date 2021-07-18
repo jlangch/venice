@@ -18,6 +18,7 @@ and this project adheres to
   violation. This allows Venice to pass a more user friendly Venice stacktrace 
   with the exception
 - support for nillable types with `deftype`
+- tee functions to the tracing module
 
 ### Fixed
 
@@ -36,7 +37,6 @@ and this project adheres to
 - function `vector*`
 - optimizations to global var lookup
 - callstack info to error messages where it was missing
-- tee functions to the tracing module
 
 
 
