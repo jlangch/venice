@@ -151,6 +151,16 @@ created.
 )
 ```
 
+Even global functions can remember the context they have been created:
+
+```clojure
+(do
+  (let [x 100]
+    (defn test [] (str "x: " x)))
+    
+  (test))  ; => "x: 100"
+```
+
 
 ## Functions with preconditions
 
