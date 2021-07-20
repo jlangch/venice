@@ -201,6 +201,35 @@
 
 
 (defn
+  ^{ :arglists '( "(tee x)" )
+     :doc """
+          Allows to branch off values passed to `tee` to a printer.
+
+          The form is equivalent to:¶
+          &ensp;  `(tee-> x #(println "trace:" %))`¶
+          &ensp;  `(tee->> x #(println "trace:" %))`¶
+          when used with the threading macros `->` and `->>`
+          """
+     :examples '(
+          """
+          (do
+            (-> 5
+                (+ 3)
+                trace/tee
+                (/ 2)
+                trace/tee
+                (- 1)))
+          """)
+     :see-also '(
+        "trace/tee->", "trace/tee->>" ) }
+
+  tee [x]
+
+  (println "trace:" x)
+  x)
+
+
+(defn
   ^{ :arglists '( "(tee-> x f!)" )
      :doc "Allows to branch off values passed through the forms of a `->` macro"
      :examples '(
@@ -214,11 +243,12 @@
                 (- 1)))
           """)
      :see-also '(
-        "trace/tee->>" ) }
+        "trace/tee->>", "trace/tee" ) }
 
   tee-> [x f!]
 
-  (f! x) x)
+  (f! x)
+  x)
 
 
 (defn
@@ -235,8 +265,9 @@
                  (- 1)))
           """)
      :see-also '(
-        "trace/tee->" ) }
+        "trace/tee->", "trace/tee" ) }
 
   tee->> [f! x]
 
-  (f! x) x)
+  (f! x)
+  x)

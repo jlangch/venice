@@ -2034,8 +2034,12 @@ public class DocGenerator {
 		final DocSection util = new DocSection("Util", id());
 		all.addSection(util);
 		util.addItem(getDocItem("trace/trace-str-limit"));
-		util.addItem(getDocItem("trace/tee->"));
-		util.addItem(getDocItem("trace/tee->>"));
+
+		final DocSection tee = new DocSection("Tee", id());
+		all.addSection(tee);
+		tee.addItem(getDocItem("trace/tee->"));
+		tee.addItem(getDocItem("trace/tee->>"));
+		tee.addItem(getDocItem("trace/tee"));
 
 		return section;
 	}

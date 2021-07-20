@@ -54,6 +54,7 @@ public class RestrictedBlacklistedFunctions {
 					"gc",
 					"shutdown-hook",
 					"sh",
+					"callstack",
 					
 					// concurrency
 					"deliver",
@@ -149,7 +150,8 @@ public class RestrictedBlacklistedFunctions {
 					"var-name",
 					"inspect",
 					"dorun",
-					"dobench"));
+					"dobench",
+					"prof"));
 	}
 	
 	public static Set<String> getAll() {
