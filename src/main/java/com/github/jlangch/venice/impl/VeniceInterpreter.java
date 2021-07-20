@@ -496,7 +496,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
 								throw new VncException(String.format(
 										"The recur args (%d) do not match the loop args (%d) !",
-										args.size(), recursionPoint.getLoopBindingNamesCount()));
+										args.size(), 
+										recursionPoint.getLoopBindingNamesCount()));
 							}
 						}
 				
@@ -513,45 +514,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						tailPosition = true;
 					}
 					break;
-
-//				case "call-cc":  { 	// (call-cc f) call-with-current-continuation
-//						final VncKeyword ccID = new VncKeyword("call-cc@" + UUID.randomUUID().toString());
-//
-//						try {
-//							ThreadLocalMap.set(ccID, new VncLong(0));
-//							
-//							env = new Env(env);
-//	
-//							final VncFunction f = Coerce.toVncFunction(evaluate(args.first(), env));
-//							final VncSymbol ccSym = Coerce.toVncSymbol(f.getParams().first());
-//							final Env ccEnv = env;
-//							final Continuation ccCont = cont;
-//							
-//							final VncFunction ccFn = new VncFunction(ccSym.getName()) {
-//								public VncVal apply(final VncList args) {
-//									if (ThreadLocalMap.containsKey(ccID)) {
-//										throw new ContinuationException(args.first());
-//									}
-//									else {
-//										return evaluate(ccCont.getAst(), ccEnv);
-//									}
-//								}
-//								private static final long serialVersionUID = -1L;
-//							};
-//							
-//							env.setLocal(new Var(ccSym, ccFn));
-//							try {
-//								orig_ast = evaluateBody((VncList)f.getBody(), env, false);
-//							}
-//							catch(ContinuationException ex) {
-//								orig_ast = ex.getVal();
-//							}
-//						}
-//						finally {
-//							ThreadLocalMap.remove(ccID);
-//						}
-//					}
-//					break;
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
 					return fn_(new CallFrame("fn", a0.getMeta()), args, env);
@@ -751,10 +713,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								// invoke function with a new call frame
 								try {
 									callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
-						
-									// -------------------------------------------------
-									// Debugging breakpoint for functions
-									// -------------------------------------------------
 									
 									return fn.apply(fnArgs);
 								}
@@ -1472,7 +1430,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				}
 				else {
 					throw new VncException(String.format(
-						"The namespace '%s' does not exist", ns.toString()));
+						"The namespace '%s' does not exist", 
+						ns.toString()));
 				}
 			}
 		}
@@ -2447,7 +2406,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					throw new VncException(String.format(
 							"Special form '%s': Invalid use of namespace. "
 								+ "The symbol '%s' can only be defined for the current namespace '%s'.",
-								specialFormName,
+							specialFormName,
 							sym.getSimpleName(),
 							Namespaces.getCurrentNS().toString()));
 				}
