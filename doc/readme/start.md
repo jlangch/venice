@@ -33,13 +33,13 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL:
 
 ```text
-foo> java -jar venice-1.9.25.jar -colors
+foo> java -jar venice-1.9.26.jar -colors
 ```
 
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.9.25
+Venice REPL: V1.9.26
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -63,13 +63,13 @@ Open a terminal, move to the directory the Venice and the 'jansi' JAR is located
 and start a REPL:
 
 ```text
-foo> java -cp venice-1.9.25.jar;jansi-2.3.2.jar com.github.jlangch.venice.Launcher -colors-darkmode
+foo> java -cp venice-1.9.26.jar;jansi-2.3.2.jar com.github.jlangch.venice.Launcher -colors-darkmode
 ```
 
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.9.25
+Venice REPL: V1.9.26
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -98,7 +98,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup mode:
 
 ```text
-foo> java -jar venice-1.9.25.jar -setup -colors
+foo> java -jar venice-1.9.26.jar -setup -colors
 ```
 
 For a REPL run in a darkmode terminal use the option `-colors-darkmode` instead 
