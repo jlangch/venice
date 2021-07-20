@@ -62,7 +62,8 @@ public class Inspector {
 					new VncKeyword("name"), new VncString(((VncFunction)val).getQualifiedName()),
 					new VncKeyword("type"), Types.getType(val),
 					new VncKeyword("meta"), toNil(val.getMeta()),
-					new VncKeyword("arity-fn"), VncList.ofList(arityFunctions));
+					new VncKeyword("arity-fn"), VncList.ofList(arityFunctions),
+					new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
 		}
 		else if (Types.isVncMultiFunction(val)) {
 			return VncOrderedMap.of(
@@ -70,7 +71,8 @@ public class Inspector {
 					new VncKeyword("type"), Types.getType(val),
 					new VncKeyword("meta"), toNil(val.getMeta()),
 					new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
-					new VncKeyword("params"), toNil(((VncFunction)val).getParams()));
+					new VncKeyword("params"), toNil(((VncFunction)val).getParams()),
+					new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
 		}
 		else if (Types.isVncMacro(val)) {
 			return VncOrderedMap.of(
@@ -78,7 +80,8 @@ public class Inspector {
 					new VncKeyword("type"), Types.getType(val),
 					new VncKeyword("meta"), toNil(val.getMeta()),
 					new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
-					new VncKeyword("params"), toNil(((VncFunction)val).getParams()));
+					new VncKeyword("params"), toNil(((VncFunction)val).getParams()),
+					new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
 		}
 		else if (Types.isVncFunction(val)) {
 			return VncOrderedMap.of(
@@ -86,7 +89,11 @@ public class Inspector {
 					new VncKeyword("type"), Types.getType(val),
 					new VncKeyword("meta"), toNil(val.getMeta()),
 					new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
-					new VncKeyword("params"), toNil(((VncFunction)val).getParams()));
+					new VncKeyword("params"), toNil(((VncFunction)val).getParams()),
+					new VncKeyword("native?"), VncBoolean.of(((VncFunction)val).isNative()),
+					new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()),
+					new VncKeyword("variadic?"), VncBoolean.of(((VncFunction)val).hasVariadicArgs()),
+					new VncKeyword("anonymous?"), VncBoolean.of(((VncFunction)val).isAnonymous()));
 		}
 		else {
 			return VncOrderedMap.of(
