@@ -29,7 +29,7 @@ and this project adheres to
 
 ### Fixed
 
-- `CapturingPrintStream` to use the the system-dependent line separator string.
+- `CapturingPrintStream` to use the system-dependent line separator string.
 
 ### Changed
 
