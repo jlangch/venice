@@ -23,11 +23,16 @@ package com.github.jlangch.venice.impl;
 
 import java.util.List;
 
+import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public interface IVeniceInterpreter {
+
+	boolean hasDebugger();
+
+	IDebugAgent getDebugAgent();
 
 	void initNS();
 	

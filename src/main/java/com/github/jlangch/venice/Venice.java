@@ -172,11 +172,9 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		return runWithSandbox( () -> {
-			ThreadLocalMap.clear();
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
-			final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
-
+		return runWithSandbox(venice, () -> {
 			final Env env = addParams(getPrecompiledEnv(), params);
 
 			// re-init namespaces!
@@ -270,11 +268,9 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		return runWithSandbox( () -> {
-			ThreadLocalMap.clear();
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
-			final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
-
+		return runWithSandbox(venice, () -> {
 			final Env env = createEnv(venice, macroexpand, params);
 			
 			meterRegistry.reset();  // no metrics for creating env and loading modules 
@@ -413,8 +409,13 @@ public class Venice {
 		}
 	}
 	
-	private Object runWithSandbox(final Callable<Object> callable) {
+	private Object runWithSandbox(
+			final IVeniceInterpreter venice,
+			final Callable<Object> callable
+	) {
 		try {
+			ThreadLocalMap.clear();
+			
 			if (interceptor.getMaxFutureThreadPoolSize() != null) {
 				ConcurrencyFunctions
 					.setMaximumFutureThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());

@@ -45,6 +45,8 @@ import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.debug.DebugAgent;
+import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.ComputedVar;
 import com.github.jlangch.venice.impl.env.DynamicVar;
@@ -119,15 +121,34 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 	public VeniceInterpreter(final IInterceptor interceptor) {
+		this(interceptor, false);
+	}
+
+	public VeniceInterpreter(
+			final IInterceptor interceptor, 
+			final boolean debugger
+	) {
 		if (interceptor == null) {
 			throw new SecurityException("VeniceInterpreter can not run without an interceptor");
 		}
 		
 		this.interceptor = interceptor;
+		this.debugAgent = debugger ? new DebugAgent() : null;
 		this.meterRegistry = this.interceptor.getMeterRegistry();
 		
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
+	}
+
+	
+	@Override
+	public boolean hasDebugger() {
+		return debugAgent != null;
+	}
+
+	@Override
+	public IDebugAgent getDebugAgent() {
+		return debugAgent;
 	}
 	
 	@Override
@@ -400,12 +421,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									throw new VncException("let requires an even number of forms in the binding vector!");					
 								}
 							}
-							if (sym instanceof VncSymbol) {
+							if (sym instanceof VncSymbol && ((VncSymbol)sym).hasNamespace()) {
 								final VncSymbol s = (VncSymbol)sym;
-								if (s.hasNamespace()) {
-									try (WithCallStack cs = new WithCallStack(new CallFrame(s.getQualifiedName(), s.getMeta()))) {
-										throw new VncException("Can't use qualified symbols with let!");					
-									}
+								final CallFrame cf = new CallFrame(s.getQualifiedName(), s.getMeta());
+								try (WithCallStack cs = new WithCallStack(cf)) {
+									throw new VncException("Can't use qualified symbols with let!");					
 								}
 							}
 							final VncVal val = evaluate(bindingsIter.next(), env);
@@ -695,7 +715,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							checkInterrupted(currThread, fnName);
 	
 							final CallStack callStack = ThreadLocalMap.getCallStack();
-	
+							
 							// Automatic TCO (tail call optimization)
 							if (tailPosition
 									&& !fn.isNative()  // native functions do not have an AST body
@@ -712,7 +732,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							else {
 								// invoke function with a new call frame
 								try {
-									callStack.push(new CallFrame(fn.getQualifiedName(), a0.getMeta()));
+									callStack.push(new CallFrame(fnName, a0.getMeta()));
+									
+									if (debugAgent != null 
+											&& fn.isNative() 
+											&& debugAgent.activated() 
+											&& debugAgent.hasBreakpoint(fnName)
+									) {
+										debugAgent.onBreak(fn, args, null);
+									}
 									
 									return fn.apply(fnArgs);
 								}
@@ -726,10 +754,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										final long elapsed = System.nanoTime() - nanos;
 										if (fn instanceof VncMultiArityFunction) {
 											final VncFunction f = fn.getFunctionForArgs(fnArgs);
-											meterRegistry.record(fn.getQualifiedName() + "[" + f.getParams().size() + "]", elapsed);
+											meterRegistry.record(fnName + "[" + f.getParams().size() + "]", elapsed);
 										}
 										else {
-											meterRegistry.record(fn.getQualifiedName(), elapsed);
+											meterRegistry.record(fnName, elapsed);
 										}
 									}
 								}
@@ -2195,6 +2223,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					final Namespace curr_ns = threadLocalMap.getCurrentNS();
 					try {
 						threadLocalMap.setCurrentNS(ns);
+
+						if (debugAgent != null 
+								&& debugAgent.activated() 
+								&& debugAgent.hasBreakpoint(this.getQualifiedName())
+						) {
+							debugAgent.onBreak(this, args, localEnv);
+						}
 						
 						if (hasPreConditions) {
 							validateFnPreconditions(localEnv);
@@ -2432,6 +2467,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
+	
+	private final DebugAgent debugAgent;
 	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
 	

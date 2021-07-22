@@ -2514,7 +2514,7 @@ public class CoreFunctions {
 
 				final MeterRegistry meterRegistry = JavaInterop.getInterceptor().getMeterRegistry();
 
-				final  List<VncFunction> functions = new ArrayList<>();
+				final List<VncFunction> functions = new ArrayList<>();
 				
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 
