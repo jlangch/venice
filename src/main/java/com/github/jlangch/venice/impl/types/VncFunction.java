@@ -46,23 +46,11 @@ public abstract class VncFunction
 		this(name, null, false, null, Constants.Nil);
 	}
 	
-	public VncFunction(final String name, final boolean macro) {
-		this(name, null, macro, null, Constants.Nil);
-	}
-	
 	public VncFunction(final String name, final VncVal meta) {
 		this(name, null, false, null, meta);
 	}
 
 	public VncFunction(final String name, final VncVector params) {
-		this(name, params, false, null, Constants.Nil);
-	}
-
-	public VncFunction(final String name, final VncVector params, final boolean macro) {
-		this(name, params, macro, null, Constants.Nil);
-	}
-
-	public VncFunction(final String name, final VncVector params, final VncVal meta) {
 		this(name, params, false, null, Constants.Nil);
 	}
 	

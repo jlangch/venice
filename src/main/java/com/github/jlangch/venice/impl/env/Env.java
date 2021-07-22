@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,14 @@ public class Env implements Serializable {
 		// while running the precompiled script and thus can be reused by subsequent
 		// precompiled script invocations
 		return new Env(globalSymbols);
+	}
+
+	public Env parent() {
+		return outer;
+	}
+
+	public int level() {
+		return level;
 	}
 
 	/**
@@ -293,10 +302,6 @@ public class Env implements Serializable {
 	public Var getGlobalVarOrNull(final VncSymbol sym) {
 		return getGlobalVar(sym);
 	}
-
-	public int level() {
-		return level;
-	}
 	
 	public Env setLocal(final Var localVar) {
 		final VncSymbol sym = localVar.getName();
@@ -362,6 +367,10 @@ public class Env implements Serializable {
 
 	public void addLocalVars(final List<Var> vars) {
 		for(Var b : vars) setLocal(b);
+	}
+
+	public Collection<Var> getLocalVars() {
+		return localSymbols.values();
 	}
 
 	public void pushGlobalDynamic(final VncSymbol sym, final VncVal val) {
