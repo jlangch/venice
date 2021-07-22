@@ -356,6 +356,7 @@ public class ReplConfig {
 														"result", 
 														"stdout", 
 														"stderr", 
+														"debug", 
 														"error", 
 														"system", 
 														"interrupt", 

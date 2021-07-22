@@ -39,7 +39,7 @@ public class ReplResultHistory {
 		IntStream.range(0, max).forEach(ii -> results.add(Constants.Nil));
 	}
 
-	public void add(final VncVal val) {
+	public synchronized void add(final VncVal val) {
 		results.addFirst(val == null ? Constants.Nil : val);
 		results.removeLast();
 	}
@@ -48,7 +48,7 @@ public class ReplResultHistory {
 		return max;
 	}
 
-	public void mergeToEnv(final Env env) {
+	public synchronized void mergeToEnv(final Env env) {
 		IntStream.rangeClosed(1, results.size())
 				 .forEach(ii -> addToEnv(env, "*" + ii, results.get(ii-1)));
 

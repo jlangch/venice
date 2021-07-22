@@ -30,6 +30,8 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +60,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.debug.DebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -316,15 +319,7 @@ public class REPL {
 				}
 				else {
 					// run the s-expr read from the line reader
-					final VncVal result = venice.RE(line, "user", env);
-					if (result != null) {
-						printer.println("result", resultPrefix + venice.PRINT(result));
-						
-						// do not add the result for "*1", "*2", "*3", "**" to the result history 
-						if (!isResultHistorySymbol(line, resultHistory)) {
-							resultHistory.add(result);
-						}
-					}
+					runScript(line, resultPrefix, resultHistory);
 				}
 			} 
 			catch (ContinueException ex) {
@@ -339,6 +334,88 @@ public class REPL {
 		}
 	}
 	
+	private void runScript(
+			final String line,
+			final String resultPrefix,
+			final ReplResultHistory resultHistory
+	) throws Exception {
+		if (debugAgent == null) {
+			runScriptSync(line, resultPrefix, resultHistory);
+		}
+		else {
+			runScriptAsync(line, resultPrefix, resultHistory);
+		}
+	}
+
+	private void runScriptSync(
+			final String line,
+			final String resultPrefix,
+			final ReplResultHistory resultHistory
+	) throws Exception {
+		final VncVal result = venice.RE(line, "user", env);
+		if (result != null) {
+			printer.println("result", resultPrefix + venice.PRINT(result));
+			
+			// do not add the result for "*1", "*2", "*3", "**" to the result history 
+			if (!isResultHistorySymbol(line, resultHistory)) {
+				resultHistory.add(result);
+			}
+		}
+	}
+	
+	private void runScriptAsync(
+			final String line,
+			final String resultPrefix,
+			final ReplResultHistory resultHistory
+	) throws Exception {
+		final long asyncID = asyncCounter.getAndIncrement();
+		
+		printer.println("debug", String.format("[%d] Async ...", asyncID));
+
+		// thread local values from the parent thread
+		final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
+				new AtomicReference<>(ThreadLocalMap.getValues());
+
+		// run the script in another thread when debugging it
+		final Runnable task = () -> {
+			ThreadLocalMap.setValues(parentThreadLocals.get());
+			ThreadLocalMap.clearCallStack();
+			JavaInterop.register(interceptor);	
+
+			try {
+				final VncVal result = venice.RE(line, "user", env);
+				if (result != null) {
+					printer.println("result", String.format(
+												"[%d] %s%s", 
+												asyncID, 
+												resultPrefix, 
+												venice.PRINT(result)));
+					
+					printer.println("debug", String.format(
+												"[%d] Async execution finished.", 
+												asyncID));
+					
+					// do not add the result for "*1", "*2", "*3", "**" to the result history 
+					if (!isResultHistorySymbol(line, resultHistory)) {
+						resultHistory.add(result);
+					}
+				}
+			}
+			catch (SymbolNotFoundException ex) {
+				handleSymbolNotFoundException(ex);
+			}
+			catch (Exception ex) {
+				handleException(ex);
+			}
+		};
+
+		final Thread th = new Thread(task, "debug");
+		th.setDaemon(true);
+		th.start();
+		
+		Thread.sleep(500);
+	}
+
 	private LineReader createLineReader(
 			final Terminal terminal,
 			final History history,
@@ -392,11 +469,8 @@ public class REPL {
 		history.add(script);
 		
 		ThreadLocalMap.clearCallStack();
-		final VncVal result = venice.RE(script, "user", env);
-		if (result != null) {
-			printer.println("result", resultPrefix + venice.PRINT(result));
-			resultHistory.add(result);
-		}
+		
+		runScript(script, resultPrefix, resultHistory);
 	}
 	
 	private void handleCommand(
@@ -435,6 +509,7 @@ public class REPL {
 				case "info":        handleInfoCommand(terminal); break;
 				case "highlight":   handleHighlightCommand(args); break;
 				case "java-ex":     handleJavaExCommand(args); break;
+				case "debugger":    handleDebuggerCommand(args); break;				
 				default:            handleInvalidCommand(cmd); break;
 			}
 		}
@@ -583,7 +658,7 @@ public class REPL {
 				}
 			}
 			else if (params.get(0).equals("accept-all")) {
-				activate(
+				activateNewInterceptor(
 					new AcceptAllInterceptor(
 						LoadPathsFactory.of(
 								interceptor.getLoadPaths().getPaths(), 
@@ -591,11 +666,11 @@ public class REPL {
 				return;
 			}
 			else if (params.get(0).equals("reject-all")) {
-				activate(new RejectAllInterceptor());
+				activateNewInterceptor(new RejectAllInterceptor());
 				return;			
 			}
 			else if (params.get(0).equals("customized")) {
-				activate(
+				activateNewInterceptor(
 					new SandboxInterceptor(
 						new SandboxRules(),
 						LoadPathsFactory.of(
@@ -674,7 +749,7 @@ public class REPL {
 				}
 				
 				// activate the change
-				activate(
+				activateNewInterceptor(
 					new SandboxInterceptor(
 						rules,
 						LoadPathsFactory.of(
@@ -733,11 +808,34 @@ public class REPL {
 		}
 	}
 
+	private void handleDebuggerCommand(
+			final List<String> params
+	) {
+		if (params.isEmpty()) {
+			printer.println("stdout", "Debugger: " + (debugAgent != null ? "on" : "off"));
+		}
+		else {
+			final String param = params.get(0);
+			if ("on".equals(param)) {
+				debugAgent = new DebugAgent();
+				activateNewInterceptor(interceptor);
+			}
+			else if ("off".equals(param)) {
+				debugAgent = null;
+				activateNewInterceptor(interceptor);
+			}
+			else {
+				printer.println("error", "Invalid parameter. Use !debugger {on|off}.");
+			}
+		}
+	}
+
 	private void handleConfiguredColorsCommand() {
 		printer.println("default",   "default");
 		printer.println("result",    "result");
 		printer.println("stdout",    "stdout");
 		printer.println("stderr",    "stderr");
+		printer.println("debug",     "debug");
 		printer.println("error",     "error");
 		printer.println("system",    "system");
 		printer.println("interrupt", "interrupt");
@@ -767,6 +865,7 @@ public class REPL {
 		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
 		printer.println("stdout", "Macro Expansion: " + (venice.isMacroExpandOnLoad() ? "on" : "off"));
 		printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
+		printer.println("stdout", "Debugger:        " + (debugAgent != null ? "on" : "off"));
 		printer.println("stdout", "");
 		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
 		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
@@ -843,13 +942,15 @@ public class REPL {
 		return ReplFunctions.register(env, terminal, config);
 	}
 	
-	private void activate(final IInterceptor interceptor) {
+	private void activateNewInterceptor(final IInterceptor interceptor) {
+		final boolean macroExpandOnLoad = venice.isMacroExpandOnLoad();
+		
 		this.interceptor = interceptor; 
-		this.venice = new VeniceInterpreter(interceptor);
+		this.venice = new VeniceInterpreter(interceptor, debugAgent);
+		this.venice.setMacroExpandOnLoad(macroExpandOnLoad, env);
 		JavaInterop.register(interceptor);			
 	}
 
-	
 	private String envGlobalsToString(final Env env) {
 		return new StringBuilder()
 					.append(formatGlobalVars(
@@ -1205,7 +1306,7 @@ public class REPL {
 
 	private ReplConfig config;
 	private IInterceptor interceptor;
-	private IVeniceInterpreter venice;
+	private volatile IVeniceInterpreter venice;
 	private Env env;
 	private TerminalPrinter printer;
 	private ReplHighlighter highlighter;
@@ -1213,4 +1314,6 @@ public class REPL {
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
 	private boolean restartable = false;
+	private DebugAgent debugAgent = null;
+	private final AtomicLong asyncCounter = new AtomicLong(1L);
 }
