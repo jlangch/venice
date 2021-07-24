@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public interface IDebugAgent {
@@ -41,10 +42,10 @@ public interface IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	boolean hasBreakpoint(String qualifiedName);
-	
-	List<String> listBreakpoints();
 
-	void addBreakpoint(String qualifiedName);
+	Map<String, Set<BreakpointType>> getBreakpoints();
+
+	void addBreakpoint(String qualifiedName, Set<BreakpointType> types);
 
 	void removeBreakpoint(String qualifiedName);
 

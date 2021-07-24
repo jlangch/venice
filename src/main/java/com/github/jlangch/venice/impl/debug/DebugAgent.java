@@ -21,15 +21,21 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionException;
+import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.util.CallStack;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -74,18 +80,27 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreakpoint(final String qualifiedName) {
+	public boolean hasBreakpoint(final String qualifiedName) {		 
 		return stopOnNextFunction || breakpoints.containsKey(qualifiedName);
 	}
 	
 	@Override
-	public List<String> listBreakpoints() {
-		return new ArrayList<>(breakpoints.keySet());
+	public Map<String, Set<BreakpointType>> getBreakpoints() {
+		return new HashMap<>(breakpoints);
 	}
 
 	@Override
-	public void addBreakpoint(final String qualifiedName) {
-		breakpoints.put(qualifiedName, "");
+	public void addBreakpoint(
+			final String qualifiedName, 
+			final Set<BreakpointType> types
+	) {
+		final Set<BreakpointType> copy = new HashSet<>(types);
+		
+		if (copy.isEmpty()) {
+			copy.add(FunctionEntry);
+		}
+		
+		breakpoints.put(qualifiedName, copy);
 	}
 
 	@Override
@@ -110,26 +125,83 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = listener;
 	}
 	
-	public void onBreak(
+	public void onBreakFnEnter(
+			final String fnName,
 			final VncFunction fn,
 			final VncList args,
 			final Env env
 	) {
-		final CallStack callstack = ThreadLocalMap.getCallStack();
-		
-		onBreakEntered(fn, args, env, callstack);
+		final Set<BreakpointType> types = breakpoints.get(fnName);
+		if (stopOnNextFunction || (types != null && types.contains(FunctionEntry))) {
+			onBreakFn(
+				new Break(
+					fn, 
+					args, 
+					null, 
+					null, 
+					env, 
+					ThreadLocalMap.getCallStack(), 
+					FunctionEntry));
+		}
+	}
+	
+	public void onBreakFnExit(
+			final String fnName,
+			final VncFunction fn,
+			final VncList args,
+			final VncVal retVal,
+			final Env env
+	) {
+		final Set<BreakpointType> types = breakpoints.get(fnName);
+		if (types != null && types.contains(FunctionExit)) {
+			onBreakFn(
+				new Break(
+					fn, 
+					args, 
+					retVal, 
+					null, 
+					env, 
+					ThreadLocalMap.getCallStack(), 
+					FunctionExit));
+		}
+	}
+	
+	public void onBreakFnException(
+			final String fnName,
+			final VncFunction fn,
+			final VncList args,
+			final Exception ex,
+			final Env env
+	) {
+		final Set<BreakpointType> types = breakpoints.get(fnName);
+		if (types != null && types.contains(FunctionException)) {
+			onBreakFn(
+				new Break(
+					fn, 
+					args, 
+					null, 
+					ex, 
+					env, 
+					ThreadLocalMap.getCallStack(), 
+					FunctionException));
+		}
+	}
+	
+	public void onBreakFn(final Break br) {
+		onBreakEntered(br);
 		
 		try {
 			while(hasBreak()) {
 				Thread.sleep(500);
 			}
 		}
-		catch(InterruptedException ex) {
+		catch(InterruptedException iex) {
 			throw new com.github.jlangch.venice.InterruptedException(
 					String.format(
 							"Interrupted while waiting for leaving breakpoint "
-								+ "in function '%s'.",
-							fn.getQualifiedName()));
+								+ "in function '%s' (%s).",
+							br.getFn().getQualifiedName(),
+							br.getBreakpointType()));
 		}
 		finally {
 			activeBreak = null;
@@ -159,13 +231,8 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 
-	private void onBreakEntered(
-			final VncFunction fn,
-			final VncList args,
-			final Env env,
-			final CallStack callstack
-	) {
-		activeBreak = new Break(fn, args, env, callstack);
+	private void onBreakEntered(final Break br) {
+		activeBreak = br;
 		
 		if (breakListener != null) {
 			breakListener.onBreak(activeBreak);
@@ -177,5 +244,5 @@ public class DebugAgent implements IDebugAgent {
 	private volatile boolean stopOnNextFunction = false;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<String,String> breakpoints = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = new ConcurrentHashMap<>();
 }

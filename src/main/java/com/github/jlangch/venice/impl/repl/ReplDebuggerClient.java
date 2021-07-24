@@ -21,10 +21,14 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.debug.Break;
+import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -166,11 +170,28 @@ public class ReplDebuggerClient {
 		else {
 			switch(StringUtil.trimToEmpty(params.get(0))) {
 				case "add":
-					CollectionUtil.drop(params, 1).forEach(s -> agent.addBreakpoint(s));
+					String types = StringUtil.trimToEmpty(params.get(1));
+					if (types.matches("^[(!)]+$")) {
+						CollectionUtil.drop(params, 2)
+									  .stream()
+									  .filter(s -> !s.matches("^[(!)]+$"))
+						  			  .forEach(s -> agent.addBreakpoint(
+						  					 			s, 
+						  					 			parseBreakpointTypes(types)));
+					}
+					else {
+						CollectionUtil.drop(params, 1)
+									  .stream()
+									  .filter(s -> !s.matches("^[(!)]+$"))
+									  .forEach(s -> agent.addBreakpoint(
+											  			s,
+											  			parseBreakpointTypes("(")));
+					}
 					break;
 					
 				case "remove":
-					CollectionUtil.drop(params, 1).forEach(s -> agent.removeBreakpoint(s));
+					CollectionUtil.drop(params, 1)
+								  .forEach(s -> agent.removeBreakpoint(s));
 					break;
 					
 				case "clear":
@@ -178,17 +199,46 @@ public class ReplDebuggerClient {
 					break;
 					
 				case "list":
-					agent.listBreakpoints()
+					agent.getBreakpoints()
+						 .entrySet()
 						 .stream()
-						 .sorted()
-						 .forEach(s -> printer.println("stdout", "   " + s));
+						 .sorted(Comparator.comparing(e -> e.getKey()))
+						 .forEach(e -> printer.println(
+								 		"stdout", 
+								 		String.format(
+								 			"  %s %s", 
+								 			e.getKey(),
+								 			format(e.getValue()))));
 					break;
 			}
 		}
 	}
+	
+	private String format(final Set<BreakpointType> types) {
+		String s = "";
+		if (types.contains(BreakpointType.FunctionEntry)) s = s + "(";
+		if (types.contains(BreakpointType.FunctionException)) s = s + "!";
+		if (types.contains(BreakpointType.FunctionExit)) s = s + ")";
+		return s;
+	}
 
+	private Set<BreakpointType> parseBreakpointTypes(final String s) {
+		final Set<BreakpointType> types = new HashSet<>();
+		
+		if (s.contains("(")) types.add(BreakpointType.FunctionEntry);
+		if (s.contains("!")) types.add(BreakpointType.FunctionException);
+		if (s.contains(")")) types.add(BreakpointType.FunctionExit);
+		
+		return types;
+	}
+	
 	private void breakpointListener(final Break b) {
-		printer.println("debug", "Stopped in function " + b.getFn().getQualifiedName());		
+		printer.println(
+				"debug", 
+				String.format(
+						"Stopped in function %s at %s",
+						b.getFn().getQualifiedName(),
+						b.getBreakpointType()));		
 	}
    
     

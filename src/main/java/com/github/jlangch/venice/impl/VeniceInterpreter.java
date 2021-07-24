@@ -726,10 +726,20 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 											&& debugAgent.activated() 
 											&& debugAgent.hasBreakpoint(fnName)
 									) {
-										debugAgent.onBreak(fn, args, null);
+										try {
+											debugAgent.onBreakFnEnter(fnName, fn, args, null);
+											final VncVal retVal = fn.apply(fnArgs);
+											debugAgent.onBreakFnExit(fnName, fn, args, retVal, null);
+											return retVal;
+										}
+										catch(Exception ex) {
+											debugAgent.onBreakFnException(fnName, fn, args, ex, null);
+											throw ex;
+										}
 									}
-
-									return fn.apply(fnArgs);
+									else {
+										return fn.apply(fnArgs);
+									}
 								}
 								finally {
 									callStack.pop();
@@ -2216,13 +2226,26 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								&& debugAgent.activated() 
 								&& debugAgent.hasBreakpoint(getQualifiedName())
 						) {
-							debugAgent.onBreak(this, args, localEnv);
+							try {
+								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv);
+								if (hasPreConditions) {
+									validateFnPreconditions(localEnv);
+								}
+								final VncVal retVal = evaluateBody(body, localEnv, true);
+								debugAgent.onBreakFnExit(getQualifiedName(), this, args, retVal, localEnv);
+								return retVal;
+							}
+							catch(Exception ex) {
+								debugAgent.onBreakFnException(getQualifiedName(), this, args, ex, localEnv);
+								throw ex;
+							}
 						}
-						
-						if (hasPreConditions) {
-							validateFnPreconditions(localEnv);
+						else {
+							if (hasPreConditions) {
+								validateFnPreconditions(localEnv);
+							}
+							return evaluateBody(body, localEnv, true);
 						}
-						return evaluateBody(body, localEnv, true);
 					}
 					finally {
 						// switch always back to curr namespace, just in case (ns xyz)

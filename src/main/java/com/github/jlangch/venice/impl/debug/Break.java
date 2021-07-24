@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.debug;
 
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.CallStack;
 
@@ -32,22 +33,36 @@ public class Break {
 	public Break(
 			final VncFunction fn,
 			final VncList args,
+			final VncVal retVal,
+			final Exception ex,
 			final Env env,
-			final CallStack callStack
+			final CallStack callStack,
+			final BreakpointType type
 	) {
 		this.fn = fn;
 		this.args = args;
+		this.retVal = retVal;
+		this.ex = ex;
 		this.env = env;
 		this.callStack = callStack;
+		this.type = type;
 	}
-	
 
+	
 	public VncFunction getFn() {
 		return fn;
 	}
 
 	public VncList getArgs() {
 		return args;
+	}
+
+	public VncVal getRetVal() {
+		return retVal;
+	}
+
+	public Exception getException() {
+		return ex;
 	}
 
 	public Env getEnv() {
@@ -58,9 +73,16 @@ public class Break {
 		return callStack;
 	}
 
+	public BreakpointType getBreakpointType() {
+		return type;
+	}
+
 
 	private final VncFunction fn;
 	private final VncList args;
+	private final VncVal retVal;
+	private final Exception ex;
 	private final Env env;
 	private final CallStack callStack;
+	private final BreakpointType type;
 }
