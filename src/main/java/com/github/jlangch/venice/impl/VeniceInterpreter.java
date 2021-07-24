@@ -2174,7 +2174,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		
 		// Note: Do not switch to the functions own namespace for the function 
 		//       "core/macroexpand-all". Handle "macroexpand-all" like a special 
-		//       form.This allows expanding locally defined macros from the REPL 
+		//       form. This allows expanding locally defined macros from the REPL 
 		//       without the need of qualifying them:
 		//          > (defmacro bench [expr] ...)
 		//          > (macroexpand-all '(bench (+ 1 2))
@@ -2226,7 +2226,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						if (debugAgent != null 
 								&& debugAgent.activated() 
-								&& debugAgent.hasBreakpoint(this.getQualifiedName())
+								&& debugAgent.hasBreakpoint(getQualifiedName())
 						) {
 							debugAgent.onBreak(this, args, localEnv);
 						}

@@ -337,11 +337,16 @@ public class REPL {
 			final String resultPrefix,
 			final ReplResultHistory resultHistory
 	) throws Exception {
-		if (debugger) {
-			runScriptAsync(line, resultPrefix, resultHistory);
+		if (hasActiveDebugSession()) {
+			printer.println("error", "Debugging session is active! Can only run debug commands.");
 		}
 		else {
-			runScriptSync(line, resultPrefix, resultHistory);
+			if (debugger) {
+				runScriptAsync(line, resultPrefix, resultHistory);
+			}
+			else {
+				runScriptSync(line, resultPrefix, resultHistory);
+			}
 		}
 	}
 
@@ -482,33 +487,43 @@ public class REPL {
 			final String cmd = items.get(0);
 			final List<String> args = items.subList(1, items.size());
 
-			switch(cmd) {
-				case "macroexpand": handleMacroExpandCommand(env); break;
-				case "me":          handleMacroExpandCommand(env); break;
-				case "":            handleHelpCommand(); break;
-				case "?":           handleHelpCommand(); break;
-				case "help":        handleHelpCommand(); break;
-				case "config":      handleConfigCommand(); break;
-				case "dark":   		handleColorModeCommand(ColorMode.Dark); break;
-				case "darkmode":    handleColorModeCommand(ColorMode.Dark); break;
-				case "light":    	handleColorModeCommand(ColorMode.Light); break;
-				case "lightmode":   handleColorModeCommand(ColorMode.Light); break;
-				case "restartable": handleRestartableCommand(); break;
-				case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
-				case "setup-ext":   handleSetupCommand(venice, env, Extended, printer); break;
-				case "classpath":   handleReplClasspathCommand(); break;
-				case "cp":          handleReplClasspathCommand(); break;
-				case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
-				case "launcher":    handleLauncherCommand(); break;
-				case "env":         handleEnvCommand(args, env); break;
-				case "hist":        handleHistoryCommand(args, terminal, history); break;
-				case "sandbox":     handleSandboxCommand(args, terminal, env); break;
-				case "colors":      handleConfiguredColorsCommand(); break;
-				case "info":        handleInfoCommand(terminal); break;
-				case "highlight":   handleHighlightCommand(args); break;
-				case "java-ex":     handleJavaExCommand(args); break;
-				case "debugger":    handleDebuggerCommand(args); break;				
-				default:            handleInvalidCommand(cmd); break;
+			if (hasActiveDebugSession()) {
+				if (cmd.equals("dbg")) {
+					handleDebuggerCommand(args);
+				}
+				else {
+					printer.println("error", "Debugging session is active! Can only run debug commands.");
+				}
+			}
+			else {
+				switch(cmd) {
+					case "macroexpand": handleMacroExpandCommand(env); break;
+					case "me":          handleMacroExpandCommand(env); break;
+					case "":            handleHelpCommand(); break;
+					case "?":           handleHelpCommand(); break;
+					case "help":        handleHelpCommand(); break;
+					case "config":      handleConfigCommand(); break;
+					case "dark":   		handleColorModeCommand(ColorMode.Dark); break;
+					case "darkmode":    handleColorModeCommand(ColorMode.Dark); break;
+					case "light":    	handleColorModeCommand(ColorMode.Light); break;
+					case "lightmode":   handleColorModeCommand(ColorMode.Light); break;
+					case "restartable": handleRestartableCommand(); break;
+					case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
+					case "setup-ext":   handleSetupCommand(venice, env, Extended, printer); break;
+					case "classpath":   handleReplClasspathCommand(); break;
+					case "cp":          handleReplClasspathCommand(); break;
+					case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
+					case "launcher":    handleLauncherCommand(); break;
+					case "env":         handleEnvCommand(args, env); break;
+					case "hist":        handleHistoryCommand(args, terminal, history); break;
+					case "sandbox":     handleSandboxCommand(args, terminal, env); break;
+					case "colors":      handleConfiguredColorsCommand(); break;
+					case "info":        handleInfoCommand(terminal); break;
+					case "highlight":   handleHighlightCommand(args); break;
+					case "java-ex":     handleJavaExCommand(args); break;
+					case "dbg":         handleDebuggerCommand(args); break;				
+					default:            handleInvalidCommand(cmd); break;
+				}
 			}
 		}
 		catch(RuntimeException ex) {
@@ -811,26 +826,30 @@ public class REPL {
 	private void handleDebuggerCommand(
 			final List<String> params
 	) {
-		if (params.isEmpty()) {
-			printer.println("stdout", "Debugger: " + (debugger ? "on" : "off"));
+		final String cmd = StringUtil.trimToEmpty(params.get(0));
+		
+		if (cmd.equals("attach")) {
+			debugger = true;
+			activateNewInterceptor(interceptor);
+			printer.println("stdout", "Debugger: attached");
+		}
+		else if (cmd.equals("detach")) {
+			debugger = false;
+			activateNewInterceptor(interceptor);
+			printer.println("stdout", "Debugger: detached");
+		}
+		else if (cmd.equals("?") || cmd.equals("status")) {
+			printer.println("stdout", "Debugger: " + getDebuggerStatus());
+		}
+		else if (!debugger) {
+			printer.println("error", "Debugger not attached!");
 		}
 		else {
-			switch(StringUtil.trimToEmpty(params.get(0))) {
-				case "on":
-					debugger = true;
-					activateNewInterceptor(interceptor);
-					break;
-				case "off":
-					debugger = false;
-					activateNewInterceptor(interceptor);
-					break;
-				default:
-					printer.println("error", "Invalid parameter. Use !debugger {on|off}.");
-					break;
-			}
+			new ReplDebuggerClient(venice.getDebugAgent(), printer)
+					.handleDebuggerCommand(params);
 		}
 	}
-
+	
 	private void handleConfiguredColorsCommand() {
 		printer.println("default",   "default");
 		printer.println("result",    "result");
@@ -866,7 +885,7 @@ public class REPL {
 		printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
 		printer.println("stdout", "Macro Expansion: " + (venice.isMacroExpandOnLoad() ? "on" : "off"));
 		printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
-		printer.println("stdout", "Debugger:        " + (debugger ? "on" : "off"));
+		printer.println("stdout", "Debugger:        " + getDebuggerStatus());
 		printer.println("stdout", "");
 		printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
 		printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
@@ -1216,6 +1235,17 @@ public class REPL {
 					 .anyMatch(s -> l.equals(s));
 	}
 
+	private boolean hasActiveDebugSession() {
+		return venice.hasDebugger() && venice.getDebugAgent().hasBreak();
+	}
+	
+	private String getDebuggerStatus() {
+		return debugger
+				? venice.getDebugAgent().activated() 
+						? "active" 
+						: "not active"
+				: "not attached";
+	}
 	
 	public static enum SetupMode { Minimal, Extended };
 

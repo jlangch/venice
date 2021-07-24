@@ -45,6 +45,7 @@ public class DebugAgent implements IDebugAgent {
 	public void activate(final boolean activate) {
 		activated = activate;
 		activeBreak = null;
+		breakListener = null;
 	}
 
 	@Override
@@ -114,8 +115,12 @@ public class DebugAgent implements IDebugAgent {
 							"Interrupted while waiting for leaving breakpoint in function '%s'.",
 							fn.getQualifiedName()));
 		}
+		finally {
+			activeBreak = null;
+		}
 	}
 
+	@Override
 	public Break getBreak() {
 		return activeBreak;
 	}

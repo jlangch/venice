@@ -57,8 +57,10 @@ public interface IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	void addBreakListener(IBreakListener listener);
-	
+
 	boolean hasBreak();
+	
+	Break getBreak();
 
 	void leaveBreak();
 

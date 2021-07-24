@@ -21,21 +21,118 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.util.List;
+
+import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
+import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReplDebuggerClient {
 
 	public ReplDebuggerClient(
-			final TerminalPrinter printer,
-			final IDebugAgent debugAgent
+			final IDebugAgent agent,
+			final TerminalPrinter printer
 	) {
+		this.agent = agent;
 		this.printer = printer;
-		this.debugAgent = debugAgent;
 	}
 
-    
+	public void handleDebuggerCommand(
+			final List<String> params
+	) {
+		switch(StringUtil.trimToEmpty(params.get(0))) {
+			case "activate":
+				activate();
+				break;
+			case "deactivate":
+				deactivate();
+				break;
+			case "breakpoint":
+				handleBreakpointCmd(params);
+				break;
+			case "run":
+				run();
+				break;
+			case "callstack":
+				callstack();
+				break;
+			case "fn-args":
+				break;
+			case "locals":
+				break;
+			case "local":
+				break;
+			default:
+				printer.println("error", "Invalid dbg command.");
+				break;
+		}
+	}
+
+	private void activate() {
+		agent.activate(true);
+		agent.addBreakListener(this::breakpointListener);
+		printer.println("stdout", "Debugger: activated");
+	}
+	
+	private void deactivate() {
+		agent.activate(false);
+		printer.println("stdout", "Debugger: deactivated");
+	}
+	
+	private void run() {
+		agent.leaveBreak();
+		printer.println("debug", "Leaving break");
+	}
+	
+	private void callstack() {
+		final CallStack cs = agent.getBreak().getCallStack();
+		printer.println("debug", "Callstack:\n" + cs);
+	}
+	
+	private void handleBreakpointCmd(final List<String> params) {
+		if (params.size() < 1)  {
+			printer.println("error", "Invalid 'dbg breakpoint {cmd}' command");
+		}
+		else {
+			switch(StringUtil.trimToEmpty(params.get(1))) {
+				case "add":
+					if (params.size() < 2)  {
+						printer.println("error", "Invalid 'dbg breakpoint add {fn-name}' command");
+					}
+					else {
+						agent.addBreakpoint(params.get(2));
+					}
+					break;
+					
+				case "remove":
+					if (params.size() < 2)  {
+						printer.println("error", "Invalid 'dbg breakpoint remove {fn-name}' command");
+					}
+					else {
+						agent.removeBreakpoint(params.get(2));
+					}
+					break;
+					
+				case "clear":
+					agent.removeAllBreakpoints();
+					break;
+					
+				case "list":
+					agent.listBreakpoints()
+						 .stream()
+						 .forEachOrdered(s -> printer.println("stdout", "   " + s));
+					break;
+			}
+		}
+	}
+
+	private void breakpointListener(final Break b) {
+		printer.println("debug", "Stopped in function " + b.getFn().getQualifiedName());		
+	}
+   
     
 	private final TerminalPrinter printer;
-	private final IDebugAgent debugAgent;
+	private final IDebugAgent agent;
 }
