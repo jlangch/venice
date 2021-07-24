@@ -21,6 +21,10 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionException;
+import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -47,7 +51,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * 
  * <p>A typical debug session looks like:
  * <pre>
- *   venice> (defn sum [x y] (println "running sum") (+ x y))
+ *   venice> (defn sum [x y] (+ x y))
  *   venice> !dbg attach
  *   venice> !dbg activate
  *   venice> !dbg breakpoint add (!) user/sum
@@ -280,7 +284,8 @@ public class ReplDebuggerClient {
 	}
 
 	private String format(final Set<BreakpointType> types) {
-		return Arrays.asList(BreakpointType.values())
+		// predefined order of breakpoint types
+		return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
 					 .stream()
 					 .filter(t -> types.contains(t))
 					 .map(t -> format(t))
