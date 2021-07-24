@@ -86,6 +86,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -752,15 +753,15 @@ public class IOFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
-						new AtomicReference<>(ThreadLocalMap.getValues());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 
 				final Consumer<Runnable> wrapper = (runnable) -> {
 					// The watch-dir listeners is called from the JavaVM. Rig a
 					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.setValues(parentThreadLocals.get());
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						

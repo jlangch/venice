@@ -117,6 +117,8 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
+		ThreadLocalMap.clear();
+
 		// Note: For security reasons use the RejectAllInterceptor because
 		//       macros can execute code while being expanded. Thus we need
 		//       to have a safe sandbox in-place if macros are misused to
@@ -171,6 +173,8 @@ public class Venice {
 		}
 
 		final long nanos = System.nanoTime();
+		
+		ThreadLocalMap.clear();
 
 		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -267,7 +271,9 @@ public class Venice {
 
 
 		final long nanos = System.nanoTime();
-
+		
+		ThreadLocalMap.clear();
+		
 		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		return runWithSandbox(venice, () -> {
@@ -414,8 +420,6 @@ public class Venice {
 			final Callable<Object> callable
 	) {
 		try {
-			ThreadLocalMap.clear();
-			
 			if (interceptor.getMaxFutureThreadPoolSize() != null) {
 				ConcurrencyFunctions
 					.setMaximumFutureThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());

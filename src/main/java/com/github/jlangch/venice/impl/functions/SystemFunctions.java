@@ -58,6 +58,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -575,14 +576,14 @@ public class SystemFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 
 				// thread local values from the parent thread
-				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals =
-						new AtomicReference<>(ThreadLocalMap.getValues());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 
 				Runtime.getRuntime().addShutdownHook(new Thread() {
 				    public void run() {
 						try {
 							// inherit thread local values to the child thread
-							ThreadLocalMap.setValues(parentThreadLocals.get());
+							ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 							ThreadLocalMap.clearCallStack();
 							JavaInterop.register(parentInterceptor);
 

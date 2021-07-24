@@ -36,7 +36,21 @@ public class DebugAgent implements IDebugAgent {
 
 	public DebugAgent() {
 	}
+	
 
+	public static void register(final DebugAgent agent) {
+		ThreadLocalMap.setDebugAgent(agent);
+	}
+	
+	public static void unregister() {
+		ThreadLocalMap.setDebugAgent(null);
+	}
+	
+	public static DebugAgent current() {
+		return ThreadLocalMap.getDebugAgent();
+	}
+	
+	
 	// -------------------------------------------------------------------------
 	// Debugger turn on/off
 	// -------------------------------------------------------------------------

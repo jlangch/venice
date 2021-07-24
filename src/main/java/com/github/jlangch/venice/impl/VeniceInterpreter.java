@@ -46,7 +46,6 @@ import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.DebugAgent;
-import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.ComputedVar;
 import com.github.jlangch.venice.impl.env.DynamicVar;
@@ -120,21 +119,15 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  */
 public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
-	public VeniceInterpreter(final IInterceptor interceptor) {
-		this(interceptor, false);
-	}
-
 	public VeniceInterpreter(
-			final IInterceptor interceptor, 
-			final boolean debugger
+			final IInterceptor interceptor
 	) {
 		if (interceptor == null) {
 			throw new SecurityException("VeniceInterpreter can not run without an interceptor");
 		}
 		
 		this.interceptor = interceptor;
-		this.debugAgent = debugger ? new DebugAgent() : null;
-		this.meterRegistry = this.interceptor.getMeterRegistry();
+		this.meterRegistry = interceptor.getMeterRegistry();
 		
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
@@ -142,21 +135,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 	
 	@Override
-	public boolean hasDebugger() {
-		return debugAgent != null;
-	}
-
-	@Override
-	public IDebugAgent getDebugAgent() {
-		return debugAgent;
-	}
-	
-	@Override
 	public void initNS() {
 		nsRegistry.clear();
 		Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 	}
-	
+		
 	@Override
 	public void sealSystemNS() {
 		sealedSystemNS.set(true);
@@ -714,7 +697,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							checkInterrupted(currThread, fnName);
 	
-							final CallStack callStack = ThreadLocalMap.getCallStack();
+							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+							
+							final CallStack callStack = threadLocalMap.getCallStack_();
 							
 							// Automatic TCO (tail call optimization)
 							if (tailPosition
@@ -733,7 +718,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								// invoke function with a new call frame
 								try {
 									callStack.push(new CallFrame(fnName, a0.getMeta()));
-									
+
+									final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+
 									if (debugAgent != null 
 											&& fn.isNative() 
 											&& debugAgent.activated() 
@@ -2220,9 +2207,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				if (switchToFunctionNamespaceAtRuntime) {
 					final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
 					
-					final Namespace curr_ns = threadLocalMap.getCurrentNS();
+					final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+					final Namespace curr_ns = threadLocalMap.getCurrNS_();
 					try {
-						threadLocalMap.setCurrentNS(ns);
+						threadLocalMap.setCurrNS_(ns);
 
 						if (debugAgent != null 
 								&& debugAgent.activated() 
@@ -2239,7 +2227,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					finally {
 						// switch always back to curr namespace, just in case (ns xyz)
 						// was executed within the function body!
-						threadLocalMap.setCurrentNS(curr_ns);
+						threadLocalMap.setCurrNS_(curr_ns);
 					}
 				}
 				else {
@@ -2467,8 +2455,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
-	
-	private final DebugAgent debugAgent;
 	
 	private final AtomicBoolean sealedSystemNS = new AtomicBoolean(false);
 	

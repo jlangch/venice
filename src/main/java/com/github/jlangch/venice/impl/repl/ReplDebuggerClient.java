@@ -98,21 +98,13 @@ public class ReplDebuggerClient {
 		else {
 			switch(StringUtil.trimToEmpty(params.get(1))) {
 				case "add":
-					if (params.size() < 2)  {
-						printer.println("error", "Invalid 'dbg breakpoint add {fn-name}' command");
-					}
-					else {
-						agent.addBreakpoint(params.get(2));
-					}
+					params.subList(2, params.size())
+						  .forEach(s -> agent.addBreakpoint(s));
 					break;
 					
 				case "remove":
-					if (params.size() < 2)  {
-						printer.println("error", "Invalid 'dbg breakpoint remove {fn-name}' command");
-					}
-					else {
-						agent.removeBreakpoint(params.get(2));
-					}
+					params.subList(2, params.size())
+					  .forEach(s -> agent.removeBreakpoint(s));
 					break;
 					
 				case "clear":
@@ -122,7 +114,8 @@ public class ReplDebuggerClient {
 				case "list":
 					agent.listBreakpoints()
 						 .stream()
-						 .forEachOrdered(s -> printer.println("stdout", "   " + s));
+						 .sorted()
+						 .forEach(s -> printer.println("stdout", "   " + s));
 					break;
 			}
 		}

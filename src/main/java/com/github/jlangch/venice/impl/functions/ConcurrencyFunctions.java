@@ -38,7 +38,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
@@ -60,6 +59,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -1398,15 +1398,15 @@ public class ConcurrencyFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
-						new AtomicReference<>(ThreadLocalMap.getValues());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					// The future function is called from the JavaVM. Rig a
 					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.setValues(parentThreadLocals.get());
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						

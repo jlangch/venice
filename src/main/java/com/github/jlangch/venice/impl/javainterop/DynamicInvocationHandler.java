@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
@@ -65,7 +66,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		this.methods = methods;
 		
 		this.parentInterceptor = JavaInterop.getInterceptor();
-		this.parentThreadLocals = new AtomicReference<>(ThreadLocalMap.getValues());
+		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadLocalMap.snapshot());
 
 	}
 		 
@@ -109,7 +110,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				// Inherit sandbox and thread local vars
 				try {
 					ThreadLocalMap.clear();
-					ThreadLocalMap.setValues(parentThreadLocals.get());
+					ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 					JavaInterop.register(parentInterceptor);
 					
 					callStack.push(callFrameProxy);
@@ -181,5 +182,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	private final CallFrame callFrameProxy;
 	private final Map<String, VncFunction> methods;
 	private final IInterceptor parentInterceptor;
-	private final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals;
+	private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot;
 }

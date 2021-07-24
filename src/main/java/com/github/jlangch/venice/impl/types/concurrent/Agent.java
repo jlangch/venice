@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.concurrent;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +85,7 @@ public class Agent implements IDeref {
 						args,
 						SendType.SEND,
 						JavaInterop.getInterceptor(), 
-						ThreadLocalMap.getValues()));
+						ThreadLocalMap.snapshot()));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -97,7 +96,7 @@ public class Agent implements IDeref {
 						args, 
 						SendType.SEND_OFF,
 						JavaInterop.getInterceptor(),
-						ThreadLocalMap.getValues()));
+						ThreadLocalMap.snapshot()));
 	}
 
 	public void restart(final VncVal state) {
@@ -310,14 +309,14 @@ public class Agent implements IDeref {
 				final VncList fnArgs,
 				final SendType sendType,
 				final IInterceptor interceptor,
-				final Map<VncKeyword,VncVal> threadLocalValues
+				final ThreadLocalSnapshot parentThreadLocalSnapshot
 		) {
 			this.agent = agent;
 			this.fn = fn;
 			this.fnArgs = fnArgs;
 			this.sendType = sendType;
 			this.interceptor = interceptor;
-			this.threadLocalValues.set(threadLocalValues);
+			this.parentThreadLocalSnapshot.set(parentThreadLocalSnapshot);
 		}
 		
 		@Override
@@ -341,7 +340,7 @@ public class Agent implements IDeref {
 				callStack.push(callFrame);
 
 				// inherit thread local values to the child thread
-				ThreadLocalMap.setValues(threadLocalValues.get());
+				ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				JavaInterop.register(interceptor);	
 				
@@ -384,7 +383,7 @@ public class Agent implements IDeref {
 		private final VncList fnArgs;
 		private final SendType sendType;
 		private final IInterceptor interceptor;
-		private final AtomicReference<Map<VncKeyword,VncVal>> threadLocalValues = new AtomicReference<>();
+		private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
 	}
 	
 	private static class Value {

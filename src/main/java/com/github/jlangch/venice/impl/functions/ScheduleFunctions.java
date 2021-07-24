@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
@@ -75,13 +76,13 @@ public class ScheduleFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
-						new AtomicReference<>(ThreadLocalMap.getValues());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.setValues(parentThreadLocals.get());
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
@@ -142,13 +143,13 @@ public class ScheduleFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
-						new AtomicReference<>(ThreadLocalMap.getValues());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 				
 				final Runnable taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.setValues(parentThreadLocals.get());
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						

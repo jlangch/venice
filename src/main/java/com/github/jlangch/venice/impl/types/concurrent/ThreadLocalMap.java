@@ -32,12 +32,14 @@ import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespace;
+import com.github.jlangch.venice.impl.debug.DebugAgent;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
+
 
 public class ThreadLocalMap {
 	
@@ -46,14 +48,25 @@ public class ThreadLocalMap {
 	}
 
 
-	public Namespace getCurrentNS() {
+	public Namespace getCurrNS_() {
 		return nsCurr;
 	}
 
-	public void setCurrentNS(final Namespace ns) {
+	public void setCurrNS_(final Namespace ns) {
 		nsCurr = ns;
 	}
 
+	public DebugAgent getDebugAgent_() {
+		return debugAgent;
+	}
+
+	public void setDebugAgent_(final DebugAgent agent) {
+		debugAgent = agent;
+	}
+
+	public CallStack getCallStack_() {
+		return callStack;
+	}
 	
 	public static VncVal get(final VncKeyword key) {
 		return get(key, Nil);
@@ -178,17 +191,20 @@ public class ThreadLocalMap {
 		return copy;  // return a copy of the values
 	}
 
-	public static void setValues(final Map<VncKeyword,VncVal> newValues) {
-		copyValues(newValues, get().values);
-	}
-
-
 	public static Namespace getCurrNS() {
 		return get().nsCurr;
 	}
 
 	public static void setCurrNS(final Namespace ns) {
 		get().nsCurr = ns;
+	}
+
+	public static DebugAgent getDebugAgent() {
+		return get().debugAgent;
+	}
+
+	public static void setDebugAgent(final DebugAgent agent) {
+		get().debugAgent = agent;
 	}
 
 	public static void clearValues(final boolean preserveSystemValues) {
@@ -215,9 +231,12 @@ public class ThreadLocalMap {
 
 	public static void clear() {
 		try {
-			get().values.clear();
-			get().callStack.clear();
-			get().initNS();
+			final ThreadLocalMap tl = ThreadLocalMap.get();
+			
+			tl.debugAgent = null;
+			tl.values.clear();
+			tl.callStack.clear();
+			tl.initNS();
 		}
 		catch(Exception ex) {
 			// do not care
@@ -252,7 +271,24 @@ public class ThreadLocalMap {
 		return Coerce.toVncJavaObject(peek(new VncKeyword(":*in*")), Reader.class);
 	}
 
+	public static ThreadLocalSnapshot snapshot() {
+		final ThreadLocalMap map = get();
 	
+		final Map<VncKeyword,VncVal> vals = new HashMap<>();
+		
+		copyValues(map.values, vals);
+
+		return new ThreadLocalSnapshot(vals, map.debugAgent);
+	}
+
+	public static void inheritFrom(final ThreadLocalSnapshot snapshot) {
+		final ThreadLocalMap map = get();
+
+		copyValues(snapshot.getValues(), map.values);
+
+		map.debugAgent = snapshot.getAgent();
+	}
+
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
 		to.clear();
 		
@@ -279,6 +315,7 @@ public class ThreadLocalMap {
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
 	private Namespace nsCurr;
+	private DebugAgent debugAgent;
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed

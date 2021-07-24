@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.debug.DebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -72,6 +73,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -199,7 +201,7 @@ public class REPL {
 		printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
 		venice = new VeniceInterpreter(interceptor);		
-		env = loadEnv(cli, terminal, out, err, in, false);		
+		env = loadEnv(cli, terminal, out, err, in, false);	
 		venice.setMacroExpandOnLoad(macroexpand, env);
 		
 		if (isSetupMode(cli)) {
@@ -376,12 +378,12 @@ public class REPL {
 		printer.println("debug", String.format("[%d] Async ...", asyncID));
 
 		// thread local values from the parent thread
-		final AtomicReference<Map<VncKeyword,VncVal>> parentThreadLocals = 
-				new AtomicReference<>(ThreadLocalMap.getValues());
+		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+				new AtomicReference<>(ThreadLocalMap.snapshot());
 
 		// run the script in another thread when debugging it
 		final Runnable task = () -> {
-			ThreadLocalMap.setValues(parentThreadLocals.get());
+			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 			ThreadLocalMap.clearCallStack();
 			JavaInterop.register(interceptor);	
 
@@ -845,7 +847,7 @@ public class REPL {
 			printer.println("error", "Debugger not attached!");
 		}
 		else {
-			new ReplDebuggerClient(venice.getDebugAgent(), printer)
+			new ReplDebuggerClient(DebugAgent.current(), printer)
 					.handleDebuggerCommand(params);
 		}
 	}
@@ -966,9 +968,11 @@ public class REPL {
 		final boolean macroExpandOnLoad = venice.isMacroExpandOnLoad();
 		
 		this.interceptor = interceptor; 
-		this.venice = new VeniceInterpreter(interceptor, debugger);
+		this.venice = new VeniceInterpreter(interceptor);
 		this.venice.setMacroExpandOnLoad(macroExpandOnLoad, env);
-		JavaInterop.register(interceptor);			
+		
+		JavaInterop.register(interceptor);	
+		DebugAgent.register(debugger ? new DebugAgent() : null);
 	}
 
 	private String envGlobalsToString(final Env env) {
@@ -1236,15 +1240,21 @@ public class REPL {
 	}
 
 	private boolean hasActiveDebugSession() {
-		return venice.hasDebugger() && venice.getDebugAgent().hasBreak();
+		final DebugAgent agent = DebugAgent.current();
+		return agent != null && agent.hasBreak();
 	}
 	
 	private String getDebuggerStatus() {
-		return debugger
-				? venice.getDebugAgent().activated() 
-						? "active" 
-						: "not active"
-				: "not attached";
+		if (debugger) {
+			final DebugAgent agent = DebugAgent.current();
+	
+			return agent != null && agent.activated() 
+							? "active" 
+							: "not active";
+		}
+		else {
+			return "not attached";
+		}
 	}
 	
 	public static enum SetupMode { Minimal, Extended };
