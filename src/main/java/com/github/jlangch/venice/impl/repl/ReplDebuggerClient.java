@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallStack;
@@ -41,6 +42,31 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
+/**
+ * REPL debugger client
+ * 
+ * <p>A typical debug session looks like:
+ * <pre>
+ *   venice> (defn sum [x y] (println "running sum") (+ x y))
+ *   venice> !dbg attach
+ *   venice> !dbg activate
+ *   venice> !dbg breakpoint add (!) user/sum
+ *   venice> (sum 6 7)
+ *   Stopped in function user/sum at FunctionEntry
+ *   venice> !dbg params
+ *   Parameters:
+ *   [x y]
+ *
+ *   Arguments:
+ *   (6 7)
+ *   venice> !dbg next
+ *   Stopped in function user/sum at FunctionExit
+ *   venice> !dbg retval
+ *   return: 13
+ *   venice> !dbg next
+ *   Resuming from function user/sum
+ * </pre>
+ */
 public class ReplDebuggerClient {
 
 	public ReplDebuggerClient(
@@ -64,11 +90,11 @@ public class ReplDebuggerClient {
 			case "breakpoint":
 				handleBreakpointCmd(CollectionUtil.drop(params, 1));
 				break;
-			case "run":
+			case "next":
 				run();
 				break;
-			case "run-to-next":
-				runToNextFunction();
+			case "next-fn":
+				stopOnNextFunction();
 				break;			
 			case "callstack":
 				callstack();
@@ -81,6 +107,12 @@ public class ReplDebuggerClient {
 				break;
 			case "local":
 				local(params.get(1));
+				break;
+			case "retval":
+				retval();
+				break;
+			case "ex":
+				ex();
 				break;
 			default:
 				printer.println("error", "Invalid dbg command.");
@@ -102,13 +134,13 @@ public class ReplDebuggerClient {
 	private void run() {
 		final String fnName = agent.getBreak().getFn().getQualifiedName();
 		agent.leaveBreak();
-		printer.println("debug", "Resuming from function " + fnName);
+		printer.println("debug", "Returning from function " + fnName);
 	}
 	
-	private void runToNextFunction() {
+	private void stopOnNextFunction() {
 		final String fnName = agent.getBreak().getFn().getQualifiedName();
 		agent.leaveBreakForNextFunction();
-		printer.println("debug", "Resuming from function " + fnName + ". Stop on next function...");
+		printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
 	}
 	
 	private void callstack() {
@@ -160,6 +192,30 @@ public class ReplDebuggerClient {
 							"%s: %s", 
 							name, 
 							v.getVal().toString(true)));
+		}
+	}
+	
+	private void retval() {
+		final VncVal v = agent.getBreak().getRetVal();
+		if (v == null) {
+			printer.println("debug", "return: <not available>");
+		}
+		else {
+			printer.println(
+					"debug", 
+					String.format("return: %s", v.toString(true)));
+		}
+	}
+	
+	private void ex() {
+		final Exception e = agent.getBreak().getException();
+		if (e == null) {
+			printer.println("debug", "exception: <not available>");
+		}
+		else {
+			printer.println(
+					"debug", 
+					String.format("exception: %s", e.getClass().getName()));
 		}
 	}
 	
