@@ -96,6 +96,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void removeAllBreakpoints() {
 		breakpoints.clear();
+		stopOnNextFunction = false;
 	}
 
 
@@ -126,7 +127,8 @@ public class DebugAgent implements IDebugAgent {
 		catch(InterruptedException ex) {
 			throw new com.github.jlangch.venice.InterruptedException(
 					String.format(
-							"Interrupted while waiting for leaving breakpoint in function '%s'.",
+							"Interrupted while waiting for leaving breakpoint "
+								+ "in function '%s'.",
 							fn.getQualifiedName()));
 		}
 		finally {

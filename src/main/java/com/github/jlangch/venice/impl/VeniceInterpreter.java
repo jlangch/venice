@@ -728,7 +728,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									) {
 										debugAgent.onBreak(fn, args, null);
 									}
-									
+
 									return fn.apply(fnArgs);
 								}
 								finally {
