@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -214,22 +214,28 @@ public class ReplDebuggerClient {
 		}
 	}
 	
-	private String format(final Set<BreakpointType> types) {
-		String s = "";
-		if (types.contains(BreakpointType.FunctionEntry)) s = s + "(";
-		if (types.contains(BreakpointType.FunctionException)) s = s + "!";
-		if (types.contains(BreakpointType.FunctionExit)) s = s + ")";
-		return s;
+	private String format(final BreakpointType type) {
+		switch(type) {
+			case FunctionEntry: return "(";
+			case FunctionException: return "!";
+			case FunctionExit: return ")";
+			default: return "";
+		}
 	}
 
-	private Set<BreakpointType> parseBreakpointTypes(final String s) {
-		final Set<BreakpointType> types = new HashSet<>();
-		
-		if (s.contains("(")) types.add(BreakpointType.FunctionEntry);
-		if (s.contains("!")) types.add(BreakpointType.FunctionException);
-		if (s.contains(")")) types.add(BreakpointType.FunctionExit);
-		
-		return types;
+	private String format(final Set<BreakpointType> types) {
+		return Arrays.asList(BreakpointType.values())
+					 .stream()
+					 .filter(t -> types.contains(t))
+					 .map(t -> format(t))
+					 .collect(Collectors.joining());
+	}
+
+	private Set<BreakpointType> parseBreakpointTypes(final String types) {
+		return Arrays.asList(BreakpointType.values())
+					 .stream()
+					 .filter(t -> types.contains(format(t)))
+					 .collect(Collectors.toSet());
 	}
 	
 	private void breakpointListener(final Break b) {
