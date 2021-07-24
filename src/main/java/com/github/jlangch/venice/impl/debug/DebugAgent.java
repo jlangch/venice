@@ -75,7 +75,7 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public boolean hasBreakpoint(final String qualifiedName) {
-		return breakpoints.containsKey(qualifiedName);
+		return stopOnNextFunction || breakpoints.containsKey(qualifiedName);
 	}
 	
 	@Override
@@ -147,6 +147,13 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void leaveBreak() {
 		activeBreak = null;
+		stopOnNextFunction = false;
+	}
+
+	@Override
+	public void leaveBreakForNextFunction() {
+		activeBreak = null;
+		stopOnNextFunction = true;
 	}
 
 
@@ -165,6 +172,7 @@ public class DebugAgent implements IDebugAgent {
 
 
 	private volatile boolean activated = false;
+	private volatile boolean stopOnNextFunction = false;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<String,String> breakpoints = new ConcurrentHashMap<>();

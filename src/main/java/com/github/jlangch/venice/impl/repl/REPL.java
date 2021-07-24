@@ -75,6 +75,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -487,7 +488,7 @@ public class REPL {
 		try {
 			final List<String> items = Arrays.asList(cmdLine.split(" +"));
 			final String cmd = items.get(0);
-			final List<String> args = items.subList(1, items.size());
+			final List<String> args = CollectionUtil.drop(items, 1);
 
 			if (hasActiveDebugSession()) {
 				if (cmd.equals("dbg")) {
@@ -524,6 +525,7 @@ public class REPL {
 					case "highlight":   handleHighlightCommand(args); break;
 					case "java-ex":     handleJavaExCommand(args); break;
 					case "dbg":         handleDebuggerCommand(args); break;				
+					case "d":     	    handleDebuggerCommand(args); break;				
 					default:            handleInvalidCommand(cmd); break;
 				}
 			}

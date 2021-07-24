@@ -180,4 +180,17 @@ public class CollectionUtil {
 		return Collections.unmodifiableSet(toSet(objects));
 	}
 
+	
+	public static <U> List<U> drop(final List<U> items, final int n) {
+		if (n <= 0) {
+			return items;
+		}
+		else if (n >= items.size()) {
+			return new ArrayList<>();
+		}
+		else {
+			return items.subList(n, items.size());
+		}
+	}
+
 }

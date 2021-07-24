@@ -22,10 +22,18 @@
 package com.github.jlangch.venice.impl.repl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -50,19 +58,25 @@ public class ReplDebuggerClient {
 				deactivate();
 				break;
 			case "breakpoint":
-				handleBreakpointCmd(params);
+				handleBreakpointCmd(CollectionUtil.drop(params, 1));
 				break;
 			case "run":
 				run();
 				break;
+			case "run-to-next":
+				runToNextFunction();
+				break;			
 			case "callstack":
 				callstack();
 				break;
-			case "fn-args":
+			case "params":
+				fn_args(CollectionUtil.drop(params, 1));
 				break;
 			case "locals":
+				locals(CollectionUtil.drop(params, 1));
 				break;
 			case "local":
+				local(params.get(1));
 				break;
 			default:
 				printer.println("error", "Invalid dbg command.");
@@ -82,8 +96,15 @@ public class ReplDebuggerClient {
 	}
 	
 	private void run() {
+		final String fnName = agent.getBreak().getFn().getQualifiedName();
 		agent.leaveBreak();
-		printer.println("debug", "Leaving break");
+		printer.println("debug", "Resuming from function " + fnName);
+	}
+	
+	private void runToNextFunction() {
+		final String fnName = agent.getBreak().getFn().getQualifiedName();
+		agent.leaveBreakForNextFunction();
+		printer.println("debug", "Resuming from function " + fnName + ". Stop on next function...");
 	}
 	
 	private void callstack() {
@@ -91,20 +112,65 @@ public class ReplDebuggerClient {
 		printer.println("debug", "Callstack:\n" + cs);
 	}
 	
+	private void fn_args(final List<String> params) {
+		final VncFunction fn = agent.getBreak().getFn();
+		final VncVector spec = fn.getParams();	
+		final VncList args = agent.getBreak().getArgs();
+		
+		printer.println("debug", 
+						"Parameters:\n" + spec.toString(true) +
+						"\n\nArguments:\n" + args.toString(true));
+	}
+	
+	private void locals(final List<String> params) {
+		Env env = agent.getBreak().getEnv();
+		int maxLevel = env.level() + 1;
+		int level = Integer.parseInt(params.get(0));
+		level = Math.max(Math.min(maxLevel, level), 1);
+		
+		printer.println(
+			"debug",
+			String.format(
+				"[%d/%d] Local vars:\n%s",
+				level,
+				maxLevel,
+				env.getLocalVars(level-1)
+				   .stream()
+				   .map(v -> v.getName().getSimpleName())
+				   .map(s -> "   " + s)
+				   .collect(Collectors.joining("\n"))));
+	}
+	
+	private void local(final String name) {
+		final VncSymbol sym = new VncSymbol(name);
+		final Var v = agent.getBreak().getEnv().findLocalVar(sym);
+		if (v == null) {
+			printer.println(
+					"debug", 
+					String.format("%s: <not found>", name));
+		}
+		else {
+			printer.println(
+					"debug", 
+					String.format(
+							"%s: %s", 
+							name, 
+							v.getVal().toString(true)));
+		}
+	}
+	
 	private void handleBreakpointCmd(final List<String> params) {
 		if (params.size() < 1)  {
 			printer.println("error", "Invalid 'dbg breakpoint {cmd}' command");
 		}
 		else {
-			switch(StringUtil.trimToEmpty(params.get(1))) {
+			switch(StringUtil.trimToEmpty(params.get(0))) {
 				case "add":
-					params.subList(2, params.size())
-						  .forEach(s -> agent.addBreakpoint(s));
+					CollectionUtil.drop(params, 1).forEach(s -> agent.addBreakpoint(s));
 					break;
 					
 				case "remove":
-					params.subList(2, params.size())
-					  .forEach(s -> agent.removeBreakpoint(s));
+					CollectionUtil.drop(params, 1).forEach(s -> agent.removeBreakpoint(s));
 					break;
 					
 				case "clear":
