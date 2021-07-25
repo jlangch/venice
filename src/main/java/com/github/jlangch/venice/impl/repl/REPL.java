@@ -21,6 +21,11 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -75,9 +80,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Types;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
@@ -280,7 +283,7 @@ public class REPL {
 				}
 				
 				if (ReplParser.isCommand(line)) {
-					final String cmd = StringUtil.trimToEmpty(line.trim().substring(1));
+					final String cmd = trimToEmpty(line.trim().substring(1));
 					switch(cmd) {
 						case "reload":
 							env = loadEnv(cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
@@ -488,7 +491,7 @@ public class REPL {
 		try {
 			final List<String> items = Arrays.asList(cmdLine.split(" +"));
 			final String cmd = items.get(0);
-			final List<String> args = CollectionUtil.drop(items, 1);
+			final List<String> args = drop(items, 1);
 
 			if (hasActiveDebugSession()) {
 				if (cmd.equals("dbg") || cmd.equals("d")) {
@@ -629,7 +632,7 @@ public class REPL {
 				return;
 			}
 			else if (params.size() == 2) {
-				String filter = StringUtil.trimToNull(params.get(1));
+				String filter = trimToNull(params.get(1));
 				filter = filter == null ? null : filter.replaceAll("[*]", ".*");
 				printer.println("stdout", envGlobalsToString(env, filter));
 				return;
@@ -786,15 +789,17 @@ public class REPL {
 			printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
 		}
 		else {
-			switch(StringUtil.trimToEmpty(params.get(0))) {
+			switch(trimToEmpty(first(params))) {
 				case "on":
 					highlight = true;
 					if (highlighter != null) highlighter.enable(true);
 					break;
+					
 				case "off":
 					highlight = false;
 					if (highlighter != null) highlighter.enable(false);
 					break;
+					
 				default:
 					printer.println("error", "Invalid parameter. Use !highlight {on|off}.");
 					break;
@@ -809,17 +814,19 @@ public class REPL {
 			printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
 		}
 		else {
-			switch(StringUtil.trimToEmpty(params.get(0))) {
+			switch(trimToEmpty(first(params))) {
 				case "on":
 					javaExceptions = true;
 					printer.setPrintJavaEx(javaExceptions);
 					printer.println("stdout", "Printing Java exceptions");
 					break;
+					
 				case "off":
 					javaExceptions = false;
 					printer.setPrintJavaEx(javaExceptions);
 					printer.println("stdout", "Printing Venice exceptions");
 					break;
+					
 				default:
 					printer.println("error", "Invalid parameter. Use !java-ex {on|off}.");
 					break;
@@ -830,20 +837,20 @@ public class REPL {
 	private void handleDebuggerCommand(
 			final List<String> params
 	) {
-		final String cmd = StringUtil.trimToEmpty(params.get(0));
+		final String cmd = trimToEmpty(first(params));
 		
-		if (cmd.equals("attach")) {
+		if (cmd.equals("") || cmd.equals("?") || cmd.equals("status")) {
+			printer.println("debug", "Debugger: " + getDebuggerStatus());
+		}
+		else if (cmd.equals("attach")) {
 			debugger = true;
 			activateNewInterceptor(interceptor);
-			printer.println("stdout", "Debugger: attached");
+			printer.println("debug", "Debugger: attached");
 		}
 		else if (cmd.equals("detach")) {
 			debugger = false;
 			activateNewInterceptor(interceptor);
-			printer.println("stdout", "Debugger: detached");
-		}
-		else if (cmd.equals("?") || cmd.equals("status")) {
-			printer.println("stdout", "Debugger: " + getDebuggerStatus());
+			printer.println("debug", "Debugger: detached");
 		}
 		else if (!debugger) {
 			printer.println("error", "Debugger not attached!");
