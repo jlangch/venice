@@ -139,10 +139,12 @@ public class ExceptionFunctionsTest {
 			if (cause == null) {
 				fail("Expected an exception cause.");
 			}
-			if (!"java.io.IOException".equals(cause.getClass().getName())) {
-				fail("Expected an exception cause of type java.io.IOException");
+			else {
+				if (!"java.io.IOException".equals(cause.getClass().getName())) {
+					fail("Expected an exception cause of type java.io.IOException");
+				}
+				assertEquals("#test1", cause.getMessage());
 			}
-			assertEquals("#test1", cause.getMessage());		
 		}
 		catch(Exception ex) {
 			fail("Expected VncException instead of " + ex.getClass().getSimpleName());
