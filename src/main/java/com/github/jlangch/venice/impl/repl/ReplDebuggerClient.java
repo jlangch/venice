@@ -283,7 +283,7 @@ public class ReplDebuggerClient {
 					String.format("%s: <not found>", name));
 		}
 		else {
-			final String sval = truncate(v.toString(true), 100, "...");
+			final String sval = truncate(v.getVal().toString(true), 100, "...");
 			printer.println("debug", String.format("%s: %s", name, sval));
 		}
 	}
