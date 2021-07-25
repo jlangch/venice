@@ -31,9 +31,11 @@ public interface IDebugAgent {
 	// Debugger turn on/off
 	// -------------------------------------------------------------------------
 	
-	void activate(boolean activate);
+	void start();
+	
+	void stop();
 
-	boolean activated();
+	boolean active();
 
 
 

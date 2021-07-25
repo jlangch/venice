@@ -62,14 +62,23 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 	
 	@Override
-	public void activate(final boolean activate) {
-		activated = activate;
+	public void start() {
+		activated = true;
 		activeBreak = null;
+		stopOnNextFunction = false;
 		breakListener = null;
 	}
 
 	@Override
-	public boolean activated() {
+	public void stop() {
+		activated = false;
+		activeBreak = null;
+		stopOnNextFunction = false;
+		breakListener = null;
+	}
+
+	@Override
+	public boolean active() {
 		return activated;
 	}
 

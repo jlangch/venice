@@ -83,11 +83,11 @@ public class ReplDebuggerClient {
 
 	public void handleDebuggerCommand(final List<String> params) {
 		switch(StringUtil.trimToEmpty(params.get(0))) {
-			case "activate":
-				activate();
+			case "start":
+				start();
 				break;
-			case "deactivate":
-				deactivate();
+			case "stop":
+				stop();
 				break;
 			case "breakpoint":
 				handleBreakpointCmd(CollectionUtil.drop(params, 1));
@@ -130,15 +130,15 @@ public class ReplDebuggerClient {
 		}
 	}
 
-	private void activate() {
-		agent.activate(true);
+	private void start() {
+		agent.start();
 		agent.addBreakListener(this::breakpointListener);
-		printer.println("stdout", "Debugger: activated");
+		printer.println("stdout", "Debugger: started");
 	}
 	
-	private void deactivate() {
-		agent.activate(false);
-		printer.println("stdout", "Debugger: deactivated");
+	private void stop() {
+		agent.stop();
+		printer.println("stdout", "Debugger: stopped");
 	}
 	
 	private void run() {
@@ -171,7 +171,7 @@ public class ReplDebuggerClient {
 	private void locals(final List<String> params) {
 		Env env = agent.getBreak().getEnv();
 		int maxLevel = env.level() + 1;
-		int level = Integer.parseInt(params.get(0));
+		int level = params.isEmpty() ? 1 : Integer.parseInt(params.get(0));
 		level = Math.max(Math.min(maxLevel, level), 1);
 		
 		printer.println(
