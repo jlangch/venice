@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -228,7 +229,7 @@ public abstract class VncFunction
 	@Override 
 	public String toString() {
 		return String.format(
-				"%s %s %s", 
+				"%s %s %s%s", 
 				isMacro() ? "macro" : "function", 
 				getQualifiedName(),
 				new StringBuilder()
@@ -237,7 +238,11 @@ public abstract class VncFunction
 						.append(isPrivate() ? ":private" : ":public")
 						.append(", ns ")
 						.append(StringUtil.quote(namespace == null ? "" : namespace, '\"'))
-						.append("}"));
+						.append(", native " + isNative())
+						.append("}"),
+				isNative() 
+					? "" 
+					: " defined at " + new CallFrame(this).getSourcePosInfo());
 	}
 	
 	protected void sandboxFunctionCallValidation() {
