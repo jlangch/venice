@@ -81,9 +81,7 @@ public class ReplDebuggerClient {
 		this.printer = printer;
 	}
 
-	public void handleDebuggerCommand(
-			final List<String> params
-	) {
+	public void handleDebuggerCommand(final List<String> params) {
 		switch(StringUtil.trimToEmpty(params.get(0))) {
 			case "activate":
 				activate();
@@ -95,15 +93,19 @@ public class ReplDebuggerClient {
 				handleBreakpointCmd(CollectionUtil.drop(params, 1));
 				break;
 			case "next":
+			case "n":
 				run();
 				break;
 			case "next-fn":
+			case "n+":
 				stopOnNextFunction();
 				break;			
 			case "callstack":
+			case "cs":
 				callstack();
 				break;
 			case "params":
+			case "p":
 				fn_args(CollectionUtil.drop(params, 1));
 				break;
 			case "locals":
@@ -112,7 +114,11 @@ public class ReplDebuggerClient {
 			case "local":
 				local(params.get(1));
 				break;
+			case "global":
+				global(params.get(1));
+				break;
 			case "retval":
+			case "ret":
 				retval();
 				break;
 			case "ex":
@@ -136,20 +142,20 @@ public class ReplDebuggerClient {
 	}
 	
 	private void run() {
-		final String fnName = agent.getBreak().getFn().getQualifiedName();
+		// final String fnName = agent.getBreak().getFn().getQualifiedName();
+		// printer.println("debug", "Returning from function " + fnName);
 		agent.leaveBreak();
-		printer.println("debug", "Returning from function " + fnName);
 	}
 	
 	private void stopOnNextFunction() {
-		final String fnName = agent.getBreak().getFn().getQualifiedName();
+		// final String fnName = agent.getBreak().getFn().getQualifiedName();
+		//printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
 		agent.leaveBreakForNextFunction();
-		printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
 	}
 	
 	private void callstack() {
 		final CallStack cs = agent.getBreak().getCallStack();
-		printer.println("debug", "Callstack:\n" + cs);
+		printer.println("debug", cs.toString());
 	}
 	
 	private void fn_args(final List<String> params) {
@@ -184,6 +190,24 @@ public class ReplDebuggerClient {
 	private void local(final String name) {
 		final VncSymbol sym = new VncSymbol(name);
 		final Var v = agent.getBreak().getEnv().findLocalVar(sym);
+		if (v == null) {
+			printer.println(
+					"debug", 
+					String.format("%s: <not found>", name));
+		}
+		else {
+			printer.println(
+					"debug", 
+					String.format(
+							"%s: %s", 
+							name, 
+							v.getVal().toString(true)));
+		}
+	}
+	
+	private void global(final String name) {
+		final VncSymbol sym = new VncSymbol(name);
+		final Var v = agent.getBreak().getEnv().getGlobalVarOrNull(sym);
 		if (v == null) {
 			printer.println(
 					"debug", 

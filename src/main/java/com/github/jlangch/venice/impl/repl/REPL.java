@@ -491,7 +491,7 @@ public class REPL {
 			final List<String> args = CollectionUtil.drop(items, 1);
 
 			if (hasActiveDebugSession()) {
-				if (cmd.equals("dbg")) {
+				if (cmd.equals("dbg") || cmd.equals("d")) {
 					handleDebuggerCommand(args);
 				}
 				else {
