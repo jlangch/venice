@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
@@ -131,7 +132,7 @@ public class ReplDebuggerClient {
 				
 			case "params":  // !dbg params
 			case "p":
-				fn_args(drop(params, 1));
+				params(drop(params, 1));
 				break;
 				
 			case "locals":  // !dbg locals {level}
@@ -200,7 +201,7 @@ public class ReplDebuggerClient {
 		printer.println("debug", cs.toString());
 	}
 	
-	private void fn_args(final List<String> params) {
+	private void params(final List<String> params) {
 		if (!agent.hasBreak()) {
 			printer.println("debug", "Not in a break!");
 			return;
@@ -209,10 +210,19 @@ public class ReplDebuggerClient {
 		final VncFunction fn = agent.getBreak().getFn();
 		final VncVector spec = fn.getParams();	
 		final VncList args = agent.getBreak().getArgs();
-		
-		printer.println("debug", 
-						"Parameters:\n" + spec.toString(true) +
-						"\n\nArguments:\n" + args.toString(true));
+
+		if (fn.isNative()) {
+			printer.println("debug", renderNativeFnParams(args));
+		}
+		else {
+			final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(spec);
+			if (plainSymbolParams) {
+				printer.println("debug", renderFnNoDestructuring(spec, args));
+			}
+			else {
+				printer.println("debug", renderFnDestructuring(spec, args));
+			}
+		}
 	}
 	
 	private void locals(final String sLevel) {
@@ -409,6 +419,75 @@ public class ReplDebuggerClient {
 						b.getBreakpointType()));		
 	}
    
+	private String renderNativeFnParams(final VncList args) {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Arguments passed to native function:");
+		
+		VncList args_ = args;
+		
+		for(int ii=0; ii<10; ii++) {
+			VncVal v = args_.first();
+			
+			final String sval = truncate(v.toString(true), 100, "...");
+			sb.append(String.format("\n[%d] -> %s", ii, sval));
+			
+			args_ = args_.rest();
+			if (args_.isEmpty()) break;
+		}
+		
+		if (args_.size() > 0) {
+			sb.append(String.format(
+						"\n... %d more arguments not displayed", 
+						args_.size()));
+		}
+		
+		return sb.toString();
+	}
+	   
+	private String renderFnNoDestructuring(final VncVector spec, final VncList args) {
+		StringBuilder sb = new StringBuilder();
+	
+		VncVector spec_ = spec;
+		VncList args_ = args;
+
+		sb.append("Arguments passed to function:");
+		while(true) {
+			VncVal s = spec_.first();
+			VncVal v = args_.first();
+			
+			final String sval = truncate(v.toString(true), 100, "...");
+			sb.append(String.format("\n%s -> %s", s.toString(true), sval));
+			
+			spec_ = spec_.rest();
+			args_ = args_.rest();
+			if (spec_.isEmpty()) {
+				if (!args_.isEmpty()) {
+					sb.append(String.format(
+								"\n... %d more arguments not matching a parameter", 
+								args_.size()));
+				}
+				break;
+			}
+		}
+		
+		return sb.toString();
+	}
+	   
+	private String renderFnDestructuring(final VncVector spec, final VncList args) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("Arguments passed to function (destructured):");
+		final List<Var> vars = Destructuring.destructure(spec, args);
+		vars.forEach(v -> {
+			final String n = v.getName().toString(true);
+			final String sval = truncate(v.getVal().toString(true), 100, "...");
+			sb.append(String.format("\n%s -> %s", n, sval));
+		});
+		
+		return sb.toString();
+	}
+	
     
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
