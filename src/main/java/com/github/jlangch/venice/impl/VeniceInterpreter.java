@@ -1137,6 +1137,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 											body, 
 											null, 
 											true,
+											meta,
 											env);
 	
 			env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
@@ -1147,6 +1148,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			// multi arity:
 
 			final List<VncFunction> fns = new ArrayList<>();
+			
+			final VncVal meta_ = meta;
 
 			args.slice(argPos).forEach(s -> {
 				int pos = 0;
@@ -1163,6 +1166,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							fnBody, 
 							null,
 							true,
+							meta_,
 							env));
 			});
 
@@ -1339,6 +1343,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										body,
 										preConditions,
 										false,
+										meta,
 										env);
 
 			return multiFn.addFn(dispatchVal, fn.withMeta(meta));
@@ -1741,15 +1746,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			ArityExceptions.assertMinArity("fn", FnType.SpecialForm, args, 1);
 	
 			VncSymbol name;
+			VncVal meta;
 			int argPos;
 			
 			if (Types.isVncSymbol(args.first())) {
 				argPos = 1;
 				name = (VncSymbol)args.first();
+				meta = name.getMeta();
 			}
 			else {
 				argPos = 0;
 				name = new VncSymbol(VncFunction.createAnonymousFuncName());
+				meta = args.second().getMeta();
 			}
 	
 			final VncSymbol fnName = qualifySymbolWithCurrNS(name);
@@ -1777,7 +1785,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	//						env);
 	//			}
 	//			else {
-					return buildFunction(fnName.getName(), params, body, preCon, false, env);
+					return buildFunction(
+								fnName.getName(), params, body, preCon, 
+								false, meta, env);
 	//			}		
 			}
 			else {
@@ -1807,7 +1817,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	//							env));
 	//				}
 	//				else {
-						fns.add(buildFunction(fnName.getName(), params, body, preCon, false, env));
+						fns.add(
+							buildFunction(
+								fnName.getName(), params, body, preCon, false, meta, env));
 	//				}
 				});
 				
@@ -2164,6 +2176,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncList body, 
 			final VncVector preConditions, 
 			final boolean macro,
+			final VncVal meta,
 			final Env env
 	) {
 		// the namespace the function/macro is defined for
@@ -2185,7 +2198,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		// PreCondition optimization
 		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
-		return new VncFunction(name, params, macro, preConditions, Nil) {
+		return new VncFunction(name, params, macro, preConditions, meta) {
 			@Override
 			public VncVal apply(final VncList args) {
 				if (hasVariadicArgs()) {
