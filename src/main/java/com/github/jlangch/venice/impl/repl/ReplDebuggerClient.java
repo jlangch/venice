@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
+import com.github.jlangch.venice.impl.debug.StopNextType;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -90,15 +91,20 @@ public class ReplDebuggerClient {
 				stop();
 				break;
 			case "breakpoint":
+			case "bp":
 				handleBreakpointCmd(CollectionUtil.drop(params, 1));
 				break;
 			case "next":
 			case "n":
 				run();
 				break;
-			case "next-fn":
+			case "next+":
 			case "n+":
-				stopOnNextFunction();
+				runToNextFunction();
+				break;			
+			case "next-":
+			case "n-":
+				runToNextNonSystemFunction();
 				break;			
 			case "callstack":
 			case "cs":
@@ -144,21 +150,35 @@ public class ReplDebuggerClient {
 	private void run() {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
 		// printer.println("debug", "Returning from function " + fnName);
-		agent.leaveBreak();
+		agent.leaveBreak(StopNextType.MatchingFnName);
 	}
 	
-	private void stopOnNextFunction() {
+	private void runToNextFunction() {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		//printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
-		agent.leaveBreakForNextFunction();
+		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
+		agent.leaveBreak(StopNextType.AnyFunction);
+	}
+	
+	private void runToNextNonSystemFunction() {
+		agent.leaveBreak(StopNextType.AnyNonSystemFunction);
 	}
 	
 	private void callstack() {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+		
 		final CallStack cs = agent.getBreak().getCallStack();
 		printer.println("debug", cs.toString());
 	}
 	
 	private void fn_args(final List<String> params) {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+		
 		final VncFunction fn = agent.getBreak().getFn();
 		final VncVector spec = fn.getParams();	
 		final VncList args = agent.getBreak().getArgs();
@@ -169,6 +189,11 @@ public class ReplDebuggerClient {
 	}
 	
 	private void locals(final List<String> params) {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+
 		Env env = agent.getBreak().getEnv();
 		int maxLevel = env.level() + 1;
 		int level = params.isEmpty() ? 1 : Integer.parseInt(params.get(0));
@@ -188,6 +213,11 @@ public class ReplDebuggerClient {
 	}
 	
 	private void local(final String name) {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+
 		final VncSymbol sym = new VncSymbol(name);
 		final Var v = agent.getBreak().getEnv().findLocalVar(sym);
 		if (v == null) {
@@ -196,16 +226,17 @@ public class ReplDebuggerClient {
 					String.format("%s: <not found>", name));
 		}
 		else {
-			printer.println(
-					"debug", 
-					String.format(
-							"%s: %s", 
-							name, 
-							v.getVal().toString(true)));
+			final String sval = StringUtil.truncate(v.toString(true), 100, "...");
+			printer.println("debug", String.format("%s: %s", name, sval));
 		}
 	}
 	
 	private void global(final String name) {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+
 		final VncSymbol sym = new VncSymbol(name);
 		final Var v = agent.getBreak().getEnv().getGlobalVarOrNull(sym);
 		if (v == null) {
@@ -214,36 +245,39 @@ public class ReplDebuggerClient {
 					String.format("%s: <not found>", name));
 		}
 		else {
-			printer.println(
-					"debug", 
-					String.format(
-							"%s: %s", 
-							name, 
-							v.getVal().toString(true)));
+			final String sval = StringUtil.truncate(v.toString(true), 100, "...");
+			printer.println("debug", String.format("%s: %s", name, sval));
 		}
 	}
 	
 	private void retval() {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+
 		final VncVal v = agent.getBreak().getRetVal();
 		if (v == null) {
 			printer.println("debug", "return: <not available>");
 		}
 		else {
-			printer.println(
-					"debug", 
-					String.format("return: %s", v.toString(true)));
+			final String sval = StringUtil.truncate(v.toString(true), 100, "...");
+			printer.println("debug", String.format("return: %s", sval));
 		}
 	}
 	
 	private void ex() {
+		if (!agent.hasBreak()) {
+			printer.println("debug", "Not in a break!");
+			return;
+		}
+
 		final Exception e = agent.getBreak().getException();
 		if (e == null) {
 			printer.println("debug", "exception: <not available>");
 		}
 		else {
-			printer.println(
-					"debug", 
-					String.format("exception: %s", e.getClass().getName()));
+			printer.printex("debug", e);
 		}
 	}
 	
@@ -300,10 +334,10 @@ public class ReplDebuggerClient {
 	
 	private String format(final BreakpointType type) {
 		switch(type) {
-			case FunctionEntry: return "(";
+			case FunctionEntry:     return "(";
 			case FunctionException: return "!";
-			case FunctionExit: return ")";
-			default: return "";
+			case FunctionExit:      return ")";
+			default:                return "";
 		}
 	}
 
