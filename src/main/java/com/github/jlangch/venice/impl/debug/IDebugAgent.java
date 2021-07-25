@@ -65,8 +65,6 @@ public interface IDebugAgent {
 	
 	Break getBreak();
 
-	void leaveBreak();
-
-	void leaveBreakForNextFunction();
+	void leaveBreak(StopNextType type);
 
 }

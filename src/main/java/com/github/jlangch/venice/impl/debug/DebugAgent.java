@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -64,17 +65,13 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void start() {
 		activated = true;
-		activeBreak = null;
-		stopOnNextFunction = false;
-		breakListener = null;
+		reset();
 	}
 
 	@Override
 	public void stop() {
 		activated = false;
-		activeBreak = null;
-		stopOnNextFunction = false;
-		breakListener = null;
+		reset();
 	}
 
 	@Override
@@ -89,8 +86,13 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreakpoint(final String qualifiedName) {		 
-		return stopOnNextFunction || breakpoints.containsKey(qualifiedName);
+	public boolean hasBreakpoint(final String qualifiedName) {
+		switch (stopNextType) {
+			case MatchingFnName: return breakpoints.containsKey(qualifiedName);
+			case AnyFunction: return true;
+			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
+			default: return false;
+		}
 	}
 	
 	@Override
@@ -120,7 +122,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void removeAllBreakpoints() {
 		breakpoints.clear();
-		stopOnNextFunction = false;
+		stopNextType = StopNextType.MatchingFnName;
 	}
 
 
@@ -140,8 +142,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncList args,
 			final Env env
 	) {
-		final Set<BreakpointType> types = breakpoints.get(fnName);
-		if (stopOnNextFunction || (types != null && types.contains(FunctionEntry))) {
+		if (isStopOnFunction(fnName, FunctionEntry)) {
 			onBreakFn(
 				new Break(
 					fn, 
@@ -161,8 +162,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncVal retVal,
 			final Env env
 	) {
-		final Set<BreakpointType> types = breakpoints.get(fnName);
-		if (types != null && types.contains(FunctionExit)) {
+		if (isStopOnFunction(fnName, FunctionExit)) {
 			onBreakFn(
 				new Break(
 					fn, 
@@ -182,8 +182,7 @@ public class DebugAgent implements IDebugAgent {
 			final Exception ex,
 			final Env env
 	) {
-		final Set<BreakpointType> types = breakpoints.get(fnName);
-		if (types != null && types.contains(FunctionException)) {
+		if (isStopOnFunction(fnName, FunctionException)) {
 			onBreakFn(
 				new Break(
 					fn, 
@@ -228,18 +227,17 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void leaveBreak() {
+	public void leaveBreak(final StopNextType type) {
 		activeBreak = null;
-		stopOnNextFunction = false;
+		stopNextType = type == null ? StopNextType.MatchingFnName : type;
 	}
 
-	@Override
-	public void leaveBreakForNextFunction() {
+	private void reset() {
 		activeBreak = null;
-		stopOnNextFunction = true;
+		stopNextType = StopNextType.MatchingFnName;
+		breakListener = null;
 	}
-
-
+	
 	private void onBreakEntered(final Break br) {
 		activeBreak = br;
 		
@@ -247,10 +245,43 @@ public class DebugAgent implements IDebugAgent {
 			breakListener.onBreak(activeBreak);
 		}
 	}
+	
+	private boolean hasSystemNS(final String qualifiedName) {
+		final int pos = qualifiedName.indexOf('/');
+		return pos < 1 
+				? false 
+				: Namespaces.isSystemNS(qualifiedName.substring(0, pos));
+	}
+	
+	private boolean isStopOnFunction(
+			final String fnName,
+			final BreakpointType type
+	) {
+		final boolean matchingFnName = breakpoints.get(fnName) != null;
 
+		switch(type) {
+			case FunctionEntry:
+				switch(stopNextType) {
+					case MatchingFnName:
+						return matchingFnName;					
+					case AnyFunction:
+						return true;
+					case AnyNonSystemFunction: 
+						return !hasSystemNS(fnName);
+					default:
+						return false;
+				}
+			case FunctionExit:
+				return matchingFnName;			
+			case FunctionException:
+				return matchingFnName;				
+			default:
+				return false;
+		}
+	}
 
 	private volatile boolean activated = false;
-	private volatile boolean stopOnNextFunction = false;
+	private volatile StopNextType stopNextType = StopNextType.MatchingFnName;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = new ConcurrentHashMap<>();
