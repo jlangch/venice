@@ -105,13 +105,13 @@ public class DebugAgent implements IDebugAgent {
 			final String qualifiedName, 
 			final Set<BreakpointType> types
 	) {
-		final Set<BreakpointType> copy = new HashSet<>(types);
+		final Set<BreakpointType> copyTypes = new HashSet<>(types);
 		
-		if (copy.isEmpty()) {
-			copy.add(FunctionEntry);
+		if (copyTypes.isEmpty()) {
+			copyTypes.add(FunctionEntry);
 		}
 		
-		breakpoints.put(qualifiedName, copy);
+		breakpoints.put(qualifiedName, copyTypes);
 	}
 
 	@Override
@@ -123,6 +123,7 @@ public class DebugAgent implements IDebugAgent {
 	public void removeAllBreakpoints() {
 		breakpoints.clear();
 		stopNextType = StopNextType.MatchingFnName;
+		stopNextTypeFlags = null;
 	}
 
 
@@ -227,14 +228,19 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void leaveBreak(final StopNextType type) {
+	public void leaveBreak(
+			final StopNextType type,
+			final Set<BreakpointType> flags
+	) {
 		activeBreak = null;
 		stopNextType = type == null ? StopNextType.MatchingFnName : type;
+		stopNextTypeFlags = flags == null ? null : new HashSet<>(flags);
 	}
 
 	private void reset() {
 		activeBreak = null;
 		stopNextType = StopNextType.MatchingFnName;
+		stopNextTypeFlags = null;
 		breakListener = null;
 	}
 	
@@ -249,39 +255,37 @@ public class DebugAgent implements IDebugAgent {
 	private boolean hasSystemNS(final String qualifiedName) {
 		final int pos = qualifiedName.indexOf('/');
 		return pos < 1 
-				? false 
+				? true 
 				: Namespaces.isSystemNS(qualifiedName.substring(0, pos));
 	}
 	
 	private boolean isStopOnFunction(
-			final String fnName,
-			final BreakpointType type
+			final String fnName, 
+			final BreakpointType breakpointType
 	) {
-		final boolean matchingFnName = breakpoints.get(fnName) != null;
-
-		switch(type) {
-			case FunctionEntry:
-				switch(stopNextType) {
-					case MatchingFnName:
-						return matchingFnName;					
-					case AnyFunction:
-						return true;
-					case AnyNonSystemFunction: 
-						return !hasSystemNS(fnName);
-					default:
-						return false;
-				}
-			case FunctionExit:
-				return matchingFnName;			
-			case FunctionException:
-				return matchingFnName;				
+		switch(stopNextType) {
+			case MatchingFnName:
+				final Set<BreakpointType> types = breakpoints.get(fnName);
+				return types != null && types.contains(breakpointType);
+				
+			case AnyFunction:
+				return stopNextTypeFlags == null 
+						|| stopNextTypeFlags.contains(breakpointType);
+				
+			case AnyNonSystemFunction: 
+				return !hasSystemNS(fnName)
+							&& (stopNextTypeFlags == null 
+									|| stopNextTypeFlags.contains(breakpointType));
+				
 			default:
 				return false;
 		}
 	}
 
+
 	private volatile boolean activated = false;
 	private volatile StopNextType stopNextType = StopNextType.MatchingFnName;
+	private volatile Set<BreakpointType> stopNextTypeFlags = null;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = new ConcurrentHashMap<>();

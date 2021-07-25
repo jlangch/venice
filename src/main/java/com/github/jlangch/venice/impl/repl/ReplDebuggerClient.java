@@ -24,9 +24,17 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionException;
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+import static com.github.jlangch.venice.impl.util.StringUtil.truncate;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,8 +51,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallStack;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
-import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
@@ -54,7 +60,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
  * <pre>
  *   venice> (defn sum [x y] (+ x y))
  *   venice> !dbg attach
- *   venice> !dbg activate
+ *   venice> !dbg start
  *   venice> !dbg breakpoint add (!) user/sum
  *   venice> (sum 6 7)
  *   Stopped in function user/sum at FunctionEntry
@@ -83,7 +89,7 @@ public class ReplDebuggerClient {
 	}
 
 	public void handleDebuggerCommand(final List<String> params) {
-		switch(StringUtil.trimToEmpty(params.get(0))) {
+		switch(trimToEmpty(first(params))) {
 			case "start":
 				start();
 				break;
@@ -92,7 +98,7 @@ public class ReplDebuggerClient {
 				break;
 			case "breakpoint":
 			case "bp":
-				handleBreakpointCmd(CollectionUtil.drop(params, 1));
+				handleBreakpointCmd(drop(params, 1));
 				break;
 			case "next":
 			case "n":
@@ -100,11 +106,17 @@ public class ReplDebuggerClient {
 				break;
 			case "next+":
 			case "n+":
-				runToNextFunction();
+				runToNextFunction(
+					parseBreakpointTypes(
+						second(params), 
+						toSet(FunctionEntry)));
 				break;			
 			case "next-":
 			case "n-":
-				runToNextNonSystemFunction();
+				runToNextNonSystemFunction(
+					parseBreakpointTypes(
+						second(params), 
+						toSet(FunctionEntry)));
 				break;			
 			case "callstack":
 			case "cs":
@@ -112,16 +124,16 @@ public class ReplDebuggerClient {
 				break;
 			case "params":
 			case "p":
-				fn_args(CollectionUtil.drop(params, 1));
+				fn_args(drop(params, 1));
 				break;
 			case "locals":
-				locals(CollectionUtil.drop(params, 1));
+				locals(drop(params, 1));
 				break;
 			case "local":
-				local(params.get(1));
+				local(second(params));
 				break;
 			case "global":
-				global(params.get(1));
+				global(second(params));
 				break;
 			case "retval":
 			case "ret":
@@ -131,7 +143,7 @@ public class ReplDebuggerClient {
 				ex();
 				break;
 			default:
-				printer.println("error", "Invalid dbg command.");
+				printer.println("error", "Invalid debug command.");
 				break;
 		}
 	}
@@ -150,17 +162,19 @@ public class ReplDebuggerClient {
 	private void run() {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
 		// printer.println("debug", "Returning from function " + fnName);
-		agent.leaveBreak(StopNextType.MatchingFnName);
+		agent.leaveBreak(StopNextType.MatchingFnName, null);
 	}
 	
-	private void runToNextFunction() {
+	private void runToNextFunction(final Set<BreakpointType> flags) {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
 		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
-		agent.leaveBreak(StopNextType.AnyFunction);
+		agent.leaveBreak(StopNextType.AnyFunction, flags);
 	}
 	
-	private void runToNextNonSystemFunction() {
-		agent.leaveBreak(StopNextType.AnyNonSystemFunction);
+	private void runToNextNonSystemFunction(final Set<BreakpointType> flags) {
+		// final String fnName = agent.getBreak().getFn().getQualifiedName();
+		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
+		agent.leaveBreak(StopNextType.AnyNonSystemFunction, flags);
 	}
 	
 	private void callstack() {
@@ -226,7 +240,7 @@ public class ReplDebuggerClient {
 					String.format("%s: <not found>", name));
 		}
 		else {
-			final String sval = StringUtil.truncate(v.toString(true), 100, "...");
+			final String sval = truncate(v.toString(true), 100, "...");
 			printer.println("debug", String.format("%s: %s", name, sval));
 		}
 	}
@@ -245,7 +259,7 @@ public class ReplDebuggerClient {
 					String.format("%s: <not found>", name));
 		}
 		else {
-			final String sval = StringUtil.truncate(v.toString(true), 100, "...");
+			final String sval = truncate(v.toString(true), 100, "...");
 			printer.println("debug", String.format("%s: %s", name, sval));
 		}
 	}
@@ -261,7 +275,7 @@ public class ReplDebuggerClient {
 			printer.println("debug", "return: <not available>");
 		}
 		else {
-			final String sval = StringUtil.truncate(v.toString(true), 100, "...");
+			final String sval = truncate(v.toString(true), 100, "...");
 			printer.println("debug", String.format("return: %s", sval));
 		}
 	}
@@ -286,30 +300,29 @@ public class ReplDebuggerClient {
 			printer.println("error", "Invalid 'dbg breakpoint {cmd}' command");
 		}
 		else {
-			switch(StringUtil.trimToEmpty(params.get(0))) {
+			switch(trimToEmpty(params.get(0))) {
 				case "add":
-					String types = StringUtil.trimToEmpty(params.get(1));
+					String types = trimToEmpty(params.get(1));
 					if (types.matches("^[(!)]+$")) {
-						CollectionUtil.drop(params, 2)
-									  .stream()
-									  .filter(s -> !s.matches("^[(!)]+$"))
-						  			  .forEach(s -> agent.addBreakpoint(
-						  					 			s, 
-						  					 			parseBreakpointTypes(types)));
+						drop(params, 2)
+							.stream()
+							.filter(s -> !s.matches("^[(!)]+$"))
+							.forEach(s -> agent.addBreakpoint(
+			  					 			s, 
+			  					 			parseBreakpointTypes(types)));
 					}
 					else {
-						CollectionUtil.drop(params, 1)
-									  .stream()
-									  .filter(s -> !s.matches("^[(!)]+$"))
-									  .forEach(s -> agent.addBreakpoint(
-											  			s,
-											  			parseBreakpointTypes("(")));
+						drop(params, 1)
+							.stream()
+							.filter(s -> !s.matches("^[(!)]+$"))
+							.forEach(s -> agent.addBreakpoint(
+								  			s,
+								  			parseBreakpointTypes("(")));
 					}
 					break;
 					
 				case "remove":
-					CollectionUtil.drop(params, 1)
-								  .forEach(s -> agent.removeBreakpoint(s));
+					drop(params, 1).forEach(s -> agent.removeBreakpoint(s));
 					break;
 					
 				case "clear":
@@ -351,10 +364,24 @@ public class ReplDebuggerClient {
 	}
 
 	private Set<BreakpointType> parseBreakpointTypes(final String types) {
-		return Arrays.asList(BreakpointType.values())
-					 .stream()
-					 .filter(t -> types.contains(format(t)))
-					 .collect(Collectors.toSet());
+		return parseBreakpointTypes(types, new HashSet<>());
+	}
+
+	private Set<BreakpointType> parseBreakpointTypes(
+			final String types,
+			final Set<BreakpointType> defaultTypes
+	) {
+		if (trimToNull(types) == null) {
+			return defaultTypes;
+		}
+		else {
+			Set<BreakpointType> tset = Arrays.asList(BreakpointType.values())
+											 .stream()
+											 .filter(t -> types.contains(format(t)))
+											 .collect(Collectors.toSet());
+			
+			return tset.isEmpty() ? defaultTypes : tset;
+		}
 	}
 	
 	private void breakpointListener(final Break b) {

@@ -193,4 +193,16 @@ public class CollectionUtil {
 		}
 	}
 
+	public static <U> U first(final List<U> items) {
+		return items.isEmpty() ? null : items.get(0);
+	}
+	
+	public static <U> U second(final List<U> items) {
+		return items.size() < 2 ? null : items.get(1);
+	}
+	
+	public static <U> U third(final List<U> items) {
+		return items.size() < 3 ? null : items.get(2);
+	}
+
 }
