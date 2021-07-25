@@ -51,6 +51,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 
 
@@ -411,12 +412,19 @@ public class ReplDebuggerClient {
 	}
 	
 	private void breakpointListener(final Break b) {
+		final VncFunction fn = b.getFn();
+		
+		final String srcInfo = fn.isNative() 
+								? "" 
+								: " at " + new CallFrame(fn).getSourcePosInfo();
+		
 		printer.println(
 				"debug", 
 				String.format(
-						"Stopped in function %s at %s",
-						b.getFn().getQualifiedName(),
-						b.getBreakpointType()));		
+						"Stopped in function %s (%s)%s",
+						fn.getQualifiedName(),
+						b.getBreakpointType(),
+						srcInfo));
 	}
    
 	private String renderNativeFnParams(final VncList args) {
