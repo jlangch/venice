@@ -723,7 +723,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 									if (debugAgent != null 
 											&& fn.isNative() 
-											&& debugAgent.activated() 
+											&& debugAgent.active() 
 											&& debugAgent.hasBreakpoint(fnName)
 									) {
 										try {
@@ -2223,7 +2223,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						threadLocalMap.setCurrNS_(ns);
 
 						if (debugAgent != null 
-								&& debugAgent.activated() 
+								&& debugAgent.active() 
 								&& debugAgent.hasBreakpoint(getQualifiedName())
 						) {
 							try {

@@ -1250,7 +1250,7 @@ public class REPL {
 		if (debugger) {
 			final DebugAgent agent = DebugAgent.current();
 	
-			return agent != null && agent.activated() 
+			return agent != null && agent.active() 
 							? "active" 
 							: "not active";
 		}
