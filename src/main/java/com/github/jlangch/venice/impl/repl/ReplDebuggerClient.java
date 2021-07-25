@@ -90,58 +90,71 @@ public class ReplDebuggerClient {
 
 	public void handleDebuggerCommand(final List<String> params) {
 		switch(trimToEmpty(first(params))) {
-			case "start":
+			case "start":  // !dbg start
 				start();
 				break;
-			case "stop":
+				
+			case "stop":  // !dbg stop
 				stop();
 				break;
-			case "breakpoint":
+				
+			case "breakpoint":   // !dbg breakpoint add (|) user/sum +
 			case "bp":
 				handleBreakpointCmd(drop(params, 1));
 				break;
-			case "next":
+				
+			case "next":  // !dbg next
 			case "n":
 				run();
 				break;
-			case "next+":
+				
+			case "next+":  // !dbg next+ ()
 			case "n+":
 				runToNextFunction(
 					parseBreakpointTypes(
 						second(params), 
 						toSet(FunctionEntry)));
-				break;			
-			case "next-":
+				break;
+				
+			case "next-":  // !dbg next- ()
 			case "n-":
 				runToNextNonSystemFunction(
 					parseBreakpointTypes(
 						second(params), 
 						toSet(FunctionEntry)));
-				break;			
-			case "callstack":
+				break;
+				
+			case "callstack":  // !dbg callstack
 			case "cs":
 				callstack();
 				break;
-			case "params":
+				
+			case "params":  // !dbg params
 			case "p":
 				fn_args(drop(params, 1));
 				break;
-			case "locals":
-				locals(drop(params, 1));
+				
+			case "locals":  // !dbg locals {level}
+				locals(second(params));
 				break;
-			case "local":
+				
+			case "local":  // !dbg local x
 				local(second(params));
 				break;
-			case "global":
+				
+			case "global":  // !dbg global filter
 				global(second(params));
 				break;
-			case "retval":
+				
+			case "retval":  // !dbg retval
 			case "ret":
 				retval();
 				break;
-			case "ex":
+				
+			case "ex":  // !dbg ex
 				ex();
 				break;
+				
 			default:
 				printer.println("error", "Invalid debug command.");
 				break;
@@ -202,7 +215,7 @@ public class ReplDebuggerClient {
 						"\n\nArguments:\n" + args.toString(true));
 	}
 	
-	private void locals(final List<String> params) {
+	private void locals(final String sLevel) {
 		if (!agent.hasBreak()) {
 			printer.println("debug", "Not in a break!");
 			return;
@@ -210,7 +223,7 @@ public class ReplDebuggerClient {
 
 		Env env = agent.getBreak().getEnv();
 		int maxLevel = env.level() + 1;
-		int level = params.isEmpty() ? 1 : Integer.parseInt(params.get(0));
+		int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
 		level = Math.max(Math.min(maxLevel, level), 1);
 		
 		printer.println(
@@ -300,13 +313,16 @@ public class ReplDebuggerClient {
 			printer.println("error", "Invalid 'dbg breakpoint {cmd}' command");
 		}
 		else {
+			// build regex: "^[(!)]+$"
+			final String regex = "^[" + getBreakpointTypeSymbolList() + "]+$";
+			
 			switch(trimToEmpty(params.get(0))) {
 				case "add":
 					String types = trimToEmpty(params.get(1));
-					if (types.matches("^[(!)]+$")) {
+					if (types.matches(regex)) {
 						drop(params, 2)
 							.stream()
-							.filter(s -> !s.matches("^[(!)]+$"))
+							.filter(s -> !s.matches(regex))
 							.forEach(s -> agent.addBreakpoint(
 			  					 			s, 
 			  					 			parseBreakpointTypes(types)));
@@ -314,10 +330,10 @@ public class ReplDebuggerClient {
 					else {
 						drop(params, 1)
 							.stream()
-							.filter(s -> !s.matches("^[(!)]+$"))
+							.filter(s -> !s.matches(regex))
 							.forEach(s -> agent.addBreakpoint(
 								  			s,
-								  			parseBreakpointTypes("(")));
+								  			toSet(FunctionEntry)));
 					}
 					break;
 					
@@ -345,21 +361,12 @@ public class ReplDebuggerClient {
 		}
 	}
 	
-	private String format(final BreakpointType type) {
-		switch(type) {
-			case FunctionEntry:     return "(";
-			case FunctionException: return "!";
-			case FunctionExit:      return ")";
-			default:                return "";
-		}
-	}
-
 	private String format(final Set<BreakpointType> types) {
 		// predefined order of breakpoint types
 		return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
 					 .stream()
 					 .filter(t -> types.contains(t))
-					 .map(t -> format(t))
+					 .map(t -> t.symbol())
 					 .collect(Collectors.joining());
 	}
 
@@ -377,11 +384,20 @@ public class ReplDebuggerClient {
 		else {
 			Set<BreakpointType> tset = Arrays.asList(BreakpointType.values())
 											 .stream()
-											 .filter(t -> types.contains(format(t)))
+											 .filter(t -> types.contains(t.symbol()))
 											 .collect(Collectors.toSet());
 			
 			return tset.isEmpty() ? defaultTypes : tset;
 		}
+	}
+	
+	private String getBreakpointTypeSymbolList() {
+		// return "(!)"
+		return BreakpointType
+			.all()
+			.stream()
+			.map(t -> t.symbol())
+			.collect(Collectors.joining());
 	}
 	
 	private void breakpointListener(final Break b) {
