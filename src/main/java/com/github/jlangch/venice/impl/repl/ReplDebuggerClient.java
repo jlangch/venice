@@ -237,17 +237,21 @@ public class ReplDebuggerClient {
 		int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
 		level = Math.max(Math.min(maxLevel, level), 1);
 		
-		printer.println(
-			"debug",
-			String.format(
-				"[%d/%d] Local vars:\n%s",
-				level,
-				maxLevel,
-				env.getLocalVars(level-1)
-				   .stream()
-				   .map(v -> v.getName().getSimpleName())
-				   .map(s -> "   " + s)
-				   .collect(Collectors.joining("\n"))));
+		final List<Var> vars = env.getLocalVars(level-1);
+		final String info = vars.isEmpty()
+								? String.format(
+									"   <no local vars at level %d>",
+									level)	
+								: vars.stream()
+									  .map(v -> v.getName().getSimpleName())
+									  .map(s -> "   " + s)
+									  .collect(Collectors.joining("\n"));
+
+		printer.println("debug", String.format(
+									"[%d/%d] Local vars:\n%s",
+									level,
+									maxLevel,
+									info));
 	}
 	
 	private void local(final String name) {
@@ -259,13 +263,11 @@ public class ReplDebuggerClient {
 		final VncSymbol sym = new VncSymbol(name);
 		final Var v = agent.getBreak().getEnv().findLocalVar(sym);
 		if (v == null) {
-			printer.println(
-					"debug", 
-					String.format("%s: <not found>", name));
+			printer.println("debug", String.format("%s -> <not found>", name));
 		}
 		else {
-			final String sval = truncate(v.toString(true), 100, "...");
-			printer.println("debug", String.format("%s: %s", name, sval));
+			final String sval = truncate(v.getVal().toString(true), 100, "...");
+			printer.println("debug", String.format("%s -> %s", name, sval));
 		}
 	}
 	
