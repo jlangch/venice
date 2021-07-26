@@ -24,6 +24,7 @@
 
 (ns bench)
 
+(load-module :xchart)
 
 (defn bench/remove-outliers [samples low high]
   (filter #(and (>= %1 low) (<= %1 high)) samples))
@@ -64,8 +65,6 @@
 
 
 (defn bench/chart [stats steps median? outlier?]
-  (load-module :xchart)
-  (assert (xchart/available?) "The xchart module (xchart libraries) is not available!")
   (let [samples  (:samples stats)
         sorted   (sort samples)
         min      (first sorted)
