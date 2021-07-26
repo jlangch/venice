@@ -84,16 +84,6 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 	// Breakpoint management
 	// -------------------------------------------------------------------------
-
-	@Override
-	public boolean hasBreakpoint(final String qualifiedName) {
-		switch (stopNextType) {
-			case MatchingFnName: return breakpoints.containsKey(qualifiedName);
-			case AnyFunction: return true;
-			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
-			default: return false;
-		}
-	}
 	
 	@Override
 	public Map<String, Set<BreakpointType>> getBreakpoints() {
@@ -132,9 +122,35 @@ public class DebugAgent implements IDebugAgent {
 	// Breaks
 	// -------------------------------------------------------------------------
 
+
+	@Override
+	public boolean hasBreak(final String qualifiedName) {
+		if (activated) {
+			switch (stopNextType) {
+				case MatchingFnName: return breakpoints.containsKey(qualifiedName);
+				case AnyFunction: return true;
+				case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
+				default: return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+
 	@Override
 	public void addBreakListener(final IBreakListener listener) {
 		breakListener = listener;
+	}
+
+	public void onBreakSpecialForm(
+			final String sfName,
+			final VncList args,
+			final Env env
+	) {
+		if (isStopOnFunction(sfName, FunctionEntry)) {
+			// TODO: implement
+		}
 	}
 	
 	public void onBreakFnEnter(

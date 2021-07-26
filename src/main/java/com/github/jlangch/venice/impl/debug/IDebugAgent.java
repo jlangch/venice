@@ -43,8 +43,6 @@ public interface IDebugAgent {
 	// Breakpoint management
 	// -------------------------------------------------------------------------
 
-	boolean hasBreakpoint(String qualifiedName);
-
 	Map<String, Set<BreakpointType>> getBreakpoints();
 
 	void addBreakpoint(String qualifiedName, Set<BreakpointType> types);
@@ -58,6 +56,8 @@ public interface IDebugAgent {
 	// -------------------------------------------------------------------------
 	// Breaks
 	// -------------------------------------------------------------------------
+
+	boolean hasBreak(String qualifiedName);
 
 	void addBreakListener(IBreakListener listener);
 

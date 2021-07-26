@@ -233,25 +233,29 @@ public class ReplDebuggerClient {
 		}
 
 		Env env = agent.getBreak().getEnv();
-		int maxLevel = env.level() + 1;
-		int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
-		level = Math.max(Math.min(maxLevel, level), 1);
-		
-		final List<Var> vars = env.getLocalVars(level-1);
-		final String info = vars.isEmpty()
-								? String.format(
-									"   <no local vars at level %d>",
-									level)	
-								: vars.stream()
-									  .map(v -> v.getName().getSimpleName())
-									  .map(s -> "   " + s)
-									  .collect(Collectors.joining("\n"));
-
-		printer.println("debug", String.format(
-									"[%d/%d] Local vars:\n%s",
-									level,
-									maxLevel,
-									info));
+		if (env == null) {
+			printer.println("debug", "No information on local vars available");
+		}
+		else {
+			int maxLevel = env.level() + 1;
+			int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
+			level = Math.max(Math.min(maxLevel, level), 1);
+			
+			final List<Var> vars = env.getLocalVars(level-1);
+			final String info = vars.isEmpty()
+									? String.format(
+										"   <no local vars at level %d>",
+										level)	
+									: vars.stream()
+										  .map(v -> formatVar(v))
+										  .collect(Collectors.joining("\n"));
+	
+			printer.println("debug", String.format(
+										"[%d/%d] Local vars:\n%s",
+										level,
+										maxLevel,
+										info));
+		}
 	}
 	
 	private void local(final String name) {
@@ -260,14 +264,19 @@ public class ReplDebuggerClient {
 			return;
 		}
 
-		final VncSymbol sym = new VncSymbol(name);
-		final Var v = agent.getBreak().getEnv().findLocalVar(sym);
-		if (v == null) {
-			printer.println("debug", String.format("%s -> <not found>", name));
+		final Env env = agent.getBreak().getEnv();
+		if (env == null) {
+			printer.println("debug", "No information on local vars available");
 		}
 		else {
-			final String sval = truncate(v.getVal().toString(true), 100, "...");
-			printer.println("debug", String.format("%s -> %s", name, sval));
+			final VncSymbol sym = new VncSymbol(name);
+			final Var v = env.findLocalVar(sym);
+			if (v == null) {
+				printer.println("debug", String.format("%s -> <not found>", name));
+			}
+			else {
+				printer.println("debug", formatVar(sym, v.getVal()));
+			}
 		}
 	}
 	
@@ -277,16 +286,22 @@ public class ReplDebuggerClient {
 			return;
 		}
 
-		final VncSymbol sym = new VncSymbol(name);
-		final Var v = agent.getBreak().getEnv().getGlobalVarOrNull(sym);
-		if (v == null) {
-			printer.println(
-					"debug", 
-					String.format("%s: <not found>", name));
+		final Env env = agent.getBreak().getEnv();
+		if (env == null) {
+			printer.println("debug", "No information on global vars available");
 		}
 		else {
-			final String sval = truncate(v.getVal().toString(true), 100, "...");
-			printer.println("debug", String.format("%s: %s", name, sval));
+			final VncSymbol sym = new VncSymbol(name);
+			final Var v = env.getGlobalVarOrNull(sym);
+			if (v == null) {
+				printer.println(
+						"debug", 
+						String.format("%s: <not found>", name));
+			}
+			else {
+				final String sval = truncate(v.getVal().toString(true), 100, "...");
+				printer.println("debug", String.format("%s: %s", name, sval));
+			}
 		}
 	}
 	
@@ -298,11 +313,11 @@ public class ReplDebuggerClient {
 
 		final VncVal v = agent.getBreak().getRetVal();
 		if (v == null) {
-			printer.println("debug", "return: <not available>");
+			printer.println("debug", "Return value: <not available>");
 		}
 		else {
 			final String sval = truncate(v.toString(true), 100, "...");
-			printer.println("debug", String.format("return: %s", sval));
+			printer.println("debug", String.format("Return value: %s", sval));
 		}
 	}
 	
@@ -407,10 +422,10 @@ public class ReplDebuggerClient {
 	private String getBreakpointTypeSymbolList() {
 		// return "(!)"
 		return BreakpointType
-			.all()
-			.stream()
-			.map(t -> t.symbol())
-			.collect(Collectors.joining());
+					.all()
+					.stream()
+					.map(t -> t.symbol())
+					.collect(Collectors.joining());
 	}
 	
 	private void breakpointListener(final Break b) {
@@ -437,10 +452,8 @@ public class ReplDebuggerClient {
 		VncList args_ = args;
 		
 		for(int ii=0; ii<10; ii++) {
-			VncVal v = args_.first();
-			
-			final String sval = truncate(v.toString(true), 100, "...");
-			sb.append(String.format("\n[%d] -> %s", ii, sval));
+			sb.append("\n");
+			sb.append(formatVar(ii, args_.first()));
 			
 			args_ = args_.rest();
 			if (args_.isEmpty()) break;
@@ -463,11 +476,8 @@ public class ReplDebuggerClient {
 
 		sb.append("Arguments passed to function:");
 		while(true) {
-			VncVal s = spec_.first();
-			VncVal v = args_.first();
-			
-			final String sval = truncate(v.toString(true), 100, "...");
-			sb.append(String.format("\n%s -> %s", s.toString(true), sval));
+			sb.append("\n");
+			sb.append(formatVar(spec_.first(), args_.first()));
 			
 			spec_ = spec_.rest();
 			args_ = args_.rest();
@@ -489,13 +499,24 @@ public class ReplDebuggerClient {
 
 		sb.append("Arguments passed to function (destructured):");
 		final List<Var> vars = Destructuring.destructure(spec, args);
-		vars.forEach(v -> {
-			final String n = v.getName().toString(true);
-			final String sval = truncate(v.getVal().toString(true), 100, "...");
-			sb.append(String.format("\n%s -> %s", n, sval));
-		});
+		vars.forEach(v -> sb.append(formatVar(v)));
 		
 		return sb.toString();
+	}
+	
+	private String formatVar(final Var v) {
+		return formatVar(v.getName(), v.getVal());
+	}
+	
+	private String formatVar(final VncVal name, VncVal value) {
+		final String sval = truncate(value.toString(true), 100, "...");
+		final String sname =  name.toString(true);
+		return String.format("%s -> %s", sname, sval);
+	}
+	
+	private String formatVar(final int index, VncVal value) {
+		final String sval = truncate(value.toString(true), 100, "...");
+		return String.format("[%d] -> %s", index, sval);
 	}
 	
     
