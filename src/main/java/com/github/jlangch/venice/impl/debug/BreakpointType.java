@@ -24,24 +24,25 @@ package com.github.jlangch.venice.impl.debug;
 import java.util.Arrays;
 import java.util.List;
 
+
 public enum BreakpointType {
-	
+
 	FunctionEntry("("),		// Stop at function entry
-	
+
 	FunctionExit(")"),		// Stop at function exit
-	
+
 	FunctionException("!");	// Stop if exception is caught in function
-	
+
 
 	private BreakpointType(String symbol) {
 		this.symbol = symbol;
 	}
-	
+
 	public String symbol() { return symbol; }
-	
+
 	public static List<BreakpointType> all() {
 		return Arrays.asList(values());
 	}
-	 
+
 	private final String symbol;
 }

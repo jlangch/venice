@@ -15,6 +15,11 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- import in module :benchmark
+
+
 
 ## [1.9.26] - 2021-07-21
 

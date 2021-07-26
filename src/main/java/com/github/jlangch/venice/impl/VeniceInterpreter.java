@@ -474,7 +474,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							bindingNames.add(sym);
 						}
 
-						recursionPoint = new RecursionPoint(bindingNames, expressions, env);
+						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
+
+						recursionPoint = new RecursionPoint(bindingNames, expressions, env, debugAgent);
+
+						if (debugAgent != null && debugAgent.hasBreak("loop")) {
+							debugAgent.onBreakSpecialForm("loop", args, env);
+						}
 
 						if (expressions.size() == 1) {
 							orig_ast = expressions.first();
@@ -505,7 +511,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 				
 						env = buildRecursionEnv(args, env, recursionPoint);
-						
+	
+						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
+						if (debugAgent != null && debugAgent.hasBreak("loop")) {
+							debugAgent.onBreakSpecialForm("loop", args, env);
+						}
+
 						final VncList expressions = recursionPoint.getLoopExpressions();
 						if (expressions.size() == 1) {
 							orig_ast = expressions.first();
@@ -721,15 +732,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 									final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
-									if (debugAgent != null 
-											&& fn.isNative() 
-											&& debugAgent.active() 
-											&& debugAgent.hasBreakpoint(fnName)
-									) {
+									if (debugAgent != null && fn.isNative() && debugAgent.hasBreak(fnName)) {
 										try {
-											debugAgent.onBreakFnEnter(fnName, fn, args, null);
+											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, null);
 											final VncVal retVal = fn.apply(fnArgs);
-											debugAgent.onBreakFnExit(fnName, fn, args, retVal, null);
+											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, null);
 											return retVal;
 										}
 										catch(Exception ex) {
@@ -2235,9 +2242,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					try {
 						threadLocalMap.setCurrNS_(ns);
 
-						if (debugAgent != null 
-								&& debugAgent.active() 
-								&& debugAgent.hasBreakpoint(getQualifiedName())
+						if (debugAgent != null && debugAgent.hasBreak(getQualifiedName())
 						) {
 							try {
 								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv);
