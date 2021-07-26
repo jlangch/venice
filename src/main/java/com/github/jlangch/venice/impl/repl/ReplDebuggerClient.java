@@ -194,7 +194,7 @@ public class ReplDebuggerClient {
 	
 	private void callstack() {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 		
@@ -204,7 +204,7 @@ public class ReplDebuggerClient {
 	
 	private void params(final List<String> params) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 		
@@ -228,7 +228,7 @@ public class ReplDebuggerClient {
 	
 	private void locals(final String sLevel) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 
@@ -256,7 +256,7 @@ public class ReplDebuggerClient {
 	
 	private void local(final String name) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 
@@ -273,7 +273,7 @@ public class ReplDebuggerClient {
 	
 	private void global(final String name) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 
@@ -292,7 +292,7 @@ public class ReplDebuggerClient {
 	
 	private void retval() {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 
@@ -308,7 +308,7 @@ public class ReplDebuggerClient {
 	
 	private void ex() {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a break!");
+			printer.println("debug", "Not in a debug break!");
 			return;
 		}
 
