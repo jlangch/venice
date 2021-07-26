@@ -29,7 +29,6 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -370,12 +369,19 @@ public class Env implements Serializable {
 		for(Var b : vars) setLocal(b);
 	}
 
-	public Collection<Var> getLocalVars(final int level) {
+	public List<Var> getLocalVars(final int level) {
 		Env env = this;
 		for(int ii=0; ii<level; ii++) {
 			env = env == null ? null : env.outer;
 		}
-		return env == null ? new ArrayList<>() : env.localSymbols.values();
+		
+		return env == null 
+				? new ArrayList<>() 
+				: env.localSymbols
+					 .values()
+					 .stream()
+					 .filter(v -> !(v instanceof GlobalRefVar))
+					 .collect(Collectors.toList());
 	}
 
 	public void pushGlobalDynamic(final VncSymbol sym, final VncVal val) {

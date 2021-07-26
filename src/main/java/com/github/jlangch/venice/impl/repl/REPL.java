@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.repl;
 
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
@@ -197,17 +198,18 @@ public class REPL {
 		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
        
 		final PrintStream out = createPrintStream("stdout", terminal);
-
-		final PrintStream err = createPrintStream("stderr", terminal);
-		
+		final PrintStream err = createPrintStream("stderr", terminal);		
 		final BufferedReader in = createBufferedReader("stdin", terminal);
 
 		printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
-		venice = new VeniceInterpreter(interceptor);		
-		env = loadEnv(cli, terminal, out, err, in, false);	
+		venice = new VeniceInterpreter(interceptor);
+		// load the core functions without macro expansion! ==> check this!
+		env = loadEnv(venice, cli, terminal, out, err, in, false);	
 		venice.setMacroExpandOnLoad(macroexpand, env);
-		
+
+		JavaInterop.register(interceptor);	
+
 		if (isSetupMode(cli)) {
 			setupRepl(cli, venice, env, printer);
 			return; // we stop here
@@ -224,13 +226,12 @@ public class REPL {
 		final ReplParser parser = new ReplParser(venice);
 		parser.setEscapeChars(new char[0]);  // leave the char escape handling to Venice
 		
+		final History history = new DefaultHistory();
+		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 		final ReplCompleter completer = new ReplCompleter(
 												venice, 
 												env, 
 												interceptor.getLoadPaths().getPaths());
-		
-		final History history = new DefaultHistory();
-		
 		final LineReader reader = createLineReader(
 									terminal,
 									history,
@@ -238,8 +239,6 @@ public class REPL {
 									parser,
 									secondaryPrompt);
 		
-		final ReplResultHistory resultHistory = new ReplResultHistory(3);
-
 		highlight = highlighter != null;
 				
 		replLoop(cli, prompt, resultPrefix, terminal, reader, history, resultHistory, out, err, in);
@@ -286,7 +285,7 @@ public class REPL {
 					final String cmd = trimToEmpty(line.trim().substring(1));
 					switch(cmd) {
 						case "reload":
-							env = loadEnv(cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
+							env = loadEnv(venice, cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
 							printer.println("system", "reloaded");
 							break;
 							
@@ -619,20 +618,20 @@ public class REPL {
 			printer.println("stdout", HELP_ENV);
 			return;
 		}
-		else if (params.get(0).equals("print")) {
+		else if (first(params).equals("print")) {
 			if (params.size() == 2) {
-				final VncVal val = env.get(new VncSymbol(params.get(1)));
+				final VncVal val = env.get(new VncSymbol(second(params)));
 				printer.println("stdout", venice.PRINT(val));
 				return;
 			}
 		}
-		else if (params.get(0).equals("global")) {
+		else if (first(params).equals("global")) {
 			if (params.size() == 1) {
 				printer.println("stdout", envGlobalsToString(env));
 				return;
 			}
 			else if (params.size() == 2) {
-				String filter = trimToNull(params.get(1));
+				String filter = trimToNull(second(params));
 				filter = filter == null ? null : filter.replaceAll("[*]", ".*");
 				printer.println("stdout", envGlobalsToString(env, filter));
 				return;
@@ -655,7 +654,7 @@ public class REPL {
 		final String interceptorName = interceptor.getClass().getSimpleName();
 			
 		if (params.size() == 1) {
-			if (params.get(0).equals("status")) {
+			if (first(params).equals("status")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
 					printer.println("stdout", "No sandbox active (" + interceptorName +")");
 					return;
@@ -677,28 +676,35 @@ public class REPL {
 					return;
 				}
 			}
-			else if (params.get(0).equals("accept-all")) {
-				activateNewInterceptor(
+			else if (first(params).equals("accept-all")) {
+				reconfigureVenice(
 					new AcceptAllInterceptor(
 						LoadPathsFactory.of(
 								interceptor.getLoadPaths().getPaths(), 
-								true)));
+								true)),
+					venice.isMacroExpandOnLoad(),
+					debugger);
 				return;
 			}
-			else if (params.get(0).equals("reject-all")) {
-				activateNewInterceptor(new RejectAllInterceptor());
+			else if (first(params).equals("reject-all")) {
+				reconfigureVenice(
+						new RejectAllInterceptor(),
+						venice.isMacroExpandOnLoad(),
+						debugger);
 				return;			
 			}
-			else if (params.get(0).equals("customized")) {
-				activateNewInterceptor(
+			else if (first(params).equals("customized")) {
+				reconfigureVenice(
 					new SandboxInterceptor(
 						new SandboxRules(),
 						LoadPathsFactory.of(
 								interceptor.getLoadPaths().getPaths(), 
-								true)));
+								true)),
+					venice.isMacroExpandOnLoad(),
+					debugger);
 				return;			
 			}
-			else if (params.get(0).equals("config")) {
+			else if (first(params).equals("config")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
 					printer.println("stdout", "[accept-all] NO sandbox active");
 					printer.println("stdout", "All Java calls accepted, no Venice calls rejected");
@@ -740,8 +746,8 @@ public class REPL {
 			}
 		}
 		else if (params.size() == 2) {
-			if (params.get(0).equals("add-rule")) {
-				final String rule = params.get(1);
+			if (first(params).equals("add-rule")) {
+				final String rule = second(params);
 				if (!(interceptor instanceof SandboxInterceptor)) {
 					printer.println("system", "rules can only be added to a customized sandbox");
 					return;
@@ -769,12 +775,14 @@ public class REPL {
 				}
 				
 				// activate the change
-				activateNewInterceptor(
+				reconfigureVenice(
 					new SandboxInterceptor(
 						rules,
 						LoadPathsFactory.of(
 							interceptor.getLoadPaths().getPaths(),
-							true)));
+							true)),
+					venice.isMacroExpandOnLoad(),
+					debugger);
 				return;
 			}
 		}
@@ -782,9 +790,7 @@ public class REPL {
 		printer.println("error", "invalid sandbox command: " + Arrays.asList(params));
 	}
 
-	private void handleHighlightCommand(
-			final List<String> params
-	) {
+	private void handleHighlightCommand(final List<String> params) {
 		if (params.isEmpty()) {
 			printer.println("stdout", "Highlighting: " + (highlight ? "on" : "off"));
 		}
@@ -807,9 +813,7 @@ public class REPL {
 		}
 	}
 
-	private void handleJavaExCommand(
-			final List<String> params
-	) {
+	private void handleJavaExCommand(final List<String> params) {
 		if (params.isEmpty()) {
 			printer.println("stdout", "Java Exceptions: " + (javaExceptions ? "on" : "off"));
 		}
@@ -834,9 +838,7 @@ public class REPL {
 		}
 	}
 
-	private void handleDebuggerCommand(
-			final List<String> params
-	) {
+	private void handleDebuggerCommand(final List<String> params) {
 		final String cmd = trimToEmpty(first(params));
 		
 		if (cmd.equals("") || cmd.equals("?") || cmd.equals("status")) {
@@ -844,12 +846,17 @@ public class REPL {
 		}
 		else if (cmd.equals("attach")) {
 			debugger = true;
-			activateNewInterceptor(interceptor);
+			reconfigureVenice(
+					interceptor,
+					venice.isMacroExpandOnLoad(),
+					debugger);
 			printer.println("debug", "Debugger: attached");
 		}
 		else if (cmd.equals("detach")) {
 			debugger = false;
-			activateNewInterceptor(interceptor);
+			reconfigureVenice(interceptor,
+					venice.isMacroExpandOnLoad(),
+					debugger);
 			printer.println("debug", "Debugger: detached");
 		}
 		else if (!debugger) {
@@ -948,6 +955,7 @@ public class REPL {
 	}
 	
 	private Env loadEnv(
+			final IVeniceInterpreter venice,
 			final CommandLineArgs cli,
 			final Terminal terminal,
 			final PrintStream out,
@@ -973,15 +981,17 @@ public class REPL {
 		return ReplFunctions.register(env, terminal, config);
 	}
 	
-	private void activateNewInterceptor(final IInterceptor interceptor) {
-		final boolean macroExpandOnLoad = venice.isMacroExpandOnLoad();
-		
+	private void reconfigureVenice(
+			final IInterceptor interceptor,
+			final boolean macroExpandOnLoad,
+			final boolean attachDebugger
+	) {
 		this.interceptor = interceptor; 
 		this.venice = new VeniceInterpreter(interceptor);
 		this.venice.setMacroExpandOnLoad(macroExpandOnLoad, env);
 		
 		JavaInterop.register(interceptor);	
-		DebugAgent.register(debugger ? new DebugAgent() : null);
+		DebugAgent.register(attachDebugger ? new DebugAgent() : null);
 	}
 
 	private String envGlobalsToString(final Env env) {
@@ -1180,10 +1190,10 @@ public class REPL {
 										history.size(), history.first(), 
 										history.last(), history.index()));
 		}
-		else if (params.get(0).equals("clear")) {
+		else if (first(params).equals("clear")) {
 			clearCommandHistory(history);	
 		}
-		else if (params.get(0).equals("load")) {
+		else if (first(params).equals("load")) {
 			try {
 				history.load();
 			}
@@ -1191,7 +1201,7 @@ public class REPL {
 				printer.println("stderr", "Failed to reload REPL command history!");
 			}	
 		}
-		else if (params.get(0).equals("log")) {
+		else if (first(params).equals("log")) {
 			final Logger logger = Logger.getLogger("org.jline");
 			logger.setLevel(Level.INFO);
 			for(Handler h : logger.getHandlers()) logger.removeHandler(h);

@@ -50,6 +50,7 @@ import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -146,22 +147,23 @@ public class CustomREPL {
 									: builder
 										.encoding("UTF-8")
 										.build();
-		
 		terminal.handle(Signal.INT, signal -> mainThread.interrupt());
- 
+
+		final TerminalPrinter printer = new TerminalPrinter(
+												config, 
+												terminal, 
+												ansiTerminal, 
+												false);	
+
 		final PrintStream out = createPrintStream("stdout", terminal);
-
-		final PrintStream err = createPrintStream("stderr", terminal);
-		
+		final PrintStream err = createPrintStream("stderr", terminal);		
 		final BufferedReader in = createBufferedReader("stdin", terminal);
-
-		final TerminalPrinter printer = new TerminalPrinter(config, terminal, ansiTerminal, false);
 		
-		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
-		
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);		
 		final Env env = loadEnv(venice, cli, out, err, in);
 		
-		
+		JavaInterop.register(interceptor);	
+	
 		if (isSetupMode(cli)) {
 			setupRepl(cli, venice, env, printer);
 			return; // we stop here
@@ -170,10 +172,8 @@ public class CustomREPL {
 		if (!runApp(venice, env, printer)) {
 			return; // stop REPL
 		}
-		
-		
-		final History history = new DefaultHistory();
-		
+			
+		final History history = new DefaultHistory();		
 		final LineReader reader = LineReaderBuilder
 									.builder()
 									.appName("Venice")
@@ -182,7 +182,6 @@ public class CustomREPL {
 									.expander(new NullExpander())
 									.variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
 									.build();
-
 		final ReplResultHistory resultHistory = new ReplResultHistory(3);
 
 		
