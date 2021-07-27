@@ -37,6 +37,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
@@ -85,13 +86,17 @@ public class ReplDebuggerClient {
 
 	public ReplDebuggerClient(
 			final IDebugAgent agent,
-			final TerminalPrinter printer
+			final TerminalPrinter printer,
+			final BiFunction<String, Env, VncVal> evaluator
 	) {
 		this.agent = agent;
 		this.printer = printer;
+		this.evaluator = evaluator;
 	}
 
-	public void handleDebuggerCommand(final List<String> params) {
+	public void handleDebuggerCommand(final String cmdLine) {
+		final List<String> params = Arrays.asList(cmdLine.split(" +"));
+
 		switch(trimToEmpty(first(params))) {
 			case "start":  // $ start
 				start();
@@ -106,12 +111,12 @@ public class ReplDebuggerClient {
 				handleBreakpointCmd(drop(params, 1));
 				break;
 				
-			case "resume":  // $ resume
+			case "resume":  // $resume
 			case "r":
 				resume();
 				break;
 				
-			case "step":  // $ step ()
+			case "step":  // $step ()
 			case "s":
 				stepToNextFunction(
 					parseBreakpointTypes(
@@ -119,7 +124,7 @@ public class ReplDebuggerClient {
 						toSet(FunctionEntry)));
 				break;
 				
-			case "step-":  // $ step- ()
+			case "step-":  // $step- ()
 			case "s-":
 				stepToNextNonSystemFunction(
 					parseBreakpointTypes(
@@ -127,36 +132,40 @@ public class ReplDebuggerClient {
 						toSet(FunctionEntry)));
 				break;
 				
-			case "callstack":  // $ callstack
+			case "callstack":  // $callstack
 			case "cs":
 				callstack();
 				break;
 				
-			case "params":  // $ params
+			case "params":  // $params
 			case "p":
 				params(drop(params, 1));
 				break;
 				
-			case "locals":  // $ locals {level}
+			case "locals":  // $locals {level}
 			case "l":
 				locals(second(params));
 				break;
 				
-			case "local":  // $ local x
+			case "local":  // $local x
 				local(second(params));
 				break;
 				
-			case "global":  // $ global filter
+			case "global":  // $global filter
 				global(second(params));
 				break;
 				
-			case "retval":  // $ retval
+			case "retval":  // $retval
 			case "ret":
 				retval();
 				break;
 				
-			case "ex":  // $ ex
+			case "ex":  // $ex
 				ex();
+				break;
+				
+			case "eval":  // $eval sexpr
+				eval(cmdLine.substring(5));
 				break;
 
 			case "help":
@@ -345,7 +354,23 @@ public class ReplDebuggerClient {
 			printer.printex("debug", e);
 		}
 	}
-	
+
+	private void eval(final String expr) {
+		if (!agent.hasBreak()) {
+			println("Not in a debug break!");
+			return;
+		}
+
+		final Env env = agent.getBreak().getEnv();
+		if (env == null) {
+			println("No expression eval available");
+		}
+		else {
+			final VncVal ret = evaluator.apply(expr, env);
+			println(ret.toString(true));
+		}
+	}
+
 	private void handleBreakpointCmd(final List<String> params) {
 		if (params.size() < 1)  {
 			printlnErr("Invalid 'dbg breakpoint {cmd}' command");
@@ -570,45 +595,48 @@ public class ReplDebuggerClient {
 	private final static String HELP =
 			"Venice debugger\n\n" +
 			"Commands: \n" +
-			"  $ attach      Attach the debugger to the REPL\n" +
-			"  $ detach      Detach the debugger from the REPL\n" +
-			"  $ start       Start debugging\n" +
-			"  $ stop        Stop debugging\n" +
-			"  $ breakpoint  Manage breakpoints (short form: \"$ bp\")\n" +
-			"                breakpoint add n, n*\n" +
-			"                   Add one or multiple breakpoints\n" +
-			"                   E.g.: breakpoint add user/gauss\n" +
-			"                         breakpoint add user/gauss +\n" +
-			"                breakpoint add flags n, n*\n" +
-			"                   Add one or multiple breakpoints with the given\n" +
-			"                   flags. \n" +
-			"                   flags is a combination of:\n" +
-			"                     (  break at the entry of a function\n" +
-			"                     !  break at catching an exception in a function\n" +
-			"                     )  break at the exit of a function\n" +
-			"                   E.g.: breakpoint add (!) user/gauss \n" +
-			"                         breakpoint add ( user/gauss \n" +
-			"                breakpoint remove n, n*\n" +
-			"                   Remove one or multiple breakpoints\n" +
-			"                   E.g.: breakpoint remove user/gauss + \n" +
-			"                breakpoint list\n" +
-			"                   List all breakpoints\n" +
-			"                   E.g.: breakpoint list\n" +
-			"                Short form: \"$ bp ...\"\n" +
-			"  $ params      Print the function's parameters\n" +
-			"                Short form: \"$ p\"\n" +
-			"  $ locals x    Print the local vars from the level x. The level\n" +
-			"                is optional and default to the top level.\n" +
-			"                Short form: \"$ l\"\n" +
-			"  $ local v     Print a local var with the name v\n" +
-			"  $ global v    Print a global var with the name v\n" +
-			"  $ callstack   Print the current callstack (short form: \"$ cs\")\n" +
-			"                Short form: \"$ cs\"\n" +
-			"  $ retval      Print the function's return value\n" +
-			"                Short form: \"$ ret\"\n" +
-			"  $ ex          Print the function's exception\n";
+			"  $attach      Attach the debugger to the REPL\n" +
+			"  $detach      Detach the debugger from the REPL\n" +
+			"  $start       Start debugging\n" +
+			"  $stop        Stop debugging\n" +
+			"  $breakpoint  Manage breakpoints (short form: \"$ bp\")\n" +
+			"               breakpoint add n, n*\n" +
+			"                  Add one or multiple breakpoints\n" +
+			"                  E.g.: $breakpoint add user/gauss\n" +
+			"                        $breakpoint add user/gauss +\n" +
+			"               breakpoint add flags n, n*\n" +
+			"                  Add one or multiple breakpoints with the given\n" +
+			"                  flags. \n" +
+			"                  flags is a combination of:\n" +
+			"                    (  break at the entry of a function\n" +
+			"                    !  break at catching an exception in a function\n" +
+			"                    )  break at the exit of a function\n" +
+			"                  E.g.: $breakpoint add (!) user/gauss \n" +
+			"                        $breakpoint add ( user/gauss \n" +
+			"               breakpoint remove n, n*\n" +
+			"                  Remove one or multiple breakpoints\n" +
+			"                  E.g.: $breakpoint remove user/gauss + \n" +
+			"               breakpoint list\n" +
+			"                  List all breakpoints\n" +
+			"                  E.g.: $breakpoint list\n" +
+			"               Short form: \"$bp ...\"\n" +
+			"  $params      Print the function's parameters\n" +
+			"               Short form: \"$p\"\n" +
+			"  $locals x    Print the local vars from the level x. The level\n" +
+			"               is optional and default to the top level.\n" +
+			"               Short form: \"$l\"\n" +
+			"  $local v     Print a local var with the name v\n" +
+			"  $global v    Print a global var with the name v\n" +
+			"  $callstack   Print the current callstack (short form: \"$ cs\")\n" +
+			"               Short form: \"$cs\"\n" +
+			"  $retval      Print the function's return value\n" +
+			"               Short form: \"$ret\"\n" +
+			"  $ex          Print the function's exception\n" +
+			"  $eval e      Evaluates an expression\n" +
+			"               E.g.: $eval (+ 1 2)\n";
 
    
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
+	private final BiFunction<String, Env, VncVal> evaluator;
 }
