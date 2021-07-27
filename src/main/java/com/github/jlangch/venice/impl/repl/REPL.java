@@ -844,8 +844,11 @@ public class REPL {
 	private void handleDebuggerCommand(final List<String> params) {
 		final String cmd = trimToEmpty(first(params));
 		
-		if (cmd.equals("") || cmd.equals("?") || cmd.equals("status")) {
+		if (cmd.equals("") || cmd.equals("status")) {
 			printer.println("debug", "Debugger: " + getDebuggerStatus());
+		}
+		else if (cmd.equals("help") || cmd.equals("h")) {
+			ReplDebuggerClient.pringHelp(printer);
 		}
 		else if (cmd.equals("attach")) {
 			debugger = true;

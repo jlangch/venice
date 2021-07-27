@@ -160,6 +160,7 @@ public class ReplDebuggerClient {
 				break;
 
 			case "help":
+			case "h":
 			case "?":
 				printer.println("debug", HELP);
 				break;
@@ -170,6 +171,10 @@ public class ReplDebuggerClient {
 		}
 	}
 
+	public static void pringHelp(final TerminalPrinter printer) {
+		printer.println("debug", HELP);
+	}
+	
 	private void start() {
 		agent.start();
 		agent.addBreakListener(this::breakpointListener);
