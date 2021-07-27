@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RecursionPoint;
@@ -147,17 +148,22 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	public void onBreakLoop(
-			final VncList args,
 			final RecursionPoint rp,
 			final Env env
 	) {
 		if (isStopOnFunction("loop", FunctionEntry)) {
+			
 			final Break br = new Break(
 									new SpecialFormsVirtualFunction(
 											"loop", 
 											VncVector.ofColl(rp.getLoopBindingNames()), 
 											rp.getMeta()), 
-									args, 
+									VncList.ofColl(
+											rp.getLoopBindingNames()
+											  .stream()
+											  .map(s -> env.findLocalVar(s))
+											  .map(v -> v == null ? Nil : v.getVal())
+											  .collect(Collectors.toList())), 
 									null, 
 									null, 
 									env, 
@@ -328,22 +334,6 @@ public class DebugAgent implements IDebugAgent {
 				return false;
 		}
 	}
-
-	private static class SpecialFormsVirtualFunction extends VncFunction {
-		public SpecialFormsVirtualFunction(
-				final String name, 
-				final VncVector params, 
-				final VncVal meta
-		) {
-			super(name, params, false, null, meta);
-		}
-		
-		public VncVal apply(final VncList args) {
-			return Nil;
-		}
-		
-		private static final long serialVersionUID = -1;
-	};
 
 
 	private volatile boolean activated = false;
