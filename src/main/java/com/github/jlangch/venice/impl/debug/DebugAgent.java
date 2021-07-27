@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.debug;
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionException;
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,10 +33,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.RecursionPoint;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
@@ -143,13 +146,41 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = listener;
 	}
 
-	public void onBreakSpecialForm(
-			final String sfName,
+	public void onBreakLoop(
 			final VncList args,
+			final RecursionPoint rp,
 			final Env env
 	) {
-		if (isStopOnFunction(sfName, FunctionEntry)) {
-			// TODO: implement
+		if (isStopOnFunction("loop", FunctionEntry)) {
+			final Break br = new Break(
+									new SpecialFormsVirtualFunction(
+											"loop", 
+											VncVector.ofColl(rp.getLoopBindingNames()), 
+											rp.getMeta()), 
+									args, 
+									null, 
+									null, 
+									env, 
+									ThreadLocalMap.getCallStack(), 
+									FunctionEntry);
+			onBreakEntered(br);
+			
+			try {
+				while(hasBreak()) {
+					Thread.sleep(500);
+				}
+			}
+			catch(InterruptedException iex) {
+				throw new com.github.jlangch.venice.InterruptedException(
+						String.format(
+								"Interrupted while waiting for leaving breakpoint "
+									+ "in function '%s' (%s).",
+								br.getFn().getQualifiedName(),
+								br.getBreakpointType()));
+			}
+			finally {
+				activeBreak = null;
+			}
 		}
 	}
 	
@@ -297,6 +328,22 @@ public class DebugAgent implements IDebugAgent {
 				return false;
 		}
 	}
+
+	private static class SpecialFormsVirtualFunction extends VncFunction {
+		public SpecialFormsVirtualFunction(
+				final String name, 
+				final VncVector params, 
+				final VncVal meta
+		) {
+			super(name, params, false, null, meta);
+		}
+		
+		public VncVal apply(final VncList args) {
+			return Nil;
+		}
+		
+		private static final long serialVersionUID = -1;
+	};
 
 
 	private volatile boolean activated = false;

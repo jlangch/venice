@@ -92,11 +92,11 @@ public class ReplDebuggerClient {
 
 	public void handleDebuggerCommand(final List<String> params) {
 		switch(trimToEmpty(first(params))) {
-			case "start":  // !dbg start
+			case "start":  // $ start
 				start();
 				break;
 				
-			case "stop":  // !dbg stop
+			case "stop":  // $ stop
 				stop();
 				break;
 				
@@ -105,12 +105,12 @@ public class ReplDebuggerClient {
 				handleBreakpointCmd(drop(params, 1));
 				break;
 				
-			case "resume":  // !dbg resume
+			case "resume":  // $ resume
 			case "r":
 				resume();
 				break;
 				
-			case "step":  // !dbg step ()
+			case "step":  // $ step ()
 			case "s":
 				stepToNextFunction(
 					parseBreakpointTypes(
@@ -118,7 +118,7 @@ public class ReplDebuggerClient {
 						toSet(FunctionEntry)));
 				break;
 				
-			case "step-":  // !dbg step- ()
+			case "step-":  // $ step- ()
 			case "s-":
 				stepToNextNonSystemFunction(
 					parseBreakpointTypes(
@@ -126,36 +126,41 @@ public class ReplDebuggerClient {
 						toSet(FunctionEntry)));
 				break;
 				
-			case "callstack":  // !dbg callstack
+			case "callstack":  // $ callstack
 			case "cs":
 				callstack();
 				break;
 				
-			case "params":  // !dbg params
+			case "params":  // $ params
 			case "p":
 				params(drop(params, 1));
 				break;
 				
-			case "locals":  // !dbg locals {level}
+			case "locals":  // $ locals {level}
 			case "l":
 				locals(second(params));
 				break;
 				
-			case "local":  // !dbg local x
+			case "local":  // $ local x
 				local(second(params));
 				break;
 				
-			case "global":  // !dbg global filter
+			case "global":  // $ global filter
 				global(second(params));
 				break;
 				
-			case "retval":  // !dbg retval
+			case "retval":  // $ retval
 			case "ret":
 				retval();
 				break;
 				
-			case "ex":  // !dbg ex
+			case "ex":  // $ ex
 				ex();
+				break;
+
+			case "help":
+			case "?":
+				printer.println("debug", HELP);
 				break;
 				
 			default:
@@ -386,6 +391,10 @@ public class ReplDebuggerClient {
 								 			e.getKey(),
 								 			format(e.getValue()))));
 					break;
+					
+				default:
+					printer.println("error", "Invalid breakpoint command.");
+					break;
 			}
 		}
 	}
@@ -520,7 +529,43 @@ public class ReplDebuggerClient {
 		return String.format("[%d] -> %s", index, sval);
 	}
 	
-    
+	private final static String HELP =
+			"Venice debugger\n\n" +
+			"Commands: \n" +
+			"  $ attach     Attach the debugger to the REPL\n" +
+			"  $ detach     Detach the debugger from the REPL\n" +
+			"  $ start      Start debugging\n" +
+			"  $ stop       Stop debugging\n" +
+			"  $ breakpoint Manage breakpoints\n" +
+			"               breakpoint add n, n*\n" +
+			"                  Add one or multiple breakpoints\n" +
+			"                  E.g.: breakpoint add user/gauss\n" +
+			"                        breakpoint add user/gauss +\n" +
+			"               breakpoint add flags n, n*\n" +
+			"                  Add one or multiple breakpoints with the given\n" +
+			"                  flags. \n" +
+			"                  flags is a combination of:\n" +
+			"                    (  break at the entry of the function\n" +
+			"                    !  break at catching an exception in the function\n" +
+			"                    )  break at the exit of the function\n" +
+			"                  E.g.: breakpoint add (!) user/gauss \n" +
+			"                        breakpoint add ( user/gauss \n" +
+			"               breakpoint remove n, n*\n" +
+			"                  Remove one or multiple breakpoints\n" +
+			"                  E.g.: breakpoint remove user/gauss + \n" +
+			"               breakpoint list\n" +
+			"                  List all breakpoints\n" +
+			"                  E.g.: breakpoint list\n" +
+			"  $ params     Print the function's parameters\n" +
+			"  $ locals x   Print the local vars from the level x. The level\n" +
+			"               is optional and default to the top level.\n" +
+			"  $ local v    Print a local var with the name v\n" +
+			"  $ global v   Print a global var with the name v\n" +
+			"  $ callstack  Print the current callstack\n" +
+			"  $ retval     Print the function's return value\n" +
+			"  $ ex         Print the function's exception\n";
+
+   
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
 }
