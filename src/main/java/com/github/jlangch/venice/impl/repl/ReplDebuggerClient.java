@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
+import com.github.jlangch.venice.impl.debug.SpecialFormsVirtualFunction;
 import com.github.jlangch.venice.impl.debug.StopNextType;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -218,16 +219,16 @@ public class ReplDebuggerClient {
 		final VncVector spec = fn.getParams();	
 		final VncList args = agent.getBreak().getArgs();
 
-		if (fn.isNative()) {
-			printer.println("debug", renderNativeFnParams(args));
+		if (fn.isNative() && !(fn instanceof SpecialFormsVirtualFunction)) {
+			printer.println("debug", renderNativeFnParams(fn, args));
 		}
 		else {
 			final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(spec);
 			if (plainSymbolParams) {
-				printer.println("debug", renderFnNoDestructuring(spec, args));
+				printer.println("debug", renderFnNoDestructuring(fn, spec, args));
 			}
 			else {
-				printer.println("debug", renderFnDestructuring(spec, args));
+				printer.println("debug", renderFnDestructuring(fn, spec, args));
 			}
 		}
 	}
@@ -453,11 +454,16 @@ public class ReplDebuggerClient {
 						b.getBreakpointType(),
 						srcInfo));
 	}
-   
-	private String renderNativeFnParams(final VncList args) {
-		StringBuilder sb = new StringBuilder();
+
+	private String renderNativeFnParams(
+			final VncFunction fn, 
+			final VncList args
+	) {
+		final StringBuilder sb = new StringBuilder();
 		
-		sb.append("Arguments passed to native function:");
+		sb.append(String.format(
+					"Arguments passed to native function %s:",
+					fn.getQualifiedName()));
 		
 		VncList args_ = args;
 		
@@ -478,13 +484,23 @@ public class ReplDebuggerClient {
 		return sb.toString();
 	}
 	   
-	private String renderFnNoDestructuring(final VncVector spec, final VncList args) {
-		StringBuilder sb = new StringBuilder();
+	private String renderFnNoDestructuring(
+			final VncFunction fn, 
+			final VncVector spec, 
+			final VncList args
+	) {
+		final StringBuilder sb = new StringBuilder();
 	
 		VncVector spec_ = spec;
 		VncList args_ = args;
 
-		sb.append("Arguments passed to function:");
+		sb.append(String.format(
+				"Arguments passed to %s %s:",
+				fn instanceof SpecialFormsVirtualFunction 
+					? "special form"
+					: "function",
+				fn.getQualifiedName()));
+
 		while(true) {
 			sb.append("\n");
 			sb.append(formatVar(spec_.first(), args_.first()));
@@ -504,10 +520,20 @@ public class ReplDebuggerClient {
 		return sb.toString();
 	}
 	   
-	private String renderFnDestructuring(final VncVector spec, final VncList args) {
-		StringBuilder sb = new StringBuilder();
+	private String renderFnDestructuring(
+			final VncFunction fn, 
+			final VncVector spec, 
+			final VncList args
+	) {
+		final StringBuilder sb = new StringBuilder();
 
-		sb.append("Arguments passed to function (destructured):");
+		sb.append(String.format(
+				"Arguments passed to %s %s (destructured):",
+				fn instanceof SpecialFormsVirtualFunction 
+					? "special form"
+					: "function",
+				fn.getQualifiedName()));
+
 		final List<Var> vars = Destructuring.destructure(spec, args);
 		vars.forEach(v -> sb.append(formatVar(v)));
 		
@@ -532,38 +558,43 @@ public class ReplDebuggerClient {
 	private final static String HELP =
 			"Venice debugger\n\n" +
 			"Commands: \n" +
-			"  $ attach     Attach the debugger to the REPL\n" +
-			"  $ detach     Detach the debugger from the REPL\n" +
-			"  $ start      Start debugging\n" +
-			"  $ stop       Stop debugging\n" +
-			"  $ breakpoint Manage breakpoints\n" +
-			"               breakpoint add n, n*\n" +
-			"                  Add one or multiple breakpoints\n" +
-			"                  E.g.: breakpoint add user/gauss\n" +
-			"                        breakpoint add user/gauss +\n" +
-			"               breakpoint add flags n, n*\n" +
-			"                  Add one or multiple breakpoints with the given\n" +
-			"                  flags. \n" +
-			"                  flags is a combination of:\n" +
-			"                    (  break at the entry of the function\n" +
-			"                    !  break at catching an exception in the function\n" +
-			"                    )  break at the exit of the function\n" +
-			"                  E.g.: breakpoint add (!) user/gauss \n" +
-			"                        breakpoint add ( user/gauss \n" +
-			"               breakpoint remove n, n*\n" +
-			"                  Remove one or multiple breakpoints\n" +
-			"                  E.g.: breakpoint remove user/gauss + \n" +
-			"               breakpoint list\n" +
-			"                  List all breakpoints\n" +
-			"                  E.g.: breakpoint list\n" +
-			"  $ params     Print the function's parameters\n" +
-			"  $ locals x   Print the local vars from the level x. The level\n" +
-			"               is optional and default to the top level.\n" +
-			"  $ local v    Print a local var with the name v\n" +
-			"  $ global v   Print a global var with the name v\n" +
-			"  $ callstack  Print the current callstack\n" +
-			"  $ retval     Print the function's return value\n" +
-			"  $ ex         Print the function's exception\n";
+			"  $ attach      Attach the debugger to the REPL\n" +
+			"  $ detach      Detach the debugger from the REPL\n" +
+			"  $ start       Start debugging\n" +
+			"  $ stop        Stop debugging\n" +
+			"  $ breakpoint  Manage breakpoints (short form: \"$ bp\")\n" +
+			"                breakpoint add n, n*\n" +
+			"                   Add one or multiple breakpoints\n" +
+			"                   E.g.: breakpoint add user/gauss\n" +
+			"                         breakpoint add user/gauss +\n" +
+			"                breakpoint add flags n, n*\n" +
+			"                   Add one or multiple breakpoints with the given\n" +
+			"                   flags. \n" +
+			"                   flags is a combination of:\n" +
+			"                     (  break at the entry of a function\n" +
+			"                     !  break at catching an exception in a function\n" +
+			"                     )  break at the exit of a function\n" +
+			"                   E.g.: breakpoint add (!) user/gauss \n" +
+			"                         breakpoint add ( user/gauss \n" +
+			"                breakpoint remove n, n*\n" +
+			"                   Remove one or multiple breakpoints\n" +
+			"                   E.g.: breakpoint remove user/gauss + \n" +
+			"                breakpoint list\n" +
+			"                   List all breakpoints\n" +
+			"                   E.g.: breakpoint list\n" +
+			"                Short form: \"$ bp ...\"\n" +
+			"  $ params      Print the function's parameters\n" +
+			"                Short form: \"$ p\"\n" +
+			"  $ locals x    Print the local vars from the level x. The level\n" +
+			"                is optional and default to the top level.\n" +
+			"                Short form: \"$ l\"\n" +
+			"  $ local v     Print a local var with the name v\n" +
+			"  $ global v    Print a global var with the name v\n" +
+			"  $ callstack   Print the current callstack (short form: \"$ cs\")\n" +
+			"                Short form: \"$ cs\"\n" +
+			"  $ retval      Print the function's return value\n" +
+			"                Short form: \"$ ret\"\n" +
+			"  $ ex          Print the function's exception\n";
 
    
 	private final TerminalPrinter printer;
