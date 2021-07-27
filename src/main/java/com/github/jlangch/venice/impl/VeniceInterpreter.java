@@ -457,9 +457,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
-
+						final VncVal meta = a0.getMeta();
+						
 						if (bindings.size() % 2 != 0) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", meta))) {
 								throw new VncException("loop requires an even number of forms in the binding vector!");					
 							}
 						}
@@ -476,10 +477,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
 
-						recursionPoint = new RecursionPoint(bindingNames, expressions, env, debugAgent);
+						recursionPoint = new RecursionPoint(bindingNames, expressions, env, meta, debugAgent);
 
 						if (debugAgent != null && debugAgent.hasBreak("loop")) {
-							debugAgent.onBreakSpecialForm("loop", args, env);
+							debugAgent.onBreakLoop(args, recursionPoint, env);
 						}
 
 						if (expressions.size() == 1) {
@@ -514,7 +515,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
 						if (debugAgent != null && debugAgent.hasBreak("loop")) {
-							debugAgent.onBreakSpecialForm("loop", args, env);
+							debugAgent.onBreakLoop(args, recursionPoint, env);
 						}
 
 						final VncList expressions = recursionPoint.getLoopExpressions();

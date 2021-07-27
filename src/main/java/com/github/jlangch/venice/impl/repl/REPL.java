@@ -319,8 +319,7 @@ public class REPL {
 				}
 				else if (ReplParser.isDebugCommand(line)) {
 					final String cmd = trimToEmpty(line.trim().substring(1));
-					final List<String> args = Arrays.asList(cmd.split(" +"));
-					handleDebuggerCommand(args);				
+					handleDebuggerCommand(Arrays.asList(cmd.split(" +")));				
 				}
 				else if (ReplParser.isDroppedVeniceScriptFile(line)) {
 					handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
@@ -498,7 +497,7 @@ public class REPL {
 			final List<String> args = drop(items, 1);
 
 			if (hasActiveDebugSession()) {
-				if (cmd.equals("dbg") || cmd.equals("d")) {
+				if (cmd.equals("dbg")) {
 					handleDebuggerCommand(args);
 				}
 				else {
@@ -532,7 +531,6 @@ public class REPL {
 					case "highlight":   handleHighlightCommand(args); break;
 					case "java-ex":     handleJavaExCommand(args); break;
 					case "dbg":         handleDebuggerCommand(args); break;				
-					case "d":     	    handleDebuggerCommand(args); break;				
 					default:            handleInvalidCommand(cmd); break;
 				}
 			}
