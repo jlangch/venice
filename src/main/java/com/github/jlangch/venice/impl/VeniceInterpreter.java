@@ -724,7 +724,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								
 								final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 								if (debugAgent != null && debugAgent.hasBreak(fnName)) {
-									debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env);
+									debugAgent.onBreakFnEnter(fnName, f, fnArgs, env);
 								}
 								
 								final VncList body = (VncList)f.getBody();
