@@ -127,7 +127,6 @@ public class DebugAgent implements IDebugAgent {
 	// Breaks
 	// -------------------------------------------------------------------------
 
-
 	@Override
 	public boolean hasBreak(final String qualifiedName) {
 		if (activated) {
@@ -170,24 +169,8 @@ public class DebugAgent implements IDebugAgent {
 									env, 
 									ThreadLocalMap.getCallStack(), 
 									FunctionEntry);
-			onBreakEntered(br);
-			
-			try {
-				while(hasBreak()) {
-					Thread.sleep(500);
-				}
-			}
-			catch(InterruptedException iex) {
-				throw new com.github.jlangch.venice.InterruptedException(
-						String.format(
-								"Interrupted while waiting for leaving breakpoint "
-									+ "in function '%s' (%s).",
-								br.getFn().getQualifiedName(),
-								br.getBreakpointType()));
-			}
-			finally {
-				activeBreak = null;
-			}
+			notifOnBreak(br);
+			waitOnBreak(br);
 		}
 	}
 	
@@ -198,15 +181,17 @@ public class DebugAgent implements IDebugAgent {
 			final Env env
 	) {
 		if (isStopOnFunction(fnName, FunctionEntry)) {
-			onBreakFn(
-				new Break(
-					fn, 
-					args, 
-					null, 
-					null, 
-					env, 
-					ThreadLocalMap.getCallStack(), 
-					FunctionEntry));
+			final Break br = new Break(
+									fn, 
+									args, 
+									null, 
+									null, 
+									env, 
+									ThreadLocalMap.getCallStack(), 
+									FunctionEntry);
+			
+			notifOnBreak(br);
+			waitOnBreak(br);
 		}
 	}
 	
@@ -218,15 +203,17 @@ public class DebugAgent implements IDebugAgent {
 			final Env env
 	) {
 		if (isStopOnFunction(fnName, FunctionExit)) {
-			onBreakFn(
-				new Break(
-					fn, 
-					args, 
-					retVal, 
-					null, 
-					env, 
-					ThreadLocalMap.getCallStack(), 
-					FunctionExit));
+			final Break br = new Break(
+									fn, 
+									args, 
+									retVal, 
+									null, 
+									env, 
+									ThreadLocalMap.getCallStack(), 
+									FunctionExit);
+			
+			notifOnBreak(br);
+			waitOnBreak(br);
 		}
 	}
 	
@@ -238,36 +225,17 @@ public class DebugAgent implements IDebugAgent {
 			final Env env
 	) {
 		if (isStopOnFunction(fnName, FunctionException)) {
-			onBreakFn(
-				new Break(
-					fn, 
-					args, 
-					null, 
-					ex, 
-					env, 
-					ThreadLocalMap.getCallStack(), 
-					FunctionException));
-		}
-	}
-	
-	public void onBreakFn(final Break br) {
-		onBreakEntered(br);
-		
-		try {
-			while(hasBreak()) {
-				Thread.sleep(500);
-			}
-		}
-		catch(InterruptedException iex) {
-			throw new com.github.jlangch.venice.InterruptedException(
-					String.format(
-							"Interrupted while waiting for leaving breakpoint "
-								+ "in function '%s' (%s).",
-							br.getFn().getQualifiedName(),
-							br.getBreakpointType()));
-		}
-		finally {
-			activeBreak = null;
+			final Break br = new Break(
+									fn, 
+									args, 
+									null, 
+									ex, 
+									env, 
+									ThreadLocalMap.getCallStack(), 
+									FunctionException);
+			
+			notifOnBreak(br);
+			waitOnBreak(br);
 		}
 	}
 
@@ -298,7 +266,7 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = null;
 	}
 	
-	private void onBreakEntered(final Break br) {
+	private void notifOnBreak(final Break br) {
 		activeBreak = br;
 		
 		if (breakListener != null) {
@@ -336,7 +304,26 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 
+	private void waitOnBreak(final Break br) {
+		try {
+			while(hasBreak()) {
+				Thread.sleep(500);
+			}
+		}
+		catch(InterruptedException iex) {
+			throw new com.github.jlangch.venice.InterruptedException(
+					String.format(
+							"Interrupted while waiting for leaving breakpoint "
+								+ "in function '%s' (%s).",
+							br.getFn().getQualifiedName(),
+							br.getBreakpointType()));
+		}
+		finally {
+			activeBreak = null;
+		}
+	}
 
+	
 	private volatile boolean activated = false;
 	private volatile StopNextType stopNextType = StopNextType.MatchingFnName;
 	private volatile Set<BreakpointType> stopNextTypeFlags = null;

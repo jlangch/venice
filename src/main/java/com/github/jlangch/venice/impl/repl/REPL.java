@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
@@ -350,11 +351,11 @@ public class REPL {
 			printer.println("error", "Debugging session is active! Can only run debug commands.");
 		}
 		else {
-			if (debugger) {
-				runScriptAsync(line, resultPrefix, resultHistory);
+			if (DebugAgent.current() == null) {
+				runScriptSync(line, resultPrefix, resultHistory);
 			}
 			else {
-				runScriptSync(line, resultPrefix, resultHistory);
+				runScriptAsync(line, resultPrefix, resultHistory);
 			}
 		}
 	}
@@ -685,15 +686,13 @@ public class REPL {
 						LoadPathsFactory.of(
 								interceptor.getLoadPaths().getPaths(), 
 								true)),
-					venice.isMacroExpandOnLoad(),
-					debugger);
+					venice.isMacroExpandOnLoad());
 				return;
 			}
 			else if (first(params).equals("reject-all")) {
 				reconfigureVenice(
 						new RejectAllInterceptor(),
-						venice.isMacroExpandOnLoad(),
-						debugger);
+						venice.isMacroExpandOnLoad());
 				return;			
 			}
 			else if (first(params).equals("customized")) {
@@ -703,8 +702,7 @@ public class REPL {
 						LoadPathsFactory.of(
 								interceptor.getLoadPaths().getPaths(), 
 								true)),
-					venice.isMacroExpandOnLoad(),
-					debugger);
+					venice.isMacroExpandOnLoad());
 				return;			
 			}
 			else if (first(params).equals("config")) {
@@ -784,8 +782,7 @@ public class REPL {
 						LoadPathsFactory.of(
 							interceptor.getLoadPaths().getPaths(),
 							true)),
-					venice.isMacroExpandOnLoad(),
-					debugger);
+					venice.isMacroExpandOnLoad());
 				return;
 			}
 		}
@@ -851,21 +848,32 @@ public class REPL {
 			ReplDebuggerClient.pringHelp(printer);
 		}
 		else if (cmd.equals("attach")) {
-			debugger = true;
-			reconfigureVenice(
-					interceptor,
-					venice.isMacroExpandOnLoad(),
-					debugger);
-			printer.println("debug", "Debugger: attached");
+			if (DebugAgent.current() == null) {
+				DebugAgent.register(new DebugAgent());
+				printer.println("debug", "Debugger: attached");
+			}
+			else {
+				printer.println("debug", "Debugger: already attached");
+			}
+		}
+		else if (cmd.equals("attach+") || cmd.equals("a+")) {
+			if (DebugAgent.current() == null) {
+				DebugAgent.register(new DebugAgent());
+				printer.println("debug", "Debugger: attached");
+			}
+			new ReplDebuggerClient(DebugAgent.current(), printer)
+					.handleDebuggerCommand(toList("start"));
 		}
 		else if (cmd.equals("detach")) {
-			debugger = false;
-			reconfigureVenice(interceptor,
-					venice.isMacroExpandOnLoad(),
-					debugger);
-			printer.println("debug", "Debugger: detached");
+			if (DebugAgent.current() != null) {
+				DebugAgent.register(null);
+				printer.println("debug", "Debugger: detached");
+			}
+			else {
+				printer.println("debug", "Debugger: not attached");
+			}
 		}
-		else if (!debugger) {
+		else if (DebugAgent.current() == null) {
 			printer.println("error", "Debugger not attached!");
 		}
 		else {
@@ -989,15 +997,16 @@ public class REPL {
 	
 	private void reconfigureVenice(
 			final IInterceptor interceptor,
-			final boolean macroExpandOnLoad,
-			final boolean attachDebugger
+			final boolean macroExpandOnLoad
 	) {
+		final DebugAgent agent = DebugAgent.current();
+		
 		this.interceptor = interceptor; 
 		this.venice = new VeniceInterpreter(interceptor);
 		this.venice.setMacroExpandOnLoad(macroExpandOnLoad, env);
 		
 		JavaInterop.register(interceptor);	
-		DebugAgent.register(attachDebugger ? new DebugAgent() : null);
+		DebugAgent.register(agent);
 	}
 
 	private String envGlobalsToString(final Env env) {
@@ -1270,12 +1279,9 @@ public class REPL {
 	}
 	
 	private String getDebuggerStatus() {
-		if (debugger) {
-			final DebugAgent agent = DebugAgent.current();
-	
-			return agent != null && agent.active() 
-							? "active" 
-							: "not active";
+		final DebugAgent agent = DebugAgent.current();
+		if (agent != null) {
+			return agent.active() ? "active"  : "not active";
 		}
 		else {
 			return "not attached";
@@ -1380,6 +1386,5 @@ public class REPL {
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
 	private boolean restartable = false;
-	private boolean debugger = false;
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
 }
