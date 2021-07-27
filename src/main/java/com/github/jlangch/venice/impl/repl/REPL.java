@@ -155,7 +155,7 @@ public class REPL {
 			if (!setupMode) {
 				System.out.println("Type '!' for help.");
 			}
-			
+						
 			repl(cli, macroexpand);
 		}
 		catch (Exception ex) {
@@ -425,6 +425,43 @@ public class REPL {
 		th.start();
 		
 		Thread.sleep(500);
+	}
+
+	
+	private void runDebuggerExprAsync(
+			final String expr,
+			final Env env
+	) {
+		// thread local values from the parent thread
+		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+				new AtomicReference<>(ThreadLocalMap.snapshot());
+
+		// run the script in another thread when debugging it
+		final Runnable task = () -> {
+			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+			ThreadLocalMap.clearCallStack();
+			JavaInterop.register(interceptor);
+			DebugAgent.unregister();
+
+			try {
+				final VncVal result = venice.RE(expr, "debugger", env);
+				printer.println("debug", result.toString(true));
+			}
+			catch (Exception ex) {
+				handleException(ex);
+			}
+		};
+
+		final Thread th = new Thread(task, "debug");
+		th.setDaemon(true);
+		th.start();
+		
+		try {
+			th.join();
+		}
+		catch (Exception ex) {
+			handleException(ex);
+		}
 	}
 
 	private LineReader createLineReader(
@@ -873,7 +910,7 @@ public class REPL {
 			new ReplDebuggerClient(
 					DebugAgent.current(), 
 					printer,
-					(s,env) -> venice.RE(s, "debug", env)
+					(s,env) -> runDebuggerExprAsync(s, env)
 				).handleDebuggerCommand(cmdLine);
 		}
 	}

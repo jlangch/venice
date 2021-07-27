@@ -37,7 +37,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
@@ -87,7 +87,7 @@ public class ReplDebuggerClient {
 	public ReplDebuggerClient(
 			final IDebugAgent agent,
 			final TerminalPrinter printer,
-			final BiFunction<String, Env, VncVal> evaluator
+			final BiConsumer<String, Env> evaluator
 	) {
 		this.agent = agent;
 		this.printer = printer;
@@ -164,7 +164,7 @@ public class ReplDebuggerClient {
 				ex();
 				break;
 				
-			case "eval":  // $eval sexpr
+			case "eval":  // $eval expr
 				eval(cmdLine.substring(5));
 				break;
 
@@ -366,8 +366,7 @@ public class ReplDebuggerClient {
 			println("No expression eval available");
 		}
 		else {
-			final VncVal ret = evaluator.apply(expr, env);
-			println(ret.toString(true));
+			evaluator.accept(expr, env);
 		}
 	}
 
@@ -638,5 +637,5 @@ public class ReplDebuggerClient {
    
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
-	private final BiFunction<String, Env, VncVal> evaluator;
+	private final BiConsumer<String, Env> evaluator;
 }

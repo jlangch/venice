@@ -746,14 +746,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 									if (debugAgent != null && fn.isNative() && debugAgent.hasBreak(fnName)) {
+										final Env env__ = new Env(env);
+										env__.setLocal(new Var(new VncSymbol("args"), fnArgs));
 										try {
-											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, null);
+											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env__);
 											final VncVal retVal = fn.apply(fnArgs);
-											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, null);
+											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env__);
 											return retVal;
 										}
 										catch(Exception ex) {
-											debugAgent.onBreakFnException(fnName, fn, args, ex, null);
+											debugAgent.onBreakFnException(fnName, fn, args, ex, env__);
 											throw ex;
 										}
 									}
