@@ -43,7 +43,7 @@ import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
-import com.github.jlangch.venice.impl.debug.SpecialFormsVirtualFunction;
+import com.github.jlangch.venice.impl.debug.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.debug.StopNextType;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -224,7 +224,7 @@ public class ReplDebuggerClient {
 		final VncVector spec = fn.getParams();	
 		final VncList args = agent.getBreak().getArgs();
 
-		if (fn.isNative() && !(fn instanceof SpecialFormsVirtualFunction)) {
+		if (fn.isNative() && !(fn instanceof SpecialFormVirtualFunction)) {
 			printer.println("debug", renderNativeFnParams(fn, args));
 		}
 		else {
@@ -501,7 +501,7 @@ public class ReplDebuggerClient {
 
 		sb.append(String.format(
 				"Arguments passed to %s %s:",
-				fn instanceof SpecialFormsVirtualFunction 
+				fn instanceof SpecialFormVirtualFunction 
 					? "special form"
 					: "function",
 				fn.getQualifiedName()));
@@ -534,7 +534,7 @@ public class ReplDebuggerClient {
 
 		sb.append(String.format(
 				"Arguments passed to %s %s (destructured):",
-				fn instanceof SpecialFormsVirtualFunction 
+				fn instanceof SpecialFormVirtualFunction 
 					? "special form"
 					: "function",
 				fn.getQualifiedName()));
