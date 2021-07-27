@@ -72,11 +72,11 @@ import com.github.jlangch.venice.impl.util.CallStack;
  *
  *   Arguments:
  *   (6 7)
- *   venice> !dbg next
+ *   venice> !dbg resume
  *   Stopped in function user/sum at FunctionExit
  *   venice> !dbg retval
  *   return: 13
- *   venice> !dbg next
+ *   venice> !dbg resume
  *   Resuming from function user/sum
  * </pre>
  */
@@ -105,22 +105,22 @@ public class ReplDebuggerClient {
 				handleBreakpointCmd(drop(params, 1));
 				break;
 				
-			case "next":  // !dbg next
-			case "n":
-				run();
+			case "resume":  // !dbg resume
+			case "r":
+				resume();
 				break;
 				
-			case "next+":  // !dbg next+ ()
-			case "n+":
-				runToNextFunction(
+			case "step":  // !dbg step ()
+			case "s":
+				stepToNextFunction(
 					parseBreakpointTypes(
 						second(params), 
 						toSet(FunctionEntry)));
 				break;
 				
-			case "next-":  // !dbg next- ()
-			case "n-":
-				runToNextNonSystemFunction(
+			case "step-":  // !dbg step- ()
+			case "s-":
+				stepToNextNonSystemFunction(
 					parseBreakpointTypes(
 						second(params), 
 						toSet(FunctionEntry)));
@@ -137,6 +137,7 @@ public class ReplDebuggerClient {
 				break;
 				
 			case "locals":  // !dbg locals {level}
+			case "l":
 				locals(second(params));
 				break;
 				
@@ -174,19 +175,19 @@ public class ReplDebuggerClient {
 		printer.println("stdout", "Debugger: stopped");
 	}
 	
-	private void run() {
+	private void resume() {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
 		// printer.println("debug", "Returning from function " + fnName);
 		agent.leaveBreak(StopNextType.MatchingFnName, null);
 	}
 	
-	private void runToNextFunction(final Set<BreakpointType> flags) {
+	private void stepToNextFunction(final Set<BreakpointType> flags) {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
 		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
 		agent.leaveBreak(StopNextType.AnyFunction, flags);
 	}
 	
-	private void runToNextNonSystemFunction(final Set<BreakpointType> flags) {
+	private void stepToNextNonSystemFunction(final Set<BreakpointType> flags) {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
 		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
 		agent.leaveBreak(StopNextType.AnyNonSystemFunction, flags);
