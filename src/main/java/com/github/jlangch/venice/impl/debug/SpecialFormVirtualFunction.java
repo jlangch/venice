@@ -29,8 +29,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
-public class SpecialFormsVirtualFunction extends VncFunction {
-	public SpecialFormsVirtualFunction(
+public class SpecialFormVirtualFunction extends VncFunction {
+	public SpecialFormVirtualFunction(
 			final String name, 
 			final VncVector params, 
 			final VncVal meta

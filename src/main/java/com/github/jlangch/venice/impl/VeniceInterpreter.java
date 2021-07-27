@@ -480,7 +480,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						recursionPoint = new RecursionPoint(bindingNames, expressions, env, meta, debugAgent);
 
 						if (debugAgent != null && debugAgent.hasBreak("loop")) {
-							debugAgent.onBreakLoop(recursionPoint, env);
+							debugAgent.onBreakLoop(
+								recursionPoint.getLoopBindingNames(), 
+								recursionPoint.getMeta(),
+								env);
 						}
 
 						if (expressions.size() == 1) {
@@ -515,7 +518,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
 						if (debugAgent != null && debugAgent.hasBreak("loop")) {
-							debugAgent.onBreakLoop(recursionPoint, env);
+							debugAgent.onBreakLoop(
+									recursionPoint.getLoopBindingNames(), 
+									recursionPoint.getMeta(),
+									env);
 						}
 
 						final VncList expressions = recursionPoint.getLoopExpressions();

@@ -28,15 +28,16 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Namespaces;
-import com.github.jlangch.venice.impl.RecursionPoint;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -148,18 +149,18 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	public void onBreakLoop(
-			final RecursionPoint rp,
+			final List<VncSymbol> loopBindingNames,
+			final VncVal loopMeta,
 			final Env env
 	) {
-		if (isStopOnFunction("loop", FunctionEntry)) {
-			
+		if (isStopOnFunction("loop", FunctionEntry)) {			
 			final Break br = new Break(
-									new SpecialFormsVirtualFunction(
+									new SpecialFormVirtualFunction(
 											"loop", 
-											VncVector.ofColl(rp.getLoopBindingNames()), 
-											rp.getMeta()), 
+											VncVector.ofColl(loopBindingNames), 
+											loopMeta), 
 									VncList.ofColl(
-											rp.getLoopBindingNames()
+											loopBindingNames
 											  .stream()
 											  .map(s -> env.findLocalVar(s))
 											  .map(v -> v == null ? Nil : v.getVal())
