@@ -321,7 +321,7 @@ public class REPL {
 					final String cmd = trimToEmpty(line.trim().substring(1));
 					final List<String> args = Arrays.asList(cmd.split(" +"));
 					handleDebuggerCommand(args);				
-			}
+				}
 				else if (ReplParser.isDroppedVeniceScriptFile(line)) {
 					handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
 				}
