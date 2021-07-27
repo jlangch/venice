@@ -162,11 +162,11 @@ public class ReplDebuggerClient {
 			case "help":
 			case "h":
 			case "?":
-				printer.println("debug", HELP);
+				println(HELP);
 				break;
 				
 			default:
-				printer.println("error", "Invalid debug command.");
+				printlnErr("Invalid debug command.");
 				break;
 		}
 	}
@@ -178,45 +178,45 @@ public class ReplDebuggerClient {
 	private void start() {
 		agent.start();
 		agent.addBreakListener(this::breakpointListener);
-		printer.println("stdout", "Debugger: started");
+		println("Debugger: started");
 	}
 	
 	private void stop() {
 		agent.stop();
-		printer.println("stdout", "Debugger: stopped");
+		println("Debugger: stopped");
 	}
 	
 	private void resume() {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		// printer.println("debug", "Returning from function " + fnName);
+		// println("Returning from function " + fnName);
 		agent.leaveBreak(StopNextType.MatchingFnName, null);
 	}
 	
 	private void stepToNextFunction(final Set<BreakpointType> flags) {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
+		// println("Returning from function " + fnName + ". Stop on next function...");
 		agent.leaveBreak(StopNextType.AnyFunction, flags);
 	}
 	
 	private void stepToNextNonSystemFunction(final Set<BreakpointType> flags) {
 		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		// printer.println("debug", "Returning from function " + fnName + ". Stop on next function...");
+		// println("Returning from function " + fnName + ". Stop on next function...");
 		agent.leaveBreak(StopNextType.AnyNonSystemFunction, flags);
 	}
 	
 	private void callstack() {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 		
 		final CallStack cs = agent.getBreak().getCallStack();
-		printer.println("debug", cs.toString());
+		println(cs.toString());
 	}
 	
 	private void params(final List<String> params) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 		
@@ -225,28 +225,28 @@ public class ReplDebuggerClient {
 		final VncList args = agent.getBreak().getArgs();
 
 		if (fn.isNative() && !(fn instanceof SpecialFormVirtualFunction)) {
-			printer.println("debug", renderNativeFnParams(fn, args));
+			println(renderNativeFnParams(fn, args));
 		}
 		else {
 			final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(spec);
 			if (plainSymbolParams) {
-				printer.println("debug", renderFnNoDestructuring(fn, spec, args));
+				println(renderFnNoDestructuring(fn, spec, args));
 			}
 			else {
-				printer.println("debug", renderFnDestructuring(fn, spec, args));
+				println(renderFnDestructuring(fn, spec, args));
 			}
 		}
 	}
 	
 	private void locals(final String sLevel) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 
 		Env env = agent.getBreak().getEnv();
 		if (env == null) {
-			printer.println("debug", "No information on local vars available");
+			println("No information on local vars available");
 		}
 		else {
 			int maxLevel = env.level() + 1;
@@ -262,86 +262,84 @@ public class ReplDebuggerClient {
 										  .map(v -> formatVar(v))
 										  .collect(Collectors.joining("\n"));
 	
-			printer.println("debug", String.format(
-										"[%d/%d] Local vars:\n%s",
-										level,
-										maxLevel,
-										info));
+			println(String.format(
+						"[%d/%d] Local vars:\n%s",
+						level,
+						maxLevel,
+						info));
 		}
 	}
 	
 	private void local(final String name) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 
 		final Env env = agent.getBreak().getEnv();
 		if (env == null) {
-			printer.println("debug", "No information on local vars available");
+			println("No information on local vars available");
 		}
 		else {
 			final VncSymbol sym = new VncSymbol(name);
 			final Var v = env.findLocalVar(sym);
 			if (v == null) {
-				printer.println("debug", String.format("%s -> <not found>", name));
+				println(String.format("%s -> <not found>", name));
 			}
 			else {
-				printer.println("debug", formatVar(sym, v.getVal()));
+				println(formatVar(sym, v.getVal()));
 			}
 		}
 	}
 	
 	private void global(final String name) {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 
 		final Env env = agent.getBreak().getEnv();
 		if (env == null) {
-			printer.println("debug", "No information on global vars available");
+			println("No information on global vars available");
 		}
 		else {
 			final VncSymbol sym = new VncSymbol(name);
 			final Var v = env.getGlobalVarOrNull(sym);
 			if (v == null) {
-				printer.println(
-						"debug", 
-						String.format("%s: <not found>", name));
+				println(String.format("%s: <not found>", name));
 			}
 			else {
 				final String sval = truncate(v.getVal().toString(true), 100, "...");
-				printer.println("debug", String.format("%s: %s", name, sval));
+				println(String.format("%s: %s", name, sval));
 			}
 		}
 	}
 	
 	private void retval() {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 
 		final VncVal v = agent.getBreak().getRetVal();
 		if (v == null) {
-			printer.println("debug", "Return value: <not available>");
+			println("Return value: <not available>");
 		}
 		else {
 			final String sval = truncate(v.toString(true), 100, "...");
-			printer.println("debug", String.format("Return value: %s", sval));
+			println(String.format("Return value: %s", sval));
 		}
 	}
 	
 	private void ex() {
 		if (!agent.hasBreak()) {
-			printer.println("debug", "Not in a debug break!");
+			println("Not in a debug break!");
 			return;
 		}
 
 		final Exception e = agent.getBreak().getException();
 		if (e == null) {
-			printer.println("debug", "exception: <not available>");
+			println("exception: <not available>");
 		}
 		else {
 			printer.printex("debug", e);
@@ -350,7 +348,7 @@ public class ReplDebuggerClient {
 	
 	private void handleBreakpointCmd(final List<String> params) {
 		if (params.size() < 1)  {
-			printer.println("error", "Invalid 'dbg breakpoint {cmd}' command");
+			printlnErr("Invalid 'dbg breakpoint {cmd}' command");
 		}
 		else {
 			// build regex: "^[(!)]+$"
@@ -399,7 +397,7 @@ public class ReplDebuggerClient {
 					break;
 					
 				default:
-					printer.println("error", "Invalid breakpoint command.");
+					printlnErr("Invalid breakpoint command.");
 					break;
 			}
 		}
@@ -559,6 +557,15 @@ public class ReplDebuggerClient {
 		final String sval = truncate(value.toString(true), 100, "...");
 		return String.format("[%d] -> %s", index, sval);
 	}
+	
+	private void println(final String s) {
+		printer.println("debug", s);
+	}
+	
+	private void printlnErr(final String s) {
+		printer.println("error", s);
+	}
+	
 	
 	private final static String HELP =
 			"Venice debugger\n\n" +
