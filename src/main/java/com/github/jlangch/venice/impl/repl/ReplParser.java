@@ -75,6 +75,10 @@ public class ReplParser extends DefaultParser {
 		return buffer.trim().startsWith("!");
 	}
 
+	public static boolean isDebugCommand(final String buffer) {
+		return buffer.trim().startsWith("$");
+	}
+
 	
 	private final IVeniceInterpreter venice;
 	
