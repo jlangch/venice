@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
@@ -319,8 +318,7 @@ public class REPL {
 					}
 				}
 				else if (ReplParser.isDebugCommand(line)) {
-					final String cmd = trimToEmpty(line.trim().substring(1));
-					handleDebuggerCommand(Arrays.asList(cmd.split(" +")));				
+					handleDebuggerCommand(line.trim().substring(1).trim());				
 				}
 				else if (ReplParser.isDroppedVeniceScriptFile(line)) {
 					handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
@@ -498,12 +496,7 @@ public class REPL {
 			final List<String> args = drop(items, 1);
 
 			if (hasActiveDebugSession()) {
-				if (cmd.equals("dbg")) {
-					handleDebuggerCommand(args);
-				}
-				else {
-					printer.println("error", "Debugging session is active! Can only run debug commands.");
-				}
+				printer.println("error", "Debugging session is active! Can only run debug commands.");
 			}
 			else {
 				switch(cmd) {
@@ -531,7 +524,6 @@ public class REPL {
 					case "info":        handleInfoCommand(terminal); break;
 					case "highlight":   handleHighlightCommand(args); break;
 					case "java-ex":     handleJavaExCommand(args); break;
-					case "dbg":         handleDebuggerCommand(args); break;				
 					default:            handleInvalidCommand(cmd); break;
 				}
 			}
@@ -838,7 +830,8 @@ public class REPL {
 		}
 	}
 
-	private void handleDebuggerCommand(final List<String> params) {
+	private void handleDebuggerCommand(final String cmdLine) {
+		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 		final String cmd = trimToEmpty(first(params));
 		
 		if (cmd.equals("") || cmd.equals("status")) {
@@ -861,8 +854,8 @@ public class REPL {
 				DebugAgent.register(new DebugAgent());
 				printer.println("debug", "Debugger: attached");
 			}
-			new ReplDebuggerClient(DebugAgent.current(), printer)
-					.handleDebuggerCommand(toList("start"));
+			new ReplDebuggerClient(DebugAgent.current(), printer, null)
+					.handleDebuggerCommand("start");
 		}
 		else if (cmd.equals("detach")) {
 			if (DebugAgent.current() != null) {
@@ -877,8 +870,11 @@ public class REPL {
 			printer.println("error", "Debugger not attached!");
 		}
 		else {
-			new ReplDebuggerClient(DebugAgent.current(), printer)
-					.handleDebuggerCommand(params);
+			new ReplDebuggerClient(
+					DebugAgent.current(), 
+					printer,
+					(s,env) -> venice.RE(s, "debug", env)
+				).handleDebuggerCommand(cmdLine);
 		}
 	}
 	
