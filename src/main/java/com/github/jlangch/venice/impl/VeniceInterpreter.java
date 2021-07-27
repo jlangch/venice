@@ -721,6 +721,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								// fn may be a normal function, a multi-arity, or a multi-method function							
 								final VncFunction f = fn.getFunctionForArgs(fnArgs);
 								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
+								
+								final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+								if (debugAgent != null && debugAgent.hasBreak(fnName)) {
+									debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env);
+								}
+								
 								final VncList body = (VncList)f.getBody();
 								evaluate_sequence_values(body.butlast(), env);
 								orig_ast = body.last();
