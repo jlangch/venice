@@ -60,22 +60,21 @@ import com.github.jlangch.venice.impl.util.CallFrame;
  * <p>A typical debug session looks like:
  * <pre>
  *   venice> (defn sum [x y] (+ x y))
- *   venice> !dbg attach
- *   venice> !dbg start
- *   venice> !dbg breakpoint add (!) user/sum
- *   venice> (sum 6 7)
- *   Stopped in function user/sum at FunctionEntry
- *   venice> !dbg params
+ *   venice> !attach
+ *   debug> !breakpoint add (!) user/sum
+ *   debug> (sum 6 7)
+ *   Stopped in function user/sum (user: line 1, col 7) at entry
+ *   venice> !params
  *   Parameters:
  *   [x y]
  *
  *   Arguments:
  *   (6 7)
- *   venice> !dbg resume
+ *   debug> !resume
  *   Stopped in function user/sum at FunctionExit
- *   venice> !dbg retval
+ *   debug> !retval
  *   return: 13
- *   venice> !dbg resume
+ *   debug> !resume
  *   Resuming from function user/sum
  * </pre>
  */
@@ -117,6 +116,11 @@ public class ReplDebuggerClient {
 				agent.stepToNextFn(toSet(FunctionExit));
 				break;
 				
+			case "break?": 
+			case "b?":
+				breakQ();
+				break;
+				
 			case "callstack": 
 			case "cs":
 				callstack();
@@ -156,7 +160,16 @@ public class ReplDebuggerClient {
 	}
 
 	public static void pringHelp(final TerminalPrinter printer) {
-		printer.println("debug", HELP);
+		printer.println("stdout", HELP);
+	}
+	
+	private void breakQ() {
+		if (!agent.hasBreak()) {
+			println("Not in a debug break!");
+		}
+		else {
+			println(formatStop(agent.getBreak()));
+		}
 	}
 	
 	private void callstack() {
@@ -555,6 +568,7 @@ public class ReplDebuggerClient {
 	
 	
 	private final static String HELP =
+		   //------------------------------------------------------------------------------80
 			"Venice debugger\n\n" +
 			"Commands: \n" +
 			"  !attach      Attach the debugger to the REPL\n" +
@@ -586,10 +600,12 @@ public class ReplDebuggerClient {
 			"               Short form: !si\n" +
 			"  !step-return Step to the return of the function\n" +
 			"               Short form: !sr\n" +
+			"  !break?      Prints info on weather the debugger is in a break or not\n" +
+			"               Short form: !b?\n" +
 			"  !params      Print the functions parameters\n" +
 			"               Short form: !p\n" +
-			"  !locals x    Print the local vars from the level x. The level\n" +
-			"               is optional and default to the top level.\n" +
+			"  !locals x    Print the local vars from the level x. The level is optional\n" +
+			"               and defaults to the top level.\n" +
 			"               Short form: !l\n" +
 			"  !local v     Print a local var with the name v\n" +
 			"  !global v    Print a global var with the name v\n" +
