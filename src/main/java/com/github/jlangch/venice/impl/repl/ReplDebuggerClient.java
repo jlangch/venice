@@ -45,7 +45,6 @@ import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.debug.SpecialFormVirtualFunction;
-import com.github.jlangch.venice.impl.debug.StopNextType;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -100,19 +99,19 @@ public class ReplDebuggerClient {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
 		switch(trimToEmpty(first(params))) {
-			case "breakpoint":   // !dbg breakpoint add (|) user/sum +
-			case "bp":
+			case "breakpoint":   // !dbg breakpoint add (!) user/sum +
+			case "b":
 				handleBreakpointCmd(drop(params, 1));
 				break;
 				
 			case "resume":  // $resume
 			case "r":
-				resume();
+				agent.resume();
 				break;
 				
 			case "step":  // $step ()
 			case "s":
-				stepToNextFunction(
+				agent.stepToNextFn(
 					parseBreakpointTypes(
 						second(params), 
 						toSet(FunctionEntry)));
@@ -120,7 +119,7 @@ public class ReplDebuggerClient {
 				
 			case "step-":  // $step- ()
 			case "s-":
-				stepToNextNonSystemFunction(
+				agent.stepToNextNonSystemFn(
 					parseBreakpointTypes(
 						second(params), 
 						toSet(FunctionEntry)));
@@ -176,24 +175,6 @@ public class ReplDebuggerClient {
 
 	public static void pringHelp(final TerminalPrinter printer) {
 		printer.println("debug", HELP);
-	}
-	
-	private void resume() {
-		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		// println("Returning from function " + fnName);
-		agent.leaveBreak(StopNextType.MatchingFnName, null);
-	}
-	
-	private void stepToNextFunction(final Set<BreakpointType> flags) {
-		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		// println("Returning from function " + fnName + ". Stop on next function...");
-		agent.leaveBreak(StopNextType.AnyFunction, flags);
-	}
-	
-	private void stepToNextNonSystemFunction(final Set<BreakpointType> flags) {
-		// final String fnName = agent.getBreak().getFn().getQualifiedName();
-		// println("Returning from function " + fnName + ". Stop on next function...");
-		agent.leaveBreak(StopNextType.AnyNonSystemFunction, flags);
 	}
 	
 	private void callstack() {
@@ -601,7 +582,13 @@ public class ReplDebuggerClient {
 			"               breakpoint list\n" +
 			"                  List all breakpoints\n" +
 			"                  E.g.: $breakpoint list\n" +
-			"               Short form: \"$bp ...\"\n" +
+			"               Short form: \"$b ...\"\n" +
+			"  $resume      Resume from breakpoint\n" +
+			"               Short form: \"$r\"\n" +
+			"  $step        Step into next function\n" +
+			"               Short form: \"$s\"\n" +
+			"  $step-       Step into next non system function\n" +
+			"               Short form: \"$s-\"\n" +
 			"  $params      Print the function's parameters\n" +
 			"               Short form: \"$p\"\n" +
 			"  $locals x    Print the local vars from the level x. The level\n" +

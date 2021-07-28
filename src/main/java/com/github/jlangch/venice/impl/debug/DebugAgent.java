@@ -42,6 +42,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -49,6 +50,10 @@ public class DebugAgent implements IDebugAgent {
 	public DebugAgent() {
 	}
 	
+
+	// -------------------------------------------------------------------------
+	// Register
+	// -------------------------------------------------------------------------
 
 	public static void register(final DebugAgent agent) {
 		ThreadLocalMap.setDebugAgent(agent);
@@ -66,6 +71,14 @@ public class DebugAgent implements IDebugAgent {
 		return ThreadLocalMap.getDebugAgent() != null;
 	}
 	
+	
+	@Override
+	public void detach() {
+		activeBreak = null;
+		breakpoints.clear();
+		stopNextType = StopNextType.MatchingFnName;
+		stopNextTypeFlags = null;
+	}
 
 	
 	// -------------------------------------------------------------------------
@@ -100,7 +113,17 @@ public class DebugAgent implements IDebugAgent {
 	public void removeAllBreakpoints() {
 		breakpoints.clear();
 		stopNextType = StopNextType.MatchingFnName;
-		stopNextTypeFlags = null;
+		stopNextTypeFlags = DEFAULT_FLAGS;
+	}
+
+	@Override
+	public void storeBreakpoints() {
+		memorized.putAll(breakpoints);
+	}
+	
+	@Override
+	public void restoreBreakpoints() {
+		breakpoints.putAll(memorized);
 	}
 
 
@@ -227,13 +250,24 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void leaveBreak(
-			final StopNextType type,
-			final Set<BreakpointType> flags
-	) {
+	public void resume() {
 		activeBreak = null;
-		stopNextType = type == null ? StopNextType.MatchingFnName : type;
-		stopNextTypeFlags = flags == null ? null : new HashSet<>(flags);
+		stopNextType = StopNextType.MatchingFnName;
+		stopNextTypeFlags = DEFAULT_FLAGS;
+	}
+
+	@Override
+	public void stepToNextFn(final Set<BreakpointType> flags) {
+		activeBreak = null;
+		stopNextType = StopNextType.AnyFunction;
+		stopNextTypeFlags = flags == null ? DEFAULT_FLAGS : new HashSet<>(flags);
+	}
+
+	@Override
+	public void stepToNextNonSystemFn(final Set<BreakpointType> flags) {
+		activeBreak = null;
+		stopNextType = StopNextType.AnyNonSystemFunction;
+		stopNextTypeFlags = flags == null ? DEFAULT_FLAGS : new HashSet<>(flags);
 	}
 	
 	private void notifOnBreak(final Break br) {
@@ -257,17 +291,14 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		switch(stopNextType) {
 			case MatchingFnName:
-				final Set<BreakpointType> types = breakpoints.get(fnName);
-				return types != null && types.contains(breakpointType);
+				return breakpoints.getOrDefault(fnName, EMPTY_BP)
+								  .contains(breakpointType);
 				
 			case AnyFunction:
-				return stopNextTypeFlags == null 
-						|| stopNextTypeFlags.contains(breakpointType);
+				return stopNextTypeFlags.contains(breakpointType);
 				
 			case AnyNonSystemFunction: 
-				return !hasSystemNS(fnName)
-							&& (stopNextTypeFlags == null 
-									|| stopNextTypeFlags.contains(breakpointType));
+				return !hasSystemNS(fnName) || stopNextTypeFlags.contains(breakpointType);
 				
 			default:
 				return false;
@@ -277,7 +308,7 @@ public class DebugAgent implements IDebugAgent {
 	private void waitOnBreak(final Break br) {
 		try {
 			while(hasBreak()) {
-				Thread.sleep(500);
+				Thread.sleep(BREAK_SLEEP);
 			}
 		}
 		catch(InterruptedException iex) {
@@ -290,12 +321,28 @@ public class DebugAgent implements IDebugAgent {
 		}
 		finally {
 			activeBreak = null;
+			stopNextType = StopNextType.MatchingFnName;
+			stopNextTypeFlags = null;
 		}
 	}
-
 	
+
+	private static enum StopNextType {
+		MatchingFnName,
+		AnyFunction,
+		AnyNonSystemFunction;	
+	}
+	
+	
+	private static final long BREAK_SLEEP = 500L;
+	private static final Set<BreakpointType> EMPTY_BP = new HashSet<>();
+	private static final Set<BreakpointType> DEFAULT_FLAGS = CollectionUtil.toSet(BreakpointType.FunctionEntry);
+
+	// simple breakpoint memorization
+	private static final ConcurrentHashMap<String,Set<BreakpointType>> memorized = new ConcurrentHashMap<>();
+
 	private volatile StopNextType stopNextType = StopNextType.MatchingFnName;
-	private volatile Set<BreakpointType> stopNextTypeFlags = null;
+	private volatile Set<BreakpointType> stopNextTypeFlags = DEFAULT_FLAGS;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = new ConcurrentHashMap<>();
