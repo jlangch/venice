@@ -77,7 +77,7 @@ public class DebugAgent implements IDebugAgent {
 		activeBreak = null;
 		breakpoints.clear();
 		stopNextType = StopNextType.MatchingFnName;
-		stopNextTypeFlags = null;
+		stopNextFlags = null;
 	}
 
 	
@@ -113,7 +113,7 @@ public class DebugAgent implements IDebugAgent {
 	public void removeAllBreakpoints() {
 		breakpoints.clear();
 		stopNextType = StopNextType.MatchingFnName;
-		stopNextTypeFlags = DEFAULT_FLAGS;
+		stopNextFlags = DEFAULT_FLAGS;
 	}
 
 	@Override
@@ -253,21 +253,21 @@ public class DebugAgent implements IDebugAgent {
 	public void resume() {
 		activeBreak = null;
 		stopNextType = StopNextType.MatchingFnName;
-		stopNextTypeFlags = DEFAULT_FLAGS;
+		stopNextFlags = DEFAULT_FLAGS;
 	}
 
 	@Override
 	public void stepToNextFn(final Set<BreakpointType> flags) {
 		activeBreak = null;
 		stopNextType = StopNextType.AnyFunction;
-		stopNextTypeFlags = flags == null ? DEFAULT_FLAGS : new HashSet<>(flags);
+		stopNextFlags = flags == null ? DEFAULT_FLAGS : new HashSet<>(flags);
 	}
 
 	@Override
 	public void stepToNextNonSystemFn(final Set<BreakpointType> flags) {
 		activeBreak = null;
 		stopNextType = StopNextType.AnyNonSystemFunction;
-		stopNextTypeFlags = flags == null ? DEFAULT_FLAGS : new HashSet<>(flags);
+		stopNextFlags = flags == null ? DEFAULT_FLAGS : new HashSet<>(flags);
 	}
 	
 	private void notifOnBreak(final Break br) {
@@ -295,10 +295,10 @@ public class DebugAgent implements IDebugAgent {
 								  .contains(breakpointType);
 				
 			case AnyFunction:
-				return stopNextTypeFlags.contains(breakpointType);
+				return stopNextFlags.contains(breakpointType);
 				
 			case AnyNonSystemFunction: 
-				return !hasSystemNS(fnName) || stopNextTypeFlags.contains(breakpointType);
+				return !hasSystemNS(fnName) || stopNextFlags.contains(breakpointType);
 				
 			default:
 				return false;
@@ -322,7 +322,7 @@ public class DebugAgent implements IDebugAgent {
 		finally {
 			activeBreak = null;
 			stopNextType = StopNextType.MatchingFnName;
-			stopNextTypeFlags = null;
+			stopNextFlags = null;
 		}
 	}
 	
@@ -342,7 +342,7 @@ public class DebugAgent implements IDebugAgent {
 	private static final ConcurrentHashMap<String,Set<BreakpointType>> memorized = new ConcurrentHashMap<>();
 
 	private volatile StopNextType stopNextType = StopNextType.MatchingFnName;
-	private volatile Set<BreakpointType> stopNextTypeFlags = DEFAULT_FLAGS;
+	private volatile Set<BreakpointType> stopNextFlags = DEFAULT_FLAGS;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = new ConcurrentHashMap<>();

@@ -37,7 +37,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
@@ -53,7 +52,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallStack;
 
 
 /**
@@ -86,89 +84,73 @@ public class ReplDebuggerClient {
 	public ReplDebuggerClient(
 			final IDebugAgent agent,
 			final TerminalPrinter printer,
-			final BiConsumer<String, Env> evaluator
+			final Thread replThread
 	) {
 		this.agent = agent;
 		this.printer = printer;
-		this.evaluator = evaluator;
+		this.replThread = replThread;
 		
 		agent.addBreakListener(this::breakpointListener);
 	}
 
-	public void handleDebuggerCommand(final String cmdLine) {
+	public void handleCommand(final String cmdLine) {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
 		switch(trimToEmpty(first(params))) {
-			case "breakpoint":   // !dbg breakpoint add (!) user/sum +
+			case "breakpoint":
 			case "b":
 				handleBreakpointCmd(drop(params, 1));
 				break;
 				
-			case "resume":  // $resume
+			case "resume":
 			case "r":
 				agent.resume();
 				break;
 				
-			case "step":  // $step ()
-			case "s":
-				agent.stepToNextFn(
-					parseBreakpointTypes(
-						second(params), 
-						toSet(FunctionEntry)));
+			case "step-into":
+			case "si":
+				agent.stepToNextFn(toSet(FunctionEntry));
 				break;
 				
-			case "step-":  // $step- ()
-			case "s-":
-				agent.stepToNextNonSystemFn(
-					parseBreakpointTypes(
-						second(params), 
-						toSet(FunctionEntry)));
+			case "step-return":
+			case "sr":
+				agent.stepToNextFn(toSet(FunctionExit));
 				break;
 				
-			case "callstack":  // $callstack
+			case "callstack": 
 			case "cs":
 				callstack();
 				break;
 				
-			case "params":  // $params
+			case "params": 
 			case "p":
 				params(drop(params, 1));
 				break;
 				
-			case "locals":  // $locals {level}
+			case "locals":
 			case "l":
 				locals(second(params));
 				break;
 				
-			case "local":  // $local x
+			case "local": 
 				local(second(params));
 				break;
 				
-			case "global":  // $global filter
+			case "global":
 				global(second(params));
 				break;
 				
-			case "retval":  // $retval
+			case "retval":
 			case "ret":
 				retval();
 				break;
 				
-			case "ex":  // $ex
+			case "ex":
 				ex();
 				break;
-				
-			case "eval":  // $eval expr
-				eval(cmdLine.substring(5));
-				break;
 
-			case "help":
-			case "h":
-			case "?":
-				println(HELP);
-				break;
-				
 			default:
-				printlnErr("Invalid debug command.");
+				println(HELP);
 				break;
 		}
 	}
@@ -183,8 +165,10 @@ public class ReplDebuggerClient {
 			return;
 		}
 		
-		final CallStack cs = agent.getBreak().getCallStack();
-		println(cs.toString());
+		final Break br = agent.getBreak();
+
+		println(formatBreak(br));
+		println(br.getCallStack().toString());
 	}
 	
 	private void params(final List<String> params) {
@@ -192,7 +176,11 @@ public class ReplDebuggerClient {
 			println("Not in a debug break!");
 			return;
 		}
-		
+
+		final Break br = agent.getBreak();
+
+		println(formatBreak(br));
+
 		final VncFunction fn = agent.getBreak().getFn();
 		final VncVector spec = fn.getParams();	
 		final VncList args = agent.getBreak().getArgs();
@@ -216,6 +204,10 @@ public class ReplDebuggerClient {
 			println("Not in a debug break!");
 			return;
 		}
+		
+		final Break br = agent.getBreak();
+
+		println(formatBreak(br));
 
 		Env env = agent.getBreak().getEnv();
 		if (env == null) {
@@ -293,8 +285,12 @@ public class ReplDebuggerClient {
 			println("Not in a debug break!");
 			return;
 		}
+		
+		final Break br = agent.getBreak();
 
-		final VncVal v = agent.getBreak().getRetVal();
+		println(formatBreak(br));
+
+		final VncVal v = br.getRetVal();
 		if (v == null) {
 			println("Return value: <not available>");
 		}
@@ -309,28 +305,17 @@ public class ReplDebuggerClient {
 			println("Not in a debug break!");
 			return;
 		}
+	
+		final Break br = agent.getBreak();
 
-		final Exception e = agent.getBreak().getException();
+		println(formatBreak(br));
+
+		final Exception e = br.getException();
 		if (e == null) {
 			println("exception: <not available>");
 		}
 		else {
 			printer.printex("debug", e);
-		}
-	}
-
-	private void eval(final String expr) {
-		if (!agent.hasBreak()) {
-			println("Not in a debug break!");
-			return;
-		}
-
-		final Env env = agent.getBreak().getEnv();
-		if (env == null) {
-			println("No expression eval available");
-		}
-		else {
-			evaluator.accept(expr, env);
 		}
 	}
 
@@ -431,19 +416,10 @@ public class ReplDebuggerClient {
 	}
 	
 	private void breakpointListener(final Break b) {
-		final VncFunction fn = b.getFn();
-		
-		final String srcInfo = fn.isNative() 
-								? "" 
-								: " at " + new CallFrame(fn).getSourcePosInfo();
-		
-		printer.println(
-				"debug", 
-				String.format(
-						"Stopped in function %s (%s)%s",
-						fn.getQualifiedName(),
-						b.getBreakpointType(),
-						srcInfo));
+		printer.println("debug", formatStop(b));
+
+		// Interrupt the LineReader to display a new prompt
+		replThread.interrupt();
 	}
 
 	private String renderNativeFnParams(
@@ -546,6 +522,29 @@ public class ReplDebuggerClient {
 		return String.format("[%d] -> %s", index, sval);
 	}
 	
+	private String formatBreak(final Break br) {
+		return String.format(
+				"Break in %s %s at %s.",
+				br.getFn() instanceof SpecialFormVirtualFunction
+					? "special form"
+					: "function",
+				br.getFn().getQualifiedName(),
+				br.getBreakpointType().description());
+	}
+	
+	private String formatStop(final Break br) {
+		return String.format(
+				"Stopped in %s %s%s at %s.",
+				br.getFn() instanceof SpecialFormVirtualFunction
+					? "special form"
+					: "function",
+				br.getFn().getQualifiedName(),
+				br.getFn().isNative() 
+					? "" 
+					: " (" + new CallFrame(br.getFn()).getSourcePosInfo() +")",
+				br.getBreakpointType().description());
+	}
+	
 	private void println(final String s) {
 		printer.println("debug", s);
 	}
@@ -558,54 +557,50 @@ public class ReplDebuggerClient {
 	private final static String HELP =
 			"Venice debugger\n\n" +
 			"Commands: \n" +
-			"  $attach      Attach the debugger to the REPL\n" +
-			"               Short form: \"$a\"\n" +
-			"  $detach      Detach the debugger from the REPL\n" +
-			"               Short form: \"$d\"\n" +
-			"  $breakpoint  Manage breakpoints (short form: \"$bp\")\n" +
-			"               breakpoint add n, n*\n" +
+			"  !attach      Attach the debugger to the REPL\n" +
+			"  !detach      Detach the debugger from the REPL\n" +
+			"  !breakpoint  Manage breakpoints (short form: !bp)\n" +
+			"               !breakpoint add n, n*\n" +
 			"                  Add one or multiple breakpoints\n" +
-			"                  E.g.: $breakpoint add user/gauss\n" +
-			"                        $breakpoint add user/gauss +\n" +
-			"               breakpoint add flags n, n*\n" +
+			"                  E.g.: !breakpoint add user/gauss\n" +
+			"                        !breakpoint add user/gauss +\n" +
+			"               !breakpoint add flags n, n*\n" +
 			"                  Add one or multiple breakpoints with the given\n" +
 			"                  flags. \n" +
 			"                  flags is a combination of:\n" +
 			"                    (  break at the entry of a function\n" +
 			"                    !  break at catching an exception in a function\n" +
 			"                    )  break at the exit of a function\n" +
-			"                  E.g.: $breakpoint add (!) user/gauss \n" +
-			"                        $breakpoint add ( user/gauss \n" +
-			"               breakpoint remove n, n*\n" +
+			"                  E.g.: !breakpoint add (!) user/gauss \n" +
+			"                        !breakpoint add ( user/gauss \n" +
+			"               !breakpoint remove n, n*\n" +
 			"                  Remove one or multiple breakpoints\n" +
-			"                  E.g.: $breakpoint remove user/gauss + \n" +
-			"               breakpoint list\n" +
+			"                  E.g.: !breakpoint remove user/gauss + \n" +
+			"               !breakpoint list\n" +
 			"                  List all breakpoints\n" +
-			"                  E.g.: $breakpoint list\n" +
-			"               Short form: \"$b ...\"\n" +
-			"  $resume      Resume from breakpoint\n" +
-			"               Short form: \"$r\"\n" +
-			"  $step        Step into next function\n" +
-			"               Short form: \"$s\"\n" +
-			"  $step-       Step into next non system function\n" +
-			"               Short form: \"$s-\"\n" +
-			"  $params      Print the function's parameters\n" +
-			"               Short form: \"$p\"\n" +
-			"  $locals x    Print the local vars from the level x. The level\n" +
+			"                  E.g.: !breakpoint list\n" +
+			"               Short form: !b ...\n" +
+			"  !resume      Resume from breakpoint\n" +
+			"               Short form: !r\n" +
+			"  !step-into   Step into next function\n" +
+			"               Short form: !si\n" +
+			"  !step-return Step to the return of the function\n" +
+			"               Short form: !sr\n" +
+			"  !params      Print the functions parameters\n" +
+			"               Short form: !p\n" +
+			"  !locals x    Print the local vars from the level x. The level\n" +
 			"               is optional and default to the top level.\n" +
-			"               Short form: \"$l\"\n" +
-			"  $local v     Print a local var with the name v\n" +
-			"  $global v    Print a global var with the name v\n" +
-			"  $callstack   Print the current callstack\n" +
-			"               Short form: \"$cs\"\n" +
-			"  $retval      Print the function's return value\n" +
-			"               Short form: \"$ret\"\n" +
-			"  $ex          Print the function's exception\n" +
-			"  $eval e      Evaluates an expression\n" +
-			"               E.g.: $eval (+ 1 2)\n";
+			"               Short form: !l\n" +
+			"  !local v     Print a local var with the name v\n" +
+			"  !global v    Print a global var with the name v\n" +
+			"  !callstack   Print the current callstack\n" +
+			"               Short form: !cs\n" +
+			"  !retval      Print the functions return value\n" +
+			"               Short form: !ret\n" +
+			"  !ex          Print the function's exception\n";
 
    
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
-	private final BiConsumer<String, Env> evaluator;
+	private final Thread replThread;
 }

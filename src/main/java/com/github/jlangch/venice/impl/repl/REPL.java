@@ -82,6 +82,7 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
@@ -167,10 +168,12 @@ public class REPL {
 			final CommandLineArgs cli,
 			final boolean macroexpand
 	) throws Exception {
-		final String prompt = config.getPrompt();
-		final String secondaryPrompt = ansiTerminal ? config.getSecondaryPrompt() : "";
-		final String resultPrefix = config.getResultPrefix();
-		
+		promptVenice = config.getPrompt();
+		promptDebug = "debug> ";
+		resultPrefix = config.getResultPrefix();
+
+		changePrompt(promptVenice);
+
 		final Thread mainThread = Thread.currentThread();
 		
 		final TerminalBuilder builder = TerminalBuilder
@@ -241,12 +244,11 @@ public class REPL {
 		
 		highlight = highlighter != null;
 				
-		replLoop(cli, prompt, resultPrefix, terminal, reader, history, resultHistory, out, err, in);
+		replLoop(cli, resultPrefix, terminal, reader, history, resultHistory, out, err, in);
 	}
 
 	private void replLoop(
 			final CommandLineArgs cli,
-			final String prompt,
 			final String resultPrefix,
 			final Terminal terminal,
 			final LineReader reader,
@@ -283,49 +285,76 @@ public class REPL {
 				
 				if (ReplParser.isCommand(line)) {
 					final String cmd = trimToEmpty(line.trim().substring(1));
-					switch(cmd) {
-						case "reload":
-							env = loadEnv(venice, cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
-							printer.println("system", "reloaded");
-							break;
-							
-						case "restart":
-							if (restartable) {
-								printer.println("system", "restarting...");
-								ReplRestart.write(
-									venice.isMacroExpandOnLoad(),
-									config.getColorMode());
-								System.exit(RESTART_EXIT_CODE);
-								return;
-							}
-							else {
-								printer.println("error", "This REPL is not restartable!");
-							}
-							break;
-							
-						case "quit":
-						case "q":
-						case "exit":
-						case "e":
-							clearCommandHistoryIfRequired(history);
-							printer.println("interrupt", " good bye ");
-							Thread.sleep(1000);
-							return; // quit the REPL
-							
-						default:
-							handleCommand(cmd, env, terminal, history);
-							break;
+					if (cmd.equals("quit") || cmd.equals("q") || cmd.equals("exit") || cmd.equals("e")) {
+						quitREPL( history);
+						return; // quit the REPL
 					}
 				}
-				else if (ReplParser.isDebugCommand(line)) {
-					handleDebuggerCommand(line.trim().substring(1).trim());				
-				}
-				else if (ReplParser.isDroppedVeniceScriptFile(line)) {
-					handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
+				
+				if (DebugAgent.isAttached()) {
+					final DebugAgent agent = DebugAgent.current();
+					
+					if (ReplParser.isCommand(line)) {
+						final String cmd = trimToEmpty(line.trim().substring(1));
+						switch(cmd) {
+							case "detach":
+								switchToRegularREPL();
+								break;
+								
+							default:
+								new ReplDebuggerClient(agent, printer, Thread.currentThread()).handleCommand(cmd);
+								break;
+						}
+					}
+					else if (DebugAgent.current().hasBreak()) {
+						// run the expression in the context of the break
+						final Env env = agent.getBreak().getEnv();
+						runDebuggerExprAsync(line, env);
+					}
+					else {
+						// run the s-expr read from the line reader
+						runScriptAsync(line, resultPrefix, resultHistory);
+					}
 				}
 				else {
-					// run the s-expr read from the line reader
-					runScript(line, resultPrefix, resultHistory);
+					if (ReplParser.isCommand(line)) {
+						final String cmd = trimToEmpty(line.trim().substring(1));
+						switch(cmd) {
+							case "reload":
+								env = loadEnv(venice, cli, terminal, out, err, in, venice.isMacroExpandOnLoad());
+								printer.println("system", "reloaded");
+								break;
+								
+							case "restart":
+								if (restartable) {
+									printer.println("system", "restarting...");
+									ReplRestart.write(
+										venice.isMacroExpandOnLoad(),
+										config.getColorMode());
+									System.exit(RESTART_EXIT_CODE);
+									return;
+								}
+								else {
+									printer.println("error", "This REPL is not restartable!");
+								}
+								break;
+
+							case "attach":
+								switchToDebugREPL();
+								break;
+								
+							default:
+								handleReplCommand(cmd, env, terminal, history);
+								break;
+						}
+					}
+					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
+						handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
+					}
+					else {
+						// run the s-expr read from the line reader
+						runScriptSync(line, resultPrefix, resultHistory);
+					}
 				}
 			} 
 			catch (ContinueException ex) {
@@ -338,6 +367,40 @@ public class REPL {
 				handleException(ex);
 			}
 		}
+	}
+	
+	private void switchToRegularREPL() {
+		final DebugAgent agent = DebugAgent.current();
+		if (agent != null) {
+			agent.storeBreakpoints();
+			agent.detach();
+			DebugAgent.unregister();
+			printer.println("debug", "Debugger: detached");
+		}
+		else {
+			printer.println("error", "Debugger: not attached");
+			printer.println("debug", "Attach a debuger first using: $attach");
+		}
+		changePrompt(promptVenice);
+	}
+	
+	private void switchToDebugREPL() {
+		if (DebugAgent.isAttached()) {
+			printer.println("debug", "Debugger: already attached");
+		}
+		else {
+			final DebugAgent agent = new DebugAgent();
+			DebugAgent.register(agent);
+			agent.restoreBreakpoints();
+			printer.println("debug", "Debugger: attached");
+		}
+		changePrompt(promptDebug);
+	}
+	
+	private void quitREPL(final History history) {
+		clearCommandHistoryIfRequired(history);
+		printer.println("interrupt", " good bye ");
+		try { Thread.sleep(1000); } catch(Exception e) {};
 	}
 	
 	private void runScript(
@@ -383,6 +446,8 @@ public class REPL {
 		
 		printer.println("debug", String.format("[%d] Async ...", asyncID));
 
+		final Thread replThread = Thread.currentThread();
+		
 		// thread local values from the parent thread
 		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
 				new AtomicReference<>(ThreadLocalMap.snapshot());
@@ -410,6 +475,11 @@ public class REPL {
 					if (!isResultHistorySymbol(line, resultHistory)) {
 						resultHistory.add(result);
 					}
+
+					try { Thread.sleep(200); } catch(Exception ex) {}
+
+					// Interrupt the LineReader to display a new prompt
+					replThread.interrupt();
 				}
 			}
 			catch (SymbolNotFoundException ex) {
@@ -420,11 +490,9 @@ public class REPL {
 			}
 		};
 
-		final Thread th = new Thread(task, "debug");
+		final Thread th = new Thread(task, "async");
 		th.setDaemon(true);
-		th.start();
-		
-		Thread.sleep(500);
+		th.start();		
 	}
 
 	
@@ -521,7 +589,7 @@ public class REPL {
 		runScript(script, resultPrefix, resultHistory);
 	}
 	
-	private void handleCommand(
+	private void handleReplCommand(
 			final String cmdLine, 
 			final Env env, 
 			final Terminal terminal,
@@ -864,53 +932,6 @@ public class REPL {
 					printer.println("error", "Invalid parameter. Use !java-ex {on|off}.");
 					break;
 			}
-		}
-	}
-
-	private void handleDebuggerCommand(final String cmdLine) {
-		final List<String> params = Arrays.asList(cmdLine.split(" +"));
-		final String cmd = trimToEmpty(first(params));
-		
-		if (cmd.equals("") || cmd.equals("status")) {
-			printer.println("debug", "Debugger: " + getDebuggerStatus());
-		}
-		else if (cmd.equals("help") || cmd.equals("h")) {
-			ReplDebuggerClient.pringHelp(printer);
-		}
-		else if (cmd.equals("attach") || cmd.equals("a")) {
-			if (DebugAgent.isAttached()) {
-				printer.println("debug", "Debugger: already attached");
-			}
-			else {
-				final DebugAgent agent = new DebugAgent();
-				DebugAgent.register(agent);
-				agent.restoreBreakpoints();
-				printer.println("debug", "Debugger: attached");
-			}
-		}
-		else if (cmd.equals("detach") || cmd.equals("d")) {
-			final DebugAgent agent = DebugAgent.current();
-			if (agent != null) {
-				agent.storeBreakpoints();
-				agent.detach();
-				DebugAgent.unregister();
-				printer.println("debug", "Debugger: detached");
-			}
-			else {
-				printer.println("error", "Debugger: not attached");
-				printer.println("debug", "Attach a debuger first using: $attach");
-			}
-		}
-		else if (DebugAgent.current() == null) {
-			printer.println("error", "Debugger not attached!");
-			printer.println("debug", "Attach a debuger first using: $attach");
-		}
-		else {
-			new ReplDebuggerClient(
-					DebugAgent.current(), 
-					printer,
-					(s,env) -> runDebuggerExprAsync(s, env)
-				).handleDebuggerCommand(cmdLine);
 		}
 	}
 	
@@ -1314,6 +1335,12 @@ public class REPL {
 		return DebugAgent.isAttached() ? "attached" : "not attached";
 	}
 	
+	private void changePrompt(final String prompt) {
+		this.prompt = prompt;
+		this.secondaryPrompt = ansiTerminal ? StringUtil.repeat(' ', prompt.length()) : "";
+
+	}
+	
 	
 	public static enum SetupMode { Minimal, Extended };
 
@@ -1413,5 +1440,11 @@ public class REPL {
 	private boolean highlight = true;
 	private boolean javaExceptions = false;
 	private boolean restartable = false;
+	private String promptVenice;
+	private String promptDebug;
+	private String prompt;
+	private String secondaryPrompt;
+	private String resultPrefix = "=> ";
+
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
 }
