@@ -27,22 +27,25 @@ import java.util.List;
 
 public enum BreakpointType {
 
-	FunctionEntry("("),		// Stop at function entry
+	FunctionEntry("(", "entry"),			// Stop at function entry
 
-	FunctionExit(")"),		// Stop at function exit
+	FunctionExit(")", "exit"),				// Stop at function exit
 
-	FunctionException("!");	// Stop if exception is caught in function
+	FunctionException("!", "exception");	// Stop if exception is caught in function
 
 
-	private BreakpointType(String symbol) {
+	private BreakpointType(String symbol, String description) {
 		this.symbol = symbol;
+		this.description = description;
 	}
 
 	public String symbol() { return symbol; }
+	public String description() { return description; }
 
 	public static List<BreakpointType> all() {
 		return Arrays.asList(values());
 	}
 
 	private final String symbol;
+	private final String description;
 }

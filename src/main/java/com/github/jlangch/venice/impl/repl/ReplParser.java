@@ -72,11 +72,8 @@ public class ReplParser extends DefaultParser {
 	}
 
 	public static boolean isCommand(final String buffer) {
-		return buffer.trim().startsWith("!");
-	}
-
-	public static boolean isDebugCommand(final String buffer) {
-		return buffer.trim().startsWith("$");
+		final String cmd = buffer.trim();
+		return cmd.startsWith("!") || cmd.startsWith("$");
 	}
 
 	
