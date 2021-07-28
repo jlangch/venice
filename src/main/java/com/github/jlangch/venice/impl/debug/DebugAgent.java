@@ -62,30 +62,12 @@ public class DebugAgent implements IDebugAgent {
 		return ThreadLocalMap.getDebugAgent();
 	}
 	
+	public static boolean isAttached() {
+		return ThreadLocalMap.getDebugAgent() != null;
+	}
 	
-	// -------------------------------------------------------------------------
-	// Debugger turn on/off
-	// -------------------------------------------------------------------------
+
 	
-	@Override
-	public void start() {
-		activated = true;
-		reset();
-	}
-
-	@Override
-	public void stop() {
-		activated = false;
-		reset();
-	}
-
-	@Override
-	public boolean active() {
-		return activated;
-	}
-
-
-
 	// -------------------------------------------------------------------------
 	// Breakpoint management
 	// -------------------------------------------------------------------------
@@ -129,16 +111,11 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public boolean hasBreak(final String qualifiedName) {
-		if (activated) {
-			switch (stopNextType) {
-				case MatchingFnName: return breakpoints.containsKey(qualifiedName);
-				case AnyFunction: return true;
-				case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
-				default: return false;
-			}
-		}
-		else {
-			return false;
+		switch (stopNextType) {
+			case MatchingFnName: return breakpoints.containsKey(qualifiedName);
+			case AnyFunction: return true;
+			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
+			default: return false;
 		}
 	}
 
@@ -258,13 +235,6 @@ public class DebugAgent implements IDebugAgent {
 		stopNextType = type == null ? StopNextType.MatchingFnName : type;
 		stopNextTypeFlags = flags == null ? null : new HashSet<>(flags);
 	}
-
-	private void reset() {
-		activeBreak = null;
-		stopNextType = StopNextType.MatchingFnName;
-		stopNextTypeFlags = null;
-		breakListener = null;
-	}
 	
 	private void notifOnBreak(final Break br) {
 		activeBreak = br;
@@ -324,7 +294,6 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	
-	private volatile boolean activated = false;
 	private volatile StopNextType stopNextType = StopNextType.MatchingFnName;
 	private volatile Set<BreakpointType> stopNextTypeFlags = null;
 	private volatile Break activeBreak = null;

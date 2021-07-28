@@ -92,20 +92,14 @@ public class ReplDebuggerClient {
 		this.agent = agent;
 		this.printer = printer;
 		this.evaluator = evaluator;
+		
+		agent.addBreakListener(this::breakpointListener);
 	}
 
 	public void handleDebuggerCommand(final String cmdLine) {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
 		switch(trimToEmpty(first(params))) {
-			case "start":  // $ start
-				start();
-				break;
-				
-			case "stop":  // $ stop
-				stop();
-				break;
-				
 			case "breakpoint":   // !dbg breakpoint add (|) user/sum +
 			case "bp":
 				handleBreakpointCmd(drop(params, 1));
@@ -182,17 +176,6 @@ public class ReplDebuggerClient {
 
 	public static void pringHelp(final TerminalPrinter printer) {
 		printer.println("debug", HELP);
-	}
-	
-	private void start() {
-		agent.start();
-		agent.addBreakListener(this::breakpointListener);
-		println("Debugger: started");
-	}
-	
-	private void stop() {
-		agent.stop();
-		println("Debugger: stopped");
 	}
 	
 	private void resume() {
@@ -595,10 +578,10 @@ public class ReplDebuggerClient {
 			"Venice debugger\n\n" +
 			"Commands: \n" +
 			"  $attach      Attach the debugger to the REPL\n" +
+			"               Short form: \"$a\"\n" +
 			"  $detach      Detach the debugger from the REPL\n" +
-			"  $start       Start debugging\n" +
-			"  $stop        Stop debugging\n" +
-			"  $breakpoint  Manage breakpoints (short form: \"$ bp\")\n" +
+			"               Short form: \"$d\"\n" +
+			"  $breakpoint  Manage breakpoints (short form: \"$bp\")\n" +
 			"               breakpoint add n, n*\n" +
 			"                  Add one or multiple breakpoints\n" +
 			"                  E.g.: $breakpoint add user/gauss\n" +
@@ -626,7 +609,7 @@ public class ReplDebuggerClient {
 			"               Short form: \"$l\"\n" +
 			"  $local v     Print a local var with the name v\n" +
 			"  $global v    Print a global var with the name v\n" +
-			"  $callstack   Print the current callstack (short form: \"$ cs\")\n" +
+			"  $callstack   Print the current callstack\n" +
 			"               Short form: \"$cs\"\n" +
 			"  $retval      Print the function's return value\n" +
 			"               Short form: \"$ret\"\n" +

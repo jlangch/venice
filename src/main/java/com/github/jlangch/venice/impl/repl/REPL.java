@@ -349,11 +349,11 @@ public class REPL {
 			printer.println("error", "Debugging session is active! Can only run debug commands.");
 		}
 		else {
-			if (DebugAgent.current() == null) {
-				runScriptSync(line, resultPrefix, resultHistory);
+			if (DebugAgent.isAttached()) {
+				runScriptAsync(line, resultPrefix, resultHistory);
 			}
 			else {
-				runScriptAsync(line, resultPrefix, resultHistory);
+				runScriptSync(line, resultPrefix, resultHistory);
 			}
 		}
 	}
@@ -436,7 +436,7 @@ public class REPL {
 		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
 				new AtomicReference<>(ThreadLocalMap.snapshot());
 
-		// run the script in another thread when debugging it
+		// run the expression in another thread without debugger!! 
 		final Runnable task = () -> {
 			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 			ThreadLocalMap.clearCallStack();
@@ -877,26 +877,18 @@ public class REPL {
 		else if (cmd.equals("help") || cmd.equals("h")) {
 			ReplDebuggerClient.pringHelp(printer);
 		}
-		else if (cmd.equals("attach")) {
-			if (DebugAgent.current() == null) {
-				DebugAgent.register(new DebugAgent());
-				printer.println("debug", "Debugger: attached");
-			}
-			else {
+		else if (cmd.equals("attach") || cmd.equals("a")) {
+			if (DebugAgent.isAttached()) {
 				printer.println("debug", "Debugger: already attached");
 			}
-		}
-		else if (cmd.equals("attach+") || cmd.equals("a+")) {
-			if (DebugAgent.current() == null) {
+			else {
 				DebugAgent.register(new DebugAgent());
 				printer.println("debug", "Debugger: attached");
 			}
-			new ReplDebuggerClient(DebugAgent.current(), printer, null)
-					.handleDebuggerCommand("start");
 		}
-		else if (cmd.equals("detach")) {
-			if (DebugAgent.current() != null) {
-				DebugAgent.register(null);
+		else if (cmd.equals("detach") || cmd.equals("d")) {
+			if (DebugAgent.isAttached()) {
+				DebugAgent.unregister();
 				printer.println("debug", "Debugger: detached");
 			}
 			else {
@@ -1312,14 +1304,9 @@ public class REPL {
 	}
 	
 	private String getDebuggerStatus() {
-		final DebugAgent agent = DebugAgent.current();
-		if (agent != null) {
-			return agent.active() ? "active"  : "not active";
-		}
-		else {
-			return "not attached";
-		}
+		return DebugAgent.isAttached() ? "attached" : "not attached";
 	}
+	
 	
 	public static enum SetupMode { Minimal, Extended };
 
