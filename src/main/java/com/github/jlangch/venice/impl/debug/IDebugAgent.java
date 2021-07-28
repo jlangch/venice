@@ -27,7 +27,9 @@ import java.util.Set;
 
 public interface IDebugAgent {
 
+	void detach();
 
+	
 	// -------------------------------------------------------------------------
 	// Breakpoint management
 	// -------------------------------------------------------------------------
@@ -40,6 +42,9 @@ public interface IDebugAgent {
 
 	void removeAllBreakpoints();
 
+	void storeBreakpoints();
+	
+	void restoreBreakpoints();
 
 
 	// -------------------------------------------------------------------------
@@ -54,6 +59,10 @@ public interface IDebugAgent {
 	
 	Break getBreak();
 
-	void leaveBreak(StopNextType type, Set<BreakpointType> flags);
+	void resume();
+
+	void stepToNextFn(Set<BreakpointType> flags);
+
+	void stepToNextNonSystemFn(Set<BreakpointType> flags);
 
 }

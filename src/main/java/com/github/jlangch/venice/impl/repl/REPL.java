@@ -882,21 +882,28 @@ public class REPL {
 				printer.println("debug", "Debugger: already attached");
 			}
 			else {
-				DebugAgent.register(new DebugAgent());
+				final DebugAgent agent = new DebugAgent();
+				DebugAgent.register(agent);
+				agent.restoreBreakpoints();
 				printer.println("debug", "Debugger: attached");
 			}
 		}
 		else if (cmd.equals("detach") || cmd.equals("d")) {
-			if (DebugAgent.isAttached()) {
+			final DebugAgent agent = DebugAgent.current();
+			if (agent != null) {
+				agent.storeBreakpoints();
+				agent.detach();
 				DebugAgent.unregister();
 				printer.println("debug", "Debugger: detached");
 			}
 			else {
-				printer.println("debug", "Debugger: not attached");
+				printer.println("error", "Debugger: not attached");
+				printer.println("debug", "Attach a debuger first using: $attach");
 			}
 		}
 		else if (DebugAgent.current() == null) {
 			printer.println("error", "Debugger not attached!");
+			printer.println("debug", "Attach a debuger first using: $attach");
 		}
 		else {
 			new ReplDebuggerClient(
