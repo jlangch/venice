@@ -100,18 +100,6 @@ public class ReplDebuggerClient {
 				handleBreakpointCmd(drop(params, 1));
 				break;
 
-			case "add": // add
-				handleBreakpointCmd(addFirst(drop(params, 1), "add"));
-				break;
-
-			case "remove": // remove
-				handleBreakpointCmd(addFirst(drop(params, 1), "remove"));
-				break;
-
-			case "list": // list
-				handleBreakpointCmd(toList("list"));
-				break;
-
 			case "resume":
 			case "r":
 				agent.resume();
@@ -129,15 +117,7 @@ public class ReplDebuggerClient {
 				
 			case "step-return":
 			case "sr":
-				if (!agent.hasBreak()) {
-					printer.println("error", "Not in a break!");
-				}
-				else if (agent.getBreak().isSpecialForm()) {
-					printer.println("error", "Cannot not step into the return of a special form!");
-				}
-				else {
-					agent.stepToReturn();
-				}
+				stepReturn();
 				break;
 				
 			case "break?": 
@@ -193,6 +173,23 @@ public class ReplDebuggerClient {
 		}
 		else {
 			println(formatStop(agent.getBreak()));
+		}
+	}
+	
+	private void stepReturn() {
+		if (!agent.hasBreak()) {
+			printer.println("error", "Not in a break!");
+		}
+		else if (agent.getBreak().isSpecialForm()) {
+			printer.println("error", "Cannot not step into the return of a special form!");
+		}
+		else {
+			printer.println(
+					"debug", 
+					String.format(
+						"Stepping into return of function %s ...",
+						agent.getBreak().getFn().getQualifiedName()));
+			agent.stepToReturn();
 		}
 	}
 	

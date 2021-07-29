@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -267,7 +268,15 @@ public class DebugAgent implements IDebugAgent {
 	
 	@Override
 	public void stepToReturn() {
-		if (activeBreak != null) {
+		if (activeBreak == null) {
+			throw new VncException(
+					"Cannot step into a function's return if there is no break!");
+		}
+		else if (activeBreak.isSpecialForm()) {
+			throw new VncException(
+					"Cannot step into a special form's return!");
+		}
+		else {
 			stopNext = StopNext.FunctionReturn;
 			stopNextReturnFnName = activeBreak.getFn().getQualifiedName();
 			activeBreak = null;
@@ -291,23 +300,21 @@ public class DebugAgent implements IDebugAgent {
 	
 	private boolean isStopOnFunction(
 			final String fnName, 
-			final BreakpointType breakpointType
+			final BreakpointType bt
 	) {
 		switch(stopNext) {
 			case MatchingFnName:
 				return breakpoints.getOrDefault(fnName, EMPTY_BP)
-								  .contains(breakpointType);
+								  .contains(bt);
 				
 			case AnyFunction:
-				return breakpointType == FunctionEntry;
+				return bt == FunctionEntry;
 				
 			case AnyNonSystemFunction: 
-				return breakpointType == FunctionEntry 
-							&& !hasSystemNS(fnName);
+				return bt == FunctionEntry && !hasSystemNS(fnName);
 				
 			case FunctionReturn: 
-				return breakpointType == FunctionExit 
-							&& fnName.equals(stopNextReturnFnName);
+				return bt == FunctionExit && fnName.equals(stopNextReturnFnName);
 				
 			default:
 				return false;
@@ -329,7 +336,7 @@ public class DebugAgent implements IDebugAgent {
 							br.getBreakpointType()));
 		}
 		finally {
-			clearBreak();
+			activeBreak = null;
 		}
 	}
 	
