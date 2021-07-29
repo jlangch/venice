@@ -596,7 +596,7 @@ public class ReplDebuggerClient {
 			"Commands: \n" +
 			"  !attach      Attach the debugger to the REPL\n" +
 			"  !detach      Detach the debugger from the REPL\n" +
-			"  !breakpoint  Manage breakpoints (short form: !bp)\n" +
+			"  !breakpoint  Manage breakpoints\n" +
 			"               !breakpoint add n, n*\n" +
 			"                  Add one or multiple breakpoints\n" +
 			"                  E.g.: !breakpoint add user/gauss\n" +
@@ -614,7 +614,7 @@ public class ReplDebuggerClient {
 			"               Short form: !si\n" +
 			"  !step-return Step to the return of the function\n" +
 			"               Short form: !sr\n" +
-			"  !break?      Prints info on wether the debugger is in a break or not\n" +
+			"  !break?      Prints info on whether the debugger is in a break or not\n" +
 			"               Short form: !b?\n" +
 			"  !params      Print the functions parameters\n" +
 			"               Short form: !p\n" +
