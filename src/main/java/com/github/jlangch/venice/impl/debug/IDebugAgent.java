@@ -27,6 +27,9 @@ import java.util.Set;
 
 public interface IDebugAgent {
 
+	/**
+	 * Detach the debugger from Venice
+	 */
 	void detach();
 
 	
@@ -34,14 +37,33 @@ public interface IDebugAgent {
 	// Breakpoint management
 	// -------------------------------------------------------------------------
 
+	/**
+	 * @return all the registered breakpoints
+	 */
 	Map<String, Set<BreakpointType>> getBreakpoints();
 
+	/**
+	 * Add a new breakpoint
+	 * 
+	 * @param qualifiedName The qualified name of the function or special form
+	 * @param types specifies where to break in the function {entry, exception, 
+	 *              or exit}
+	 */
 	void addBreakpoint(String qualifiedName, Set<BreakpointType> types);
 
+	/**
+	 * Removes a breakpoint
+	 * 
+	 * @param qualifiedName The qualified name of the function or special form
+	 */
 	void removeBreakpoint(String qualifiedName);
 
+	/**
+	 * Remove all breakpoints
+	 */
 	void removeAllBreakpoints();
 
+	
 	void storeBreakpoints();
 	
 	void restoreBreakpoints();
@@ -51,6 +73,13 @@ public interface IDebugAgent {
 	// Breaks
 	// -------------------------------------------------------------------------
 
+	/**
+	 * Checks if there is a breakpoint matching the qualified name
+	 *  
+	 * @param qualifiedName The qualified name of the function or special form
+	 * @return Returns <code>true</code> if there is a breakpoint matching the
+	 *         qualified name, otherwise <code>false</code>.
+	 */
 	boolean hasBreak(String qualifiedName);
 
 	void addBreakListener(IBreakListener listener);

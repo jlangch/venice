@@ -346,11 +346,12 @@ public class DebugAgent implements IDebugAgent {
 		stopNextReturnFnName = null;
 	}
 
+	
 	private static enum StopNext {
-		MatchingFnName,
-		AnyFunction,
-		AnyNonSystemFunction,
-		FunctionReturn;	
+		MatchingFnName,			// stop on function with specified name entry
+		AnyFunction,			// stop on next function entry
+		AnyNonSystemFunction,	// stop on next non system function entry
+		FunctionReturn;			// stop on function return
 	}
 	
 	
@@ -359,11 +360,13 @@ public class DebugAgent implements IDebugAgent {
 	private static final Set<BreakpointType> EMPTY_BP = new HashSet<>();
 
 	// simple breakpoint memorization
-	private static final ConcurrentHashMap<String,Set<BreakpointType>> memorized = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String,Set<BreakpointType>> memorized =
+			new ConcurrentHashMap<>();
 
 	private volatile StopNext stopNext = StopNext.MatchingFnName;
 	private volatile String stopNextReturnFnName = null;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = 
+			new ConcurrentHashMap<>();
 }

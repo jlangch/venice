@@ -512,7 +512,9 @@ public class REPL {
 			DebugAgent.unregister();
 
 			try {
-				final VncVal result = venice.RE(expr, "debugger", env);
+				final Env safeEnv = new Env(env);
+				
+				final VncVal result = venice.RE(expr, "debugger", safeEnv);
 				printer.println("debug", result.toString(true));
 			}
 			catch (Exception ex) {
