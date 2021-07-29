@@ -61,8 +61,10 @@ public interface IDebugAgent {
 
 	void resume();
 
-	void stepToNextFn(Set<BreakpointType> flags);
+	void stepToNextFn();
 
-	void stepToNextNonSystemFn(Set<BreakpointType> flags);
+	void stepToNextNonSystemFn();
+
+	void stepToReturn();
 
 }

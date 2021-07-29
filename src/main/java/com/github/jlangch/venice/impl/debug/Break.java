@@ -77,6 +77,14 @@ public class Break {
 		return type;
 	}
 
+	public boolean isSpecialForm() {
+		return fn instanceof SpecialFormVirtualFunction;
+	}
+
+	public boolean isNativeFn() {
+		return fn.isNative() && !(fn instanceof SpecialFormVirtualFunction);
+	}
+	
 
 	private final VncFunction fn;
 	private final VncList args;

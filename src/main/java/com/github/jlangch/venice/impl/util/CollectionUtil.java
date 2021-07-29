@@ -205,4 +205,14 @@ public class CollectionUtil {
 		return items.size() < 3 ? null : items.get(2);
 	}
 
+	public static <U> List<U> addFirst(final List<U> items, final U item) {
+		items.add(0, item);
+		return items;
+	}
+
+	public static <U> List<U> addLast(final List<U> items, final U item) {
+		items.add(item);
+		return items;
+	}
+
 }
