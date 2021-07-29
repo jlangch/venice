@@ -26,7 +26,7 @@ import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExcept
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.*;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
@@ -43,7 +43,6 @@ import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointType;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
-import com.github.jlangch.venice.impl.debug.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -100,7 +99,19 @@ public class ReplDebuggerClient {
 			case "b":
 				handleBreakpointCmd(drop(params, 1));
 				break;
-				
+
+			case "add": // add
+				handleBreakpointCmd(addFirst(drop(params, 1), "add"));
+				break;
+
+			case "remove": // remove
+				handleBreakpointCmd(addFirst(drop(params, 1), "remove"));
+				break;
+
+			case "list": // list
+				handleBreakpointCmd(toList("list"));
+				break;
+
 			case "resume":
 			case "r":
 				agent.resume();
@@ -108,12 +119,25 @@ public class ReplDebuggerClient {
 				
 			case "step-into":
 			case "si":
-				agent.stepToNextFn(toSet(FunctionEntry));
+				agent.stepToNextFn();
+				break;
+				
+			case "step-into-":
+			case "si-":
+				agent.stepToNextNonSystemFn();
 				break;
 				
 			case "step-return":
 			case "sr":
-				agent.stepToNextFn(toSet(FunctionExit));
+				if (!agent.hasBreak()) {
+					printer.println("error", "Not in a break!");
+				}
+				else if (agent.getBreak().isSpecialForm()) {
+					printer.println("error", "Cannot not step into the return of a special form!");
+				}
+				else {
+					agent.stepToReturn();
+				}
 				break;
 				
 			case "break?": 
@@ -194,20 +218,17 @@ public class ReplDebuggerClient {
 
 		println(formatBreak(br));
 
-		final VncFunction fn = agent.getBreak().getFn();
-		final VncVector spec = fn.getParams();	
-		final VncList args = agent.getBreak().getArgs();
-
-		if (fn.isNative() && !(fn instanceof SpecialFormVirtualFunction)) {
-			println(renderNativeFnParams(fn, args));
+		if (br.isNativeFn()) {
+			println(renderNativeFnParams(br));
 		}
 		else {
+			final VncVector spec = br.getFn().getParams();	
 			final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(spec);
 			if (plainSymbolParams) {
-				println(renderFnNoDestructuring(fn, spec, args));
+				println(renderFnNoDestructuring(br));
 			}
 			else {
-				println(renderFnDestructuring(fn, spec, args));
+				println(renderFnDestructuring(br));
 			}
 		}
 	}
@@ -391,11 +412,16 @@ public class ReplDebuggerClient {
 	
 	private String format(final Set<BreakpointType> types) {
 		// predefined order of breakpoint types
-		return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
-					 .stream()
-					 .filter(t -> types.contains(t))
-					 .map(t -> t.symbol())
-					 .collect(Collectors.joining());
+		if (types.contains(FunctionException) || types.contains(FunctionExit)) {
+			return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
+						 .stream()
+						 .filter(t -> types.contains(t))
+						 .map(t -> t.symbol())
+						 .collect(Collectors.joining());
+		}
+		else {
+			return "";
+		}
 	}
 
 	private Set<BreakpointType> parseBreakpointTypes(final String types) {
@@ -435,10 +461,10 @@ public class ReplDebuggerClient {
 		replThread.interrupt();
 	}
 
-	private String renderNativeFnParams(
-			final VncFunction fn, 
-			final VncList args
-	) {
+	private String renderNativeFnParams(final Break br) {
+		final VncFunction fn = br.getFn();
+		final VncList args = br.getArgs();
+
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
@@ -464,11 +490,11 @@ public class ReplDebuggerClient {
 		return sb.toString();
 	}
 	   
-	private String renderFnNoDestructuring(
-			final VncFunction fn, 
-			final VncVector spec, 
-			final VncList args
-	) {
+	private String renderFnNoDestructuring(final Break br) {
+		final VncFunction fn = br.getFn();
+		final VncVector spec = fn.getParams();	
+		final VncList args = br.getArgs();
+
 		final StringBuilder sb = new StringBuilder();
 	
 		VncVector spec_ = spec;
@@ -476,7 +502,7 @@ public class ReplDebuggerClient {
 
 		sb.append(String.format(
 				"Arguments passed to %s %s:",
-				fn instanceof SpecialFormVirtualFunction 
+				br.isSpecialForm() 
 					? "special form"
 					: "function",
 				fn.getQualifiedName()));
@@ -500,16 +526,16 @@ public class ReplDebuggerClient {
 		return sb.toString();
 	}
 	   
-	private String renderFnDestructuring(
-			final VncFunction fn, 
-			final VncVector spec, 
-			final VncList args
-	) {
+	private String renderFnDestructuring(final Break br) {
+		final VncFunction fn = br.getFn();
+		final VncVector spec = fn.getParams();	
+		final VncList args = br.getArgs();
+
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(String.format(
 				"Arguments passed to %s %s (destructured):",
-				fn instanceof SpecialFormVirtualFunction 
+				br.isSpecialForm() 
 					? "special form"
 					: "function",
 				fn.getQualifiedName()));
@@ -538,7 +564,7 @@ public class ReplDebuggerClient {
 	private String formatBreak(final Break br) {
 		return String.format(
 				"Break in %s %s at %s.",
-				br.getFn() instanceof SpecialFormVirtualFunction
+				br.isSpecialForm()
 					? "special form"
 					: "function",
 				br.getFn().getQualifiedName(),
@@ -548,7 +574,7 @@ public class ReplDebuggerClient {
 	private String formatStop(final Break br) {
 		return String.format(
 				"Stopped in %s %s%s at %s.",
-				br.getFn() instanceof SpecialFormVirtualFunction
+				br.isSpecialForm()
 					? "special form"
 					: "function",
 				br.getFn().getQualifiedName(),
@@ -568,7 +594,7 @@ public class ReplDebuggerClient {
 	
 	
 	private final static String HELP =
-		   //------------------------------------------------------------------------------80
+		  //+------------------------------------------------------------------------------+
 			"Venice debugger\n\n" +
 			"Commands: \n" +
 			"  !attach      Attach the debugger to the REPL\n" +
@@ -578,15 +604,6 @@ public class ReplDebuggerClient {
 			"                  Add one or multiple breakpoints\n" +
 			"                  E.g.: !breakpoint add user/gauss\n" +
 			"                        !breakpoint add user/gauss +\n" +
-			"               !breakpoint add flags n, n*\n" +
-			"                  Add one or multiple breakpoints with the given\n" +
-			"                  flags. \n" +
-			"                  flags is a combination of:\n" +
-			"                    (  break at the entry of a function\n" +
-			"                    !  break at catching an exception in a function\n" +
-			"                    )  break at the exit of a function\n" +
-			"                  E.g.: !breakpoint add (!) user/gauss \n" +
-			"                        !breakpoint add ( user/gauss \n" +
 			"               !breakpoint remove n, n*\n" +
 			"                  Remove one or multiple breakpoints\n" +
 			"                  E.g.: !breakpoint remove user/gauss + \n" +
@@ -600,7 +617,7 @@ public class ReplDebuggerClient {
 			"               Short form: !si\n" +
 			"  !step-return Step to the return of the function\n" +
 			"               Short form: !sr\n" +
-			"  !break?      Prints info on weather the debugger is in a break or not\n" +
+			"  !break?      Prints info on wether the debugger is in a break or not\n" +
 			"               Short form: !b?\n" +
 			"  !params      Print the functions parameters\n" +
 			"               Short form: !p\n" +
