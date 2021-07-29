@@ -3,6 +3,7 @@
         "*.venice": "clojure"
     },
     
-    "workbench.colorTheme": "Tomorrow Night Blue"
+    "workbench.colorTheme": "Tomorrow Night Blue",
+    "redhat.telemetry.enabled": false
     
 }
