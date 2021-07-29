@@ -77,9 +77,9 @@ import com.github.jlangch.venice.impl.util.CallFrame;
  *   Resuming from function user/sum
  * </pre>
  */
-public class ReplDebuggerClient {
+public class ReplDebugClient {
 
-	public ReplDebuggerClient(
+	public ReplDebugClient(
 			final IDebugAgent agent,
 			final TerminalPrinter printer,
 			final Thread replThread
@@ -597,15 +597,15 @@ public class ReplDebuggerClient {
 			"  !attach      Attach the debugger to the REPL\n" +
 			"  !detach      Detach the debugger from the REPL\n" +
 			"  !breakpoint  Manage breakpoints\n" +
-			"               !breakpoint add n, n*\n" +
-			"                  Add one or multiple breakpoints\n" +
+			"               o Add one or multiple breakpoints\n" +
+			"                  !breakpoint add n, n*\n" +
 			"                  E.g.: !breakpoint add user/gauss\n" +
 			"                        !breakpoint add user/gauss +\n" +
-			"               !breakpoint remove n, n*\n" +
-			"                  Remove one or multiple breakpoints\n" +
+			"               o Remove one or multiple breakpoints\n" +
+			"                  !breakpoint remove n, n*\n" +
 			"                  E.g.: !breakpoint remove user/gauss + \n" +
-			"               !breakpoint list\n" +
-			"                  List all breakpoints\n" +
+			"               o List breakpoints\n" +
+			"                  !breakpoint list\n" +
 			"                  E.g.: !breakpoint list\n" +
 			"               Short form: !b ...\n" +
 			"  !resume      Resume from breakpoint\n" +
