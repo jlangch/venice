@@ -302,7 +302,7 @@ public class REPL {
 								break;
 								
 							default:
-								new ReplDebuggerClient(agent, printer, Thread.currentThread()).handleCommand(cmd);
+								new ReplDebugClient(agent, printer, Thread.currentThread()).handleCommand(cmd);
 								break;
 						}
 					}
