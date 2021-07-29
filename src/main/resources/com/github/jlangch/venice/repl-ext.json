@@ -1,6 +1,6 @@
 {
   "prompt": "venice> ",
-  "secondary-prompt": "      | ",
+  "secondary-prompt": "        ",
   "result-prefix": "=> ",
 
   "colors": {
@@ -19,7 +19,7 @@
     "result": "\u001b[38;5;39m",
     "stdout": "\u001b[38;5;246m",
     "stderr": "\u001b[38;5;199m",
-    "debug": "\u001b[38;5;190m",
+    "debug": "\u001b[38;5;154m",
     "error": "\u001b[38;5;196m",
     "system": "\u001b[48;5;35m\u001b[38;5;231m",
     "interrupt": "\u001b[48;5;196m\u001b[38;5;231m"
