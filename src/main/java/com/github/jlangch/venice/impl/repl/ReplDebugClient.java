@@ -596,6 +596,7 @@ public class ReplDebugClient {
 			"Commands: \n" +
 			"  !attach      Attach the debugger to the REPL\n" +
 			"  !detach      Detach the debugger from the REPL\n" +
+			"  !terminate   Terminate a running debug session\n" +
 			"  !breakpoint  Manage breakpoints\n" +
 			"               o Add one or multiple breakpoints\n" +
 			"                  !breakpoint add n, n*\n" +

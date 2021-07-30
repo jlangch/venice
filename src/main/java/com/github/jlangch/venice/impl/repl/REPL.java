@@ -299,8 +299,16 @@ public class REPL {
 								switchToRegularREPL();
 								break;
 								
+							case "terminate":
+								scriptExec.cancelAsyncScript();
+								break;
+								
 							default:
-								new ReplDebugClient(agent, printer, Thread.currentThread()).handleCommand(cmd);
+								new ReplDebugClient(
+										agent, 
+										printer, 
+										Thread.currentThread()
+									).handleCommand(cmd);
 								break;
 						}
 					}
