@@ -26,6 +26,8 @@ import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExcept
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -174,26 +177,24 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	public void onBreakLet(
-			final VncVector bindings,
+			final List<Var> vars,
 			final VncVal meta,
 			final Env env
 	) {
 		if (isStopOnFunction("let", FunctionEntry)) {
-			VncVector spec = VncVector.empty();
-			VncList args = VncList.empty();
-			VncVector bindings_ = bindings;
-			while(!bindings_.isEmpty()) {			
-				spec = spec.addAtEnd(bindings_.first());
-				args = args.addAtEnd(bindings_.second());
-				bindings_ = bindings_.drop(2);
-			}
-
+			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
 									new SpecialFormVirtualFunction(
 											"let", 
-											spec, 
+											VncVector.ofColl(
+												vars.stream()
+													.map(v -> v.getName())
+													.collect(Collectors.toList())), 
 											meta), 
-									args, 
+									VncList.ofColl(
+										vars.stream()
+											.map(v -> v.getVal())
+											.collect(Collectors.toList())), 
 									null, 
 									null, 
 									env, 
