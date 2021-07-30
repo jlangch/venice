@@ -397,6 +397,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final VncList expressions = args.rest();
 
 						final Iterator<VncVal> bindingsIter = bindings.iterator();
+						final List<Var> vars = new ArrayList<>();
 						while(bindingsIter.hasNext()) {
 							final VncVal sym = bindingsIter.next();
 							if (!bindingsIter.hasNext()) {
@@ -412,12 +413,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								}
 							}
 							final VncVal val = evaluate(bindingsIter.next(), env);
-							env.addLocalVars(Destructuring.destructure(sym, val));
+							vars.addAll(0, Destructuring.destructure(sym, val));
 						}
+						env.addLocalVars(vars);
 						
 						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
 						if (debugAgent != null && debugAgent.hasBreak("let")) {
-							debugAgent.onBreakLet(bindings, a0.getMeta(), env);
+							debugAgent.onBreakLet(vars, a0.getMeta(), env);
 						}
 						
 						if (expressions.size() == 1) {
