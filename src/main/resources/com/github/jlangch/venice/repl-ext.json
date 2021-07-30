@@ -31,10 +31,10 @@
 
   "libs": {
     "dir": "libs",
-    "mandatory": [ "org.fusesource.jansi:jansi:2.3.2",
+    "mandatory": [ "org.fusesource.jansi:jansi:2.3.4",
                    "org.knowm.xchart:xchart:3.8.0",
-                   "org.apache.tomcat.embed:tomcat-embed-core:9.0.44",
-                   "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.44",
+                   "org.apache.tomcat.embed:tomcat-embed-core:9.0.50",
+                   "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.50",
                    "javax.annotation:javax.annotation-api:1.3.2",
                    "org.xhtmlrenderer:flying-saucer-core:9.1.22",
                    "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22",

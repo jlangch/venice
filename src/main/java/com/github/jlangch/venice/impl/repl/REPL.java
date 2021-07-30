@@ -136,7 +136,7 @@ public class REPL {
 					System.out.print(
 							"--------------------------------------------------------------------\n" +
 							"The Venice REPL requires the jansi library on Windows.              \n" +
-							"Please download the jar artifact 'org.fusesource.jansi:jansi:2.3.2' \n" +
+							"Please download the jar artifact 'org.fusesource.jansi:jansi:2.3.4' \n" +
 							"from a Maven repo and put it on the classpath.                      \n" +
 							"--------------------------------------------------------------------\n\n");
 				}
