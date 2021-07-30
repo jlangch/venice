@@ -314,8 +314,7 @@ public class REPL {
 					}
 					else if (DebugAgent.current().hasBreak()) {
 						// run the expression in the context of the break
-						final Env env = agent.getBreak().getEnv();
-						runDebuggerExprAsync(line, env);
+						runDebuggerExprAsync(line, agent.getBreak().getEnv());
 					}
 					else {
 						// run the s-expr read from the line reader

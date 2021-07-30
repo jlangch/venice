@@ -415,6 +415,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							env.addLocalVars(Destructuring.destructure(sym, val));
 						}
 						
+						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
+						if (debugAgent != null && debugAgent.hasBreak("let")) {
+							debugAgent.onBreakLet(bindings, a0.getMeta(), env);
+						}
+						
 						if (expressions.size() == 1) {
 							orig_ast = expressions.first();
 						}

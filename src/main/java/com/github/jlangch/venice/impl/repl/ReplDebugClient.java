@@ -538,7 +538,10 @@ public class ReplDebugClient {
 				fn.getQualifiedName()));
 
 		final List<Var> vars = Destructuring.destructure(spec, args);
-		vars.forEach(v -> sb.append(formatVar(v)));
+		vars.forEach(v -> {
+			sb.append('\n');
+			sb.append(formatVar(v)); 
+		});
 		
 		return sb.toString();
 	}
@@ -597,6 +600,7 @@ public class ReplDebugClient {
 			"  !attach      Attach the debugger to the REPL\n" +
 			"  !detach      Detach the debugger from the REPL\n" +
 			"  !terminate   Terminate a running debug session\n" +
+			"               Sends an interrupt to the script under debugging.\n" +
 			"  !breakpoint  Manage breakpoints\n" +
 			"               o Add one or multiple breakpoints\n" +
 			"                  !breakpoint add n, n*\n" +
