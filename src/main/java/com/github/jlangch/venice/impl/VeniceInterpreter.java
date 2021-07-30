@@ -393,6 +393,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						env = new Env(env);  // let introduces a new environment
 
+						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
+
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
 
@@ -412,13 +414,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									throw new VncException("Can't use qualified symbols with let!");					
 								}
 							}
+							
 							final VncVal val = evaluate(bindingsIter.next(), env);
 							final List<Var> varTmp = Destructuring.destructure(sym, val);
 							env.addLocalVars(varTmp);
-							vars.addAll(varTmp);
+							
+							if (debugAgent != null) {
+								vars.addAll(varTmp);
+							}
 						}
 						
-						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
 						if (debugAgent != null && debugAgent.hasBreak("let")) {
 							debugAgent.onBreakLet(vars, a0.getMeta(), env);
 						}
@@ -1930,22 +1935,23 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 
-		final List<Var> vars = new ArrayList<>();
-		for(int i=0; i<bindings.size(); i+=2) {
-			final VncVal sym = bindings.nth(i);
-			final VncVal val = evaluate(bindings.nth(i+1), env);
-	
-			vars.addAll(Destructuring.destructure(sym, val));
-		}
-			
+		final List<Var> bindingVars = new ArrayList<>();
 		try {
-			vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
+			for(int i=0; i<bindings.size(); i+=2) {
+				final VncVal sym = bindings.nth(i);
+				final VncVal val = evaluate(bindings.nth(i+1), env);
+		
+				final List<Var> vars = Destructuring.destructure(sym, val);
+				vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
+				
+				bindingVars.addAll(vars);
+			}
 			
 			evaluate_sequence_values(expressions.butlast(), env);
 			return evaluate(expressions.last(), env);
 		}
 		finally {
-			vars.forEach(v -> env.popGlobalDynamic(v.getName()));
+			bindingVars.forEach(v -> env.popGlobalDynamic(v.getName()));
 		}
 	}
 
