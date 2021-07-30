@@ -36,14 +36,10 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.jline.reader.History;
 import org.jline.reader.LineReader;
@@ -79,7 +75,6 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -360,9 +355,6 @@ public class REPL {
 			catch (ContinueException ex) {
 				// ok, just continue
 			}
-			catch (SymbolNotFoundException ex) {
-				handleSymbolNotFoundException(ex);
-			}
 			catch (Exception ex) {
 				handleException(ex);
 			}
@@ -422,116 +414,45 @@ public class REPL {
 	}
 
 	private void runScriptSync(
-			final String line,
+			final String script,
 			final String resultPrefix,
 			final ReplResultHistory resultHistory
 	) throws Exception {
-		final VncVal result = venice.RE(line, "user", env);
-		if (result != null) {
-			printer.println("result", resultPrefix + venice.PRINT(result));
-			
-			// do not add the result for "*1", "*2", "*3", "**" to the result history 
-			if (!isResultHistorySymbol(line, resultHistory)) {
-				resultHistory.add(result);
-			}
-		}
+		scriptExec.runSync(
+				script, 
+				venice, 
+				env, 
+				printer, 
+				resultPrefix, 
+				resultHistory, 
+				this::handleException);
 	}
 	
 	private void runScriptAsync(
-			final String line,
+			final String script,
 			final String resultPrefix,
 			final ReplResultHistory resultHistory
 	) throws Exception {
-		final long asyncID = asyncCounter.getAndIncrement();
-		
-		printer.println("debug", String.format("[%d] Async ...", asyncID));
-
-		final Thread replThread = Thread.currentThread();
-		
-		// thread local values from the parent thread
-		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadLocalMap.snapshot());
-
-		// run the script in another thread when debugging it
-		final Runnable task = () -> {
-			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadLocalMap.clearCallStack();
-			JavaInterop.register(interceptor);	
-
-			try {
-				final VncVal result = venice.RE(line, "user", env);
-				if (result != null) {
-					printer.println("result", String.format(
-												"[%d] %s%s", 
-												asyncID, 
-												resultPrefix, 
-												venice.PRINT(result)));
-					
-					printer.println("debug", String.format(
-												"[%d] Async execution finished.", 
-												asyncID));
-					
-					// do not add the result for "*1", "*2", "*3", "**" to the result history 
-					if (!isResultHistorySymbol(line, resultHistory)) {
-						resultHistory.add(result);
-					}
-
-					try { Thread.sleep(200); } catch(Exception ex) {}
-
-					// Interrupt the LineReader to display a new prompt
-					replThread.interrupt();
-				}
-			}
-			catch (SymbolNotFoundException ex) {
-				handleSymbolNotFoundException(ex);
-			}
-			catch (Exception ex) {
-				handleException(ex);
-			}
-		};
-
-		final Thread th = new Thread(task, "async");
-		th.setDaemon(true);
-		th.start();		
+		scriptExec.runAsync(
+				script, 
+				venice, 
+				env, 
+				printer, 
+				resultPrefix, 
+				resultHistory, 
+				this::handleException);
 	}
 
-	
 	private void runDebuggerExprAsync(
 			final String expr,
 			final Env env
 	) {
-		// thread local values from the parent thread
-		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadLocalMap.snapshot());
-
-		// run the expression in another thread without debugger!! 
-		final Runnable task = () -> {
-			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadLocalMap.clearCallStack();
-			JavaInterop.register(interceptor);
-			DebugAgent.unregister();
-
-			try {
-				final Env safeEnv = new Env(env);
-				
-				final VncVal result = venice.RE(expr, "debugger", safeEnv);
-				printer.println("debug", result.toString(true));
-			}
-			catch (Exception ex) {
-				handleException(ex);
-			}
-		};
-
-		final Thread th = new Thread(task, "debug");
-		th.setDaemon(true);
-		th.start();
-		
-		try {
-			th.join();
-		}
-		catch (Exception ex) {
-			handleException(ex);
-		}
+		scriptExec.runDebuggerExpressionAsync(
+				expr, 
+				venice, 
+				env, 
+				printer, 
+				this::handleException);
 	}
 
 	private LineReader createLineReader(
@@ -996,7 +917,17 @@ public class REPL {
 		printer.println("error", "Failed to handle command");
 		printer.println("error", ex.getMessage());
 	}
+
 	
+	private void handleException(final Exception ex) {
+		if (ex instanceof SymbolNotFoundException) {
+			handleSymbolNotFoundException((SymbolNotFoundException)ex);
+		}
+		else {
+			printer.printex("error", ex);
+		}
+	}
+
 	private void handleSymbolNotFoundException(final SymbolNotFoundException ex) {
 		final VncSymbol sym = new VncSymbol(ex.getSymbol());
 		if (sym.hasNamespace()) {
@@ -1016,10 +947,6 @@ public class REPL {
 				}
 			}
 		}
-		printer.printex("error", ex);
-	}
-	
-	private void handleException(final Exception ex) {
 		printer.printex("error", ex);
 	}
 	
@@ -1314,19 +1241,6 @@ public class REPL {
 			return "unknown";
 		}
 	}
-	
-	private boolean isResultHistorySymbol(
-			final String line,
-			final ReplResultHistory resultHistory
-	) {
-		final String l = line.trim();
-		
-		//  check **, *1, *2, *3, ...
-		return Stream.concat(
-						Stream.of("**"),
-						IntStream.rangeClosed(1, resultHistory.max()).mapToObj(ii -> "*" + ii))
-					 .anyMatch(s -> l.equals(s));
-	}
 
 	private boolean hasActiveDebugSession() {
 		final DebugAgent agent = DebugAgent.current();
@@ -1448,5 +1362,5 @@ public class REPL {
 	private String secondaryPrompt;
 	private String resultPrefix = "=> ";
 
-	private final AtomicLong asyncCounter = new AtomicLong(1L);
+	private final ScriptExecuter scriptExec = new ScriptExecuter();
 }

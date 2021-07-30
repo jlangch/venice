@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.repl;
 
 import java.util.LinkedList;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -59,6 +60,16 @@ public class ReplResultHistory {
 		env.setGlobal(new Var(new VncSymbol(name), val));
 	}
 
+	public boolean isResultHistorySymbol(final String symbol) {
+		final String l = symbol.trim();
+		
+		//  check **, *1, *2, *3, ...
+		return Stream.concat(
+						Stream.of("**"),
+						IntStream.rangeClosed(1, max()).mapToObj(ii -> "*" + ii))
+					 .anyMatch(s -> l.equals(s));
+	}
+	
 	
 	private final int max;
 	private final LinkedList<VncVal> results = new LinkedList<>();

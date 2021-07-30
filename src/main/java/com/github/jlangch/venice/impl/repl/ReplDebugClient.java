@@ -122,7 +122,7 @@ public class ReplDebugClient {
 				
 			case "break?": 
 			case "b?":
-				breakQ();
+				isBreak();
 				break;
 				
 			case "callstack": 
@@ -167,7 +167,7 @@ public class ReplDebugClient {
 		printer.println("stdout", HELP);
 	}
 	
-	private void breakQ() {
+	private void isBreak() {
 		if (!agent.hasBreak()) {
 			println("Not in a debug break!");
 		}
