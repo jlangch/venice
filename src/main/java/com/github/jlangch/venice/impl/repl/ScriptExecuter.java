@@ -147,7 +147,7 @@ public class ScriptExecuter {
 			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 			ThreadLocalMap.clearCallStack();
 			JavaInterop.register(interceptor);
-			DebugAgent.unregister();
+			DebugAgent.unregister();  // do not run under debugger!!
 
 			try {
 				final Env safeEnv = new Env(env);
@@ -171,6 +171,29 @@ public class ScriptExecuter {
 		}
 	}
 
+	public boolean runInitialLoadFile(
+			final String loadFile, 
+			final IVeniceInterpreter venice,
+			final Env env, 
+			final TerminalPrinter printer,
+			final String resultPrefix
+	) {
+		try {
+			if (loadFile != null) {
+				printer.println("stdout", "Loading file \"" + loadFile + "\"");
+				final VncVal result = venice.RE(
+										"(load-file \"" + loadFile + "\")", 
+										"user", 
+										env);
+				printer.println("stdout", resultPrefix + venice.PRINT(result));
+			}
+			return true;
+		}
+		catch(Exception ex) {
+			printer.printex("error", ex);
+			return false;
+		}
+	}
 	
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
 
