@@ -18,6 +18,7 @@ and this project adheres to
 ### Fixed
 
 - import in module :benchmark
+- an edge case with binding destructuring
 
 
 
