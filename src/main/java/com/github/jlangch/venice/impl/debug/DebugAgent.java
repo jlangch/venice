@@ -26,8 +26,6 @@ import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExcept
 import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -182,7 +180,6 @@ public class DebugAgent implements IDebugAgent {
 			final Env env
 	) {
 		if (isStopOnFunction("let", FunctionEntry)) {
-			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
 									new SpecialFormVirtualFunction(
 											"let", 
