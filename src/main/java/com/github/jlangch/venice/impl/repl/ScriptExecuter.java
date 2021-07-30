@@ -21,12 +21,15 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.debug.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
@@ -90,7 +93,7 @@ public class ScriptExecuter {
 		
 		final IInterceptor interceptor = JavaInterop.getInterceptor();
 		
-		final Runnable task = () -> {
+		final Callable<Boolean> task = () -> {
 			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 			ThreadLocalMap.clearCallStack();
 			JavaInterop.register(interceptor);	
@@ -117,16 +120,31 @@ public class ScriptExecuter {
 	
 				// Interrupt the LineReader to display a new prompt
 				replThread.interrupt();
+				return true;
+			}
+			catch (InterruptedException ex) {
+				printer.println("debug", "Debugging interrupted and terminated!");
+				return false;
 			}
 			catch (Exception ex) {
 				errorHandler.accept(ex);
+				return false;
 			}
 			finally {
 				ThreadLocalMap.remove();
 			}
 		};
 
-		executor.submit(task);
+		cancelableAsynScript = executor.submit(task);
+	}
+	
+	public void cancelAsyncScript() {
+		final Future<Boolean> future = cancelableAsynScript;
+		if (future != null) {
+			if (!future.isDone() && !future.isCancelled()) {
+				future.cancel(true);
+			}
+		}
 	}
 
 	public void runDebuggerExpressionAsync(
@@ -194,6 +212,10 @@ public class ScriptExecuter {
 			return false;
 		}
 	}
+	
+	
+	
+	private volatile Future<Boolean> cancelableAsynScript = null;
 	
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
 
