@@ -213,7 +213,10 @@ public class REPL {
 			return; // we stop here
 		}
 
-		if (!runInitialLoadFile(config.getLoadFile(), env, resultPrefix)) {
+		if (!scriptExec.runInitialLoadFile(
+				config.getLoadFile(), venice, env, printer, resultPrefix)
+		) {
+			printer.println("error", "Stopped REPL");
 			return; // we stop here, if the initial load file run failed
 		}
 		
@@ -1014,7 +1017,9 @@ public class REPL {
 		return vars.values()
 				   .stream()
 				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
-				   .filter(v -> regexFilter == null ? true : v.getName().getName().matches(regexFilter))
+				   .filter(v -> regexFilter == null 
+				   					? true 
+				   					: v.getName().getName().matches(regexFilter))
 				   .map(v -> String.format(
 								"%s (:%s)", 
 								v.getName().getName(),
@@ -1038,35 +1043,22 @@ public class REPL {
 		}
 	}
 
-	private PrintStream createPrintStream(final String context, final Terminal terminal) {
+	private PrintStream createPrintStream(
+			final String context, 
+			final Terminal terminal
+	) {
 		return new ReplPrintStream(
 					terminal, 
 					ansiTerminal ? config.getColor(context) : null);
 	}
 	
-	private BufferedReader createBufferedReader(final String context, final Terminal terminal) {
+	private BufferedReader createBufferedReader(
+			final String context, 
+			final Terminal terminal
+	) {
 		return new BufferedReader(terminal.reader());
 	}
 	
-	private boolean runInitialLoadFile(
-			final String loadFile, 
-			final Env env, final 
-			String resultPrefix
-	) {
-		try {
-			if (loadFile != null) {
-				printer.println("stdout", "Loading file \"" + loadFile + "\"");
-				final VncVal result = venice.RE("(load-file \"" + loadFile + "\")" , "user", env);
-				printer.println("stdout", resultPrefix + venice.PRINT(result));
-			}
-			return true;
-		}
-		catch(Exception ex) {
-			printer.printex("error", ex);
-			printer.println("error", "Stopped REPL");
-			return false; // stop the REPL
-		}
-	}
 	
 	private String getTerminalInfo() {
 		if (ansiTerminal) {
@@ -1253,7 +1245,9 @@ public class REPL {
 	
 	private void changePrompt(final String prompt) {
 		this.prompt = prompt;
-		this.secondaryPrompt = ansiTerminal ? StringUtil.repeat(' ', prompt.length()) : "";
+		this.secondaryPrompt = ansiTerminal 
+									? StringUtil.repeat(' ', prompt.length()) 
+									: "";
 
 	}
 	
