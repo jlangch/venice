@@ -63,18 +63,20 @@ import com.github.jlangch.venice.impl.util.CallFrame;
  *   debug> !breakpoint add (!) user/sum
  *   debug> (sum 6 7)
  *   Stopped in function user/sum (user: line 1, col 7) at entry
- *   venice> !params
- *   Parameters:
- *   [x y]
- *
- *   Arguments:
- *   (6 7)
+ *   debug> !params
+ *   Break in function user/sum at entry.
+ *   Arguments passed to function user/sum:
+ *   x -> 6
+ *   y -> 7
+ *   debug> !step-return
+ *   Stopped in function user/sum (user: line 1, col 7) at exit
+ *   debug> !params
+ *   Break in function user/sum at exit.
+ *   Arguments passed to function user/sum:
+ *   x -> 6
+ *   y -> 7
+ *   [return] -> 13
  *   debug> !resume
- *   Stopped in function user/sum at FunctionExit
- *   debug> !retval
- *   return: 13
- *   debug> !resume
- *   Resuming from function user/sum
  * </pre>
  */
 public class ReplDebugClient {
@@ -259,7 +261,7 @@ public class ReplDebugClient {
 										  .collect(Collectors.joining("\n"));
 	
 			println(String.format(
-						"[%d/%d] Local vars:\n%s",
+						"Local vars at level %d/%d:\n%s",
 						level,
 						maxLevel,
 						info));
@@ -484,6 +486,11 @@ public class ReplDebugClient {
 						args_.size()));
 		}
 		
+		if (br.getRetVal() != null) {
+			sb.append('\n');
+			sb.append(formatReturnVal(br.getRetVal()));
+		}
+		
 		return sb.toString();
 	}
 	   
@@ -520,6 +527,11 @@ public class ReplDebugClient {
 			}
 		}
 		
+		if (br.getRetVal() != null) {
+			sb.append('\n');
+			sb.append(formatReturnVal(br.getRetVal()));
+		}
+		
 		return sb.toString();
 	}
 	   
@@ -542,7 +554,13 @@ public class ReplDebugClient {
 			sb.append('\n');
 			sb.append(formatVar(v)); 
 		});
+
 		
+		if (br.getRetVal() != null) {
+			sb.append('\n');
+			sb.append(formatReturnVal(br.getRetVal()));
+		}
+
 		return sb.toString();
 	}
 	
@@ -550,17 +568,22 @@ public class ReplDebugClient {
 		return formatVar(v.getName(), v.getVal());
 	}
 	
-	private String formatVar(final VncVal name, VncVal value) {
+	private String formatVar(final VncVal name, final VncVal value) {
 		final String sval = truncate(value.toString(true), 100, "...");
 		final String sname =  name.toString(true);
 		return String.format("%s -> %s", sname, sval);
 	}
 	
-	private String formatVar(final int index, VncVal value) {
+	private String formatVar(final int index, final VncVal value) {
 		final String sval = truncate(value.toString(true), 100, "...");
 		return String.format("[%d] -> %s", index, sval);
 	}
-	
+
+	private String formatReturnVal(final VncVal retval) {
+		final String sval = truncate(retval.toString(true), 100, "...");
+		return String.format("[return] -> %s", sval);
+	}
+
 	private String formatBreak(final Break br) {
 		return String.format(
 				"Break in %s %s at %s.",
