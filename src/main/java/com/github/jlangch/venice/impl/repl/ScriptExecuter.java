@@ -118,12 +118,10 @@ public class ScriptExecuter {
 	
 				try { Thread.sleep(200); } catch(Exception ex) {}
 	
-				// Interrupt the LineReader to display a new prompt
-				replThread.interrupt();
 				return true;
 			}
 			catch (InterruptedException ex) {
-				printer.println("debug", "Debugging interrupted and terminated!");
+				printer.println("debug", "Script under debugging interrupted and terminated!");
 				return false;
 			}
 			catch (Exception ex) {
@@ -132,18 +130,19 @@ public class ScriptExecuter {
 			}
 			finally {
 				ThreadLocalMap.remove();
+
+				// Interrupt the LineReader of the REPLto display a new prompt
+				replThread.interrupt();
 			}
 		};
 
-		cancelableAsynScript = executor.submit(task);
+		cancellableAsynScript = executor.submit(task);
 	}
 	
 	public void cancelAsyncScript() {
-		final Future<Boolean> future = cancelableAsynScript;
+		final Future<Boolean> future = cancellableAsynScript;
 		if (future != null) {
-			if (!future.isDone() && !future.isCancelled()) {
-				future.cancel(true);
-			}
+			future.cancel(true);
 		}
 	}
 
@@ -215,7 +214,7 @@ public class ScriptExecuter {
 	
 	
 	
-	private volatile Future<Boolean> cancelableAsynScript = null;
+	private volatile Future<Boolean> cancellableAsynScript = null;
 	
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
 

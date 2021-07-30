@@ -148,7 +148,7 @@ public class DebugAgent implements IDebugAgent {
 
 	public void onBreakLoop(
 			final List<VncSymbol> loopBindingNames,
-			final VncVal loopMeta,
+			final VncVal meta,
 			final Env env
 	) {
 		if (isStopOnFunction("loop", FunctionEntry)) {			
@@ -156,13 +156,44 @@ public class DebugAgent implements IDebugAgent {
 									new SpecialFormVirtualFunction(
 											"loop", 
 											VncVector.ofColl(loopBindingNames), 
-											loopMeta), 
+											meta), 
 									VncList.ofColl(
 											loopBindingNames
 											  .stream()
 											  .map(s -> env.findLocalVar(s))
 											  .map(v -> v == null ? Nil : v.getVal())
 											  .collect(Collectors.toList())), 
+									null, 
+									null, 
+									env, 
+									ThreadLocalMap.getCallStack(), 
+									FunctionEntry);
+			notifOnBreak(br);
+			waitOnBreak(br);
+		}
+	}
+
+	public void onBreakLet(
+			final VncVector bindings,
+			final VncVal meta,
+			final Env env
+	) {
+		if (isStopOnFunction("let", FunctionEntry)) {
+			VncVector spec = VncVector.empty();
+			VncList args = VncList.empty();
+			VncVector bindings_ = bindings;
+			while(!bindings_.isEmpty()) {			
+				spec = spec.addAtEnd(bindings_.first());
+				args = args.addAtEnd(bindings_.second());
+				bindings_ = bindings_.drop(2);
+			}
+
+			final Break br = new Break(
+									new SpecialFormVirtualFunction(
+											"let", 
+											spec, 
+											meta), 
+									args, 
 									null, 
 									null, 
 									env, 
