@@ -37,7 +37,7 @@ public class Break {
 			final Exception ex,
 			final Env env,
 			final CallStack callStack,
-			final BreakpointType type
+			final BreakpointScope scope
 	) {
 		this.fn = fn;
 		this.args = args;
@@ -45,7 +45,7 @@ public class Break {
 		this.ex = ex;
 		this.env = env;
 		this.callStack = callStack;
-		this.type = type;
+		this.scope = scope;
 	}
 
 	
@@ -73,8 +73,8 @@ public class Break {
 		return callStack;
 	}
 
-	public BreakpointType getBreakpointType() {
-		return type;
+	public BreakpointScope getBreakpointScope() {
+		return scope;
 	}
 
 	public boolean isSpecialForm() {
@@ -92,5 +92,5 @@ public class Break {
 	private final Exception ex;
 	private final Env env;
 	private final CallStack callStack;
-	private final BreakpointType type;
+	private final BreakpointScope scope;
 }

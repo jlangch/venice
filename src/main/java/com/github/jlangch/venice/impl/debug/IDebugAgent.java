@@ -40,16 +40,16 @@ public interface IDebugAgent {
 	/**
 	 * @return all the registered breakpoints
 	 */
-	Map<String, Set<BreakpointType>> getBreakpoints();
+	Map<String, Set<BreakpointScope>> getBreakpoints();
 
 	/**
 	 * Add a new breakpoint
 	 * 
 	 * @param qualifiedName The qualified name of the function or special form
-	 * @param types specifies where to break in the function {entry, exception, 
+	 * @param scopes specifies where to break in the function {entry, exception, 
 	 *              or exit}
 	 */
-	void addBreakpoint(String qualifiedName, Set<BreakpointType> types);
+	void addBreakpoint(String qualifiedName, Set<BreakpointScope> scopes);
 
 	/**
 	 * Removes a breakpoint

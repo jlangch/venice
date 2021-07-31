@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public enum BreakpointType {
+public enum BreakpointScope {
 
 	FunctionEntry("(", "entry"),			// Stop at function entry
 
@@ -34,7 +34,7 @@ public enum BreakpointType {
 	FunctionException("!", "exception");	// Stop if exception is caught in function
 
 
-	private BreakpointType(String symbol, String description) {
+	private BreakpointScope(String symbol, String description) {
 		this.symbol = symbol;
 		this.description = description;
 	}
@@ -42,7 +42,7 @@ public enum BreakpointType {
 	public String symbol() { return symbol; }
 	public String description() { return description; }
 
-	public static List<BreakpointType> all() {
+	public static List<BreakpointScope> all() {
 		return Arrays.asList(values());
 	}
 

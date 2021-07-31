@@ -21,9 +21,9 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionException;
-import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.*;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
-import com.github.jlangch.venice.impl.debug.BreakpointType;
+import com.github.jlangch.venice.impl.debug.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -358,18 +358,18 @@ public class ReplDebugClient {
 		}
 		else {
 			// build regex: "^[(!)]+$"
-			final String regex = "^[" + getBreakpointTypeSymbolList() + "]+$";
+			final String regex = "^[" + getBreakpointScopeSymbolList() + "]+$";
 			
 			switch(trimToEmpty(params.get(0))) {
 				case "add":
-					String types = trimToEmpty(params.get(1));
-					if (types.matches(regex)) {
+					String scopes = trimToEmpty(params.get(1));
+					if (scopes.matches(regex)) {
 						drop(params, 2)
 							.stream()
 							.filter(s -> !s.matches(regex))
 							.forEach(s -> agent.addBreakpoint(
 			  					 			s, 
-			  					 			parseBreakpointTypes(types)));
+			  					 			parseBreakpointScopes(scopes)));
 					}
 					else {
 						drop(params, 1)
@@ -409,12 +409,12 @@ public class ReplDebugClient {
 		}
 	}
 	
-	private String format(final Set<BreakpointType> types) {
-		// predefined order of breakpoint types
-		if (types.contains(FunctionException) || types.contains(FunctionExit)) {
+	private String format(final Set<BreakpointScope> scopes) {
+		// predefined order of breakpoint scopes
+		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
 			return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
 						 .stream()
-						 .filter(t -> types.contains(t))
+						 .filter(t -> scopes.contains(t))
 						 .map(t -> t.symbol())
 						 .collect(Collectors.joining());
 		}
@@ -423,30 +423,30 @@ public class ReplDebugClient {
 		}
 	}
 
-	private Set<BreakpointType> parseBreakpointTypes(final String types) {
-		return parseBreakpointTypes(types, new HashSet<>());
+	private Set<BreakpointScope> parseBreakpointScopes(final String scopes) {
+		return parseBreakpointScopes(scopes, new HashSet<>());
 	}
 
-	private Set<BreakpointType> parseBreakpointTypes(
-			final String types,
-			final Set<BreakpointType> defaultTypes
+	private Set<BreakpointScope> parseBreakpointScopes(
+			final String scopes,
+			final Set<BreakpointScope> defaultScopes
 	) {
-		if (trimToNull(types) == null) {
-			return defaultTypes;
+		if (trimToNull(scopes) == null) {
+			return defaultScopes;
 		}
 		else {
-			Set<BreakpointType> tset = Arrays.asList(BreakpointType.values())
+			Set<BreakpointScope> tset = Arrays.asList(BreakpointScope.values())
 											 .stream()
-											 .filter(t -> types.contains(t.symbol()))
+											 .filter(t -> scopes.contains(t.symbol()))
 											 .collect(Collectors.toSet());
 			
-			return tset.isEmpty() ? defaultTypes : tset;
+			return tset.isEmpty() ? defaultScopes : tset;
 		}
 	}
 	
-	private String getBreakpointTypeSymbolList() {
+	private String getBreakpointScopeSymbolList() {
 		// return "(!)"
-		return BreakpointType
+		return BreakpointScope
 					.all()
 					.stream()
 					.map(t -> t.symbol())
@@ -591,7 +591,7 @@ public class ReplDebugClient {
 					? "special form"
 					: "function",
 				br.getFn().getQualifiedName(),
-				br.getBreakpointType().description());
+				br.getBreakpointScope().description());
 	}
 	
 	private String formatStop(final Break br) {
@@ -604,7 +604,7 @@ public class ReplDebugClient {
 				br.getFn().isNative() 
 					? "" 
 					: " (" + new CallFrame(br.getFn()).getSourcePosInfo() +")",
-				br.getBreakpointType().description());
+				br.getBreakpointScope().description());
 	}
 	
 	private void println(final String s) {

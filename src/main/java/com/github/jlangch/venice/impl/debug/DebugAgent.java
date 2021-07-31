@@ -21,9 +21,9 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionException;
-import static com.github.jlangch.venice.impl.debug.BreakpointType.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.Collections;
@@ -88,22 +88,22 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 	
 	@Override
-	public Map<String, Set<BreakpointType>> getBreakpoints() {
+	public Map<String, Set<BreakpointScope>> getBreakpoints() {
 		return new HashMap<>(breakpoints);
 	}
 
 	@Override
 	public void addBreakpoint(
 			final String qualifiedName, 
-			final Set<BreakpointType> types
+			final Set<BreakpointScope> scopes
 	) {
-		final Set<BreakpointType> copyTypes = new HashSet<>(types);
+		final Set<BreakpointScope> copyScopes = new HashSet<>(scopes);
 		
-		if (copyTypes.isEmpty()) {
-			copyTypes.add(FunctionEntry);
+		if (copyScopes.isEmpty()) {
+			copyScopes.add(FunctionEntry);
 		}
 		
-		breakpoints.put(qualifiedName, copyTypes);
+		breakpoints.put(qualifiedName, copyScopes);
 	}
 
 	@Override
@@ -332,7 +332,7 @@ public class DebugAgent implements IDebugAgent {
 	
 	private boolean isStopOnFunction(
 			final String fnName, 
-			final BreakpointType bt
+			final BreakpointScope bt
 	) {
 		switch(stopNext) {
 			case MatchingFnName:
@@ -365,7 +365,7 @@ public class DebugAgent implements IDebugAgent {
 							"Interrupted while waiting for leaving breakpoint "
 								+ "in function '%s' (%s).",
 							br.getFn().getQualifiedName(),
-							br.getBreakpointType()));
+							br.getBreakpointScope()));
 		}
 		finally {
 			activeBreak = null;
@@ -389,16 +389,16 @@ public class DebugAgent implements IDebugAgent {
 	
 	
 	private static final long BREAK_SLEEP = 500L;
-	private static final Set<BreakpointType> EMPTY_BP = new HashSet<>();
+	private static final Set<BreakpointScope> EMPTY_BP = new HashSet<>();
 
 	// simple breakpoint memorization
-	private static final ConcurrentHashMap<String,Set<BreakpointType>> memorized =
+	private static final ConcurrentHashMap<String,Set<BreakpointScope>> memorized =
 			new ConcurrentHashMap<>();
 
 	private volatile StopNext stopNext = StopNext.MatchingFnName;
 	private volatile String stopNextReturnFnName = null;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<String,Set<BreakpointType>> breakpoints = 
+	private final ConcurrentHashMap<String,Set<BreakpointScope>> breakpoints = 
 			new ConcurrentHashMap<>();
 }
