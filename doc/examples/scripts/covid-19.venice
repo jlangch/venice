@@ -1,4 +1,4 @@
-;;;;   __    __         _
+ ;;;;   __    __         _
 ;;;;   \ \  / /__ _ __ (_) ___ ___
 ;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
 ;;;;     \  /  __/ | | | | (_|  __/
@@ -24,6 +24,8 @@
 
 
 (do
+  (ns covid-19)
+  
   (load-module :xchart)
 
   (def country-config [
@@ -40,7 +42,8 @@
       { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }}
       ;;{ :name "India"        :iso "IND"  :style { :color :x-brown      }}
       ;;{ :name "Croatia"      :iso "HRV"  :style { :color :x-brown      }}
-      { :name "Portugal"     :iso "PRT"  :style { :color :x-brown      }}
+      { :name "Netherlands"  :iso "NLD"  :style { :color :x-brown      }}
+      ;;{ :name "Portugal"     :iso "PRT"  :style { :color :x-brown      }}
       ;;{ :name "Slovenia"     :iso "SVN"  :style { :color :x-brown      }}
       { :name "US"           :iso "USA"  :style { :color :x-black      }} ])
 
@@ -65,31 +68,31 @@
 
   ;;; I/O functions ------------------------------------------------------------
 
-  (defn view-chart [file] (sh/open file))
+  (defn view-chart! [file] (sh/open file))
 
-  (defn save-chart [chart file dpi]
+  (defn save-chart! [chart file dpi]
     (xchart/write-to-file chart :png dpi file)
     file)
 
-  (defn log-process-country [country-name]
+  (defn log-process-country! [country-name]
     (println "Processing data for" country-name "..."))
 
-  (defn load-country-html-data [country-name]
+  (defn load-country-html-data! [country-name]
     (let [url (str worldometers-url (str/lower-case country-name) "/")]
       (io/download url :user-agent "Mozilla")))
 
-  (defn load-country-population [country-iso]
+  (defn load-country-population! [country-iso]
     (let [url (str rest-population-url country-iso)]
       (-<> (io/download url :user-agent "Mozilla")
            (json/read-str <>)
            (get <> "population")
            (long <>))))
 
-  (defn add-country-html-data [country-data]
-    (assoc country-data :html (load-country-html-data (:name country-data))))
+  (defn add-country-html-data! [country-data]
+    (assoc country-data :html (load-country-html-data! (:name country-data))))
 
-  (defn add-country-population [country-data]
-    (let [p (load-country-population (:iso country-data))]
+  (defn add-country-population! [country-data]
+    (let [p (load-country-population! (:iso country-data))]
       (-> country-data
           (assoc :population p)
           (assoc :population-normalized (/ p 100_000.0)))))
@@ -151,10 +154,10 @@
          (assoc country-data :cases)))
 
   (defn aggregate-country-data [country-data start end]
-    (log-process-country (:name country-data))
+    (log-process-country! (:name country-data))
     (->> country-data
-         (add-country-population)
-         (add-country-html-data)
+         (add-country-population!)
+         (add-country-html-data!)
          (add-country-cases)
          (aggregate-country-cases)
          (filter-country-cases-by-date start end)))
@@ -194,7 +197,7 @@
     (-<> country-config
          (map #(aggregate-country-data % start-date end-date) <>)
          (render-chart <> chart-width chart-height sample-days)
-         (save-chart <> filename chart-dpi)
-         (view-chart <>)))
+         (save-chart! <> filename chart-dpi)
+         (view-chart! <>)))
 
   (main "covid-19.png"))
