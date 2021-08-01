@@ -21,14 +21,9 @@
  */
 package com.github.jlangch.venice.impl.util;
 
-import static com.github.jlangch.venice.impl.types.Constants.Nil;
-
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.VncFunction;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
-import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.util.StackFrame;
 
 
@@ -48,19 +43,22 @@ public class CallFrame {
 	}
 	
 	public String getFile() {
-		final VncVal vFile = getMetaVal(MetaUtil.FILE);
-		final String file = vFile == Nil ? null : Coerce.toVncString(vFile).getValue();
+		// Accessing meta data is expensive so its delayed until the data
+		// is needed. Creating a CallFrame must be as fast as possible.
+		final String file = MetaUtil.getFile(meta);
 		return file == null || file.isEmpty() ? "unknown" : file;
 	}
 	
 	public int getLine() {
-		final VncVal vLine = getMetaVal(MetaUtil.LINE);
-		return vLine == Nil ? -1 : Coerce.toVncLong(vLine).getValue().intValue();		
+		// Accessing meta data is expensive so its delayed until the data
+		// is needed. Creating a CallFrame must be as fast as possible.
+		return MetaUtil.getLine(meta);		
 	}
 	
 	public int getCol() {
-		final VncVal vCol = getMetaVal(MetaUtil.COLUMN);
-		return vCol == Nil ? -1 : Coerce.toVncLong(vCol).getValue().intValue();		
+		// Accessing meta data is expensive so its delayed until the data
+		// is needed. Creating a CallFrame must be as fast as possible.
+		return MetaUtil.getCol(meta);		
 	}
 	
 	public StackFrame toStackFrame() {
@@ -76,10 +74,6 @@ public class CallFrame {
 		return fnName == null
 				? getSourcePosInfo()
 				: String.format("%s (%s)", fnName, getSourcePosInfo());
-	}
-
-	private VncVal getMetaVal(final VncString key) {
-		return (meta instanceof VncHashMap) ? ((VncHashMap)meta).get(key) : Nil;
 	}
 
 	
