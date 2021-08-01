@@ -53,7 +53,7 @@ public class DebugAgent implements IDebugAgent {
 	
 
 	// -------------------------------------------------------------------------
-	// Register
+	// Register Agent
 	// -------------------------------------------------------------------------
 
 	public static void register(final DebugAgent agent) {
@@ -81,8 +81,8 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void detach() {
 		activeBreak = null;
-		breakpoints.clear();
-		stopNext = StopNext.MatchingFnName;
+		fnBreakpoints.clear();
+		stopNext = StopNext.Breakpoint;
 	}
 
 	
@@ -93,7 +93,7 @@ public class DebugAgent implements IDebugAgent {
 	
 	@Override
 	public Map<String, BreakpointFn> getBreakpoints() {
-		return new HashMap<>(breakpoints);
+		return new HashMap<>(fnBreakpoints);
 	}
 
 	@Override
@@ -102,28 +102,28 @@ public class DebugAgent implements IDebugAgent {
 			throw new IllegalArgumentException("A breakpoint must not be null");
 		}
 		
-		breakpoints.put(breakpoint.getQualifiedFnName(), breakpoint);
+		fnBreakpoints.put(breakpoint.getQualifiedFnName(), breakpoint);
 	}
 
 	@Override
 	public void removeBreakpoint(final String qualifiedName) {
-		breakpoints.remove(qualifiedName);
+		fnBreakpoints.remove(qualifiedName);
 	}
 
 	@Override
 	public void removeAllBreakpoints() {
-		breakpoints.clear();
-		stopNext = StopNext.MatchingFnName;
+		fnBreakpoints.clear();
+		stopNext = StopNext.Breakpoint;
 	}
 
 	@Override
 	public void storeBreakpoints() {
-		memorized.putAll(breakpoints);
+		memorized.putAll(fnBreakpoints);
 	}
 	
 	@Override
 	public void restoreBreakpoints() {
-		breakpoints.putAll(memorized);
+		fnBreakpoints.putAll(memorized);
 	}
 
 
@@ -135,7 +135,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public boolean hasBreak(final String qualifiedName) {
 		switch (stopNext) {
-			case MatchingFnName: return breakpoints.containsKey(qualifiedName);
+			case Breakpoint: return fnBreakpoints.containsKey(qualifiedName);
 			case AnyFunction: return true;
 			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
 			case FunctionReturn: return qualifiedName.equals(stopNextReturnFnName);
@@ -282,7 +282,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void resume() {
 		clearBreak();
-		stopNext = StopNext.MatchingFnName;
+		stopNext = StopNext.Breakpoint;
 	}
 
 	@Override
@@ -334,8 +334,8 @@ public class DebugAgent implements IDebugAgent {
 			final BreakpointScope bt
 	) {
 		switch(stopNext) {
-			case MatchingFnName:
-				final BreakpointFn bp = breakpoints.get(fnName);
+			case Breakpoint:
+				final BreakpointFn bp = fnBreakpoints.get(fnName);
 				return bp != null && bp.hasScope(bt);
 				
 			case AnyFunction:
@@ -373,13 +373,13 @@ public class DebugAgent implements IDebugAgent {
 	
 	void clearBreak() {
 		activeBreak = null;
-		stopNext = StopNext.MatchingFnName;
+		stopNext = StopNext.Breakpoint;
 		stopNextReturnFnName = null;
 	}
 
 	
 	private static enum StopNext {
-		MatchingFnName,			// stop on function with specified name entry
+		Breakpoint,				// stop on registered fn or line breakpoint
 		AnyFunction,			// stop on next function entry
 		AnyNonSystemFunction,	// stop on next non system function entry
 		FunctionReturn;			// stop on function return
@@ -393,10 +393,10 @@ public class DebugAgent implements IDebugAgent {
 	private static final ConcurrentHashMap<String,BreakpointFn> memorized =
 			new ConcurrentHashMap<>();
 
-	private volatile StopNext stopNext = StopNext.MatchingFnName;
+	private volatile StopNext stopNext = StopNext.Breakpoint;
 	private volatile String stopNextReturnFnName = null;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<String,BreakpointFn> breakpoints = 
+	private final ConcurrentHashMap<String,BreakpointFn> fnBreakpoints = 
 			new ConcurrentHashMap<>();
 }
