@@ -40,8 +40,6 @@ The REPL let's you interactively run and test commands.
 - io/zip−append, io/zip−remove
 - io/unzip, io/unzip−to−dir
 - io/unzip−first, io/unzip−all
-- ...
-
 - io/gzip, io/gzip−to−stream 
 - io/ungzip, io/ungzip−to−stream
 
