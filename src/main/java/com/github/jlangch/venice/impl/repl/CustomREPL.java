@@ -68,7 +68,9 @@ public class CustomREPL {
 		this.app = app;
 	}
 	
-	public void run(final String[] args) {
+	public void run(final String[] args) {	
+		JavaInterop.register(interceptor);
+
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
 		try {
@@ -161,8 +163,6 @@ public class CustomREPL {
 		
 		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);		
 		final Env env = loadEnv(venice, cli, out, err, in);
-		
-		JavaInterop.register(interceptor);	
 	
 		if (isSetupMode(cli)) {
 			setupRepl(cli, venice, env, printer);
