@@ -23,9 +23,6 @@ package com.github.jlangch.venice.impl.util;
 
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.reader.Token;
-import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -53,13 +50,16 @@ public class ErrorMessage {
 	}
 	
 	public static String buildErrLocation(final VncVal val) {
-		final VncVal file = val.getMetaVal(MetaUtil.FILE);
-		final VncVal line = val.getMetaVal(MetaUtil.LINE);
-		final VncVal column = val.getMetaVal(MetaUtil.COLUMN);
+		final VncVal meta = val.getMeta();
+		
+		final String file = MetaUtil.getFile(meta);
+		final int line =  MetaUtil.getLine(meta);
+		final int column =  MetaUtil.getCol(meta);
+		
 		return String.format(
 				"File <%s> (%d,%d)",
-				file == Constants.Nil ? "unknown" : ((VncString)file).getValue(),
-				line == Constants.Nil ? 1 : ((VncLong)line).getValue(),
-				column == Constants.Nil ? 1 : ((VncLong)column).getValue());
+				file == null || file.isEmpty()? "unknown" : file,
+				line == -1 ? 1 : line,
+				column == -1 ? 1 : column);
 	}
 }

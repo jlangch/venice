@@ -43,8 +43,12 @@ public class ErrorMessageTest {
 		final VncVal val = new VncLong(0L, meta);
 		
 		assertEquals("core.venice", ((VncString)val.getMetaVal(MetaUtil.FILE)).getValue());
-		assertEquals(Long.valueOf(10L), ((VncLong)val.getMetaVal(MetaUtil.LINE)).getValue());
-		assertEquals(Long.valueOf(42L), ((VncLong)val.getMetaVal(MetaUtil.COLUMN)).getValue());
+		assertEquals(10L, ((VncLong)val.getMetaVal(MetaUtil.LINE)).getValue());
+		assertEquals(42L, ((VncLong)val.getMetaVal(MetaUtil.COLUMN)).getValue());
+		
+		assertEquals("core.venice", MetaUtil.getFile(val.getMeta()));
+		assertEquals(10, MetaUtil.getLine(val.getMeta()));
+		assertEquals(42, MetaUtil.getCol(val.getMeta()));
 	}
 	
 }

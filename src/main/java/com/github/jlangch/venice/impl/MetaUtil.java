@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
@@ -121,6 +122,26 @@ public class MetaUtil {
 	
 	public static VncVal setNamespace(final VncVal meta, final String ns) {
 		return MetaUtil.addMetaVal(meta, NS, new VncString(ns));
+	}
+
+	public static String getFile(final VncVal meta) {
+		final VncVal vFile = getMetaVal(meta, MetaUtil.FILE);
+		final String file = vFile == Nil ? null : Coerce.toVncString(vFile).getValue();
+		return file == null || file.isEmpty() ? null : file;
+	}
+	
+	public static int getLine(final VncVal meta) {
+		final VncVal vLine = getMetaVal(meta, MetaUtil.LINE);
+		return vLine == Nil ? -1 : Coerce.toVncLong(vLine).getValue().intValue();		
+	}
+	
+	public static int getCol(final VncVal meta) {
+		final VncVal vCol = getMetaVal(meta, MetaUtil.COLUMN);
+		return vCol == Nil ? -1 : Coerce.toVncLong(vCol).getValue().intValue();		
+	}
+
+	public static VncVal getMetaVal(final VncVal meta, final VncString key) {
+		return (meta instanceof VncHashMap) ? ((VncHashMap)meta).get(key) : Nil;
 	}
 	
 	
