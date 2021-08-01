@@ -94,6 +94,8 @@ public class REPL {
 	}
 	
 	public void run(final String[] args) {
+		JavaInterop.register(interceptor);
+
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
 		try {
@@ -205,8 +207,6 @@ public class REPL {
 		// load the core functions without macro expansion! ==> check this!
 		env = loadEnv(venice, cli, terminal, out, err, in, false);	
 		venice.setMacroExpandOnLoad(macroexpand, env);
-
-		JavaInterop.register(interceptor);	
 
 		if (isSetupMode(cli)) {
 			setupRepl(cli, venice, env, printer);
@@ -997,7 +997,6 @@ public class REPL {
 		this.venice = new VeniceInterpreter(interceptor);
 		this.venice.setMacroExpandOnLoad(macroExpandOnLoad, env);
 		
-		JavaInterop.register(interceptor);	
 		DebugAgent.register(agent);
 	}
 

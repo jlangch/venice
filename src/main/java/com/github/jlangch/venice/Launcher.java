@@ -34,7 +34,6 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -121,7 +120,6 @@ public class Launcher {
 			}
 			else if (cli.switchPresent("-file")) {
 				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-				JavaInterop.register(interceptor);
 				
 				// run the file from the filesystem
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-file"));
@@ -132,7 +130,6 @@ public class Launcher {
 			}
 			else if (cli.switchPresent("-cp-file")) {
 				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-				JavaInterop.register(interceptor);
 				
 				// run the file from the classpath
 				final String file = suffixWithVeniceFileExt(cli.switchValue("-cp-file"));
@@ -143,7 +140,6 @@ public class Launcher {
 			}
 			else if (cli.switchPresent("-script")) {
 				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-				JavaInterop.register(interceptor);
 				
 				// run the script passed as command line argument
 				final String script = cli.switchValue("-script");
@@ -163,7 +159,6 @@ public class Launcher {
 													loadPaths.isUnlimitedAccess());
 
 				final IInterceptor interceptor = new AcceptAllInterceptor(appLoadPaths);
-				JavaInterop.register(interceptor);
 
 				final VncMap manifest = getManifest(appFile);
 				
@@ -178,7 +173,6 @@ public class Launcher {
 			}
 			else if (cli.switchPresent("-app-repl")) {
 				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-				JavaInterop.register(interceptor);
 				
 				// run a custom application repl
 				final String file = cli.switchValue("-app-repl");
@@ -186,18 +180,12 @@ public class Launcher {
 				new CustomREPL(interceptor, new File(file)).run(args);
 			}
 			else if (cli.switchPresent("-repl")) {
-				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-				JavaInterop.register(interceptor);
-				
 				// run the Venice repl
-				new REPL(interceptor).run(args);
+				new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
 			}
 			else {
-				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
-				JavaInterop.register(interceptor);
-				
 				// run the Venice repl
-				new REPL(interceptor).run(args);
+				new REPL(new AcceptAllInterceptor(loadPaths)).run(args);
 			}
 			
 			System.exit(SystemFunctions.SYSTEM_EXIT_CODE.get());

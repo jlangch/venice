@@ -60,14 +60,14 @@ import com.lowagie.text.pdf.PdfReader;
 public class DocGenerator {
 
 	public DocGenerator() {
-		this.preloadedModules
+		preloadedModules
 			.addAll(Arrays.asList(
 						"app",    "xml",    "crypt",  "gradle", 
 						"trace",  "ansi",   "maven",  "kira",
 						"java",   "semver", "excel",  "hexdump",
 						"shell",  "geoip",  "benchmark"));
 		
-		Env env = new VeniceInterpreter(new AcceptAllInterceptor())
+		final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
 								preloadedModules, 
 								false, 
@@ -76,9 +76,10 @@ public class DocGenerator {
 							.setStdoutPrintStream(null)
 							.setStderrPrintStream(null);
 		
-		this.env = ReplFunctions.register(env, null, null);
+		// make REPL specific functions available (e.g: 'repl/info')
+		env = ReplFunctions.register(docEnv, null, null);
 		
-		this.codeHighlighter = new DocHighlighter(DocColorTheme.getLightTheme());
+		codeHighlighter = new DocHighlighter(DocColorTheme.getLightTheme());
 	}
 	
 	public static List<DocSection> docInfo() {
