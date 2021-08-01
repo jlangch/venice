@@ -3,7 +3,7 @@
 A Venice REPL (Read-Eval-Print Loop) is a programming environment which enables 
 you to run and test code interactively.
 
-Start the REPL with `java -jar venice-1.9.26.jar -colors`
+Start the REPL with `java -jar venice-1.9.27.jar -colors`
 
 ```text
 venice> (+ 1 1)

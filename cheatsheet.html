@@ -372,7 +372,7 @@
         <div class="main">
             <div class="title">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.26</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.9.27</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -6655,7 +6655,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">*loaded-modules*</span>
-=&gt; #{:crypt :csv :trace :java :xml :semver :json :cidr :app :geoip :hexdump :io :maven :ansi :benchmark :str :gradle :excel :core :regex :pdf :shell :time :kira}</code>
+=&gt; #{:crypt :csv :xchart :trace :java :xml :semver :json :cidr :app :geoip :hexdump :io :maven :ansi :benchmark :str :gradle :excel :core :regex :pdf :shell :time :kira}</code>
                     </div>
                     
                     
@@ -7134,7 +7134,7 @@ public class Example {
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.ZonedDateTime</span> <span style="color: #E9967A">:now</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T00:33:55.843+02:00[Europe/Zurich]
+=&gt; 2021-08-01T13:54:22.947+02:00[Europe/Zurich]
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.lang.Math</span> <span style="color: #E9967A">:min</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
@@ -11650,7 +11650,7 @@ public class Example {
          <span style="color: #404040">gd</span> <span style="color: #404040">(</span><span style="color: #4169E1">cast</span> <span style="color: #E9967A">:Graphics</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #404040">img</span> <span style="color: #E9967A">:createGraphics</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">]</span> 
      <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #404040">gd</span> <span style="color: #E9967A">:fillOval</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span>
      <span style="color: #404040">img</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; BufferedImage@2669b199: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
+=&gt; BufferedImage@22e357dc: type = 1 DirectColorModel: rmask=ff0000 gmask=ff00 bmask=ff amask=0 IntegerInterleavedRaster: width = 40 height = 40 #Bands = 3 xOff = 0 yOff = 0 dataOffset[0] 0</code>
                     </div>
                     
                     
@@ -13015,7 +13015,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span>
-=&gt; function anonymous-644c6f28-5e4e-48a5-b81c-c074a686a67c {visibility :public, ns &quot;core&quot;}
+=&gt; function anonymous-77524cc3-7f28-42fe-a9d8-3c0da816cc4f {visibility :public, ns &quot;core&quot;, native false} defined at unknown: line -1, col -1
 
 <span style="color: #404040">(</span><span style="color: #4169E1">filter</span> <span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 3)</code>
@@ -14323,7 +14323,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">current-time-millis</span><span style="color: #404040">)</span>
-=&gt; 1626820450832</code>
+=&gt; 1627818879507</code>
                     </div>
                     
                     
@@ -14940,7 +14940,7 @@ public class Example {
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">defmacro</span> <span style="color: #404040">unless</span> <span style="color: #404040">[</span><span style="color: #404040">pred</span> <span style="color: #404040">a</span> <span style="color: #404040">b</span><span style="color: #404040">]</span>   
   <span style="color: #404040">`</span><span style="color: #404040">(</span><span style="color: #9932CC">if</span> <span style="color: #404040">(</span><span style="color: #4169E1">not</span> <span style="color: #404040">~</span><span style="color: #404040">pred</span><span style="color: #404040">)</span> <span style="color: #404040">~</span><span style="color: #404040">a</span> <span style="color: #404040">~</span><span style="color: #404040">b</span><span style="color: #404040">)</span><span style="color: #404040">)</span>      
-=&gt; macro user/unless {visibility :public, ns &quot;user&quot;}</code>
+=&gt; macro user/unless {visibility :public, ns &quot;user&quot;, native false} defined at example: line 18, col 21</code>
                     </div>
                     
                     
@@ -16319,11 +16319,11 @@ public class Example {
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                     
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (89 16 18 46)
+=&gt; (34 67 29 23)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (88 48 55 44)</code>
+=&gt; (17 7 4 94)</code>
                     </div>
                     
                     
@@ -16370,7 +16370,7 @@ public class Example {
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">10</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2260 620 488 254 217 223 225 230 215 217)</code>
+=&gt; (2565 702 484 278 243 218 218 223 231 216)</code>
                     </div>
                     
                     
@@ -22056,8 +22056,8 @@ After 300ms: done=true</span>
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
 <span style="color: #808080">Worker0
-Worker1
-Worker2</span>
+Worker2
+Worker1</span>
 =&gt; nil</code>
                     </div>
                     
@@ -22197,9 +22197,9 @@ Worker2</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker0
-Worker1
-Worker2</span>
+<span style="color: #808080">Worker2
+Worker0
+Worker1</span>
 =&gt; nil</code>
                     </div>
                     
@@ -30490,7 +30490,7 @@ Hello Bob</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">rand-long</span><span style="color: #404040">)</span>                                       
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                                                   
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (5604598280515025633 1590178990358857003 7242984508708389799 7982941123274048775)
+=&gt; (2067713607988732576 6486801003835191935 4647874191950348517 6037933877054088724)
 
 <span style="color: #808080">; lazy sequence with a constant value                           </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">(</span><span style="color: #4169E1">constantly</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                                  
@@ -32813,7 +32813,7 @@ out</span>
           <span style="color: #E9967A">:else</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #E9967A">25</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 4.62ms</span>
+<span style="color: #808080">Elapsed time: 4.68ms</span>
 =&gt; 75025</code>
                     </div>
                     
@@ -33444,14 +33444,14 @@ out</span>
 =&gt; &quot;+&quot;
 
 <span style="color: #808080">;; compare with var-name </span>
-<span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;+&quot;
 
 <span style="color: #808080">;; compare aliased function with var-name </span>
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span> 
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;add&quot;</code>
                     </div>
                     
@@ -33488,30 +33488,30 @@ out</span>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">namespace</span> <span style="color: #404040">&apos;</span><span style="color: #404040">user/foo</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">namespace</span> <span style="color: #404040">&apos;</span><span style="color: #404040">user/foo</span><span style="color: #404040">)</span>
 =&gt; &quot;user&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">namespace</span> <span style="color: #E9967A">:user/foo</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">namespace</span> <span style="color: #E9967A">:user/foo</span><span style="color: #404040">)</span>
 =&gt; &quot;user&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">namespace</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">namespace</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span> 
-  <span style="color: #404040">(</span><span style="color: #4169E1">namespace</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">namespace</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
 <span style="color: #808080">;; compare with var-ns </span>
-<span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
 <span style="color: #808080">;; compare alias def&apos;d function with var-ns </span>
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;foo&quot;</code>
                     </div>
                     
@@ -33564,7 +33564,7 @@ out</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>
-=&gt; 252931429841652</code>
+=&gt; 166073569500416</code>
                     </div>
                     
                     
@@ -34308,7 +34308,7 @@ out</span>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">ns-list</span> <span style="color: #404040">regex</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">ns-list</span> <span style="color: #404040">regex</span><span style="color: #404040">)</span>
 =&gt; (regex/count regex/find regex/find+ regex/find-all regex/find-all+ regex/find? regex/group regex/matcher regex/matches regex/matches? regex/pattern regex/reset)</code>
                     </div>
                     
@@ -34382,8 +34382,8 @@ out</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">yoo</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>                          
   <span style="color: #404040">(</span><span style="color: #9932CC">ns-remove</span> <span style="color: #404040">xxx</span><span style="color: #404040">)</span>                      
   <span style="color: #404040">(</span><span style="color: #9932CC">ns-remove</span> <span style="color: #404040">*ns*</span><span style="color: #404040">)</span>                     
-  <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;ns xxx:&quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">ns-list</span> <span style="color: #404040">xxx</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
-  <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;ns yyy:&quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">ns-list</span> <span style="color: #404040">yyy</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
+  <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;ns xxx:&quot;</span> <span style="color: #404040">(</span><span style="color: #9932CC">ns-list</span> <span style="color: #404040">xxx</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
+  <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;ns yyy:&quot;</span> <span style="color: #404040">(</span><span style="color: #9932CC">ns-list</span> <span style="color: #404040">yyy</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
 <span style="color: #808080">ns xxx: ()
 ns yyy: ()</span>
 =&gt; nil</code>
@@ -35996,7 +35996,7 @@ ns yyy: ()</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">pid</span><span style="color: #404040">)</span>
-=&gt; &quot;48935&quot;</code>
+=&gt; &quot;32152&quot;</code>
                     </div>
                     
                     
@@ -37055,7 +37055,7 @@ line 2: 456</span>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">quasiquote</span> <span style="color: #404040">(</span><span style="color: #E9967A">16</span> <span style="color: #E9967A">17</span> <span style="color: #404040">(</span><span style="color: #4169E1">inc</span> <span style="color: #E9967A">17</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">quasiquote</span> <span style="color: #404040">(</span><span style="color: #E9967A">16</span> <span style="color: #E9967A">17</span> <span style="color: #404040">(</span><span style="color: #4169E1">inc</span> <span style="color: #E9967A">17</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (16 17 (inc 17))
 
 <span style="color: #404040">`</span><span style="color: #404040">(</span><span style="color: #E9967A">16</span> <span style="color: #E9967A">17</span> <span style="color: #404040">(</span><span style="color: #4169E1">inc</span> <span style="color: #E9967A">17</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
@@ -37251,10 +37251,10 @@ line 2: 456</span>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">quote</span> <span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">quote</span> <span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 2 3)
 
-<span style="color: #404040">(</span><span style="color: #4169E1">quote</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">quote</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (+ 1 2)
 
 <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span><span style="color: #404040">)</span>
@@ -37304,10 +37304,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span><span style="color: #404040">)</span>
-=&gt; 0.7992147630041635
+=&gt; 0.261399111458825
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span> <span style="color: #E9967A">100.0</span><span style="color: #404040">)</span>
-=&gt; 15.931539428756736</code>
+=&gt; 62.21680740153115</code>
                     </div>
                     
                     
@@ -37347,10 +37347,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span><span style="color: #404040">)</span>
-=&gt; 0.6113106871139196
+=&gt; 0.2025945692841488
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span> <span style="color: #E9967A">0.0</span> <span style="color: #E9967A">5.0</span><span style="color: #404040">)</span>
-=&gt; -0.01371165479118873</code>
+=&gt; 4.407253000611062</code>
                     </div>
                     
                     
@@ -37390,10 +37390,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span><span style="color: #404040">)</span>
-=&gt; 6753526161524875811
+=&gt; 8722606804169998526
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 38</code>
+=&gt; 59</code>
                     </div>
                     
                     
@@ -37758,7 +37758,7 @@ true</span>
 <span style="color: #808080">;; sliding window (width 3) average</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">partition</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">10</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">30</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
      <span style="color: #404040">(</span><span style="color: #4169E1">map</span> <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">window</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">/</span> <span style="color: #404040">(</span><span style="color: #4169E1">reduce</span> <span style="color: #404040">+</span> <span style="color: #404040">window</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">count</span> <span style="color: #404040">window</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (18 10 9 4 11 16 17 13)</code>
+=&gt; (16 17 10 14 15 20 13 14)</code>
                     </div>
                     
                     
@@ -38894,12 +38894,12 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">5</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (4 0 8 0 8)
+=&gt; (7 10 7 1 3)
 
 <span style="color: #808080">;; compare with repeat, which only calls the &apos;rand-long&apos;</span>
 <span style="color: #808080">;; function once, repeating the value five times. </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">repeat</span> <span style="color: #E9967A">5</span> <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (9 9 9 9 9)</code>
+=&gt; (10 10 10 10 10)</code>
                     </div>
                     
                     
@@ -39215,13 +39215,13 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">resolve</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
-=&gt; function + {visibility :public, ns &quot;core&quot;}
+=&gt; function + {visibility :public, ns &quot;core&quot;, native true}
 
 <span style="color: #404040">(</span><span style="color: #9932CC">resolve</span> <span style="color: #404040">&apos;</span><span style="color: #404040">y</span><span style="color: #404040">)</span>
 =&gt; nil
 
 <span style="color: #404040">(</span><span style="color: #9932CC">resolve</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; function + {visibility :public, ns &quot;core&quot;}
+=&gt; function + {visibility :public, ns &quot;core&quot;, native true}
 
 <span style="color: #404040">(</span><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #2E8B57">&quot;first&quot;</span> <span style="color: #404040">symbol</span> <span style="color: #404040">resolve</span><span style="color: #404040">)</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
 =&gt; 1</code>
@@ -41951,13 +41951,13 @@ E.g.: { :major 1, :minor 3, :patch 5 }
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (4 5 2 1 3 6)
+=&gt; (6 3 4 1 5 2)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-=&gt; [5 4 2 1 6 3]
+=&gt; [5 6 2 4 1 3]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #2E8B57">&quot;abcdef&quot;</span><span style="color: #404040">)</span>
-=&gt; (&quot;c&quot; &quot;b&quot; &quot;e&quot; &quot;f&quot; &quot;a&quot; &quot;d&quot;)</code>
+=&gt; (&quot;e&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;f&quot; &quot;a&quot;)</code>
                     </div>
                     
                     
@@ -43136,7 +43136,7 @@ E.g.: { :major 1, :minor 3, :patch 5 }
 =&gt; &quot;123&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">str</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-=&gt; &quot;function + {visibility :public, ns \&quot;core\&quot;}&quot;
+=&gt; &quot;function + {visibility :public, ns \&quot;core\&quot;, native true}&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">str</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
 =&gt; &quot;[1 2 3]&quot;</code>
@@ -46212,11 +46212,11 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #808080">;; in tail position </span>
-<span style="color: #404040">(</span><span style="color: #9932CC">do</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #4169E1">tail-pos</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #9932CC">tail-pos</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; nil
 
 <span style="color: #808080">;; not in tail position </span>
-<span style="color: #404040">(</span><span style="color: #9932CC">do</span> <span style="color: #404040">(</span><span style="color: #4169E1">tail-pos</span><span style="color: #404040">)</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span> <span style="color: #404040">(</span><span style="color: #9932CC">tail-pos</span><span style="color: #404040">)</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; <span style="color: #808080">NotInTailPositionException: Not in tail position</span></code>
                     </div>
                     
@@ -46703,7 +46703,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">thread-local-clear</span><span style="color: #404040">)</span>
-=&gt; function thread-local-clear {visibility :public, ns &quot;core&quot;}</code>
+=&gt; function thread-local-clear {visibility :public, ns &quot;core&quot;, native true}</code>
                     </div>
                     
                     
@@ -47025,7 +47025,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">100</span> <span style="color: #E9967A">200</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 7.79µs</span>
+<span style="color: #808080">Elapsed time: 5.72µs</span>
 =&gt; 300</code>
                     </div>
                     
@@ -47154,7 +47154,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span>
-=&gt; Wed Jul 21 00:34:16 CEST 2021</code>
+=&gt; Sun Aug 01 13:54:44 CEST 2021</code>
                     </div>
                     
                     
@@ -47228,13 +47228,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 21
+=&gt; 1
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 21
+=&gt; 1
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 21</code>
+=&gt; 1</code>
                     </div>
                     
                     
@@ -47271,13 +47271,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :WEDNESDAY
+=&gt; :SUNDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :WEDNESDAY
+=&gt; :SUNDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :WEDNESDAY</code>
+=&gt; :SUNDAY</code>
                     </div>
                     
                     
@@ -47314,13 +47314,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 202
+=&gt; 213
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 202
+=&gt; 213
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 202</code>
+=&gt; 213</code>
                     </div>
                     
                     
@@ -47394,13 +47394,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-01
+=&gt; 2021-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-01
+=&gt; 2021-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-01</code>
+=&gt; 2021-08-01</code>
                     </div>
                     
                     
@@ -47439,19 +47439,19 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;21-07-2021&quot;
+=&gt; &quot;01-08-2021&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-07-21T00:34:17.077CEST&quot;
+=&gt; &quot;2021-08-01T13:54:46.076CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-07-21T00:34:17.087+02:00&quot;
+=&gt; &quot;2021-08-01T13:54:46.088+02:00&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-07-21T00:34:17.103CEST&quot;
+=&gt; &quot;2021-08-01T13:54:46.101CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2021-07-21T00:34:17.117+02:00&quot;</code>
+=&gt; &quot;2021-08-01T13:54:46.114+02:00&quot;</code>
                     </div>
                     
                     
@@ -47540,10 +47540,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 0
+=&gt; 13
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 0</code>
+=&gt; 13</code>
                     </div>
                     
                     
@@ -47580,13 +47580,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-31
+=&gt; 2021-08-31
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-31
+=&gt; 2021-08-31
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-31</code>
+=&gt; 2021-08-31</code>
                     </div>
                     
                     
@@ -47804,7 +47804,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21
+=&gt; 2021-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01
@@ -47816,7 +47816,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21</code>
+=&gt; 2021-08-01</code>
                     </div>
                     
                     
@@ -47901,7 +47901,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T00:34:16.338
+=&gt; 2021-08-01T13:54:45.113
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00
@@ -47919,7 +47919,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T00:34:16.396</code>
+=&gt; 2021-08-01T13:54:45.189</code>
                     </div>
                     
                     
@@ -48070,13 +48070,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-07-19
+=&gt; 2021-07-30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-07-19T00:34:17.297
+=&gt; 2021-07-30T13:54:46.343
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-07-19T00:34:17.307+02:00[Europe/Zurich]</code>
+=&gt; 2021-07-30T13:54:46.356+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -48116,10 +48116,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 34
+=&gt; 54
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 34</code>
+=&gt; 54</code>
                     </div>
                     
                     
@@ -48156,13 +48156,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7
+=&gt; 8
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7
+=&gt; 8
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 7</code>
+=&gt; 8</code>
                     </div>
                     
                     
@@ -48316,13 +48316,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-07-23
+=&gt; 2021-08-03
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-07-23T00:34:17.265
+=&gt; 2021-08-03T13:54:46.304
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2021-07-23T00:34:17.278+02:00[Europe/Zurich]</code>
+=&gt; 2021-08-03T13:54:46.317+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -48362,10 +48362,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 16
+=&gt; 45
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 16</code>
+=&gt; 45</code>
                     </div>
                     
                     
@@ -48402,7 +48402,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1626818400000</code>
+=&gt; 1627768800000</code>
                     </div>
                     
                     
@@ -48441,13 +48441,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T22:00:15.333
+=&gt; 2021-08-01T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T22:00:15.333
+=&gt; 2021-08-01T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2021-08-01T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -48696,7 +48696,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T00:34:16.434+02:00[Europe/Zurich]
+=&gt; 2021-08-01T13:54:45.239+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -48714,10 +48714,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-21T00:34:16.496+02:00[Europe/Zurich]
+=&gt; 2021-08-01T13:54:45.324+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span><span style="color: #404040">)</span>
-=&gt; 2021-07-20T22:34:16.506Z[UTC]
+=&gt; 2021-08-01T11:54:45.337Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -48735,7 +48735,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T00:00Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">:UTC</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2021-07-20T22:34:16.563Z[UTC]</code>
+=&gt; 2021-08-01T11:54:45.413Z[UTC]</code>
                     </div>
                     
                     
@@ -48941,7 +48941,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">total-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;1031.0MB&quot;</code>
+=&gt; &quot;794.0MB&quot;</code>
                     </div>
                     
                     
@@ -50243,7 +50243,7 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">used-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;40.3MB&quot;</code>
+=&gt; &quot;43.4MB&quot;</code>
                     </div>
                     
                     
@@ -50290,7 +50290,7 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">uuid</span><span style="color: #404040">)</span>
-=&gt; &quot;6579c0a2-9637-440a-aeaf-22193f85654d&quot;</code>
+=&gt; &quot;fe41e579-c5e9-4ec0-b52a-c03e55b1a27a&quot;</code>
                     </div>
                     
                     
@@ -50455,13 +50455,13 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">var-get</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-=&gt; function + {visibility :public, ns &quot;core&quot;}
+=&gt; function + {visibility :public, ns &quot;core&quot;, native true}
 
 <span style="color: #404040">(</span><span style="color: #9932CC">var-get</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
-=&gt; function + {visibility :public, ns &quot;core&quot;}
+=&gt; function + {visibility :public, ns &quot;core&quot;, native true}
 
 <span style="color: #404040">(</span><span style="color: #9932CC">var-get</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; function + {visibility :public, ns &quot;core&quot;}
+=&gt; function + {visibility :public, ns &quot;core&quot;, native true}
 
 <span style="color: #404040">(</span><span style="color: #404040">(</span><span style="color: #9932CC">var-get</span> <span style="color: #404040">+</span><span style="color: #404040">)</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
 =&gt; 3
@@ -50535,22 +50535,22 @@ sorted     reverse         max, min</code></div>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">var-global?</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">var-global?</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; true
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-global?</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-global?</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; true
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-global?</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-global?</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; true
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>                
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">)</span>       
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-global?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-global?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
 =&gt; true
 
 <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">]</span>        
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-global?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-global?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
 =&gt; false</code>
                     </div>
                     
@@ -50617,22 +50617,22 @@ sorted     reverse         max, min</code></div>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">var-local?</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">var-local?</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; false
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-local?</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-local?</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; false
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-local?</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-local?</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; false
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>               
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">)</span>      
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-local?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-local?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
 =&gt; false
 
 <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">]</span>       
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-local?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-local?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>   
 =&gt; true</code>
                     </div>
                     
@@ -50699,29 +50699,29 @@ sorted     reverse         max, min</code></div>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;+&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;+&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;+&quot;
 
 <span style="color: #808080">;; aliased function </span>
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;add&quot;
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">)</span> 
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;x&quot;
 
 <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">]</span> 
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-name</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-name</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;x&quot;
 
 <span style="color: #808080">;; compare with name </span>
@@ -50807,43 +50807,43 @@ sorted     reverse         max, min</code></div>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">&apos;</span><span style="color: #404040">+</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
-<span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">(</span><span style="color: #4169E1">symbol</span> <span style="color: #2E8B57">&quot;+&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
 <span style="color: #808080">;; aliased function </span>
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;foo&quot;
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>  
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">)</span> 
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;user&quot;
 
 <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">x</span> <span style="color: #E9967A">10</span><span style="color: #404040">]</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-ns</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-ns</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; nil
 
 <span style="color: #808080">;; compare with namespace </span>
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">namespace</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">namespace</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;
 
 <span style="color: #808080">;; compare aliased function with namespace </span>
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">ns</span> <span style="color: #404040">foo</span><span style="color: #404040">)</span> 
   <span style="color: #404040">(</span><span style="color: #9932CC">def</span> <span style="color: #404040">add</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">namespace</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">namespace</span> <span style="color: #404040">add</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; &quot;core&quot;</code>
                     </div>
                     
@@ -50916,7 +50916,7 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">binding</span> <span style="color: #404040">[</span><span style="color: #404040">x</span> <span style="color: #E9967A">100</span><span style="color: #404040">]</span> 
-  <span style="color: #404040">(</span><span style="color: #4169E1">var-local?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">var-local?</span> <span style="color: #404040">x</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; false</code>
                     </div>
                     
