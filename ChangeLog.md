@@ -18,7 +18,7 @@ and this project adheres to
 ### Fixed
 
 - import in module :benchmark
-- an edge case with binding destructuring 
+- an edge case with destructuring in binding special form
   `(binding [bindings*] exprs*)`
 
 
