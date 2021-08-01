@@ -22,11 +22,9 @@
 package com.github.jlangch.venice.impl.repl;
 
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.*;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
@@ -41,6 +39,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
+import com.github.jlangch.venice.impl.debug.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
@@ -368,16 +367,18 @@ public class ReplDebugClient {
 							.stream()
 							.filter(s -> !s.matches(regex))
 							.forEach(s -> agent.addBreakpoint(
-			  					 			s, 
-			  					 			parseBreakpointScopes(scopes)));
+											new BreakpointFn(
+													s, 
+													parseBreakpointScopes(scopes))));
 					}
 					else {
 						drop(params, 1)
 							.stream()
 							.filter(s -> !s.matches(regex))
 							.forEach(s -> agent.addBreakpoint(
-								  			s,
-								  			toSet(FunctionEntry)));
+											new BreakpointFn(
+													s,
+													toSet(FunctionEntry))));
 					}
 					break;
 					
@@ -399,27 +400,13 @@ public class ReplDebugClient {
 								 		String.format(
 								 			"  %s %s", 
 								 			e.getKey(),
-								 			format(e.getValue()))));
+								 			e.getValue().getFormattedScopes())));
 					break;
 					
 				default:
 					printlnErr("Invalid breakpoint command.");
 					break;
 			}
-		}
-	}
-	
-	private String format(final Set<BreakpointScope> scopes) {
-		// predefined order of breakpoint scopes
-		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
-			return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
-						 .stream()
-						 .filter(t -> scopes.contains(t))
-						 .map(t -> t.symbol())
-						 .collect(Collectors.joining());
-		}
-		else {
-			return "";
 		}
 	}
 

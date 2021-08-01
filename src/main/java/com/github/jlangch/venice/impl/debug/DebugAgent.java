@@ -29,10 +29,8 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -74,6 +72,11 @@ public class DebugAgent implements IDebugAgent {
 		return ThreadLocalMap.getDebugAgent() != null;
 	}
 	
+
+	
+	// -------------------------------------------------------------------------
+	// Lifecycle
+	// -------------------------------------------------------------------------
 	
 	@Override
 	public void detach() {
@@ -83,27 +86,23 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	
+	
 	// -------------------------------------------------------------------------
 	// Breakpoint management
 	// -------------------------------------------------------------------------
 	
 	@Override
-	public Map<String, Set<BreakpointScope>> getBreakpoints() {
+	public Map<String, BreakpointFn> getBreakpoints() {
 		return new HashMap<>(breakpoints);
 	}
 
 	@Override
-	public void addBreakpoint(
-			final String qualifiedName, 
-			final Set<BreakpointScope> scopes
-	) {
-		final Set<BreakpointScope> copyScopes = new HashSet<>(scopes);
-		
-		if (copyScopes.isEmpty()) {
-			copyScopes.add(FunctionEntry);
+	public void addBreakpoint(final BreakpointFn breakpoint) {
+		if (breakpoint == null) {
+			throw new IllegalArgumentException("A breakpoint must not be null");
 		}
 		
-		breakpoints.put(qualifiedName, copyScopes);
+		breakpoints.put(breakpoint.getQualifiedFnName(), breakpoint);
 	}
 
 	@Override
@@ -336,8 +335,8 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		switch(stopNext) {
 			case MatchingFnName:
-				return breakpoints.getOrDefault(fnName, EMPTY_BP)
-								  .contains(bt);
+				final BreakpointFn bp = breakpoints.get(fnName);
+				return bp != null && bp.hasScope(bt);
 				
 			case AnyFunction:
 				return bt == FunctionEntry;
@@ -389,16 +388,15 @@ public class DebugAgent implements IDebugAgent {
 	
 	
 	private static final long BREAK_SLEEP = 500L;
-	private static final Set<BreakpointScope> EMPTY_BP = new HashSet<>();
 
 	// simple breakpoint memorization
-	private static final ConcurrentHashMap<String,Set<BreakpointScope>> memorized =
+	private static final ConcurrentHashMap<String,BreakpointFn> memorized =
 			new ConcurrentHashMap<>();
 
 	private volatile StopNext stopNext = StopNext.MatchingFnName;
 	private volatile String stopNextReturnFnName = null;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<String,Set<BreakpointScope>> breakpoints = 
+	private final ConcurrentHashMap<String,BreakpointFn> breakpoints = 
 			new ConcurrentHashMap<>();
 }
