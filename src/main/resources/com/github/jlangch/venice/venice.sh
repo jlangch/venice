@@ -2,7 +2,12 @@
 
 help () {
   echo "-------------------------------------------------------------------------"
-  echo "./gradlew --warning-mode all clean shadowJar"
+  echo "rebuild     rebuild, deploy, and start the Venice REPL"
+  echo "tests       run the unit tests"
+  echo "cheatsheet  generate the cheatsheets"
+  echo "publish     Publish Venice artefacts to Maven"
+  echo ""
+  echo "Gradle commands:"
   echo "./gradlew test"
   echo "./gradlew cheatsheet"
   echo "./gradlew updateReleaseVersion"
@@ -16,13 +21,17 @@ help () {
   echo "          clean shadowJar publish"
   echo "./gradlew jmh -Pinclude=\".*PrecompileBenchmark\""
   echo "./gradlew -Dorg.gradle.java.home=\${JAVA_11_ZULU_HOME} jmh -Pinclude=\".*PrecompileBenchmark\""
-  echo "cp build/libs/venice-*.jar ~/Desktop/venice/libs"
-  echo "open /Users/juerg/Desktop/venice/repl.sh"
   echo "-------------------------------------------------------------------------"
   echo
 }
 
+
 publish () {
+  if [ -z "$1" ]; then
+    echo "Please provide the Sonatype password for user '${SONATYPE_USER}'!"
+    return
+  fi
+
   ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true \
             -Dorg.gradle.internal.http.socketTimeout=60000 \
             -Dorg.gradle.internal.http.connectionTimeout=60000 \
@@ -44,16 +53,22 @@ cheatsheet () {
   ./gradlew cheatsheet
 }
 
+tests () {
+  ./gradlew clear test
+}
+
 
 export JAVA_HOME=${JAVA_8_OPENJDK_HOME}
 export REPL_HOME=~/Desktop/venice
 export WORKSPACE_HOME=~/Documents/workspace-omni/venice
 
-export PGP_KEY=111111AA
+export PGP_KEY=xxxxxx
 export SONATYPE_USER=xxxxxx
 
 export -f rebuild
 export -f cheatsheet
+export -f publish
+export -f tests
 export -f help
 
 cd ${WORKSPACE_HOME}
