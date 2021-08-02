@@ -42,10 +42,10 @@ public class BreakpointParser {
 		
 		final int pos = ref_.indexOf('/');
 		if (pos < 0 || ref_.equals("/")) {
-			// core function breakpoint, e.g.: +, filter
-			return isInteger(ref_) ? null : new BreakpointFn(ref_);
+			// core function breakpoint, e.g.: +, /, filter
+			return ref_.matches("[0-9].*") ? null : new BreakpointFn(ref_);
 		}
-		if (pos == ref_.length()-1) {
+		if (pos == 0 || pos == ref_.length()-1) {
 			return null;
 		}
 		else {
