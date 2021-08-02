@@ -26,11 +26,10 @@ import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExcep
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -81,7 +80,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void detach() {
 		activeBreak = null;
-		fnBreakpoints.clear();
+		breakpoints.clear();
 		stopNext = StopNext.Breakpoint;
 	}
 
@@ -92,38 +91,63 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 	
 	@Override
-	public Map<String, BreakpointFn> getBreakpoints() {
-		return new HashMap<>(fnBreakpoints);
+	public List<IBreakpoint> getBreakpoints() {
+		final ArrayList<IBreakpoint> list = new ArrayList<>();
+
+		list.addAll(
+				breakpoints
+					.keySet()
+					.stream()
+					.filter(b -> b instanceof BreakpointFn)
+					.map(b -> (BreakpointFn)b)
+					.sorted(Comparator
+								.comparing(BreakpointFn::getQualifiedFnName))
+					.collect(Collectors.toList()));
+
+		list.addAll(
+				breakpoints
+					.keySet()
+					.stream()
+					.filter(b -> b instanceof BreakpointLine)
+					.map(b -> (BreakpointLine)b)
+					.sorted(Comparator
+								.comparing(BreakpointLine::getFile)
+								.thenComparing(BreakpointLine::getLineNr))
+					.collect(Collectors.toList()));
+
+		return list;
 	}
 
 	@Override
-	public void addBreakpoint(final BreakpointFn breakpoint) {
+	public void addBreakpoint(final IBreakpoint breakpoint) {
 		if (breakpoint == null) {
 			throw new IllegalArgumentException("A breakpoint must not be null");
 		}
 		
-		fnBreakpoints.put(breakpoint.getQualifiedFnName(), breakpoint);
+		breakpoints.put(breakpoint, breakpoint);
 	}
 
 	@Override
-	public void removeBreakpoint(final String qualifiedName) {
-		fnBreakpoints.remove(qualifiedName);
+	public void removeBreakpoint(IBreakpoint breakpoint) {
+		if (breakpoint != null) {
+			breakpoints.remove(breakpoint);
+		}
 	}
 
 	@Override
 	public void removeAllBreakpoints() {
-		fnBreakpoints.clear();
+		breakpoints.clear();
 		stopNext = StopNext.Breakpoint;
 	}
 
 	@Override
 	public void storeBreakpoints() {
-		memorized.putAll(fnBreakpoints);
+		memorized.putAll(breakpoints);
 	}
 	
 	@Override
 	public void restoreBreakpoints() {
-		fnBreakpoints.putAll(memorized);
+		breakpoints.putAll(memorized);
 	}
 
 
@@ -135,7 +159,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public boolean hasBreak(final String qualifiedName) {
 		switch (stopNext) {
-			case Breakpoint: return fnBreakpoints.containsKey(qualifiedName);
+			case Breakpoint: return breakpoints.containsKey(new BreakpointFn(qualifiedName));
 			case AnyFunction: return true;
 			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
 			case FunctionReturn: return qualifiedName.equals(stopNextReturnFnName);
@@ -335,8 +359,10 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		switch(stopNext) {
 			case Breakpoint:
-				final BreakpointFn bp = fnBreakpoints.get(fnName);
-				return bp != null && bp.hasScope(bt);
+				final IBreakpoint bp = breakpoints.get(new BreakpointFn(fnName));
+				return bp != null 
+						&& bp instanceof BreakpointFn
+						&& ((BreakpointFn)bp).hasScope(bt);
 				
 			case AnyFunction:
 				return bt == FunctionEntry;
@@ -390,13 +416,13 @@ public class DebugAgent implements IDebugAgent {
 	private static final long BREAK_SLEEP = 500L;
 
 	// simple breakpoint memorization
-	private static final ConcurrentHashMap<String,BreakpointFn> memorized =
+	private static final ConcurrentHashMap<IBreakpoint,IBreakpoint> memorized =
 			new ConcurrentHashMap<>();
 
 	private volatile StopNext stopNext = StopNext.Breakpoint;
 	private volatile String stopNextReturnFnName = null;
 	private volatile Break activeBreak = null;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<String,BreakpointFn> fnBreakpoints = 
+	private final ConcurrentHashMap<IBreakpoint,IBreakpoint> breakpoints = 
 			new ConcurrentHashMap<>();
 }

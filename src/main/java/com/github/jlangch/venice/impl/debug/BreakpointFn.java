@@ -33,7 +33,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-public class BreakpointFn {
+public class BreakpointFn implements IBreakpoint {
+
+	public BreakpointFn(
+			final String qualifiedFnName
+	) {
+		if (isBlank(qualifiedFnName)) {
+			throw new IllegalArgumentException("A qualifiedFnName must not be blank");
+		}
+
+		this.qualifiedFnName = qualifiedFnName;
+		this.scopes = DEFAULT_SCOPES;
+	}
 
 	public BreakpointFn(
 			final String qualifiedFnName,
@@ -45,10 +56,15 @@ public class BreakpointFn {
 
 		this.qualifiedFnName = qualifiedFnName;
 		this.scopes = scopes == null || scopes.isEmpty() 
-						? new HashSet<>(toSet(FunctionEntry)) 
+						? DEFAULT_SCOPES
 						: new HashSet<>(scopes);
 	}
+
 	
+	public BreakpointFn withScopes(final Set<BreakpointScope> scopes) {
+		return new BreakpointFn(qualifiedFnName, scopes);
+	}
+
 	public String getQualifiedFnName() {
 		return qualifiedFnName;
 	}
@@ -61,6 +77,33 @@ public class BreakpointFn {
 		return format(scopes);
 	}
 	
+	@Override
+	public String format() {
+		return String.format("%s %s", qualifiedFnName, format(scopes));
+	}
+	
+	@Override
+	public String toString() {
+		return format();
+	}
+	
+	@Override
+	public int hashCode() {
+		return qualifiedFnName.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BreakpointFn other = (BreakpointFn) obj;
+		return (qualifiedFnName.equals(other.qualifiedFnName));
+	}
+
 	
 	private String format(final Set<BreakpointScope> scopes) {
 		// predefined order of breakpoint scopes
@@ -76,13 +119,8 @@ public class BreakpointFn {
 		}
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("%s %s", qualifiedFnName, format(scopes));
-	}
 	
-	
-	
+	private static final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
 	private final String qualifiedFnName;
 	private final Set<BreakpointScope> scopes;
 }
