@@ -23,18 +23,24 @@ package com.github.jlangch.venice.impl.repl;
 
 import static com.github.jlangch.venice.impl.debug.BreakpointParser.isBreakpointScopes;
 import static com.github.jlangch.venice.impl.debug.BreakpointParser.parseBreakpoint;
+import static com.github.jlangch.venice.impl.debug.BreakpointParser.parseBreakpointScopes;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.truncate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
+import com.github.jlangch.venice.impl.debug.BreakpointFn;
+import com.github.jlangch.venice.impl.debug.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -173,22 +179,28 @@ public class ReplDebugClient {
 				//   - add user/sum
 				//   - add user/sum + *
 				//   - add () user/sum
-				//   - add () user/sum + *
+				//   - add (!) user/sum + *
 				//   - add statistics.venice/300
 				case "add":
-					String scopes = trimToEmpty(params.get(1));
-					if (isBreakpointScopes(scopes)) {
-						drop(params, 2)
-							.stream()
-							.filter(s -> isBreakpointRef(s))
-							.forEach(s -> agent.addBreakpoint(parseBreakpoint(s, scopes)));
-					}
-					else {
-						drop(params, 1)
-							.stream()
-							.filter(s -> isBreakpointRef(s))
-							.forEach(s -> agent.addBreakpoint(parseBreakpoint(s)));
-					}
+					final String scopes = trimToEmpty(params.get(1));
+					
+					final boolean hasScopes = isBreakpointScopes(scopes);
+
+					final Set<BreakpointScope> scopeSet = 
+							hasScopes ? parseBreakpointScopes(scopes, DEFAULT_SCOPES)
+									  : DEFAULT_SCOPES;
+
+					final List<String> breakpoints = drop(params, hasScopes ? 2 : 1);
+					
+					breakpoints
+						.stream()
+						.filter(s -> isBreakpointRef(s))
+						.map(s -> parseBreakpoint(s))
+						.filter(b -> b != null)
+						.map(b -> b instanceof BreakpointFn
+										? ((BreakpointFn)b).withScopes(scopeSet)
+										: b)
+						.forEach(b -> agent.addBreakpoint(b));
 					break;
 					
 				case "remove":
@@ -611,4 +623,7 @@ public class ReplDebugClient {
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
 	private final Thread replThread;
+	
+	private final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
+
 }

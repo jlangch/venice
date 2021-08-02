@@ -33,55 +33,39 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class BreakpointParser {
 
-	public static IBreakpoint parseBreakpoint(
-			final String ref,
-			final String scopes
-	) {	
-		return BreakpointParser
-					.parseBreakpointFn(ref)
-					.withScopes(parseBreakpointScopes(scopes));
-	}
-
 	public static IBreakpoint parseBreakpoint(final String ref) {
-		final IBreakpoint bp = parseBreakpointFn(ref);
-		return bp != null ? bp : parseBreakpointLine(ref);
+		if (StringUtil.isBlank(ref)) {
+			return null;
+		}
+		
+		final String ref_ = ref.trim();
+		
+		final int pos = ref_.indexOf('/');
+		if (pos < 1 || pos == (ref_.length()-1)) {
+			return null;
+		}
+		else {
+			final String s1 = ref_.substring(0, pos).trim();
+			final String s2 = ref_.substring(pos+1).trim();
+	
+			if (isInteger(s2)) {
+				// line breakpoint
+				final int lineNr = parseInteger(s2);
+				return lineNr < 1
+						? null
+						: new BreakpointLine(s1, lineNr);			
+			}
+			else {
+				// function breakpoint
+				return new BreakpointFn(ref_);
+			}
+		}
 	}
 
 	public static Set<BreakpointScope> parseBreakpointScopes(
 			final String scopes
 	) {
 		return parseBreakpointScopes(scopes, new HashSet<>());
-	}
-	
-	public static BreakpointFn parseBreakpointFn(
-			final String ref
-	) {
-		// format:  {namespace}/{name}  
-		//          e.g.: user/sum
-		
-		if (StringUtil.isBlank(ref)) {
-			return null;
-		}
-		
-		return new BreakpointFn(ref);
-	}
-
-	public static BreakpointLine parseBreakpointLine(final String ref) {
-		// format:  {file}/{lineNr}  
-		//          e.g.: statistics.venice/300
-		
-		if (StringUtil.isBlank(ref)) {
-			return null;
-		}
-		
-		final int pos = ref.lastIndexOf('/');
-		if (pos < 1) {
-			return null;
-		}
-		
-		final String file = ref.substring(0, pos);
-		final int lineNr = parseInt(ref.substring(pos));
-		return (lineNr < 1) ? null : new BreakpointLine(file, lineNr);
 	}
 
 	public static Set<BreakpointScope> parseBreakpointScopes(
@@ -105,8 +89,13 @@ public class BreakpointParser {
 	public static boolean isBreakpointScopes(final String scopes) {
 		return scopes.matches(BREAKPOINT_SCOPE_REGEX);
 	}
+
 	
-	private static int parseInt(final String s) {
+	private static boolean isInteger(final String s) {
+		return s.matches("[0-9]+");
+	}
+
+	private static int parseInteger(final String s) {
 		try {
 			return Integer.parseInt(s);
 		}
@@ -116,18 +105,7 @@ public class BreakpointParser {
 	}
 
 	
-	private static String getBreakpointScopeSymbolList() {
-		// return "(!)"
-		return BreakpointScope
-					.all()
-					.stream()
-					.map(t -> t.symbol())
-					.collect(Collectors.joining());
-	}
-
-	
 	
 	// build regex: "^[(!)]+$"
-	private static final String BREAKPOINT_SCOPE_REGEX = 
-			"^[" + getBreakpointScopeSymbolList() + "]+$";
+	private static final String BREAKPOINT_SCOPE_REGEX = "^[(!)]+$";
 }

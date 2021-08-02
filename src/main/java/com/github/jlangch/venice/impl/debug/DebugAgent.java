@@ -381,7 +381,7 @@ public class DebugAgent implements IDebugAgent {
 	private void waitOnBreak(final Break br) {
 		try {
 			while(hasBreak()) {
-				Thread.sleep(BREAK_SLEEP);
+				Thread.sleep(BREAK_LOOP_SLEEP_MILLIS);
 			}
 		}
 		catch(InterruptedException iex) {
@@ -397,7 +397,7 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 	
-	void clearBreak() {
+	private void clearBreak() {
 		activeBreak = null;
 		stopNext = StopNext.Breakpoint;
 		stopNextReturnFnName = null;
@@ -413,7 +413,7 @@ public class DebugAgent implements IDebugAgent {
 	
 	
 	
-	private static final long BREAK_SLEEP = 500L;
+	private static final long BREAK_LOOP_SLEEP_MILLIS = 500L;
 
 	// simple breakpoint memorization
 	private static final ConcurrentHashMap<IBreakpoint,IBreakpoint> memorized =
