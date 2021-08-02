@@ -92,6 +92,10 @@ public class BreakpointParserTest {
 	@Test
 	public void test_parseBreakpoint_fn() {
 		assertEquals(
+				"+", 
+				((BreakpointFn)parseBreakpoint("+")).getQualifiedFnName());
+
+		assertEquals(
 				"user/sum", 
 				((BreakpointFn)parseBreakpoint("user/sum")).getQualifiedFnName());
 	}

@@ -139,6 +139,16 @@ public class DebugAgent implements IDebugAgent {
 		breakpoints.clear();
 		stopNext = StopNext.Breakpoint;
 	}
+	
+	@Override
+	public void skipBreakpoints(final boolean skip) {
+		skipBreakpoints = skip;
+	}
+
+	@Override
+	public boolean isSkipBreakpoints() {
+		return skipBreakpoints;	
+	}
 
 	@Override
 	public void storeBreakpoints() {
@@ -159,7 +169,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public boolean hasBreak(final String qualifiedName) {
 		switch (stopNext) {
-			case Breakpoint: return breakpoints.containsKey(new BreakpointFn(qualifiedName));
+			case Breakpoint: return !skipBreakpoints && breakpoints.containsKey(new BreakpointFn(qualifiedName));
 			case AnyFunction: return true;
 			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
 			case FunctionReturn: return qualifiedName.equals(stopNextReturnFnName);
@@ -359,10 +369,15 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		switch(stopNext) {
 			case Breakpoint:
-				final IBreakpoint bp = breakpoints.get(new BreakpointFn(fnName));
-				return bp != null 
-						&& bp instanceof BreakpointFn
-						&& ((BreakpointFn)bp).hasScope(bt);
+				if (skipBreakpoints) {
+					return false;
+				}
+				else {
+					final IBreakpoint bp = breakpoints.get(new BreakpointFn(fnName));
+					return bp != null 
+							&& bp instanceof BreakpointFn
+							&& ((BreakpointFn)bp).hasScope(bt);
+				}
 				
 			case AnyFunction:
 				return bt == FunctionEntry;
@@ -422,6 +437,7 @@ public class DebugAgent implements IDebugAgent {
 	private volatile StopNext stopNext = StopNext.Breakpoint;
 	private volatile String stopNextReturnFnName = null;
 	private volatile Break activeBreak = null;
+	private volatile boolean skipBreakpoints = false;
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<IBreakpoint,IBreakpoint> breakpoints = 
 			new ConcurrentHashMap<>();

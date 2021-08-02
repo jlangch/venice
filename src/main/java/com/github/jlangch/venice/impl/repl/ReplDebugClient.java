@@ -170,11 +170,12 @@ public class ReplDebugClient {
 	}
 	
 	private void handleBreakpointCmd(final List<String> params) {
-		if (params.size() < 1)  {
-			printlnErr("Invalid 'dbg breakpoint {cmd}' command");
+		if (params.isEmpty())  {
+			printlnErr("Invalid breakpoint command. Missing sub command as 'add', 'remove', ...");
 		}
 		else {
-			switch(trimToEmpty(params.get(0))) {
+			final String cmd = trimToEmpty(params.get(0));
+			switch(cmd) {
 				// Command variants
 				//   - add user/sum
 				//   - add user/sum + *
@@ -215,13 +216,31 @@ public class ReplDebugClient {
 					agent.removeAllBreakpoints();
 					break;
 					
+				case "skip":
+					agent.skipBreakpoints(true);
+					break;
+					
+				case "unskip":
+					agent.skipBreakpoints(false);
+					break;
+					
+				case "skip?":
+					println("Skip breakpoints: " + agent.isSkipBreakpoints());
+					break;
+					
 				case "list":
+					final boolean skip =  agent.isSkipBreakpoints();
 					agent.getBreakpoints()
-						 .forEach(b -> printer.println("stdout", "  " + b.format()));
+						 .forEach(b -> printer.println(
+								 			"stdout", 
+								 			String.format(
+								 				"  %s%s",
+								 				skip ? "[-] " : "",
+								 				b.format())));
 					break;
 					
 				default:
-					printlnErr("Invalid breakpoint command.");
+					printlnErr(String.format("Invalid breakpoint command '%s'.", cmd));
 					break;
 			}
 		}
@@ -594,6 +613,10 @@ public class ReplDebugClient {
 			"               o Remove one or multiple breakpoints\n" +
 			"                  !breakpoint remove n, n*\n" +
 			"                  E.g.: !breakpoint remove user/gauss + \n" +
+			"               o Temporarily skip/unskip all breakpoints\n" +
+			"                  !breakpoint skip\n" +
+			"                  !breakpoint unksip\n" +
+			"                  !breakpoint skip?\n" +
 			"               o List breakpoints\n" +
 			"                  !breakpoint list\n" +
 			"                  E.g.: !breakpoint list\n" +
