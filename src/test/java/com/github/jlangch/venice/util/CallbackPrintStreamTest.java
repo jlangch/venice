@@ -34,12 +34,9 @@ public class CallbackPrintStreamTest {
 			assertEquals("d\ne\n", captured.get(2));
 			assertEquals("300-400", captured.get(3));
 			assertEquals("500.0\n", captured.get(4));
-	        
-			System.setOut(orgStdOut);
 		}
-		catch(Exception ex) {
+		finally {
 			System.setOut(orgStdOut);
-			throw ex;
 		}
 	}
 
