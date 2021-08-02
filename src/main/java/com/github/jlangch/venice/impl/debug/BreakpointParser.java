@@ -41,7 +41,11 @@ public class BreakpointParser {
 		final String ref_ = ref.trim();
 		
 		final int pos = ref_.indexOf('/');
-		if (pos < 1 || pos == (ref_.length()-1)) {
+		if (pos < 0 || ref_.equals("/")) {
+			// core function breakpoint, e.g.: +, filter
+			return isInteger(ref_) ? null : new BreakpointFn(ref_);
+		}
+		if (pos == ref_.length()-1) {
 			return null;
 		}
 		else {

@@ -59,11 +59,16 @@ public interface IDebugAgent {
 	 * Remove all breakpoints
 	 */
 	void removeAllBreakpoints();
+	
+	void skipBreakpoints(boolean skip);
+	
+	boolean isSkipBreakpoints();
 
 	
 	void storeBreakpoints();
 	
 	void restoreBreakpoints();
+	
 
 
 	// -------------------------------------------------------------------------
