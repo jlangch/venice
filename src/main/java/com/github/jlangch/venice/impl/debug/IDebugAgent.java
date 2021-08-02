@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
-import java.util.Map;
+import java.util.List;
 
 
 public interface IDebugAgent {
@@ -39,21 +39,21 @@ public interface IDebugAgent {
 	/**
 	 * @return all the registered breakpoints
 	 */
-	Map<String, BreakpointFn> getBreakpoints();
+	List<IBreakpoint> getBreakpoints();
 
 	/**
 	 * Add a new breakpoint
 	 * 
 	 * @param breakpoint A breakpoint
 	 */
-	void addBreakpoint(BreakpointFn breakpoint);
+	void addBreakpoint(IBreakpoint breakpoint);
 
 	/**
 	 * Removes a breakpoint
 	 * 
-	 * @param qualifiedName The qualified name of the function or special form
+	 * @param breakpoint The breakpoint to be removed
 	 */
-	void removeBreakpoint(String qualifiedName);
+	void removeBreakpoint(IBreakpoint breakpoint);
 
 	/**
 	 * Remove all breakpoints

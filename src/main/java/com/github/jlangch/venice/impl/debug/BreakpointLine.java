@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.debug;
 import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
 
 
-public class BreakpointLine {
+public class BreakpointLine implements IBreakpoint {
 
 	public BreakpointLine(
 			final String file,
@@ -51,11 +51,44 @@ public class BreakpointLine {
 	}
 	
 	@Override
-	public String toString() {
+	public String format() {
 		return String.format("%s %d", file, lineNr);
 	}
+	
+	@Override
+	public String toString() {
+		return format();
+	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((file == null) ? 0 : file.hashCode());
+		result = prime * result + lineNr;
+		return result;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BreakpointLine other = (BreakpointLine) obj;
+		if (file == null) {
+			if (other.file != null)
+				return false;
+		} else if (!file.equals(other.file))
+			return false;
+		if (lineNr != other.lineNr)
+			return false;
+		return true;
+	}
+
+	
 	private final String file;
 	private final int lineNr;			
 }

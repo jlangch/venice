@@ -21,26 +21,20 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.BreakpointParser.isBreakpointScopes;
+import static com.github.jlangch.venice.impl.debug.BreakpointParser.parseBreakpoint;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
-import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 import static com.github.jlangch.venice.impl.util.StringUtil.truncate;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
-import com.github.jlangch.venice.impl.debug.BreakpointFn;
-import com.github.jlangch.venice.impl.debug.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -59,7 +53,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
  * <pre>
  *   venice> (defn sum [x y] (+ x y))
  *   venice> !attach
- *   debug> !breakpoint add (!) user/sum
+ *   debug> !breakpoint add user/sum
  *   debug> (sum 6 7)
  *   Stopped in function user/sum (user: line 1, col 7) at entry
  *   debug> !params
@@ -88,8 +82,13 @@ public class ReplDebugClient {
 		this.agent = agent;
 		this.printer = printer;
 		this.replThread = replThread;
-		
+
 		agent.addBreakListener(this::breakpointListener);
+	}
+
+	
+	public static void pringHelp(final TerminalPrinter printer) {
+		printer.println("stdout", HELP);
 	}
 
 	public void handleCommand(final String cmdLine) {
@@ -163,9 +162,57 @@ public class ReplDebugClient {
 				break;
 		}
 	}
-
-	public static void pringHelp(final TerminalPrinter printer) {
-		printer.println("stdout", HELP);
+	
+	private void handleBreakpointCmd(final List<String> params) {
+		if (params.size() < 1)  {
+			printlnErr("Invalid 'dbg breakpoint {cmd}' command");
+		}
+		else {
+			switch(trimToEmpty(params.get(0))) {
+				// Command variants
+				//   - add user/sum
+				//   - add user/sum + *
+				//   - add () user/sum
+				//   - add () user/sum + *
+				//   - add statistics.venice/300
+				case "add":
+					String scopes = trimToEmpty(params.get(1));
+					if (isBreakpointScopes(scopes)) {
+						drop(params, 2)
+							.stream()
+							.filter(s -> isBreakpointRef(s))
+							.forEach(s -> agent.addBreakpoint(parseBreakpoint(s, scopes)));
+					}
+					else {
+						drop(params, 1)
+							.stream()
+							.filter(s -> isBreakpointRef(s))
+							.forEach(s -> agent.addBreakpoint(parseBreakpoint(s)));
+					}
+					break;
+					
+				case "remove":
+					// Command variants
+					//   - remove user/sum
+					//   - remove user/sum + *
+					//   - remove statistics.venice/300
+					drop(params, 1).forEach(s -> agent.removeBreakpoint(parseBreakpoint(s)));
+					break;
+					
+				case "clear":
+					agent.removeAllBreakpoints();
+					break;
+					
+				case "list":
+					agent.getBreakpoints()
+						 .forEach(b -> printer.println("stdout", "  " + b.format()));
+					break;
+					
+				default:
+					printlnErr("Invalid breakpoint command.");
+					break;
+			}
+		}
 	}
 	
 	private void isBreak() {
@@ -351,93 +398,9 @@ public class ReplDebugClient {
 		}
 	}
 
-	private void handleBreakpointCmd(final List<String> params) {
-		if (params.size() < 1)  {
-			printlnErr("Invalid 'dbg breakpoint {cmd}' command");
-		}
-		else {
-			// build regex: "^[(!)]+$"
-			final String regex = "^[" + getBreakpointScopeSymbolList() + "]+$";
-			
-			switch(trimToEmpty(params.get(0))) {
-				case "add":
-					String scopes = trimToEmpty(params.get(1));
-					if (scopes.matches(regex)) {
-						drop(params, 2)
-							.stream()
-							.filter(s -> !s.matches(regex))
-							.forEach(s -> agent.addBreakpoint(
-											new BreakpointFn(
-													s, 
-													parseBreakpointScopes(scopes))));
-					}
-					else {
-						drop(params, 1)
-							.stream()
-							.filter(s -> !s.matches(regex))
-							.forEach(s -> agent.addBreakpoint(
-											new BreakpointFn(
-													s,
-													toSet(FunctionEntry))));
-					}
-					break;
-					
-				case "remove":
-					drop(params, 1).forEach(s -> agent.removeBreakpoint(s));
-					break;
-					
-				case "clear":
-					agent.removeAllBreakpoints();
-					break;
-					
-				case "list":
-					agent.getBreakpoints()
-						 .entrySet()
-						 .stream()
-						 .sorted(Comparator.comparing(e -> e.getKey()))
-						 .forEach(e -> printer.println(
-								 		"stdout", 
-								 		String.format(
-								 			"  %s %s", 
-								 			e.getKey(),
-								 			e.getValue().getFormattedScopes())));
-					break;
-					
-				default:
-					printlnErr("Invalid breakpoint command.");
-					break;
-			}
-		}
-	}
 
-	private Set<BreakpointScope> parseBreakpointScopes(final String scopes) {
-		return parseBreakpointScopes(scopes, new HashSet<>());
-	}
-
-	private Set<BreakpointScope> parseBreakpointScopes(
-			final String scopes,
-			final Set<BreakpointScope> defaultScopes
-	) {
-		if (trimToNull(scopes) == null) {
-			return defaultScopes;
-		}
-		else {
-			Set<BreakpointScope> tset = Arrays.asList(BreakpointScope.values())
-											 .stream()
-											 .filter(t -> scopes.contains(t.symbol()))
-											 .collect(Collectors.toSet());
-			
-			return tset.isEmpty() ? defaultScopes : tset;
-		}
-	}
-	
-	private String getBreakpointScopeSymbolList() {
-		// return "(!)"
-		return BreakpointScope
-					.all()
-					.stream()
-					.map(t -> t.symbol())
-					.collect(Collectors.joining());
+	private boolean isBreakpointRef(final String s) {
+		return s != null && !isBreakpointScopes(s);
 	}
 	
 	private void breakpointListener(final Break b) {

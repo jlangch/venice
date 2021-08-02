@@ -492,7 +492,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
 
-						recursionPoint = new RecursionPoint(bindingNames, expressions, env, meta, debugAgent);
+						recursionPoint = new RecursionPoint(
+												bindingNames,
+												expressions,
+												env,
+												meta,
+												debugAgent);
 
 						if (debugAgent != null && debugAgent.hasBreak("loop")) {
 							debugAgent.onBreakLoop(
@@ -531,6 +536,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				
 						env = buildRecursionEnv(args, env, recursionPoint);
 	
+						// for performance reasons the DebugAgent is stored in the 
+						// RecursionPoint. Saves repeated ThreadLocal access!
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
 						if (debugAgent != null && debugAgent.hasBreak("loop")) {
 							debugAgent.onBreakLoop(
