@@ -84,13 +84,18 @@ public class BreakpointParserTest {
 	public void test_parseBreakpoint_invalid() {
 		assertNull(parseBreakpoint(""));
 		assertNull(parseBreakpoint("0"));
-		assertNull(parseBreakpoint("/"));
-		assertNull(parseBreakpoint(" / "));
+		assertNull(parseBreakpoint("0.0"));
+		assertNull(parseBreakpoint("0M"));
 		assertNull(parseBreakpoint("test.venice/"));
+		assertNull(parseBreakpoint("/any"));
  	}
 
 	@Test
 	public void test_parseBreakpoint_fn() {
+		assertEquals(
+				"/", 
+				((BreakpointFn)parseBreakpoint("/")).getQualifiedFnName());
+
 		assertEquals(
 				"+", 
 				((BreakpointFn)parseBreakpoint("+")).getQualifiedFnName());

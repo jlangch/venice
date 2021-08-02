@@ -32,6 +32,7 @@ public interface IDebugAgent {
 	void detach();
 
 	
+	
 	// -------------------------------------------------------------------------
 	// Breakpoint management
 	// -------------------------------------------------------------------------
@@ -60,8 +61,17 @@ public interface IDebugAgent {
 	 */
 	void removeAllBreakpoints();
 	
+	/**
+	 * Temporarily skip/unskip all breakpoints
+	 * 
+	 * @param skip if <code>true</code> skip else unskip
+	 */
 	void skipBreakpoints(boolean skip);
 	
+	/**
+	 * @return <code>true</code> if the breakpoints are temporarily skipped
+	 * 			else <code>false</code>
+	 */
 	boolean isSkipBreakpoints();
 
 	
