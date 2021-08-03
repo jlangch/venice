@@ -132,7 +132,21 @@ public class DocForm {
 	}
 	
 	private static VncString docForKeyword(final VncKeyword keyword, final Env env) {
-		if (Modules.isValidModule(keyword)) {
+		if (keyword.getValue().endsWith(".venice")) {
+			if (ModuleLoader.isLoadedClasspathFile(keyword.getValue())) {
+				return docForLoadedClasspathFile(keyword, env);
+			}
+			else if (ModuleLoader.isLoadedExternalFile(keyword.getValue())) {
+				return docForLoadedExternalFile(keyword, env);
+			}
+			else {
+				throw new VncException(String.format(
+						"'%s' is not a loaded classpath file or an external file. "
+							+ "No documentation available!",
+						keyword.getValue()));
+			}
+		}
+		else if (Modules.isValidModule(keyword)) {
 			return docForModule(keyword, env);
 		}
 		else {
@@ -382,13 +396,17 @@ public class DocForm {
 		if (theme == null) {
 			return new VncString(form);
 		}
-		else {			
-			final List<HighlightItem> items = HighlightParser.parse("(do " + form + ")");
+		else {
+			// frame the form with "(do  ... )" before parsing
+			List<HighlightItem> items = HighlightParser.parse("(do " + form + ")");
 			
+			// remove the framing "(do  ... )" after parsing
+			items = items.subList(3, items.size()-1);
+			
+			// style the items 
 			return new VncString(
 					AnsiColorTheme.ANSI_RESET +
-					items.subList(3, items.size()-1)
-						 .stream()
+					items.stream()
 						 .map(it -> theme.style(it.getForm(), it.getClazz()))
 						 .collect(Collectors.joining()));
 		}
