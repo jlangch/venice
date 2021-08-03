@@ -23,6 +23,10 @@ package com.github.jlangch.venice.impl.debug;
 
 import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
 
+import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+
 
 public class BreakpointLine implements IBreakpoint {
 
@@ -41,7 +45,21 @@ public class BreakpointLine implements IBreakpoint {
 		this.lineNr = lineNr;
 	}
 	
+	
+	public static BreakpointLine fromMeta(final VncVal meta) {
+		if (meta instanceof VncMap) {
+			final String file = MetaUtil.getFile(meta);
+			final int lineNr = MetaUtil.getLine(meta);
+			return file != null && lineNr > 0
+					? new BreakpointLine(file, lineNr)
+					: null;
+		}
+		else {
+			return null;
+		}
+	}
 
+	
 	public String getFile() {
 		return file;
 	}

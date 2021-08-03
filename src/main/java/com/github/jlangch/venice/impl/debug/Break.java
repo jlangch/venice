@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.util.CallStack;
 public class Break {
 
 	public Break(
+			final IBreakpoint breakpoint,
 			final VncFunction fn,
 			final VncList args,
 			final VncVal retVal,
@@ -39,6 +40,7 @@ public class Break {
 			final CallStack callStack,
 			final BreakpointScope scope
 	) {
+		this.breakpoint = breakpoint;
 		this.fn = fn;
 		this.args = args;
 		this.retVal = retVal;
@@ -49,6 +51,10 @@ public class Break {
 	}
 
 	
+	public IBreakpoint getBreakpoint() {
+		return breakpoint;
+	}
+
 	public VncFunction getFn() {
 		return fn;
 	}
@@ -86,6 +92,7 @@ public class Break {
 	}
 	
 
+	private final IBreakpoint breakpoint;
 	private final VncFunction fn;
 	private final VncList args;
 	private final VncVal retVal;

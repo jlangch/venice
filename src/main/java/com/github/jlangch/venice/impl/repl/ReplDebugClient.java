@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.Break;
 import com.github.jlangch.venice.impl.debug.BreakpointFn;
+import com.github.jlangch.venice.impl.debug.BreakpointLine;
 import com.github.jlangch.venice.impl.debug.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
@@ -575,17 +576,26 @@ public class ReplDebugClient {
 				br.getBreakpointScope().description());
 	}
 	
-	private String formatStop(final Break br) {
-		return String.format(
-				"Stopped in %s %s%s at %s.",
-				br.isSpecialForm()
-					? "special form"
-					: "function",
-				br.getFn().getQualifiedName(),
-				br.getFn().isNative() 
-					? "" 
-					: " (" + new CallFrame(br.getFn()).getSourcePosInfo() +")",
-				br.getBreakpointScope().description());
+	private String formatStop(final Break br) {	
+		if (br.getBreakpoint() instanceof BreakpointFn) {
+			return String.format(
+					"Stopped in %s %s%s at %s.",
+					br.isSpecialForm()
+						? "special form"
+						: "function",
+					br.getFn().getQualifiedName(),
+					br.getFn().isNative() 
+						? "" 
+						: " (" + new CallFrame(br.getFn()).getSourcePosInfo() +")",
+					br.getBreakpointScope().description());
+		}
+		else {
+			final BreakpointLine bp = (BreakpointLine)br.getBreakpoint();
+			return String.format(
+					"Stopped in file %s at line %d",
+					bp.getFile(),
+					bp.getLineNr());
+		}
 	}
 	
 	private void println(final String s) {
