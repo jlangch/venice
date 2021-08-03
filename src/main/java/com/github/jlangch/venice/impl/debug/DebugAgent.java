@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.debug;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionCall;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
@@ -215,9 +216,9 @@ public class DebugAgent implements IDebugAgent {
 									null,
 									env,
 									ThreadLocalMap.getCallStack(),
-									FunctionEntry);
+									FunctionCall);
 
-			notifOnBreak(br);
+			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
 	}
@@ -245,7 +246,7 @@ public class DebugAgent implements IDebugAgent {
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
-			notifOnBreak(br);
+			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
 	}
@@ -275,7 +276,7 @@ public class DebugAgent implements IDebugAgent {
 									env, 
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
-			notifOnBreak(br);
+			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
 	}
@@ -297,7 +298,7 @@ public class DebugAgent implements IDebugAgent {
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
 			
-			notifOnBreak(br);
+			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
 	}
@@ -320,7 +321,7 @@ public class DebugAgent implements IDebugAgent {
 									ThreadLocalMap.getCallStack(),
 									FunctionExit);
 			
-			notifOnBreak(br);
+			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
 	}
@@ -343,7 +344,7 @@ public class DebugAgent implements IDebugAgent {
 									ThreadLocalMap.getCallStack(),
 									FunctionException);
 
-			notifOnBreak(br);
+			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
 	}
@@ -449,7 +450,7 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 	
-	private void notifOnBreak(final Break br) {
+	private void notifyOnBreak(final Break br) {
 		activeBreak = br;
 		
 		if (breakListener != null) {

@@ -603,9 +603,13 @@ public class ReplDebugClient {
 		else {
 			final BreakpointLine bp = (BreakpointLine)br.getBreakpoint();
 			return String.format(
-					"Stopped in file %s at line %d",
+					"Stopped in file '%s', line %d at calling %s %s",
 					bp.getFile(),
-					bp.getLineNr());
+					bp.getLineNr(),
+					br.isBreakInSpecialForm()
+						? "special form"
+						: "function",
+					br.getFn().getQualifiedName());
 		}
 	}
 	
