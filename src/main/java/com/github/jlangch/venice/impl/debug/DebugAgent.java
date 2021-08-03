@@ -168,13 +168,24 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public boolean hasBreak(final String qualifiedFnName) {
 		switch (stopNext) {
-			case Breakpoint: return !skipBreakpoints 
-										&& breakpoints.containsKey(
+			case Breakpoint: 
+				return !skipBreakpoints && breakpoints.containsKey(
 												new BreakpointFn(qualifiedFnName));
-			case AnyFunction: return true;
-			case AnyNonSystemFunction: return !hasSystemNS(qualifiedFnName);
-			case FunctionReturn: return qualifiedFnName.equals(stopNextReturnFnName);
-			default: return false;
+				
+			case AnyFunction: 
+				return true;
+				
+			case AnyNonSystemFunction: 
+				return !hasSystemNS(qualifiedFnName);
+				
+			case FunctionReturn: 
+				return qualifiedFnName.equals(stopNextFnName);
+				
+			case IntoFunction: 
+				return qualifiedFnName.equals(stopNextFnName);
+				
+			default: 
+				return false;
 		}
 	}
 	
@@ -365,7 +376,11 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction:
 				stepToNextNonSystemFn();
 				break;
-	
+				
+			case StepIntoFunction:
+				stepIntoFunction();
+				break;
+				
 			case StepToFunctionReturn:
 				stepToFunctionReturn();
 				break;
@@ -385,9 +400,15 @@ public class DebugAgent implements IDebugAgent {
 	
 			case StepToNextNonSystemFunction:
 				return true;
-	
+				
+			case StepIntoFunction:
+				return hasBreak() 
+						|| getBreak().isBreakInLineNr();
+				
 			case StepToFunctionReturn:
-				return hasBreak() || getBreak().isBreakInFunction();
+				return hasBreak() 
+						|| getBreak().isBreakInFunction() 
+						|| getBreak().isBreakInLineNr();
 					
 			default:
 				return false;
@@ -406,13 +427,24 @@ public class DebugAgent implements IDebugAgent {
 		stopNext = StopNext.AnyNonSystemFunction;
 	}
 	
+	private void stepIntoFunction() {
+		if (activeBreak == null || !activeBreak.isBreakInLineNr()) {
+			return; // cannot do that
+		}
+		else {
+			stopNext = StopNext.IntoFunction;
+			stopNextFnName = activeBreak.getFn().getQualifiedName();
+			activeBreak = null;
+		}
+	}
+	
 	private void stepToFunctionReturn() {
 		if (activeBreak == null || activeBreak.isBreakInSpecialForm()) {
 			return; // cannot do that
 		}
 		else {
 			stopNext = StopNext.FunctionReturn;
-			stopNextReturnFnName = activeBreak.getFn().getQualifiedName();
+			stopNextFnName = activeBreak.getFn().getQualifiedName();
 			activeBreak = null;
 		}
 	}
@@ -459,7 +491,10 @@ public class DebugAgent implements IDebugAgent {
 				return bt == FunctionEntry && !hasSystemNS(fnName);
 
 			case FunctionReturn: 
-				return bt == FunctionExit && fnName.equals(stopNextReturnFnName);
+				return bt == FunctionExit && fnName.equals(stopNextFnName);
+
+			case IntoFunction: 
+				return bt == FunctionEntry && fnName.equals(stopNextFnName);
 
 			default:
 				return false;
@@ -488,7 +523,7 @@ public class DebugAgent implements IDebugAgent {
 	private void clearBreak() {
 		activeBreak = null;
 		stopNext = StopNext.Breakpoint;
-		stopNextReturnFnName = null;
+		stopNextFnName = null;
 	}
 
 	
@@ -496,6 +531,7 @@ public class DebugAgent implements IDebugAgent {
 		Breakpoint,				// stop on registered fn or line breakpoint
 		AnyFunction,			// stop on next function entry
 		AnyNonSystemFunction,	// stop on next non system function entry
+		IntoFunction,			// stop on function after arg evaluation
 		FunctionReturn;			// stop on function return
 	}
 
@@ -508,7 +544,7 @@ public class DebugAgent implements IDebugAgent {
 			new ConcurrentHashMap<>();
 
 	private volatile StopNext stopNext = StopNext.Breakpoint;
-	private volatile String stopNextReturnFnName = null;
+	private volatile String stopNextFnName = null;
 	private volatile Break activeBreak = null;
 	private volatile boolean skipBreakpoints = false;
 	private volatile IBreakListener breakListener = null;
