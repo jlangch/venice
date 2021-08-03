@@ -113,8 +113,8 @@ public class ReplDebugClient {
 				agent.resume();
 				break;
 				
-			case "step-into":
-			case "si":
+			case "step-next":
+			case "sn":
 				if (!agent.isStepPossible(StepMode.StepToNextFunction)) {
 					printer.println(
 							"error", 
@@ -125,13 +125,20 @@ public class ReplDebugClient {
 				agent.step(StepMode.StepToNextFunction);
 				break;
 				
-			case "step-into-":
-			case "si-":
-				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
-
+			case "step-next-":
+			case "sn-":
+				if (!agent.isStepPossible(StepMode.StepToFunctionReturn))  {
 					return;
 				}
 				agent.step(StepMode.StepToNextNonSystemFunction);
+				break;
+				
+			case "step-into":
+			case "si":
+				if (!agent.isStepPossible(StepMode.StepIntoFunction))  {
+					return;
+				}
+				agent.step(StepMode.StepIntoFunction);
 				break;
 				
 			case "step-return":
@@ -637,7 +644,9 @@ public class ReplDebugClient {
 			"               Short form: !b ...\n" +
 			"  !resume      Resume from breakpoint\n" +
 			"               Short form: !r\n" +
-			"  !step-into   Step into next function\n" +
+			"  !step-next   Step to next function\n" +
+			"               Short form: !sn\n" +
+			"  !step-into   Step into function body\n" +
 			"               Short form: !si\n" +
 			"  !step-return Step to the return of the function\n" +
 			"               Short form: !sr\n" +

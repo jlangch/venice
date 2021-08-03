@@ -28,6 +28,8 @@ public enum StepMode {
 
 	StepToNextNonSystemFunction,
 
+	StepIntoFunction,
+
 	StepToFunctionReturn;
 
 }
