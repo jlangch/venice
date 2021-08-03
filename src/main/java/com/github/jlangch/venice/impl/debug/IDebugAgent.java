@@ -104,10 +104,8 @@ public interface IDebugAgent {
 
 	void resume();
 
-	void stepToNextFn();
+	void step(StepMode mode);
 
-	void stepToNextNonSystemFn();
-
-	void stepToReturn();
+	boolean isStepPossible(StepMode mode);
 
 }
