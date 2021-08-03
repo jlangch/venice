@@ -95,8 +95,7 @@ public class ModuleLoader {
 			throw new VncException("Failed to load the file '" + file + "'!");
 		}
 		else {
-			externalFiles.put(file, data);
-			
+			externalFiles.put(new File(file).getName(), data);		
 			return data;
 		}
 	} 
@@ -110,7 +109,7 @@ public class ModuleLoader {
 		return classpathFiles.containsKey(file);
 	}
 
-	public static boolean isLoadExternalFile(final String file) {
+	public static boolean isLoadedExternalFile(final String file) {
 		return externalFiles.containsKey(file);
 	}
 	

@@ -497,13 +497,10 @@ public class REPL {
 			final ReplResultHistory resultHistory,
 			final String resultPrefix
 	) throws Exception {
-		final String fileName = unescapeDroppedFileName(droppedFileName.trim());
+		final String file = unescapeDroppedFileName(droppedFileName.trim());
 		
-		// remove leading comments
-		final List<String> lines = Files
-									.readAllLines(new File(fileName).toPath())
-									.stream()
-									.collect(Collectors.toList());
+		final List<String> lines = Files.readAllLines(new File(file).toPath());
+		
 		if (lines.size() < 20) {
 			// if file scripts has less than 20 lines display it on the
 			// REPL and and add it to the history for easy modification
@@ -514,7 +511,7 @@ public class REPL {
 
 		ThreadLocalMap.clearCallStack();
 
-		final String script = String.format("(load-file \"%s\")", fileName);
+		final String script = String.format("(load-file \"%s\")", file);
 		history.add(script);
 		runScript(script, resultPrefix, resultHistory);
 	}

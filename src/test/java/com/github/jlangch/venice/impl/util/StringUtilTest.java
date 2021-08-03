@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 
@@ -66,6 +68,59 @@ public class StringUtilTest {
 		assertEquals("a", StringUtil.trimRight("a\n"));
 		assertEquals("a", StringUtil.trimRight("a  \n\n"));
 		assertEquals("a", StringUtil.trimRight("a  \n\r\n"));
+	}
+
+	@Test
+	public void testSplitIntoLines() {
+		List<String> lines;
+
+		lines = StringUtil.splitIntoLines("");	
+		assertEquals(0, lines.size());
+
+		
+		
+		lines = StringUtil.splitIntoLines("\n");	
+		assertEquals(1, lines.size());
+		assertEquals("", lines.get(0));
+
+		
+		
+		lines = StringUtil.splitIntoLines("1\n");	
+		assertEquals(1, lines.size());
+		assertEquals("1", lines.get(0));
+
+		lines = StringUtil.splitIntoLines("\n2");	
+		assertEquals(2, lines.size());
+		assertEquals("", lines.get(0));
+		assertEquals("2", lines.get(1));
+
+		lines = StringUtil.splitIntoLines("1\n2");	
+		assertEquals(2, lines.size());
+		assertEquals("1", lines.get(0));
+		assertEquals("2", lines.get(1));
+
+		lines = StringUtil.splitIntoLines("\n\n");	
+		assertEquals(2, lines.size());
+		assertEquals("", lines.get(0));
+		assertEquals("", lines.get(1));
+
+		
+		
+		lines = StringUtil.splitIntoLines("1\n\n");	
+		assertEquals(2, lines.size());
+		assertEquals("1", lines.get(0));
+		assertEquals("", lines.get(1));
+
+		lines = StringUtil.splitIntoLines("\n2\n");	
+		assertEquals(2, lines.size());
+		assertEquals("", lines.get(0));
+		assertEquals("2", lines.get(1));
+
+		lines = StringUtil.splitIntoLines("\n\n3");	
+		assertEquals(3, lines.size());
+		assertEquals("", lines.get(0));
+		assertEquals("", lines.get(1));
+		assertEquals("3", lines.get(2));
 	}
 
 }
