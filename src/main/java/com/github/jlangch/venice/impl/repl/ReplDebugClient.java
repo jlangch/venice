@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.debug.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.BreakpointLine;
 import com.github.jlangch.venice.impl.debug.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.IDebugAgent;
+import com.github.jlangch.venice.impl.debug.StepMode;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -114,17 +115,37 @@ public class ReplDebugClient {
 				
 			case "step-into":
 			case "si":
-				agent.stepToNextFn();
+				if (!agent.isStepPossible(StepMode.StepToNextFunction)) {
+					printer.println(
+							"error", 
+							"Stepping into next function is not possible in the "
+							+ "current debug context");
+					return;
+				}
+				agent.step(StepMode.StepToNextFunction);
 				break;
 				
 			case "step-into-":
 			case "si-":
-				agent.stepToNextNonSystemFn();
+				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
+
+					return;
+				}
+				agent.step(StepMode.StepToNextNonSystemFunction);
 				break;
 				
 			case "step-return":
 			case "sr":
-				stepReturn();
+				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
+
+					return;
+				}
+				printer.println(
+						"debug", 
+						String.format(
+							"Stepping into return of function %s ...",
+							agent.getBreak().getFn().getQualifiedName()));
+				agent.step(StepMode.StepToFunctionReturn);
 				break;
 				
 			case "break?": 
@@ -256,23 +277,6 @@ public class ReplDebugClient {
 		}
 	}
 	
-	private void stepReturn() {
-		if (!agent.hasBreak()) {
-			printer.println("error", "Not in a break!");
-		}
-		else if (agent.getBreak().isSpecialForm()) {
-			printer.println("error", "Cannot not step into the return of a special form!");
-		}
-		else {
-			printer.println(
-					"debug", 
-					String.format(
-						"Stepping into return of function %s ...",
-						agent.getBreak().getFn().getQualifiedName()));
-			agent.stepToReturn();
-		}
-	}
-	
 	private void callstack() {
 		if (!agent.hasBreak()) {
 			println("Not in a debug break!");
@@ -295,7 +299,7 @@ public class ReplDebugClient {
 
 		println(formatBreak(br));
 
-		if (br.isNativeFn()) {
+		if (br.isBreakInNativeFn()) {
 			println(renderNativeFnParams(br));
 		}
 		else {
@@ -488,7 +492,7 @@ public class ReplDebugClient {
 
 		sb.append(String.format(
 				"Arguments passed to %s %s:",
-				br.isSpecialForm() 
+				br.isBreakInSpecialForm() 
 					? "special form"
 					: "function",
 				fn.getQualifiedName()));
@@ -526,7 +530,7 @@ public class ReplDebugClient {
 
 		sb.append(String.format(
 				"Arguments passed to %s %s (destructured):",
-				br.isSpecialForm() 
+				br.isBreakInSpecialForm() 
 					? "special form"
 					: "function",
 				fn.getQualifiedName()));
@@ -569,7 +573,7 @@ public class ReplDebugClient {
 	private String formatBreak(final Break br) {
 		return String.format(
 				"Break in %s %s at %s.",
-				br.isSpecialForm()
+				br.isBreakInSpecialForm()
 					? "special form"
 					: "function",
 				br.getFn().getQualifiedName(),
@@ -580,7 +584,7 @@ public class ReplDebugClient {
 		if (br.getBreakpoint() instanceof BreakpointFn) {
 			return String.format(
 					"Stopped in %s %s%s at %s.",
-					br.isSpecialForm()
+					br.isBreakInSpecialForm()
 						? "special form"
 						: "function",
 					br.getFn().getQualifiedName(),

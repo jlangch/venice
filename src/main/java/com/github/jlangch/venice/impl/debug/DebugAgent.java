@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -355,26 +354,61 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void stepToNextFn() {
+	public void step(final StepMode mode) {
+		if (mode == null) return;
+		
+		switch(mode) {
+			case StepToNextFunction:
+				stepToNextFn();
+				break;
+	
+			case StepToNextNonSystemFunction:
+				stepToNextNonSystemFn();
+				break;
+	
+			case StepToFunctionReturn:
+				stepToFunctionReturn();
+				break;
+				
+			default:
+				break;
+		}
+	}
+
+	@Override
+	public boolean isStepPossible(final StepMode mode) {
+		if (mode == null) return false;
+		
+		switch(mode) {
+			case StepToNextFunction:
+				return true;
+	
+			case StepToNextNonSystemFunction:
+				return true;
+	
+			case StepToFunctionReturn:
+				return hasBreak() || getBreak().isBreakInFunction();
+					
+			default:
+				return false;
+		}		
+	}
+
+
+	
+	private void stepToNextFn() {
 		clearBreak();
 		stopNext = StopNext.AnyFunction;
 	}
 
-	@Override
-	public void stepToNextNonSystemFn() {
+	private void stepToNextNonSystemFn() {
 		clearBreak();
 		stopNext = StopNext.AnyNonSystemFunction;
 	}
 	
-	@Override
-	public void stepToReturn() {
-		if (activeBreak == null) {
-			throw new VncException(
-					"Cannot step into a function's return if there is no break!");
-		}
-		else if (activeBreak.isSpecialForm()) {
-			throw new VncException(
-					"Cannot step into a special form's return!");
+	private void stepToFunctionReturn() {
+		if (activeBreak == null || activeBreak.isBreakInSpecialForm()) {
+			return; // cannot do that
 		}
 		else {
 			stopNext = StopNext.FunctionReturn;

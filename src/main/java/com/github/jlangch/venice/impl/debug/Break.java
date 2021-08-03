@@ -83,11 +83,19 @@ public class Break {
 		return scope;
 	}
 
-	public boolean isSpecialForm() {
+	public boolean isBreakInLineNr() {
+		return breakpoint instanceof BreakpointLine;
+	}
+
+	public boolean isBreakInFunction() {
+		return breakpoint instanceof BreakpointFn;
+	}
+
+	public boolean isBreakInSpecialForm() {
 		return fn instanceof SpecialFormVirtualFunction;
 	}
 
-	public boolean isNativeFn() {
+	public boolean isBreakInNativeFn() {
 		return fn.isNative() && !(fn instanceof SpecialFormVirtualFunction);
 	}
 	
