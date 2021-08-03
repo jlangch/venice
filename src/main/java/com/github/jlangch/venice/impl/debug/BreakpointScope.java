@@ -27,6 +27,8 @@ import java.util.List;
 
 public enum BreakpointScope {
 
+	FunctionCall(">", "call"),				// Stop at function entry
+
 	FunctionEntry("(", "entry"),			// Stop at function entry
 
 	FunctionExit(")", "exit"),				// Stop at function exit
