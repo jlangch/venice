@@ -145,17 +145,8 @@ public class ModuleFunctions {
 				
 				final String file = name(args.first());					
 				try {
-					final IInterceptor interceptor = JavaInterop.getInterceptor();
-						
-					final String data = interceptor.getLoadPaths().loadVeniceFile(new File(file));
-						
-					if (data == null) {
-						throw new VncException(
-								"Failed to load the Venice file '" + file + "'!");
-					}
-					else {
-						return new VncString(data);
-					}
+					final String data = ModuleLoader.loadExternalFile(file);
+					return new VncString(data);
 				} 
 				catch (VncException ex) {
 					throw ex;

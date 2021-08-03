@@ -146,21 +146,35 @@ public class DocForm {
 	) {
 		final String form = ModuleLoader.loadModule(module.getValue());
 		
-		final AnsiColorTheme theme = AnsiColorThemes.getTheme(getColorTheme(env));
+		return highlightVeniceSource(form, env);
+	}
 
-		if (theme == null) {
-			return new VncString(form);
+	private static VncString docForLoadedClasspathFile(
+			final VncString file, 
+			final Env env
+	) {
+		final String form = ModuleLoader.getCachedClasspathFile(file.getValue());
+		if (form == null) {
+			throw new VncException(String.format(
+					"The Venice source file '%s' has not been loaded yet from the classpath!", 
+					file.getValue()));
 		}
-		else {			
-			final List<HighlightItem> items = HighlightParser.parse("(do " + form + ")");
-			
-			return new VncString(
-					AnsiColorTheme.ANSI_RESET +
-					items.subList(3, items.size()-1)
-						 .stream()
-						 .map(it -> theme.style(it.getForm(), it.getClazz()))
-						 .collect(Collectors.joining()));
+		
+		return highlightVeniceSource(form, env);
+	}
+
+	private static VncString docForLoadedExternalFile(
+			final VncString file, 
+			final Env env
+	) {
+		final String form = ModuleLoader.getCachedExternalFile(file.getValue());
+		if (form == null) {
+			throw new VncException(String.format(
+					"The Venice source file '%s' has not been loaded from the filesystem yet!", 
+					file.getValue()));
 		}
+		
+		return highlightVeniceSource(form, env);
 	}
 	
 	private static VncString docForCustomType(
@@ -361,6 +375,25 @@ public class DocForm {
 	private static String toString(final VncVal val) {
 		return val == Constants.Nil ? "" : ((VncString)val).getValue();
 	}
+	
+	private static VncString highlightVeniceSource(final String form, final Env env) {
+		final AnsiColorTheme theme = AnsiColorThemes.getTheme(getColorTheme(env));
+
+		if (theme == null) {
+			return new VncString(form);
+		}
+		else {			
+			final List<HighlightItem> items = HighlightParser.parse("(do " + form + ")");
+			
+			return new VncString(
+					AnsiColorTheme.ANSI_RESET +
+					items.subList(3, items.size()-1)
+						 .stream()
+						 .map(it -> theme.style(it.getForm(), it.getClazz()))
+						 .collect(Collectors.joining()));
+		}
+	}
+	
 	
 	
 	private static final boolean MARKDOWN_FN_DESCR = true;

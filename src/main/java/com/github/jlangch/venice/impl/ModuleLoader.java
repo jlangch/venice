@@ -23,11 +23,14 @@ package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 
+import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ModuleLoader {
@@ -74,9 +77,59 @@ public class ModuleLoader {
 					ex);
 		}
 	}
+
+	public static String loadExternalFile(final String file) {
+		// For security reasons just allow to load venice scripts!
+		if (!file.endsWith(".venice")) {
+			throw new VncException(String.format(
+					"Must not load other than Venice (*.venice) files. "
+						+ "File: '%s'",
+						file));
+		}
+
+		final IInterceptor interceptor = JavaInterop.getInterceptor();
 		
+		final String data = interceptor.getLoadPaths().loadVeniceFile(new File(file));
+			
+		if (data == null) {
+			throw new VncException("Failed to load the file '" + file + "'!");
+		}
+		else {
+			externalFiles.put(file, data);
+			
+			return data;
+		}
+	} 
+
+	
+	public static boolean isLoadedModule(final String module) {
+		return modules.containsKey(module);
+	}
+
+	public static boolean isLoadedClasspathFile(final String file) {
+		return classpathFiles.containsKey(file);
+	}
+
+	public static boolean isLoadExternalFile(final String file) {
+		return externalFiles.containsKey(file);
+	}
+	
+
+	public static String getCachedLoadedModule(final String module) {
+		return modules.get(module);
+	}
+
+	public static String getCachedClasspathFile(final String file) {
+		return classpathFiles.get(file);
+	}
+
+	public static String getCachedExternalFile(final String file) {
+		return externalFiles.get(file);
+	}
+
 	
 	
 	private static final Map<String,String> modules = new ConcurrentHashMap<>();
 	private static final Map<String,String> classpathFiles = new ConcurrentHashMap<>();
+	private static final Map<String,String> externalFiles = new ConcurrentHashMap<>();
 }
