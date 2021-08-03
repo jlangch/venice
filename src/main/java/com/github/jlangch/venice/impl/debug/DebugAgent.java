@@ -167,14 +167,21 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreak(final String qualifiedName) {
+	public boolean hasBreak(final String qualifiedFnName) {
 		switch (stopNext) {
-			case Breakpoint: return !skipBreakpoints && breakpoints.containsKey(new BreakpointFn(qualifiedName));
+			case Breakpoint: return !skipBreakpoints 
+										&& breakpoints.containsKey(
+												new BreakpointFn(qualifiedFnName));
 			case AnyFunction: return true;
-			case AnyNonSystemFunction: return !hasSystemNS(qualifiedName);
-			case FunctionReturn: return qualifiedName.equals(stopNextReturnFnName);
+			case AnyNonSystemFunction: return !hasSystemNS(qualifiedFnName);
+			case FunctionReturn: return qualifiedFnName.equals(stopNextReturnFnName);
 			default: return false;
 		}
+	}
+	
+	@Override
+	public boolean hasBreak(final BreakpointLine bp) {
+		return isStopOnLineNr(bp);
 	}
 
 	@Override
@@ -182,13 +189,37 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = listener;
 	}
 
+	public void onBreakLineNr(
+			final BreakpointLine bp,
+			final VncFunction fn,
+			final VncList args,
+			final VncVal meta,
+			final Env env
+	) {
+		if (isStopOnLineNr(bp)) {
+			final Break br = new Break(
+									bp,
+									fn,
+									args,
+									null,
+									null,
+									env,
+									ThreadLocalMap.getCallStack(),
+									FunctionEntry);
+
+			notifOnBreak(br);
+			waitOnBreak(br);
+		}
+	}
+
 	public void onBreakLoop(
 			final List<VncSymbol> loopBindingNames,
 			final VncVal meta,
 			final Env env
 	) {
-		if (isStopOnFunction("loop", FunctionEntry)) {			
+		if (isStopOnFunction("loop", FunctionEntry)) {
 			final Break br = new Break(
+									new BreakpointFn("loop"),
 									new SpecialFormVirtualFunction(
 											"loop", 
 											VncVector.ofColl(loopBindingNames), 
@@ -198,11 +229,11 @@ public class DebugAgent implements IDebugAgent {
 											  .stream()
 											  .map(s -> env.findLocalVar(s))
 											  .map(v -> v == null ? Nil : v.getVal())
-											  .collect(Collectors.toList())), 
-									null, 
-									null, 
-									env, 
-									ThreadLocalMap.getCallStack(), 
+											  .collect(Collectors.toList())),
+									null,
+									null,
+									env,
+									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
 			notifOnBreak(br);
 			waitOnBreak(br);
@@ -217,21 +248,22 @@ public class DebugAgent implements IDebugAgent {
 		if (isStopOnFunction("let", FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
+									new BreakpointFn("let"),
 									new SpecialFormVirtualFunction(
-											"let", 
+											"let",
 											VncVector.ofColl(
 												vars.stream()
 													.map(v -> v.getName())
-													.collect(Collectors.toList())), 
+													.collect(Collectors.toList())),
 											meta), 
 									VncList.ofColl(
 										vars.stream()
 											.map(v -> v.getVal())
-											.collect(Collectors.toList())), 
-									null, 
-									null, 
+											.collect(Collectors.toList())),
+									null,
+									null,
 									env, 
-									ThreadLocalMap.getCallStack(), 
+									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
 			notifOnBreak(br);
 			waitOnBreak(br);
@@ -246,12 +278,13 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionEntry)) {
 			final Break br = new Break(
-									fn, 
-									args, 
-									null, 
-									null, 
-									env, 
-									ThreadLocalMap.getCallStack(), 
+									new BreakpointFn(fnName),
+									fn,
+									args,
+									null,
+									null,
+									env,
+									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
 			
 			notifOnBreak(br);
@@ -268,12 +301,13 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionExit)) {
 			final Break br = new Break(
-									fn, 
-									args, 
-									retVal, 
-									null, 
-									env, 
-									ThreadLocalMap.getCallStack(), 
+									new BreakpointFn(fnName),
+									fn,
+									args,
+									retVal,
+									null,
+									env,
+									ThreadLocalMap.getCallStack(),
 									FunctionExit);
 			
 			notifOnBreak(br);
@@ -290,14 +324,15 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionException)) {
 			final Break br = new Break(
-									fn, 
-									args, 
-									null, 
-									ex, 
-									env, 
-									ThreadLocalMap.getCallStack(), 
+									new BreakpointFn(fnName),
+									fn,
+									args,
+									null,
+									ex,
+									env,
+									ThreadLocalMap.getCallStack(),
 									FunctionException);
-			
+
 			notifOnBreak(br);
 			waitOnBreak(br);
 		}
@@ -363,6 +398,10 @@ public class DebugAgent implements IDebugAgent {
 				: Namespaces.isSystemNS(qualifiedName.substring(0, pos));
 	}
 	
+	private boolean isStopOnLineNr(final BreakpointLine bp) {
+		return bp != null && !skipBreakpoints && breakpoints.containsKey(bp);
+	}
+	
 	private boolean isStopOnFunction(
 			final String fnName, 
 			final BreakpointScope bt
@@ -378,16 +417,16 @@ public class DebugAgent implements IDebugAgent {
 							&& bp instanceof BreakpointFn
 							&& ((BreakpointFn)bp).hasScope(bt);
 				}
-				
+
 			case AnyFunction:
 				return bt == FunctionEntry;
-				
+
 			case AnyNonSystemFunction: 
 				return bt == FunctionEntry && !hasSystemNS(fnName);
-				
+
 			case FunctionReturn: 
 				return bt == FunctionExit && fnName.equals(stopNextReturnFnName);
-				
+
 			default:
 				return false;
 		}
@@ -425,9 +464,9 @@ public class DebugAgent implements IDebugAgent {
 		AnyNonSystemFunction,	// stop on next non system function entry
 		FunctionReturn;			// stop on function return
 	}
-	
-	
-	
+
+
+
 	private static final long BREAK_LOOP_SLEEP_MILLIS = 500L;
 
 	// simple breakpoint memorization
@@ -439,6 +478,6 @@ public class DebugAgent implements IDebugAgent {
 	private volatile Break activeBreak = null;
 	private volatile boolean skipBreakpoints = false;
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<IBreakpoint,IBreakpoint> breakpoints = 
+	private final ConcurrentHashMap<IBreakpoint,IBreakpoint> breakpoints =
 			new ConcurrentHashMap<>();
 }

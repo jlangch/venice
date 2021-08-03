@@ -45,6 +45,7 @@ import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.debug.BreakpointLine;
 import com.github.jlangch.venice.impl.debug.DebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.ComputedVar;
@@ -707,6 +708,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										
 					if (fn0 instanceof VncFunction) { 
 						final VncFunction fn = (VncFunction)fn0;
+
+						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						
+						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+						if (debugAgent != null) {
+							final VncVal meta =  a0.getMeta();
+							final BreakpointLine bp = BreakpointLine.fromMeta(meta);
+							if (bp != null && debugAgent.hasBreak(bp)) {
+								debugAgent.onBreakLineNr(bp, fn, args, meta, env);
+							}
+						}
+
 						if (fn.isMacro()) { 
 							// macro
 							final VncVal expandedAst = macroexpand(ast, env, null);
@@ -736,9 +749,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final Thread currThread = Thread.currentThread();
 	
 							checkInterrupted(currThread, fnName);
-	
-							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
-							
+								
 							final CallStack callStack = threadLocalMap.getCallStack_();
 							
 							// Automatic TCO (tail call optimization)
@@ -751,7 +762,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								final VncFunction f = fn.getFunctionForArgs(fnArgs);
 								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 								
-								final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 								if (debugAgent != null && debugAgent.hasBreak(fnName)) {
 									debugAgent.onBreakFnEnter(fnName, f, fnArgs, env);
 								}
@@ -764,8 +774,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								// invoke function with a new call frame
 								try {
 									callStack.push(new CallFrame(fnName, a0.getMeta()));
-
-									final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 									if (debugAgent != null && fn.isNative() && debugAgent.hasBreak(fnName)) {
 										final Env env__ = new Env(env);
