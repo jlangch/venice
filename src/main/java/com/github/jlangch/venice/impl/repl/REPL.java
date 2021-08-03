@@ -503,22 +503,19 @@ public class REPL {
 		final List<String> lines = Files
 									.readAllLines(new File(fileName).toPath())
 									.stream()
-									.filter(l -> !l.startsWith(";"))
 									.collect(Collectors.toList());
-		String script = null;
 		if (lines.size() < 20) {
-			// file scripts with less than 20 lines, treat them as if they have 
-			// been typed to allow editing it
-			script = String.join("\n", lines);
+			// if file scripts has less than 20 lines display it on the
+			// REPL and and add it to the history for easy modification
+			final String script = String.join("\n", lines);
+			history.add(script);
 			printer.println("stdout", DocForm.highlight(new VncString(script), env).getValue());
 		}
-		else {
-			script = String.format("(load-file \"%s\")", fileName);
-		}
-		history.add(script);
-		
+
 		ThreadLocalMap.clearCallStack();
-		
+
+		final String script = String.format("(load-file \"%s\")", fileName);
+		history.add(script);
 		runScript(script, resultPrefix, resultHistory);
 	}
 	
