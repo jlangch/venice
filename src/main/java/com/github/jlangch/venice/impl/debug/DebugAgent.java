@@ -21,10 +21,10 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionCall;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionCall;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
@@ -165,25 +165,26 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public boolean hasBreak(final String qualifiedFnName) {
+		final boolean inBreak = activeBreak != null;
+		
 		switch (stepMode) {
 			case Disabled: 
 				return !skipBreakpoints && breakpoints.containsKey(
 											new BreakpointFn(qualifiedFnName));
 				
 			case StepToNextFunction: 
-				return true;
+				return inBreak;
 				
 			case StepToNextNonSystemFunction: 
-				return !hasSystemNS(qualifiedFnName);
+				return inBreak && !hasSystemNS(qualifiedFnName);
 				
 			case StepToFunctionReturn: 
-				return qualifiedFnName.equals(stepBoundToFnName);
+				return inBreak && qualifiedFnName.equals(stepBoundToFnName);
 				
 			case StepIntoFunction: 
-				return qualifiedFnName.equals(stepBoundToFnName);
+				return inBreak && qualifiedFnName.equals(stepBoundToFnName);
 				
 			case StepToNextLine:
-				// TODO: implement
 				return false;
 				
 			default: 
@@ -261,13 +262,7 @@ public class DebugAgent implements IDebugAgent {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
 									new BreakpointFn("let"),
-									new SpecialFormVirtualFunction(
-											"let",
-											VncVector.ofColl(
-												vars.stream()
-													.map(v -> v.getName())
-													.collect(Collectors.toList())),
-											meta), 
+									new SpecialFormVirtualFunction("let", vars, meta), 
 									VncList.ofColl(
 										vars.stream()
 											.map(v -> v.getVal())
@@ -366,42 +361,55 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void step(final StepMode mode) {
-		if (mode == null) return;
+	public boolean step(final StepMode mode) {
+		if (!isStepPossible(mode)) {
+			return false;
+		}
 		
+		final Break br = activeBreak;
+
+		clearBreak();
+
 		switch(mode) {
 			case StepToNextFunction:
-				stepToNextFn();
+				stepMode = StepMode.StepToNextFunction;
 				break;
 	
 			case StepToNextNonSystemFunction:
-				stepToNextNonSystemFn();
+				stepMode = StepMode.StepToNextNonSystemFunction;
 				break;
 				
 			case StepIntoFunction:
-				stepIntoFunction();
+				stepMode = StepMode.StepIntoFunction;
+				stepBoundToFnName = br.getFn().getQualifiedName();
 				break;
 				
 			case StepToFunctionReturn:
-				stepToFunctionReturn();
+				stepMode = StepMode.StepToFunctionReturn;
+				stepBoundToFnName = activeBreak.getFn().getQualifiedName();
 				break;
 				
 			case StepToNextLine:
-				// TODO: impelement;
+				final BreakpointLine bp = (BreakpointLine)activeBreak.getBreakpoint();
+				stepMode = StepMode.StepToNextLine;
+				stepFrom = bp;
 				break;
 				
 			case Disabled:
-				// TODO: impelement;
 				break;
 				
 			default:
 				break;
 		}
+		
+		return true;
 	}
 
 	@Override
 	public boolean isStepPossible(final StepMode mode) {
-		if (mode == null || !hasBreak()) {
+		final Break br = activeBreak;
+		
+		if (mode == null || br == null) {
 			return false;
 		}
 		
@@ -413,17 +421,17 @@ public class DebugAgent implements IDebugAgent {
 				return true;
 				
 			case StepIntoFunction:
-				return getBreak().isBreakInLineNr();
+				return br.isBreakInLineNr();
 				
 			case StepToFunctionReturn:
-				return getBreak().isBreakInFunction() 
-							|| getBreak().isBreakInLineNr();
+				return !br.isBreakInSpecialForm() 
+							&& br.getBreakpointScope() != FunctionExit;
 				
 			case StepToNextLine:
-				return getBreak().isBreakInLineNr();
+				return br.isBreakInLineNr();
 				
 			case Disabled:
-				return false;
+				return true;
 					
 			default:
 				return false;
@@ -431,39 +439,6 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 
-	
-	private void stepToNextFn() {
-		clearBreak();
-		stepMode = StepMode.StepToNextFunction;
-	}
-
-	private void stepToNextNonSystemFn() {
-		clearBreak();
-		stepMode = StepMode.StepToNextNonSystemFunction;
-	}
-	
-	private void stepIntoFunction() {
-		if (activeBreak == null || !activeBreak.isBreakInLineNr()) {
-			return; // cannot do that
-		}
-		else {
-			stepMode = StepMode.StepIntoFunction;
-			stepBoundToFnName = activeBreak.getFn().getQualifiedName();
-			activeBreak = null;
-		}
-	}
-	
-	private void stepToFunctionReturn() {
-		if (activeBreak == null || activeBreak.isBreakInSpecialForm()) {
-			return; // cannot do that
-		}
-		else {
-			stepMode = StepMode.StepToFunctionReturn;
-			stepBoundToFnName = activeBreak.getFn().getQualifiedName();
-			activeBreak = null;
-		}
-	}
-	
 	private void notifyOnBreak(final Break br) {
 		activeBreak = br;
 		
@@ -480,7 +455,14 @@ public class DebugAgent implements IDebugAgent {
 	}
 	
 	private boolean isStopOnLineNr(final BreakpointLine bp) {
-		return bp != null && !skipBreakpoints && breakpoints.containsKey(bp);
+		if (bp == null) {
+			return false;
+		}
+		
+		return stepFrom == null
+				? !skipBreakpoints && breakpoints.containsKey(bp)
+				: bp.getFile().equals(stepFrom.getFile())
+						&& bp.getLineNr() > stepFrom.getLineNr();
 	}
 	
 	private boolean isStopOnFunction(
@@ -512,7 +494,6 @@ public class DebugAgent implements IDebugAgent {
 				return bt == FunctionEntry && fnName.equals(stepBoundToFnName);
 
 			case StepToNextLine:
-				// TODO: impelement
 				return false;
 
 			default:
@@ -543,12 +524,14 @@ public class DebugAgent implements IDebugAgent {
 		activeBreak = null;
 		stepMode = StepMode.Disabled;
 		stepBoundToFnName = null;
+		stepFrom = null;
 	}
 	
 	private void clearAll() {
 		activeBreak = null;
 		stepMode = StepMode.Disabled;
 		stepBoundToFnName = null;
+		stepFrom = null;
 		skipBreakpoints = false;
 		breakpoints.clear();
 	}
@@ -564,6 +547,7 @@ public class DebugAgent implements IDebugAgent {
 	private volatile Break activeBreak = null;
 	private volatile StepMode stepMode = StepMode.Disabled;
 	private volatile String stepBoundToFnName = null;
+	private volatile BreakpointLine stepFrom = null;
 	private volatile boolean skipBreakpoints = false;
 
 	private volatile IBreakListener breakListener = null;

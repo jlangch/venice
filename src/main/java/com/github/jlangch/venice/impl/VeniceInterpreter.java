@@ -2288,8 +2288,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					try {
 						threadLocalMap.setCurrNS_(ns);
 
-						if (debugAgent != null && debugAgent.hasBreak(getQualifiedName())
-						) {
+						if (debugAgent != null && debugAgent.hasBreak(getQualifiedName())) {
 							try {
 								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv);
 								if (hasPreConditions) {
