@@ -69,6 +69,7 @@
   (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
 
   ;; Covid-19 vaccination data
+  ;; https://www.google.com/search?q=schweiz+covid+impfung
   ;; https://ourworldindata.org/covid-vaccinations
   ;; https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations
   (def vaccinations-url "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json")
@@ -197,11 +198,10 @@
                  :line-style  :solid }}))
 
   (defn chart-series-all-countries [countries-data]
-    (let [vac (load-vaccinations)
-          iso-vac (fn [iso] (str (get vac iso 0) "%"))]
-      (reduce #(assoc %1 (str (:name %2) " - " (iso-vac (:iso %2))) (chart-series-country %2))
-            (ordered-map)
-            countries-data)))
+    (let [series-name (fn [data] (str (:name data) " - " (:vac data)))]
+    (reduce #(assoc %1 (series-name %2) (chart-series-country %2))
+          (ordered-map)
+          countries-data)))
 
   (defn render-chart [countries-data width height sample-days]
     (xchart/xy-chart
@@ -219,10 +219,13 @@
 
   (defn main [filename]
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
-    (-<> country-config
-         (map #(aggregate-country-data % start-date end-date) <>)
-         (render-chart <> chart-width chart-height sample-days)
-         (save-chart! <> filename chart-dpi)
-         (view-chart! <>)))
+    (let [vac (load-vaccinations)
+          iso-vac (fn [iso] (str (get vac iso 0) "%"))]
+      (-<> country-config
+           (map #(assoc % :vac (iso-vac (:iso %))) <>)
+           (map #(aggregate-country-data % start-date end-date) <>)
+           (render-chart <> chart-width chart-height sample-days)
+           (save-chart! <> filename chart-dpi)
+           (view-chart! <>))))
 
   (main "covid-19.png"))
