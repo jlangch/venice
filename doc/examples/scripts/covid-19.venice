@@ -25,7 +25,7 @@
 
 (do
   (ns covid-19)
-  
+
   (load-module :xchart)
 
   (def country-config [
@@ -40,12 +40,15 @@
       { :name "Greece"       :iso "GRC"  :style { :color :x-dark-pink  }}
       { :name "Spain"        :iso "ESP"  :style { :color :x-dark-green }}
       { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }}
+      { :name "Netherlands"  :iso "NLD"  :style { :color :x-magenta    }}
+      { :name "Iceland"      :iso "ISL"  :style { :color :x-black      }}
+      { :name "Israel"       :iso "ISR"  :style { :color :x-brown      }}
       ;;{ :name "India"        :iso "IND"  :style { :color :x-brown      }}
       ;;{ :name "Croatia"      :iso "HRV"  :style { :color :x-brown      }}
-      { :name "Netherlands"  :iso "NLD"  :style { :color :x-brown      }}
       ;;{ :name "Portugal"     :iso "PRT"  :style { :color :x-brown      }}
       ;;{ :name "Slovenia"     :iso "SVN"  :style { :color :x-brown      }}
-      { :name "US"           :iso "USA"  :style { :color :x-black      }} ])
+      ;;{ :name "US"           :iso "USA"  :style { :color :x-black      }}
+      ])
 
   ;; the interval length in days to calculate the moving average
   (def sample-days 7)
@@ -64,6 +67,11 @@
 
   ;; country population REST URL
   (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
+
+  ;; Covid-19 vaccination data
+  ;; https://ourworldindata.org/covid-vaccinations
+  ;; https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations
+  (def vaccinations-url "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json")
 
 
   ;;; I/O functions ------------------------------------------------------------
@@ -97,6 +105,21 @@
           (assoc :population p)
           (assoc :population-normalized (/ p 100_000.0)))))
 
+  (defn load-vaccinations []
+    ;; returns a map with country iso code and vaccinated (all doses) rate
+    ;; { "CHE" 54.18 "AUT" 58.97 ... }
+    (let [countries-iso (apply set (map :iso country-config))
+          to-long       #(long (+ % 0.5))]
+      (->> (io/download vaccinations-url :user-agent "Mozilla")
+           (json/read-str)
+           (filter #(countries-iso (get % "iso_code")))
+           (map #(list (get % "iso_code")
+                       (to-long (get (last (get % "data"))
+                                     "people_fully_vaccinated_per_hundred"
+                                     0.00))))
+           (flatten)
+           (apply hash-map)
+           )))
 
   ;;; Extracting, parsing, and aggregating data --------------------------------
 
@@ -174,9 +197,11 @@
                  :line-style  :solid }}))
 
   (defn chart-series-all-countries [countries-data]
-    (reduce #(assoc %1 (:name %2) (chart-series-country %2))
+    (let [vac (load-vaccinations)
+          iso-vac (fn [iso] (str (get vac iso 0) "%"))]
+      (reduce #(assoc %1 (str (:name %2) " - " (iso-vac (:iso %2))) (chart-series-country %2))
             (ordered-map)
-            countries-data))
+            countries-data)))
 
   (defn render-chart [countries-data width height sample-days]
     (xchart/xy-chart
