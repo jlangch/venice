@@ -24,12 +24,22 @@ package com.github.jlangch.venice.impl.debug;
 
 public enum StepMode {
 
+	// Step to next function entry
 	StepToNextFunction,
 
+	// Step to next non system function entry
 	StepToNextNonSystemFunction,
 
+	// Step in the current function after arguments evaluation
 	StepIntoFunction,
 
-	StepToFunctionReturn;
+	// Step in the current function to the return
+	StepToFunctionReturn,
+
+	// Step to function entry on the next line
+	StepToNextLine,
+	
+	// Disable stepping
+	Disabled;
 
 }

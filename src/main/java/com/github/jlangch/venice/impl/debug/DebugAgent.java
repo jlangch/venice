@@ -79,9 +79,7 @@ public class DebugAgent implements IDebugAgent {
 	
 	@Override
 	public void detach() {
-		activeBreak = null;
-		breakpoints.clear();
-		stopNext = StopNext.Breakpoint;
+		clearAll();
 	}
 
 	
@@ -136,8 +134,7 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public void removeAllBreakpoints() {
-		breakpoints.clear();
-		stopNext = StopNext.Breakpoint;
+		clearAll();
 	}
 	
 	@Override
@@ -168,22 +165,26 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public boolean hasBreak(final String qualifiedFnName) {
-		switch (stopNext) {
-			case Breakpoint: 
+		switch (stepMode) {
+			case Disabled: 
 				return !skipBreakpoints && breakpoints.containsKey(
-												new BreakpointFn(qualifiedFnName));
+											new BreakpointFn(qualifiedFnName));
 				
-			case AnyFunction: 
+			case StepToNextFunction: 
 				return true;
 				
-			case AnyNonSystemFunction: 
+			case StepToNextNonSystemFunction: 
 				return !hasSystemNS(qualifiedFnName);
 				
-			case FunctionReturn: 
-				return qualifiedFnName.equals(stopNextFnName);
+			case StepToFunctionReturn: 
+				return qualifiedFnName.equals(stepBoundToFnName);
 				
-			case IntoFunction: 
-				return qualifiedFnName.equals(stopNextFnName);
+			case StepIntoFunction: 
+				return qualifiedFnName.equals(stepBoundToFnName);
+				
+			case StepToNextLine:
+				// TODO: implement
+				return false;
 				
 			default: 
 				return false;
@@ -362,7 +363,6 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void resume() {
 		clearBreak();
-		stopNext = StopNext.Breakpoint;
 	}
 
 	@Override
@@ -386,6 +386,14 @@ public class DebugAgent implements IDebugAgent {
 				stepToFunctionReturn();
 				break;
 				
+			case StepToNextLine:
+				// TODO: impelement;
+				break;
+				
+			case Disabled:
+				// TODO: impelement;
+				break;
+				
 			default:
 				break;
 		}
@@ -393,7 +401,9 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public boolean isStepPossible(final StepMode mode) {
-		if (mode == null) return false;
+		if (mode == null || !hasBreak()) {
+			return false;
+		}
 		
 		switch(mode) {
 			case StepToNextFunction:
@@ -403,13 +413,17 @@ public class DebugAgent implements IDebugAgent {
 				return true;
 				
 			case StepIntoFunction:
-				return hasBreak() 
-						|| getBreak().isBreakInLineNr();
+				return getBreak().isBreakInLineNr();
 				
 			case StepToFunctionReturn:
-				return hasBreak() 
-						|| getBreak().isBreakInFunction() 
-						|| getBreak().isBreakInLineNr();
+				return getBreak().isBreakInFunction() 
+							|| getBreak().isBreakInLineNr();
+				
+			case StepToNextLine:
+				return getBreak().isBreakInLineNr();
+				
+			case Disabled:
+				return false;
 					
 			default:
 				return false;
@@ -420,12 +434,12 @@ public class DebugAgent implements IDebugAgent {
 	
 	private void stepToNextFn() {
 		clearBreak();
-		stopNext = StopNext.AnyFunction;
+		stepMode = StepMode.StepToNextFunction;
 	}
 
 	private void stepToNextNonSystemFn() {
 		clearBreak();
-		stopNext = StopNext.AnyNonSystemFunction;
+		stepMode = StepMode.StepToNextNonSystemFunction;
 	}
 	
 	private void stepIntoFunction() {
@@ -433,8 +447,8 @@ public class DebugAgent implements IDebugAgent {
 			return; // cannot do that
 		}
 		else {
-			stopNext = StopNext.IntoFunction;
-			stopNextFnName = activeBreak.getFn().getQualifiedName();
+			stepMode = StepMode.StepIntoFunction;
+			stepBoundToFnName = activeBreak.getFn().getQualifiedName();
 			activeBreak = null;
 		}
 	}
@@ -444,8 +458,8 @@ public class DebugAgent implements IDebugAgent {
 			return; // cannot do that
 		}
 		else {
-			stopNext = StopNext.FunctionReturn;
-			stopNextFnName = activeBreak.getFn().getQualifiedName();
+			stepMode = StepMode.StepToFunctionReturn;
+			stepBoundToFnName = activeBreak.getFn().getQualifiedName();
 			activeBreak = null;
 		}
 	}
@@ -473,8 +487,8 @@ public class DebugAgent implements IDebugAgent {
 			final String fnName, 
 			final BreakpointScope bt
 	) {
-		switch(stopNext) {
-			case Breakpoint:
+		switch(stepMode) {
+			case Disabled:
 				if (skipBreakpoints) {
 					return false;
 				}
@@ -485,17 +499,21 @@ public class DebugAgent implements IDebugAgent {
 							&& ((BreakpointFn)bp).hasScope(bt);
 				}
 
-			case AnyFunction:
+			case StepToNextFunction:
 				return bt == FunctionEntry;
 
-			case AnyNonSystemFunction: 
+			case StepToNextNonSystemFunction: 
 				return bt == FunctionEntry && !hasSystemNS(fnName);
 
-			case FunctionReturn: 
-				return bt == FunctionExit && fnName.equals(stopNextFnName);
+			case StepToFunctionReturn: 
+				return bt == FunctionExit && fnName.equals(stepBoundToFnName);
 
-			case IntoFunction: 
-				return bt == FunctionEntry && fnName.equals(stopNextFnName);
+			case StepIntoFunction: 
+				return bt == FunctionEntry && fnName.equals(stepBoundToFnName);
+
+			case StepToNextLine:
+				// TODO: impelement
+				return false;
 
 			default:
 				return false;
@@ -523,17 +541,16 @@ public class DebugAgent implements IDebugAgent {
 	
 	private void clearBreak() {
 		activeBreak = null;
-		stopNext = StopNext.Breakpoint;
-		stopNextFnName = null;
+		stepMode = StepMode.Disabled;
+		stepBoundToFnName = null;
 	}
-
 	
-	private static enum StopNext {
-		Breakpoint,				// stop on registered fn or line breakpoint
-		AnyFunction,			// stop on next function entry
-		AnyNonSystemFunction,	// stop on next non system function entry
-		IntoFunction,			// stop on function after arg evaluation
-		FunctionReturn;			// stop on function return
+	private void clearAll() {
+		activeBreak = null;
+		stepMode = StepMode.Disabled;
+		stepBoundToFnName = null;
+		skipBreakpoints = false;
+		breakpoints.clear();
 	}
 
 
@@ -544,10 +561,11 @@ public class DebugAgent implements IDebugAgent {
 	private static final ConcurrentHashMap<IBreakpoint,IBreakpoint> memorized =
 			new ConcurrentHashMap<>();
 
-	private volatile StopNext stopNext = StopNext.Breakpoint;
-	private volatile String stopNextFnName = null;
 	private volatile Break activeBreak = null;
+	private volatile StepMode stepMode = StepMode.Disabled;
+	private volatile String stepBoundToFnName = null;
 	private volatile boolean skipBreakpoints = false;
+
 	private volatile IBreakListener breakListener = null;
 	private final ConcurrentHashMap<IBreakpoint,IBreakpoint> breakpoints =
 			new ConcurrentHashMap<>();
