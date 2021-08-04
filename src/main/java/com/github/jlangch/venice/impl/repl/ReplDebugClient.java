@@ -141,6 +141,14 @@ public class ReplDebugClient {
 				agent.step(StepMode.StepIntoFunction);
 				break;
 				
+			case "step-line":
+			case "sl":
+				if (!agent.isStepPossible(StepMode.StepToNextLine))  {
+					return;
+				}
+				agent.step(StepMode.StepToNextLine);
+				break;
+				
 			case "step-return":
 			case "sr":
 				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
