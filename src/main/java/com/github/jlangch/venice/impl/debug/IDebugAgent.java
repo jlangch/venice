@@ -104,7 +104,7 @@ public interface IDebugAgent {
 
 	void resume();
 
-	void step(StepMode mode);
+	boolean step(StepMode mode);
 
 	boolean isStepPossible(StepMode mode);
 

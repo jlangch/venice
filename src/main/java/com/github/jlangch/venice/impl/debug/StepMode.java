@@ -39,7 +39,7 @@ public enum StepMode {
 	// Step to function entry on the next line
 	StepToNextLine,
 	
-	// Disable stepping
+	// Disable stepping, just stop on function/lineNr breakpoints
 	Disabled;
 
 }

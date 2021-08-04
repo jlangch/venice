@@ -23,6 +23,10 @@ package com.github.jlangch.venice.impl.debug;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -38,10 +42,27 @@ public class SpecialFormVirtualFunction extends VncFunction {
 		super(name, params, false, null, meta);
 	}
 	
+	public SpecialFormVirtualFunction(
+			final String name, 
+			final List<Var> args, 
+			final VncVal meta
+	) {
+		this("let", toParams(args), meta);
+	}
+	
 	
 	public VncVal apply(final VncList args) {
 		return Nil;
 	}
+	
+	
+	private static VncVector toParams(final List<Var> args) {
+		return VncVector.ofColl(
+					args.stream()
+						.map(v -> v.getName())
+						.collect(Collectors.toList()));
+	}
+	
 	
 	private static final long serialVersionUID = -1;
 }
