@@ -93,6 +93,7 @@ public class RestrictedBlacklistedFunctions {
 					
 					// miscellaneous
 					"fn-body",
+					"fn-pre-conditions",
 
 					// I/O
 					"io/copy-file",
