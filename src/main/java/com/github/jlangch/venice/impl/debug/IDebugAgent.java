@@ -92,9 +92,9 @@ public interface IDebugAgent {
 	 * @return Returns <code>true</code> if there is a breakpoint matching the
 	 *         qualified name, otherwise <code>false</code>.
 	 */
-	boolean hasBreak(String qualifiedFnName);
+	boolean hasBreakpointFor(String qualifiedFnName);
 	
-	boolean hasBreak(BreakpointLine bp);
+	boolean hasBreakpointFor(BreakpointLine bp);
 
 	void addBreakListener(IBreakListener listener);
 

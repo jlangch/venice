@@ -164,7 +164,7 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreak(final String qualifiedFnName) {
+	public boolean hasBreakpointFor(final String qualifiedFnName) {
 		final boolean inBreak = activeBreak != null;
 		
 		switch (stepMode) {
@@ -193,7 +193,7 @@ public class DebugAgent implements IDebugAgent {
 	}
 	
 	@Override
-	public boolean hasBreak(final BreakpointLine bp) {
+	public boolean hasBreakpointFor(final BreakpointLine bp) {
 		return isStopOnLineNr(bp);
 	}
 
@@ -380,19 +380,45 @@ public class DebugAgent implements IDebugAgent {
 				break;
 				
 			case StepIntoFunction:
-				stepMode = StepMode.StepIntoFunction;
-				stepBoundToFnName = br.getFn().getQualifiedName();
+				if (br.isBreakInLineNr()) {
+					stepMode = StepMode.StepIntoFunction;
+					stepBoundToFnName = br.getFn().getQualifiedName();
+					stepFrom = br;
+				}
+				else if (stepFrom != null && stepFrom.isBreakInLineNr()) {
+					stepMode = StepMode.StepIntoFunction;
+					stepBoundToFnName = stepFrom.getFn().getQualifiedName();
+				}
+				else {
+					stepMode = StepMode.StepIntoFunction;
+					stepBoundToFnName = br.getFn().getQualifiedName();
+				}
 				break;
 				
 			case StepToFunctionReturn:
-				stepMode = StepMode.StepToFunctionReturn;
-				stepBoundToFnName = activeBreak.getFn().getQualifiedName();
+				if (br.isBreakInLineNr()) {
+					stepMode = StepMode.StepToFunctionReturn;
+					stepBoundToFnName = br.getFn().getQualifiedName();
+					stepFrom = br;
+				}
+				else if (stepFrom != null && stepFrom.isBreakInLineNr()) {
+					stepMode = StepMode.StepToFunctionReturn;
+					stepBoundToFnName = stepFrom.getFn().getQualifiedName();
+				}
+				else {
+					stepMode = StepMode.StepToFunctionReturn;
+					stepBoundToFnName = br.getFn().getQualifiedName();
+				}
 				break;
 				
 			case StepToNextLine:
-				final BreakpointLine bp = (BreakpointLine)activeBreak.getBreakpoint();
-				stepMode = StepMode.StepToNextLine;
-				stepFrom = bp;
+				if (br.isBreakInLineNr() || (stepFrom != null && stepFrom.isBreakInLineNr())) {
+					stepMode = StepMode.StepToNextLine;
+					stepFrom = br;
+				}
+				else if (stepFrom.isBreakInLineNr()) {
+					stepMode = StepMode.StepToNextLine;
+				}
 				break;
 				
 			case Disabled:
@@ -428,7 +454,7 @@ public class DebugAgent implements IDebugAgent {
 							&& br.getBreakpointScope() != FunctionExit;
 				
 			case StepToNextLine:
-				return br.isBreakInLineNr();
+				return br.isBreakInLineNr() || (stepFrom != null && stepFrom.isBreakInLineNr());
 				
 			case Disabled:
 				return true;
@@ -459,10 +485,16 @@ public class DebugAgent implements IDebugAgent {
 			return false;
 		}
 		
-		return stepFrom == null
-				? !skipBreakpoints && breakpoints.containsKey(bp)
-				: bp.getFile().equals(stepFrom.getFile())
-						&& bp.getLineNr() > stepFrom.getLineNr();
+		if (stepFrom == null) {
+			return !skipBreakpoints && breakpoints.containsKey(bp);
+		}
+		else if (stepFrom.isBreakInLineNr()){
+			final BreakpointLine b = (BreakpointLine)stepFrom.getBreakpoint();
+			return bp.getFile().equals(b.getFile()) && bp.getLineNr() > b.getLineNr();
+		}
+		else {
+			return false;
+		}
 	}
 	
 	private boolean isStopOnFunction(
@@ -547,7 +579,7 @@ public class DebugAgent implements IDebugAgent {
 	private volatile Break activeBreak = null;
 	private volatile StepMode stepMode = StepMode.Disabled;
 	private volatile String stepBoundToFnName = null;
-	private volatile BreakpointLine stepFrom = null;
+	private volatile Break stepFrom = null;
 	private volatile boolean skipBreakpoints = false;
 
 	private volatile IBreakListener breakListener = null;

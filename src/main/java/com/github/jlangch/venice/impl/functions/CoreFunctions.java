@@ -657,8 +657,9 @@ public class CoreFunctions {
 						"(fn-body fn)", 
 						"(fn-body fn arity)")
 					.doc(
-						"Returns the body of a function. \n\n" +
-						"Returns `nil` if fn is not a function or if fn is a native function.")
+						"Returns the body (a list of forms) of a function.\n\n" +
+						"Returns `nil` if fn is not a function or if fn is a " +
+						"native function.")
 					.examples(
 						"(do                         \n" +
 						"  (defn calc [& x]          \n" +
@@ -709,7 +710,8 @@ public class CoreFunctions {
 						"(fn-pre-conditions fn)", 
 						"(fn-pre-conditions fn arity)")
 					.doc(
-						"Returns the pre-conditions of a function. \n\n" +
+						"Returns the pre-conditions (a vector of forms) of a " +
+						"function.\n\n" +
 						"Returns `nil` if fn is not a function.")
 					.examples(
 						"(do                                   \n" +
