@@ -35,6 +35,17 @@ public class Break {
 			final IBreakpoint breakpoint,
 			final VncFunction fn,
 			final VncList args,
+			final Env env,
+			final CallStack callStack,
+			final BreakpointScope scope
+	) {
+		this(breakpoint, fn, args, null, null, env, callStack, scope);
+	}
+
+	public Break(
+			final IBreakpoint breakpoint,
+			final VncFunction fn,
+			final VncList args,
 			final VncVal retVal,
 			final Exception ex,
 			final Env env,
@@ -109,11 +120,11 @@ public class Break {
 					breakpoint.toString()));
 		
 		sb.append(String.format(
-					"Scope     : %s\n", 
+					"Scope:      %s\n", 
 					scope));
 		
 		sb.append(String.format(
-					"Function  : %s defined in %s at line %d", 
+					"Function:   %s defined in %s at line %d", 
 					fn.getQualifiedName(),
 					MetaUtil.getFile(fn.getMeta()),
 					MetaUtil.getLine(fn.getMeta())));

@@ -43,7 +43,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.util.StringUtil;
+import static com.github.jlangch.venice.impl.util.StringUtil.*;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -244,8 +244,6 @@ public class DebugAgent implements IDebugAgent {
 											  .map(s -> env.findLocalVar(s))
 											  .map(v -> v == null ? Nil : v.getVal())
 											  .collect(Collectors.toList())),
-									null,
-									null,
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
@@ -268,8 +266,6 @@ public class DebugAgent implements IDebugAgent {
 										vars.stream()
 											.map(v -> v.getVal())
 											.collect(Collectors.toList())),
-									null,
-									null,
 									env, 
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
@@ -289,8 +285,6 @@ public class DebugAgent implements IDebugAgent {
 									new BreakpointFn(fnName),
 									fn,
 									args,
-									null,
-									null,
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
@@ -455,7 +449,8 @@ public class DebugAgent implements IDebugAgent {
 							&& br.getBreakpointScope() != FunctionExit;
 				
 			case StepToNextLine:
-				return br.isBreakInLineNr() || (stepFrom != null && stepFrom.isBreakInLineNr());
+				return br.isBreakInLineNr() 
+							|| (stepFrom != null && stepFrom.isBreakInLineNr());
 				
 			case Disabled:
 				return true;
@@ -470,11 +465,13 @@ public class DebugAgent implements IDebugAgent {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
-					"Active break         : %s\n", 
-					activeBreak == null ? "no" : "Break\n" + StringUtil.indent(activeBreak.toString(), 25)));
+					"Active break:          %s\n", 
+					activeBreak == null
+						?  "no" 
+						: "Break\n" + indent(activeBreak.toString(), 25)));
 		
 		sb.append(String.format(
-					"Step mode            : %s\n", 
+					"Step mode:             %s\n", 
 					stepMode));
 		
 		sb.append(String.format(
@@ -482,11 +479,11 @@ public class DebugAgent implements IDebugAgent {
 					stepBoundToFnName == null ? "-" : stepBoundToFnName));
 		
 		sb.append(String.format(
-					"Step from break      : %s\n", 
+					"Step from break:       %s\n", 
 					stepFrom == null ? "-" : stepFrom.toString()));
 		
 		sb.append(String.format(
-					"Skip breakpoints     : %s", 
+					"Skip breakpoints:      %s", 
 					skipBreakpoints ? "yes" : "no"));
 		
 		return sb.toString();

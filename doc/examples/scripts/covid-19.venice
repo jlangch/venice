@@ -28,28 +28,118 @@
 
   (load-module :xchart)
 
-  (def country-config [
-      { :name "Switzerland"  :iso "CHE"  :style { :color :x-green      }}
-      { :name "Romania"      :iso "ROU"  :style { :color :x-blue       }}
-      { :name "Austria"      :iso "AUT"  :style { :color :x-purple     }}
-      { :name "Hungary"      :iso "HUN"  :style { :color :x-orange     }}
-      { :name "Germany"      :iso "DEU"  :style { :color :x-red        }}
-      { :name "Italy"        :iso "ITA"  :style { :color :x-pink       }}
-      { :name "France"       :iso "FRA"  :style { :color :x-light-blue }}
-      { :name "Sweden"       :iso "SWE"  :style { :color :x-dark-gray  }}
-      { :name "Greece"       :iso "GRC"  :style { :color :x-dark-pink  }}
-      { :name "Spain"        :iso "ESP"  :style { :color :x-dark-green }}
-      { :name "UK"           :iso "GBR"  :style { :color :x-yellow     }}
-      { :name "Netherlands"  :iso "NLD"  :style { :color :x-magenta    }}
-      { :name "Iceland"      :iso "ISL"  :style { :color :x-black      }}
-      { :name "Israel"       :iso "ISR"  :style { :color :x-brown      }}
-      ;;{ :name "Gibraltar"    :iso "GIB"  :style { :color :x-brown      }}
-      ;;{ :name "India"        :iso "IND"  :style { :color :x-brown      }}
-      ;;{ :name "Croatia"      :iso "HRV"  :style { :color :x-brown      }}
-      ;;{ :name "Portugal"     :iso "PRT"  :style { :color :x-brown      }}
-      ;;{ :name "Slovenia"     :iso "SVN"  :style { :color :x-brown      }}
-      ;;{ :name "US"           :iso "USA"  :style { :color :x-black      }}
-      ])
+  (def country-set-1 [
+    "Switzerland"
+    "Romania"
+    "Austria"
+    "Hungary"
+    "Germany"
+    "Italy"
+    "France"
+    "Sweden"
+    "Greece"
+    "Spain"
+    "UK"
+    "Netherlands"
+    "Iceland"
+    "Israel" ])
+
+  (def country-set-2 [
+    "Gibraltar"
+    "Croatia"
+    "Portugal"
+    "Belgium"
+    "Luxembourg"
+    "Norway"
+    "Finland"
+    "Denmark"
+    "Ireland"
+    "Slovenia"
+    "Poland"
+    "US"
+    "Czech-Republic"
+    "Turkey" ])
+
+  (def country-set-3 [
+    "India"
+    "Australia"
+    "China"
+    "Russia"
+    "Lithuania"
+    "Japan"
+    "Thailand"
+    "Bulgaria"
+    "Singapore"
+    "New-Zealand"
+    "Brazil"
+    "Argentina"
+    "Colombia"
+    "Canada" ])
+
+  ;; the defined styles for the chart series
+  (def styles [
+    { :color :x-green      }
+    { :color :x-blue       }
+    { :color :x-purple     }
+    { :color :x-orange     }
+    { :color :x-red        }
+    { :color :x-pink       }
+    { :color :x-light-blue }
+    { :color :x-dark-gray  }
+    { :color :x-dark-pink  }
+    { :color :x-dark-green }
+    { :color :x-yellow     }
+    { :color :x-magenta    }
+    { :color :x-black      }
+    { :color :x-brown      } ])
+
+  ;; country - iso code mappings
+  (def country-iso [
+    { :name "Argentina"      :iso "ARG" }
+    { :name "Australia"      :iso "AUS" }
+    { :name "Austria"        :iso "AUT" }
+    { :name "Belgium"        :iso "BEL" }
+    { :name "Brazil"         :iso "BRA" }
+    { :name "Bulgaria"       :iso "BGR" }
+    { :name "Canada"         :iso "CAN" }
+    { :name "China"          :iso "CHN" }
+    { :name "Colombia"       :iso "COL" }
+    { :name "Croatia"        :iso "HRV" }
+    { :name "Czech-Republic" :iso "CZE" }
+    { :name "Denmark"        :iso "DNK" }
+    { :name "Estonia"        :iso "EST" }
+    { :name "Finland"        :iso "FIN" }
+    { :name "France"         :iso "FRA" }
+    { :name "Germany"        :iso "DEU" }
+    { :name "Gibraltar"      :iso "GIB" }
+    { :name "Greece"         :iso "GRC" }
+    { :name "Hungary"        :iso "HUN" }
+    { :name "Iceland"        :iso "ISL" }
+    { :name "India"          :iso "IND" }
+    { :name "Ireland"        :iso "IRL" }
+    { :name "Israel"         :iso "ISR" }
+    { :name "Italy"          :iso "ITA" }
+    { :name "Japan"          :iso "JPN" }
+    { :name "Latvia"         :iso "LVA" }
+    { :name "Lithuania"      :iso "LTU" }
+    { :name "Luxembourg"     :iso "LUX" }
+    { :name "Netherlands"    :iso "NLD" }
+    { :name "New-Zealand"    :iso "NZL" }
+    { :name "Norway"         :iso "NOR" }
+    { :name "Poland"         :iso "POL" }
+    { :name "Portugal"       :iso "PRT" }
+    { :name "Romania"        :iso "ROU" }
+    { :name "Russia"         :iso "RUS" }
+    { :name "Singapore"      :iso "SGP" }
+    { :name "Slovenia"       :iso "SVN" }
+    { :name "Spain"          :iso "ESP" }
+    { :name "Sweden"         :iso "SWE" }
+    { :name "Switzerland"    :iso "CHE" }
+    { :name "Thailand"       :iso "THA" }
+    { :name "Turkey"         :iso "TUR" }
+    { :name "UK"             :iso "GBR" }
+    { :name "US"             :iso "USA" } ])
+
 
   ;; the interval length in days to calculate the moving average
   (def sample-days 7)
@@ -108,15 +198,15 @@
           (assoc :population p)
           (assoc :population-normalized (/ p 100_000.0)))))
 
-  (defn add-country-vaccination-rate! [country-config]
-    (let [vac (load-vaccinations)]
-      (map #(assoc % :vac (get vac (:iso %))) country-config)))
+  (defn add-country-vaccination-rate! [country-cfg]
+    (let [vac (load-vaccinations country-cfg)]
+      (map #(assoc % :vac (get vac (:iso %))) country-cfg)))
 
-  (defn load-vaccinations []
+  (defn load-vaccinations [country-cfg]
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18 "AUT" 58.97 ... }
     (println "Loading country vaccination data...")
-    (let [countries-iso (apply set (map :iso country-config))
+    (let [countries-iso (apply set (map :iso country-cfg))
           format        #(str/format "%.1f%%" %)]
       (->> (io/download vaccinations-url :user-agent "Mozilla")
            (json/read-str)
@@ -221,15 +311,24 @@
          :legend       { :border-color :white }
          :render-style :line } ))
 
-  ;;; Main ---------------------------------------------------------------------
+  (defn build-country-config [countries]
+    ;; build a list of maps of {:name "Switzerland" :iso "CHE" :style {:color :x-green} }
+    (let [country-map (reduce #(assoc %1 (:name %2) %2) {} country-iso)
+          country-part (map #(get country-map %) countries)
+          styles-part (map #(hash-map :style %) styles)]
+      (map merge country-part styles-part)))
 
-  (defn main [filename]
+  (defn process [filename countries]
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
-    (-<> country-config
+    (-<> (build-country-config  countries)
          (add-country-vaccination-rate! <>)
          (map #(aggregate-country-data % start-date end-date) <>)
          (render-chart <> chart-width chart-height sample-days)
          (save-chart! <> filename chart-dpi)
          (view-chart! <>)))
 
-  (main "covid-19.png"))
+
+  ;;; Main ---------------------------------------------------------------------
+
+  (process "covid-19_1.png" country-set-1)
+  (process "covid-19_2.png" country-set-2))
