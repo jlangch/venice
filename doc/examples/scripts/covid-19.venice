@@ -21,7 +21,12 @@
 
 ;;;; Creates a Covid-19 chart representing Switzerland compared to some other
 ;;;; countries
-
+;;;;
+;;;; Composes the charts from three data sets that are available on the
+;;;; internet:
+;;;;   1. Covid-19 country cases         https://www.worldometers.info/coronavirus/
+;;;;   2. Covid-19 country vaccinations  https://github.com/owid/covid-19-data/
+;;;;   3. Country population             https://restcountries.eu/
 
 (do
   (ns covid-19)
@@ -77,7 +82,7 @@
     "Canada" ])
 
   ;; the defined styles for the chart series
-  (def styles [
+  (def chart-series-styles [
     { :color :x-green      }
     { :color :x-blue       }
     { :color :x-purple     }
@@ -189,22 +194,9 @@
            (get <> "population")
            (long <>))))
 
-  (defn add-country-html-data! [country-data]
-    (assoc country-data :html (load-country-html-data! (:name country-data))))
-
-  (defn add-country-population! [country-data]
-    (let [p (load-country-population! (:iso country-data))]
-      (-> country-data
-          (assoc :population p)
-          (assoc :population-normalized (/ p 100_000.0)))))
-
-  (defn add-country-vaccination-rate! [country-cfg]
-    (let [vac (load-vaccinations country-cfg)]
-      (map #(assoc % :vac (get vac (:iso %))) country-cfg)))
-
-  (defn load-vaccinations [country-cfg]
+  (defn load-vaccinations! [country-cfg]
     ;; returns a map with country iso code and vaccinated (all doses) rate
-    ;; { "CHE" 54.18 "AUT" 58.97 ... }
+    ;; { "CHE" 54.18, "AUT" 58.97, ... }
     (println "Loading country vaccination data...")
     (let [countries-iso (apply set (map :iso country-cfg))
           format        #(str/format "%.1f%%" %)]
@@ -217,6 +209,19 @@
                                      0.00))))
            (flatten)
            (apply hash-map))))
+
+  (defn add-country-html-data! [country-data]
+    (assoc country-data :html (load-country-html-data! (:name country-data))))
+
+  (defn add-country-population! [country-data]
+    (let [p (load-country-population! (:iso country-data))]
+      (-> country-data
+          (assoc :population p)
+          (assoc :population-normalized (/ p 100_000.0)))))
+
+  (defn add-country-vaccination-rate! [country-cfg]
+    (let [vac (load-vaccinations! country-cfg)]
+      (map #(assoc % :vac (get vac (:iso %))) country-cfg)))
 
   ;;; Extracting, parsing, and aggregating data --------------------------------
 
@@ -313,9 +318,9 @@
 
   (defn build-country-config [countries]
     ;; build a list of maps of {:name "Switzerland" :iso "CHE" :style {:color :x-green} }
-    (let [country-map (reduce #(assoc %1 (:name %2) %2) {} country-iso)
+    (let [country-map  (reduce #(assoc %1 (:name %2) %2) {} country-iso)
           country-part (map #(get country-map %) countries)
-          styles-part (map #(hash-map :style %) styles)]
+          styles-part  (map #(hash-map :style %) chart-series-styles)]
       (map merge country-part styles-part)))
 
   (defn process [filename countries]
