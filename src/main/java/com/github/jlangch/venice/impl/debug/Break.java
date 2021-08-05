@@ -123,11 +123,18 @@ public class Break {
 					"Scope:      %s\n", 
 					scope));
 		
-		sb.append(String.format(
-					"Function:   %s defined in %s at line %d", 
-					fn.getQualifiedName(),
-					MetaUtil.getFile(fn.getMeta()),
-					MetaUtil.getLine(fn.getMeta())));
+		if (fn.isNative()) {
+			sb.append(String.format(
+					"Function:   %s (native, no source line info)", 
+					fn.getQualifiedName()));
+		}
+		else {
+			sb.append(String.format(
+						"Function:   %s defined in %s at line %d", 
+						fn.getQualifiedName(),
+						MetaUtil.getFile(fn.getMeta()),
+						MetaUtil.getLine(fn.getMeta())));
+		}
 		
 		return sb.toString();
 	}

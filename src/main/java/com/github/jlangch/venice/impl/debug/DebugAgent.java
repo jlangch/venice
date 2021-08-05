@@ -214,12 +214,9 @@ public class DebugAgent implements IDebugAgent {
 									bp,
 									fn,
 									args,
-									null,
-									null,
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionCall);
-			stepFrom = br;
 			
 			notifyOnBreak(br);
 			waitOnBreak(br);
@@ -363,66 +360,79 @@ public class DebugAgent implements IDebugAgent {
 		
 		final Break br = activeBreak;
 
-		clearBreak();
 
 		switch(mode) {
 			case StepToNextFunction:
 				stepMode = StepMode.StepToNextFunction;
+				stepBoundToFnName = null;
+				stepFrom = null;
 				break;
 	
 			case StepToNextNonSystemFunction:
 				stepMode = StepMode.StepToNextNonSystemFunction;
+				stepBoundToFnName = null;
+				stepFrom = null;
 				break;
 				
 			case StepIntoFunction:
-				if (br.isBreakInLineNr()) {
+				if (br.getBreakpointScope() == FunctionCall) {
 					stepMode = StepMode.StepIntoFunction;
 					stepBoundToFnName = br.getFn().getQualifiedName();
-					stepFrom = br;
-				}
-				else if (stepFrom != null && stepFrom.isBreakInLineNr()) {
-					stepMode = StepMode.StepIntoFunction;
-					stepBoundToFnName = stepFrom.getFn().getQualifiedName();
+					// keep 'stepFrom'
 				}
 				else {
-					stepMode = StepMode.StepIntoFunction;
-					stepBoundToFnName = br.getFn().getQualifiedName();
+					stepMode = StepMode.Disabled;
+					stepBoundToFnName = null;
+					stepFrom = null;
 				}
 				break;
 				
 			case StepToFunctionReturn:
-				if (br.isBreakInLineNr()) {
+				if (br.getBreakpointScope() == FunctionCall) {
 					stepMode = StepMode.StepToFunctionReturn;
 					stepBoundToFnName = br.getFn().getQualifiedName();
-					stepFrom = br;
+					// keep 'stepFrom'
 				}
-				else if (stepFrom != null && stepFrom.isBreakInLineNr()) {
+				else if (br.getBreakpointScope() == FunctionEntry) {
 					stepMode = StepMode.StepToFunctionReturn;
-					stepBoundToFnName = stepFrom.getFn().getQualifiedName();
+					stepBoundToFnName = br.getFn().getQualifiedName();
+					// keep 'stepFrom'
 				}
 				else {
-					stepMode = StepMode.StepToFunctionReturn;
-					stepBoundToFnName = br.getFn().getQualifiedName();
+					stepMode = StepMode.Disabled;
+					stepBoundToFnName = null;
+					stepFrom = null;
 				}
 				break;
 				
 			case StepToNextLine:
-				if (br.isBreakInLineNr() || (stepFrom != null && stepFrom.isBreakInLineNr())) {
+				if (br.isBreakInLineNr()) {
 					stepMode = StepMode.StepToNextLine;
+					stepBoundToFnName = null;
 					stepFrom = br;
 				}
-				else if (stepFrom.isBreakInLineNr()) {
+				else if (stepFrom != null && stepFrom.isBreakInLineNr()) {
 					stepMode = StepMode.StepToNextLine;
+					stepBoundToFnName = null;
+					stepFrom = null;
+				}
+				else {
+					stepMode = StepMode.Disabled;
+					stepBoundToFnName = null;
+					stepFrom = null;
 				}
 				break;
 				
 			case Disabled:
-				break;
-				
 			default:
+				stepMode = StepMode.Disabled;
+				stepBoundToFnName = null;
+				stepFrom = null;
 				break;
 		}
-		
+
+		activeBreak = null;
+
 		return true;
 	}
 
@@ -442,11 +452,12 @@ public class DebugAgent implements IDebugAgent {
 				return true;
 				
 			case StepIntoFunction:
-				return br.isBreakInLineNr();
+				return br.getBreakpointScope() == FunctionCall;
 				
 			case StepToFunctionReturn:
 				return !br.isBreakInSpecialForm() 
-							&& br.getBreakpointScope() != FunctionExit;
+							&& (br.getBreakpointScope() == FunctionCall
+									|| br.getBreakpointScope() == FunctionEntry);
 				
 			case StepToNextLine:
 				return br.isBreakInLineNr() 
@@ -480,7 +491,9 @@ public class DebugAgent implements IDebugAgent {
 		
 		sb.append(String.format(
 					"Step from break:       %s\n", 
-					stepFrom == null ? "-" : stepFrom.toString()));
+					stepFrom == null 
+						? "-" 
+						: "Break\n" + indent(stepFrom.toString(), 25)));
 		
 		sb.append(String.format(
 					"Skip breakpoints:      %s", 
@@ -583,7 +596,7 @@ public class DebugAgent implements IDebugAgent {
 		stepBoundToFnName = null;
 		stepFrom = null;
 	}
-	
+
 	private void clearAll() {
 		activeBreak = null;
 		stepMode = StepMode.Disabled;
