@@ -656,7 +656,16 @@ public class CoreFunctions {
 					.arglists(
 						"(fn-body fn)", 
 						"(fn-body fn arity)")
-					.doc("Returns the body of a function")
+					.doc(
+						"Returns the body of a function. \n\n" +
+						"Note: Returns `nil`for native functions.")
+					.examples(
+						"(do                         \n" +
+						"  (defn calc [& x]          \n" +
+						"    (->> x                  \n" +
+						"         (filter even?)     \n" +
+						"         (map #(* % 10))))  \n" +
+						"  (fn-body (var-get calc))) ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

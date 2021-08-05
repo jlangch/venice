@@ -90,6 +90,9 @@ public class RestrictedBlacklistedFunctions {
 					"thread-local?",
 					"thread-local-map",
 					"thread-local-clear",
+					
+					// miscellaneous
+					"fn-body",
 
 					// I/O
 					"io/copy-file",
