@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
+import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -97,6 +98,27 @@ public class Break {
 
 	public boolean isBreakInNativeFn() {
 		return fn.isNative() && !(fn instanceof SpecialFormVirtualFunction);
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append(String.format(
+					"Breakpoint: %s\n",
+					breakpoint.toString()));
+		
+		sb.append(String.format(
+					"Scope     : %s\n", 
+					scope));
+		
+		sb.append(String.format(
+					"Function  : %s defined in %s at line %d", 
+					fn.getQualifiedName(),
+					MetaUtil.getFile(fn.getMeta()),
+					MetaUtil.getLine(fn.getMeta())));
+		
+		return sb.toString();
 	}
 	
 

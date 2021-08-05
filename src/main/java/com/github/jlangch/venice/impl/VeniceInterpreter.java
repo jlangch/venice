@@ -712,11 +712,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
 						
 						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+						
 						if (debugAgent != null) {
 							final VncVal meta = a0.getMeta();
 							final BreakpointLine bp = BreakpointLine.fromMeta(meta);
 							if (bp != null && debugAgent.hasBreakpointFor(bp)) {
-								debugAgent.onBreakLineNr(bp, fn, args, meta, env);
+								debugAgent.onBreakLineNr(bp, fn, args, env);
 							}
 						}
 

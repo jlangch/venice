@@ -75,7 +75,7 @@ public class BreakpointLine implements IBreakpoint {
 	
 	@Override
 	public String toString() {
-		return format();
+		return String.format("Line breakpoint: %s", format());
 	}
 
 	@Override

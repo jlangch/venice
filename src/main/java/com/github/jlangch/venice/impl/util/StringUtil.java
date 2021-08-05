@@ -249,6 +249,20 @@ public class StringUtil {
 		return -1;
 	}
 	
+	public static String indent(final String text, final int indent) {
+		if (text == null || text.isEmpty()) {
+			return text;
+		}
+
+		final String indentStr = repeat(' ', Math.min(200, Math.max(0, indent)));
+		
+		return StringUtil
+					.splitIntoLines(text)
+					.stream()
+					.map(s -> indentStr + s)
+					.collect(Collectors.joining("\n"));
+	}
+	
 	public static String stripIndent(final String text) {
 		if (text == null || text.isEmpty()) {
 			return text;
