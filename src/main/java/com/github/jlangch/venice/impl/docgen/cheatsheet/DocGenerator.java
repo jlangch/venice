@@ -1069,6 +1069,7 @@ public class DocGenerator {
 		final DocSection def = new DocSection("Definiton", "functions.def");
 		all.addSection(def);
 		def.addItem(getDocItem("fn-body"));
+		def.addItem(getDocItem("fn-pre-conditions"));
 
 		final DocSection syntax = new DocSection("Syntax", "functions.syntax");
 		all.addSection(syntax);

@@ -658,7 +658,7 @@ public class CoreFunctions {
 						"(fn-body fn arity)")
 					.doc(
 						"Returns the body of a function. \n\n" +
-						"Note: Returns `nil`for native functions.")
+						"Returns `nil` if fn is not a function or if fn is a native function.")
 					.examples(
 						"(do                         \n" +
 						"  (defn calc [& x]          \n" +
@@ -705,14 +705,76 @@ public class CoreFunctions {
 				}
 				else {
 					return fn.getBody();
-				}
-				
+				}				
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction fn_pre_conditions =
+		new VncFunction(
+				"fn-pre-conditions",
+				VncFunction
+					.meta()
+					.arglists(
+						"(fn-pre-conditions fn)", 
+						"(fn-pre-conditions fn arity)")
+					.doc(
+						"Returns the pre-conditions of a function. \n\n" +
+						"Returns `nil` if fn is not a function.")
+					.examples(
+						"(do                                   \n" +
+						"  (defn sum [x y]                     \n" +
+						"     { :pre [(> x 0) (> y 0)] }       \n" +
+						"     (+ x y))                         \n" +
+						"  (fn-pre-conditions (var-get sum)))  ")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1, 2);
 
+				if (!Types.isVncFunction(args.first())) {
+					return Nil;
+				}
+				
+				final VncFunction fn = (VncFunction)args.first();					
+				if (fn instanceof VncMultiArityFunction) {
+					if (args.size() == 1) {
+						return ((VncMultiArityFunction)fn)
+									.getFunctions()
+									.stream()
+									.map(f -> ((VncFunction)f).getPreConditions())
+									.findFirst()
+									.orElse(VncVector.empty());
+					}
+					else if (args.size() == 2) {
+						final int arity = Coerce.toVncLong(args.second()).getIntValue();
+						return ((VncMultiArityFunction)fn)
+									.getFunctions()
+									.stream()
+									.map(f -> (VncFunction)f)
+									.filter(f -> f.getFixedArgsCount() == arity)
+									.map(f -> f.getPreConditions())
+									.findFirst()
+									.orElse(VncVector.empty());
+					}
+					else {
+						return Nil;
+					}
+				}
+				else if (fn instanceof VncMultiFunction) {
+					return Nil;
+				}
+				else {
+					return fn.getPreConditions();
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// String functions
 	///////////////////////////////////////////////////////////////////////////
@@ -7625,6 +7687,7 @@ public class CoreFunctions {
 				.add(fn_Q)
 				.add(macro_Q)
 				.add(fn_body)
+				.add(fn_pre_conditions)
 
 				.add(just)
 				.add(just_Q)
