@@ -677,31 +677,20 @@ public class CoreFunctions {
 				
 				final VncFunction fn = (VncFunction)args.first();					
 				if (fn instanceof VncMultiArityFunction) {
+					final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
 					if (args.size() == 1) {
-						return ((VncMultiArityFunction)fn)
-									.getFunctions()
-									.stream()
-									.map(f -> ((VncFunction)f).getBody())
-									.findFirst()
-									.orElse(Nil);
+						return ((VncFunction)mafn.getFunctions().first()).getBody();
 					}
 					else if (args.size() == 2) {
 						final int arity = Coerce.toVncLong(args.second()).getIntValue();
-						return ((VncMultiArityFunction)fn)
-									.getFunctions()
-									.stream()
-									.map(f -> (VncFunction)f)
-									.filter(f -> f.getFixedArgsCount() == arity)
-									.map(f -> f.getBody())
-									.findFirst()
-									.orElse(Nil);
+						return mafn.getFunctionForArity(arity).getBody();
 					}
 					else {
 						return Nil;
 					}
 				}
 				else if (fn instanceof VncMultiFunction) {
-					return Nil;
+					return Nil;  // not supported
 				}
 				else {
 					return fn.getBody();
@@ -736,27 +725,16 @@ public class CoreFunctions {
 				if (!Types.isVncFunction(args.first())) {
 					return Nil;
 				}
-				
+
 				final VncFunction fn = (VncFunction)args.first();					
 				if (fn instanceof VncMultiArityFunction) {
+					final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
 					if (args.size() == 1) {
-						return ((VncMultiArityFunction)fn)
-									.getFunctions()
-									.stream()
-									.map(f -> ((VncFunction)f).getPreConditions())
-									.findFirst()
-									.orElse(VncVector.empty());
+						return ((VncFunction)mafn.getFunctions().first()).getPreConditions();
 					}
 					else if (args.size() == 2) {
 						final int arity = Coerce.toVncLong(args.second()).getIntValue();
-						return ((VncMultiArityFunction)fn)
-									.getFunctions()
-									.stream()
-									.map(f -> (VncFunction)f)
-									.filter(f -> f.getFixedArgsCount() == arity)
-									.map(f -> f.getPreConditions())
-									.findFirst()
-									.orElse(VncVector.empty());
+						return mafn.getFunctionForArity(arity).getPreConditions();
 					}
 					else {
 						return Nil;

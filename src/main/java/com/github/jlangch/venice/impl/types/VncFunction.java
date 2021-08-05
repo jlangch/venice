@@ -119,6 +119,10 @@ public abstract class VncFunction
 	public abstract VncVal apply(final VncList args);
 
 	public VncFunction getFunctionForArgs(final VncList args) {
+		return getFunctionForArity(args.size());
+	}
+
+	public VncFunction getFunctionForArity(final int arity) {
 		return this;
 	}
 
