@@ -312,6 +312,9 @@ public class REPL {
 								break;
 						}
 					}
+					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
+						handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
+					}
 					else if (DebugAgent.current().hasBreak()) {
 						// run the expression in the context of the break
 						runDebuggerExprAsync(line, agent.getBreak().getEnv());
