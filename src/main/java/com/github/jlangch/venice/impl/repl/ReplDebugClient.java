@@ -103,6 +103,11 @@ public class ReplDebugClient {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
 		switch(trimToEmpty(first(params))) {
+			case "info":
+			case "?":
+				printer.println("stdout", agent.toString());
+				break;
+
 			case "breakpoint":
 			case "b":
 				handleBreakpointCmd(drop(params, 1));

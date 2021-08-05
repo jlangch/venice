@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -206,7 +207,6 @@ public class DebugAgent implements IDebugAgent {
 			final BreakpointLine bp,
 			final VncFunction fn,
 			final VncList args,
-			final VncVal meta,
 			final Env env
 	) {
 		if (isStopOnLineNr(bp)) {
@@ -219,7 +219,8 @@ public class DebugAgent implements IDebugAgent {
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionCall);
-
+			stepFrom = br;
+			
 			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
@@ -464,6 +465,32 @@ public class DebugAgent implements IDebugAgent {
 		}		
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append(String.format(
+					"Active break         : %s\n", 
+					activeBreak == null ? "no" : "Break\n" + StringUtil.indent(activeBreak.toString(), 25)));
+		
+		sb.append(String.format(
+					"Step mode            : %s\n", 
+					stepMode));
+		
+		sb.append(String.format(
+					"Step bound to Fn name: %s\n", 
+					stepBoundToFnName == null ? "-" : stepBoundToFnName));
+		
+		sb.append(String.format(
+					"Step from break      : %s\n", 
+					stepFrom == null ? "-" : stepFrom.toString()));
+		
+		sb.append(String.format(
+					"Skip breakpoints     : %s", 
+					skipBreakpoints ? "yes" : "no"));
+		
+		return sb.toString();
+	}
 
 	private void notifyOnBreak(final Break br) {
 		activeBreak = br;
@@ -488,9 +515,10 @@ public class DebugAgent implements IDebugAgent {
 		if (stepFrom == null) {
 			return !skipBreakpoints && breakpoints.containsKey(bp);
 		}
-		else if (stepFrom.isBreakInLineNr()){
+		else if (stepFrom.isBreakInLineNr()) {
+			// handles step line in same file on another line
 			final BreakpointLine b = (BreakpointLine)stepFrom.getBreakpoint();
-			return bp.getFile().equals(b.getFile()) && bp.getLineNr() > b.getLineNr();
+			return bp.getFile().equals(b.getFile()) && bp.getLineNr() != b.getLineNr();
 		}
 		else {
 			return false;

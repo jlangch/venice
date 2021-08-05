@@ -59,7 +59,7 @@
   (def end-date nil)
 
   ;; chart rendering
-  (def chart-width 600)
+  (def chart-width 700)
   (def chart-height 500)
   (def chart-dpi 240)
 
@@ -109,21 +109,20 @@
           (assoc :population-normalized (/ p 100_000.0)))))
 
   (defn add-country-vaccination-rate! [country-config]
-    (let [vac     (load-vaccinations)
-          iso-vac (fn [iso] (str (get vac iso 0) "%"))]
-      (map #(assoc % :vac (iso-vac (:iso %))) country-config)))
+    (let [vac (load-vaccinations)]
+      (map #(assoc % :vac (get vac (:iso %))) country-config)))
 
   (defn load-vaccinations []
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18 "AUT" 58.97 ... }
     (println "Loading country vaccination data...")
     (let [countries-iso (apply set (map :iso country-config))
-          to-long       #(long (+ % 0.5))]
+          format        #(str/format "%.1f%%" %)]
       (->> (io/download vaccinations-url :user-agent "Mozilla")
            (json/read-str)
            (filter #(countries-iso (get % "iso_code")))
            (map #(list (get % "iso_code")
-                       (to-long (get (last (get % "data"))
+                       (format (get (last (get % "data"))
                                      "people_fully_vaccinated_per_hundred"
                                      0.00))))
            (flatten)

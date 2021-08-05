@@ -84,7 +84,7 @@ public class BreakpointFn implements IBreakpoint {
 	
 	@Override
 	public String toString() {
-		return format();
+		return String.format("Function breakpoint: %s", format());
 	}
 	
 	@Override
