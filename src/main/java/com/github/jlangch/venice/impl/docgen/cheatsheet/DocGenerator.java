@@ -1066,6 +1066,10 @@ public class DocGenerator {
 		doc.addItem(getDocItem("doc", false));
 		doc.addItem(getDocItem("modules"));
 
+		final DocSection def = new DocSection("Definiton", "functions.def");
+		all.addSection(def);
+		def.addItem(getDocItem("fn-body"));
+
 		final DocSection syntax = new DocSection("Syntax", "functions.syntax");
 		all.addSection(syntax);
 		syntax.addItem(getDocItem("highlight"));

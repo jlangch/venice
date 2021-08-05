@@ -43,6 +43,7 @@
       { :name "Netherlands"  :iso "NLD"  :style { :color :x-magenta    }}
       { :name "Iceland"      :iso "ISL"  :style { :color :x-black      }}
       { :name "Israel"       :iso "ISR"  :style { :color :x-brown      }}
+      ;;{ :name "Gibraltar"    :iso "GIB"  :style { :color :x-brown      }}
       ;;{ :name "India"        :iso "IND"  :style { :color :x-brown      }}
       ;;{ :name "Croatia"      :iso "HRV"  :style { :color :x-brown      }}
       ;;{ :name "Portugal"     :iso "PRT"  :style { :color :x-brown      }}
@@ -69,6 +70,7 @@
   (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
 
   ;; Covid-19 vaccination data
+  ;; https://www.google.com/search?q=schweiz+covid
   ;; https://www.google.com/search?q=schweiz+covid+impfung
   ;; https://ourworldindata.org/covid-vaccinations
   ;; https://github.com/owid/covid-19-data/tree/master/public/data/vaccinations
@@ -106,9 +108,15 @@
           (assoc :population p)
           (assoc :population-normalized (/ p 100_000.0)))))
 
+  (defn add-country-vaccination-rate! [country-config]
+    (let [vac     (load-vaccinations)
+          iso-vac (fn [iso] (str (get vac iso 0) "%"))]
+      (map #(assoc % :vac (iso-vac (:iso %))) country-config)))
+
   (defn load-vaccinations []
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18 "AUT" 58.97 ... }
+    (println "Loading country vaccination data...")
     (let [countries-iso (apply set (map :iso country-config))
           to-long       #(long (+ % 0.5))]
       (->> (io/download vaccinations-url :user-agent "Mozilla")
@@ -119,8 +127,7 @@
                                      "people_fully_vaccinated_per_hundred"
                                      0.00))))
            (flatten)
-           (apply hash-map)
-           )))
+           (apply hash-map))))
 
   ;;; Extracting, parsing, and aggregating data --------------------------------
 
@@ -219,13 +226,11 @@
 
   (defn main [filename]
     ;; scrape up the Covid-19 data from HTML, create a chart, and view the chart
-    (let [vac (load-vaccinations)
-          iso-vac (fn [iso] (str (get vac iso 0) "%"))]
-      (-<> country-config
-           (map #(assoc % :vac (iso-vac (:iso %))) <>)
-           (map #(aggregate-country-data % start-date end-date) <>)
-           (render-chart <> chart-width chart-height sample-days)
-           (save-chart! <> filename chart-dpi)
-           (view-chart! <>))))
+    (-<> country-config
+         (add-country-vaccination-rate! <>)
+         (map #(aggregate-country-data % start-date end-date) <>)
+         (render-chart <> chart-width chart-height sample-days)
+         (save-chart! <> filename chart-dpi)
+         (view-chart! <>)))
 
   (main "covid-19.png"))
