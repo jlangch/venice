@@ -93,8 +93,11 @@ public class VncMultiArityFunction extends VncFunction {
 
 	@Override
 	public VncFunction getFunctionForArgs(final VncList args) {
-		final int arity = args.size();
+		return getFunctionForArity(args.size());
+	}
 
+	@Override
+	public VncFunction getFunctionForArity(final int arity) {
 		VncFunction fn = arityFunctionCache.get(arity);
 		if (fn != null) {
 			return fn;

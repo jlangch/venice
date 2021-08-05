@@ -123,6 +123,13 @@ public class VncMultiFunction extends VncFunction {
 					getQualifiedName(),
 					Printer.pr_str(dispatchVal, true)));
 	}
+	
+	@Override
+	public VncFunction getFunctionForArity(final int arity) {
+		throw new VncException(String.format(
+				"No supported for multi-function methods (%s)", 
+				getQualifiedName()));
+	}
 
 	@Override public TypeRank typeRank() {
 		return TypeRank.MULTI_FUNCTION;
