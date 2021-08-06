@@ -15,9 +15,9 @@ help () {
   echo "          -Dorg.gradle.internal.http.socketTimeout=60000 \\"
   echo "          -Dorg.gradle.internal.http.connectionTimeout=60000 \\"
   echo "          --warning-mode all \\"
-  echo "          -Psigning.gnupg.keyName=${PGP_KEY} \\"
+  echo "          -Psigning.gnupg.keyName=XXXXXXXX \\"
   echo "          -PsonatypeUsername=${SONATYPE_USER} \\"
-  echo "          -PsonatypePassword=\"123\" \\"
+  echo "          -PsonatypePassword=\"password\" \\"
   echo "          clean shadowJar publish"
   echo "./gradlew jmh -Pinclude=\".*PrecompileBenchmark\""
   echo "./gradlew -Dorg.gradle.java.home=\${JAVA_11_ZULU_HOME} jmh -Pinclude=\".*PrecompileBenchmark\""
@@ -28,7 +28,11 @@ help () {
 
 publish () {
   if [ -z "$1" ]; then
-    echo "Please provide the Sonatype password for user '${SONATYPE_USER}'!"
+    echo "Please provide the PGP key ID! E.g.: publish 0000AAAA password"
+    return
+  fi
+  if [ -z "$2" ]; then
+    echo "Please provide the Sonatype password for user '${SONATYPE_USER}'!  E.g.: publish 0000AAAA password"
     return
   fi
 
@@ -36,9 +40,9 @@ publish () {
             -Dorg.gradle.internal.http.socketTimeout=60000 \
             -Dorg.gradle.internal.http.connectionTimeout=60000 \
             --warning-mode all \
-            -Psigning.gnupg.keyName=${PGP_KEY} \
+            -Psigning.gnupg.keyName=$1 \
             -PsonatypeUsername=${SONATYPE_USER} \
-            -PsonatypePassword="$1" \
+            -PsonatypePassword="$2" \
             clean shadowJar publish
 }
 
@@ -66,8 +70,7 @@ export JAVA_HOME=${JAVA_8_OPENJDK_HOME}
 export REPL_HOME=~/Desktop/venice
 export WORKSPACE_HOME=~/Documents/workspace-omni/venice
 
-export PGP_KEY=xxxxx
-export SONATYPE_USER=xxxxxx
+export SONATYPE_USER=jlangch
 
 export -f help
 export -f rebuild

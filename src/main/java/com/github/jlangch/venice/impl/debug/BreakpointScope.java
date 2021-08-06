@@ -43,35 +43,35 @@ import java.util.List;
  * <p><b>Function processing model:</b>
  * 
  * <pre>
- *                                            Breakpoint Scope
- *                                                   |
- *                                                   v
- * +----------------------------------------------------------+
- * |Function                                                  |
- * +--------------------------------------------- Call Level -+
- * |                                                          |
- * | 1) Evaluating and destructuring args                     |
- * |                                                          |
- * +-------------------------------------------- Entry Level -+
- * |                                                          |
- * | 2) Evaluating body expressions          Exception Level -|
- * |                                                          |
- * +--------------------------------------------- Exit Level -+
- * |                                                          |
- * | 3) Return the value of the last expression               |
- * |                                                          |
- * +----------------------------------------------------------+
+ *                                                 Breakpoint Scope
+ *                                                        |
+ *                                                        v
+ * +---------------------------------------------------------------+
+ * |Function                                                       |
+ * +-------------------------------------------------- Call Level -+
+ * |                                                               |
+ * | 1) Evaluating and destructuring args                          |
+ * |                                                               |
+ * +------------------------------------------------- Entry Level -+
+ * |                                                               |
+ * | 2) Evaluating body expressions               Exception Level -|
+ * |                                                               |
+ * +-------------------------------------------------- Exit Level -+
+ * |                                                               |
+ * | 3) Return the value of the last expression                    |
+ * |                                                               |
+ * +---------------------------------------------------------------+
  * </pre>
  */
 public enum BreakpointScope {
 
-	FunctionCall(">", "call"),				// Stop at function entry
+	FunctionCall(">", "call"),				// Stop at fn call
 
-	FunctionEntry("(", "entry"),			// Stop at function entry
+	FunctionEntry("(", "entry"),			// Stop at fn entry
 
-	FunctionExit(")", "exit"),				// Stop at function exit
+	FunctionExit(")", "exit"),				// Stop at fn exit
 
-	FunctionException("!", "exception");	// Stop if exception is caught in function
+	FunctionException("!", "exception");	// Stop on exception in fn body
 
 
 	private BreakpointScope(String symbol, String description) {
@@ -79,13 +79,19 @@ public enum BreakpointScope {
 		this.description = description;
 	}
 
-	public String symbol() { return symbol; }
-	public String description() { return description; }
+	public String symbol() { 
+		return symbol; 
+	}
+	
+	public String description() { 
+		return description; 
+	}
 
 	public static List<BreakpointScope> all() {
 		return Arrays.asList(values());
 	}
 
+	
 	private final String symbol;
 	private final String description;
 }
