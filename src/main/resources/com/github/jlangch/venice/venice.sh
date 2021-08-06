@@ -1,0 +1,81 @@
+#!/bin/sh
+
+help () {
+  echo "-------------------------------------------------------------------------"
+  echo "rebuild     rebuild, deploy, and start the Venice REPL"
+  echo "tests       run the unit tests"
+  echo "cheatsheet  generate the cheatsheets"
+  echo "publish     Publish Venice artefacts to Maven"
+  echo ""
+  echo "Gradle commands:"
+  echo "./gradlew test"
+  echo "./gradlew cheatsheet"
+  echo "./gradlew updateReleaseVersion"
+  echo "./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true \\"
+  echo "          -Dorg.gradle.internal.http.socketTimeout=60000 \\"
+  echo "          -Dorg.gradle.internal.http.connectionTimeout=60000 \\"
+  echo "          --warning-mode all \\"
+  echo "          -Psigning.gnupg.keyName=${PGP_KEY} \\"
+  echo "          -PsonatypeUsername=${SONATYPE_USER} \\"
+  echo "          -PsonatypePassword=\"123\" \\"
+  echo "          clean shadowJar publish"
+  echo "./gradlew jmh -Pinclude=\".*PrecompileBenchmark\""
+  echo "./gradlew -Dorg.gradle.java.home=\${JAVA_11_ZULU_HOME} jmh -Pinclude=\".*PrecompileBenchmark\""
+  echo "-------------------------------------------------------------------------"
+  echo
+}
+
+
+publish () {
+  if [ -z "$1" ]; then
+    echo "Please provide the Sonatype password for user '${SONATYPE_USER}'!"
+    return
+  fi
+
+  ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true \
+            -Dorg.gradle.internal.http.socketTimeout=60000 \
+            -Dorg.gradle.internal.http.connectionTimeout=60000 \
+            --warning-mode all \
+            -Psigning.gnupg.keyName=${PGP_KEY} \
+            -PsonatypeUsername=${SONATYPE_USER} \
+            -PsonatypePassword="$1" \
+            clean shadowJar publish
+}
+
+start () {
+  open ${REPL_HOME}/repl.sh
+}
+
+rebuild () {
+  ./gradlew --warning-mode all clean shadowJar
+  cp build/libs/venice-*.jar ${REPL_HOME}/libs
+  echo "Starting new REPL..."
+  start
+}
+
+cheatsheet () {
+  ./gradlew cheatsheet
+}
+
+tests () {
+  ./gradlew clean test
+}
+
+
+export JAVA_HOME=${JAVA_8_OPENJDK_HOME}
+export REPL_HOME=~/Desktop/venice
+export WORKSPACE_HOME=~/Documents/workspace-omni/venice
+
+export PGP_KEY=xxxxx
+export SONATYPE_USER=xxxxxx
+
+export -f help
+export -f rebuild
+export -f start
+export -f publish
+export -f cheatsheet
+export -f tests
+
+cd ${WORKSPACE_HOME}
+
+/bin/sh
