@@ -66,8 +66,8 @@ export JAVA_HOME=${JAVA_8_OPENJDK_HOME}
 export REPL_HOME=~/Desktop/venice
 export WORKSPACE_HOME=~/Documents/workspace-omni/venice
 
-export PGP_KEY=10A7D38B
-export SONATYPE_USER=jlangch
+export PGP_KEY=xxxxx
+export SONATYPE_USER=xxxxxx
 
 export -f help
 export -f rebuild
