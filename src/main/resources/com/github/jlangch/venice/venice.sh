@@ -42,11 +42,15 @@ publish () {
             clean shadowJar publish
 }
 
+start () {
+  open ${REPL_HOME}/repl.sh
+}
+
 rebuild () {
   ./gradlew --warning-mode all clean shadowJar
   cp build/libs/venice-*.jar ${REPL_HOME}/libs
   echo "Starting new REPL..."
-  open ${REPL_HOME}/repl.sh
+  start
 }
 
 cheatsheet () {
@@ -54,7 +58,7 @@ cheatsheet () {
 }
 
 tests () {
-  ./gradlew clear test
+  ./gradlew clean test
 }
 
 
@@ -62,14 +66,15 @@ export JAVA_HOME=${JAVA_8_OPENJDK_HOME}
 export REPL_HOME=~/Desktop/venice
 export WORKSPACE_HOME=~/Documents/workspace-omni/venice
 
-export PGP_KEY=xxxxxx
-export SONATYPE_USER=xxxxxx
+export PGP_KEY=10A7D38B
+export SONATYPE_USER=jlangch
 
-export -f rebuild
-export -f cheatsheet
-export -f publish
-export -f tests
 export -f help
+export -f rebuild
+export -f start
+export -f publish
+export -f cheatsheet
+export -f tests
 
 cd ${WORKSPACE_HOME}
 

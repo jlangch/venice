@@ -25,6 +25,44 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * Defines the breakpoint scopes.
+ * 
+ * <p>Breakpoint scopes are related to function execution phases and define
+ * at which execution phase a break point may be set.
+ * 
+ * <p><b>Defined scopes:</b>
+ * <ol>
+ * <li> CALL: inspection of unevaluated function args
+ * <li> ENTRY: inspection of evaluated function args
+ * <li> EXCEPTION: inspection of exception caught in the function's body 
+ * and evaluated function args
+ * <li> EXIT: inspection of evaluated function args and return value
+ * </ol>
+ * 
+ * <p><b>Function processing model:</b>
+ * 
+ * <pre>
+ *                                            Breakpoint Scope
+ *                                                   |
+ *                                                   v
+ * +----------------------------------------------------------+
+ * |Function                                                  |
+ * +--------------------------------------------- Call Level -+
+ * |                                                          |
+ * | 1) Evaluating and destructuring args                     |
+ * |                                                          |
+ * +-------------------------------------------- Entry Level -+
+ * |                                                          |
+ * | 2) Evaluating body expressions          Exception Level -|
+ * |                                                          |
+ * +--------------------------------------------- Exit Level -+
+ * |                                                          |
+ * | 3) Return the value of the last expression               |
+ * |                                                          |
+ * +----------------------------------------------------------+
+ * </pre>
+ */
 public enum BreakpointScope {
 
 	FunctionCall(">", "call"),				// Stop at function entry
