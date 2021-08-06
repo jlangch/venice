@@ -23,6 +23,16 @@
 [My task… what’s wrong with your Gradle task?](https://blog.softwaremill.com/my-task-whats-wrong-with-your-gradle-task-82312100c595)
 
 
+### BFG Repo-Cleaner
+
+[BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)
+
+```sh
+$ cd /Users/foo/venice/
+$ java -jar {path-to-bfg}/bfg-1.14.0.jar  --delete-files my-file.txt
+```
+
+
 ### Gitpod
 
 [Gitpodifying — The Ultimate Guide](https://www.gitpod.io/blog/gitpodify/)
