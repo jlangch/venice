@@ -286,17 +286,13 @@
 
           Progress options:
 
-          | :caption txt    | A caption text. Defaults to empty.      |
-          | :start-msg msg  | A start message. Defaults to 'started'. |
-          | :end-msg msg    | An end message. Defaults to 'ok'.       |
-          | :failed-msg msg | A failed message. Defaults to 'failed'. |
+          | :caption txt    | A caption text. Defaults to empty.                |
+          | :start-msg msg  | A start message. Defaults to "{caption} started". |
+          | :end-msg msg    | An end message. Defaults to "{caption} ok".       |
+          | :failed-msg msg | A failed message. Defaults to "{caption} failed". |
           """
      :examples '("""
-                 (let [pb (ansi/progress
-                                 :caption     "Test: "
-                                 :start-msg   "Test started"
-                                 :end-msg     "Test ok"
-                                 :failed-msg  "Test failed")]
+                 (let [pb (ansi/progress :caption "Test:")]
                    (pb 0 :progress)
                    (sleep 1 :seconds)
                    (pb 50 :progress)
@@ -309,25 +305,21 @@
                  (io/download "https://foo.org/image.png"
                               :binary true
                               :user-agent "Mozilla"
-                              :progress-fn (ansi/progress
-                                              :caption     "Download: "
-                                              :start-msg   "Download started"
-                                              :end-msg     "Download ok"
-                                              :failed-msg  "Download failed"))
+                              :progress-fn (ansi/progress :caption "Download:"))
                  """) }
 
   progress [& options]
 
   (let [options        (apply hash-map options)
         caption        (:caption options "")
-        start-msg      (:start-msg options "started")
-        end-msg        (:end-msg options "ok")
-        failed-msg     (:failed-msg options "failed")
+        start-msg      (:start-msg options "~{caption} started")
+        end-msg        (:end-msg options "~{caption} ok")
+        failed-msg     (:failed-msg options "~{caption} failed")
         percent-styles (:percent-styles options [])]
     (if (and ansi/*use-ansi* core/*ansi-term*)
       (fn progress-handler [percent status]
           (let [percent (max 0 (min 100 percent))
-                value   (str/format "%3s%%" percent)]
+                value   (str/format " %3s%%" percent)]
             (if (and (= status :progress) (pos? percent))
               (print (ansi/style "" :cursor-left-1000))
               (print (ansi/style "" :clear-line :cursor-left-1000)))
@@ -366,20 +358,17 @@
 
           Progress bar options:
 
-          | :caption txt       | A caption text. Defaults to empty. |
-          | :width val         | The width of the bar in chars. Defaults to 25. |
-          | :start-msg msg     | A start message. Defaults to 'started'. |
-          | :end-msg msg       | An end message. Defaults to 'ok'. |
-          | :failed-msg msg    | A failed message. Defaults to 'failed'. |
+          | :caption txt       | A caption text. Defaults to empty.                 |
+          | :width val         | The width of the bar in chars. Defaults to 25.     |
+          | :start-msg msg     | A start message. Defaults to "{caption} started".  |
+          | :end-msg msg       | An end message. Defaults to "{caption} ok".        |
+          | :failed-msg msg    | A failed message. Defaults to "{caption} failed".  |
           | :show-percent bool | If true shows the percentage. Defaults to 'false'. |
           """
      :examples '("""
                  (let [pb (ansi/progress-bar
-                                 :caption     "Test: "
+                                 :caption     "Test:"
                                  :width        25
-                                 :start-msg   "Test started"
-                                 :end-msg     "Test ok"
-                                 :failed-msg  "Test failed"
                                  :show-percent true)]
                    (pb 0 :progress)
                    (sleep 1 :seconds)
@@ -394,11 +383,8 @@
                               :binary true
                               :user-agent "Mozilla"
                               :progress-fn (ansi/progress-bar
-                                              :caption      "Download: "
+                                              :caption      "Download:"
                                               :width        25
-                                              :start-msg    "Download started"
-                                              :end-msg      "Download ok"
-                                              :failed-msg   "Download failed"
                                               :show-percent true))
                  """) }
 
@@ -412,16 +398,16 @@
                         (-> (str/truncate caption caption-width :middle)
                             (str/expand caption-width " " :end)))
         width         (min (max (:width options 25) 10) 100)
-        start-msg     (:start-msg options "started")
-        end-msg       (:end-msg options "ok")
-        failed-msg    (:failed-msg options "failed")
+        start-msg     (:start-msg options "~{caption} started")
+        end-msg       (:end-msg options "~{caption} ok")
+        failed-msg    (:failed-msg options "~{caption} failed")
         show-percent  (:show-percent options false)
         bar           (fn [percent]
                         (let [w1    (/ (* percent width) 100)
                               w2    (- width w1)
                               value (str percent "%")]
                           (str caption
-                               "["
+                               " ["
                                (str/repeat "#" w1)
                                (str/repeat " " w2)
                                "]"
@@ -549,11 +535,7 @@
 
 (defn demo-progress []
   (without-cursor
-    (let [pg (ansi/progress
-                 :caption     "Download: "
-                 :start-msg   "Download started"
-                 :end-msg     "Download ok"
-                 :failed-msg  "Download failed")]
+    (let [pg (ansi/progress :caption "Download:")]
 
       (println "Progress demo")
       (pg 0 :start)
@@ -565,10 +547,7 @@
   (without-cursor
     (let [pg (ansi/progress-bar
                  :width        25
-                 :caption      "Download: "
-                 :start-msg    "Download started"
-                 :end-msg      "Download ok"
-                 :failed-msg   "Download failed"
+                 :caption      "Download:"
                  :show-percent true)]
 
       (println "Progress bar demo")

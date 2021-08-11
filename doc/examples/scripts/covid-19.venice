@@ -31,6 +31,7 @@
 (do
   (ns covid-19)
 
+  (load-module :ansi)
   (load-module :xchart)
 
   (def country-set-1 [
@@ -81,7 +82,7 @@
     "Colombia"
     "Canada" ])
 
-  ;; the defined styles for the chart series
+  ;; 14 styles for the chart series, each visualizing a country
   (def chart-series-styles [
     { :color :x-green      }
     { :color :x-blue       }
@@ -173,7 +174,7 @@
 
 
 
-  ;;; I/O functions ------------------------------------------------------------
+  ;;; I/O functions (not pure) -------------------------------------------------
 
   (defn view-chart! [file] (sh/open file))
 
@@ -182,9 +183,10 @@
     file)
 
   (defn load-country-html-data! [country-name]
-    (println "Loading case data for" country-name "...")
     (let [url (str worldometers-url (str/lower-case country-name) "/")]
-      (io/download url :user-agent "Mozilla")))
+      (io/download url
+                   :user-agent "Mozilla"
+                   :progress-fn (ansi/progress :caption "Loading case data for ~{country-name}:"))))
 
   (defn load-countries-html-data! [country-names]
     (->> (map load-country-html-data! country-names)
@@ -198,23 +200,35 @@
            (long <>))))
 
   (defn load-countries-population! [countries-iso]
-    (println "Loading country population data...")
-    (->> (map load-country-population! countries-iso)
-         (zipmap countries-iso)))
+    (let [counter  (atom 0)
+          delta    (/ 100 (count countries-iso))
+          pg       (ansi/progress :caption "Loading country population data:")]
+      (try
+        (pg 0 :progress)
+        (->> (map (fn [x]
+                    (let [population (load-country-population! x)]
+                      (pg (swap! counter #(+ % delta)) :progress)
+                      population))
+                  countries-iso)
+             (zipmap countries-iso))
+        (finally
+          (pg 100 :progress)
+          (pg 0 :end)))))
 
   (defn load-country-vaccinations! []
-   ;; returns a map with country iso code and vaccinated (all doses) rate
-   ;; { "CHE" 54.18, "AUT" 58.97, ... }
-   (println "Loading country vaccination data...")
-   (let [format #(str/format "%.1f%%" %)]
-     (->> (io/download vaccinations-url :user-agent "Mozilla")
-          (json/read-str)
-          (map #(list (get % "iso_code")
-                      (format (get (last (get % "data"))
-                                    "people_fully_vaccinated_per_hundred"
-                                    0.00))))
-          (flatten)
-          (apply hash-map))))
+    ;; returns a map with country iso code and vaccinated (all doses) rate
+    ;; { "CHE" 54.18, "AUT" 58.97, ... }
+    (let [format  #(str/format "%.1f%%" %)]
+      (->> (io/download vaccinations-url
+                        :user-agent "Mozilla"
+                        :progress-fn (ansi/progress :caption "Loading country vaccination data:"))
+           (json/read-str)
+           (map #(list (get % "iso_code")
+                       (format (get (last (get % "data"))
+                                     "people_fully_vaccinated_per_hundred"
+                                     0.00))))
+           (flatten)
+           (apply hash-map))))
 
 
 
@@ -271,7 +285,7 @@
                 (let [date (first (last window))
                       tot  (reduce + (map second window))
                       avg  (/ tot normalized-population)]
-                [date (long avg)])))))
+                  [date (long avg)])))))
 
   (defn aggregate-country-cases [country-data]
     (->> (:cases country-data)
@@ -304,9 +318,9 @@
   (defn enrich-country-data-with-population [populations country-data]
     (let [iso-list (map :iso country-data)]
       (->> country-data
-          (map #(assoc % :population
-                         (get populations (:iso %))))
-          (map #(assoc % :population-normalized
+           (map #(assoc % :population
+                          (get populations (:iso %))))
+           (map #(assoc % :population-normalized
                           (/ (get populations (:iso %)) 100_000.0))))))
 
   (defn enrich-country-data-with-cases-html [countries-html country-data]
@@ -320,7 +334,6 @@
 
   (defn aggregate-country-data [country-names start end
                                 country-vacs populations countries-html]
-
     (->> (build-country-data country-names)
          (enrich-country-data-with-chart-styles)
          (enrich-country-data-with-vaccination-rate country-vacs)
@@ -366,9 +379,10 @@
   ;;; Process ------------------------------------------------------------------
 
   (defn process! [filename country-names]
-    ;; 1) Download data from Web
-    ;; 2) Aggregate the data
-    ;; 3) Create a chart, save it, and open an image viewer for the chart
+    ;; 1) Download data from Web     (not pure)
+    ;; 2) Aggregate the data             (pure)
+    ;; 3) Create the chart               (pure)
+    ;; 4) Save and open the chart    (not pure)
     (let [countries-iso  (country-names-to-iso country-names)
           vaccinations   (load-country-vaccinations!)
           populations    (load-countries-population! countries-iso)

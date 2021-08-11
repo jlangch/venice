@@ -1693,6 +1693,10 @@ public class IOFunctions {
 						"If the server returns the HTTP response status code 403 (Access Denied) " +
 						"sending a user agent like \"Mozilla\" may fool the website and solve the " +
 						"problem.")
+					.examples(
+						"(-<> \"https://live.staticflickr.com/65535/51007202541_ea453871d8_o_d.jpg\"\n" +
+						"     (io/download <> :binary true :user-agent \"Mozilla\")\n" +
+						"     (io/spit \"space-x.jpg\" <>))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1702,6 +1706,8 @@ public class IOFunctions {
 
 				final String uri = Coerce.toVncString(args.first()).getValue();
 
+				VncFunction progressFn = null;
+				
 				try {
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
 					final VncVal binary = options.get(new VncKeyword("binary"));
@@ -1712,13 +1718,15 @@ public class IOFunctions {
 					final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
 					
 					final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-					final VncFunction progressFn = progressVal == Nil 
+					progressFn = progressVal == Nil 
 										? new VncFunction("io/progress-default") {
 											private static final long serialVersionUID = 1L;
 											public VncVal apply(final VncList args) { return Nil; }
 										  }
 										: Coerce.toVncFunction(progressVal);
-					
+	
+					updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
+
 					final URLConnection conn = (URLConnection)new URL(uri).openConnection();
 					if (Types.isVncString(useragent)) {
 						conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
@@ -1744,11 +1752,11 @@ public class IOFunctions {
 
 						final long contentLength = conn.getContentLengthLong();
 	
-						updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
-
 						try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
 							final ByteArrayOutputStream output = new ByteArrayOutputStream();							
 							try {
+								updateDownloadProgress(progressFn, 0L, new VncKeyword("progress"));
+
 								final byte[] buffer = new byte[16 * 1024];
 								int n;
 								long total = 0L;
@@ -1758,7 +1766,7 @@ public class IOFunctions {
 									total += n;
 
 									// progress: 0..100%
-									long progress = Math.max(0, Math.min(100, total * 100 / contentLength));
+									long progress = Math.max(0, Math.min(100, (total * 100) / contentLength));
 
 									if (progress != progressLast) {
 										updateDownloadProgress(progressFn, progress, new VncKeyword("progress"));
@@ -1767,13 +1775,16 @@ public class IOFunctions {
 									progressLast = progress;
 								}
 
-								updateDownloadProgress(progressFn, 100L, new VncKeyword("end"));
+								if (progressLast < 100L) {
+									updateDownloadProgress(progressFn, 100L, new VncKeyword("progress"));
+								}
 
 								byte data[] = output.toByteArray();
 
 								return VncBoolean.isTrue(binary)
-										? new VncByteBuffer(ByteBuffer.wrap(data))
-										: new VncString(new String(data, encoding));
+											? new VncByteBuffer(ByteBuffer.wrap(data))
+											: new VncString(new String(data, encoding));
+								
 							}
 							finally {
 								output.close();
@@ -1781,16 +1792,20 @@ public class IOFunctions {
 						}
 					}
 					catch(Exception ex) {
-						updateDownloadProgress(progressFn, 0L, new VncKeyword("failed"));
 						throw ex;
 					}
 					finally {
 						if (conn instanceof HttpURLConnection) {
 							((HttpURLConnection)conn).disconnect();
 						}
+						updateDownloadProgress(progressFn, 100L, new VncKeyword("end"));
 					}
 				}
 				catch (Exception ex) {
+					if (progressFn != null) {
+						updateDownloadProgress(progressFn, 0L, new VncKeyword("failed"));
+					}
+					
 					throw new VncException("Failed to download data from the URI: " + uri, ex);
 				}
 			}
