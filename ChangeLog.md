@@ -11,9 +11,10 @@ and this project adheres to
 
 ## [1.9.28] - 2021-08-xx
 
-### Added
+### Fixed
 
-- ... 
+- ansi module progress bar percentage to be converted to an integer always and
+  to not display floats
 
 
 
