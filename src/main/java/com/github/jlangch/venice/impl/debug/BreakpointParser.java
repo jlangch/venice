@@ -96,7 +96,7 @@ public class BreakpointParser {
 
 	
 	private static boolean isInteger(final String s) {
-		return s.matches("[0-9]+");
+		return s.matches("([1-9][0-9]*|0)");
 	}
 
 	private static int parseInteger(final String s) {
@@ -107,9 +107,7 @@ public class BreakpointParser {
 			return -1;
 		}
 	}
-
 	
 	
-	// build regex: "^[(!)]+$"
-	private static final String BREAKPOINT_SCOPE_REGEX = "^[(!)]+$";
+	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }

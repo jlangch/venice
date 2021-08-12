@@ -1696,7 +1696,14 @@ public class IOFunctions {
 					.examples(
 						"(-<> \"https://live.staticflickr.com/65535/51007202541_ea453871d8_o_d.jpg\"\n" +
 						"     (io/download <> :binary true :user-agent \"Mozilla\")\n" +
-						"     (io/spit \"space-x.jpg\" <>))")
+						"     (io/spit \"space-x.jpg\" <>))",
+						"(do \n" +
+						"  (load-module :ansi) \n" +
+						"  (-<> \"https://live.staticflickr.com/65535/51007202541_ea453871d8_o_d.jpg\" \n" +
+						"       (io/download <> :binary true \n" +
+						"                       :user-agent \"Mozilla\" \n" +
+						"                       :progress-fn (ansi/progress :caption \"Download:\")) \n" +
+						"       (io/spit \"space-x.jpg\" <>)))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
