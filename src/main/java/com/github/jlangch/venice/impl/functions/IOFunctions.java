@@ -1782,8 +1782,9 @@ public class IOFunctions {
 									progressLast = progress;
 								}
 
-								if (progressLast < 100L) {
+								if (progressVal != Nil) {
 									updateDownloadProgress(progressFn, 100L, new VncKeyword("progress"));
+									Thread.sleep(100); // leave the 100% progress for a blink of the eye
 								}
 
 								byte data[] = output.toByteArray();
