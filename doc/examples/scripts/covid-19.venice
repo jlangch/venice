@@ -155,9 +155,10 @@
   (defn load-country-html-data! [country-name]
     (let [caption (str/expand "Loading case data for ~{country-name}:" 35 " ")
           url     (str worldometers-url (str/lower-case country-name) "/")]
-      (io/download url
-                   :user-agent "Mozilla"
-                   :progress-fn (ansi/progress :caption caption))))
+      (ansi/without-cursor
+        (io/download url
+                     :user-agent "Mozilla"
+                     :progress-fn (ansi/progress :caption caption)))))
 
   (defn load-countries-html-data! [country-names]
     (->> (map load-country-html-data! country-names)
@@ -175,33 +176,35 @@
           counter  (atom 0.0)
           delta    (/ 100.0 (count countries-iso))
           pg       (ansi/progress :caption caption)]
-      (try
-        (pg 0 :progress)
-        (->> (map (fn [x]
-                    (let [population (load-country-population! x)]
-                      (pg (swap! counter #(+ % delta)) :progress)
-                      population))
-                  countries-iso)
-             (zipmap countries-iso))
-        (finally
-          (pg 100 :progress)
-          (pg 100 :end)))))
+      (ansi/without-cursor
+        (try
+          (pg 0 :progress)
+          (->> (map (fn [x]
+                      (let [population (load-country-population! x)]
+                        (pg (swap! counter #(+ % delta)) :progress)
+                        population))
+                    countries-iso)
+               (zipmap countries-iso))
+          (finally
+            (pg 100 :progress)
+            (pg 100 :end))))))
 
   (defn load-country-vaccinations! []
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18, "AUT" 58.97, ... }
     (let [caption  (str/expand "Loading country vaccination data:" 35 " ")
           format   #(str/format "%.1f%%" %)]
-      (->> (io/download vaccinations-url
-                        :user-agent "Mozilla"
-                        :progress-fn (ansi/progress :caption caption))
-           (json/read-str)
-           (map #(list (get % "iso_code")
-                       (format (get (last (get % "data"))
-                                    "people_fully_vaccinated_per_hundred"
-                                    0.00))))
-           (flatten)
-           (apply hash-map))))
+      (ansi/without-cursor
+        (->> (io/download vaccinations-url
+                          :user-agent "Mozilla"
+                          :progress-fn (ansi/progress :caption caption))
+             (json/read-str)
+             (map #(list (get % "iso_code")
+                         (format (get (last (get % "data"))
+                                      "people_fully_vaccinated_per_hundred"
+                                      0.00))))
+             (flatten)
+             (apply hash-map)))))
 
 
 
