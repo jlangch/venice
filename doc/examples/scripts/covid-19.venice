@@ -153,7 +153,7 @@
     file)
 
   (defn load-country-html-data! [country-name]
-    (let [caption "Loading case data for ~{country-name}:"
+    (let [caption (str/expand "Loading case data for ~{country-name}:" 35 " ")
           url     (str worldometers-url (str/lower-case country-name) "/")]
       (io/download url
                    :user-agent "Mozilla"
@@ -171,7 +171,7 @@
            (long <>))))
 
   (defn load-countries-population! [countries-iso]
-    (let [caption  "Loading country population data:"
+    (let [caption  (str/expand "Loading country population data:" 35 " ")
           counter  (atom 0.0)
           delta    (/ 100.0 (count countries-iso))
           pg       (ansi/progress :caption caption)]
@@ -190,7 +190,7 @@
   (defn load-country-vaccinations! []
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18, "AUT" 58.97, ... }
-    (let [caption  "Loading country vaccination data:"
+    (let [caption  (str/expand "Loading country vaccination data:" 35 " ")
           format   #(str/format "%.1f%%" %)]
       (->> (io/download vaccinations-url
                         :user-agent "Mozilla"
@@ -198,8 +198,8 @@
            (json/read-str)
            (map #(list (get % "iso_code")
                        (format (get (last (get % "data"))
-                                     "people_fully_vaccinated_per_hundred"
-                                     0.00))))
+                                    "people_fully_vaccinated_per_hundred"
+                                    0.00))))
            (flatten)
            (apply hash-map))))
 
@@ -303,7 +303,6 @@
     ;; build a list of maps of { :name "Switzerland" :iso "CHE" }
     (let [country-map (map-country-iso-mapping-by-name)]
       (map #(get country-map %) country-names)))
-
 
   (defn aggregate-country-data [country-names start end
                                 country-vacs populations countries-html]
