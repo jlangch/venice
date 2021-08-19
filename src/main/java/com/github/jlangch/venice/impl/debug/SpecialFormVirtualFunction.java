@@ -33,6 +33,10 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
+/**
+ * Defines a special form as a <i>virtual</i> function to be used as
+ * function for a breakpoint.
+ */
 public class SpecialFormVirtualFunction extends VncFunction {
 	public SpecialFormVirtualFunction(
 			final String name, 

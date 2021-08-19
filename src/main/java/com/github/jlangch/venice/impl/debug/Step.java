@@ -22,6 +22,9 @@
 package com.github.jlangch.venice.impl.debug;
 
 
+/**
+ * Defines the step context for the debugger
+ */
 public class Step {
 
 	public Step() {

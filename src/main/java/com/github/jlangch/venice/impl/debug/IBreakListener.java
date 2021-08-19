@@ -24,6 +24,11 @@ package com.github.jlangch.venice.impl.debug;
 
 public interface IBreakListener {
 
+	/**
+	 * Called if a breakpoint is reached
+	 * 
+	 * @param br the break
+	 */
 	void onBreak(Break br);
 	
 }

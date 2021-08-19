@@ -28,6 +28,9 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
+/**
+ * Defines a breakpoint given by a file and a line number
+ */
 public class BreakpointLine implements IBreakpoint {
 
 	public BreakpointLine(

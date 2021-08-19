@@ -31,8 +31,29 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
+/**
+ * Breakpoint parser. Parses function and file/line breakpoints
+ */
 public class BreakpointParser {
 
+	/**
+	 * Parse a breakpoint given by a reference.
+	 * 
+	 * <p>Function breakpoints:
+	 * <ul>
+	 *   <li>filter</li>
+	 *   <li>foo/count</li>
+	 * </ul>
+	 * 
+	 * <p>File/line breakpoints:
+	 * <ul>
+	 *   <li>test.venice/300</li>
+	 * </ul>
+	 * 
+	 * @param ref a breakpoint reference
+	 * @return A breakpoint or <code>null</code> if the passed reference
+	 *         could not be parsed
+	 */
 	public static IBreakpoint parseBreakpoint(final String ref) {
 		if (StringUtil.isBlank(ref)) {
 			return null;

@@ -33,6 +33,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
+/**
+ * Defines a breakpoint given by qualified function name
+ */
 public class BreakpointFn implements IBreakpoint {
 
 	public BreakpointFn(

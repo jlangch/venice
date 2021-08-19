@@ -22,6 +22,9 @@
 package com.github.jlangch.venice.impl.debug;
 
 
+/**
+ * Defines the stepping modes for the debugger
+ */
 public enum StepMode {
 
 	// Step to next function entry
@@ -39,7 +42,7 @@ public enum StepMode {
 	// Step to function entry on the next line
 	StepToNextLine,
 	
-	// Disable stepping, just stop on function/lineNr breakpoints
+	// Disable stepping, just stop on function or file/lineNr breakpoints
 	Disabled;
 
 }
