@@ -780,6 +780,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									callStack.push(new CallFrame(fnName, a0.getMeta()));
 
 									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(fnName)) {
+										// Debugging handled for native functions only.
 										final Env env__ = new Env(env);
 										env__.setLocal(new Var(new VncSymbol("args"), fnArgs));
 										try {
@@ -794,6 +795,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										}
 									}
 									else {
+										// Debugging for  non native functions is handled in 
+										// VncFunction::apply. See the builder
+										// VeniceInterpreter::buildFunction(..)
 										return fn.apply(fnArgs);
 									}
 								}
@@ -2270,13 +2274,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					}
 				}
 				else if (args.size() != getFixedArgsCount()) {
-						throw new ArityException(
-								formatArityExMsg(
-									getQualifiedName(), 
-									macro ? FnType.Macro : FnType.Function,
-									args.size(), 
-									getFixedArgsCount(),
-									getArgLists()));
+					throw new ArityException(
+							formatArityExMsg(
+								getQualifiedName(), 
+								macro ? FnType.Macro : FnType.Function,
+								args.size(), 
+								getFixedArgsCount(),
+								getArgLists()));
 				}
 
 				

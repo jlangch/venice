@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.debug;
 
 import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
 
+import java.util.Comparator;
+
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -109,6 +111,20 @@ public class BreakpointLine implements IBreakpoint {
 		return true;
 	}
 
+	@Override
+	public int compareTo(final IBreakpoint o) {
+		if (o instanceof BreakpointLine) {
+			return comp.compare(this, (BreakpointLine)o);
+		}
+		else {
+			return 1;
+		}
+	}
+
+
+	private static Comparator<BreakpointLine> comp = 
+			Comparator.comparing(BreakpointLine::getFile)
+					  .thenComparing(BreakpointLine::getLineNr);
 	
 	private final String file;
 	private final int lineNr;			

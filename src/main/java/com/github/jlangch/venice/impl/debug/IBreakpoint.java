@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.impl.debug;
 
 
-public interface IBreakpoint {
+public interface IBreakpoint extends Comparable<IBreakpoint> {
 
 	String format();
 	

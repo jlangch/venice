@@ -33,7 +33,6 @@ import static com.github.jlangch.venice.impl.debug.StepMode.StepToNextNonSystemF
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.StringUtil.indent;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -96,30 +95,11 @@ public class DebugAgent implements IDebugAgent {
 	
 	@Override
 	public List<IBreakpoint> getBreakpoints() {
-		final ArrayList<IBreakpoint> list = new ArrayList<>();
-
-		list.addAll(
-				breakpoints
+		return breakpoints
 					.keySet()
 					.stream()
-					.filter(b -> b instanceof BreakpointFn)
-					.map(b -> (BreakpointFn)b)
-					.sorted(Comparator
-								.comparing(BreakpointFn::getQualifiedFnName))
-					.collect(Collectors.toList()));
-
-		list.addAll(
-				breakpoints
-					.keySet()
-					.stream()
-					.filter(b -> b instanceof BreakpointLine)
-					.map(b -> (BreakpointLine)b)
-					.sorted(Comparator
-								.comparing(BreakpointLine::getFile)
-								.thenComparing(BreakpointLine::getLineNr))
-					.collect(Collectors.toList()));
-
-		return list;
+					.sorted()
+					.collect(Collectors.toList());
 	}
 
 	@Override
@@ -140,7 +120,7 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public void removeAllBreakpoints() {
-		clearAll();
+		breakpoints.clear();
 	}
 	
 	@Override

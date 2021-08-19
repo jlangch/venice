@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionCall;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
 import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
@@ -28,6 +29,7 @@ import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -107,11 +109,24 @@ public class BreakpointFn implements IBreakpoint {
 		return (qualifiedFnName.equals(other.qualifiedFnName));
 	}
 
+	@Override
+	public int compareTo(final IBreakpoint o) {
+		if (o instanceof BreakpointFn) {
+			return comp.compare(this, (BreakpointFn)o);
+		}
+		else {
+			return -1;
+		}
+	}
 	
 	private String format(final Set<BreakpointScope> scopes) {
 		// predefined order of breakpoint scopes
 		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
-			return Arrays.asList(FunctionEntry, FunctionException, FunctionExit)
+			return Arrays.asList(
+							FunctionCall, 
+							FunctionEntry, 
+							FunctionException, 
+							FunctionExit)
 						 .stream()
 						 .filter(t -> scopes.contains(t))
 						 .map(t -> t.symbol())
@@ -122,6 +137,8 @@ public class BreakpointFn implements IBreakpoint {
 		}
 	}
 	
+	private static Comparator<BreakpointFn> comp = 
+			Comparator.comparing(BreakpointFn::getQualifiedFnName);
 	
 	private static final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
 	private final String qualifiedFnName;

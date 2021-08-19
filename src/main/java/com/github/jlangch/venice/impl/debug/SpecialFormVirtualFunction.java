@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
  * function for a breakpoint.
  */
 public class SpecialFormVirtualFunction extends VncFunction {
+	
 	public SpecialFormVirtualFunction(
 			final String name, 
 			final VncVector params, 
@@ -51,7 +52,7 @@ public class SpecialFormVirtualFunction extends VncFunction {
 			final List<Var> args, 
 			final VncVal meta
 	) {
-		this("let", toParams(args), meta);
+		this(name, toParams(args), meta);
 	}
 	
 	
