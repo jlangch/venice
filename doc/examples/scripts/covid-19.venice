@@ -153,7 +153,7 @@
     file)
 
   (defn load-country-html-data! [country-name]
-    (let [caption (str/expand "Loading case data for ~{country-name}:" 35 " ")
+    (let [caption (str/expand "Loading case data for ~{country-name}:" 38 " ")
           url     (str worldometers-url (str/lower-case country-name) "/")]
       (ansi/without-cursor
         (io/download url
@@ -172,7 +172,7 @@
            (long <>))))
 
   (defn load-countries-population! [countries-iso]
-    (let [caption  (str/expand "Loading country population data:" 35 " ")
+    (let [caption  (str/expand "Loading country population data:" 38 " ")
           counter  (atom 0.0)
           delta    (/ 100.0 (count countries-iso))
           pg       (ansi/progress :caption caption)]
@@ -192,7 +192,7 @@
   (defn load-country-vaccinations! []
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18, "AUT" 58.97, ... }
-    (let [caption  (str/expand "Loading country vaccination data:" 35 " ")
+    (let [caption  (str/expand "Loading country vaccination data:" 38 " ")
           format   #(str/format "%.1f%%" %)]
       (ansi/without-cursor
         (->> (io/download vaccinations-url
