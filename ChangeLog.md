@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- a custom mode to ansi/progress function to render the progress
 
 
 
@@ -21,8 +21,8 @@ and this project adheres to
 
 ### Fixed
 
-- ansi module progress bar percentage to be converted to an integer always and
-  to not display floats
+- :ansi module progress bar percentage to be converted to an integer always thus
+  preventing the progress bar from displaying floats and decimals
 
 
 
