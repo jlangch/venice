@@ -33,6 +33,7 @@ import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.truncate;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -97,6 +98,10 @@ public class ReplDebugClient {
 	
 	public static void pringHelp(final TerminalPrinter printer) {
 		printer.println("stdout", HELP);
+	}
+	
+	public static boolean isDebugCommand(final String cmd) {
+		return DEBUG_COMMANDS.contains(cmd);
 	}
 
 	public void handleCommand(final String cmdLine) {
@@ -643,6 +648,7 @@ public class ReplDebugClient {
 			"  !detach      Detach the debugger from the REPL\n" +
 			"  !terminate   Terminate a running debug session\n" +
 			"               Sends an interrupt to the script under debugging.\n" +
+			"  !info        Print info on the current debug session\n" +
 			"  !breakpoint  Manage breakpoints\n" +
 			"               o Add one or multiple breakpoints\n" +
 			"                  !breakpoint add n, n*\n" +
@@ -682,6 +688,30 @@ public class ReplDebugClient {
 			"               Short form: !ret\n" +
 			"  !ex          Print the function's exception\n";
 
+	private static final Set<String> DEBUG_COMMANDS = new HashSet<>(
+			Arrays.asList(
+					// command     short
+					"attach",
+					"detach",
+					"terminate",
+					"info",        "?",
+					"breakpoint",  "b",
+					"resume",      "r",
+					"step-next",   "sn",
+					"step-next-",  "sn-",
+					"step-into",   "si",
+					"step-line",   "sl",
+					"step-return", "sr",
+					"break?",      "b?",
+					"callstack",   "cs",
+					"params",      "p",
+					"locals",      "l",
+					"local", 
+					"global",
+					"retval",      "ret",
+					"ex"
+			));
+	
    
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;

@@ -351,6 +351,10 @@ public class REPL {
 								switchToDebugREPL();
 								break;
 								
+							case "detach":
+								printer.println("error", "There is no debugger attached!");
+								break;
+								
 							default:
 								handleReplCommand(cmd, env, terminal, history);
 								break;
@@ -559,6 +563,7 @@ public class REPL {
 					case "info":        handleInfoCommand(terminal); break;
 					case "highlight":   handleHighlightCommand(args); break;
 					case "java-ex":     handleJavaExCommand(args); break;
+					case "debug":     	handleDebugHelpCommand(); break;
 					default:            handleInvalidCommand(cmd); break;
 				}
 			}
@@ -596,6 +601,10 @@ public class REPL {
 
 	private void handleHelpCommand() {
 		printer.println("stdout", HELP);
+	}
+
+	private void handleDebugHelpCommand() {
+		ReplDebugClient.pringHelp(printer);
 	}
 
 	private void handleSetupCommand(
@@ -917,7 +926,15 @@ public class REPL {
 	}
 
 	private void handleInvalidCommand(final String cmd) {
-		printer.println("error", "Invalid command");
+		if (ReplDebugClient.isDebugCommand(cmd)) {
+			printer.println(
+				"error", 
+				"This debugging command requires an attached debugger! "
+					+ "Use the !attach command first.");			
+		}
+		else {
+			printer.println("error", "Invalid command");
+		}
 	}
 
 	private void handleFailedCommand(final Exception ex) {
