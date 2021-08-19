@@ -43,6 +43,6 @@ public enum StepMode {
 	StepToNextLine,
 	
 	// Disable stepping, just stop on function or file/lineNr breakpoints
-	Disabled;
+	SteppingDisabled;
 
 }

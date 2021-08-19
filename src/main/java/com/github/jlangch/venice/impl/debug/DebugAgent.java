@@ -173,7 +173,7 @@ public class DebugAgent implements IDebugAgent {
 	public boolean hasBreakpointFor(final String qualifiedFnName) {
 		final Step step = this.step;
 		switch (step.mode()) {
-			case Disabled: 
+			case SteppingDisabled: 
 				return !skipBreakpoints && breakpoints.containsKey(
 											new BreakpointFn(qualifiedFnName));
 				
@@ -417,7 +417,7 @@ public class DebugAgent implements IDebugAgent {
 				}
 				break;
 				
-			case Disabled:
+			case SteppingDisabled:
 			default:
 				step = step.clear();
 				break;
@@ -453,7 +453,7 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextLine:
 				return br.isBreakInLineNr() || (step.isBreakInLineNr());
 				
-			case Disabled:
+			case SteppingDisabled:
 				return true;
 					
 			default:
@@ -536,7 +536,7 @@ public class DebugAgent implements IDebugAgent {
 		final Step stepTmp = step;
 
 		switch(stepTmp.mode()) {
-			case Disabled:
+			case SteppingDisabled:
 				if (skipBreakpoints) {
 					return false;
 				}

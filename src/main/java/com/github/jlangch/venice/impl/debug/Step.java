@@ -28,7 +28,7 @@ package com.github.jlangch.venice.impl.debug;
 public class Step {
 
 	public Step() {
-		this(StepMode.Disabled, null, null);
+		this(StepMode.SteppingDisabled, null, null);
 	}
 	
 	public Step(final StepMode mode) {
