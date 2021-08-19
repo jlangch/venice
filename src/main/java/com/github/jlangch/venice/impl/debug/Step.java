@@ -69,6 +69,10 @@ public class Step {
 	public boolean isBreakInFunction() {
 		return fromBreak != null && fromBreak.isBreakInFunction();
 	}
+
+	public boolean isBreakInSpecialForm() {
+		return fromBreak != null && fromBreak.isBreakInSpecialForm();
+	}
 	
 
 	private final StepMode mode;

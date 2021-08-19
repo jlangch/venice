@@ -55,10 +55,16 @@ public class SpecialFormVirtualFunction extends VncFunction {
 	}
 	
 	
+	@Override
 	public VncVal apply(final VncList args) {
 		return Nil;
 	}
-	
+
+	@Override
+	public boolean isNative() { 
+		return false;
+	}
+
 	
 	private static VncVector toParams(final List<Var> args) {
 		return VncVector.ofColl(

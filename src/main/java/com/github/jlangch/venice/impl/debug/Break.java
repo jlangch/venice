@@ -113,7 +113,7 @@ public class Break {
 	}
 
 	public boolean isBreakInNativeFn() {
-		return fn.isNative() && !(fn instanceof SpecialFormVirtualFunction);
+		return fn.isNative();
 	}
 	
 	@Override
