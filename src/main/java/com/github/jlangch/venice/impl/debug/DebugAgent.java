@@ -184,10 +184,10 @@ public class DebugAgent implements IDebugAgent {
 				return !hasSystemNS(qualifiedFnName);
 				
 			case StepToFunctionReturn: 
-				return qualifiedFnName.equals(step.boundToFnName());
+				return step.isBoundToFnName(qualifiedFnName);
 				
 			case StepIntoFunction: 
-				return qualifiedFnName.equals(step.boundToFnName());
+				return step.isBoundToFnName(qualifiedFnName);
 				
 			case StepToNextLine:
 				return false;
@@ -554,10 +554,10 @@ public class DebugAgent implements IDebugAgent {
 				return bt == FunctionEntry && !hasSystemNS(fnName);
 
 			case StepToFunctionReturn: 
-				return bt == FunctionExit && fnName.equals(stepTmp.boundToFnName());
+				return bt == FunctionExit && stepTmp.isBoundToFnName(fnName);
 
 			case StepIntoFunction: 
-				return bt == FunctionEntry && fnName.equals(stepTmp.boundToFnName());
+				return bt == FunctionEntry && stepTmp.isBoundToFnName(fnName);
 
 			case StepToNextLine:
 				return false;

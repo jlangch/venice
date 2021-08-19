@@ -58,6 +58,10 @@ public class Step {
 		return boundToFnName;
 	}
 
+	public boolean isBoundToFnName(final String fnName) {
+		return boundToFnName != null && boundToFnName.equals(fnName);
+	}
+
 	public Break fromBreak() {
 		return fromBreak;
 	}
