@@ -374,7 +374,7 @@ public class DebugAgent implements IDebugAgent {
 				break;
 				
 			case StepIntoFunction:
-				if (br.getBreakpointScope() == FunctionCall) {
+				if (br.isInScope(FunctionCall)) {
 					step = new Step(
 								StepIntoFunction,
 								br.getFn().getQualifiedName(),
@@ -387,14 +387,14 @@ public class DebugAgent implements IDebugAgent {
 				break;
 				
 			case StepToFunctionReturn:
-				if (br.getBreakpointScope() == FunctionCall) {
+				if (br.isInScope(FunctionCall)) {
 					step = new Step(
 								StepToFunctionReturn,
 								br.getFn().getQualifiedName(),
 								step.fromBreak());
 					// keep 'stepFrom'
 				}
-				else if (br.getBreakpointScope() == FunctionEntry) {
+				else if (br.isInScope(FunctionEntry)) {
 					step = new Step(
 							StepToFunctionReturn,
 							br.getFn().getQualifiedName(),
@@ -409,7 +409,7 @@ public class DebugAgent implements IDebugAgent {
 				if (br.isBreakInLineNr()) {
 					step = new Step(StepToNextLine, null, br);
 				}
-				else if (step.isFromBreak_BreakInLineNr()) {
+				else if (step.isBreakInLineNr()) {
 					step = new Step(StepToNextLine);
 				}
 				else {
@@ -444,15 +444,14 @@ public class DebugAgent implements IDebugAgent {
 				return true;
 				
 			case StepIntoFunction:
-				return br.getBreakpointScope() == FunctionCall;
+				return br.isInScope(FunctionCall);
 				
 			case StepToFunctionReturn:
 				return !br.isBreakInSpecialForm() 
-							&& (br.getBreakpointScope() == FunctionCall
-									|| br.getBreakpointScope() == FunctionEntry);
+							&& br.isInScope(FunctionCall, FunctionEntry);
 				
 			case StepToNextLine:
-				return br.isBreakInLineNr() || (step.isFromBreak_BreakInLineNr());
+				return br.isBreakInLineNr() || (step.isBreakInLineNr());
 				
 			case Disabled:
 				return true;

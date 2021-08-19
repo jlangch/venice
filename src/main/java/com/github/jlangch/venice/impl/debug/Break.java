@@ -27,6 +27,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
 public class Break {
@@ -93,6 +94,10 @@ public class Break {
 
 	public BreakpointScope getBreakpointScope() {
 		return scope;
+	}
+
+	public boolean isInScope(final BreakpointScope... scopes) {
+		return CollectionUtil.toList(scopes).contains(scope);
 	}
 
 	public boolean isBreakInLineNr() {

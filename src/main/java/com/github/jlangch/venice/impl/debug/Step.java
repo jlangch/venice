@@ -62,10 +62,14 @@ public class Step {
 		return fromBreak;
 	}
 
-	public boolean isFromBreak_BreakInLineNr() {
+	public boolean isBreakInLineNr() {
 		return fromBreak != null && fromBreak.isBreakInLineNr();
-
 	}
+
+	public boolean isBreakInFunction() {
+		return fromBreak != null && fromBreak.isBreakInFunction();
+	}
+	
 
 	private final StepMode mode;
 	private final String boundToFnName;
