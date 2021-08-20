@@ -158,19 +158,11 @@ public class DebugAgent implements IDebugAgent {
 											new BreakpointFn(qualifiedFnName));
 				
 			case StepToNextFunction: 
-				return true;
-				
 			case StepToNextNonSystemFunction: 
-				return !hasSystemNS(qualifiedFnName);
-				
 			case StepToFunctionReturn: 
-				return step.isBoundToFnName(qualifiedFnName);
-				
 			case StepIntoFunction: 
-				return step.isBoundToFnName(qualifiedFnName);
-				
 			case StepToNextLine:
-				return false;
+				return true;
 				
 			default: 
 				return false;
@@ -366,13 +358,7 @@ public class DebugAgent implements IDebugAgent {
 				break;
 				
 			case StepToFunctionReturn:
-				if (br.isInScope(FunctionCall)) {
-					step = new Step(
-								StepToFunctionReturn,
-								br.getFn().getQualifiedName(),
-								step.fromBreak());
-				}
-				else if (br.isInScope(FunctionEntry)) {
+				if (br.isInScope(FunctionCall, FunctionEntry)) {
 					step = new Step(
 								StepToFunctionReturn,
 								br.getFn().getQualifiedName(),
@@ -429,7 +415,7 @@ public class DebugAgent implements IDebugAgent {
 							&& br.isInScope(FunctionCall, FunctionEntry);
 				
 			case StepToNextLine:
-				return br.isBreakInLineNr() || (step.isBreakInLineNr());
+				return br.isBreakInLineNr() || step.isBreakInLineNr();
 				
 			case SteppingDisabled:
 				return true;
@@ -491,6 +477,13 @@ public class DebugAgent implements IDebugAgent {
 		if (bp == null) {
 			return false;
 		}
+		
+		if (step.isInMode(StepToFunctionReturn, StepIntoFunction)) {
+			// stop on line nr is suspended while stepping to FunctionReturn,
+			// or StepIntoFunction
+			return false;
+		}
+
 
 		final Step stepTmp = step;
 

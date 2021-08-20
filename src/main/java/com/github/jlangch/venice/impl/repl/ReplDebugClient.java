@@ -623,7 +623,7 @@ public class ReplDebugClient {
 					br.getFn().getQualifiedName(),
 					br.getFn().isNative() 
 						? "" 
-						: " (" + new CallFrame(br.getFn()).getSourcePosInfo() +")",
+						: " (" + new CallFrame(br.getFn()).getSourcePosInfo() + ")",
 					br.getBreakpointScope().description());
 		}
 		else {

@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 /**
  * Defines the step context for the debugger
@@ -52,6 +53,10 @@ public class Step {
 
 	public StepMode mode() {
 		return mode;
+	}
+
+	public boolean isInMode(final StepMode... modes) {
+		return CollectionUtil.toList(modes).contains(mode);
 	}
 
 	public String boundToFnName() {
