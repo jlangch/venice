@@ -27,10 +27,10 @@ package com.github.jlangch.venice.impl.debug;
  */
 public enum StepMode {
 
-	// Step to next function entry
+	// Step to next function entry (aka step over)
 	StepToNextFunction,
 
-	// Step to next non system function entry
+	// Step to next non system function entry (aka step over)
 	StepToNextNonSystemFunction,
 
 	// Step in the current function after arguments evaluation

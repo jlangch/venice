@@ -478,34 +478,39 @@ public class DebugAgent implements IDebugAgent {
 			return false;
 		}
 		
-		if (step.isInMode(StepToFunctionReturn, StepIntoFunction)) {
-			// stop on line nr is suspended while stepping to FunctionReturn,
-			// or StepIntoFunction
-			return false;
-		}
-
-
-		final Step stepTmp = step;
-
-		if (stepTmp.fromBreak() == null) {
-			return !skipBreakpoints && breakpoints.containsKey(bp);
-		}
-		else if (stepTmp.fromBreak().isBreakInLineNr()) {
-			// handles step line in same file on another line
-			final BreakpointLine b = (BreakpointLine)stepTmp.fromBreak()
-															.getBreakpoint();
-			return bp.isSameFile(b) && !bp.isSameLineNr(b);
-		}
-		else {
-			return false;
+		final Step stepTmp = step;  // be immune to changing step var
+		
+		switch(stepTmp.mode()) {
+			case SteppingDisabled:
+				return !skipBreakpoints && breakpoints.containsKey(bp);
+	
+			case StepToNextFunction:
+			case StepToNextNonSystemFunction: 
+			case StepToFunctionReturn: 
+			case StepIntoFunction: 
+				// stop on line nr is suspended while stepping
+				return false;
+	
+			case StepToNextLine:
+				if (stepTmp.isBreakInLineNr()) {
+					// must be on another line
+					final BreakpointLine b = (BreakpointLine)stepTmp.fromBreak().getBreakpoint();
+					return !bp.equals(b);
+				}
+				else {
+					return false;
+				}
+	
+			default:
+				return false;
 		}
 	}
 	
 	private boolean isStopOnFunction(
 			final String fnName, 
-			final BreakpointScope bt
+			final BreakpointScope scope
 	) {
-		final Step stepTmp = step;
+		final Step stepTmp = step;  // be immune to changing step var
 
 		switch(stepTmp.mode()) {
 			case SteppingDisabled:
@@ -516,20 +521,20 @@ public class DebugAgent implements IDebugAgent {
 					final IBreakpoint bp = breakpoints.get(new BreakpointFn(fnName));
 					return bp != null 
 							&& bp instanceof BreakpointFn
-							&& ((BreakpointFn)bp).hasScope(bt);
+							&& ((BreakpointFn)bp).hasScope(scope);
 				}
 
 			case StepToNextFunction:
-				return bt == FunctionEntry;
+				return scope == FunctionEntry;
 
 			case StepToNextNonSystemFunction: 
-				return bt == FunctionEntry && !hasSystemNS(fnName);
+				return scope == FunctionEntry && !hasSystemNS(fnName);
 
 			case StepToFunctionReturn: 
-				return bt == FunctionExit && stepTmp.isBoundToFnName(fnName);
+				return scope == FunctionExit && stepTmp.isBoundToFnName(fnName);
 
 			case StepIntoFunction: 
-				return bt == FunctionEntry && stepTmp.isBoundToFnName(fnName);
+				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
 
 			case StepToNextLine:
 				return false;
