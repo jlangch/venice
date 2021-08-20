@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ArityException;
@@ -596,7 +595,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return deftype_create_(new CallFrame(".:", a0.getMeta()), args, env);
 
 				case "defmulti":  // (defmulti name dispatch-fn)
-					return defmulti_(new CallFrame("defmulti", a0.getMeta()), args, env);
+					return defmulti_(new CallFrame("defmulti", a0.getMeta()), args, env, a0.getMeta());
 
 				case "defmethod": // (defmethod multifn-name dispatch-val & fn-tail)
 					return defmethod_(new CallFrame("defmethod", a0.getMeta()), args, env, a0.getMeta());
@@ -651,7 +650,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 				case "macroexpand": // (macroexpand form)
 					return macroexpand(
-							new CallFrame("macroexpand", a0.getMeta()), args, env, null);
+							new CallFrame("macroexpand", a0.getMeta()), args, env);
 
 				case "macroexpand-all*":  // (macroexpand-all* form)
 					// Note: This special form is exposed through the public Venice function 
@@ -726,7 +725,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						if (fn.isMacro()) { 
 							// macro
-							final VncVal expandedAst = macroexpand(ast, env, null);
+							final VncVal expandedAst = macroexpand(ast, env);
 							if (expandedAst instanceof VncList) {					
 								orig_ast = expandedAst;
 								continue;
@@ -930,8 +929,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	 */
 	private VncVal macroexpand(
 			final VncVal ast, 
-			final Env env,
-			final AtomicInteger expandedMacrosCounter
+			final Env env
 	) {
 		final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
 		
@@ -982,13 +980,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private VncVal macroexpand(
 			final CallFrame callframe, 
 			final VncList args, 
-			final Env env,
-			final AtomicInteger expandedMacrosCounter
+			final Env env
 	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("macroexpand", FnType.SpecialForm, args, 1);
 			final VncVal ast = evaluate(args.first(), env);
-			return macroexpand(ast, env, expandedMacrosCounter);
+			return macroexpand(ast, env);
 		}		
 	}
 
@@ -1026,8 +1023,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final Env env
 	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			final AtomicInteger expandedMacroCounter = new AtomicInteger(0);
-	
 			final VncFunction handler = new VncFunction(createAnonymousFuncName("macroexpand-all-handler")) {
 				public VncVal apply(final VncList args) {
 					final VncVal form = args.first();
@@ -1047,7 +1042,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							}
 							else {
 								// try to expand
-								return macroexpand(list, env, expandedMacroCounter);
+								return macroexpand(list, env);
 							}
 						}
 					}
@@ -1350,7 +1345,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal defmulti_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal defmulti_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("defmulti", FnType.SpecialForm, args, 2);
 			final VncSymbol name =  validateSymbolWithCurrNS(
