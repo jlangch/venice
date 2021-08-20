@@ -101,6 +101,8 @@ public interface IDebugAgent {
 	boolean hasBreak();
 	
 	Break getBreak();
+	
+	void clearBreak();
 
 	void resume();
 

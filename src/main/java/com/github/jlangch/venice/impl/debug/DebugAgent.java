@@ -424,6 +424,12 @@ public class DebugAgent implements IDebugAgent {
 				return false;
 		}		
 	}
+	
+	@Override
+	public void clearBreak() {
+		step = step.clear();
+		activeBreak = null;
+	}
 
 	@Override
 	public String toString() {
@@ -561,11 +567,6 @@ public class DebugAgent implements IDebugAgent {
 		finally {
 			activeBreak = null;
 		}
-	}
-	
-	private void clearBreak() {
-		step = step.clear();
-		activeBreak = null;
 	}
 
 	private void clearAll() {
