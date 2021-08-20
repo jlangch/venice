@@ -73,6 +73,14 @@ public class BreakpointLine implements IBreakpoint {
 		return lineNr;
 	}
 	
+	public boolean isSameFile(final BreakpointLine bp) {
+		return file.equals(bp.getFile());
+	}
+	
+	public boolean isSameLineNr(final BreakpointLine bp) {
+		return lineNr == bp.getLineNr();
+	}
+	
 	@Override
 	public String format() {
 		return String.format("%s %d", file, lineNr);

@@ -499,8 +499,9 @@ public class DebugAgent implements IDebugAgent {
 		}
 		else if (stepTmp.fromBreak().isBreakInLineNr()) {
 			// handles step line in same file on another line
-			final BreakpointLine b = (BreakpointLine)stepTmp.fromBreak().getBreakpoint();
-			return bp.getFile().equals(b.getFile()) && bp.getLineNr() != b.getLineNr();
+			final BreakpointLine b = (BreakpointLine)stepTmp.fromBreak()
+															.getBreakpoint();
+			return bp.isSameFile(b) && !bp.isSameLineNr(b);
 		}
 		else {
 			return false;

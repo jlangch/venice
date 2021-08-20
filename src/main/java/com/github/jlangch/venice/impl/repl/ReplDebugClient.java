@@ -217,7 +217,7 @@ public class ReplDebugClient {
 	
 	private void handleBreakpointCmd(final List<String> params) {
 		if (params.isEmpty())  {
-			printlnErr("Invalid breakpoint command. Missing sub command as 'add', 'remove', ...");
+			printBreakpoints();
 		}
 		else {
 			final String cmd = trimToEmpty(params.get(0));
@@ -275,14 +275,7 @@ public class ReplDebugClient {
 					break;
 					
 				case "list":
-					final boolean skip =  agent.isSkipBreakpoints();
-					agent.getBreakpoints()
-						 .forEach(b -> printer.println(
-								 			"stdout", 
-								 			String.format(
-								 				"  %s%s",
-								 				skip ? "[-] " : "",
-								 				b.format())));
+					printBreakpoints();
 					break;
 					
 				default:
@@ -311,6 +304,22 @@ public class ReplDebugClient {
 
 		println(formatBreak(br));
 		println(br.getCallStack().toString());
+	}
+	
+	private void printBreakpoints() {
+		if (agent.getBreakpoints().isEmpty()) {
+			 printer.println("stdout", "No breakpoints defined!");
+		}
+		else {
+			final boolean skip = agent.isSkipBreakpoints();
+			agent.getBreakpoints()
+				 .forEach(b -> printer.println(
+						 			"stdout", 
+						 			String.format(
+						 				"  %s%s",
+						 				skip ? "[-] " : "",
+						 				b.format())));
+		}
 	}
 	
 	private void params(final List<String> params) {
@@ -596,7 +605,7 @@ public class ReplDebugClient {
 
 	private String formatBreak(final Break br) {
 		return String.format(
-				"Break in %s %s at %s.",
+				"Break in %s %s at %s level.",
 				br.isBreakInSpecialForm()
 					? "special form"
 					: "function",
@@ -607,7 +616,7 @@ public class ReplDebugClient {
 	private String formatStop(final Break br) {	
 		if (br.getBreakpoint() instanceof BreakpointFn) {
 			return String.format(
-					"Stopped in %s %s%s at %s.",
+					"Stopped in %s %s%s at %s level.",
 					br.isBreakInSpecialForm()
 						? "special form"
 						: "function",
@@ -620,7 +629,7 @@ public class ReplDebugClient {
 		else {
 			final BreakpointLine bp = (BreakpointLine)br.getBreakpoint();
 			return String.format(
-					"Stopped in file '%s', line %d at calling %s %s",
+					"Stopped in file '%s', line %d at %s %s call level",
 					bp.getFile(),
 					bp.getLineNr(),
 					br.isBreakInSpecialForm()
@@ -641,7 +650,14 @@ public class ReplDebugClient {
 	
 	private final static String HELP =
 		  //+------------------------------------------------------------------------------+
-			"Venice debugger\n\n" +
+			"Venice debugger\n" +
+			"\n" +
+			"The debugger can stop within functions at 4 levels: \n" +
+			"  call:        before the passed arguments are evaluated\n" +
+			"  entry:       after the passed arguments have been evaluated\n" +
+			"  exception:   on catching an exception with the function's body\n" +
+			"  exit:        before returning from the function\n" +
+			"\n" +
 			"Commands: \n" +
 			"  !attach      Attach the debugger to the REPL\n" +
 			"  !detach      Detach the debugger from the REPL\n" +
