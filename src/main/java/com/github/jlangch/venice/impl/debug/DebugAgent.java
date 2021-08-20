@@ -359,7 +359,6 @@ public class DebugAgent implements IDebugAgent {
 								StepIntoFunction,
 								br.getFn().getQualifiedName(),
 								step.fromBreak());
-					// keep 'stepFrom'
 				}
 				else {
 					step = step.clear();
@@ -372,13 +371,12 @@ public class DebugAgent implements IDebugAgent {
 								StepToFunctionReturn,
 								br.getFn().getQualifiedName(),
 								step.fromBreak());
-					// keep 'stepFrom'
 				}
 				else if (br.isInScope(FunctionEntry)) {
 					step = new Step(
-							StepToFunctionReturn,
-							br.getFn().getQualifiedName(),
-							step.fromBreak());
+								StepToFunctionReturn,
+								br.getFn().getQualifiedName(),
+								step.fromBreak());
 				}
 				else {
 					step = step.clear();

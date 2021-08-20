@@ -119,6 +119,7 @@ public class BreakpointFn implements IBreakpoint {
 		}
 	}
 	
+	
 	private String format(final Set<BreakpointScope> scopes) {
 		// predefined order of breakpoint scopes
 		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
@@ -136,6 +137,7 @@ public class BreakpointFn implements IBreakpoint {
 			return "";
 		}
 	}
+	
 	
 	private static Comparator<BreakpointFn> comp = 
 			Comparator.comparing(BreakpointFn::getQualifiedFnName);

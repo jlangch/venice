@@ -162,7 +162,6 @@ public class ReplDebugClient {
 			case "step-return":
 			case "sr":
 				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
-
 					return;
 				}
 				printer.println(
