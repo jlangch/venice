@@ -32,8 +32,13 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class VncMultiArityFunction extends VncFunction {
 
-	public VncMultiArityFunction(final String name, final List<VncFunction> functions, final boolean macro) {
-		super(name, null, macro, null, Constants.Nil);
+	public VncMultiArityFunction(
+			final String name, 
+			final List<VncFunction> functions,
+			final boolean macro,
+			final VncVal meta
+	) {
+		super(name, null, macro, null, meta);
 		
 		if (functions == null || functions.isEmpty()) {
 			throw new VncException("A multi-arity function must have at least one function");

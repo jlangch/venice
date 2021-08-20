@@ -1230,7 +1230,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							env));
 			});
 
-			final VncFunction macroFn = new VncMultiArityFunction(macroName_.getName(), fns, true).withMeta(meta);
+			final VncFunction macroFn = new VncMultiArityFunction(
+												macroName_.getName(), 
+												fns, 
+												true, 
+												meta);
 			
 			env.setGlobal(new Var(macroName_, macroFn, false));
 
@@ -1883,7 +1887,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	//				}
 				});
 				
-				return new VncMultiArityFunction(fnName.getName(), fns, false);
+				return new VncMultiArityFunction(fnName.getName(), fns, false, meta);
 			}
 		}
 	}

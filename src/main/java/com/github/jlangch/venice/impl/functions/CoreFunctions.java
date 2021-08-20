@@ -2659,7 +2659,11 @@ public class CoreFunctions {
 					return Nil; // we never get here, handled by arity check
 				}
 				
-				return new VncMultiArityFunction(createAnonymousFuncName("fnil"), functions, false);
+				return new VncMultiArityFunction(
+								createAnonymousFuncName("fnil"), 
+								functions, 
+								false,
+								Nil);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
