@@ -28,6 +28,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
@@ -36,11 +37,13 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 public class VncKeyword extends VncString implements IVncFunction, INamespaceAware {
 	
 	public VncKeyword(final String v) { 
-		this(parse(v), Constants.Nil); 
+		this(QualifiedName.parseWithoutCoreNamespaceMapping(stripColon(v)), 
+			 Constants.Nil); 
 	}
 
 	public VncKeyword(final String v, final VncVal meta) {
-		this(parse(v), meta); 
+		this(QualifiedName.parseWithoutCoreNamespaceMapping(stripColon(v)), 
+			 meta); 
 	}
 
 	public VncKeyword(final String namespace, final String simpleName, final VncVal meta) {
@@ -48,6 +51,14 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 			 simpleName, 
 			 namespace == null ? simpleName : namespace + "/" + simpleName, 
 			 meta); 
+	}
+	
+	private VncKeyword(final QualifiedName qn, final VncVal meta) { 
+		super(qn.getQualifiedName(), meta);
+
+		this.namespace = qn.getNamespace();
+		this.simpleName = qn.getSimpleName();
+		this.qualifiedName = qn.getQualifiedName();
 	}
 
 	private VncKeyword(final String namespace, final String simpleName, final String qualifiedName, final VncVal meta) { 
@@ -74,18 +85,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		namespace = other.namespace;
 	}
 
-	private static String[] parse(final String name) { 
-		final String qn = name.charAt(0) == ':' ? name.substring(1) : name;
-		
-		final int pos = qn.indexOf("/");
-
-		final String namespace = pos <= 0 ? null : qn.substring(0, pos);
-		final String simpleName = pos < 0 ? qn : qn.substring(pos+1);
-		final String qualifiedName = namespace == null ? simpleName : namespace + "/" + simpleName;
-		
-		return new String[] {namespace, simpleName, qualifiedName};
-	}
-
+	
 	@Override
 	public VncVal apply(final VncList args) {
 		ArityExceptions.assertArity(this, FnType.Keyword, args, 1, 2);
@@ -261,6 +261,10 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		return value != null && value.contentEquals(getValue());
 	}
 	
+
+	private static String stripColon(final String name) { 
+		return name.charAt(0) == ':' ? name.substring(1) : name;
+	}
 	
     public static final VncKeyword TYPE = new VncKeyword(":core/keyword");
 	

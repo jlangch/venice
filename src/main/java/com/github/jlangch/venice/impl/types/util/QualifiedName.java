@@ -42,7 +42,6 @@ public class QualifiedName {
 			final String namespace, 
 			final String simpleName
 	) {
-		
 		String namespace_ = StringUtil.trimToNull(namespace);
 		if (namespace_.indexOf("/") >= 0) {
 			throw new VncException("A namespace must not contain a '/'");
@@ -97,6 +96,41 @@ public class QualifiedName {
 						namespace, 
 						simpleName);
 		}
+	}
+
+	public static QualifiedName parseWithoutCoreNamespaceMapping(final String name) {
+		final String name_ = StringUtil.trimToNull(name);
+		if (name_ == null) {
+			throw new VncException("A qualified name must not be blank");
+		}
+
+		if (name_.equals("/")) {
+			// special case function
+			return new QualifiedName("/", null, "/");
+		}
+		else {
+			final int pos = name_.indexOf("/");
+			
+			String namespace = pos < 0 ? null : StringUtil.trimToNull(name_.substring(0, pos));
+			
+			String simpleName = pos < 0 ? name_ : StringUtil.trimToNull(name_.substring(pos+1));
+			if (simpleName == null) {
+				throw new VncException("A simple name of a qualified name name must not be blank");
+			}
+			
+			final String qualifiedName = namespace == null
+											? simpleName 
+											: namespace + "/" + simpleName;
+
+			return new QualifiedName(
+						qualifiedName, 
+						namespace, 
+						simpleName);
+		}
+	}
+	
+	public QualifiedName withOtherNamespace(final String namespace) {
+		return QualifiedName.of(namespace, simpleName);
 	}
 	
 	public QualifiedName mapCoreNamespaceToNull() {
