@@ -69,7 +69,7 @@ public class QualifiedName {
 	public static QualifiedName parse(final String name) {
 		final String name_ = StringUtil.trimToNull(name);
 		if (name_ == null) {
-			throw new VncException("A qualified name must not be blank");
+			throw new VncException("A name must not be blank");
 		}
 
 		if (name_.equals("/")) {
@@ -99,9 +99,11 @@ public class QualifiedName {
 	}
 
 	public static QualifiedName parseWithoutCoreNamespaceMapping(final String name) {
+		// Note: keywords have a slightly different core namespace handling!
+		
 		final String name_ = StringUtil.trimToNull(name);
 		if (name_ == null) {
-			throw new VncException("A qualified name must not be blank");
+			throw new VncException("A name must not be blank");
 		}
 
 		if (name_.equals("/")) {
