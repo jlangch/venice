@@ -50,11 +50,25 @@ public interface IDebugAgent {
 	void addBreakpoint(IBreakpoint breakpoint);
 
 	/**
+	 * Add a new breakpoints
+	 * 
+	 * @param breakpoints A list of breakpoints
+	 */
+	void addBreakpoints(List<IBreakpoint> breakpoints);
+
+	/**
 	 * Removes a breakpoint
 	 * 
 	 * @param breakpoint The breakpoint to be removed
 	 */
 	void removeBreakpoint(IBreakpoint breakpoint);
+
+	/**
+	 * Removes breakpoints
+	 * 
+	 * @param breakpoints The breakpoints to be removed
+	 */
+	void removeBreakpoints(List<IBreakpoint> breakpoints);
 
 	/**
 	 * Remove all breakpoints

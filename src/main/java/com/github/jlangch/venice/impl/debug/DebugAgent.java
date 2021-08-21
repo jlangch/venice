@@ -111,11 +111,25 @@ public class DebugAgent implements IDebugAgent {
 		breakpoints.remove(breakpoint);
 		breakpoints.put(breakpoint, breakpoint);
 	}
+	
+	@Override
+	public void addBreakpoints(final List<IBreakpoint> breakpoints) {
+		if (breakpoints != null) {
+			breakpoints.forEach(b -> addBreakpoint(b));
+		}
+	}
 
 	@Override
 	public void removeBreakpoint(final IBreakpoint breakpoint) {
 		if (breakpoint != null) {
 			breakpoints.remove(breakpoint);
+		}
+	}
+	
+	@Override
+	public void removeBreakpoints(final List<IBreakpoint> breakpoints) {
+		if (breakpoints != null) {
+			breakpoints.forEach(b -> removeBreakpoint(b));
 		}
 	}
 

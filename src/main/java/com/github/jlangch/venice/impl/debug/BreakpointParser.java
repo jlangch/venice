@@ -21,10 +21,16 @@
  */
 package com.github.jlangch.venice.impl.debug;
 
+import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,13 +43,66 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class BreakpointParser {
 
 	/**
+	 * Parse breakpoint from tokens
+	 * 
+	 * <p>Breakpoint variants:
+	 * <ul>
+	 *   <li>user/sum</li>
+	 *   <li>user/sum + *</li>
+	 *   <li>() user/sum</li>
+	 *   <li>(!) user/sum + *</li>
+	 *   <li>statistics.venice/300</li>
+	 * </ul>
+	 * 
+	 * @param tokens the tokens
+	 * @return the parsed breakpoints
+	 */
+	public static List<IBreakpoint> parseBreakpoints(final List<String> tokens) {
+		if (tokens.isEmpty()) {
+			return new ArrayList<IBreakpoint>();
+		}
+		
+		final String scopes = trimToEmpty(tokens.get(0));
+		
+		final boolean hasScopes = isBreakpointScopes(scopes);
+
+		final Set<BreakpointScope> scopeSet = hasScopes 
+												? parseBreakpointScopes(
+														scopes, 
+														DEFAULT_SCOPES)
+												: DEFAULT_SCOPES;
+
+		final List<String> bpTokens = hasScopes ? drop(tokens,1) : tokens;
+		
+		return bpTokens
+				.stream()
+				.filter(s -> isBreakpointRef(s))
+				.map(s -> parseBreakpoint(s))
+				.filter(b -> b != null)
+				.map(b -> b instanceof BreakpointFn
+								? ((BreakpointFn)b).withScopes(scopeSet)
+								: b)
+				.collect(Collectors.toList());
+	}
+	
+	/**
 	 * Parse a breakpoint given by a reference.
 	 * 
 	 * <p>Function breakpoints:
 	 * <ul>
 	 *   <li>filter</li>
 	 *   <li>foo/count</li>
+	 *   <li>foo/count > reduce</li>
+	 *   <li>foo/count + reduce</li>
 	 * </ul>
+	 * 
+	 * Selector style function break points:
+	 * <br/>
+	 * <i>foo/*:</i>  break in any function defined in namespace foo
+	 * <br/>
+	 * <i>function1 > function2:</i>  break in function2 if function1 is its immediate caller
+	 * <br/>
+	 * <i>function1 + function2:</i>  break in function2 if function1 is in the caller hierarchy
 	 * 
 	 * <p>File/line breakpoints:
 	 * <ul>
@@ -115,6 +174,9 @@ public class BreakpointParser {
 		return scopes.matches(BREAKPOINT_SCOPE_REGEX);
 	}
 
+	private static boolean isBreakpointRef(final String s) {
+		return s != null && !isBreakpointScopes(s);
+	}
 	
 	private static boolean isInteger(final String s) {
 		return s.matches("([1-9][0-9]*|0)");
@@ -130,5 +192,7 @@ public class BreakpointParser {
 	}
 	
 	
+	private static final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
+
 	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }
