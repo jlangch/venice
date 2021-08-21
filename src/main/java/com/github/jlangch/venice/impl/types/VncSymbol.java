@@ -25,7 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
+
 
 public class VncSymbol extends VncVal implements INamespaceAware {
 
@@ -36,22 +38,28 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	public VncSymbol(final String v, final VncVal meta) { 
 		super(meta);
 		
-		final int pos = v.indexOf("/");
-
-		namespace = pos <= 0 ? null : v.substring(0, pos);
-		simpleName = pos < 0 ? v : v.substring(pos+1); 	
-		qualifiedName = v;
-		hash = v.hashCode();
+		final QualifiedName qn = QualifiedName
+									.parse(v)
+									.mapCoreNamespaceToNull();
+		
+		namespace = qn.getNamespace();
+		simpleName = qn.getSimpleName(); 	
+		qualifiedName = qn.getQualifiedName();
+		
+		hash = qualifiedName.hashCode();
 	}
 
 	public VncSymbol(final String ns, final String name, final VncVal meta) { 
 		super(meta);
 		
-		final boolean emptyNS = (ns == null || ns.isEmpty());
+		final QualifiedName qn = QualifiedName
+									.of(ns, name)
+									.mapCoreNamespaceToNull();
 		
-		namespace = emptyNS ? null : ns;
-		simpleName = name;
-		qualifiedName = emptyNS ? simpleName : ns + "/" + simpleName;
+		namespace = qn.getNamespace();
+		simpleName = qn.getSimpleName(); 	
+		qualifiedName = qn.getQualifiedName();
+		
 		hash = qualifiedName.hashCode();
 	}
 
