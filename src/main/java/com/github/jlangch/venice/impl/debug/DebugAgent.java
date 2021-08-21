@@ -108,10 +108,8 @@ public class DebugAgent implements IDebugAgent {
 			throw new IllegalArgumentException("A breakpoint must not be null");
 		}
 		
-		if (breakpoint != null) {
-			breakpoints.remove(breakpoint);
-			breakpoints.put(breakpoint, breakpoint);
-		}
+		breakpoints.remove(breakpoint);
+		breakpoints.put(breakpoint, breakpoint);
 	}
 
 	@Override
