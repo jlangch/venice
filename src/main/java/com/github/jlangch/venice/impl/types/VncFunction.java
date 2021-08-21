@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -64,10 +65,11 @@ public abstract class VncFunction
 	) {
 		super(Constants.Nil);
 
-		final int pos = name.indexOf("/");
-		this.namespace = pos < 0 ? "core" : name.substring(0, pos);
-		this.simpleName = pos < 0 ? name : name.substring(pos+1);
-		this.qualifiedName = "core".equals(namespace) ? simpleName : namespace + "/" + simpleName;
+		final QualifiedName qn = QualifiedName.parse(name);
+		
+		this.namespace = qn.getNamespace();
+		this.simpleName = qn.getSimpleName();
+		this.qualifiedName = qn.getQualifiedName();
 
 		this.params = params == null ? VncVector.empty() : params;
 		
