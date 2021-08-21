@@ -26,4 +26,6 @@ public interface IBreakpoint extends Comparable<IBreakpoint> {
 
 	String format();
 	
+	String formatEx();
+	
 }

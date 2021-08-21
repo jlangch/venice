@@ -716,8 +716,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 						
 						if (debugAgent != null) {
-							final VncVal meta = a0.getMeta();
-							final BreakpointLine bp = BreakpointLine.fromMeta(meta);
+							final BreakpointLine bp = BreakpointLine.fromMeta(a0.getMeta());
 							if (bp != null && debugAgent.hasBreakpointFor(bp)) {
 								debugAgent.onBreakLineNr(bp, fn, args, env);
 							}
@@ -754,7 +753,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							checkInterrupted(currThread, fnName);
 								
 							final CallStack callStack = threadLocalMap.getCallStack_();
-							
+
 							// Automatic TCO (tail call optimization)
 							if (tailPosition
 									&& !fn.isNative()  // native functions do not have an AST body

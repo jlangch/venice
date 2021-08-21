@@ -83,7 +83,12 @@ public class BreakpointLine implements IBreakpoint {
 	
 	@Override
 	public String format() {
-		return String.format("%s %d", file, lineNr);
+		return String.format("%s at line %d", file, lineNr);
+	}
+	
+	@Override
+	public String formatEx() {
+		return String.format("%s at line %d", file, lineNr);
 	}
 	
 	@Override

@@ -318,7 +318,7 @@ public class ReplDebugClient {
 						 			String.format(
 						 				"  %s%s",
 						 				skip ? "[-] " : "",
-						 				b.format())));
+						 				b.formatEx())));
 		}
 	}
 	

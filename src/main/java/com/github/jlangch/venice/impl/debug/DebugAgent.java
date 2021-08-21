@@ -112,7 +112,7 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void removeBreakpoint(IBreakpoint breakpoint) {
+	public void removeBreakpoint(final IBreakpoint breakpoint) {
 		if (breakpoint != null) {
 			breakpoints.remove(breakpoint);
 		}
@@ -179,26 +179,6 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = listener;
 	}
 
-	public void onBreakLineNr(
-			final BreakpointLine bp,
-			final VncFunction fn,
-			final VncList args,
-			final Env env
-	) {
-		if (isStopOnLineNr(bp)) {
-			final Break br = new Break(
-									bp,
-									fn,
-									args,
-									env,
-									ThreadLocalMap.getCallStack(),
-									FunctionCall);
-			
-			notifyOnBreak(br);
-			waitOnBreak(br);
-		}
-	}
-
 	public void onBreakLoop(
 			final List<VncSymbol> loopBindingNames,
 			final VncVal meta,
@@ -242,6 +222,26 @@ public class DebugAgent implements IDebugAgent {
 									env, 
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
+			notifyOnBreak(br);
+			waitOnBreak(br);
+		}
+	}
+
+	public void onBreakLineNr(
+			final BreakpointLine bp,
+			final VncFunction fn,
+			final VncList args,
+			final Env env
+	) {
+		if (isStopOnLineNr(bp)) {
+			final Break br = new Break(
+									bp,
+									fn,
+									args,
+									env,
+									ThreadLocalMap.getCallStack(),
+									FunctionCall);
+			
 			notifyOnBreak(br);
 			waitOnBreak(br);
 		}

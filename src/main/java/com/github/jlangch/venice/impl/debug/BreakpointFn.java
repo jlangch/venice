@@ -34,6 +34,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
+
 
 /**
  * Defines a breakpoint given by qualified function name
@@ -79,12 +81,25 @@ public class BreakpointFn implements IBreakpoint {
 	}
 	
 	public String getFormattedScopes() {
-		return format(scopes);
+		return format(scopes, false);
 	}
 	
 	@Override
 	public String format() {
-		return String.format("%s %s", qualifiedFnName, format(scopes));
+		final String sScopes = format(scopes, false);
+		
+		return StringUtil.isBlank(sScopes)
+				? qualifiedFnName
+				: String.format("%s at level %s", qualifiedFnName, sScopes);
+	}
+	
+	@Override
+	public String formatEx() {
+		final String sScopes = format(scopes, true);
+		
+		return StringUtil.isBlank(sScopes)
+				? qualifiedFnName
+				: String.format("%s at level %s", qualifiedFnName, sScopes);
 	}
 	
 	@Override
@@ -120,9 +135,10 @@ public class BreakpointFn implements IBreakpoint {
 	}
 	
 	
-	private String format(final Set<BreakpointScope> scopes) {
+	private String format(final Set<BreakpointScope> scopes, final boolean extended) {
 		// predefined order of breakpoint scopes
 		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
+			final String delimiter = extended ? ", " : "";
 			return Arrays.asList(
 							FunctionCall, 
 							FunctionEntry, 
@@ -130,8 +146,8 @@ public class BreakpointFn implements IBreakpoint {
 							FunctionExit)
 						 .stream()
 						 .filter(t -> scopes.contains(t))
-						 .map(t -> t.symbol())
-						 .collect(Collectors.joining());
+						 .map(t -> extended ? t.description() : t.symbol())
+						 .collect(Collectors.joining(delimiter));
 		}
 		else {
 			return "";
