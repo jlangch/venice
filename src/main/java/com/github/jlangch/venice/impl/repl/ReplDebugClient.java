@@ -270,12 +270,17 @@ public class ReplDebugClient {
 		else {
 			final boolean skip = agent.isSkipBreakpoints();
 			agent.getBreakpoints()
-				 .forEach(b -> printer.println(
-						 			"stdout", 
-						 			String.format(
-						 				"  %s%s",
-						 				skip ? "[-] " : "",
-						 				b.format(true))));
+				 .stream()
+				 .forEach(b ->
+					 b.getSelectors().forEach(s ->
+						 printer.println(
+							"stdout",
+							String.format(
+								"  %s%s", 
+								skip ? "[-] " : "", 
+										s.formatForBaseFn(
+											b.getQualifiedFnName(),
+											true)))));
 		}
 	}
 	

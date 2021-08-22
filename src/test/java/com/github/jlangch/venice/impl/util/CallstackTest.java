@@ -112,25 +112,28 @@ public class CallstackTest {
 	public void testAncestor() {
 		final CallStack stack = new CallStack();
 
-		assertFalse(stack.hasNearestAncestor(null));
-		assertFalse(stack.hasAnyAncestor(null));
+		assertFalse(stack.hasNearestAncestor(null, true));
+		assertFalse(stack.hasAnyAncestor(null, true));
 
-		assertFalse(stack.hasNearestAncestor("foo"));
-		assertFalse(stack.hasAnyAncestor("foo"));
+		assertFalse(stack.hasNearestAncestor("foo", true));
+		assertFalse(stack.hasAnyAncestor("foo", true));
 
 		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
 		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
 		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
+		stack.push(new CallFrame("curr", new VncLong(4).getMeta()));
 
-		assertFalse(stack.hasNearestAncestor("foo"));
-		assertFalse(stack.hasAnyAncestor("foo"));
+		assertFalse(stack.hasNearestAncestor("foo", true));
+		assertFalse(stack.hasAnyAncestor("foo", true));
 
-		assertFalse(stack.hasNearestAncestor("fn-1"));
-		assertFalse(stack.hasNearestAncestor("fn-2"));
-		assertTrue(stack.hasNearestAncestor("fn-3"));
+		assertFalse(stack.hasNearestAncestor("fn-1", true));
+		assertFalse(stack.hasNearestAncestor("fn-2", true));
+		assertTrue(stack.hasNearestAncestor("fn-3", true));
+		assertFalse(stack.hasNearestAncestor("curr", true));
 		
-		assertTrue(stack.hasAnyAncestor("fn-1"));
-		assertTrue(stack.hasAnyAncestor("fn-2"));
-		assertTrue(stack.hasAnyAncestor("fn-3"));
+		assertTrue(stack.hasAnyAncestor("fn-1", true));
+		assertTrue(stack.hasAnyAncestor("fn-2", true));
+		assertTrue(stack.hasAnyAncestor("fn-3", true));
+		assertFalse(stack.hasAnyAncestor("curr", true));
 	}
 }

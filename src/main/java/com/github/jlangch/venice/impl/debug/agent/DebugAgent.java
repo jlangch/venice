@@ -116,8 +116,15 @@ public class DebugAgent implements IDebugAgent {
 		}
 		
 		final BreakpointFnRef ref = breakpoint.getBreakpointRef();
-		breakpoints.remove(ref);
-		breakpoints.put(ref, breakpoint);
+		
+		final BreakpointFn bp = breakpoints.get(ref);
+		if (bp == null) {
+			breakpoints.put(ref, breakpoint);
+		}
+		else {
+			breakpoints.remove(ref);
+			breakpoints.put(ref, bp.merge(breakpoint.getSelectors()));
+		}
 	}
 	
 	@Override
@@ -535,13 +542,14 @@ public class DebugAgent implements IDebugAgent {
 					else {
 						// match ancestor with callstack
 						final CallStack callStack = ThreadLocalMap.get().getCallStack_();
+						final String ancestorQN = as.getAncestor().getQualifiedName();
 						if (as.getType() == AncestorType.Nearest) {
-							if (callStack.hasNearestAncestor(fnName)) {
+							if (callStack.hasNearestAncestor(ancestorQN, true)) {
 								return true;
 							}
 						}
 						else {
-							if (callStack.hasAnyAncestor(fnName)) {
+							if (callStack.hasAnyAncestor(ancestorQN, true)) {
 								return true;
 							}
 						}

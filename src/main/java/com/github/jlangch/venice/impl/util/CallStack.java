@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.util;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -138,15 +139,24 @@ public class CallStack {
 	 * Checks if the any of call frames refers to the specified function name
 	 * 
 	 * @param fnName A qualified function name
+	 * @param skipHead skip the head element
 	 * @return <code>true</code> if any of the call frames refers to the 
 	 * 			specified function name else <code>false</code>
 	 */
-	public boolean hasAnyAncestor(final String fnName) {
-		for(CallFrame cf : queue) {
+	public boolean hasAnyAncestor(final String fnName, final boolean skipHead) {
+		final Iterator<CallFrame> iter = queue.iterator();
+		
+		if (skipHead && iter.hasNext()) {
+			iter.next();
+		}
+
+		while (iter.hasNext()) {
+			final CallFrame cf = iter.next();
 			if (cf.hasFnName(fnName)) {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
@@ -154,12 +164,23 @@ public class CallStack {
 	 * Checks if the top call frame refers to the specified function name
 	 * 
 	 * @param fnName A qualified function name
+	 * @param skipHead skip the head element
 	 * @return <code>true</code> if if the top call frame refers to the 
 	 * 			specified function name else <code>false</code>
 	 */
-	public boolean hasNearestAncestor(final String fnName) {
-		final CallFrame top = peek();
-		return top != null && top.hasFnName(fnName);
+	public boolean hasNearestAncestor(final String fnName, final boolean skipHead) {
+		final Iterator<CallFrame> iter = queue.iterator();
+		
+		if (skipHead && iter.hasNext()) {
+			iter.next();
+		}
+		
+		if (iter.hasNext()) {
+			final CallFrame cf = iter.next();
+			return cf.hasFnName(fnName);
+		}
+		
+		return false;
 	}
 	
 	

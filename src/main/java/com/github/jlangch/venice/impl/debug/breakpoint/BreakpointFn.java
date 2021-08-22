@@ -69,6 +69,18 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 		}
 	}
 
+	public BreakpointFn merge(final List<Selector> selectors) {
+		if (selectors == null || selectors.isEmpty()) {
+			return this;
+		}
+		else {
+			// TODO: this can be done smarter!
+			final ArrayList<Selector> tmp = new ArrayList<>();
+			tmp.addAll(selectors);
+			tmp.addAll(this.selectors);
+			return new BreakpointFn(qn, tmp);
+		}
+	}
 
 	public String getQualifiedFnName() {
 		return qn.getQualifiedName();
