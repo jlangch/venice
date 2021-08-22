@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -107,5 +107,30 @@ public class CallstackTest {
 		assertEquals("fn-2", items.get(1).getFnName());
 		assertEquals("fn-1", items.get(2).getFnName());
 	}
-	
+
+	@Test
+	public void testAncestor() {
+		final CallStack stack = new CallStack();
+
+		assertFalse(stack.hasDirectAncestor(null));
+		assertFalse(stack.hasAnyAncestor(null));
+
+		assertFalse(stack.hasDirectAncestor("foo"));
+		assertFalse(stack.hasAnyAncestor("foo"));
+
+		stack.push(new CallFrame("fn-1", new VncLong(1).getMeta()));
+		stack.push(new CallFrame("fn-2", new VncLong(2).getMeta()));
+		stack.push(new CallFrame("fn-3", new VncLong(3).getMeta()));
+
+		assertFalse(stack.hasDirectAncestor("foo"));
+		assertFalse(stack.hasAnyAncestor("foo"));
+
+		assertFalse(stack.hasDirectAncestor("fn-1"));
+		assertFalse(stack.hasDirectAncestor("fn-2"));
+		assertTrue(stack.hasDirectAncestor("fn-3"));
+		
+		assertTrue(stack.hasAnyAncestor("fn-1"));
+		assertTrue(stack.hasAnyAncestor("fn-2"));
+		assertTrue(stack.hasAnyAncestor("fn-3"));
+	}
 }
