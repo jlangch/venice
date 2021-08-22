@@ -71,10 +71,6 @@ public class Step {
 		return fromBreak;
 	}
 
-	public boolean isBreakInLineNr() {
-		return fromBreak != null && fromBreak.isBreakInLineNr();
-	}
-
 	public boolean isBreakInFunction() {
 		return fromBreak != null && fromBreak.isBreakInFunction();
 	}

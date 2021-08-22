@@ -53,7 +53,6 @@ public class BreakpointParser {
 	 *   <li>user/sum + *</li>
 	 *   <li>() user/sum</li>
 	 *   <li>(!) user/sum + *</li>
-	 *   <li>statistics.venice/300</li>
 	 * </ul>
 	 * 
 	 * @param tokens the tokens
@@ -118,11 +117,6 @@ public class BreakpointParser {
 	 * <br/>
 	 * <i>function1 + function2:</i>  break in function2 if function1 is in the caller hierarchy
 	 * 
-	 * <p>File/line breakpoints:
-	 * <ul>
-	 *   <li>test.venice/300</li>
-	 * </ul>
-	 * 
 	 * @param ref a breakpoint reference
 	 * @return A breakpoint or <code>null</code> if the passed reference
 	 *         could not be parsed
@@ -138,11 +132,7 @@ public class BreakpointParser {
 		try {
 			final String ref_ = ref.trim();
 			
-			if (isBreakpointLine(ref_)) {
-				// file/line breakpoint
-				return parseBreakpointLine(ref_);
-			}
-			else if (isBreakpointFn(ref_)) {
+			if (isBreakpointFn(ref_)) {
 				// function breakpoint
 				return new BreakpointFn(
 							QualifiedName.parse(ref_), 
@@ -184,36 +174,13 @@ public class BreakpointParser {
 	public static boolean isBreakpointScopes(final String scopes) {
 		return scopes.matches(BREAKPOINT_SCOPE_REGEX);
 	}
-
-	private static boolean isBreakpointLine(final String ref) {
-		return ref.matches(".*/[0-9]+");
-	}
 	
 	private static boolean isBreakpointFn(final String ref) {
 		return ref.equals("/") || ref.matches("([^0-9/][^/]*|[^0-9/][^/]*/[^/]+)");
 	}
-
-	private static BreakpointLine parseBreakpointLine(final String ref) {
-		final int pos = ref.indexOf('/');
-		final String file = ref.substring(0, pos).trim();
-		final String line = ref.substring(pos+1).trim();
-
-		final int lineNr = parseInteger(line);
-			
-		return lineNr < 1 ? null : new BreakpointLine(file, lineNr);			
-	}
 	
 	private static boolean isBreakpointRefCandidate(final String s) {
 		return s != null && !isBreakpointScopes(s);
-	}
-
-	private static int parseInteger(final String s) {
-		try {
-			return Integer.parseInt(s);
-		}
-		catch(Exception ex) {
-			return -1;
-		}
 	}
 	
 	

@@ -50,7 +50,6 @@ import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.ComputedVar;
 import com.github.jlangch.venice.impl.env.DynamicVar;
@@ -712,17 +711,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					if (fn0 instanceof VncFunction) { 
 						final VncFunction fn = (VncFunction)fn0;
 
-						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
-						
-						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
-						
-						if (debugAgent != null) {
-							final BreakpointLine bp = BreakpointLine.fromMeta(a0.getMeta());
-							if (bp != null && debugAgent.hasBreakpointFor(bp)) {
-								debugAgent.onBreakLineNr(bp, fn, args, env);
-							}
-						}
-
 						if (fn.isMacro()) { 
 							// macro
 							final VncVal expandedAst = macroexpand(ast, env);
@@ -752,8 +740,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final Thread currThread = Thread.currentThread();
 	
 							checkInterrupted(currThread, fnName);
-								
+							
+							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+															
 							final CallStack callStack = threadLocalMap.getCallStack_();
+							
+							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 							// Automatic TCO (tail call optimization)
 							if (tailPosition

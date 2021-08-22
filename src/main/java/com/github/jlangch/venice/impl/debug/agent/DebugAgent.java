@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.debug.agent;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepIntoFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextLine;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionCall;
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope;
 import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpoint;
 import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpointRef;
@@ -55,7 +53,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.types.util.QualifiedName;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -174,27 +171,38 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreakpointFor(final BreakpointFnRef bpRef) {
-		final Step step = this.step;
-		switch (step.mode()) {
-			case SteppingDisabled: 
-				return !skipBreakpoints && breakpoints.containsKey(bpRef);
-				
-			case StepToNextFunction: 
-			case StepToNextNonSystemFunction: 
-			case StepToFunctionReturn: 
-			case StepIntoFunction: 
-			case StepToNextLine:
-				return true;
-				
-			default: 
-				return false;
+	public boolean hasBreakpointFor(final IBreakpointRef bpRef) {
+		if (bpRef instanceof BreakpointFnRef) {
+			switch (step.mode()) {
+				case SteppingDisabled: 
+					return !skipBreakpoints && breakpoints.containsKey(bpRef);
+					
+				case StepToNextFunction: 
+				case StepToNextNonSystemFunction: 
+				case StepToFunctionReturn: 
+				case StepIntoFunction: 
+					return true;
+					
+				default: 
+					return false;
+			}
 		}
-	}
-	
-	@Override
-	public boolean hasBreakpointFor(final BreakpointLine bp) {
-		return isStopOnLineNr(bp);
+		else {
+			switch(step.mode()) {
+				case SteppingDisabled:
+					return !skipBreakpoints && breakpoints.containsKey(bpRef);
+		
+				case StepToNextFunction:
+				case StepToNextNonSystemFunction: 
+				case StepToFunctionReturn: 
+				case StepIntoFunction: 
+					// stop on line nr is suspended while stepping
+					return false;
+		
+				default:
+					return false;
+			}
+		}
 	}
 
 	@Override
@@ -209,7 +217,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction("loop", FunctionEntry)) {
 			final Break br = new Break(
-									new BreakpointFn(QualifiedName.parse("loop")),
+									new BreakpointFnRef("loop"),
 									new SpecialFormVirtualFunction(
 											"loop", 
 											VncVector.ofColl(loopBindingNames), 
@@ -236,7 +244,7 @@ public class DebugAgent implements IDebugAgent {
 		if (isStopOnFunction("let", FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
-									new BreakpointFn(QualifiedName.parse("let")),
+									new BreakpointFnRef("let"),
 									new SpecialFormVirtualFunction("let", vars, meta), 
 									VncList.ofColl(
 										vars.stream()
@@ -245,26 +253,6 @@ public class DebugAgent implements IDebugAgent {
 									env, 
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
-			notifyOnBreak(br);
-			waitOnBreak(br);
-		}
-	}
-
-	public void onBreakLineNr(
-			final BreakpointLine bp,
-			final VncFunction fn,
-			final VncList args,
-			final Env env
-	) {
-		if (isStopOnLineNr(bp)) {
-			final Break br = new Break(
-									bp,
-									fn,
-									args,
-									env,
-									ThreadLocalMap.getCallStack(),
-									FunctionCall);
-			
 			notifyOnBreak(br);
 			waitOnBreak(br);
 		}
@@ -278,7 +266,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionEntry)) {
 			final Break br = new Break(
-									new BreakpointFn(QualifiedName.parse(fnName)),
+									new BreakpointFnRef(fnName),
 									fn,
 									args,
 									env,
@@ -299,7 +287,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionExit)) {
 			final Break br = new Break(
-									new BreakpointFn(QualifiedName.parse(fnName)),
+									new BreakpointFnRef(fnName),
 									fn,
 									args,
 									retVal,
@@ -322,7 +310,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionException)) {
 			final Break br = new Break(
-									new BreakpointFn(QualifiedName.parse(fnName)),
+									new BreakpointFnRef(fnName),
 									fn,
 									args,
 									null,
@@ -392,18 +380,6 @@ public class DebugAgent implements IDebugAgent {
 				}
 				break;
 				
-			case StepToNextLine:
-				if (br.isBreakInLineNr()) {
-					step = new Step(StepToNextLine, null, br);
-				}
-				else if (step.isBreakInLineNr()) {
-					step = new Step(StepToNextLine);
-				}
-				else {
-					step = step.clear();
-				}
-				break;
-				
 			case SteppingDisabled:
 			default:
 				step = step.clear();
@@ -436,10 +412,7 @@ public class DebugAgent implements IDebugAgent {
 			case StepToFunctionReturn:
 				return !br.isBreakInSpecialForm() 
 							&& br.isInScope(FunctionCall, FunctionEntry);
-				
-			case StepToNextLine:
-				return br.isBreakInLineNr() || step.isBreakInLineNr();
-				
+
 			case SteppingDisabled:
 				return true;
 					
@@ -502,39 +475,6 @@ public class DebugAgent implements IDebugAgent {
 				: Namespaces.isSystemNS(qualifiedName.substring(0, pos));
 	}
 	
-	private boolean isStopOnLineNr(final BreakpointLine bp) {
-		if (bp == null) {
-			return false;
-		}
-		
-		final Step stepTmp = step;  // be immune to changing step var
-		
-		switch(stepTmp.mode()) {
-			case SteppingDisabled:
-				return !skipBreakpoints && breakpoints.containsKey(bp);
-	
-			case StepToNextFunction:
-			case StepToNextNonSystemFunction: 
-			case StepToFunctionReturn: 
-			case StepIntoFunction: 
-				// stop on line nr is suspended while stepping
-				return false;
-	
-			case StepToNextLine:
-				if (stepTmp.isBreakInLineNr()) {
-					// must be on another line
-					final BreakpointLine b = (BreakpointLine)stepTmp.fromBreak().getBreakpoint();
-					return bp.isSameFile(b) && !bp.isSameLineNr(b);
-				}
-				else {
-					return false;
-				}
-	
-			default:
-				return false;
-		}
-	}
-	
 	private boolean isStopOnFunction(
 			final String fnName, 
 			final BreakpointScope scope
@@ -564,9 +504,6 @@ public class DebugAgent implements IDebugAgent {
 
 			case StepIntoFunction: 
 				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
-
-			case StepToNextLine:
-				return false;
 
 			default:
 				return false;

@@ -34,6 +34,12 @@ public class BreakpointFnRef implements IBreakpointRef {
 	public String getQualifiedName() {
 		return qualifiedName;
 	}
+
+
+	@Override
+	public String toString() {
+		return String.format("Function breakpoint: %s", qualifiedName);
+	}
 	
 	
 	@Override

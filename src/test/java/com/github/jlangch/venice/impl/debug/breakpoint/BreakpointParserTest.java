@@ -35,10 +35,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope;
-
 
 public class BreakpointParserTest {
 
@@ -130,17 +126,6 @@ public class BreakpointParserTest {
 		assertEquals(
 				"(!)", 
 				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry,FunctionExit,FunctionException))).getFormattedScopes());
-	}
-
-	@Test
-	public void test_parseBreakpoint_ln() {
-		assertEquals(
-				"test.venice", 
-				((BreakpointLine)parseBreakpoint("test.venice/100", null)).getFile());
-		
-		assertEquals(
-				100, 
-				((BreakpointLine)parseBreakpoint("test.venice/100", null)).getLineNr());
 	}
 	
 }

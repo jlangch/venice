@@ -38,9 +38,6 @@ public enum StepMode {
 
 	// Step in the current function to the return
 	StepToFunctionReturn,
-
-	// Step to function entry on the next line
-	StepToNextLine,
 	
 	// Disable stepping, just stop on function or file/lineNr breakpoints
 	SteppingDisabled;

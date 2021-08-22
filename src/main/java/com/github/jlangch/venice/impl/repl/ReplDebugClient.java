@@ -38,8 +38,6 @@ import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.agent.Break;
 import com.github.jlangch.venice.impl.debug.agent.IDebugAgent;
 import com.github.jlangch.venice.impl.debug.agent.StepMode;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -144,14 +142,6 @@ public class ReplDebugClient {
 					return;
 				}
 				agent.step(StepMode.StepIntoFunction);
-				break;
-				
-			case "step-line":
-			case "sl":
-				if (!agent.isStepPossible(StepMode.StepToNextLine))  {
-					return;
-				}
-				agent.step(StepMode.StepToNextLine);
 				break;
 				
 			case "step-return":
@@ -576,29 +566,16 @@ public class ReplDebugClient {
 	}
 	
 	private String formatStop(final Break br) {	
-		if (br.getBreakpoint() instanceof BreakpointFn) {
-			return String.format(
-					"Stopped in %s %s%s at %s level.",
-					br.isBreakInSpecialForm()
-						? "special form"
-						: "function",
-					br.getFn().getQualifiedName(),
-					br.getFn().isNative() 
-						? "" 
-						: " (" + new CallFrame(br.getFn()).getSourcePosInfo() + ")",
-					br.getBreakpointScope().description());
-		}
-		else {
-			final BreakpointLine bp = (BreakpointLine)br.getBreakpoint();
-			return String.format(
-					"Stopped in file '%s', line %d at %s %s call level",
-					bp.getFile(),
-					bp.getLineNr(),
-					br.isBreakInSpecialForm()
-						? "special form"
-						: "function",
-					br.getFn().getQualifiedName());
-		}
+		return String.format(
+				"Stopped in %s %s%s at %s level.",
+				br.isBreakInSpecialForm()
+					? "special form"
+					: "function",
+				br.getFn().getQualifiedName(),
+				br.getFn().isNative() 
+					? "" 
+					: " (" + new CallFrame(br.getFn()).getSourcePosInfo() + ")",
+				br.getBreakpointScope().description());
 	}
 	
 	private void println(final String s) {
