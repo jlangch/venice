@@ -43,7 +43,7 @@ public class QualifiedName {
 			final String simpleName
 	) {
 		String namespace_ = StringUtil.trimToNull(namespace);
-		if (namespace_.indexOf("/") >= 0) {
+		if (namespace_ != null && namespace_.indexOf("/") >= 0) {
 			throw new VncException("A namespace must not contain a '/'");
 		}
 		namespace_ = namespace_ == null ? "core" : namespace_;
@@ -60,10 +60,7 @@ public class QualifiedName {
 										? simpleName 
 										: namespace + "/" + simpleName;
 
-		return new QualifiedName(
-						qualifiedName_, 
-						namespace_, 
-						simpleName_);
+		return new QualifiedName(qualifiedName_, namespace_, simpleName_);
 	}
 
 	public static QualifiedName parse(final String name) {
@@ -91,10 +88,7 @@ public class QualifiedName {
 											? simpleName 
 											: namespace + "/" + simpleName;
 
-			return new QualifiedName(
-						qualifiedName, 
-						namespace, 
-						simpleName);
+			return new QualifiedName(qualifiedName, namespace, simpleName);
 		}
 	}
 
@@ -124,10 +118,7 @@ public class QualifiedName {
 											? simpleName 
 											: namespace + "/" + simpleName;
 
-			return new QualifiedName(
-						qualifiedName, 
-						namespace, 
-						simpleName);
+			return new QualifiedName(qualifiedName, namespace, simpleName);
 		}
 	}
 	
