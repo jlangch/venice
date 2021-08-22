@@ -46,7 +46,11 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 			 meta); 
 	}
 
-	public VncKeyword(final String namespace, final String simpleName, final VncVal meta) {
+	public VncKeyword(
+			final String namespace, 
+			final String simpleName, 
+			final VncVal meta
+	) {
 		this(namespace, 
 			 simpleName, 
 			 namespace == null ? simpleName : namespace + "/" + simpleName, 
@@ -61,7 +65,12 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		this.qualifiedName = qn.getQualifiedName();
 	}
 
-	private VncKeyword(final String namespace, final String simpleName, final String qualifiedName, final VncVal meta) { 
+	private VncKeyword(
+			final String namespace, 
+			final String simpleName, 
+			final String qualifiedName, 
+			final VncVal meta
+	) { 
 		super(qualifiedName, meta);
 
 		this.namespace = namespace;
