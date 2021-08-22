@@ -2,7 +2,7 @@ package com.github.jlangch.venice.impl.types.concurrent;
 
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.debug.DebugAgent;
+import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 

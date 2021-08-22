@@ -19,14 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.debug;
+package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionCall;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionCall;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
-import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -34,6 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -43,25 +43,25 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class BreakpointFn implements IBreakpoint {
 
 	public BreakpointFn(
-			final String qualifiedFnName
+			final QualifiedName qualifiedName
 	) {
-		if (isBlank(qualifiedFnName)) {
-			throw new IllegalArgumentException("A qualifiedFnName must not be blank");
+		if (qualifiedName == null) {
+			throw new IllegalArgumentException("A qualifiedName must not be null");
 		}
 
-		this.qualifiedFnName = qualifiedFnName;
+		this.qn = qualifiedName;
 		this.scopes = DEFAULT_SCOPES;
 	}
 
 	public BreakpointFn(
-			final String qualifiedFnName,
+			final QualifiedName qualifiedName,
 			final Set<BreakpointScope> scopes
 	) {
-		if (isBlank(qualifiedFnName)) {
-			throw new IllegalArgumentException("A qualifiedFnName must not be blank");
+		if (qualifiedName == null) {
+			throw new IllegalArgumentException("A qualifiedName must not be null");
 		}
 
-		this.qualifiedFnName = qualifiedFnName;
+		this.qn = qualifiedName;
 		this.scopes = scopes == null || scopes.isEmpty() 
 						? DEFAULT_SCOPES
 						: new HashSet<>(scopes);
@@ -69,11 +69,19 @@ public class BreakpointFn implements IBreakpoint {
 
 	
 	public BreakpointFn withScopes(final Set<BreakpointScope> scopes) {
-		return new BreakpointFn(qualifiedFnName, scopes);
+		return new BreakpointFn(qn, scopes);
 	}
 
 	public String getQualifiedFnName() {
-		return qualifiedFnName;
+		return qn.getQualifiedName();
+	}
+
+	public String getNamespace() {
+		return qn.getNamespace();
+	}
+
+	public String getSimpleFnName() {
+		return qn.getSimpleName();
 	}
 	
 	public boolean hasScope(final BreakpointScope scope) {
@@ -83,14 +91,19 @@ public class BreakpointFn implements IBreakpoint {
 	public String getFormattedScopes() {
 		return format(scopes, false);
 	}
+
+	@Override
+	public IBreakpointRef getBreakpointRef() {
+		return new BreakpointFnRef(qn.getQualifiedName());
+	}
 	
 	@Override
 	public String format() {
 		final String sScopes = format(scopes, false);
 		
 		return StringUtil.isBlank(sScopes)
-				? qualifiedFnName
-				: String.format("%s at level %s", qualifiedFnName, sScopes);
+				? qn.getQualifiedName()
+				: String.format("%s at level %s", qn.getQualifiedName(), sScopes);
 	}
 	
 	@Override
@@ -98,8 +111,8 @@ public class BreakpointFn implements IBreakpoint {
 		final String sScopes = format(scopes, true);
 		
 		return StringUtil.isBlank(sScopes)
-				? qualifiedFnName
-				: String.format("%s at level %s", qualifiedFnName, sScopes);
+				? qn.getQualifiedName()
+				: String.format("%s at level %s", qn.getQualifiedName(), sScopes);
 	}
 	
 	@Override
@@ -109,7 +122,7 @@ public class BreakpointFn implements IBreakpoint {
 	
 	@Override
 	public int hashCode() {
-		return qualifiedFnName.hashCode();
+		return qn.hashCode();
 	}
 
 	@Override
@@ -121,7 +134,7 @@ public class BreakpointFn implements IBreakpoint {
 		if (getClass() != obj.getClass())
 			return false;
 		BreakpointFn other = (BreakpointFn) obj;
-		return (qualifiedFnName.equals(other.qualifiedFnName));
+		return (qn.equals(other.qn));
 	}
 
 	@Override
@@ -159,6 +172,7 @@ public class BreakpointFn implements IBreakpoint {
 			Comparator.comparing(BreakpointFn::getQualifiedFnName);
 	
 	private static final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
-	private final String qualifiedFnName;
+	
+	private final QualifiedName qn;
 	private final Set<BreakpointScope> scopes;
 }

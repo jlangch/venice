@@ -62,7 +62,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.debug.DebugAgent;
+import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;

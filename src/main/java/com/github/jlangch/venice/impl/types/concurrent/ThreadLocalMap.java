@@ -32,7 +32,7 @@ import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespace;
-import com.github.jlangch.venice.impl.debug.DebugAgent;
+import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;

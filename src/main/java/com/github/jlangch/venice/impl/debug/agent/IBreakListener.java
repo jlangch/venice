@@ -19,13 +19,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.debug;
+package com.github.jlangch.venice.impl.debug.agent;
 
+public interface IBreakListener {
 
-public interface IBreakpoint extends Comparable<IBreakpoint> {
-
-	String format();
-	
-	String formatEx();
+	/**
+	 * Called if a breakpoint is reached
+	 * 
+	 * @param br the break
+	 */
+	void onBreak(Break br);
 	
 }

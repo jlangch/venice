@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
-import com.github.jlangch.venice.impl.debug.DebugAgent;
+import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncVal;

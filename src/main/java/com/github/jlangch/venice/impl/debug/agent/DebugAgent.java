@@ -19,17 +19,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.debug;
+package com.github.jlangch.venice.impl.debug.agent;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionCall;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
-import static com.github.jlangch.venice.impl.debug.StepMode.StepIntoFunction;
-import static com.github.jlangch.venice.impl.debug.StepMode.StepToFunctionReturn;
-import static com.github.jlangch.venice.impl.debug.StepMode.StepToNextFunction;
-import static com.github.jlangch.venice.impl.debug.StepMode.StepToNextLine;
-import static com.github.jlangch.venice.impl.debug.StepMode.StepToNextNonSystemFunction;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepIntoFunction;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextLine;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionCall;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.StringUtil.indent;
 
@@ -40,6 +40,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope;
+import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpoint;
+import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpointRef;
+import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -48,6 +55,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -96,7 +104,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public List<IBreakpoint> getBreakpoints() {
 		return breakpoints
-					.keySet()
+					.values()
 					.stream()
 					.sorted()
 					.collect(Collectors.toList());
@@ -108,8 +116,9 @@ public class DebugAgent implements IDebugAgent {
 			throw new IllegalArgumentException("A breakpoint must not be null");
 		}
 		
-		breakpoints.remove(breakpoint);
-		breakpoints.put(breakpoint, breakpoint);
+		final IBreakpointRef ref = breakpoint.getBreakpointRef();
+		breakpoints.remove(ref);
+		breakpoints.put(ref, breakpoint);
 	}
 	
 	@Override
@@ -122,7 +131,7 @@ public class DebugAgent implements IDebugAgent {
 	@Override
 	public void removeBreakpoint(final IBreakpoint breakpoint) {
 		if (breakpoint != null) {
-			breakpoints.remove(breakpoint);
+			breakpoints.remove(breakpoint.getBreakpointRef());
 		}
 	}
 	
@@ -170,7 +179,7 @@ public class DebugAgent implements IDebugAgent {
 		switch (step.mode()) {
 			case SteppingDisabled: 
 				return !skipBreakpoints && breakpoints.containsKey(
-											new BreakpointFn(qualifiedFnName));
+											new BreakpointFnRef(qualifiedFnName));
 				
 			case StepToNextFunction: 
 			case StepToNextNonSystemFunction: 
@@ -201,7 +210,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction("loop", FunctionEntry)) {
 			final Break br = new Break(
-									new BreakpointFn("loop"),
+									new BreakpointFn(QualifiedName.parse("loop")),
 									new SpecialFormVirtualFunction(
 											"loop", 
 											VncVector.ofColl(loopBindingNames), 
@@ -228,7 +237,7 @@ public class DebugAgent implements IDebugAgent {
 		if (isStopOnFunction("let", FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
-									new BreakpointFn("let"),
+									new BreakpointFn(QualifiedName.parse("let")),
 									new SpecialFormVirtualFunction("let", vars, meta), 
 									VncList.ofColl(
 										vars.stream()
@@ -270,7 +279,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionEntry)) {
 			final Break br = new Break(
-									new BreakpointFn(fnName),
+									new BreakpointFn(QualifiedName.parse(fnName)),
 									fn,
 									args,
 									env,
@@ -291,7 +300,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionExit)) {
 			final Break br = new Break(
-									new BreakpointFn(fnName),
+									new BreakpointFn(QualifiedName.parse(fnName)),
 									fn,
 									args,
 									retVal,
@@ -314,7 +323,7 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(fnName, FunctionException)) {
 			final Break br = new Break(
-									new BreakpointFn(fnName),
+									new BreakpointFn(QualifiedName.parse(fnName)),
 									fn,
 									args,
 									null,
@@ -539,7 +548,7 @@ public class DebugAgent implements IDebugAgent {
 					return false;
 				}
 				else {
-					final IBreakpoint bp = breakpoints.get(new BreakpointFn(fnName));
+					final IBreakpoint bp = breakpoints.get(new BreakpointFnRef(fnName));
 					return bp != null 
 							&& bp instanceof BreakpointFn
 							&& ((BreakpointFn)bp).hasScope(scope);
@@ -596,7 +605,7 @@ public class DebugAgent implements IDebugAgent {
 	private static final long BREAK_LOOP_SLEEP_MILLIS = 500L;
 
 	// simple breakpoint memorization
-	private static final ConcurrentHashMap<IBreakpoint,IBreakpoint> memorized =
+	private static final ConcurrentHashMap<IBreakpointRef,IBreakpoint> memorized =
 			new ConcurrentHashMap<>();
 
 	private volatile Break activeBreak = null;
@@ -604,6 +613,6 @@ public class DebugAgent implements IDebugAgent {
 	private volatile boolean skipBreakpoints = false;
 
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<IBreakpoint,IBreakpoint> breakpoints =
+	private final ConcurrentHashMap<IBreakpointRef,IBreakpoint> breakpoints =
 			new ConcurrentHashMap<>();
 }

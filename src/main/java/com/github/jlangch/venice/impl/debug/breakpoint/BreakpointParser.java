@@ -19,10 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.debug;
+package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -62,27 +64,38 @@ public class BreakpointParser {
 			return new ArrayList<IBreakpoint>();
 		}
 		
+		// First token: optional scopes
 		final String scopes = trimToEmpty(tokens.get(0));
-		
 		final boolean hasScopes = isBreakpointScopes(scopes);
-
-		final Set<BreakpointScope> scopeSet = hasScopes 
-												? parseBreakpointScopes(
-														scopes, 
-														DEFAULT_SCOPES)
-												: DEFAULT_SCOPES;
+		final Set<BreakpointScope> scopeSet = parseBreakpointScopes(
+													hasScopes ? scopes : null);
 
 		final List<String> bpTokens = hasScopes ? drop(tokens,1) : tokens;
 		
-		return bpTokens
-				.stream()
-				.filter(s -> isBreakpointRef(s))
-				.map(s -> parseBreakpoint(s))
-				.filter(b -> b != null)
-				.map(b -> b instanceof BreakpointFn
-								? ((BreakpointFn)b).withScopes(scopeSet)
-								: b)
-				.collect(Collectors.toList());
+		final String selector = bpTokens.size() == 3 ? bpTokens.get(1) : ""; 
+		
+		switch (selector) {
+			case ">": 
+				final QualifiedName parent = QualifiedName.parse(bpTokens.get(0));
+				return toList(new BreakpointFn(
+									QualifiedName.parse(bpTokens.get(2)), 
+									scopeSet));
+				
+			case "+":
+				final QualifiedName anscestor = QualifiedName.parse(bpTokens.get(0));
+				return toList(new BreakpointFn(
+									QualifiedName.parse(bpTokens.get(2)), 
+									scopeSet));
+				
+			default:
+				return bpTokens
+						.stream()
+						.map(s -> StringUtil.trimToNull(s.replace(',', ' ')))
+						.filter(s -> isBreakpointRefCandidate(s))
+						.map(s -> parseBreakpoint(s, scopeSet))
+						.filter(b -> b != null)
+						.collect(Collectors.toList());
+		}		
 	}
 	
 	/**
@@ -92,6 +105,7 @@ public class BreakpointParser {
 	 * <ul>
 	 *   <li>filter</li>
 	 *   <li>foo/count</li>
+	 *   <li>foo/*</li>
 	 *   <li>foo/count > reduce</li>
 	 *   <li>foo/count + reduce</li>
 	 * </ul>
@@ -113,36 +127,33 @@ public class BreakpointParser {
 	 * @return A breakpoint or <code>null</code> if the passed reference
 	 *         could not be parsed
 	 */
-	public static IBreakpoint parseBreakpoint(final String ref) {
+	public static IBreakpoint parseBreakpoint(
+			final String ref,
+			final Set<BreakpointScope> scopes
+	) {
 		if (StringUtil.isBlank(ref)) {
 			return null;
 		}
 		
-		final String ref_ = ref.trim();
-		
-		final int pos = ref_.indexOf('/');
-		if (pos < 0 || ref_.equals("/")) {
-			// core function breakpoint, e.g.: +, /, filter
-			return ref_.matches("[0-9].*") ? null : new BreakpointFn(ref_);
-		}
-		if (pos == 0 || pos == ref_.length()-1) {
-			return null;
-		}
-		else {
-			final String s1 = ref_.substring(0, pos).trim();
-			final String s2 = ref_.substring(pos+1).trim();
-	
-			if (isInteger(s2)) {
-				// line breakpoint
-				final int lineNr = parseInteger(s2);
-				return lineNr < 1
-						? null
-						: new BreakpointLine(s1, lineNr);			
+		try {
+			final String ref_ = ref.trim();
+			
+			if (isBreakpointLine(ref_)) {
+				// file/line breakpoint
+				return parseBreakpointLine(ref_);
+			}
+			else if (isBreakpointFn(ref_)) {
+				// function breakpoint
+				return new BreakpointFn(
+							QualifiedName.parse(ref_), 
+							scopes == null ? DEFAULT_SCOPES : scopes);
 			}
 			else {
-				// function breakpoint
-				return new BreakpointFn(ref_);
+				return null;
 			}
+		}
+		catch(RuntimeException ex) {
+			return null;
 		}
 	}
 
@@ -174,12 +185,26 @@ public class BreakpointParser {
 		return scopes.matches(BREAKPOINT_SCOPE_REGEX);
 	}
 
-	private static boolean isBreakpointRef(final String s) {
-		return s != null && !isBreakpointScopes(s);
+	private static boolean isBreakpointLine(final String ref) {
+		return ref.matches(".*/[0-9]+");
 	}
 	
-	private static boolean isInteger(final String s) {
-		return s.matches("([1-9][0-9]*|0)");
+	private static boolean isBreakpointFn(final String ref) {
+		return ref.equals("/") || ref.matches("([^0-9/][^/]*|[^0-9/][^/]*/[^/]+)");
+	}
+
+	private static BreakpointLine parseBreakpointLine(final String ref) {
+		final int pos = ref.indexOf('/');
+		final String file = ref.substring(0, pos).trim();
+		final String line = ref.substring(pos+1).trim();
+
+		final int lineNr = parseInteger(line);
+			
+		return lineNr < 1 ? null : new BreakpointLine(file, lineNr);			
+	}
+	
+	private static boolean isBreakpointRefCandidate(final String s) {
+		return s != null && !isBreakpointScopes(s);
 	}
 
 	private static int parseInteger(final String s) {

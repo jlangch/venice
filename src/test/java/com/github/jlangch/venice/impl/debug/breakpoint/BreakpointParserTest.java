@@ -19,13 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.debug;
+package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointParser.parseBreakpoint;
-import static com.github.jlangch.venice.impl.debug.BreakpointParser.parseBreakpointScopes;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.BreakpointScope.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoint;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpointScopes;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -34,6 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope;
 
 
 public class BreakpointParserTest {
@@ -82,37 +86,61 @@ public class BreakpointParserTest {
 
 	@Test
 	public void test_parseBreakpoint_invalid() {
-		assertNull(parseBreakpoint(""));
-		assertNull(parseBreakpoint("0"));
-		assertNull(parseBreakpoint("0.0"));
-		assertNull(parseBreakpoint("0M"));
-		assertNull(parseBreakpoint("test.venice/"));
-		assertNull(parseBreakpoint("/any"));
+		assertNull(parseBreakpoint("", null));
+		assertNull(parseBreakpoint("0", null));
+		assertNull(parseBreakpoint("0.0", null));
+		assertNull(parseBreakpoint("0M", null));
+		assertNull(parseBreakpoint("test.venice/", null));
+		assertNull(parseBreakpoint("/any", null));
  	}
 
 	@Test
 	public void test_parseBreakpoint_fn() {
 		assertEquals(
 				"/", 
-				((BreakpointFn)parseBreakpoint("/")).getQualifiedFnName());
+				((BreakpointFn)parseBreakpoint("/", null)).getQualifiedFnName());
 
 		assertEquals(
 				"+", 
-				((BreakpointFn)parseBreakpoint("+")).getQualifiedFnName());
+				((BreakpointFn)parseBreakpoint("+", null)).getQualifiedFnName());
 
 		assertEquals(
 				"user/sum", 
-				((BreakpointFn)parseBreakpoint("user/sum")).getQualifiedFnName());
+				((BreakpointFn)parseBreakpoint("user/sum", null)).getQualifiedFnName());
+
+		assertEquals(
+				"user/*", 
+				((BreakpointFn)parseBreakpoint("user/*", null)).getQualifiedFnName());
+	}
+
+	@Test
+	public void test_parseBreakpoint_fn_scopes() {
+		assertEquals(
+				"", 
+				((BreakpointFn)parseBreakpoint("user/*", null)).getFormattedScopes());
+
+		assertEquals(
+				"", 
+				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry))).getFormattedScopes());
+
+		assertEquals(
+				"()", 
+				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry,FunctionExit))).getFormattedScopes());
+
+		assertEquals(
+				"(!)", 
+				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry,FunctionExit,FunctionException))).getFormattedScopes());
 	}
 
 	@Test
 	public void test_parseBreakpoint_ln() {
 		assertEquals(
 				"test.venice", 
-				((BreakpointLine)parseBreakpoint("test.venice/100")).getFile());
+				((BreakpointLine)parseBreakpoint("test.venice/100", null)).getFile());
+		
 		assertEquals(
 				100, 
-				((BreakpointLine)parseBreakpoint("test.venice/100")).getLineNr());
+				((BreakpointLine)parseBreakpoint("test.venice/100", null)).getLineNr());
 	}
 	
 }

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.debug;
+package com.github.jlangch.venice.impl.debug.breakpoint;
 
 import static com.github.jlangch.venice.impl.util.StringUtil.isBlank;
 
@@ -33,7 +33,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 /**
  * Defines a breakpoint given by a file and a line number
  */
-public class BreakpointLine implements IBreakpoint {
+public class BreakpointLine implements IBreakpoint, IBreakpointRef{
 
 	public BreakpointLine(
 			final String file,
@@ -79,6 +79,11 @@ public class BreakpointLine implements IBreakpoint {
 	
 	public boolean isSameLineNr(final BreakpointLine bp) {
 		return lineNr == bp.getLineNr();
+	}
+
+	@Override
+	public IBreakpointRef getBreakpointRef() {
+		return this;
 	}
 	
 	@Override

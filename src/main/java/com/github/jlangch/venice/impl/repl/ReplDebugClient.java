@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import static com.github.jlangch.venice.impl.debug.BreakpointParser.parseBreakpoints;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoints;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
@@ -35,11 +35,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Destructuring;
-import com.github.jlangch.venice.impl.debug.Break;
-import com.github.jlangch.venice.impl.debug.BreakpointFn;
-import com.github.jlangch.venice.impl.debug.BreakpointLine;
-import com.github.jlangch.venice.impl.debug.IDebugAgent;
-import com.github.jlangch.venice.impl.debug.StepMode;
+import com.github.jlangch.venice.impl.debug.agent.Break;
+import com.github.jlangch.venice.impl.debug.agent.IDebugAgent;
+import com.github.jlangch.venice.impl.debug.agent.StepMode;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
