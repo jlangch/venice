@@ -174,36 +174,18 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public boolean hasBreakpointFor(final BreakpointFnRef bpRef) {
-		if (bpRef instanceof BreakpointFnRef) {
-			switch (step.mode()) {
-				case SteppingDisabled: 
-					return !skipBreakpoints && breakpoints.containsKey(bpRef);
-					
-				case StepToNextFunction: 
-				case StepToNextNonSystemFunction: 
-				case StepToFunctionReturn: 
-				case StepIntoFunction: 
-					return true;
-					
-				default: 
-					return false;
-			}
-		}
-		else {
-			switch(step.mode()) {
-				case SteppingDisabled:
-					return !skipBreakpoints && breakpoints.containsKey(bpRef);
-		
-				case StepToNextFunction:
-				case StepToNextNonSystemFunction: 
-				case StepToFunctionReturn: 
-				case StepIntoFunction: 
-					// stop on line nr is suspended while stepping
-					return false;
-		
-				default:
-					return false;
-			}
+		switch (step.mode()) {
+			case SteppingDisabled: 
+				return !skipBreakpoints && breakpoints.containsKey(bpRef);
+				
+			case StepToNextFunction: 
+			case StepToNextNonSystemFunction: 
+			case StepToFunctionReturn: 
+			case StepIntoFunction: 
+				return true;
+				
+			default: 
+				return false;
 		}
 	}
 
