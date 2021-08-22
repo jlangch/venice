@@ -111,16 +111,10 @@ public class BreakpointFn implements IBreakpoint {
 		
 		if (selector != null) {
 			return StringUtil.isBlank(sScopes)
-					? String.format(
-							"%s %s %s", 
-							selector.getAncestor().getQualifiedName(),
-							selector.getType().symbol(),
-							qn.getQualifiedName())
+					? selector.formatForBaseFn(qn.getQualifiedName())
 					: String.format(
-							"%s %s %s at level %s", 
-							selector.getAncestor().getQualifiedName(),
-							selector.getType().symbol(),
-							qn.getQualifiedName(), 
+							"%s at level %s", 
+							selector.formatForBaseFn(qn.getQualifiedName()), 
 							sScopes);
 		}
 		else {
@@ -139,16 +133,10 @@ public class BreakpointFn implements IBreakpoint {
 		
 		if (selector != null) {
 			return StringUtil.isBlank(sScopes)
-					? String.format(
-							"%s %s %s", 
-							selector.getAncestor().getQualifiedName(),
-							selector.getType().symbol(),
-							qn.getQualifiedName())
+					? selector.formatForBaseFn(qn.getQualifiedName())
 					: String.format(
-							"%s %s %s at level %s", 
-							selector.getAncestor().getQualifiedName(),
-							selector.getType().symbol(),
-							qn.getQualifiedName(), 
+							"%s at level %s", 
+							selector.formatForBaseFn(qn.getQualifiedName()), 
 							sScopes);
 		}
 		else {

@@ -50,7 +50,15 @@ public class AncestorSelector {
 		return type;
 	}
 
+	public String formatForBaseFn(final String fnName) {
+		return String.format(
+				"%s %s %s", 
+				ancestorQN.getQualifiedName(),
+				type.symbol(),
+				fnName);
+	}
 
+	
 	private final QualifiedName ancestorQN;
 	private final AncestorType type;
 }
