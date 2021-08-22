@@ -37,9 +37,14 @@ public class CallFrame {
 		this.fnName = fnName;
 		this.meta = meta;
 	}
-		
+
+
 	public String getFnName() {
 		return fnName;
+	}
+	
+	public boolean hasFnName(final String fnName) {
+		return this.fnName.equals(fnName);
 	}
 	
 	public String getFile() {

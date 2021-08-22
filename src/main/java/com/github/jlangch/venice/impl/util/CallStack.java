@@ -134,6 +134,35 @@ public class CallStack {
 		return Arrays.asList(queue.toArray(new CallFrame[queue.size()]));
 	}
 
+	/**
+	 * Checks if the any of call frames refers to the specified function name
+	 * 
+	 * @param fnName A qualified function name
+	 * @return <code>true</code> if any of the call frames refers to the 
+	 * 			specified function name else <code>false</code>
+	 */
+	public boolean hasAnyAncestor(final String fnName) {
+		for(CallFrame cf : queue) {
+			if (cf.hasFnName(fnName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if the top call frame refers to the specified function name
+	 * 
+	 * @param fnName A qualified function name
+	 * @return <code>true</code> if if the top call frame refers to the 
+	 * 			specified function name else <code>false</code>
+	 */
+	public boolean hasDirectAncestor(final String fnName) {
+		final CallFrame top = peek();
+		return top != null && top.hasFnName(fnName);
+	}
+	
+	
 	@Override
 	public String toString() {
 		return toList()
