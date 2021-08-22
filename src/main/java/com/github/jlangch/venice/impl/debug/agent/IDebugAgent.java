@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.debug.agent;
 
 import java.util.List;
 
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
 import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpoint;
 
@@ -109,7 +110,7 @@ public interface IDebugAgent {
 	 * @return Returns <code>true</code> if there is a breakpoint matching the
 	 *         qualified name, otherwise <code>false</code>.
 	 */
-	boolean hasBreakpointFor(String qualifiedFnName);
+	boolean hasBreakpointFor(BreakpointFnRef bpRef);
 	
 	boolean hasBreakpointFor(BreakpointLine bp);
 

@@ -174,12 +174,11 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreakpointFor(final String qualifiedFnName) {
+	public boolean hasBreakpointFor(final BreakpointFnRef bpRef) {
 		final Step step = this.step;
 		switch (step.mode()) {
 			case SteppingDisabled: 
-				return !skipBreakpoints && breakpoints.containsKey(
-											new BreakpointFnRef(qualifiedFnName));
+				return !skipBreakpoints && breakpoints.containsKey(bpRef);
 				
 			case StepToNextFunction: 
 			case StepToNextNonSystemFunction: 

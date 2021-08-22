@@ -49,6 +49,7 @@ import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointLine;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.ComputedVar;
@@ -429,7 +430,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							}
 						}
 						
-						if (debugAgent != null && debugAgent.hasBreakpointFor("let")) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
 							debugAgent.onBreakLet(vars, a0.getMeta(), env);
 						}
 						
@@ -502,7 +503,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 												meta,
 												debugAgent);
 
-						if (debugAgent != null && debugAgent.hasBreakpointFor("loop")) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
 								recursionPoint.getLoopBindingNames(), 
 								recursionPoint.getMeta(),
@@ -542,7 +543,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						// for performance reasons the DebugAgent is stored in the 
 						// RecursionPoint. Saves repeated ThreadLocal access!
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
-						if (debugAgent != null && debugAgent.hasBreakpointFor("loop")) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
 									recursionPoint.getLoopBindingNames(), 
 									recursionPoint.getMeta(),
@@ -764,7 +765,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								final VncFunction f = fn.getFunctionForArgs(fnArgs);
 								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 								
-								if (debugAgent != null && debugAgent.hasBreakpointFor(fnName)) {
+								if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 									debugAgent.onBreakFnEnter(fnName, f, fnArgs, env);
 								}
 								
@@ -777,7 +778,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								try {
 									callStack.push(new CallFrame(fnName, a0.getMeta()));
 
-									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(fnName)) {
+									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 										// Debugging handled for native functions only.
 										final Env env__ = new Env(env);
 										env__.setLocal(new Var(new VncSymbol("args"), fnArgs));
@@ -2294,7 +2295,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					try {
 						threadLocalMap.setCurrNS_(ns);
 
-						if (debugAgent != null && debugAgent.hasBreakpointFor(getQualifiedName())) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(getQualifiedName()))) {
 							try {
 								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv);
 								if (hasPreConditions) {
@@ -2541,6 +2542,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 	private static final VncKeyword CAUSE_TYPE_SELECTOR_KEY = new VncKeyword(":cause-type");
+	
+	private static final BreakpointFnRef BREAKPOINT_REF_LOOP = new BreakpointFnRef("loop");
+	private static final BreakpointFnRef BREAKPOINT_REF_LET = new BreakpointFnRef("let");
 		
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
