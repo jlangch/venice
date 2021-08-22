@@ -59,6 +59,35 @@ public class AncestorSelector {
 	}
 
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ancestorQN == null) ? 0 : ancestorQN.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AncestorSelector other = (AncestorSelector) obj;
+		if (ancestorQN == null) {
+			if (other.ancestorQN != null)
+				return false;
+		} else if (!ancestorQN.equals(other.ancestorQN))
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
+
+
 	private final QualifiedName ancestorQN;
 	private final AncestorType type;
 }

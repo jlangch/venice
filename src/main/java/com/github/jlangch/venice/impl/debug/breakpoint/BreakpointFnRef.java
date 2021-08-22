@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.debug.breakpoint;
 /**
  * Defines a reference for function breakpoint
  */
-public class BreakpointFnRef implements IBreakpointRef {
+public class BreakpointFnRef {
 
 	public BreakpointFnRef(final String qualifiedName) {
 		this.qualifiedName = qualifiedName;

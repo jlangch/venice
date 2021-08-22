@@ -42,8 +42,6 @@ import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
-import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpoint;
-import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpointRef;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -99,7 +97,7 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 	
 	@Override
-	public List<IBreakpoint> getBreakpoints() {
+	public List<BreakpointFn> getBreakpoints() {
 		return breakpoints
 					.values()
 					.stream()
@@ -108,32 +106,32 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public void addBreakpoint(final IBreakpoint breakpoint) {
+	public void addBreakpoint(final BreakpointFn breakpoint) {
 		if (breakpoint == null) {
 			throw new IllegalArgumentException("A breakpoint must not be null");
 		}
 		
-		final IBreakpointRef ref = breakpoint.getBreakpointRef();
+		final BreakpointFnRef ref = breakpoint.getBreakpointRef();
 		breakpoints.remove(ref);
 		breakpoints.put(ref, breakpoint);
 	}
 	
 	@Override
-	public void addBreakpoints(final List<IBreakpoint> breakpoints) {
+	public void addBreakpoints(final List<BreakpointFn> breakpoints) {
 		if (breakpoints != null) {
 			breakpoints.forEach(b -> addBreakpoint(b));
 		}
 	}
 
 	@Override
-	public void removeBreakpoint(final IBreakpoint breakpoint) {
+	public void removeBreakpoint(final BreakpointFn breakpoint) {
 		if (breakpoint != null) {
 			breakpoints.remove(breakpoint.getBreakpointRef());
 		}
 	}
 	
 	@Override
-	public void removeBreakpoints(final List<IBreakpoint> breakpoints) {
+	public void removeBreakpoints(final List<BreakpointFn> breakpoints) {
 		if (breakpoints != null) {
 			breakpoints.forEach(b -> removeBreakpoint(b));
 		}
@@ -171,7 +169,7 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	@Override
-	public boolean hasBreakpointFor(final IBreakpointRef bpRef) {
+	public boolean hasBreakpointFor(final BreakpointFnRef bpRef) {
 		if (bpRef instanceof BreakpointFnRef) {
 			switch (step.mode()) {
 				case SteppingDisabled: 
@@ -487,10 +485,10 @@ public class DebugAgent implements IDebugAgent {
 					return false;
 				}
 				else {
-					final IBreakpoint bp = breakpoints.get(new BreakpointFnRef(fnName));
+					final BreakpointFn bp = breakpoints.get(new BreakpointFnRef(fnName));
 					return bp != null 
 							&& bp instanceof BreakpointFn
-							&& ((BreakpointFn)bp).hasScope(scope);
+							&& ((BreakpointFn)bp).getSelector().hasScope(scope);
 				}
 
 			case StepToNextFunction:
@@ -541,7 +539,7 @@ public class DebugAgent implements IDebugAgent {
 	private static final long BREAK_LOOP_SLEEP_MILLIS = 500L;
 
 	// simple breakpoint memorization
-	private static final ConcurrentHashMap<IBreakpointRef,IBreakpoint> memorized =
+	private static final ConcurrentHashMap<BreakpointFnRef,BreakpointFn> memorized =
 			new ConcurrentHashMap<>();
 
 	private volatile Break activeBreak = null;
@@ -549,6 +547,6 @@ public class DebugAgent implements IDebugAgent {
 	private volatile boolean skipBreakpoints = false;
 
 	private volatile IBreakListener breakListener = null;
-	private final ConcurrentHashMap<IBreakpointRef,IBreakpoint> breakpoints =
+	private final ConcurrentHashMap<BreakpointFnRef,BreakpointFn> breakpoints =
 			new ConcurrentHashMap<>();
 }

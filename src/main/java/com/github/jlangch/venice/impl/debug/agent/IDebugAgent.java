@@ -23,8 +23,8 @@ package com.github.jlangch.venice.impl.debug.agent;
 
 import java.util.List;
 
-import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpoint;
-import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpointRef;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 
 
 public interface IDebugAgent {
@@ -43,35 +43,35 @@ public interface IDebugAgent {
 	/**
 	 * @return all the registered breakpoints
 	 */
-	List<IBreakpoint> getBreakpoints();
+	List<BreakpointFn> getBreakpoints();
 
 	/**
 	 * Add a new breakpoint
 	 * 
 	 * @param breakpoint A breakpoint
 	 */
-	void addBreakpoint(IBreakpoint breakpoint);
+	void addBreakpoint(BreakpointFn breakpoint);
 
 	/**
 	 * Add a new breakpoints
 	 * 
 	 * @param breakpoints A list of breakpoints
 	 */
-	void addBreakpoints(List<IBreakpoint> breakpoints);
+	void addBreakpoints(List<BreakpointFn> breakpoints);
 
 	/**
 	 * Removes a breakpoint
 	 * 
 	 * @param breakpoint The breakpoint to be removed
 	 */
-	void removeBreakpoint(IBreakpoint breakpoint);
+	void removeBreakpoint(BreakpointFn breakpoint);
 
 	/**
 	 * Removes breakpoints
 	 * 
 	 * @param breakpoints The breakpoints to be removed
 	 */
-	void removeBreakpoints(List<IBreakpoint> breakpoints);
+	void removeBreakpoints(List<BreakpointFn> breakpoints);
 
 	/**
 	 * Remove all breakpoints
@@ -109,7 +109,7 @@ public interface IDebugAgent {
 	 * @return Returns <code>true</code> if there is a breakpoint matching the
 	 *         qualified name, otherwise <code>false</code>.
 	 */
-	boolean hasBreakpointFor(IBreakpointRef bpRef);
+	boolean hasBreakpointFor(BreakpointFnRef bpRef);
 
 	void addBreakListener(IBreakListener listener);
 

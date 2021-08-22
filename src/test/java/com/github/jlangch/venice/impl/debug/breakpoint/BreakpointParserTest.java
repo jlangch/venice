@@ -21,14 +21,13 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoint;
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpointScopes;
+import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoints;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
@@ -82,50 +81,61 @@ public class BreakpointParserTest {
 
 	@Test
 	public void test_parseBreakpoint_invalid() {
-		assertNull(parseBreakpoint("", null));
-		assertNull(parseBreakpoint("0", null));
-		assertNull(parseBreakpoint("0.0", null));
-		assertNull(parseBreakpoint("0M", null));
-		assertNull(parseBreakpoint("test.venice/", null));
-		assertNull(parseBreakpoint("/any", null));
+		assertTrue(parseBreakpoints("").isEmpty());
+		assertTrue(parseBreakpoints("0").isEmpty());
+		assertTrue(parseBreakpoints("0.0").isEmpty());
+		assertTrue(parseBreakpoints("0M").isEmpty());
+		assertTrue(parseBreakpoints("test.venice/").isEmpty());
+		assertTrue(parseBreakpoints("/any").isEmpty());
  	}
 
 	@Test
 	public void test_parseBreakpoint_fn() {
 		assertEquals(
 				"/", 
-				((BreakpointFn)parseBreakpoint("/", null)).getQualifiedFnName());
+				parseBreakpoints("/").get(0).getQualifiedFnName());
 
 		assertEquals(
 				"+", 
-				((BreakpointFn)parseBreakpoint("+", null)).getQualifiedFnName());
+				parseBreakpoints("+").get(0).getQualifiedFnName());
 
 		assertEquals(
 				"user/sum", 
-				((BreakpointFn)parseBreakpoint("user/sum", null)).getQualifiedFnName());
+				parseBreakpoints("user/sum").get(0).getQualifiedFnName());
 
 		assertEquals(
 				"user/*", 
-				((BreakpointFn)parseBreakpoint("user/*", null)).getQualifiedFnName());
+				parseBreakpoints("user/*").get(0).getQualifiedFnName());
 	}
 
 	@Test
 	public void test_parseBreakpoint_fn_scopes() {
 		assertEquals(
 				"", 
-				((BreakpointFn)parseBreakpoint("user/*", null)).getFormattedScopes());
+				parseBreakpoints("user/*")
+					.get(0)
+					.getSelector()
+					.getFormattedScopes());
 
 		assertEquals(
 				"", 
-				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry))).getFormattedScopes());
+				parseBreakpoints("( user/*")
+					.get(0)
+					.getSelector()
+					.getFormattedScopes());
 
 		assertEquals(
 				"()", 
-				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry,FunctionExit))).getFormattedScopes());
+				parseBreakpoints("() user/*")
+					.get(0)
+					.getSelector()
+					.getFormattedScopes());
 
 		assertEquals(
 				"(!)", 
-				((BreakpointFn)parseBreakpoint("user/*", toSet(FunctionEntry,FunctionExit,FunctionException))).getFormattedScopes());
-	}
-	
+				parseBreakpoints("(!) user/*")
+					.get(0)
+					.getSelector()
+					.getFormattedScopes());
+	}	
 }

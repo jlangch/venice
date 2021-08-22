@@ -275,7 +275,7 @@ public class ReplDebugClient {
 						 			String.format(
 						 				"  %s%s",
 						 				skip ? "[-] " : "",
-						 				b.formatEx())));
+						 				b.format(true))));
 		}
 	}
 	

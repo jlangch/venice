@@ -21,60 +21,34 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
-import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
-
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
-import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 /**
  * Defines a breakpoint given by qualified function name
  */
-public class BreakpointFn implements IBreakpoint {
+public class BreakpointFn implements Comparable<BreakpointFn> {
 
 	public BreakpointFn(
 			final QualifiedName qualifiedName
 	) {
-		this(qualifiedName, DEFAULT_SCOPES, null);
+		this(qualifiedName, null);
 	}
 
 	public BreakpointFn(
 			final QualifiedName qualifiedName,
-			final Set<FunctionScope> scopes
-	) {
-		this(qualifiedName, scopes, null);
-	}
-
-	public BreakpointFn(
-			final QualifiedName qualifiedName,
-			final Set<FunctionScope> scopes,
-			final AncestorSelector selector
+			final Selector selector
 	) {
 		if (qualifiedName == null) {
 			throw new IllegalArgumentException("A qualifiedName must not be null");
 		}
 
 		this.qn = qualifiedName;
-		this.scopes = scopes == null || scopes.isEmpty() 
-						? DEFAULT_SCOPES
-						: new HashSet<>(scopes);
-		this.selector = selector;
+		this.selector = selector == null ? new Selector() : selector;
 	}
 
-	
-	public BreakpointFn withScopes(final Set<FunctionScope> scopes) {
-		return new BreakpointFn(qn, scopes);
-	}
 
 	public String getQualifiedFnName() {
 		return qn.getQualifiedName();
@@ -88,70 +62,23 @@ public class BreakpointFn implements IBreakpoint {
 		return qn.getSimpleName();
 	}
 
-	public AncestorSelector getAncestorSelector() {
+	public Selector getSelector() {
 		return selector;
 	}
-	
-	public boolean hasScope(final FunctionScope scope) {
-		return scope == null ? false : scopes.contains(scope);
-	}
-	
-	public String getFormattedScopes() {
-		return format(scopes, false);
-	}
 
-	@Override
-	public IBreakpointRef getBreakpointRef() {
+	public BreakpointFnRef getBreakpointRef() {
 		return new BreakpointFnRef(qn.getQualifiedName());
 	}
 	
-	@Override
-	public String format() {
-		final String sScopes = format(scopes, false);
-		
-		if (selector != null) {
-			return StringUtil.isBlank(sScopes)
-					? selector.formatForBaseFn(qn.getQualifiedName())
-					: String.format(
-							"%s at level %s", 
-							selector.formatForBaseFn(qn.getQualifiedName()), 
-							sScopes);
-		}
-		else {
-			return StringUtil.isBlank(sScopes)
-					? qn.getQualifiedName()
-					: String.format(
-							"%s at level %s", 
-							qn.getQualifiedName(), 
-							sScopes);
-		}
-	}
-	
-	@Override
-	public String formatEx() {
-		final String sScopes = format(scopes, true);
-		
-		if (selector != null) {
-			return StringUtil.isBlank(sScopes)
-					? selector.formatForBaseFn(qn.getQualifiedName())
-					: String.format(
-							"%s at level %s", 
-							selector.formatForBaseFn(qn.getQualifiedName()), 
-							sScopes);
-		}
-		else {
-			return StringUtil.isBlank(sScopes)
-					? qn.getQualifiedName()
-					: String.format(
-							"%s at level %s", 
-							qn.getQualifiedName(), 
-							sScopes);
-		}
+	public String format(boolean useDescriptiveScopeNames) {
+		return selector.formatForBaseFn(
+				qn.getQualifiedName(), 
+				useDescriptiveScopeNames);
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Function breakpoint: %s", format());
+		return String.format("Function breakpoint: %s", format(false));
 	}
 	
 	@Override
@@ -172,42 +99,14 @@ public class BreakpointFn implements IBreakpoint {
 	}
 
 	@Override
-	public int compareTo(final IBreakpoint o) {
-		if (o instanceof BreakpointFn) {
-			return comp.compare(this, (BreakpointFn)o);
-		}
-		else {
-			return -1;
-		}
-	}
-	
-	
-	private String format(final Set<FunctionScope> scopes, final boolean extended) {
-		// predefined order of breakpoint scopes
-		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
-			final String delimiter = extended ? ", " : "";
-			return Arrays.asList(
-							FunctionCall, 
-							FunctionEntry, 
-							FunctionException, 
-							FunctionExit)
-						 .stream()
-						 .filter(t -> scopes.contains(t))
-						 .map(t -> extended ? t.description() : t.symbol())
-						 .collect(Collectors.joining(delimiter));
-		}
-		else {
-			return "";
-		}
+	public int compareTo(final BreakpointFn o) {
+		return comp.compare(this, (BreakpointFn)o);
 	}
 	
 	
 	private static Comparator<BreakpointFn> comp = 
 			Comparator.comparing(BreakpointFn::getQualifiedFnName);
 	
-	private static final Set<FunctionScope> DEFAULT_SCOPES = toSet(FunctionEntry);
-	
 	private final QualifiedName qn;
-	private final Set<FunctionScope> scopes;
-	private final AncestorSelector selector;
+	private final Selector selector;
 }

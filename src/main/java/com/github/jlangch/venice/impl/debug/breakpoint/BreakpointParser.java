@@ -21,10 +21,8 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
@@ -45,22 +43,37 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class BreakpointParser {
 
 	/**
-	 * Parse breakpoint from tokens
+	 * Parse breakpoint
 	 * 
 	 * <p>Breakpoint variants:
 	 * <ul>
-	 *   <li>user/sum</li>
-	 *   <li>user/sum + *</li>
+	 *   <li>filter</li>
+	 *   <li>foo/count</li>
+	 *   <li>foo/count filter map</li>
+	 *   <li>foo/count > reduce</li>
+	 *   <li>foo/count + reduce</li>
 	 *   <li>() user/sum</li>
 	 *   <li>(!) user/sum + *</li>
 	 * </ul>
 	 * 
-	 * @param tokens the tokens
+	 * Selector style function break points:
+	 * <br/>
+	 * <i>foo/*:</i>  break in any function defined in namespace foo
+	 * <br/>
+	 * <i>function1 > function2:</i>  break in function2 if function1 is its immediate caller
+	 * <br/>
+	 * <i>function1 + function2:</i>  break in function2 if function1 is in the caller hierarchy
+	 * 
+	 * @param definition the breakpoint definition
 	 * @return the parsed breakpoints
 	 */
-	public static List<IBreakpoint> parseBreakpoints(final List<String> tokens) {
+	public static List<BreakpointFn> parseBreakpoints(final String definition) {
+		return parseBreakpoints(Arrays.asList(definition.trim().split(" +")));
+	}
+
+	public static List<BreakpointFn> parseBreakpoints(final List<String> tokens) {
 		if (tokens.isEmpty()) {
-			return new ArrayList<IBreakpoint>();
+			return new ArrayList<BreakpointFn>();
 		}
 		
 		// First token: optional scopes
@@ -75,20 +88,24 @@ public class BreakpointParser {
 		
 		switch (selector) {
 			case ">": 
-				return toList(new BreakpointFn(
-									QualifiedName.parse(bpTokens.get(2)), 
+				return toList(
+						new BreakpointFn(
+								QualifiedName.parse(bpTokens.get(2)),
+								new Selector(
 									scopeSet,
 									new AncestorSelector(
 											QualifiedName.parse(bpTokens.get(0)),
-											AncestorType.Nearest)));
+											AncestorType.Nearest))));
 				
 			case "+":
-				return toList(new BreakpointFn(
-									QualifiedName.parse(bpTokens.get(2)), 
+				return toList(
+						new BreakpointFn(
+								QualifiedName.parse(bpTokens.get(2)),
+								new Selector(
 									scopeSet,
 									new AncestorSelector(
 											QualifiedName.parse(bpTokens.get(0)),
-											AncestorType.Any)));
+											AncestorType.Any))));
 				
 			default:
 				return bpTokens
@@ -104,28 +121,11 @@ public class BreakpointParser {
 	/**
 	 * Parse a breakpoint given by a reference.
 	 * 
-	 * <p>Function breakpoints:
-	 * <ul>
-	 *   <li>filter</li>
-	 *   <li>foo/count</li>
-	 *   <li>foo/*</li>
-	 *   <li>foo/count > reduce</li>
-	 *   <li>foo/count + reduce</li>
-	 * </ul>
-	 * 
-	 * Selector style function break points:
-	 * <br/>
-	 * <i>foo/*:</i>  break in any function defined in namespace foo
-	 * <br/>
-	 * <i>function1 > function2:</i>  break in function2 if function1 is its immediate caller
-	 * <br/>
-	 * <i>function1 + function2:</i>  break in function2 if function1 is in the caller hierarchy
-	 * 
 	 * @param ref a breakpoint reference
 	 * @return A breakpoint or <code>null</code> if the passed reference
 	 *         could not be parsed
 	 */
-	public static IBreakpoint parseBreakpoint(
+	private static BreakpointFn parseBreakpoint(
 			final String ref,
 			final Set<FunctionScope> scopes
 	) {
@@ -140,7 +140,7 @@ public class BreakpointParser {
 				// function breakpoint
 				return new BreakpointFn(
 							QualifiedName.parse(ref_), 
-							scopes == null ? DEFAULT_SCOPES : scopes);
+							new Selector(scopes));
 			}
 			else {
 				return null;
@@ -188,7 +188,5 @@ public class BreakpointParser {
 	}
 	
 	
-	private static final Set<FunctionScope> DEFAULT_SCOPES = toSet(FunctionEntry);
-
 	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }
