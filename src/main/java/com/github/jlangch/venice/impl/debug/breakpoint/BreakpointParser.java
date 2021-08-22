@@ -75,16 +75,20 @@ public class BreakpointParser {
 		
 		switch (selector) {
 			case ">": 
-				final QualifiedName parent = QualifiedName.parse(bpTokens.get(0));
 				return toList(new BreakpointFn(
 									QualifiedName.parse(bpTokens.get(2)), 
-									scopeSet));
+									scopeSet,
+									new AncestorSelector(
+											QualifiedName.parse(bpTokens.get(0)),
+											AncestorType.Nearest)));
 				
 			case "+":
-				final QualifiedName anscestor = QualifiedName.parse(bpTokens.get(0));
 				return toList(new BreakpointFn(
 									QualifiedName.parse(bpTokens.get(2)), 
-									scopeSet));
+									scopeSet,
+									new AncestorSelector(
+											QualifiedName.parse(bpTokens.get(0)),
+											AncestorType.Any)));
 				
 			default:
 				return bpTokens

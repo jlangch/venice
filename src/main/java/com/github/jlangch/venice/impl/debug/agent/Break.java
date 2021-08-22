@@ -128,7 +128,12 @@ public class Break {
 					"Scope:      %s\n", 
 					scope));
 		
-		if (fn.isNative()) {
+		if (fn.isMacro()) {
+			sb.append(String.format(
+					"Macro:      %s", 
+					fn.getQualifiedName()));
+		}
+		else if (fn.isNative()) {
 			sb.append(String.format(
 					"Function:   %s (native, no source line info)", 
 					fn.getQualifiedName()));

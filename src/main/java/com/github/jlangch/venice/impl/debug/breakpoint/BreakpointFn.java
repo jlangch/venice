@@ -45,17 +45,20 @@ public class BreakpointFn implements IBreakpoint {
 	public BreakpointFn(
 			final QualifiedName qualifiedName
 	) {
-		if (qualifiedName == null) {
-			throw new IllegalArgumentException("A qualifiedName must not be null");
-		}
-
-		this.qn = qualifiedName;
-		this.scopes = DEFAULT_SCOPES;
+		this(qualifiedName, DEFAULT_SCOPES, null);
 	}
 
 	public BreakpointFn(
 			final QualifiedName qualifiedName,
 			final Set<BreakpointScope> scopes
+	) {
+		this(qualifiedName, scopes, null);
+	}
+
+	public BreakpointFn(
+			final QualifiedName qualifiedName,
+			final Set<BreakpointScope> scopes,
+			final AncestorSelector selector
 	) {
 		if (qualifiedName == null) {
 			throw new IllegalArgumentException("A qualifiedName must not be null");
@@ -65,6 +68,7 @@ public class BreakpointFn implements IBreakpoint {
 		this.scopes = scopes == null || scopes.isEmpty() 
 						? DEFAULT_SCOPES
 						: new HashSet<>(scopes);
+		this.selector = selector;
 	}
 
 	
@@ -82,6 +86,10 @@ public class BreakpointFn implements IBreakpoint {
 
 	public String getSimpleFnName() {
 		return qn.getSimpleName();
+	}
+
+	public AncestorSelector getAncestorSelector() {
+		return selector;
 	}
 	
 	public boolean hasScope(final BreakpointScope scope) {
@@ -175,4 +183,5 @@ public class BreakpointFn implements IBreakpoint {
 	
 	private final QualifiedName qn;
 	private final Set<BreakpointScope> scopes;
+	private final AncestorSelector selector;
 }

@@ -157,7 +157,7 @@ public class CallStack {
 	 * @return <code>true</code> if if the top call frame refers to the 
 	 * 			specified function name else <code>false</code>
 	 */
-	public boolean hasDirectAncestor(final String fnName) {
+	public boolean hasNearestAncestor(final String fnName) {
 		final CallFrame top = peek();
 		return top != null && top.hasFnName(fnName);
 	}
