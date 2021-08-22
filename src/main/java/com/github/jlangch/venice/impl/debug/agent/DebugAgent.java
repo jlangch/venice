@@ -25,10 +25,10 @@ import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepIntoFuncti
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionCall;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.StringUtil.indent;
 
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope;
+import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
 import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpoint;
 import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpointRef;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
@@ -477,7 +477,7 @@ public class DebugAgent implements IDebugAgent {
 	
 	private boolean isStopOnFunction(
 			final String fnName, 
-			final BreakpointScope scope
+			final FunctionScope scope
 	) {
 		final Step stepTmp = step;  // be immune to changing step var
 

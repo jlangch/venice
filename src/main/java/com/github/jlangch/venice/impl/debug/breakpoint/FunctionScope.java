@@ -26,10 +26,10 @@ import java.util.List;
 
 
 /**
- * Defines the breakpoint scopes.
+ * Defines the breakpoint function scopes.
  * 
- * <p>Breakpoint scopes are related to function execution phases and define
- * at which execution phase a break point may be set.
+ * <p>Breakpoint function scopes are related to function execution phases and
+ * define at which execution phase a break point may be set.
  * 
  * <p><b>Defined scopes:</b>
  * <ol>
@@ -43,7 +43,7 @@ import java.util.List;
  * <p><b>Function processing model:</b>
  * 
  * <pre>
- *                                                 Breakpoint Scope
+ *                                                  Function Scope
  *                                                        |
  *                                                        v
  * +---------------------------------------------------------------+
@@ -63,7 +63,7 @@ import java.util.List;
  * +---------------------------------------------------------------+
  * </pre>
  */
-public enum BreakpointScope {
+public enum FunctionScope {
 
 	FunctionCall(">", "call"),				// Stop at fn call
 
@@ -74,7 +74,7 @@ public enum BreakpointScope {
 	FunctionException("!", "exception");	// Stop on exception in fn body
 
 
-	private BreakpointScope(String symbol, String description) {
+	private FunctionScope(String symbol, String description) {
 		this.symbol = symbol;
 		this.description = description;
 	}
@@ -87,7 +87,7 @@ public enum BreakpointScope {
 		return description; 
 	}
 
-	public static List<BreakpointScope> all() {
+	public static List<FunctionScope> all() {
 		return Arrays.asList(values());
 	}
 

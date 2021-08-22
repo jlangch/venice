@@ -23,9 +23,9 @@ package com.github.jlangch.venice.impl.debug.breakpoint;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoint;
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpointScopes;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -40,14 +40,14 @@ public class BreakpointParserTest {
 
 	@Test
 	public void test_parseBreakpointScopes() {
-		final Set<BreakpointScope> scopes1 = parseBreakpointScopes("");
+		final Set<FunctionScope> scopes1 = parseBreakpointScopes("");
 		assertTrue(scopes1.isEmpty());
 		
-		final Set<BreakpointScope> scopes2 = parseBreakpointScopes("(");
+		final Set<FunctionScope> scopes2 = parseBreakpointScopes("(");
 		assertEquals(1, scopes2.size());
 		assertTrue(scopes2.contains(FunctionEntry));
 
-		final Set<BreakpointScope> scopes3 = parseBreakpointScopes("(!)");
+		final Set<FunctionScope> scopes3 = parseBreakpointScopes("(!)");
 		assertEquals(3, scopes3.size());
 		assertTrue(scopes3.contains(FunctionEntry));
 		assertTrue(scopes3.contains(FunctionException));
@@ -56,24 +56,24 @@ public class BreakpointParserTest {
 
 	@Test
 	public void test_parseBreakpointScopes_withDefault() {
-		final Set<BreakpointScope> scopes1 = parseBreakpointScopes("", toSet(FunctionEntry));
+		final Set<FunctionScope> scopes1 = parseBreakpointScopes("", toSet(FunctionEntry));
 		assertEquals(1, scopes1.size());
 		assertTrue(scopes1.contains(FunctionEntry));
 		
-		final Set<BreakpointScope> scopes2 = parseBreakpointScopes("", toSet(FunctionEntry, FunctionExit));
+		final Set<FunctionScope> scopes2 = parseBreakpointScopes("", toSet(FunctionEntry, FunctionExit));
 		assertEquals(2, scopes2.size());
 		assertTrue(scopes2.contains(FunctionEntry));
 		assertTrue(scopes2.contains(FunctionExit));
 		
-		final Set<BreakpointScope> scopes3 = parseBreakpointScopes("(", toSet(FunctionEntry));
+		final Set<FunctionScope> scopes3 = parseBreakpointScopes("(", toSet(FunctionEntry));
 		assertEquals(1, scopes3.size());
 		assertTrue(scopes3.contains(FunctionEntry));
 		
-		final Set<BreakpointScope> scopes4 = parseBreakpointScopes("!", toSet(FunctionEntry, FunctionExit));
+		final Set<FunctionScope> scopes4 = parseBreakpointScopes("!", toSet(FunctionEntry, FunctionExit));
 		assertEquals(1, scopes4.size());
 		assertTrue(scopes4.contains(FunctionException));
 
-		final Set<BreakpointScope> scopes5 = parseBreakpointScopes("(!)", toSet(FunctionEntry, FunctionExit));
+		final Set<FunctionScope> scopes5 = parseBreakpointScopes("(!)", toSet(FunctionEntry, FunctionExit));
 		assertEquals(3, scopes5.size());
 		assertTrue(scopes5.contains(FunctionEntry));
 		assertTrue(scopes5.contains(FunctionException));

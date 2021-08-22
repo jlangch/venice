@@ -21,10 +21,10 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionCall;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionException;
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionExit;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 
 import java.util.Arrays;
@@ -50,14 +50,14 @@ public class BreakpointFn implements IBreakpoint {
 
 	public BreakpointFn(
 			final QualifiedName qualifiedName,
-			final Set<BreakpointScope> scopes
+			final Set<FunctionScope> scopes
 	) {
 		this(qualifiedName, scopes, null);
 	}
 
 	public BreakpointFn(
 			final QualifiedName qualifiedName,
-			final Set<BreakpointScope> scopes,
+			final Set<FunctionScope> scopes,
 			final AncestorSelector selector
 	) {
 		if (qualifiedName == null) {
@@ -72,7 +72,7 @@ public class BreakpointFn implements IBreakpoint {
 	}
 
 	
-	public BreakpointFn withScopes(final Set<BreakpointScope> scopes) {
+	public BreakpointFn withScopes(final Set<FunctionScope> scopes) {
 		return new BreakpointFn(qn, scopes);
 	}
 
@@ -92,7 +92,7 @@ public class BreakpointFn implements IBreakpoint {
 		return selector;
 	}
 	
-	public boolean hasScope(final BreakpointScope scope) {
+	public boolean hasScope(final FunctionScope scope) {
 		return scope == null ? false : scopes.contains(scope);
 	}
 	
@@ -109,18 +109,56 @@ public class BreakpointFn implements IBreakpoint {
 	public String format() {
 		final String sScopes = format(scopes, false);
 		
-		return StringUtil.isBlank(sScopes)
-				? qn.getQualifiedName()
-				: String.format("%s at level %s", qn.getQualifiedName(), sScopes);
+		if (selector != null) {
+			return StringUtil.isBlank(sScopes)
+					? String.format(
+							"%s %s %s", 
+							selector.getAncestor().getQualifiedName(),
+							selector.getType().symbol(),
+							qn.getQualifiedName())
+					: String.format(
+							"%s %s %s at level %s", 
+							selector.getAncestor().getQualifiedName(),
+							selector.getType().symbol(),
+							qn.getQualifiedName(), 
+							sScopes);
+		}
+		else {
+			return StringUtil.isBlank(sScopes)
+					? qn.getQualifiedName()
+					: String.format(
+							"%s at level %s", 
+							qn.getQualifiedName(), 
+							sScopes);
+		}
 	}
 	
 	@Override
 	public String formatEx() {
 		final String sScopes = format(scopes, true);
 		
-		return StringUtil.isBlank(sScopes)
-				? qn.getQualifiedName()
-				: String.format("%s at level %s", qn.getQualifiedName(), sScopes);
+		if (selector != null) {
+			return StringUtil.isBlank(sScopes)
+					? String.format(
+							"%s %s %s", 
+							selector.getAncestor().getQualifiedName(),
+							selector.getType().symbol(),
+							qn.getQualifiedName())
+					: String.format(
+							"%s %s %s at level %s", 
+							selector.getAncestor().getQualifiedName(),
+							selector.getType().symbol(),
+							qn.getQualifiedName(), 
+							sScopes);
+		}
+		else {
+			return StringUtil.isBlank(sScopes)
+					? qn.getQualifiedName()
+					: String.format(
+							"%s at level %s", 
+							qn.getQualifiedName(), 
+							sScopes);
+		}
 	}
 	
 	@Override
@@ -156,7 +194,7 @@ public class BreakpointFn implements IBreakpoint {
 	}
 	
 	
-	private String format(final Set<BreakpointScope> scopes, final boolean extended) {
+	private String format(final Set<FunctionScope> scopes, final boolean extended) {
 		// predefined order of breakpoint scopes
 		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
 			final String delimiter = extended ? ", " : "";
@@ -179,9 +217,9 @@ public class BreakpointFn implements IBreakpoint {
 	private static Comparator<BreakpointFn> comp = 
 			Comparator.comparing(BreakpointFn::getQualifiedFnName);
 	
-	private static final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
+	private static final Set<FunctionScope> DEFAULT_SCOPES = toSet(FunctionEntry);
 	
 	private final QualifiedName qn;
-	private final Set<BreakpointScope> scopes;
+	private final Set<FunctionScope> scopes;
 	private final AncestorSelector selector;
 }

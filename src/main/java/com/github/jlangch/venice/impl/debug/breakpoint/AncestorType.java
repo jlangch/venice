@@ -27,7 +27,17 @@ package com.github.jlangch.venice.impl.debug.breakpoint;
  */
 public enum AncestorType {
 
-	Nearest,  // Nearest ancestor
-	Any;      // Any ancestor
+	Nearest(">"),  // Nearest ancestor
+	Any("+");      // Any ancestor
 
+	
+	private AncestorType(String symbol) {
+		this.symbol = symbol;
+	}
+
+	public String symbol() { 
+		return symbol; 
+	}
+	
+	private final String symbol;
 }

@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
-import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope.FunctionEntry;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
@@ -66,7 +66,7 @@ public class BreakpointParser {
 		// First token: optional scopes
 		final String scopes = trimToEmpty(tokens.get(0));
 		final boolean hasScopes = isBreakpointScopes(scopes);
-		final Set<BreakpointScope> scopeSet = parseBreakpointScopes(
+		final Set<FunctionScope> scopeSet = parseBreakpointScopes(
 													hasScopes ? scopes : null);
 
 		final List<String> bpTokens = hasScopes ? drop(tokens,1) : tokens;
@@ -127,7 +127,7 @@ public class BreakpointParser {
 	 */
 	public static IBreakpoint parseBreakpoint(
 			final String ref,
-			final Set<BreakpointScope> scopes
+			final Set<FunctionScope> scopes
 	) {
 		if (StringUtil.isBlank(ref)) {
 			return null;
@@ -151,22 +151,22 @@ public class BreakpointParser {
 		}
 	}
 
-	public static Set<BreakpointScope> parseBreakpointScopes(
+	public static Set<FunctionScope> parseBreakpointScopes(
 			final String scopes
 	) {
 		return parseBreakpointScopes(scopes, new HashSet<>());
 	}
 
-	public static Set<BreakpointScope> parseBreakpointScopes(
+	public static Set<FunctionScope> parseBreakpointScopes(
 			final String scopes,
-			final Set<BreakpointScope> defaultScopes
+			final Set<FunctionScope> defaultScopes
 	) {
 		if (trimToNull(scopes) == null) {
 			return defaultScopes;
 		}
 		else {
-			final Set<BreakpointScope> tset = 
-					Arrays.asList(BreakpointScope.values())
+			final Set<FunctionScope> tset = 
+					Arrays.asList(FunctionScope.values())
 						  .stream()
 						  .filter(t -> scopes.contains(t.symbol()))
 						  .collect(Collectors.toSet());
@@ -188,7 +188,7 @@ public class BreakpointParser {
 	}
 	
 	
-	private static final Set<BreakpointScope> DEFAULT_SCOPES = toSet(FunctionEntry);
+	private static final Set<FunctionScope> DEFAULT_SCOPES = toSet(FunctionEntry);
 
 	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }

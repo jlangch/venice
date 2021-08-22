@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.debug.agent;
 
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
-import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointScope;
+import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
 import com.github.jlangch.venice.impl.debug.breakpoint.IBreakpointRef;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.env.Env;
@@ -42,7 +42,7 @@ public class Break {
 			final VncList args,
 			final Env env,
 			final CallStack callStack,
-			final BreakpointScope scope
+			final FunctionScope scope
 	) {
 		this(breakpoint, fn, args, null, null, env, callStack, scope);
 	}
@@ -55,7 +55,7 @@ public class Break {
 			final Exception ex,
 			final Env env,
 			final CallStack callStack,
-			final BreakpointScope scope
+			final FunctionScope scope
 	) {
 		this.breakpoint = breakpoint;
 		this.fn = fn;
@@ -96,11 +96,11 @@ public class Break {
 		return callStack;
 	}
 
-	public BreakpointScope getBreakpointScope() {
+	public FunctionScope getBreakpointScope() {
 		return scope;
 	}
 
-	public boolean isInScope(final BreakpointScope... scopes) {
+	public boolean isInScope(final FunctionScope... scopes) {
 		return CollectionUtil.toList(scopes).contains(scope);
 	}
 
@@ -157,5 +157,5 @@ public class Break {
 	private final Exception ex;
 	private final Env env;
 	private final CallStack callStack;
-	private final BreakpointScope scope;
+	private final FunctionScope scope;
 }
