@@ -114,28 +114,32 @@ public class BreakpointParserTest {
 				"", 
 				parseBreakpoints("user/*")
 					.get(0)
-					.getSelector()
+					.getSelectors()
+					.get(0)
 					.getFormattedScopes());
 
 		assertEquals(
 				"", 
 				parseBreakpoints("( user/*")
 					.get(0)
-					.getSelector()
+					.getSelectors()
+					.get(0)
 					.getFormattedScopes());
 
 		assertEquals(
 				"()", 
 				parseBreakpoints("() user/*")
 					.get(0)
-					.getSelector()
+					.getSelectors()
+					.get(0)
 					.getFormattedScopes());
 
 		assertEquals(
 				"(!)", 
 				parseBreakpoints("(!) user/*")
 					.get(0)
-					.getSelector()
+					.getSelectors()
+					.get(0)
 					.getFormattedScopes());
 	}	
 }

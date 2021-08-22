@@ -21,9 +21,14 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
 /**
@@ -34,19 +39,34 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 	public BreakpointFn(
 			final QualifiedName qualifiedName
 	) {
-		this(qualifiedName, null);
+		this(qualifiedName, new ArrayList<>());
 	}
 
 	public BreakpointFn(
 			final QualifiedName qualifiedName,
 			final Selector selector
 	) {
+		this(qualifiedName, CollectionUtil.toList(selector));
+	}
+
+	public BreakpointFn(
+			final QualifiedName qualifiedName,
+			final List<Selector> selectors
+	) {
 		if (qualifiedName == null) {
 			throw new IllegalArgumentException("A qualifiedName must not be null");
 		}
 
+		this.ref = new BreakpointFnRef(qualifiedName.getQualifiedName());
 		this.qn = qualifiedName;
-		this.selector = selector == null ? new Selector() : selector;
+		this.selectors = new ArrayList<>();
+		
+		if (selectors == null || selectors.isEmpty()) {
+			this.selectors.add(new Selector());
+		}
+		else {
+			this.selectors.addAll(selectors);
+		}
 	}
 
 
@@ -62,23 +82,36 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 		return qn.getSimpleName();
 	}
 
-	public Selector getSelector() {
-		return selector;
+	public List<Selector> getSelectors() {
+		return Collections.unmodifiableList(selectors);
 	}
 
 	public BreakpointFnRef getBreakpointRef() {
-		return new BreakpointFnRef(qn.getQualifiedName());
+		return ref;
 	}
 	
-	public String format(boolean useDescriptiveScopeNames) {
-		return selector.formatForBaseFn(
-				qn.getQualifiedName(), 
-				useDescriptiveScopeNames);
+	public List<String> format(boolean useDescriptiveScopeNames) {
+		return selectors
+				.stream()
+				.map(s -> s.formatForBaseFn(
+								qn.getQualifiedName(), 
+								useDescriptiveScopeNames))
+				.collect(Collectors.toList());
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Function breakpoint: %s", format(false));
+		final List<String> lines = format(false);
+		
+		if (lines.size() == 1) {
+			return String.format("Function breakpoint: %s", lines.get(0));
+		}
+		else {
+			return "Function breakpoints: \n" +
+					lines.stream()
+						 .map(s -> "  " + s)
+						 .collect(Collectors.joining("\n"));
+		}
 	}
 	
 	@Override
@@ -107,6 +140,7 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 	private static Comparator<BreakpointFn> comp = 
 			Comparator.comparing(BreakpointFn::getQualifiedFnName);
 	
+	private final BreakpointFnRef ref;
 	private final QualifiedName qn;
-	private final Selector selector;
+	private final List<Selector> selectors;
 }

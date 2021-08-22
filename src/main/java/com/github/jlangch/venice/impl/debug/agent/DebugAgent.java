@@ -39,9 +39,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.debug.breakpoint.AncestorSelector;
+import com.github.jlangch.venice.impl.debug.breakpoint.AncestorType;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
+import com.github.jlangch.venice.impl.debug.breakpoint.Selector;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -51,6 +54,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.util.CallStack;
 
 
 public class DebugAgent implements IDebugAgent {
@@ -486,9 +490,7 @@ public class DebugAgent implements IDebugAgent {
 				}
 				else {
 					final BreakpointFn bp = breakpoints.get(new BreakpointFnRef(fnName));
-					return bp != null 
-							&& bp instanceof BreakpointFn
-							&& ((BreakpointFn)bp).getSelector().hasScope(scope);
+					return matchesWithBreakpoint(fnName, scope, bp);
 				}
 
 			case StepToNextFunction:
@@ -534,7 +536,42 @@ public class DebugAgent implements IDebugAgent {
 		activeBreak = null;
 	}
 
-
+	private boolean matchesWithBreakpoint(
+			final String fnName, 
+			final FunctionScope scope,
+			final BreakpointFn bp
+	) {
+		if (bp != null) {
+			for(Selector s : bp.getSelectors()) {
+				// match scope
+				if (s.hasScope(scope)) {
+					// The scope matches!
+					AncestorSelector as = s.getAncestorSelector();
+					if (as == null) {
+						return true;
+					}
+					else {
+						// match ancestor with callstack
+						final CallStack callStack = ThreadLocalMap.get().getCallStack_();
+						if (as.getType() == AncestorType.Nearest) {
+							if (callStack.hasNearestAncestor(fnName)) {
+								return true;
+							}
+						}
+						else {
+							if (callStack.hasAnyAncestor(fnName)) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	
 
 	private static final long BREAK_LOOP_SLEEP_MILLIS = 500L;
 
