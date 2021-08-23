@@ -256,14 +256,14 @@ public class DebugAgent implements IDebugAgent {
 	public void onBreakFnCall(
 			final String fnName,
 			final VncFunction fn,
-			final VncList args,
+			final VncList unevaluatedArgs,
 			final Env env
 	) {
 		if (isStopOnFunction(fnName, false, FunctionCall)) {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
-									args,
+									unevaluatedArgs,
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionCall);
@@ -276,14 +276,14 @@ public class DebugAgent implements IDebugAgent {
 	public void onBreakFnEnter(
 			final String fnName,
 			final VncFunction fn,
-			final VncList args,
+			final VncList evaluatedArgs,
 			final Env env
 	) {
 		if (isStopOnFunction(fnName, false, FunctionEntry)) {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
-									args,
+									evaluatedArgs,
 									env,
 									ThreadLocalMap.getCallStack(),
 									FunctionEntry);
@@ -296,7 +296,7 @@ public class DebugAgent implements IDebugAgent {
 	public void onBreakFnExit(
 			final String fnName,
 			final VncFunction fn,
-			final VncList args,
+			final VncList evaluatedArgs,
 			final VncVal retVal,
 			final Env env
 	) {
@@ -304,7 +304,7 @@ public class DebugAgent implements IDebugAgent {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
-									args,
+									evaluatedArgs,
 									retVal,
 									null,
 									env,
@@ -319,7 +319,7 @@ public class DebugAgent implements IDebugAgent {
 	public void onBreakFnException(
 			final String fnName,
 			final VncFunction fn,
-			final VncList args,
+			final VncList evaluatedArgs,
 			final Exception ex,
 			final Env env
 	) {
@@ -327,7 +327,7 @@ public class DebugAgent implements IDebugAgent {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
-									args,
+									evaluatedArgs,
 									null,
 									ex,
 									env,
