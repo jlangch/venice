@@ -23,7 +23,8 @@ package com.github.jlangch.venice;
 
 
 /**
- * Thrown if Venice can not handle a precompiled script because of incompatible versions.
+ * Thrown if Venice can not handle a precompiled script because of incompatible 
+ * versions.
  */
 public class IncompatibleVersionException extends VncException {
 

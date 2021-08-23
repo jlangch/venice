@@ -24,6 +24,10 @@ package com.github.jlangch.venice;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocGenerator;
 
 
+/**
+ * The entry point to generate the cheatsheets. It's used by the Gradle
+ * build.
+ */
 public class CheatsheetDocGen {
 
 	public static void main(final String[] args) {

@@ -23,7 +23,7 @@ package com.github.jlangch.venice;
 
 
 /**
- * Thrown if a file IO operation fails
+ * Thrown if a file I/O operation fails
  */
 public class FileException extends VncException {
 

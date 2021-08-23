@@ -49,7 +49,6 @@ public class Step {
 		return new Step();
 	}
 	
-
 	public StepMode mode() {
 		return mode;
 	}

@@ -25,6 +25,9 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
+/**
+ * A Venice exception to throw any value
+ */
 public class ValueException extends VncException {
 
 	public ValueException(final Object value) {
