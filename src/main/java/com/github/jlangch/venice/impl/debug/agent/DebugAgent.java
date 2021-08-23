@@ -202,6 +202,7 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	public void onBreakLoop(
+			final FunctionScope scope,
 			final List<VncSymbol> loopBindingNames,
 			final VncVal meta,
 			final Env env
@@ -228,6 +229,7 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	public void onBreakLet(
+			final FunctionScope scope,
 			final List<Var> vars,
 			final VncVal meta,
 			final Env env

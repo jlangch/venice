@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
@@ -430,7 +431,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
-							debugAgent.onBreakLet(vars, a0.getMeta(), env);
+							debugAgent.onBreakLet(FunctionEntry, vars, a0.getMeta(), env);
 						}
 						
 						if (expressions.size() == 1) {
@@ -504,6 +505,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
+								FunctionEntry,
 								recursionPoint.getLoopBindingNames(), 
 								recursionPoint.getMeta(),
 								env);
@@ -544,6 +546,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
+									FunctionEntry,
 									recursionPoint.getLoopBindingNames(), 
 									recursionPoint.getMeta(),
 									env);

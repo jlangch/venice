@@ -628,9 +628,9 @@ public class ReplDebugClient {
 			"               Short form: !r\n" +
 			"  !step-next   Step to next function\n" +
 			"               Short form: !sn\n" +
-			"  !step-entry  Step into function entry after args evaluation\n" +
+			"  !step-entry  Step to the entry of the current function\n" +
 			"               Short form: !se\n" +
-			"  !step-return Step to the return of the function\n" +
+			"  !step-return Step to the return of the current function\n" +
 			"               Short form: !sr\n" +
 			"  !break?      Prints info on whether the debugger is in a break or not\n" +
 			"               Short form: !b?\n" +
