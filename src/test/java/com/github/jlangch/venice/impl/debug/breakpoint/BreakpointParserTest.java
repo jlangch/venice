@@ -142,4 +142,132 @@ public class BreakpointParserTest {
 					.get(0)
 					.getFormattedScopes());
 	}	
+
+	@Test
+	public void test_parseBreakpoint_fn_ancestor_nearest() {
+		assertEquals(
+				"*", 
+				parseBreakpoints("foo/test > *")
+					.get(0)
+					.getQualifiedFnName());
+
+		assertEquals(
+				"foo/test", 
+				parseBreakpoints("foo/test > *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getAncestor()
+					.getQualifiedName());
+
+		assertEquals(
+				AncestorType.Nearest, 
+				parseBreakpoints("foo/test > *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getType());
+	}	
+
+	@Test
+	public void test_parseBreakpoint_fn_ancestor_nearest_with_scopes() {
+		assertEquals(
+				"*", 
+				parseBreakpoints("(!) foo/test > *")
+					.get(0)
+					.getQualifiedFnName());
+
+		assertEquals(
+				"foo/test", 
+				parseBreakpoints("(!) foo/test > *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getAncestor()
+					.getQualifiedName());
+
+		assertEquals(
+				AncestorType.Nearest, 
+				parseBreakpoints("(!) foo/test > *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getType());
+
+		assertEquals(
+				"(!)", 
+				parseBreakpoints("(!) foo/test > *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getFormattedScopes());
+	}	
+
+	@Test
+	public void test_parseBreakpoint_fn_ancestor_any() {
+		assertEquals(
+				"*", 
+				parseBreakpoints("foo/test + *")
+					.get(0)
+					.getQualifiedFnName());
+
+		assertEquals(
+				"foo/test", 
+				parseBreakpoints("foo/test + *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getAncestor()
+					.getQualifiedName());
+
+		assertEquals(
+				AncestorType.Any, 
+				parseBreakpoints("foo/test + *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getType());
+	}	
+
+	@Test
+	public void test_parseBreakpoint_fn_ancestor_any_with_scopes() {
+		assertEquals(
+				"*", 
+				parseBreakpoints("(!) foo/test + *")
+					.get(0)
+					.getQualifiedFnName());
+
+		assertEquals(
+				"foo/test", 
+				parseBreakpoints("(!) foo/test + *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getAncestor()
+					.getQualifiedName());
+
+		assertEquals(
+				AncestorType.Any, 
+				parseBreakpoints("(!) foo/test + *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getAncestorSelector()
+					.getType());
+
+		assertEquals(
+				"(!)", 
+				parseBreakpoints("(!) foo/test + *")
+					.get(0)
+					.getSelectors()
+					.get(0)
+					.getFormattedScopes());
+	}	
 }
