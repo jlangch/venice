@@ -570,6 +570,12 @@ public class DebugAgent implements IDebugAgent {
 						// match ancestor with callstack
 						final CallStack callStack = ThreadLocalMap.get().getCallStack_();
 						final String ancestorQN = as.getAncestor().getQualifiedName();
+						
+						// note: [1] special forms are not added to the callstack so start
+						//           with head for ancestor checking
+						//       [2] At function call level the function has not yet been
+						//           added to the callstack so start with head for ancestor
+						//           checking
 						final boolean skipCallStackHead = scope != FunctionCall && !specialForm;
 						
 						if (as.getType() == AncestorType.Nearest) {
