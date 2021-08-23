@@ -379,8 +379,7 @@ public class DebugAgent implements IDebugAgent {
 				if (br.isInScope(FunctionCall)) {
 					step = new Step(
 								StepToFunctionEntry,
-								br.getFn().getQualifiedName(),
-								step.fromBreak());
+								br.getFn().getQualifiedName());
 				}
 				else {
 					step = step.clear();
@@ -391,8 +390,7 @@ public class DebugAgent implements IDebugAgent {
 				if (br.isInScope(FunctionCall, FunctionEntry)) {
 					step = new Step(
 								StepToFunctionReturn,
-								br.getFn().getQualifiedName(),
-								step.fromBreak());
+								br.getFn().getQualifiedName());
 				}
 				else {
 					step = step.clear();
@@ -466,12 +464,6 @@ public class DebugAgent implements IDebugAgent {
 					stepTmp.boundToFnName() == null ? "-" : stepTmp.boundToFnName()));
 		
 		sb.append(String.format(
-					"Step from break:       %s\n", 
-					stepTmp.fromBreak() == null 
-						? "-" 
-						: "Break\n" + indent(stepTmp.fromBreak().toString(), 25)));
-		
-		sb.append(String.format(
 					"Skip breakpoints:      %s", 
 					skipBreakpoints ? "yes" : "no"));
 		
@@ -518,7 +510,7 @@ public class DebugAgent implements IDebugAgent {
 			case StepOverNextFunction:
 				if (scope == FunctionEntry) {
 					// redirect
-					step = new Step(StepToFunctionReturn, fnName, null);
+					step = new Step(StepToFunctionReturn, fnName);
 				}			
 				return false;
 

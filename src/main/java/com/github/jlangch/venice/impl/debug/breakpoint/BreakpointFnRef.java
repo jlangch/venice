@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
+
 /**
  * Defines a reference for function breakpoint
  */
@@ -38,7 +39,7 @@ public class BreakpointFnRef {
 
 	@Override
 	public String toString() {
-		return String.format("Function breakpoint: %s", qualifiedName);
+		return qualifiedName;
 	}
 	
 	

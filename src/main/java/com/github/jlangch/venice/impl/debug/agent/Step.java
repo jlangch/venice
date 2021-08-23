@@ -23,27 +23,26 @@ package com.github.jlangch.venice.impl.debug.agent;
 
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 
+
 /**
  * Defines the step context for the debugger
  */
 public class Step {
 
 	public Step() {
-		this(StepMode.SteppingDisabled, null, null);
+		this(StepMode.SteppingDisabled, null);
 	}
 	
 	public Step(final StepMode mode) {
-		this(mode, null, null);
+		this(mode, null);
 	}
 
 	public Step(
 			final StepMode mode,
-			final String boundToFnName,
-			final Break fromBreak
+			final String boundToFnName
 	) {
 		this.mode = mode;
 		this.boundToFnName = boundToFnName;
-		this.fromBreak = fromBreak;
 	}
 	
 	public Step clear() {
@@ -66,17 +65,8 @@ public class Step {
 	public boolean isBoundToFnName(final String fnName) {
 		return boundToFnName != null && boundToFnName.equals(fnName);
 	}
-
-	public Break fromBreak() {
-		return fromBreak;
-	}
-
-	public boolean isBreakInSpecialForm() {
-		return fromBreak != null && fromBreak.isBreakInSpecialForm();
-	}
 	
 
 	private final StepMode mode;
 	private final String boundToFnName;
-	private final Break fromBreak;
 }
