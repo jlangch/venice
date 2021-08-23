@@ -116,26 +116,33 @@ public class Break {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
-					"Breakpoint: %s\n",
-					breakpoint.toString()));
+						"Breakpoint:   %s\n",
+						breakpoint.toString()));
 		
 		sb.append(String.format(
-					"Scope:      %s\n", 
-					scope));
+						"Scope:        %s\n", 
+						scope));
 		
-		if (fn.isMacro()) {
+		if (isBreakInSpecialForm()) {
 			sb.append(String.format(
-					"Macro:      %s", 
-					fn.getQualifiedName()));
+						"Special Form: %s", 
+						fn.getQualifiedName()));
+		}
+		else if (fn.isMacro()) {
+			sb.append(String.format(
+						"Macro:        %s defined in %s at line %d", 
+						fn.getQualifiedName(),
+						MetaUtil.getFile(fn.getMeta()),
+						MetaUtil.getLine(fn.getMeta())));
 		}
 		else if (fn.isNative()) {
 			sb.append(String.format(
-					"Function:   %s (native, no source line info)", 
-					fn.getQualifiedName()));
+						"Function:     %s (native, no source line info)", 
+						fn.getQualifiedName()));
 		}
 		else {
 			sb.append(String.format(
-						"Function:   %s defined in %s at line %d", 
+						"Function:     %s defined in %s at line %d", 
 						fn.getQualifiedName(),
 						MetaUtil.getFile(fn.getMeta()),
 						MetaUtil.getLine(fn.getMeta())));

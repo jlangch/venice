@@ -493,13 +493,12 @@ public class DebugAgent implements IDebugAgent {
 
 		switch(stepTmp.mode()) {
 			case SteppingDisabled:
-				if (skipBreakpoints) {
-					return false;
-				}
-				else {
-					final BreakpointFn bp = breakpoints.get(new BreakpointFnRef(fnName));
-					return matchesWithBreakpoint(fnName, scope, bp);
-				}
+				return skipBreakpoints
+						? false
+						: matchesWithBreakpoint(
+								fnName, 
+								scope, 
+								breakpoints.get(new BreakpointFnRef(fnName)));
 
 			case StepToNextFunction:
 				return scope == FunctionEntry;
@@ -509,8 +508,7 @@ public class DebugAgent implements IDebugAgent {
 
 			case StepOverNextFunction:
 				if (scope == FunctionEntry) {
-					// redirect
-					step = new Step(StepToFunctionReturn, fnName);
+					step = new Step(StepToFunctionReturn, fnName); // redirect
 				}			
 				return false;
 

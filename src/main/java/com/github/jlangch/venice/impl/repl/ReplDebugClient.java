@@ -43,8 +43,13 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 
 
@@ -422,8 +427,7 @@ public class ReplDebugClient {
 			println("Return value: <not available>");
 		}
 		else {
-			final String sval = truncate(v.toString(true), 100, "...");
-			println(String.format("Return value: %s", sval));
+			println(String.format("Return value: %s", renderValue(v,100)));
 		}
 	}
 	
@@ -498,11 +502,11 @@ public class ReplDebugClient {
 		VncList args_ = args;
 
 		sb.append(String.format(
-				"Arguments passed to %s %s:",
-				br.isBreakInSpecialForm() 
-					? "special form"
-					: "function",
-				fn.getQualifiedName()));
+					"Arguments passed to %s %s:",
+					br.isBreakInSpecialForm() 
+						? "special form"
+						: fn.isMacro() ? "macro" : "function",
+					fn.getQualifiedName()));
 
 		while(true) {
 			sb.append("\n");
@@ -536,22 +540,18 @@ public class ReplDebugClient {
 		final StringBuilder sb = new StringBuilder();
 
 		sb.append(String.format(
-				"Arguments passed to %s %s (destructured):",
-				br.isBreakInSpecialForm() 
-					? "special form"
-					: "function",
-				fn.getQualifiedName()));
+					"Arguments passed to %s %s (destructured):",
+					br.isBreakInSpecialForm() 
+						? "special form"
+						: fn.isMacro() ? "macro" : "function",
+					fn.getQualifiedName()));
 
 		final List<Var> vars = Destructuring.destructure(spec, args);
-		vars.forEach(v -> {
-			sb.append('\n');
-			sb.append(formatVar(v)); 
-		});
+		vars.forEach(v -> sb.append("\n" + formatVar(v)));
 
 		
 		if (br.getRetVal() != null) {
-			sb.append('\n');
-			sb.append(formatReturnVal(br.getRetVal()));
+			sb.append("\n" + formatReturnVal(br.getRetVal()));
 		}
 
 		return sb.toString();
@@ -578,26 +578,55 @@ public class ReplDebugClient {
 	}
 
 	private String formatBreak(final Break br) {
+		final VncFunction fn = br.getFn();
+
 		return String.format(
 				"Break in %s %s at %s level.",
 				br.isBreakInSpecialForm()
 					? "special form"
-					: "function",
-				br.getFn().getQualifiedName(),
+					: fn.isMacro() ? "macro" : "function",
+				fn.getQualifiedName(),
 				br.getBreakpointScope().description());
 	}
 	
 	private String formatStop(final Break br) {	
+		final VncFunction fn = br.getFn();
+
 		return String.format(
 				"Stopped in %s %s%s at %s level.",
 				br.isBreakInSpecialForm()
 					? "special form"
-					: "function",
-				br.getFn().getQualifiedName(),
-				br.getFn().isNative() 
+					: fn.isMacro() ? "macro" : "function",
+				fn.getQualifiedName(),
+				fn.isNative() 
 					? "" 
-					: " (" + new CallFrame(br.getFn()).getSourcePosInfo() + ")",
+					: " (" + new CallFrame(fn).getSourcePosInfo() + ")",
 				br.getBreakpointScope().description());
+	}
+	
+	private String renderValue(final VncVal val, final int maxLen) {
+		final String sVal = truncate(val.toString(true), maxLen, "...");
+		final String type = Types.getType(val).toString();
+		
+		if (val instanceof VncSequence) {
+			final int size = ((VncSequence)val).size();
+			return String.format("%s [%d]: %s", type, size, sVal);
+		}
+		else if (val instanceof VncMap) {
+			final int size = ((VncMap)val).size();
+			return String.format("%s [%d]: %s", type, size, sVal);
+		}
+		else if (val instanceof VncSet) {
+			final int size = ((VncSet)val).size();
+			return String.format("%s [%d]: %s", type, size, sVal);
+		}
+		else if (val instanceof VncCollection) {
+			final int size = ((VncCollection)val).size();
+			return String.format("%s [%d]: %s", type, size, sVal);
+		}
+		else {
+			return sVal;
+		}
 	}
 	
 	private void println(final String s) {
@@ -670,20 +699,21 @@ public class ReplDebugClient {
 					"attach",
 					"detach",
 					"terminate",
-					"info",        "?",
-					"breakpoint",  "b",
-					"resume",      "r",
-					"step-next",   "sn",
-					"step-next-",  "sn-",
-					"step-entry",  "se",
-					"step-return", "sr",
-					"break?",      "b?",
-					"callstack",   "cs",
-					"params",      "p",
-					"locals",      "l",
+					"info",           "?",
+					"breakpoint",     "b",
+					"resume",         "r",
+					"step-next",      "sn",
+					"step-next-",     "sn-",
+					"step-over-next", "so",
+					"step-entry",     "se",
+					"step-return",    "sr",
+					"break?",         "b?",
+					"callstack",      "cs",
+					"params",         "p",
+					"locals",         "l",
 					"local", 
 					"global",
-					"retval",      "ret",
+					"retval",         "ret",
 					"ex"
 			));
 	
