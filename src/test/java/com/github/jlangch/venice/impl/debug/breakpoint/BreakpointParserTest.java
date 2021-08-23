@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.debug.breakpoint;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpointScopes;
 import static com.github.jlangch.venice.impl.debug.breakpoint.BreakpointParser.parseBreakpoints;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
@@ -51,6 +52,49 @@ public class BreakpointParserTest {
 		assertTrue(scopes3.contains(FunctionEntry));
 		assertTrue(scopes3.contains(FunctionException));
 		assertTrue(scopes3.contains(FunctionExit));
+		
+		final Set<FunctionScope> scopes4 = parseBreakpointScopes(">");
+		assertEquals(1, scopes4.size());
+		assertTrue(scopes4.contains(FunctionCall));
+
+		final Set<FunctionScope> scopes5 = parseBreakpointScopes(">(!)");
+		assertEquals(4, scopes5.size());
+		assertTrue(scopes5.contains(FunctionEntry));
+		assertTrue(scopes5.contains(FunctionException));
+		assertTrue(scopes5.contains(FunctionExit));
+		assertTrue(scopes5.contains(FunctionCall));
+	}
+	
+	@Test
+	public void test_parseBreakpointScopes_Format() {
+		assertEquals(
+				"", 
+				parseBreakpoints("foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
+		assertEquals(
+				"", 
+				parseBreakpoints("( foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
+		assertEquals(
+				")", 
+				parseBreakpoints(") foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
+		assertEquals(
+				"!", 
+				parseBreakpoints("! foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
+		assertEquals(
+				">", 
+				parseBreakpoints("> foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
+		assertEquals(
+				"()", 
+				parseBreakpoints("() foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
+		assertEquals(
+				">(!)", 
+				parseBreakpoints(">(!) foo").get(0).getSelectors().get(0).getFormattedScopes());
+		
 	}
 
 	@Test

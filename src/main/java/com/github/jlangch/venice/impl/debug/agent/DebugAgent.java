@@ -249,6 +249,26 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 	
+	public void onBreakFnCall(
+			final String fnName,
+			final VncFunction fn,
+			final VncList args,
+			final Env env
+	) {
+		if (isStopOnFunction(fnName, FunctionCall)) {
+			final Break br = new Break(
+									new BreakpointFnRef(fnName),
+									fn,
+									args,
+									env,
+									ThreadLocalMap.getCallStack(),
+									FunctionCall);
+			
+			notifyOnBreak(br);
+			waitOnBreak(br);
+		}
+	}
+	
 	public void onBreakFnEnter(
 			final String fnName,
 			final VncFunction fn,

@@ -96,9 +96,13 @@ public class Selector {
 			final Set<FunctionScope> scopes, 
 			final boolean useDescriptiveScopeNames
 	) {
-		// predefined order of breakpoint scopes
-		if (scopes.contains(FunctionException) || scopes.contains(FunctionExit)) {
+		if (scopes.size() == 1 && scopes.contains(FunctionEntry)) {
+			return "";
+		}
+		else {
 			final String delimiter = useDescriptiveScopeNames ? ", " : "";
+
+			// predefined order of breakpoint scopes
 			return Arrays.asList(
 							FunctionCall, 
 							FunctionEntry, 
@@ -110,9 +114,6 @@ public class Selector {
 								 	? t.description() 
 								 	: t.symbol())
 						 .collect(Collectors.joining(delimiter));
-		}
-		else {
-			return "";
 		}
 	}
 

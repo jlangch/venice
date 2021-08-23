@@ -723,9 +723,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							}
 						} 
 						else { 
-							// function
-							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 							final String fnName = fn.getQualifiedName();
+
+							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+							
+							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+							
+							if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+								debugAgent.onBreakFnCall(fnName, fn, args, env);
+							}
+		
+							// evaluate function args
+							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 							
 							final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
 	
@@ -741,11 +750,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							checkInterrupted(currThread, fnName);
 							
-							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
 															
 							final CallStack callStack = threadLocalMap.getCallStack_();
-							
-							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 							// Automatic TCO (tail call optimization)
 							if (tailPosition
