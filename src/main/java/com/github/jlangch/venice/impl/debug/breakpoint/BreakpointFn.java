@@ -113,17 +113,9 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 	
 	@Override
 	public String toString() {
-		final List<String> lines = format(false);
-		
-		if (lines.size() == 1) {
-			return String.format("Function breakpoint: %s", lines.get(0));
-		}
-		else {
-			return "Function breakpoints: \n" +
-					lines.stream()
-						 .map(s -> "  " + s)
-						 .collect(Collectors.joining("\n"));
-		}
+		return format(false)
+					.stream()
+					.collect(Collectors.joining("\n"));
 	}
 	
 	@Override

@@ -33,6 +33,9 @@ public enum StepMode {
 	// Step to next non system function entry (aka step over)
 	StepToNextNonSystemFunction,
 
+	// Step over next function
+	StepOverNextFunction,
+
 	// Step in the current function to the entry: call -> entry
 	// Steps over all functions called for evaluating the functions args
 	StepToFunctionEntry,

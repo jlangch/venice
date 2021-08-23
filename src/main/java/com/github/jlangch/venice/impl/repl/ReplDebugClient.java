@@ -136,11 +136,28 @@ public class ReplDebugClient {
 				agent.step(StepMode.StepToNextNonSystemFunction);
 				break;
 				
+			case "step-over-next":
+			case "so":
+				if (!agent.isStepPossible(StepMode.StepOverNextFunction)) {
+					printer.println(
+							"error", 
+							"Stepping over next function is not possible in the "
+							+ "current debug context");
+					return;
+				}
+				agent.step(StepMode.StepOverNextFunction);
+				break;
+				
 			case "step-entry":
 			case "se":
 				if (!agent.isStepPossible(StepMode.StepToFunctionEntry))  {
 					return;
 				}
+				printer.println(
+						"debug", 
+						String.format(
+							"Stepping into entry of function %s ...",
+							agent.getBreak().getFn().getQualifiedName()));
 				agent.step(StepMode.StepToFunctionEntry);
 				break;
 				

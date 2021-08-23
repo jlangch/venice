@@ -21,8 +21,9 @@
  */
 package com.github.jlangch.venice.impl.debug.agent;
 
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepOverNextFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionEntry;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
@@ -187,6 +188,7 @@ public class DebugAgent implements IDebugAgent {
 				
 			case StepToNextFunction: 
 			case StepToNextNonSystemFunction: 
+			case StepOverNextFunction: 
 			case StepToFunctionEntry: 
 			case StepToFunctionReturn: 
 				return true;
@@ -369,6 +371,10 @@ public class DebugAgent implements IDebugAgent {
 				step = new Step(StepToNextNonSystemFunction);
 				break;
 				
+			case StepOverNextFunction:
+				step = new Step(StepOverNextFunction);
+				break;
+	
 			case StepToFunctionEntry:
 				if (br.isInScope(FunctionCall)) {
 					step = new Step(
@@ -414,11 +420,10 @@ public class DebugAgent implements IDebugAgent {
 		
 		switch(mode) {
 			case StepToNextFunction:
+			case StepToNextNonSystemFunction:
+			case StepOverNextFunction:
 				return true;
 	
-			case StepToNextNonSystemFunction:
-				return true;
-				
 			case StepToFunctionEntry:
 				return br.isInScope(FunctionCall);
 				
@@ -509,6 +514,13 @@ public class DebugAgent implements IDebugAgent {
 
 			case StepToNextNonSystemFunction: 
 				return scope == FunctionEntry && !hasSystemNS(fnName);
+
+			case StepOverNextFunction:
+				if (scope == FunctionEntry) {
+					// redirect
+					step = new Step(StepToFunctionReturn, fnName, null);
+				}			
+				return false;
 
 			case StepToFunctionEntry: 
 				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
