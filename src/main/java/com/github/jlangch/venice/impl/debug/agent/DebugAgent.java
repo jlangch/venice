@@ -567,13 +567,15 @@ public class DebugAgent implements IDebugAgent {
 						// match ancestor with callstack
 						final CallStack callStack = ThreadLocalMap.get().getCallStack_();
 						final String ancestorQN = as.getAncestor().getQualifiedName();
+						final boolean skipCallStackHead = scope != FunctionCall;
+						
 						if (as.getType() == AncestorType.Nearest) {
-							if (callStack.hasNearestAncestor(ancestorQN, true)) {
+							if (callStack.hasNearestAncestor(ancestorQN, skipCallStackHead)) {
 								return true;
 							}
 						}
 						else {
-							if (callStack.hasAnyAncestor(ancestorQN, true)) {
+							if (callStack.hasAnyAncestor(ancestorQN, skipCallStackHead)) {
 								return true;
 							}
 						}
