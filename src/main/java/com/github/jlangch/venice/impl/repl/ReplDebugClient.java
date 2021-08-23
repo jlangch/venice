@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.agent.Break;
 import com.github.jlangch.venice.impl.debug.agent.IDebugAgent;
@@ -230,11 +231,21 @@ public class ReplDebugClient {
 			final String cmd = trimToEmpty(params.get(0));
 			switch(cmd) {
 				case "add":
-					agent.addBreakpoints(parseBreakpoints(drop(params, 1)));
+					try {
+						agent.addBreakpoints(parseBreakpoints(drop(params, 1)));
+					}
+					catch(ParseError ex) {
+						printer.println("error", ex.getMessage());
+					}
 					break;
 					
 				case "remove":
-					agent.removeBreakpoints(parseBreakpoints(drop(params, 1)));
+					try {
+						agent.removeBreakpoints(parseBreakpoints(drop(params, 1)));
+					}
+					catch(ParseError ex) {
+						printer.println("error", ex.getMessage());
+					}
 					break;
 					
 				case "clear":

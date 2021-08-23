@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.debug.breakpoint;
 
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.toList;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
@@ -33,6 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.impl.SpecialForms;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -89,23 +94,25 @@ public class BreakpointParser {
 		switch (selector) {
 			case ">": 
 				return toList(
-						new BreakpointFn(
-								QualifiedName.parse(bpTokens.get(2)),
-								new Selector(
-									scopeSet,
-									new AncestorSelector(
-											QualifiedName.parse(bpTokens.get(0)),
-											AncestorType.Nearest))));
+						validate(
+							new BreakpointFn(
+									QualifiedName.parse(bpTokens.get(2)),
+									new Selector(
+										scopeSet,
+										new AncestorSelector(
+												QualifiedName.parse(bpTokens.get(0)),
+												AncestorType.Nearest)))));
 				
 			case "+":
 				return toList(
-						new BreakpointFn(
-								QualifiedName.parse(bpTokens.get(2)),
-								new Selector(
-									scopeSet,
-									new AncestorSelector(
-											QualifiedName.parse(bpTokens.get(0)),
-											AncestorType.Any))));
+						validate(
+							new BreakpointFn(
+									QualifiedName.parse(bpTokens.get(2)),
+									new Selector(
+										scopeSet,
+										new AncestorSelector(
+												QualifiedName.parse(bpTokens.get(0)),
+												AncestorType.Any)))));
 				
 			default:
 				return bpTokens
@@ -114,6 +121,7 @@ public class BreakpointParser {
 						.filter(s -> isBreakpointRefCandidate(s))
 						.map(s -> parseBreakpoint(s, scopeSet))
 						.filter(b -> b != null)
+						.map(s -> validate(s))
 						.collect(Collectors.toList());
 		}		
 	}
@@ -187,6 +195,41 @@ public class BreakpointParser {
 		return s != null && !isBreakpointScopes(s);
 	}
 	
+	private static BreakpointFn validate(final BreakpointFn bp) {
+		final String fnName = bp.getQualifiedFnName();
+		
+		if (SpecialForms.isSpecialForm(fnName)) {		
+			if (!isSpecialFormSupportedForDebugging(fnName)) {
+				throw new ParseError(
+						String.format(
+							"The special form '%s' is not supported for debugging!",
+							fnName));
+			}
+
+			bp.getSelectors().forEach(s -> {
+				if (s.hasScope(FunctionCall) 
+						|| s.hasScope(FunctionExit) 
+						|| s.hasScope(FunctionException)
+				) {
+					throw new ParseError(
+							String.format(
+								"Breakpoints on special forms like '%s' do not support level %s, %s, or %s!",
+								fnName,
+								FunctionCall.description(),
+								FunctionExit.description(),
+								FunctionException.description()));
+				}
+			});
+		}
+		
+		return bp;
+	}
+	
+	
+	private static boolean isSpecialFormSupportedForDebugging(final String name) {
+		return "let".equals(name) 
+				|| "loop".equals(name);
+	}
 	
 	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }

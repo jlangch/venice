@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.impl.SpecialForms;
 
 
 public class HighlightParser {
@@ -163,8 +164,11 @@ public class HighlightParser {
 							// '(a 2 3)
 							addItem(sToken, SYMBOL);
 						}
-						else if (SPECIAL_FORMS.contains(sToken)) {
+						else if (SpecialForms.isSpecialForm(sToken)) {
 							// (def a 10)
+							addItem(sToken, SYMBOL_SPECIAL_FORM);
+						}
+						else if (SYSTEM_VARS.contains(sToken)) {
 							addItem(sToken, SYMBOL_SPECIAL_FORM);
 						}
 						else if (CORE_MACROS.contains(sToken)) {
@@ -331,63 +335,9 @@ public class HighlightParser {
 	private boolean hasUnprocessedTokens() {
 		return position < tokens.size();
 	}
-
 	
-	
-	private static Set<String> SPECIAL_FORMS = new HashSet<>(
+	private static Set<String> SYSTEM_VARS = new HashSet<>(
 			Arrays.asList(
-					"gensym",
-					"doc",
-					"modules",
-					"fn",
-					"eval",
-					"resolve",
-					"var-get",
-					"var-name",
-					"var-ns",
-					"var-local?",
-					"var-thread-local?",
-					"var-global?",
-					"def",
-					"defn",
-					"defn-",
-					"defonce",
-					"defmulti",
-					"defmethod",
-					"deftype",
-					"deftype?",
-					"deftype-of",
-					"deftype-or",
-					".:",
-					"def-dynamic",
-					"binding",
-					"bound?",
-					"set!",
-					"do",
-					"if",
-					"let",
-					"loop",
-					"recur",
-					"try",
-					"try-with",
-					"catch",
-					"finally",
-					"locking",
-					"defmacro",
-					"macroexpand",
-					"ns",
-					"namespace",
-					"ns-unmap",
-					"ns-remove",
-					"ns-list",
-					"quote",
-					"quasiquote",
-					"tail-pos",
-					"import",
-					"imports",
-					"dobench",
-					"dorun",
-					"prof",
 					"*version*",
 					"*newline*",
 					"*loaded-modules*",
