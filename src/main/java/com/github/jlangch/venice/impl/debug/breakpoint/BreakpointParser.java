@@ -202,8 +202,14 @@ public class BreakpointParser {
 			if (!isSpecialFormSupportedForDebugging(fnName)) {
 				throw new ParseError(
 						String.format(
-							"The special form '%s' is not supported for debugging!",
-							fnName));
+							"The special form '%s' is not supported for debugging! "
+							+ "Only the forms %s are supported yet.",
+							fnName,
+							SUPPORTED_SPECIAL_FORMS
+								.stream()
+								.sorted()
+								.map(s -> "'" + s + "'")
+								.collect(Collectors.joining(", "))));
 			}
 
 			bp.getSelectors().forEach(s -> {
@@ -227,9 +233,13 @@ public class BreakpointParser {
 	
 	
 	private static boolean isSpecialFormSupportedForDebugging(final String name) {
-		return "let".equals(name) 
-				|| "loop".equals(name);
+		return SUPPORTED_SPECIAL_FORMS.contains(name);
 	}
-	
+
+	public static Set<String> SUPPORTED_SPECIAL_FORMS = new HashSet<>(
+			Arrays.asList(
+				"let", 
+				"loop"));
+
 	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }
