@@ -130,18 +130,18 @@ public class ReplDebugClient {
 				
 			case "step-next-":
 			case "sn-":
-				if (!agent.isStepPossible(StepMode.StepToFunctionReturn))  {
+				if (!agent.isStepPossible(StepMode.StepToNextNonSystemFunction))  {
 					return;
 				}
 				agent.step(StepMode.StepToNextNonSystemFunction);
 				break;
 				
-			case "step-into":
-			case "si":
-				if (!agent.isStepPossible(StepMode.StepIntoFunction))  {
+			case "step-entry":
+			case "se":
+				if (!agent.isStepPossible(StepMode.StepToFunctionEntry))  {
 					return;
 				}
-				agent.step(StepMode.StepIntoFunction);
+				agent.step(StepMode.StepToFunctionEntry);
 				break;
 				
 			case "step-return":
@@ -628,8 +628,8 @@ public class ReplDebugClient {
 			"               Short form: !r\n" +
 			"  !step-next   Step to next function\n" +
 			"               Short form: !sn\n" +
-			"  !step-into   Step into function body\n" +
-			"               Short form: !si\n" +
+			"  !step-entry  Step into function entry after args evaluation\n" +
+			"               Short form: !se\n" +
 			"  !step-return Step to the return of the function\n" +
 			"               Short form: !sr\n" +
 			"  !break?      Prints info on whether the debugger is in a break or not\n" +
@@ -658,8 +658,7 @@ public class ReplDebugClient {
 					"resume",      "r",
 					"step-next",   "sn",
 					"step-next-",  "sn-",
-					"step-into",   "si",
-					"step-line",   "sl",
+					"step-entry",  "se",
 					"step-return", "sr",
 					"break?",      "b?",
 					"callstack",   "cs",

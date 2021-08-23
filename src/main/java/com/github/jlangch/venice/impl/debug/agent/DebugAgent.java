@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.impl.debug.agent;
 
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepIntoFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionEntry;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
@@ -187,8 +187,8 @@ public class DebugAgent implements IDebugAgent {
 				
 			case StepToNextFunction: 
 			case StepToNextNonSystemFunction: 
+			case StepToFunctionEntry: 
 			case StepToFunctionReturn: 
-			case StepIntoFunction: 
 				return true;
 				
 			default: 
@@ -367,10 +367,10 @@ public class DebugAgent implements IDebugAgent {
 				step = new Step(StepToNextNonSystemFunction);
 				break;
 				
-			case StepIntoFunction:
+			case StepToFunctionEntry:
 				if (br.isInScope(FunctionCall)) {
 					step = new Step(
-								StepIntoFunction,
+								StepToFunctionEntry,
 								br.getFn().getQualifiedName(),
 								step.fromBreak());
 				}
@@ -417,7 +417,7 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction:
 				return true;
 				
-			case StepIntoFunction:
+			case StepToFunctionEntry:
 				return br.isInScope(FunctionCall);
 				
 			case StepToFunctionReturn:
@@ -508,11 +508,11 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction: 
 				return scope == FunctionEntry && !hasSystemNS(fnName);
 
+			case StepToFunctionEntry: 
+				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
+
 			case StepToFunctionReturn: 
 				return scope == FunctionExit && stepTmp.isBoundToFnName(fnName);
-
-			case StepIntoFunction: 
-				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
 
 			default:
 				return false;

@@ -33,13 +33,15 @@ public enum StepMode {
 	// Step to next non system function entry (aka step over)
 	StepToNextNonSystemFunction,
 
-	// Step in the current function after arguments evaluation
-	StepIntoFunction,
+	// Step in the current function to the entry: call -> entry
+	// Steps over all functions called for evaluating the functions args
+	StepToFunctionEntry,
 
-	// Step in the current function to the return
+	// Step in the current function to the return: (call,entry) -> exit
+	// Steps over all functions called for evaluating the functions args or body
 	StepToFunctionReturn,
 	
-	// Disable stepping, just stop on function or file/lineNr breakpoints
+	// Disable stepping, just stop on function breakpoints
 	SteppingDisabled;
 
 }
