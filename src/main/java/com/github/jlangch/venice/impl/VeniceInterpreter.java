@@ -790,12 +790,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 											return retVal;
 										}
 										catch(Exception ex) {
-											debugAgent.onBreakFnException(fnName, fn, args, ex, env__);
+											debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env__);
 											throw ex;
 										}
 									}
 									else {
-										// Debugging for  non native functions is handled in 
+										// Debugging for non native functions is handled in 
 										// VncFunction::apply. See the builder
 										// VeniceInterpreter::buildFunction(..)
 										return fn.apply(fnArgs);
