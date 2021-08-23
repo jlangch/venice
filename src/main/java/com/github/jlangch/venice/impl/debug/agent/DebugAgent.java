@@ -209,7 +209,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncVal meta,
 			final Env env
 	) {
-		if (isStopOnFunction("loop", FunctionEntry)) {
+		if (isStopOnFunction("loop", true, FunctionEntry)) {
 			final Break br = new Break(
 									new BreakpointFnRef("loop"),
 									new SpecialFormVirtualFunction(
@@ -236,7 +236,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncVal meta,
 			final Env env
 	) {
-		if (isStopOnFunction("let", FunctionEntry)) {
+		if (isStopOnFunction("let", true, FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
 									new BreakpointFnRef("let"),
@@ -259,7 +259,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncList args,
 			final Env env
 	) {
-		if (isStopOnFunction(fnName, FunctionCall)) {
+		if (isStopOnFunction(fnName, false, FunctionCall)) {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
@@ -279,7 +279,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncList args,
 			final Env env
 	) {
-		if (isStopOnFunction(fnName, FunctionEntry)) {
+		if (isStopOnFunction(fnName, false, FunctionEntry)) {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
@@ -300,7 +300,7 @@ public class DebugAgent implements IDebugAgent {
 			final VncVal retVal,
 			final Env env
 	) {
-		if (isStopOnFunction(fnName, FunctionExit)) {
+		if (isStopOnFunction(fnName, false, FunctionExit)) {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
@@ -323,7 +323,7 @@ public class DebugAgent implements IDebugAgent {
 			final Exception ex,
 			final Env env
 	) {
-		if (isStopOnFunction(fnName, FunctionException)) {
+		if (isStopOnFunction(fnName, false, FunctionException)) {
 			final Break br = new Break(
 									new BreakpointFnRef(fnName),
 									fn,
@@ -487,6 +487,7 @@ public class DebugAgent implements IDebugAgent {
 	
 	private boolean isStopOnFunction(
 			final String fnName, 
+			final boolean specialForm,
 			final FunctionScope scope
 	) {
 		final Step stepTmp = step;  // be immune to changing step var
@@ -496,7 +497,8 @@ public class DebugAgent implements IDebugAgent {
 				return skipBreakpoints
 						? false
 						: matchesWithBreakpoint(
-								fnName, 
+								fnName,
+								specialForm,
 								scope, 
 								breakpoints.get(new BreakpointFnRef(fnName)));
 
@@ -551,6 +553,7 @@ public class DebugAgent implements IDebugAgent {
 
 	private boolean matchesWithBreakpoint(
 			final String fnName, 
+			final boolean specialForm,
 			final FunctionScope scope,
 			final BreakpointFn bp
 	) {
@@ -567,7 +570,7 @@ public class DebugAgent implements IDebugAgent {
 						// match ancestor with callstack
 						final CallStack callStack = ThreadLocalMap.get().getCallStack_();
 						final String ancestorQN = as.getAncestor().getQualifiedName();
-						final boolean skipCallStackHead = scope != FunctionCall;
+						final boolean skipCallStackHead = scope != FunctionCall && !specialForm;
 						
 						if (as.getType() == AncestorType.Nearest) {
 							if (callStack.hasNearestAncestor(ancestorQN, skipCallStackHead)) {
