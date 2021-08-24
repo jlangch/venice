@@ -123,6 +123,15 @@ public class ReplDebugClient {
 				agent.resume();
 				break;
 				
+			case "step":
+			case "s":
+				if (!agent.isStepPossible(StepMode.StepToAny)) {
+					printErrorSteppingNotPossible("to any");
+					return;
+				}
+				agent.step(StepMode.StepToAny);
+				break;
+				
 			case "step-next":
 			case "sn":
 				if (!agent.isStepPossible(StepMode.StepToNextFunction)) {

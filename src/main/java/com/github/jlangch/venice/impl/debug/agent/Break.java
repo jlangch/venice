@@ -116,13 +116,15 @@ public class Break {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
-						"Breakpoint:   %s\n",
+						"Breakpoint:   %s",
 						breakpoint.toString()));
 		
+		sb.append("\n");
 		sb.append(String.format(
-						"Scope:        %s\n", 
+						"Scope:        %s", 
 						scope));
 		
+		sb.append("\n");
 		if (isBreakInSpecialForm()) {
 			sb.append(String.format(
 						"Special Form: %s", 
@@ -147,6 +149,12 @@ public class Break {
 						MetaUtil.getFile(fn.getMeta()),
 						MetaUtil.getLine(fn.getMeta())));
 		}
+			
+		sb.append("\n");
+		sb.append(String.format(
+						"Callstack:    Level %d", 
+						getCallStack().level()));
+		
 		
 		return sb.toString();
 	}

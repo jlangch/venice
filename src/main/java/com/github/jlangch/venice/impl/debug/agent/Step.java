@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.debug.agent;
 
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.SteppingDisabled;
+
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
@@ -30,7 +32,7 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 public class Step {
 
 	public Step() {
-		this(StepMode.SteppingDisabled, null);
+		this(SteppingDisabled, null);
 	}
 	
 	public Step(final StepMode mode) {
@@ -45,6 +47,7 @@ public class Step {
 		this.boundToFnName = boundToFnName;
 	}
 	
+	
 	public Step clear() {
 		return new Step();
 	}
@@ -56,13 +59,17 @@ public class Step {
 	public boolean isInMode(final StepMode... modes) {
 		return CollectionUtil.toList(modes).contains(mode);
 	}
-
+	
 	public String boundToFnName() {
 		return boundToFnName;
 	}
 
 	public boolean isBoundToFnName(final String fnName) {
 		return boundToFnName != null && boundToFnName.equals(fnName);
+	}
+
+	public boolean isBoundToFnNameOrNull(final String fnName) {
+		return boundToFnName == null || boundToFnName.equals(fnName);
 	}
 	
 

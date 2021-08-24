@@ -22,10 +22,13 @@
 package com.github.jlangch.venice.impl.debug.agent;
 
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepOverFunction;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepOverFunction_NextCall;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToAny;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionEntry;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionExit;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.*;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunctionCall;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
@@ -186,9 +189,12 @@ public class DebugAgent implements IDebugAgent {
 			case SteppingDisabled: 
 				return !skipBreakpoints && breakpoints.containsKey(bpRef);
 				
+			case StepToAny:
 			case StepToNextFunction: 
 			case StepToNextNonSystemFunction: 
-			case StepOverFunction: 
+			case StepToNextFunctionCall: 
+			case StepOverFunction:
+			case StepOverFunction_NextCall:
 			case StepToFunctionEntry: 
 			case StepToFunctionExit: 
 				return true;
@@ -207,7 +213,8 @@ public class DebugAgent implements IDebugAgent {
 			final FunctionScope scope,
 			final List<VncSymbol> loopBindingNames,
 			final VncVal meta,
-			final Env env
+			final Env env,
+			final CallStack callstack
 	) {
 		if (isStopOnFunction("loop", true, FunctionEntry)) {
 			final Break br = new Break(
@@ -223,7 +230,7 @@ public class DebugAgent implements IDebugAgent {
 											  .map(v -> v == null ? Nil : v.getVal())
 											  .collect(Collectors.toList())),
 									env,
-									ThreadLocalMap.getCallStack(),
+									callstack,
 									FunctionEntry);
 			notifyOnBreak(br);
 			waitOnBreak(br);
@@ -234,7 +241,8 @@ public class DebugAgent implements IDebugAgent {
 			final FunctionScope scope,
 			final List<Var> vars,
 			final VncVal meta,
-			final Env env
+			final Env env,
+			final CallStack callstack
 	) {
 		if (isStopOnFunction("let", true, FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
@@ -246,7 +254,7 @@ public class DebugAgent implements IDebugAgent {
 											.map(v -> v.getVal())
 											.collect(Collectors.toList())),
 									env, 
-									ThreadLocalMap.getCallStack(),
+									callstack,
 									FunctionEntry);
 			notifyOnBreak(br);
 			waitOnBreak(br);
@@ -257,7 +265,8 @@ public class DebugAgent implements IDebugAgent {
 			final String fnName,
 			final VncFunction fn,
 			final VncList unevaluatedArgs,
-			final Env env
+			final Env env,
+			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionCall)) {
 			final Break br = new Break(
@@ -265,7 +274,7 @@ public class DebugAgent implements IDebugAgent {
 									fn,
 									unevaluatedArgs,
 									env,
-									ThreadLocalMap.getCallStack(),
+									callstack,
 									FunctionCall);
 			
 			notifyOnBreak(br);
@@ -277,7 +286,8 @@ public class DebugAgent implements IDebugAgent {
 			final String fnName,
 			final VncFunction fn,
 			final VncList evaluatedArgs,
-			final Env env
+			final Env env,
+			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionEntry)) {
 			final Break br = new Break(
@@ -285,7 +295,7 @@ public class DebugAgent implements IDebugAgent {
 									fn,
 									evaluatedArgs,
 									env,
-									ThreadLocalMap.getCallStack(),
+									callstack,
 									FunctionEntry);
 			
 			notifyOnBreak(br);
@@ -298,7 +308,8 @@ public class DebugAgent implements IDebugAgent {
 			final VncFunction fn,
 			final VncList evaluatedArgs,
 			final VncVal retVal,
-			final Env env
+			final Env env,
+			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionExit)) {
 			final Break br = new Break(
@@ -308,7 +319,7 @@ public class DebugAgent implements IDebugAgent {
 									retVal,
 									null,
 									env,
-									ThreadLocalMap.getCallStack(),
+									callstack,
 									FunctionExit);
 			
 			notifyOnBreak(br);
@@ -321,7 +332,8 @@ public class DebugAgent implements IDebugAgent {
 			final VncFunction fn,
 			final VncList evaluatedArgs,
 			final Exception ex,
-			final Env env
+			final Env env,
+			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionException)) {
 			final Break br = new Break(
@@ -331,7 +343,7 @@ public class DebugAgent implements IDebugAgent {
 									null,
 									ex,
 									env,
-									ThreadLocalMap.getCallStack(),
+									callstack,
 									FunctionException);
 
 			notifyOnBreak(br);
@@ -364,6 +376,10 @@ public class DebugAgent implements IDebugAgent {
 		final String brFnQualifiedName = br.getFn().getQualifiedName();
 		
 		switch(mode) {
+			case StepToAny:
+				step = new Step(StepToAny);
+				break;
+
 			case StepToNextFunction:
 				step = new Step(StepToNextFunction);
 				break;
@@ -404,7 +420,7 @@ public class DebugAgent implements IDebugAgent {
 				break;
 		}
 
-		activeBreak = null;
+		activeBreak = null;  // leave current break
 
 		return true;
 	}
@@ -418,18 +434,16 @@ public class DebugAgent implements IDebugAgent {
 		}
 		
 		switch(mode) {
+			case StepToAny:
 			case StepToNextFunction:
 			case StepToNextNonSystemFunction:
 			case StepToNextFunctionCall:
 			case StepOverFunction:
-				return true;
-	
 			case StepToFunctionEntry:
-				return br.isInScope(FunctionCall);
+				return true;
 				
 			case StepToFunctionExit:
-				return !br.isBreakInSpecialForm() 
-							&& br.isInScope(FunctionCall, FunctionEntry);
+				return !br.isBreakInSpecialForm();
 
 			case SteppingDisabled:
 				return true;
@@ -452,21 +466,23 @@ public class DebugAgent implements IDebugAgent {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
-					"Active break:          %s\n", 
+					"Active break:           %s\n", 
 					activeBreak == null
 						?  "no" 
 						: "Break\n" + indent(activeBreak.toString(), 25)));
 		
 		sb.append(String.format(
-					"Step mode:             %s\n", 
+					"Step mode:              %s\n", 
 					stepTmp.mode()));
 		
 		sb.append(String.format(
-					"Step bound to Fn name: %s\n", 
-					stepTmp.boundToFnName() == null ? "-" : stepTmp.boundToFnName()));
+					"Step bound to Fn name:  %s\n", 
+					stepTmp.boundToFnName() == null 
+						? "-" 
+						: stepTmp.boundToFnName()));
 		
 		sb.append(String.format(
-					"Skip breakpoints:      %s", 
+					"Skip breakpoints:       %s", 
 					skipBreakpoints ? "yes" : "no"));
 		
 		return sb.toString();
@@ -504,6 +520,9 @@ public class DebugAgent implements IDebugAgent {
 								scope, 
 								breakpoints.get(new BreakpointFnRef(fnName)));
 
+			case StepToAny:
+				return true;
+
 			case StepToNextFunction:
 				return scope == FunctionEntry;
 
@@ -513,17 +532,27 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextFunctionCall:
 				return scope == FunctionCall;
 
+			// Step over from function f1 to the next function f2:
+			// [1] step to exit level of f1
+			// [2] step to call level of next function f2
+			// [3] step to entry level of f2
 			case StepOverFunction:
-				if (scope == FunctionExit && stepTmp.isBoundToFnName(fnName)) {
-					step = new Step(StepToNextFunctionCall); // redirect
+				if (scope == FunctionExit && stepTmp.isBoundToFnNameOrNull(fnName)) {
+					step = new Step(StepOverFunction_NextCall); // redirect
+				}
+				return false;
+				
+			case StepOverFunction_NextCall:
+				if (scope == FunctionCall && stepTmp.isBoundToFnNameOrNull(fnName)) {
+					step = new Step(StepToFunctionEntry, fnName); // redirect
 				}
 				return false;
 
 			case StepToFunctionEntry: 
-				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
+				return scope == FunctionEntry && (stepTmp.isBoundToFnNameOrNull(fnName));
 
 			case StepToFunctionExit: 
-				return scope == FunctionExit && stepTmp.isBoundToFnName(fnName);
+				return scope == FunctionExit && stepTmp.isBoundToFnNameOrNull(fnName);
 
 			default:
 				return false;

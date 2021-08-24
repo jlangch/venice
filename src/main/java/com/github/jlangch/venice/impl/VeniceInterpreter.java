@@ -399,7 +399,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						env = new Env(env);  // let introduces a new environment
 
-						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
+						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
@@ -431,7 +432,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
-							debugAgent.onBreakLet(FunctionEntry, vars, a0.getMeta(), env);
+							final CallStack callStack = threadLocalMap.getCallStack_();
+							debugAgent.onBreakLet(FunctionEntry, vars, a0.getMeta(), env, callStack);
 						}
 						
 						if (expressions.size() == 1) {
@@ -494,7 +496,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							bindingNames.add(sym);
 						}
 
-						final DebugAgent debugAgent = ThreadLocalMap.get().getDebugAgent_();
+						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 						recursionPoint = new RecursionPoint(
 												bindingNames,
@@ -508,7 +511,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								FunctionEntry,
 								recursionPoint.getLoopBindingNames(), 
 								recursionPoint.getMeta(),
-								env);
+								env,
+								threadLocalMap.getCallStack_());
 						}
 
 						if (expressions.size() == 1) {
@@ -543,13 +547,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 						// for performance reasons the DebugAgent is stored in the 
 						// RecursionPoint. Saves repeated ThreadLocal access!
-						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
+						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
 									FunctionEntry,
 									recursionPoint.getLoopBindingNames(), 
 									recursionPoint.getMeta(),
-									env);
+									env,
+									threadLocalMap.getCallStack_());
 						}
 
 						final VncList expressions = recursionPoint.getLoopExpressions();
@@ -729,11 +736,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final String fnName = fn.getQualifiedName();
 
 							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
-							
+
+							final CallStack callStack = threadLocalMap.getCallStack_();
+						
 							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 							
 							if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-								debugAgent.onBreakFnCall(fnName, fn, args, env);
+								debugAgent.onBreakFnCall(fnName, fn, args, env, callStack);
 							}
 		
 							// evaluate function args
@@ -753,8 +762,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							checkInterrupted(currThread, fnName);
 							
-															
-							final CallStack callStack = threadLocalMap.getCallStack_();
 
 							// Automatic TCO (tail call optimization)
 							if (tailPosition
@@ -767,7 +774,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
 								
 								if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-									debugAgent.onBreakFnEnter(fnName, f, fnArgs, env);
+									debugAgent.onBreakFnEnter(fnName, f, fnArgs, env, callStack);
 								}
 								
 								final VncList body = (VncList)f.getBody();
@@ -784,13 +791,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										final Env env__ = new Env(env);
 										env__.setLocal(new Var(new VncSymbol("args"), fnArgs));
 										try {
-											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env__);
+											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env__, callStack);
 											final VncVal retVal = fn.apply(fnArgs);
-											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env__);
+											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env__, callStack);
 											return retVal;
 										}
 										catch(Exception ex) {
-											debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env__);
+											debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env__, callStack);
 											throw ex;
 										}
 									}
@@ -2297,17 +2304,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						threadLocalMap.setCurrNS_(ns);
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(getQualifiedName()))) {
+							final CallStack cs = threadLocalMap.getCallStack_();
 							try {
-								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv);
+								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv, cs);
 								if (hasPreConditions) {
 									validateFnPreconditions(localEnv);
 								}
 								final VncVal retVal = evaluateBody(body, localEnv, true);
-								debugAgent.onBreakFnExit(getQualifiedName(), this, args, retVal, localEnv);
+								debugAgent.onBreakFnExit(getQualifiedName(), this, args, retVal, localEnv, cs);
 								return retVal;
 							}
 							catch(Exception ex) {
-								debugAgent.onBreakFnException(getQualifiedName(), this, args, ex, localEnv);
+								debugAgent.onBreakFnException(getQualifiedName(), this, args, ex, localEnv, cs);
 								throw ex;
 							}
 						}
