@@ -602,7 +602,7 @@ public class REPL {
 	}
 
 	private void handleHelpCommand() {
-		printer.println("stdout", HELP);
+		printer.println("stdout", ReplHelp.COMMANDS);
 	}
 
 	private void handleDebugHelpCommand() {
@@ -657,7 +657,7 @@ public class REPL {
 			final Env env
 	) {
 		if (params.isEmpty()) {
-			printer.println("stdout", HELP_ENV);
+			printer.println("stdout", ReplHelp.ENV);
 			return;
 		}
 		else if (first(params).equals("print")) {
@@ -689,7 +689,7 @@ public class REPL {
 			final Env env
 	) {
 		if (params.isEmpty()) {
-			terminal.writer().println(HELP_SANDBOX);
+			terminal.writer().println(ReplHelp.SANDBOX);
 			return;
 		}
 
@@ -809,7 +809,7 @@ public class REPL {
 					rules.rejectVeniceFunctions(rule);
 				}
 				else {
-					terminal.writer().println(HELP_SANDBOX);
+					terminal.writer().println(ReplHelp.SANDBOX);
 					return;
 				}
 				
@@ -1278,84 +1278,6 @@ public class REPL {
 
 	private static final SetupMode Minimal = SetupMode.Minimal;
 	private static final SetupMode Extended = SetupMode.Extended;
-
-	private final static String HELP =
-			"Venice REPL: V" + Venice.getVersion() + "\n\n" +
-			"Commands: \n" +
-			"  !reload      reload Venice environment\n" +
-			"  !restart     restart the REPL.\n" +
-			"               note: the REPL launcher script must support\n" +
-			"                     REPL restarting.\n" +
-			"  !, !?, !help help\n" +
-			"  !darkmode    switch to Venice's dark color theme\n" +
-			"  !lightmode   switch to Venice's light color theme\n" +
-			"  !info        show REPL setup context data\n" +
-			"  !config      show a sample REPL config\n" +
-			"  !classpath   show the REPL classpath\n" +
-			"  !loadpath    show the REPL loadpath\n" +
-			"  !highlight   turn highlighting dynamically on or off\n" +
-			"                 !highlight {on/off}\n" +
-			"  !macroexpand enable macro expansion while loading\n" +
-			"               files and modules. \n" +
-			"               This can speed-up script execution by\n" +
-			"               a factor 3 or 5 and even more with\n" +
-			"               complex code!\n" +
-			"  !env         print env symbols:\n" +
-			"                 !env print {symbol-name}\n" +
-			"                 !env global\n" +
-			"                 !env global io/*\n" +
-			"                 !env global *file*\n" +
-			"  !sandbox     sandbox\n" +	
-			"                 !sandbox status\n" +
-			"                 !sandbox config\n" +
-			"                 !sandbox accept-all\n" +
-			"                 !sandbox reject-all\n" +
-			"                 !sandbox customized\n" +
-			"                 !sandbox add-rule rule\n" +
-			"  !java-ex     print Java exception\n" +
-			"                 !java-ex\n" +
-			"                 !java-ex {on/off}\n" +
-			"  !hist clear  clear the history\n" +
-			"  !quit, !q    quit the REPL\n\n" +
-			"Drag&Drop: \n" +
-			"  Scripts can be dragged to the REPL. Upon pressing [return]\n" +
-			"  the  REPL loads the script through the dropped absolute or\n" +
-			"  relative filename. If the script has less than 20 lines it's\n" +
-			"  source is displayed.\n\n" +
-			"History: \n" +
-			"  A history of the last three result values is kept by\n" +
-			"  the REPL, accessible through the symbols `*1`, `*2`, `*3`,\n" +
-			"  and `**`. E.g. (printl *1)\n\n" +
-			"Shortcuts:\n" +
-			"  ctrl-A   move the cursor to the start\n" +
-			"  ctrl-C   stop the running command, cancel a multi-line\n" +
-			"           edit, or break out of the REPL\n" +
-			"  ctrl-E   move the cursor to the end\n" +
-			"  ctrl-K   remove the text after the cursor and store it\n" +
-			"           in a cut-buffer\n" +
-			"  ctrl-L   clear the screen\n" +
-			"  ctrl-Y   yank the text from the cut-buffer\n" +
-			"  ctrl-_   undo\n";
-
-	private final static String HELP_ENV =
-			"Please choose from:\n" +
-			"   !env print {symbol-name}\n" +
-			"   !env global\n" +
-			"   !env global io/*\n" +
-			"   !env global *file*\n";
-
-	private final static String HELP_SANDBOX =
-			"Please choose from:\n" +
-			"   !sandbox status\n" +
-			"   !sandbox config\n" +
-			"   !sandbox accept-all\n" +
-			"   !sandbox reject-all\n" +
-			"   !sandbox customized\n" +
-			"   !sandbox add-rule class:java.lang.Math:*\n" +
-			"   !sandbox add-rule system.property:os.name\n" +
-			"   !sandbox add-rule blacklist:venice:func:io/exists-dir?\n" +
-			"   !sandbox add-rule blacklist:venice:func:*io*\n" +
-			"   !sandbox add-rule venice:module:shell\n";
 
 	private final static int RESTART_EXIT_CODE = 99;
 	
