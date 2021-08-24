@@ -34,7 +34,7 @@ public class ReplDebugHelp {
 			"  entry:       breaks right after the passed parameters have been evaluated.\n" +
 			"               The evaluated function parameters are available for inspection.\n" +
 			"  exception:   breaks on catching an exception within the function's body. The\n" +
-			"               exeption and the evaluated functions parameters are available\n" +
+			"               exception and the evaluated functions parameters are available\n" +
 			"               for inspection.\n" +
 			"  exit:        breaks before returning from the function. The return value and\n" +
 			"               the evaluated function parameters are available for inspection.\n" +
