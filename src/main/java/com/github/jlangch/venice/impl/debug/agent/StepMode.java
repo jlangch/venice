@@ -36,13 +36,16 @@ public enum StepMode {
 	// Step over the current function
 	StepOverFunction,
 
+	// Step in the next function at call level
+	StepToNextFunctionCall,
+
 	// Step in the current function to the entry: call -> entry
 	// Steps over all functions called for evaluating the functions args
 	StepToFunctionEntry,
 
-	// Step in the current function to the return: (call,entry) -> exit
+	// Step in the current function to the exit: (call,entry) -> exit
 	// Steps over all functions called for evaluating the functions args or body
-	StepToFunctionReturn,
+	StepToFunctionExit,
 	
 	// Disable stepping, just stop on function breakpoints
 	SteppingDisabled;

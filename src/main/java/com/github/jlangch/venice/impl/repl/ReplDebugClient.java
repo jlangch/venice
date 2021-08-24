@@ -163,13 +163,13 @@ public class ReplDebugClient {
 				
 			case "step-return":
 			case "sr":
-				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
+				if (!agent.isStepPossible(StepMode.StepToFunctionExit)) {
 					printErrorSteppingNotPossible("to return of");
 					return;
 				}
 				println("Stepping to return of function %s ...",
 						agent.getBreak().getFn().getQualifiedName());
-				agent.step(StepMode.StepToFunctionReturn);
+				agent.step(StepMode.StepToFunctionExit);
 				break;
 				
 			case "break?": 

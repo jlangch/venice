@@ -23,9 +23,9 @@ package com.github.jlangch.venice.impl.debug.agent;
 
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepOverFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionEntry;
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionExit;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextNonSystemFunction;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.*;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionCall;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionException;
@@ -190,7 +190,7 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction: 
 			case StepOverFunction: 
 			case StepToFunctionEntry: 
-			case StepToFunctionReturn: 
+			case StepToFunctionExit: 
 				return true;
 				
 			default: 
@@ -361,6 +361,7 @@ public class DebugAgent implements IDebugAgent {
 		}
 		
 		final Break br = activeBreak;
+		final String brFnQualifiedName = br.getFn().getQualifiedName();
 		
 		switch(mode) {
 			case StepToNextFunction:
@@ -371,26 +372,26 @@ public class DebugAgent implements IDebugAgent {
 				step = new Step(StepToNextNonSystemFunction);
 				break;
 				
+			case StepToNextFunctionCall:
+				step = new Step(StepToNextFunctionCall);
+				break;
+				
 			case StepOverFunction:
-				step = new Step(StepOverFunction);
+				step = new Step(StepOverFunction, brFnQualifiedName);
 				break;
 	
 			case StepToFunctionEntry:
 				if (br.isInScope(FunctionCall)) {
-					step = new Step(
-								StepToFunctionEntry,
-								br.getFn().getQualifiedName());
+					step = new Step(StepToFunctionEntry, brFnQualifiedName);
 				}
 				else {
 					step = step.clear();
 				}
 				break;
 				
-			case StepToFunctionReturn:
+			case StepToFunctionExit:
 				if (br.isInScope(FunctionCall, FunctionEntry)) {
-					step = new Step(
-								StepToFunctionReturn,
-								br.getFn().getQualifiedName());
+					step = new Step(StepToFunctionExit, brFnQualifiedName);
 				}
 				else {
 					step = step.clear();
@@ -419,13 +420,14 @@ public class DebugAgent implements IDebugAgent {
 		switch(mode) {
 			case StepToNextFunction:
 			case StepToNextNonSystemFunction:
+			case StepToNextFunctionCall:
 			case StepOverFunction:
 				return true;
 	
 			case StepToFunctionEntry:
 				return br.isInScope(FunctionCall);
 				
-			case StepToFunctionReturn:
+			case StepToFunctionExit:
 				return !br.isBreakInSpecialForm() 
 							&& br.isInScope(FunctionCall, FunctionEntry);
 
@@ -508,16 +510,19 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction: 
 				return scope == FunctionEntry && !hasSystemNS(fnName);
 
+			case StepToNextFunctionCall:
+				return scope == FunctionCall;
+
 			case StepOverFunction:
-				if (scope == FunctionCall || scope == FunctionEntry) {
-					step = new Step(StepToFunctionReturn, fnName); // redirect
-				}			
+				if (scope == FunctionExit && stepTmp.isBoundToFnName(fnName)) {
+					step = new Step(StepToNextFunctionCall); // redirect
+				}
 				return false;
 
 			case StepToFunctionEntry: 
 				return scope == FunctionEntry && stepTmp.isBoundToFnName(fnName);
 
-			case StepToFunctionReturn: 
+			case StepToFunctionExit: 
 				return scope == FunctionExit && stepTmp.isBoundToFnName(fnName);
 
 			default:
