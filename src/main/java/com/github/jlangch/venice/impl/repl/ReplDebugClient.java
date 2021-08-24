@@ -106,9 +106,10 @@ public class ReplDebugClient {
 	public void handleCommand(final String cmdLine) {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
-		switch(trimToEmpty(first(params))) {
+		final String cmd = trimToEmpty(first(params));
+		switch(cmd) {
 			case "info":
-			case "?":
+			case "i":
 				printer.println("stdout", agent.toString());
 				break;
 
@@ -125,10 +126,7 @@ public class ReplDebugClient {
 			case "step-next":
 			case "sn":
 				if (!agent.isStepPossible(StepMode.StepToNextFunction)) {
-					printer.println(
-							"error", 
-							"Stepping into next function is not possible in the "
-							+ "current debug context");
+					printErrorSteppingNotPossible("into next");
 					return;
 				}
 				agent.step(StepMode.StepToNextFunction);
@@ -137,46 +135,40 @@ public class ReplDebugClient {
 			case "step-next-":
 			case "sn-":
 				if (!agent.isStepPossible(StepMode.StepToNextNonSystemFunction))  {
+					printErrorSteppingNotPossible("into next");
 					return;
 				}
 				agent.step(StepMode.StepToNextNonSystemFunction);
 				break;
 				
-			case "step-over-next":
+			case "step-over":
 			case "so":
-				if (!agent.isStepPossible(StepMode.StepOverNextFunction)) {
-					printer.println(
-							"error", 
-							"Stepping over next function is not possible in the "
-							+ "current debug context");
+				if (!agent.isStepPossible(StepMode.StepOverFunction)) {
+					printErrorSteppingNotPossible("over");
 					return;
 				}
-				agent.step(StepMode.StepOverNextFunction);
+				agent.step(StepMode.StepOverFunction);
 				break;
 				
 			case "step-entry":
 			case "se":
 				if (!agent.isStepPossible(StepMode.StepToFunctionEntry))  {
+					printErrorSteppingNotPossible("to entry of");
 					return;
 				}
-				printer.println(
-						"debug", 
-						String.format(
-							"Stepping into entry of function %s ...",
-							agent.getBreak().getFn().getQualifiedName()));
+				println("Stepping to entry of function %s ...",
+						agent.getBreak().getFn().getQualifiedName());
 				agent.step(StepMode.StepToFunctionEntry);
 				break;
 				
 			case "step-return":
 			case "sr":
 				if (!agent.isStepPossible(StepMode.StepToFunctionReturn)) {
+					printErrorSteppingNotPossible("to return of");
 					return;
 				}
-				printer.println(
-						"debug", 
-						String.format(
-							"Stepping into return of function %s ...",
-							agent.getBreak().getFn().getQualifiedName()));
+				println("Stepping to return of function %s ...",
+						agent.getBreak().getFn().getQualifiedName());
 				agent.step(StepMode.StepToFunctionReturn);
 				break;
 				
@@ -217,8 +209,13 @@ public class ReplDebugClient {
 				ex();
 				break;
 
-			default:
+			case "help":
+			case "?":
 				println(HELP);
+				break;
+				
+			default:
+				printlnErr("Invalid command '%s'. Use '!help' for help.", cmd);
 				break;
 		}
 	}
@@ -228,49 +225,48 @@ public class ReplDebugClient {
 			printBreakpoints();
 		}
 		else {
-			final String cmd = trimToEmpty(params.get(0));
-			switch(cmd) {
-				case "add":
-					try {
+			try {
+				final String cmd = trimToEmpty(params.get(0));
+				switch(cmd) {
+					case "add":
 						agent.addBreakpoints(parseBreakpoints(drop(params, 1)));
-					}
-					catch(ParseError ex) {
-						printer.println("error", ex.getMessage());
-					}
-					break;
-					
-				case "remove":
-					try {
+						break;
+						
+					case "remove":
 						agent.removeBreakpoints(parseBreakpoints(drop(params, 1)));
-					}
-					catch(ParseError ex) {
-						printer.println("error", ex.getMessage());
-					}
-					break;
-					
-				case "clear":
-					agent.removeAllBreakpoints();
-					break;
-					
-				case "skip":
-					agent.skipBreakpoints(true);
-					break;
-					
-				case "unskip":
-					agent.skipBreakpoints(false);
-					break;
-					
-				case "skip?":
-					println("Skip breakpoints: " + agent.isSkipBreakpoints());
-					break;
-					
-				case "list":
-					printBreakpoints();
-					break;
-					
-				default:
-					printlnErr(String.format("Invalid breakpoint command '%s'.", cmd));
-					break;
+						break;
+						
+					case "clear":
+						agent.removeAllBreakpoints();
+						break;
+						
+					case "skip":
+						agent.skipBreakpoints(true);
+						break;
+						
+					case "unskip":
+						agent.skipBreakpoints(false);
+						break;
+						
+					case "skip?":
+						println("Skip breakpoints: %s", agent.isSkipBreakpoints());
+						break;
+						
+					case "list":
+						printBreakpoints();
+						break;
+						
+					default:
+						printlnErr(
+							"Invalid breakpoint command '%s'. Use one of "
+								+ "'add', 'remove', 'clear', 'skip', 'unskip', "
+								+ "or 'list'.", 
+							cmd);
+						break;
+				}
+			}
+			catch(ParseError ex) {
+				printer.println("error", ex.getMessage());
 			}
 		}
 	}
@@ -370,11 +366,7 @@ public class ReplDebugClient {
 										  .map(v -> formatVar(v))
 										  .collect(Collectors.joining("\n"));
 	
-			println(String.format(
-						"Local vars at level %d/%d:\n%s",
-						level,
-						maxLevel,
-						info));
+			println("Local vars at level %d/%d:\n%s", level, maxLevel, info);
 		}
 	}
 	
@@ -392,7 +384,7 @@ public class ReplDebugClient {
 			final VncSymbol sym = new VncSymbol(name);
 			final Var v = env.findLocalVar(sym);
 			if (v == null) {
-				println(String.format("%s -> <not found>", name));
+				println("%s -> <not found>", name);
 			}
 			else {
 				println(formatVar(sym, v.getVal()));
@@ -414,11 +406,11 @@ public class ReplDebugClient {
 			final VncSymbol sym = new VncSymbol(name);
 			final Var v = env.getGlobalVarOrNull(sym);
 			if (v == null) {
-				println(String.format("%s: <not found>", name));
+				println("%s: <not found>", name);
 			}
 			else {
 				final String sval = truncate(v.getVal().toString(true), 100, "...");
-				println(String.format("%s: %s", name, sval));
+				println("%s: %s", name, sval);
 			}
 		}
 	}
@@ -438,7 +430,7 @@ public class ReplDebugClient {
 			println("Return value: <not available>");
 		}
 		else {
-			println(String.format("Return value: %s", renderValue(v,100)));
+			println("Return value: %s", renderValue(v,100));
 		}
 	}
 	
@@ -640,12 +632,18 @@ public class ReplDebugClient {
 		}
 	}
 	
-	private void println(final String s) {
-		printer.println("debug", s);
+	private void printErrorSteppingNotPossible(final String context) {
+		printlnErr(
+			"Stepping %s function is not possible in the current debug context",
+			context);
 	}
 	
-	private void printlnErr(final String s) {
-		printer.println("error", s);
+	private void println(String format, Object... args) {
+		printer.println("debug", String.format(format, args));
+	}
+	
+	private void printlnErr(String format, Object... args) {
+		printer.println("error", String.format(format, args));
 	}
 	
 	
@@ -685,6 +683,8 @@ public class ReplDebugClient {
 			"               Short form: !r\n" +
 			"  !step-next   Step to next function\n" +
 			"               Short form: !sn\n" +
+			"  !step-over   Step over the current function\n" +
+			"               Short form: !so\n" +
 			"  !step-entry  Step to the entry of the current function\n" +
 			"               Short form: !se\n" +
 			"  !step-return Step to the return of the current function\n" +
@@ -710,21 +710,21 @@ public class ReplDebugClient {
 					"attach",
 					"detach",
 					"terminate",
-					"info",           "?",
-					"breakpoint",     "b",
-					"resume",         "r",
-					"step-next",      "sn",
-					"step-next-",     "sn-",
-					"step-over-next", "so",
-					"step-entry",     "se",
-					"step-return",    "sr",
-					"break?",         "b?",
-					"callstack",      "cs",
-					"params",         "p",
-					"locals",         "l",
+					"info",         "i",
+					"breakpoint",   "b",
+					"resume",       "r",
+					"step-next",    "sn",
+					"step-next-",   "sn-",
+					"step-over",    "so",
+					"step-entry",   "se",
+					"step-return",  "sr",
+					"break?",       "b?",
+					"callstack",    "cs",
+					"params",       "p",
+					"locals",       "l",
 					"local", 
 					"global",
-					"retval",         "ret",
+					"retval",       "ret",
 					"ex"
 			));
 	

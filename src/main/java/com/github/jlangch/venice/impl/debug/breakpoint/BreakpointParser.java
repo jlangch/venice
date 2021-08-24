@@ -203,7 +203,7 @@ public class BreakpointParser {
 				throw new ParseError(
 						String.format(
 							"The special form '%s' is not supported for debugging! "
-							+ "Only the forms %s are supported yet.",
+								+ "Only the forms %s are supported yet.",
 							fnName,
 							SUPPORTED_SPECIAL_FORMS
 								.stream()
@@ -219,7 +219,8 @@ public class BreakpointParser {
 				) {
 					throw new ParseError(
 							String.format(
-								"Breakpoints on special forms like '%s' do not support level %s, %s, or %s!",
+								"Breakpoints on special forms like '%s' do not "
+									+ "support level %s, %s, or %s!",
 								fnName,
 								FunctionCall.description(),
 								FunctionExit.description(),

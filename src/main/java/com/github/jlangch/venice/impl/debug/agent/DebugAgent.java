@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.debug.agent;
 
-import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepOverNextFunction;
+import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepOverFunction;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionEntry;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToFunctionReturn;
 import static com.github.jlangch.venice.impl.debug.agent.StepMode.StepToNextFunction;
@@ -188,7 +188,7 @@ public class DebugAgent implements IDebugAgent {
 				
 			case StepToNextFunction: 
 			case StepToNextNonSystemFunction: 
-			case StepOverNextFunction: 
+			case StepOverFunction: 
 			case StepToFunctionEntry: 
 			case StepToFunctionReturn: 
 				return true;
@@ -371,8 +371,8 @@ public class DebugAgent implements IDebugAgent {
 				step = new Step(StepToNextNonSystemFunction);
 				break;
 				
-			case StepOverNextFunction:
-				step = new Step(StepOverNextFunction);
+			case StepOverFunction:
+				step = new Step(StepOverFunction);
 				break;
 	
 			case StepToFunctionEntry:
@@ -419,7 +419,7 @@ public class DebugAgent implements IDebugAgent {
 		switch(mode) {
 			case StepToNextFunction:
 			case StepToNextNonSystemFunction:
-			case StepOverNextFunction:
+			case StepOverFunction:
 				return true;
 	
 			case StepToFunctionEntry:
@@ -508,8 +508,8 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction: 
 				return scope == FunctionEntry && !hasSystemNS(fnName);
 
-			case StepOverNextFunction:
-				if (scope == FunctionEntry) {
+			case StepOverFunction:
+				if (scope == FunctionCall || scope == FunctionEntry) {
 					step = new Step(StepToFunctionReturn, fnName); // redirect
 				}			
 				return false;
