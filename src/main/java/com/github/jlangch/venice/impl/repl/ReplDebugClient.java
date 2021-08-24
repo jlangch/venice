@@ -69,7 +69,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
  *   Arguments passed to function user/sum:
  *   x -> 6
  *   y -> 7
- *   debug> !step-return
+ *   debug> !step-exit
  *   Stopped in function user/sum (user: line 1, col 7) at exit
  *   debug> !params
  *   Break in function user/sum at exit.
@@ -179,13 +179,13 @@ public class ReplDebugClient {
 				agent.step(StepMode.StepToFunctionEntry);
 				break;
 				
-			case "step-return":
-			case "sr":
+			case "step-exit":
+			case "sx":
 				if (!agent.isStepPossible(StepMode.StepToFunctionExit)) {
-					printErrorSteppingNotPossible("to return of");
+					printErrorSteppingNotPossible("to exit of");
 					return;
 				}
-				println("Stepping to return of function %s ...",
+				println("Stepping to exit of function %s ...",
 						agent.getBreak().getFn().getQualifiedName());
 				agent.step(StepMode.StepToFunctionExit);
 				break;
@@ -669,26 +669,34 @@ public class ReplDebugClient {
 		  //+------------------------------------------------------------------------------+
 			"Venice debugger\n" +
 			"\n" +
-			"The debugger can stop within functions at 4 levels: \n" +
-			"  call:        before the passed arguments are evaluated\n" +
-			"  entry:       after the passed arguments have been evaluated\n" +
-			"  exception:   on catching an exception with the function's body\n" +
-			"  exit:        before returning from the function\n" +
+			"The debugger can break functions at 4 levels: \n" +
+			"  call:        breaks before the passed parameters are evaluated. The \n" +
+			"               unevaluated function parameters are available for inspection.\n" +
+			"  entry:       breaks right after the passed parameters have been evaluated.\n" +
+			"               The evaluated function parameters are available for inspection.\n" +
+			"  exception:   breaks on catching an exception within the function's body. The\n" +
+			"               exeption and the evaluated functions parameters are available\n" +
+			"               for inspection.\n" +
+			"  exit:        breaks before returning from the function. The return value and\n" +
+			"               the evaluated function parameters are available for inspection.\n" +
 			"\n" +
 			"Commands: \n" +
 			"  !attach      Attach the debugger to the REPL\n" +
 			"  !detach      Detach the debugger from the REPL\n" +
-			"  !terminate   Terminate a running debug session\n" +
-			"               Sends an interrupt to the script under debugging.\n" +
-			"  !info        Print info on the current debug session\n" +
+			"  !terminate   Terminate a running debug session. Sends an interrupt to the\n" +
+			"               script under debugging.\n" +
+			"  !info        Print detail info on the current debug session\n" +
 			"  !breakpoint  Manage breakpoints\n" +
 			"               o Add one or multiple breakpoints\n" +
 			"                  !breakpoint add n, n*\n" +
-			"                  E.g.: !breakpoint add user/gauss\n" +
-			"                        !breakpoint add user/gauss +\n" +
+			"                  E.g.: !breakpoint add foo/gauss\n" +
+			"                        !breakpoint add foo/gauss count\n" +
+			"                        Ancestor selectors:\n" +
+			"                          direct ancestor: !breakpoint add foo/gauss > filter\n" +
+			"                          any ancestor:    !breakpoint add foo/gauss + filter\n" +
 			"               o Remove one or multiple breakpoints\n" +
 			"                  !breakpoint remove n, n*\n" +
-			"                  E.g.: !breakpoint remove user/gauss + \n" +
+			"                  E.g.: !breakpoint remove foo/gauss \n" +
 			"               o Temporarily skip/unskip all breakpoints\n" +
 			"                  !breakpoint skip\n" +
 			"                  !breakpoint unksip\n" +
@@ -697,30 +705,37 @@ public class ReplDebugClient {
 			"                  !breakpoint list\n" +
 			"                  E.g.: !breakpoint list\n" +
 			"               Short form: !b ...\n" +
-			"  !resume      Resume from breakpoint\n" +
+			"  !resume      Resume from current break\n" +
 			"               Short form: !r\n" +
-			"  !step-next   Step to next function\n" +
+			"  !step-any    Step to the next available break at one of the four break\n" +
+			"               levels within the current or the next function whatever is first.\n" +
+			"               Short form: !sa\n" +
+			"  !step-next   Step to next function entry\n" +
 			"               Short form: !sn\n" +
-			"  !step-over   Step over the current function\n" +
+			"  !step-over   Step over the current function to next function entry.\n" +
+			"               Implicitely steps over functions involved with function\n" +
+			"               parameter evaluation.\n" +
 			"               Short form: !so\n" +
 			"  !step-entry  Step to the entry of the current function\n" +
 			"               Short form: !se\n" +
-			"  !step-return Step to the return of the current function\n" +
-			"               Short form: !sr\n" +
-			"  !break?      Prints info on whether the debugger is in a break or not\n" +
+			"  !step-exit   Step to the exit of the current function\n" +
+			"               Short form: !sx\n" +
+			"  !break?      Checks if the debugger is in a break or not\n" +
 			"               Short form: !b?\n" +
-			"  !params      Print the functions parameters\n" +
-			"               Short form: !p\n" +
+			"  !params      Print the function's parameters\n" +
+			"               Short form: !cs\n" +
+			"  !retval      Print the function's return value\n" +
+			"               Short form: !ret\n" +
+			"  !ex          Print the function's exception\n" +
 			"  !locals x    Print the local vars from the level x. The level is optional\n" +
 			"               and defaults to the top level.\n" +
 			"               Short form: !l\n" +
 			"  !local v     Print a local var with the name v\n" +
 			"  !global v    Print a global var with the name v\n" +
 			"  !callstack   Print the current callstack\n" +
-			"               Short form: !cs\n" +
-			"  !retval      Print the functions return value\n" +
-			"               Short form: !ret\n" +
-			"  !ex          Print the function's exception\n";
+			"  form         Runs a Venice form in the current break context. Useful to\n" +
+			"               inspect parameters, return values, or global/local vars.\n" +
+			"               E.g.:  (first param1)";
 
 	private static final Set<String> DEBUG_COMMANDS = new HashSet<>(
 			Arrays.asList(
@@ -731,11 +746,12 @@ public class ReplDebugClient {
 					"info",         "i",
 					"breakpoint",   "b",
 					"resume",       "r",
+					"step-any",     "sa",
 					"step-next",    "sn",
 					"step-next-",   "sn-",
 					"step-over",    "so",
 					"step-entry",   "se",
-					"step-return",  "sr",
+					"step-exit",    "sx",
 					"break?",       "b?",
 					"callstack",    "cs",
 					"params",       "p",
