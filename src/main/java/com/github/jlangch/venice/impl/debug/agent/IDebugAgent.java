@@ -105,7 +105,7 @@ public interface IDebugAgent {
 	/**
 	 * Checks if there is a breakpoint matching the qualified name
 	 *  
-	 * @param qualifiedFnName The qualified name of the function or special form
+	 * @param bpRef The a breakpoint reference
 	 * @return Returns <code>true</code> if there is a breakpoint matching the
 	 *         qualified name, otherwise <code>false</code>.
 	 */
