@@ -132,6 +132,15 @@ public class ReplDebugClient {
 				agent.step(StepMode.StepToNextFunction);
 				break;
 				
+			case "step-next-call":
+			case "snc":
+				if (!agent.isStepPossible(StepMode.StepToNextFunctionCall)) {
+					printErrorSteppingNotPossible("into next");
+					return;
+				}
+				agent.step(StepMode.StepToNextFunctionCall);
+				break;
+				
 			case "step-next-":
 			case "sn-":
 				if (!agent.isStepPossible(StepMode.StepToNextNonSystemFunction))  {
