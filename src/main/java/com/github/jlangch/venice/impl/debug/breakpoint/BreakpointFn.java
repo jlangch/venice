@@ -69,16 +69,27 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 		}
 	}
 
-	public BreakpointFn merge(final List<Selector> selectors) {
-		if (selectors == null || selectors.isEmpty()) {
+	public BreakpointFn merge(final List<Selector> newSelectors) {
+		if (newSelectors == null || newSelectors.isEmpty()) {
 			return this;
 		}
 		else {
-			// TODO: this can be done smarter!
-			final ArrayList<Selector> tmp = new ArrayList<>();
-			tmp.addAll(selectors);
-			tmp.addAll(this.selectors);
-			return new BreakpointFn(qn, tmp);
+			List<Selector> mergedSelectors = new ArrayList<>(selectors);
+			
+			for(Selector other : newSelectors) {
+				Selector match = findSelectorByMatchingAncestor(other, mergedSelectors);
+				if (match != null) {
+					// remove selector match
+					mergedSelectors = mergedSelectors
+										.stream()
+										.filter(s -> !s.hasSameAncestorSelector(match))
+										.collect(Collectors.toList());
+
+				}
+				mergedSelectors.add(other);
+			}
+			
+			return new BreakpointFn(qn, mergedSelectors);
 		}
 	}
 
@@ -138,6 +149,17 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 	@Override
 	public int compareTo(final BreakpointFn o) {
 		return comp.compare(this, (BreakpointFn)o);
+	}
+	
+	private Selector findSelectorByMatchingAncestor(
+			final Selector candidate,
+			final List<Selector> selectors
+	) {
+		return selectors
+				.stream()
+				.filter(s -> s.hasSameAncestorSelector(candidate))
+				.findFirst()
+				.orElse(null);
 	}
 	
 	

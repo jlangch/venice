@@ -29,6 +29,7 @@ import static com.github.jlangch.venice.impl.util.CollectionUtil.toSet;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,10 @@ public class Selector {
 	
 	public AncestorSelector getAncestorSelector() {
 		return ancestorSelector;
+	}
+	
+	public boolean hasSameAncestorSelector(final Selector other) {
+		return Objects.equals(ancestorSelector, other.getAncestorSelector());
 	}
 
 	public String formatForBaseFn(
