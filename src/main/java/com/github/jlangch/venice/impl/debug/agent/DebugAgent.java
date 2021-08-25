@@ -210,34 +210,6 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = listener;
 	}
 
-	public void onBreakLoop(
-			final FunctionScope scope,
-			final List<VncSymbol> loopBindingNames,
-			final VncVal meta,
-			final Env env,
-			final CallStack callstack
-	) {
-		if (isStopOnFunction("loop", true, FunctionEntry)) {
-			final Break br = new Break(
-									new BreakpointFnRef("loop"),
-									new SpecialFormVirtualFunction(
-											"loop", 
-											VncVector.ofColl(loopBindingNames), 
-											meta), 
-									VncList.ofColl(
-											loopBindingNames
-											  .stream()
-											  .map(s -> env.findLocalVar(s))
-											  .map(v -> v == null ? Nil : v.getVal())
-											  .collect(Collectors.toList())),
-									env,
-									callstack,
-									FunctionEntry);
-			notifyOnBreak(br);
-			waitOnBreak(br);
-		}
-	}
-
 	public void onBreakIf(
 			final FunctionScope scope,
 			final VncVector params,
@@ -275,6 +247,34 @@ public class DebugAgent implements IDebugAgent {
 											.map(v -> v.getVal())
 											.collect(Collectors.toList())),
 									env, 
+									callstack,
+									FunctionEntry);
+			notifyOnBreak(br);
+			waitOnBreak(br);
+		}
+	}
+
+	public void onBreakLoop(
+			final FunctionScope scope,
+			final List<VncSymbol> loopBindingNames,
+			final VncVal meta,
+			final Env env,
+			final CallStack callstack
+	) {
+		if (isStopOnFunction("loop", true, FunctionEntry)) {
+			final Break br = new Break(
+									new BreakpointFnRef("loop"),
+									new SpecialFormVirtualFunction(
+											"loop", 
+											VncVector.ofColl(loopBindingNames), 
+											meta), 
+									VncList.ofColl(
+											loopBindingNames
+											  .stream()
+											  .map(s -> env.findLocalVar(s))
+											  .map(v -> v == null ? Nil : v.getVal())
+											  .collect(Collectors.toList())),
+									env,
 									callstack,
 									FunctionEntry);
 			notifyOnBreak(br);
@@ -524,23 +524,23 @@ public class DebugAgent implements IDebugAgent {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
-					"Active break:           %s\n", 
+					"Active break:      %s\n", 
 					activeBreak == null
 						?  "no" 
 						: "Break\n" + indent(activeBreak.toString(), 25)));
 		
 		sb.append(String.format(
-					"Step mode:              %s\n", 
+					"Step mode:         %s\n", 
 					stepTmp.mode()));
 		
 		sb.append(String.format(
-					"Step bound to Fn name:  %s\n", 
+					"Step bound to fn:  %s\n", 
 					stepTmp.boundToFnName() == null 
 						? "-" 
 						: stepTmp.boundToFnName()));
 		
 		sb.append(String.format(
-					"Skip breakpoints:       %s", 
+					"Skip breakpoints:  %s", 
 					skipBreakpoints ? "yes" : "no"));
 		
 		return sb.toString();

@@ -132,6 +132,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepToAny);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;
@@ -143,6 +144,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepToNextFunction);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;
@@ -154,6 +156,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepToNextNonSystemFunction);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;
@@ -165,6 +168,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepToNextFunctionCall);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;
@@ -176,6 +180,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepOverFunction);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;
@@ -189,6 +194,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepToFunctionEntry);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;
@@ -202,6 +208,7 @@ public class ReplDebugClient {
 					stepValidity = agent.step(StepMode.StepToFunctionExit);
 				}
 				if (!stepValidity.isValid()) {
+					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
 				break;

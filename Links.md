@@ -93,6 +93,11 @@ test {
 [Socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
 
 
+### Debugger
+
+[Cursive Debugger](https://www.youtube.com/watch?v=ql77RwhcCK0)
+
+
 ### STM
 
 [Clojure STM](https://clojure.org/reference/refs)

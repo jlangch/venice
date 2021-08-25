@@ -797,16 +797,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 										// Debugging handled for native functions only.
-										final Env env__ = new Env(env);
-										env__.setLocal(new Var(new VncSymbol("debug-fn-args"), fnArgs));
+										env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
 										try {
-											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env__, callStack);
+											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env, callStack);
 											final VncVal retVal = fn.apply(fnArgs);
-											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env__, callStack);
+											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env, callStack);
 											return retVal;
 										}
 										catch(Exception ex) {
-											debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env__, callStack);
+											debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env, callStack);
 											throw ex;
 										}
 									}

@@ -152,7 +152,7 @@ public class Break {
 			
 		sb.append("\n");
 		sb.append(String.format(
-						"Callstack:    Level %d", 
+						"Callstack:    level %d", 
 						getCallStack().level()));
 		
 		
