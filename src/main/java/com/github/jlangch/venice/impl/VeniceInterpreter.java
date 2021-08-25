@@ -376,6 +376,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final int numArgs = args.size();
 						if (numArgs == 2 || numArgs == 3) {
 							final VncVal cond = evaluate(args.first(), env);
+
+							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+
+							if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
+								final CallStack callStack = threadLocalMap.getCallStack_();
+								debugAgent.onBreakIf(FunctionEntry, VncVector.of(cond), a0.getMeta(), env, callStack);
+							}
+
 							orig_ast = VncBoolean.isFalseOrNil(cond) 
 											? args.third()   // eval false slot form (nil if not available)
 											: args.second(); // eval true slot form
@@ -789,7 +798,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 										// Debugging handled for native functions only.
 										final Env env__ = new Env(env);
-										env__.setLocal(new Var(new VncSymbol("args"), fnArgs));
+										env__.setLocal(new Var(new VncSymbol("debug-fn-args"), fnArgs));
 										try {
 											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env__, callStack);
 											final VncVal retVal = fn.apply(fnArgs);
@@ -2552,8 +2561,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 	private static final VncKeyword CAUSE_TYPE_SELECTOR_KEY = new VncKeyword(":cause-type");
 	
-	private static final BreakpointFnRef BREAKPOINT_REF_LOOP = new BreakpointFnRef("loop");
+	private static final BreakpointFnRef BREAKPOINT_REF_IF = new BreakpointFnRef("if");
 	private static final BreakpointFnRef BREAKPOINT_REF_LET = new BreakpointFnRef("let");
+	private static final BreakpointFnRef BREAKPOINT_REF_LOOP = new BreakpointFnRef("loop");
 		
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;

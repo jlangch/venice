@@ -25,6 +25,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
+import com.github.jlangch.venice.impl.debug.util.StepValidity;
 
 
 public interface IDebugAgent {
@@ -121,8 +122,8 @@ public interface IDebugAgent {
 
 	void resume();
 
-	boolean step(StepMode mode);
+	StepValidity step(StepMode mode);
 
-	boolean isStepPossible(StepMode mode);
+	StepValidity isStepPossible(StepMode mode);
 
 }

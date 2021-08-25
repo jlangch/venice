@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.debug.agent.Break;
 import com.github.jlangch.venice.impl.debug.agent.IDebugAgent;
 import com.github.jlangch.venice.impl.debug.agent.StepMode;
+import com.github.jlangch.venice.impl.debug.util.StepValidity;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -105,6 +106,8 @@ public class ReplDebugClient {
 	public void handleCommand(final String cmdLine) {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
+		StepValidity stepValidity = null;
+		
 		final String cmd = trimToEmpty(first(params));
 		switch(cmd) {
 			case "info":
@@ -124,90 +127,82 @@ public class ReplDebugClient {
 				
 			case "step":
 			case "s":
-				if (agent.isStepPossible(StepMode.StepToAny)) {
-					agent.step(StepMode.StepToAny);
+				stepValidity = agent.isStepPossible(StepMode.StepToAny);
+				if (stepValidity.isValid()) {
+					stepValidity = agent.step(StepMode.StepToAny);
 				}
-				else {
-					printlnErr(
-						"Stepping into any level of any next function is not "
-						+ "possible in the current debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
 			case "step-next":
 			case "sn":
-				if (agent.isStepPossible(StepMode.StepToNextFunction)) {
-					agent.step(StepMode.StepToNextFunction);
+				stepValidity = agent.isStepPossible(StepMode.StepToNextFunction);
+				if (stepValidity.isValid()) {
+					stepValidity = agent.step(StepMode.StepToNextFunction);
 				}
-				else {
-					printlnErr(
-						"Stepping into the entry level of the next function is "
-						+ "not possible in the current debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
 			case "step-next-":
 			case "sn-":
-				if (agent.isStepPossible(StepMode.StepToNextNonSystemFunction))  {
-					agent.step(StepMode.StepToNextNonSystemFunction);
+				stepValidity = agent.isStepPossible(StepMode.StepToNextNonSystemFunction);
+				if (stepValidity.isValid()) {
+					stepValidity = agent.step(StepMode.StepToNextNonSystemFunction);
 				}
-				else {
-					printlnErr(
-							"Stepping into the entry level of the next non "
-							+ "system function is not possible in the current "
-							+ "debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
 			case "step-call":
 			case "sc":
-				if (agent.isStepPossible(StepMode.StepToNextFunctionCall)) {
-					agent.step(StepMode.StepToNextFunctionCall);
+				stepValidity = agent.isStepPossible(StepMode.StepToNextFunctionCall);
+				if (stepValidity.isValid()) {
+					stepValidity = agent.step(StepMode.StepToNextFunctionCall);
 				}
-				else {
-					printlnErr(
-							"Stepping into the call level of the next function "
-							+ "is not possible in the current debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
 			case "step-over":
 			case "so":
-				if (agent.isStepPossible(StepMode.StepOverFunction)) {
-					agent.step(StepMode.StepOverFunction);
+				stepValidity = agent.isStepPossible(StepMode.StepOverFunction);
+				if (stepValidity.isValid()) {
+					stepValidity = agent.step(StepMode.StepOverFunction);
 				}
-				else {
-					printlnErr(
-						"Stepping over the current function is not "
-						+ "possible in the current debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
 			case "step-entry":
 			case "se":
-				if (agent.isStepPossible(StepMode.StepToFunctionEntry))  {
+				stepValidity = agent.isStepPossible(StepMode.StepToFunctionEntry);
+				if (stepValidity.isValid()) {
 					println("Stepping to entry of function %s ...",
 							agent.getBreak().getFn().getQualifiedName());
-					agent.step(StepMode.StepToFunctionEntry);
+					stepValidity = agent.step(StepMode.StepToFunctionEntry);
 				}
-				else {
-					printlnErr(
-						"Stepping to entry level of the current function is "
-						+ "not possible in the current debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
 			case "step-exit":
 			case "sx":
-				if (agent.isStepPossible(StepMode.StepToFunctionExit)) {
+				stepValidity = agent.isStepPossible(StepMode.StepToFunctionExit);
+				if (stepValidity.isValid()) {
 					println("Stepping to exit of function %s ...",
 							agent.getBreak().getFn().getQualifiedName());
-					agent.step(StepMode.StepToFunctionExit);
+					stepValidity = agent.step(StepMode.StepToFunctionExit);
 				}
-				else {
-					printlnErr(
-						"Stepping to the exit level of the current function is "
-						+ "not possible in the current debug context");
+				if (!stepValidity.isValid()) {
+					printlnErr(stepValidity);
 				}
 				break;
 				
@@ -353,7 +348,10 @@ public class ReplDebugClient {
 
 		println(formatBreak(br));
 
-		if (br.isBreakInNativeFn()) {
+		if (br.getBreakpoint().getQualifiedName().equals("if")) {
+			println(renderIfSpecialFormParams(br));
+		}
+		else if (br.isBreakInNativeFn()) {
 			println(renderNativeFnParams(br));
 		}
 		else {
@@ -443,6 +441,22 @@ public class ReplDebugClient {
 
 		// Interrupt the LineReader to display a new prompt
 		replThread.interrupt();
+	}
+
+	private String renderIfSpecialFormParams(final Break br) {
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append("Arguments passed to if:");
+		
+		sb.append("\n");
+		sb.append(formatVar(0, br.getArgs().first()));
+		
+		if (br.getRetVal() != null) {
+			sb.append('\n');
+			sb.append(formatReturnVal(br.getRetVal()));
+		}
+		
+		return sb.toString();
 	}
 
 	private String renderNativeFnParams(final Break br) {
@@ -617,17 +631,25 @@ public class ReplDebugClient {
 		}
 	}
 	
-	private void println(String format, Object... args) {
+	private void println(final String format, final Object... args) {
 		printer.println("debug", String.format(format, args));
 	}
 	
-	private void printlnErr(String format, Object... args) {
+	private void printlnErr(final String format, final Object... args) {
 		printer.println("error", String.format(format, args));
 	}
 	
+	private void printlnErr(final StepValidity validity) {
+		if (!validity.isValid()) {
+			printer.println("error", validity.getErrMsg());
+		}
+	}
+	
+	
+	
 	private static final Set<String> DEBUG_COMMANDS = new HashSet<>(
 			Arrays.asList(
-					// command     short alias
+				   // command         alias
 					"attach",
 					"detach",
 					"terminate",
@@ -646,8 +668,7 @@ public class ReplDebugClient {
 					"params",         "p",
 					"locals",         "l",
 					"retval",         "ret",
-					"ex"
-			));
+					"ex" ));
 	
    
 	private final TerminalPrinter printer;

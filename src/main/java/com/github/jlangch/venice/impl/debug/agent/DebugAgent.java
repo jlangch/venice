@@ -50,6 +50,7 @@ import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
 import com.github.jlangch.venice.impl.debug.breakpoint.Selector;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
+import com.github.jlangch.venice.impl.debug.util.StepValidity;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -237,6 +238,26 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 
+	public void onBreakIf(
+			final FunctionScope scope,
+			final VncVector params,
+			final VncVal meta,
+			final Env env,
+			final CallStack callstack
+	) {
+		if (isStopOnFunction("if", true, FunctionEntry)) {
+			final Break br = new Break(
+									new BreakpointFnRef("if"),
+									new SpecialFormVirtualFunction("if", params, meta), 
+									params.toVncList(),
+									env, 
+									callstack,
+									FunctionEntry);
+			notifyOnBreak(br);
+			waitOnBreak(br);
+		}
+	}
+
 	public void onBreakLet(
 			final FunctionScope scope,
 			final List<Var> vars,
@@ -367,9 +388,10 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	@Override
-	public boolean step(final StepMode mode) {
-		if (!isStepPossible(mode)) {
-			return false;
+	public StepValidity step(final StepMode mode) {
+		final StepValidity validity = isStepPossible(mode);
+		if (!validity.isValid()) {
+			return validity;
 		}
 		
 		final Break br = activeBreak;
@@ -422,15 +444,19 @@ public class DebugAgent implements IDebugAgent {
 
 		activeBreak = null;  // leave current break
 
-		return true;
+		return StepValidity.valid();
 	}
 
 	@Override
-	public boolean isStepPossible(final StepMode mode) {
+	public StepValidity isStepPossible(final StepMode mode) {
 		final Break br = activeBreak;
-		
-		if (mode == null || br == null) {
-			return false;
+
+		if (mode == null) {
+			throw new RuntimeException("A step mode must not be null");
+		}
+		if (br == null) {
+			return StepValidity.invalid(
+					"Cannot step when there is no active break!");
 		}
 		
 		switch(mode) {
@@ -439,20 +465,37 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction:
 			case StepToNextFunctionCall:
 			case StepOverFunction:
-				return true;
+				return StepValidity.valid();
 
 			case StepToFunctionEntry:
-				return br.isInScope(FunctionCall);
+				return br.isInScope(FunctionCall)
+						? StepValidity.valid()
+						: StepValidity.invalid(
+							"Stepping to the entry level of the current function "
+							+ "is only possible if the current function has a "
+							+ "break at call level!");
 				
 			case StepToFunctionExit:
-				return !br.isBreakInSpecialForm()
-						 && br.isInScope(FunctionCall, FunctionEntry);
+				if (br.isBreakInSpecialForm()) {
+					return StepValidity.invalid(
+							"Stepping to the exit level is not supported for "
+							+ "special forms!");
+				}
+				else if (br.isInScope(FunctionCall, FunctionEntry)) {
+					return StepValidity.valid();
+				}
+				else {
+					return StepValidity.invalid(
+							"Stepping to the exit level of the current function "
+							+ "is only possible if the current function has a "
+							+ "break at call or entry level!");
+				}
 
 			case SteppingDisabled:
-				return true;
+				return StepValidity.valid();
 					
 			default:
-				return false;
+				return StepValidity.invalid("Unsupported step mode: " + mode);
 		}		
 	}
 	
