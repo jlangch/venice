@@ -468,18 +468,30 @@ public class DebugAgent implements IDebugAgent {
 				return StepValidity.valid();
 
 			case StepToFunctionEntry:
-				return br.isInScope(FunctionCall)
-						? StepValidity.valid()
-						: StepValidity.invalid(
-							"Stepping to the entry level of the current function "
-							+ "is only possible if the current function has a "
-							+ "break at call level!");
+				if (br.isInScope(FunctionEntry)) {
+					return  StepValidity.invalid(
+								"The current break is already at entry level!");
+				}
+				else {
+					return br.isInScope(FunctionCall)
+							? StepValidity.valid()
+							: StepValidity.invalid(
+								"Stepping to the entry level of the current function "
+								+ "is only possible if the current function is in a "
+								+ "break at call level!");
+				}
 				
 			case StepToFunctionExit:
 				if (br.isBreakInSpecialForm()) {
 					return StepValidity.invalid(
 							"Stepping to the exit level is not supported for "
-							+ "special forms!");
+							+ "special forms! \n"
+							+ "Special forms do not have an exit point like "
+							+ "regular functions do.");
+				}
+				if (br.isInScope(FunctionExit)) {
+					return  StepValidity.invalid(
+								"The current break is already at exit level!");
 				}
 				else if (br.isInScope(FunctionCall, FunctionEntry)) {
 					return StepValidity.valid();
@@ -487,7 +499,7 @@ public class DebugAgent implements IDebugAgent {
 				else {
 					return StepValidity.invalid(
 							"Stepping to the exit level of the current function "
-							+ "is only possible if the current function has a "
+							+ "is only possible if the current function is in a "
 							+ "break at call or entry level!");
 				}
 
