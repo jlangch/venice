@@ -42,7 +42,6 @@ import com.github.jlangch.venice.impl.debug.agent.StepMode;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncFunction;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -213,7 +212,6 @@ public class ReplDebugClient {
 				break;
 				
 			case "break?": 
-			case "b?":
 				isBreak();
 				break;
 				
@@ -230,14 +228,6 @@ public class ReplDebugClient {
 			case "locals":
 			case "l":
 				locals(second(params));
-				break;
-				
-			case "local": 
-				local(second(params));
-				break;
-				
-			case "global":
-				global(second(params));
 				break;
 				
 			case "retval":
@@ -409,52 +399,7 @@ public class ReplDebugClient {
 			println("Local vars at level %d/%d:\n%s", level, maxLevel, info);
 		}
 	}
-	
-	private void local(final String name) {
-		if (!agent.hasBreak()) {
-			println("Not in a debug break!");
-			return;
-		}
-
-		final Env env = agent.getBreak().getEnv();
-		if (env == null) {
-			println("No information on local vars available");
-		}
-		else {
-			final VncSymbol sym = new VncSymbol(name);
-			final Var v = env.findLocalVar(sym);
-			if (v == null) {
-				println("%s -> <not found>", name);
-			}
-			else {
-				println(formatVar(sym, v.getVal()));
-			}
-		}
-	}
-	
-	private void global(final String name) {
-		if (!agent.hasBreak()) {
-			println("Not in a debug break!");
-			return;
-		}
-
-		final Env env = agent.getBreak().getEnv();
-		if (env == null) {
-			println("No information on global vars available");
-		}
-		else {
-			final VncSymbol sym = new VncSymbol(name);
-			final Var v = env.getGlobalVarOrNull(sym);
-			if (v == null) {
-				println("%s: <not found>", name);
-			}
-			else {
-				final String sval = truncate(v.getVal().toString(true), 100, "...");
-				println("%s: %s", name, sval);
-			}
-		}
-	}
-	
+			
 	private void retval() {
 		if (!agent.hasBreak()) {
 			println("Not in a debug break!");
@@ -700,8 +645,6 @@ public class ReplDebugClient {
 					"callstack",      "cs",
 					"params",         "p",
 					"locals",         "l",
-					"local", 
-					"global",
 					"retval",         "ret",
 					"ex"
 			));

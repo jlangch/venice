@@ -71,31 +71,29 @@ public class ReplDebugHelp {
 			"               Short form: !sa\n" +
 			"  !step-next   Step to next function at entry level\n" +
 			"               Short form: !sn\n" +
-			"  !step-call   Step to next function at call level\n" +
-			"               Short form: !sn\n" +
 			"  !step-over   Step over the current function to next function entry.\n" +
 			"               Implicitely steps over functions involved with function\n" +
 			"               parameter evaluation.\n" +
 			"               Short form: !so\n" +
+			"  !step-call   Step to next function at call level\n" +
+			"               Short form: !sc\n" +
 			"  !step-entry  Step to the entry level of the current function\n" +
 			"               Short form: !se\n" +
 			"  !step-exit   Step to the exit level of the current function\n" +
 			"               Short form: !sx\n" +
 			"  !break?      Checks if the debugger is in a break or not\n" +
-			"               Short form: !b?\n" +
 			"  !params      Print the function's parameters\n" +
-			"               Short form: !cs\n" +
+			"               Short form: !p\n" +
 			"  !retval      Print the function's return value\n" +
 			"               Short form: !ret\n" +
 			"  !ex          Print the function's exception\n" +
 			"  !locals x    Print the local vars from the level x. The level is optional\n" +
 			"               and defaults to the top level.\n" +
 			"               Short form: !l\n" +
-			"  !local v     Print a local var with the name v\n" +
-			"  !global v    Print a global var with the name v\n" +
 			"  !callstack   Print the current callstack\n" +
 			"  form         Runs a Venice form in the current break context. Useful to\n" +
 			"               inspect parameters, return values, or global/local vars.\n" +
+			"               Note: Debugging is suspended for the evaluating the form!\n" +
 			"               E.g.:  (first param1)";
 
 }
