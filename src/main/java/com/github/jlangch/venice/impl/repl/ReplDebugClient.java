@@ -125,69 +125,91 @@ public class ReplDebugClient {
 				
 			case "step":
 			case "s":
-				if (!agent.isStepPossible(StepMode.StepToAny)) {
-					printErrorSteppingNotPossible("to any");
-					return;
+				if (agent.isStepPossible(StepMode.StepToAny)) {
+					agent.step(StepMode.StepToAny);
 				}
-				agent.step(StepMode.StepToAny);
+				else {
+					printlnErr(
+						"Stepping into any level of any next function is not "
+						+ "possible in the current debug context");
+				}
 				break;
 				
 			case "step-next":
 			case "sn":
-				if (!agent.isStepPossible(StepMode.StepToNextFunction)) {
-					printErrorSteppingNotPossible("into next");
-					return;
+				if (agent.isStepPossible(StepMode.StepToNextFunction)) {
+					agent.step(StepMode.StepToNextFunction);
 				}
-				agent.step(StepMode.StepToNextFunction);
-				break;
-				
-			case "step-next-call":
-			case "snc":
-				if (!agent.isStepPossible(StepMode.StepToNextFunctionCall)) {
-					printErrorSteppingNotPossible("into next");
-					return;
+				else {
+					printlnErr(
+						"Stepping into the entry level of the next function is "
+						+ "not possible in the current debug context");
 				}
-				agent.step(StepMode.StepToNextFunctionCall);
 				break;
 				
 			case "step-next-":
 			case "sn-":
-				if (!agent.isStepPossible(StepMode.StepToNextNonSystemFunction))  {
-					printErrorSteppingNotPossible("into next");
-					return;
+				if (agent.isStepPossible(StepMode.StepToNextNonSystemFunction))  {
+					agent.step(StepMode.StepToNextNonSystemFunction);
 				}
-				agent.step(StepMode.StepToNextNonSystemFunction);
+				else {
+					printlnErr(
+							"Stepping into the entry level of the next non "
+							+ "system function is not possible in the current "
+							+ "debug context");
+				}
+				break;
+				
+			case "step-call":
+			case "sc":
+				if (agent.isStepPossible(StepMode.StepToNextFunctionCall)) {
+					agent.step(StepMode.StepToNextFunctionCall);
+				}
+				else {
+					printlnErr(
+							"Stepping into the call level of the next function "
+							+ "is not possible in the current debug context");
+				}
 				break;
 				
 			case "step-over":
 			case "so":
-				if (!agent.isStepPossible(StepMode.StepOverFunction)) {
-					printErrorSteppingNotPossible("over");
-					return;
+				if (agent.isStepPossible(StepMode.StepOverFunction)) {
+					agent.step(StepMode.StepOverFunction);
 				}
-				agent.step(StepMode.StepOverFunction);
+				else {
+					printlnErr(
+						"Stepping over the current function is not "
+						+ "possible in the current debug context");
+				}
 				break;
 				
 			case "step-entry":
 			case "se":
-				if (!agent.isStepPossible(StepMode.StepToFunctionEntry))  {
-					printErrorSteppingNotPossible("to entry of");
-					return;
+				if (agent.isStepPossible(StepMode.StepToFunctionEntry))  {
+					println("Stepping to entry of function %s ...",
+							agent.getBreak().getFn().getQualifiedName());
+					agent.step(StepMode.StepToFunctionEntry);
 				}
-				println("Stepping to entry of function %s ...",
-						agent.getBreak().getFn().getQualifiedName());
-				agent.step(StepMode.StepToFunctionEntry);
+				else {
+					printlnErr(
+						"Stepping to entry level of the current function is "
+						+ "not possible in the current debug context");
+				}
 				break;
 				
 			case "step-exit":
 			case "sx":
-				if (!agent.isStepPossible(StepMode.StepToFunctionExit)) {
-					printErrorSteppingNotPossible("to exit of");
-					return;
+				if (agent.isStepPossible(StepMode.StepToFunctionExit)) {
+					println("Stepping to exit of function %s ...",
+							agent.getBreak().getFn().getQualifiedName());
+					agent.step(StepMode.StepToFunctionExit);
 				}
-				println("Stepping to exit of function %s ...",
-						agent.getBreak().getFn().getQualifiedName());
-				agent.step(StepMode.StepToFunctionExit);
+				else {
+					printlnErr(
+						"Stepping to the exit level of the current function is "
+						+ "not possible in the current debug context");
+				}
 				break;
 				
 			case "break?": 
@@ -650,12 +672,6 @@ public class ReplDebugClient {
 		}
 	}
 	
-	private void printErrorSteppingNotPossible(final String context) {
-		printlnErr(
-			"Stepping %s function is not possible in the current debug context",
-			context);
-	}
-	
 	private void println(String format, Object... args) {
 		printer.println("debug", String.format(format, args));
 	}
@@ -666,26 +682,27 @@ public class ReplDebugClient {
 	
 	private static final Set<String> DEBUG_COMMANDS = new HashSet<>(
 			Arrays.asList(
-					// command     short
+					// command     short alias
 					"attach",
 					"detach",
 					"terminate",
-					"info",         "i",
-					"breakpoint",   "b",
-					"resume",       "r",
-					"step-any",     "sa",
-					"step-next",    "sn",
-					"step-next-",   "sn-",
-					"step-over",    "so",
-					"step-entry",   "se",
-					"step-exit",    "sx",
-					"break?",       "b?",
-					"callstack",    "cs",
-					"params",       "p",
-					"locals",       "l",
+					"info",           "i",
+					"breakpoint",     "b",
+					"resume",         "r",
+					"step-any",       "sa",
+					"step-next",      "sn",
+					"step-next-",     "sn-",
+					"step-call",      "sc",
+					"step-over",      "so",
+					"step-entry",     "se",
+					"step-exit",      "sx",
+					"break?",         "b?",
+					"callstack",      "cs",
+					"params",         "p",
+					"locals",         "l",
 					"local", 
 					"global",
-					"retval",       "ret",
+					"retval",         "ret",
 					"ex"
 			));
 	

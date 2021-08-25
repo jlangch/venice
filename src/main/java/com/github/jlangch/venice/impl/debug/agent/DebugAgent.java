@@ -439,11 +439,14 @@ public class DebugAgent implements IDebugAgent {
 			case StepToNextNonSystemFunction:
 			case StepToNextFunctionCall:
 			case StepOverFunction:
-			case StepToFunctionEntry:
 				return true;
+
+			case StepToFunctionEntry:
+				return br.isInScope(FunctionCall);
 				
 			case StepToFunctionExit:
-				return !br.isBreakInSpecialForm();
+				return !br.isBreakInSpecialForm()
+						 && br.isInScope(FunctionCall, FunctionEntry);
 
 			case SteppingDisabled:
 				return true;

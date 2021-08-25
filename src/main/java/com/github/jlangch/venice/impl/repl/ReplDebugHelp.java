@@ -69,15 +69,17 @@ public class ReplDebugHelp {
 			"  !step-any    Step to the next available break at one of the four break\n" +
 			"               levels within the current or the next function whatever is first.\n" +
 			"               Short form: !sa\n" +
-			"  !step-next   Step to next function entry\n" +
+			"  !step-next   Step to next function at entry level\n" +
+			"               Short form: !sn\n" +
+			"  !step-call   Step to next function at call level\n" +
 			"               Short form: !sn\n" +
 			"  !step-over   Step over the current function to next function entry.\n" +
 			"               Implicitely steps over functions involved with function\n" +
 			"               parameter evaluation.\n" +
 			"               Short form: !so\n" +
-			"  !step-entry  Step to the entry of the current function\n" +
+			"  !step-entry  Step to the entry level of the current function\n" +
 			"               Short form: !se\n" +
-			"  !step-exit   Step to the exit of the current function\n" +
+			"  !step-exit   Step to the exit level of the current function\n" +
 			"               Short form: !sx\n" +
 			"  !break?      Checks if the debugger is in a break or not\n" +
 			"               Short form: !b?\n" +
