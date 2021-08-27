@@ -36,7 +36,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.support.AuditEvent;
 import com.github.jlangch.venice.support.AuditEventType;
@@ -94,7 +94,7 @@ public class JavaInterop_bean_Test {
 										"text");
 		
 		try {
-			ThreadLocalMap.setInterceptor(new AcceptAllInterceptor());
+			ThreadContext.setInterceptor(new AcceptAllInterceptor());
 
 			final VncVal val = JavaInteropUtil.convertToVncVal(event);
 			assertTrue(Types.isVncJavaObject(val));
@@ -112,7 +112,7 @@ public class JavaInterop_bean_Test {
 			assertTrue(obj instanceof AuditEvent);
 		}
 		finally {
-			ThreadLocalMap.setInterceptor(null);
+			ThreadContext.setInterceptor(null);
 		}
 	}
 

@@ -35,7 +35,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -73,19 +73,19 @@ public class ScheduleFunctions {
 	
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadLocalMap.snapshot());
+						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadLocalMap.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadContext.clearCallStack();
 						
 						return fn.applyOf();
 					}
 					finally {
 						// clean up
-						ThreadLocalMap.remove();
+						ThreadContext.remove();
 					}
 				};
 				
@@ -136,19 +136,19 @@ public class ScheduleFunctions {
 		
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadLocalMap.snapshot());
+						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Runnable taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadLocalMap.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadContext.clearCallStack();
 						
 						fn.applyOf();
 					}
 					finally {
 						// clean up
-						ThreadLocalMap.remove();
+						ThreadContext.remove();
 					}
 				};
 				

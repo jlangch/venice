@@ -34,7 +34,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 
 
@@ -87,11 +87,11 @@ public class ScriptExecuter {
 		
 		// thread local values from the parent thread
 		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadLocalMap.snapshot());
+				new AtomicReference<>(ThreadContext.snapshot());
 		
 		final Callable<Boolean> task = () -> {
-			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadLocalMap.clearCallStack();
+			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+			ThreadContext.clearCallStack();
 
 			try {
 				final VncVal result = venice.RE(script, "user", env);
@@ -124,7 +124,7 @@ public class ScriptExecuter {
 				return false;
 			}
 			finally {
-				ThreadLocalMap.remove();
+				ThreadContext.remove();
 
 				// Interrupt the LineReader of the REPLto display a new prompt
 				replThread.interrupt();
@@ -150,12 +150,12 @@ public class ScriptExecuter {
 	) {
 		// thread local values from the parent thread
 		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadLocalMap.snapshot());
+				new AtomicReference<>(ThreadContext.snapshot());
 
 		// run the expression in another thread without debugger!! 
 		final Runnable task = () -> {
-			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadLocalMap.clearCallStack();
+			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+			ThreadContext.clearCallStack();
 			DebugAgent.unregister();  // do not run under debugger!!
 
 			try {
@@ -168,7 +168,7 @@ public class ScriptExecuter {
 				errorHandler.accept(ex);
 			}
 			finally {
-				ThreadLocalMap.remove();
+				ThreadContext.remove();
 			}
 		};
 

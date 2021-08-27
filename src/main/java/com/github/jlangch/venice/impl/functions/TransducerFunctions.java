@@ -51,7 +51,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -201,7 +201,7 @@ public class TransducerFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				if (args.size() == 0) {
 					return Nil;
@@ -314,7 +314,7 @@ public class TransducerFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				if (args.size() == 0) {
 					return Nil;
@@ -422,7 +422,7 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
@@ -561,7 +561,7 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
@@ -709,7 +709,7 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 
@@ -935,7 +935,7 @@ public class TransducerFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction predicate = Coerce.toIVncFunction(args.first());
 

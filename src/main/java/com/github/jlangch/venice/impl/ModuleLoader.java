@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -87,7 +87,7 @@ public class ModuleLoader {
 						file));
 		}
 
-		final IInterceptor interceptor = ThreadLocalMap.getInterceptor();
+		final IInterceptor interceptor = ThreadContext.getInterceptor();
 		
 		final String data = interceptor.getLoadPaths().loadVeniceFile(new File(file));
 			

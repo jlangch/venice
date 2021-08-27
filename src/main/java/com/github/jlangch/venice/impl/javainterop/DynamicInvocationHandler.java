@@ -35,7 +35,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -65,7 +65,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;
 		
-		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadLocalMap.snapshot());
+		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadContext.snapshot());
 
 	}
 		 
@@ -79,7 +79,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		if (fn != null) {
 			final VncList fnArgs = toVncArgs(args);
 				
-			final CallStack callStack = ThreadLocalMap.getCallStack();
+			final CallStack callStack = ThreadContext.getCallStack();
 			final CallFrame callFrameMethod = new CallFrame(
 													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
@@ -90,7 +90,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			// sandbox. The Java callback parent could have forked a thread
 			// to run this Venice proxy callback!
 			
-			final IInterceptor proxyInterceptor = ThreadLocalMap.getInterceptor();
+			final IInterceptor proxyInterceptor = ThreadContext.getInterceptor();
 			if (proxyInterceptor == parentThreadLocalSnapshot.get().getInterceptor()) {
 				// we run in the same security context (thread)
 				try {
@@ -108,8 +108,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				// The callback function runs in another thread.	
 				// Inherit sandbox and thread local vars
 				try {
-					ThreadLocalMap.clear();
-					ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+					ThreadContext.clear();
+					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 					
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
@@ -120,7 +120,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					callStack.pop();
 					callStack.pop();
 					
-					ThreadLocalMap.remove();
+					ThreadContext.remove();
 				}
 			}
 		}

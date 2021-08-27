@@ -58,7 +58,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.util.CallStack;
 
 
@@ -73,19 +73,19 @@ public class DebugAgent implements IDebugAgent {
 	// -------------------------------------------------------------------------
 
 	public static void register(final DebugAgent agent) {
-		ThreadLocalMap.setDebugAgent(agent);
+		ThreadContext.setDebugAgent(agent);
 	}
 	
 	public static void unregister() {
-		ThreadLocalMap.setDebugAgent(null);
+		ThreadContext.setDebugAgent(null);
 	}
 	
 	public static DebugAgent current() {
-		return ThreadLocalMap.getDebugAgent();
+		return ThreadContext.getDebugAgent();
 	}
 	
 	public static boolean isAttached() {
-		return ThreadLocalMap.getDebugAgent() != null;
+		return ThreadContext.getDebugAgent() != null;
 	}
 	
 
@@ -663,7 +663,7 @@ public class DebugAgent implements IDebugAgent {
 					}
 					else {
 						// match ancestor with callstack
-						final CallStack callStack = ThreadLocalMap.get().getCallStack_();
+						final CallStack callStack = ThreadContext.get().getCallStack_();
 						final String ancestorQN = as.getAncestor().getQualifiedName();
 						
 						// note: [1] special forms are not added to the callstack so start

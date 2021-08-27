@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -252,7 +252,7 @@ public abstract class VncFunction
 	}
 	
 	protected void sandboxFunctionCallValidation() {
-		ThreadLocalMap.getInterceptor().validateVeniceFunction(qualifiedName);
+		ThreadContext.getInterceptor().validateVeniceFunction(qualifiedName);
 	}
 	
 	

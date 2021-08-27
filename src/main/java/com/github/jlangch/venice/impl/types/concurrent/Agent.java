@@ -82,7 +82,7 @@ public class Agent implements IDeref {
 						fn, 
 						args,
 						SendType.SEND,
-						ThreadLocalMap.snapshot()));
+						ThreadContext.snapshot()));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -92,7 +92,7 @@ public class Agent implements IDeref {
 						fn, 
 						args, 
 						SendType.SEND_OFF,
-						ThreadLocalMap.snapshot()));
+						ThreadContext.snapshot()));
 	}
 
 	public void restart(final VncVal state) {
@@ -320,7 +320,7 @@ public class Agent implements IDeref {
 	
 		@Override
 		public void run() {
-			final CallStack callStack = ThreadLocalMap.getCallStack();
+			final CallStack callStack = ThreadContext.getCallStack();
 
 			final CallFrame callFrame = new CallFrame(
 											String.format(
@@ -334,8 +334,8 @@ public class Agent implements IDeref {
 				callStack.push(callFrame);
 
 				// inherit thread local values to the child thread
-				ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
+				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+				ThreadContext.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				
 				if (agent.getError() == null || agent.continueOnError) {
 					final VncVal oldVal = agent.value.get().val;
@@ -366,7 +366,7 @@ public class Agent implements IDeref {
 			finally {
 				// clean up
 				callStack.pop();
-				ThreadLocalMap.remove();
+				ThreadContext.remove();
 			}
 		}
 		

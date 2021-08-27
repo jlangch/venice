@@ -57,7 +57,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -1399,21 +1399,21 @@ public class ConcurrencyFunctions {
 		
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadLocalMap.snapshot());
+						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					// The future function is called from the JavaVM. Rig a
 					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadLocalMap.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadContext.clearCallStack();
 						
 						return fn.applyOf();
 					}
 					finally {
 						// clean up
-						ThreadLocalMap.remove();
+						ThreadContext.remove();
 					}
 				};
 				
@@ -1432,9 +1432,9 @@ public class ConcurrencyFunctions {
 //					// Venice context with the thread local vars and the sandbox
 //					try {
 //						// inherit thread local values to the child thread
-//						ThreadLocalMap.setValues(parentThreadLocals.get());
-//						ThreadLocalMap.clearCallStack();
-//						JavaInterop.register(parentInterceptor);	
+//						ThreadContext.setValues(parentThreadLocals.get());
+//						ThreadContext.clearCallStack();
+//						ThreadContext.setInterceptor(parentInterceptor);	
 //						
 //						try {
 //							completableFuture.complete(fn.applyOf());
@@ -1445,8 +1445,7 @@ public class ConcurrencyFunctions {
 //					}
 //					finally {
 //						// clean up
-//						JavaInterop.unregister();
-//						ThreadLocalMap.remove();
+//						ThreadContext.remove();
 //					}
 //				};
 //				

@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.util;
 
 import java.util.function.Supplier;
 
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 
 
 /**
@@ -49,12 +49,12 @@ public class WithCallStack implements AutoCloseable {
 			throw new IllegalArgumentException("A 'callFrame' must not be null");
 		}
 
-		ThreadLocalMap.getCallStack().push(callFrame);
+		ThreadContext.getCallStack().push(callFrame);
 	}
 
 	@Override
 	public void close() {
-		ThreadLocalMap.getCallStack().pop();
+		ThreadContext.getCallStack().pop();
 	}
 	
 	

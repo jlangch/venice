@@ -54,7 +54,7 @@ import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -69,7 +69,7 @@ public class CustomREPL {
 	}
 	
 	public void run(final String[] args) {	
-		ThreadLocalMap.setInterceptor(interceptor);
+		ThreadContext.setInterceptor(interceptor);
 
 		final CommandLineArgs cli = new CommandLineArgs(args);
 

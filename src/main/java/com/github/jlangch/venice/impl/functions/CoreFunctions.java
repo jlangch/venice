@@ -88,7 +88,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -2563,7 +2563,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2, 3, 4);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final List<VncFunction> functions = new ArrayList<>();
 				
@@ -3869,7 +3869,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 3);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				if (Types.isVncSequence(args.first())) {
 					final VncSequence list = ((VncSequence)args.first());
@@ -3927,7 +3927,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 3);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final VncVal coll = args.first();
 
@@ -5705,7 +5705,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction f = Coerce.toIVncFunction(args.first());
 				VncSequence seq = Coerce.toVncSequence(args.second());
@@ -6238,7 +6238,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncSequence coll = Coerce.toVncSequence(args.second());
@@ -6352,7 +6352,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 0);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final int len = args.size();
 
@@ -6478,7 +6478,7 @@ public class CoreFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncList lists = removeNilValues((VncList)args.rest());
@@ -6534,7 +6534,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncMap map = Coerce.toVncMap(args.second());
@@ -6573,7 +6573,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncMap map = Coerce.toVncMap(args.second());
@@ -6615,7 +6615,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final IVncFunction fn = Coerce.toIVncFunction(args.first());
 				final VncVal coll = args.second();
@@ -6877,7 +6877,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2, 3);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final boolean noInitValue = args.size() < 3;
 				final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
@@ -7232,7 +7232,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2);
 
-				final MeterRegistry meterRegistry = ThreadLocalMap.getMeterRegistry();
+				final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
 				final long repeat = Coerce.toVncLong(args.first()).getValue();
 				final IVncFunction fn = Coerce.toIVncFunction(args.second());

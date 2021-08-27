@@ -49,7 +49,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -706,7 +706,7 @@ public class ZipFunctions {
 				final Function<File,InputStream> mapper = buildMapperFunction(mapperFn);
 
 				final PrintStream ps = silent ? new PrintStream(new NullOutputStream(), true)
-				                              : ThreadLocalMap.getStdOut();
+				                              : ThreadContext.getStdOut();
 
 				try {
 					if (Types.isVncJavaObject(dest, File.class)) {
@@ -807,7 +807,7 @@ public class ZipFunctions {
 					final boolean print = !VncBoolean.isFalse(options.get(new VncKeyword("print")));
 
 					// Use the current stdout
-					final PrintStream ps = ThreadLocalMap.getStdOut();
+					final PrintStream ps = ThreadContext.getStdOut();
 					final ZipEntryAttrPrinter printer = print ? new ZipEntryAttrPrinter(ps, verbose)
 															  : ZipEntryAttrPrinter.nullPrinter();
 

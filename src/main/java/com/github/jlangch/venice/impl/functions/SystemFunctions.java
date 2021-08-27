@@ -56,7 +56,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -574,20 +574,20 @@ public class SystemFunctions {
 
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadLocalMap.snapshot());
+						new AtomicReference<>(ThreadContext.snapshot());
 
 				Runtime.getRuntime().addShutdownHook(new Thread() {
 				    public void run() {
 						try {
 							// inherit thread local values to the child thread
-							ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-							ThreadLocalMap.clearCallStack();
+							ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+							ThreadContext.clearCallStack();
 
 							fn.apply(VncList.empty());
 						}
 						finally {
 							// clean up
-							ThreadLocalMap.remove();
+							ThreadContext.remove();
 						}
 				    }
 				});
@@ -618,7 +618,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				final CallStack stack = ThreadLocalMap.getCallStack();
+				final CallStack stack = ThreadContext.getCallStack();
 
 				return VncVector.ofList(
 						stack
@@ -780,7 +780,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				return VncBoolean.of(ThreadLocalMap.isSandboxed());
+				return VncBoolean.of(ThreadContext.isSandboxed());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -800,7 +800,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				final IInterceptor interceptor = ThreadLocalMap.getInterceptor();
+				final IInterceptor interceptor = ThreadContext.getInterceptor();
 				 
 				return interceptor == null
 						? Constants.Nil
@@ -834,7 +834,7 @@ public class SystemFunctions {
 											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 
-				final String val = ThreadLocalMap.getInterceptor().onReadSystemProperty(key.getValue());
+				final String val = ThreadContext.getInterceptor().onReadSystemProperty(key.getValue());
 
 				return val == null ? defaultVal : new VncString(val);
 			}
@@ -865,7 +865,7 @@ public class SystemFunctions {
 											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 
-				final String val = ThreadLocalMap.getInterceptor().onReadSystemEnv(key.getValue());
+				final String val = ThreadContext.getInterceptor().onReadSystemEnv(key.getValue());
 
 				return val == null ? defaultVal : new VncString(val);
 			}

@@ -45,9 +45,9 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
-public class ThreadLocalMap {
+public class ThreadContext {
 	
-	public ThreadLocalMap() {
+	public ThreadContext() {
 		initNS();
 	}
 
@@ -94,17 +94,17 @@ public class ThreadLocalMap {
 	
 	public static void set(final VncKeyword key, final VncVal val) {
 		if (key != null) {
-			final ThreadLocalMap tmap = get();
-			final VncVal v = tmap.values.get(key);
+			final ThreadContext ctx = get();
+			final VncVal v = ctx.values.get(key);
 			if (v == null) {
-				tmap.values.put(key, val == null ? Nil : val);
+				ctx.values.put(key, val == null ? Nil : val);
 			}
 			else if (v instanceof VncStack) {
 				((VncStack) v).clear();
 				((VncStack)v).push(val == null ? Nil : val);
 			}
 			else {
-				tmap.values.put(key, val);
+				ctx.values.put(key, val);
 			}
 		}
 	}
@@ -121,9 +121,9 @@ public class ThreadLocalMap {
 
 	public static void push(final VncKeyword key, final VncVal val) {
 		if (key != null) {
-			final ThreadLocalMap tmap = get();
-			if (tmap.values.containsKey(key)) {
-				final VncVal v = tmap.values.get(key);
+			final ThreadContext ctx = get();
+			if (ctx.values.containsKey(key)) {
+				final VncVal v = ctx.values.get(key);
 				if (v instanceof VncStack) {
 					((VncStack)v).push(val == null ? Nil : val);
 				}
@@ -136,16 +136,16 @@ public class ThreadLocalMap {
 			else {
 				final VncStack stack = new VncStack();
 				stack.push(val == null ? Nil : val);
-				tmap.values.put(key, stack);
+				ctx.values.put(key, stack);
 			}
 		}
 	}
 
 	public static VncVal pop(final VncKeyword key) {
 		if (key != null) {
-			final ThreadLocalMap tmap = get();
-			if (tmap.values.containsKey(key)) {
-				final VncVal v = tmap.values.get(key);
+			final ThreadContext ctx = get();
+			if (ctx.values.containsKey(key)) {
+				final VncVal v = ctx.values.get(key);
 				if (v instanceof VncStack) {
 					return ((VncStack)v).pop();
 				}
@@ -162,9 +162,9 @@ public class ThreadLocalMap {
 
 	public static VncVal peek(final VncKeyword key) {
 		if (key != null) {
-			final ThreadLocalMap tmap = get();
-			if (tmap.values.containsKey(key)) {
-				final VncVal v = tmap.values.get(key);
+			final ThreadContext ctx = get();
+			if (ctx.values.containsKey(key)) {
+				final VncVal v = ctx.values.get(key);
 				if (v instanceof VncStack) {
 					return ((VncStack)v).peek();
 				}
@@ -264,14 +264,14 @@ public class ThreadLocalMap {
 
 	public static void clear() {
 		try {
-			final ThreadLocalMap tl = ThreadLocalMap.get();
+			final ThreadContext ctx = ThreadContext.get();
 			
-			tl.interceptor = new RejectAllInterceptor();
-			tl.debugAgent = null;
-			tl.meterRegistry = new MeterRegistry(false);
-			tl.values.clear();
-			tl.callStack.clear();
-			tl.initNS();
+			ctx.interceptor = new RejectAllInterceptor();
+			ctx.debugAgent = null;
+			ctx.meterRegistry = new MeterRegistry(false);
+			ctx.values.clear();
+			ctx.callStack.clear();
+			ctx.initNS();
 		}
 		catch(Exception ex) {
 			// do not care
@@ -282,16 +282,16 @@ public class ThreadLocalMap {
 		try {
 			clear();
 			
-			ThreadLocalMap.context.set(null);
-			ThreadLocalMap.context.remove();
+			ThreadContext.context.set(null);
+			ThreadContext.context.remove();
 		}
 		catch(Exception ex) {
 			// do not care
 		}
 	}
 	
-	public static ThreadLocalMap get() {
-		return ThreadLocalMap.context.get();
+	public static ThreadContext get() {
+		return ThreadContext.context.get();
 	}
 
 	public static PrintStream getStdOut() {
@@ -307,7 +307,7 @@ public class ThreadLocalMap {
 	}
 
 	public static ThreadLocalSnapshot snapshot() {
-		final ThreadLocalMap map = get();
+		final ThreadContext map = get();
 	
 		final Map<VncKeyword,VncVal> vals = new HashMap<>();
 		
@@ -321,7 +321,7 @@ public class ThreadLocalMap {
 	}
 
 	public static void inheritFrom(final ThreadLocalSnapshot snapshot) {
-		final ThreadLocalMap map = get();
+		final ThreadContext map = get();
 
 		copyValues(snapshot.getValues(), map.values);
 
@@ -361,8 +361,8 @@ public class ThreadLocalMap {
 	private MeterRegistry meterRegistry = new MeterRegistry(false);
 	
 	
-	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
-	//       to work in all cases!
-	private static ThreadLocal<ThreadLocalMap> context = 
-			ThreadLocal.withInitial(() -> new ThreadLocalMap()); 
+	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not
+	//       guaranteed to work in all cases!
+	private static ThreadLocal<ThreadContext> context = 
+			ThreadLocal.withInitial(() -> new ThreadContext()); 
 }
