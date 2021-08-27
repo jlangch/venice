@@ -60,7 +60,6 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
@@ -126,14 +125,24 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	public VeniceInterpreter(
 			final IInterceptor interceptor
 	) {
+		this(interceptor, null);
+	}
+
+	public VeniceInterpreter(
+			final IInterceptor interceptor,
+			final MeterRegistry meterRegistry
+	) {
 		if (interceptor == null) {
 			throw new SecurityException("VeniceInterpreter can not run without an interceptor");
 		}
 		
 		this.interceptor = interceptor;
-		this.meterRegistry = interceptor.getMeterRegistry();
+		this.meterRegistry = meterRegistry == null 
+								? new MeterRegistry(false) 
+								: meterRegistry;
 
-		JavaInterop.register(interceptor);	
+		ThreadLocalMap.setInterceptor(interceptor);	
+		ThreadLocalMap.setMeterRegistry(meterRegistry);	
 
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
@@ -2551,7 +2560,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 	
 	private void specialFormCallValidation(final String name) {
-		JavaInterop.getInterceptor().validateVeniceFunction(name);
+		ThreadLocalMap.getInterceptor().validateVeniceFunction(name);
 	}
 
 	

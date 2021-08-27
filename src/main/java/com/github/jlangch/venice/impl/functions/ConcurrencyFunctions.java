@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -64,7 +63,6 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ConcurrencyFunctions {
@@ -1399,8 +1397,6 @@ public class ConcurrencyFunctions {
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 		
-				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-				
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadLocalMap.snapshot());
@@ -1412,13 +1408,11 @@ public class ConcurrencyFunctions {
 						// inherit thread local values to the child thread
 						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
-						JavaInterop.register(parentInterceptor);	
 						
 						return fn.applyOf();
 					}
 					finally {
 						// clean up
-						JavaInterop.unregister();
 						ThreadLocalMap.remove();
 					}
 				};

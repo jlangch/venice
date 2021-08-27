@@ -70,10 +70,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -94,7 +92,6 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class IOFunctions {
@@ -750,8 +747,6 @@ public class IOFunctions {
 					}
 				};
 				
-				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-				
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadLocalMap.snapshot());
@@ -763,13 +758,11 @@ public class IOFunctions {
 						// inherit thread local values to the child thread
 						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
-						JavaInterop.register(parentInterceptor);	
 						
 						runnable.run();
 					}
 					finally {
 						// clean up
-						JavaInterop.unregister();
 						ThreadLocalMap.remove();
 					}
 				};
@@ -2467,17 +2460,17 @@ public class IOFunctions {
 				try {
 					if (Types.isVncString(name)) {
 						final String res = ((VncString)args.first()).getValue();
-						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = ThreadLocalMap.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncKeyword(name)) {
 						final String res = ((VncKeyword)args.first()).getValue();
-						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = ThreadLocalMap.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncSymbol(name)) {
 						final String res = ((VncSymbol)args.first()).getName();
-						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = ThreadLocalMap.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else {

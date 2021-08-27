@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.functions.ArrayFunctions;
 import com.github.jlangch.venice.impl.javainterop.Invoker;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -40,6 +39,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
@@ -127,7 +127,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	public VncVal getProperty(final VncString name) {
 		return JavaInteropUtil.convertToVncVal(
-				JavaInterop
+				ThreadLocalMap
 					.getInterceptor()
 					.onGetBeanProperty(
 							new Invoker(), 
@@ -136,7 +136,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	public void setProperty(final VncString name, final VncVal value) {
-		JavaInterop
+		ThreadLocalMap
 			.getInterceptor()
 			.onSetBeanProperty(
 					new Invoker(), 
@@ -294,7 +294,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 
 	private VncHashMap convertBean() {
-		final IInterceptor interceptor = JavaInterop.getInterceptor();
+		final IInterceptor interceptor = ThreadLocalMap.getInterceptor();
 		final IInvoker invoker = new Invoker();
 		
 		final HashMap<VncVal,VncVal> map = new HashMap<>();

@@ -77,7 +77,7 @@ public class Venice {
 	 */
 	public Venice(final IInterceptor interceptor) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
-		this.meterRegistry = this.interceptor.getMeterRegistry();
+		this.meterRegistry = new MeterRegistry(false);
 	}
 	
 	/**
@@ -124,7 +124,8 @@ public class Venice {
 		//       to have a safe sandbox in-place if macros are misused to
 		//       execute code at expansion time.
 		final IVeniceInterpreter venice = new VeniceInterpreter(
-												new RejectAllInterceptor());
+												new RejectAllInterceptor(),
+												meterRegistry);
 		
 		final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
 							  .setStdoutPrintStream(null)
@@ -176,7 +177,9 @@ public class Venice {
 		
 		ThreadLocalMap.clear();
 
-		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
+		final IVeniceInterpreter venice = new VeniceInterpreter(
+													interceptor,
+													meterRegistry);
 
 		return runWithSandbox(venice, () -> {
 			final Env env = addParams(getPrecompiledEnv(), params);
@@ -274,7 +277,9 @@ public class Venice {
 		
 		ThreadLocalMap.clear();
 		
-		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
+		final IVeniceInterpreter venice = new VeniceInterpreter(
+												interceptor,
+												meterRegistry);
 
 		return runWithSandbox(venice, () -> {
 			final Env env = createEnv(venice, macroexpand, params);
@@ -426,11 +431,18 @@ public class Venice {
 			}
 
 			if (interceptor.getMaxExecutionTimeSeconds() == null) {
-				return new SandboxedCallable<Object>(interceptor, callable).call();
+				return new SandboxedCallable<Object>(
+								ThreadLocalMap.getDebugAgent(),
+								interceptor, 
+								callable
+							).call();
 			}
 			else {
 				return runWithTimeout(
-						new SandboxedCallable<Object>(interceptor, callable), 
+						new SandboxedCallable<Object>(
+								ThreadLocalMap.getDebugAgent(),
+								interceptor, 
+								callable), 
 						interceptor.getMaxExecutionTimeSeconds());
 			}
 		}
@@ -472,7 +484,7 @@ public class Venice {
 	private Env getPrecompiledEnv() {
 		Env env = precompiledEnv.get();
 		if (env == null) {
-			env = new VeniceInterpreter(interceptor)
+			env = new VeniceInterpreter(interceptor, meterRegistry)
 						.createEnv(true, false, RunMode.SCRIPT)
 						.setStdoutPrintStream(null)
 						.setStderrPrintStream(null)

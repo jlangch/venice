@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -186,7 +185,7 @@ public class NamespaceTest {
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadLocalMap.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
+		ThreadLocalMap.setInterceptor(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -233,7 +232,7 @@ public class NamespaceTest {
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadLocalMap.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
+		ThreadLocalMap.setInterceptor(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -285,7 +284,7 @@ public class NamespaceTest {
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadLocalMap.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
+		ThreadLocalMap.setInterceptor(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -341,7 +340,7 @@ public class NamespaceTest {
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadLocalMap.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
+		ThreadLocalMap.setInterceptor(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 

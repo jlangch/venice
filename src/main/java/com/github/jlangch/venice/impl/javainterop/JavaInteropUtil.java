@@ -58,6 +58,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
@@ -95,7 +96,7 @@ public class JavaInteropUtil {
 				}
 				else {
 					return JavaInteropUtil.convertToVncVal(
-							JavaInterop
+							ThreadLocalMap
 								.getInterceptor()
 								.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
 				}
@@ -135,14 +136,14 @@ public class JavaInteropUtil {
 					if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
 						// static method
 						return JavaInteropUtil.convertToVncVal(
-								JavaInterop
+								ThreadLocalMap
 									.getInterceptor()
 									.onInvokeStaticMethod(new Invoker(), targetClass, methodName, methodArgs));
 					}
 					else if (ReflectionAccessor.isStaticField(targetClass, methodName)) {
 						// static field
 						return JavaInteropUtil.convertToVncVal(
-								JavaInterop
+								ThreadLocalMap
 									.getInterceptor()
 									.onGetStaticField(new Invoker(), targetClass, methodName));
 					}
@@ -178,14 +179,14 @@ public class JavaInteropUtil {
 					if (isInstanceMethod) {
 						// instance method
 						return JavaInteropUtil.convertToVncVal(
-								JavaInterop
+								ThreadLocalMap
 									.getInterceptor()
 									.onInvokeInstanceMethod(new Invoker(), target, targetFormalType, methodName, methodArgs));
 					}
 					else if (ReflectionAccessor.isInstanceField(target, methodName)) {
 						// instance field
 						return JavaInteropUtil.convertToVncVal(
-								JavaInterop
+								ThreadLocalMap
 									.getInterceptor()
 									.onGetInstanceField(new Invoker(), target, targetFormalType, methodName));
 					}

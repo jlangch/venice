@@ -39,6 +39,10 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class ThreadLocalMap {
@@ -207,6 +211,35 @@ public class ThreadLocalMap {
 		get().debugAgent = agent;
 	}
 
+
+	public static MeterRegistry getMeterRegistry() {
+		return get().meterRegistry;
+	}
+
+	public static void setMeterRegistry(final MeterRegistry registry) {
+		get().meterRegistry = registry == null 
+								? new MeterRegistry(false)
+								: registry;
+	}
+
+	public static IInterceptor getInterceptor() {
+		return get().interceptor;
+	}
+
+	public static void setInterceptor(final IInterceptor interceptor) {
+		get().interceptor = interceptor == null 
+								? new RejectAllInterceptor() 
+								: interceptor;
+	}
+
+	public static boolean isSandboxed() {
+		return !(getInterceptor() instanceof AcceptAllInterceptor);
+	}
+	
+	public static Integer getMaxExecutionTimeSeconds() {
+		return getInterceptor().getMaxExecutionTimeSeconds();
+	}
+
 	public static void clearValues(final boolean preserveSystemValues) {
 		try {
 			if (preserveSystemValues) {
@@ -233,7 +266,9 @@ public class ThreadLocalMap {
 		try {
 			final ThreadLocalMap tl = ThreadLocalMap.get();
 			
+			tl.interceptor = new RejectAllInterceptor();
 			tl.debugAgent = null;
+			tl.meterRegistry = new MeterRegistry(false);
 			tl.values.clear();
 			tl.callStack.clear();
 			tl.initNS();
@@ -278,7 +313,11 @@ public class ThreadLocalMap {
 		
 		copyValues(map.values, vals);
 
-		return new ThreadLocalSnapshot(vals, map.debugAgent);
+		return new ThreadLocalSnapshot(
+						vals, 
+						map.debugAgent, 
+						map.interceptor, 
+						map.meterRegistry);
 	}
 
 	public static void inheritFrom(final ThreadLocalSnapshot snapshot) {
@@ -287,6 +326,8 @@ public class ThreadLocalMap {
 		copyValues(snapshot.getValues(), map.values);
 
 		map.debugAgent = snapshot.getAgent();
+		map.interceptor = snapshot.getInterceptor();
+		map.meterRegistry = snapshot.getMeterRegistry();
 	}
 
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
@@ -316,6 +357,8 @@ public class ThreadLocalMap {
 	private final CallStack callStack = new CallStack();
 	private Namespace nsCurr;
 	private DebugAgent debugAgent;
+	private IInterceptor interceptor = new RejectAllInterceptor();
+	private MeterRegistry meterRegistry = new MeterRegistry(false);
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed

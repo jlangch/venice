@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -41,7 +40,6 @@ import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ScheduleFunctions {
@@ -73,8 +71,6 @@ public class ScheduleFunctions {
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncKeyword unit = Coerce.toVncKeyword(args.third());
 	
-				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-				
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadLocalMap.snapshot());
@@ -84,13 +80,11 @@ public class ScheduleFunctions {
 						// inherit thread local values to the child thread
 						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
-						JavaInterop.register(parentInterceptor);	
 						
 						return fn.applyOf();
 					}
 					finally {
 						// clean up
-						JavaInterop.unregister();
 						ThreadLocalMap.remove();
 					}
 				};
@@ -140,8 +134,6 @@ public class ScheduleFunctions {
 				final VncLong period = Coerce.toVncLong(args.third());
 				final VncKeyword unit = Coerce.toVncKeyword(args.nth(3));
 		
-				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-				
 				// thread local values from the parent thread
 				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadLocalMap.snapshot());
@@ -151,13 +143,11 @@ public class ScheduleFunctions {
 						// inherit thread local values to the child thread
 						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadLocalMap.clearCallStack();
-						JavaInterop.register(parentInterceptor);	
 						
 						fn.applyOf();
 					}
 					finally {
 						// clean up
-						JavaInterop.unregister();
 						ThreadLocalMap.remove();
 					}
 				};

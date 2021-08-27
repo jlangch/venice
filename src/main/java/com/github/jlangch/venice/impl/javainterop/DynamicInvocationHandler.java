@@ -65,7 +65,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;
 		
-		this.parentInterceptor = JavaInterop.getInterceptor();
 		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadLocalMap.snapshot());
 
 	}
@@ -91,8 +90,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			// sandbox. The Java callback parent could have forked a thread
 			// to run this Venice proxy callback!
 			
-			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
-			if (proxyInterceptor == parentInterceptor) {
+			final IInterceptor proxyInterceptor = ThreadLocalMap.getInterceptor();
+			if (proxyInterceptor == parentThreadLocalSnapshot.get().getInterceptor()) {
 				// we run in the same security context (thread)
 				try {
 					callStack.push(callFrameProxy);
@@ -111,7 +110,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				try {
 					ThreadLocalMap.clear();
 					ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-					JavaInterop.register(parentInterceptor);
 					
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
@@ -122,7 +120,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					callStack.pop();
 					callStack.pop();
 					
-					JavaInterop.unregister();
 					ThreadLocalMap.remove();
 				}
 			}
@@ -181,6 +178,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	private final CallFrame callFrameProxy;
 	private final Map<String, VncFunction> methods;
-	private final IInterceptor parentInterceptor;
 	private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot;
 }
