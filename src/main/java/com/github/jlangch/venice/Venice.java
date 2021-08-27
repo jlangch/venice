@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
@@ -117,7 +117,7 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		ThreadLocalMap.clear();
+		ThreadContext.clear();
 
 		// Note: For security reasons use the RejectAllInterceptor because
 		//       macros can execute code while being expanded. Thus we need
@@ -174,7 +174,7 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 		
-		ThreadLocalMap.clear();
+		ThreadContext.clear();
 
 		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -272,7 +272,7 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 		
-		ThreadLocalMap.clear();
+		ThreadContext.clear();
 		
 		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 

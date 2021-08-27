@@ -35,8 +35,8 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -88,14 +88,14 @@ public class ScriptExecuter {
 		final Thread replThread = Thread.currentThread();
 		
 		// thread local values from the parent thread
-		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadLocalMap.snapshot());
+		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
+				new AtomicReference<>(ThreadContext.snapshot());
 		
 		final IInterceptor interceptor = JavaInterop.getInterceptor();
 		
 		final Callable<Boolean> task = () -> {
-			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadLocalMap.clearCallStack();
+			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+			ThreadContext.clearCallStack();
 			JavaInterop.register(interceptor);	
 
 			try {
@@ -129,7 +129,7 @@ public class ScriptExecuter {
 				return false;
 			}
 			finally {
-				ThreadLocalMap.remove();
+				ThreadContext.remove();
 
 				// Interrupt the LineReader of the REPLto display a new prompt
 				replThread.interrupt();
@@ -154,15 +154,15 @@ public class ScriptExecuter {
 			final Consumer<Exception> errorHandler
 	) {
 		// thread local values from the parent thread
-		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadLocalMap.snapshot());
+		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
+				new AtomicReference<>(ThreadContext.snapshot());
 
 		final IInterceptor interceptor = JavaInterop.getInterceptor();
 
 		// run the expression in another thread without debugger!! 
 		final Runnable task = () -> {
-			ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadLocalMap.clearCallStack();
+			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+			ThreadContext.clearCallStack();
 			JavaInterop.register(interceptor);
 			DebugAgent.unregister();  // do not run under debugger!!
 
@@ -176,7 +176,7 @@ public class ScriptExecuter {
 				errorHandler.accept(ex);
 			}
 			finally {
-				ThreadLocalMap.remove();
+				ThreadContext.remove();
 			}
 		};
 

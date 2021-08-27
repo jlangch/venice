@@ -86,7 +86,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -377,7 +377,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						if (numArgs == 2 || numArgs == 3) {
 							final VncVal cond = evaluate(args.first(), env);
 
-							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+							final ThreadContext threadLocalMap = ThreadContext.get();
 							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 							if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
@@ -408,7 +408,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						env = new Env(env);  // let introduces a new environment
 
-						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						final ThreadContext threadLocalMap = ThreadContext.get();
 						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
@@ -505,7 +505,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							bindingNames.add(sym);
 						}
 
-						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						final ThreadContext threadLocalMap = ThreadContext.get();
 						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 						recursionPoint = new RecursionPoint(
@@ -556,7 +556,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 						// for performance reasons the DebugAgent is stored in the 
 						// RecursionPoint. Saves repeated ThreadLocal access!
-						final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+						final ThreadContext threadLocalMap = ThreadContext.get();
 						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
@@ -744,7 +744,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						else { 
 							final String fnName = fn.getQualifiedName();
 
-							final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+							final ThreadContext threadLocalMap = ThreadContext.get();
 
 							final CallStack callStack = threadLocalMap.getCallStack_();
 						
@@ -1733,7 +1733,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					// Store value to a mutable place to prevent JIT from optimizing 
 					// too much. Wrap the result so a VncStack can be used as result
 					// too (VncStack is a special value in ThreadLocalMap)
-					ThreadLocalMap.set(
+					ThreadContext.set(
 							new VncKeyword("*benchmark-val*"), 
 							new VncJust(result));
 				}
@@ -1741,7 +1741,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				return first;
 			}
 			finally {
-				ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
+				ThreadContext.remove(new VncKeyword("*benchmark-val*"));
 			}
 		}
 	}
@@ -1768,7 +1768,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					// Store value to a mutable place to prevent JIT from optimizing 
 					// too much. Wrap the result so a VncStack can be used as result
 					// too (VncStack is a special value in ThreadLocalMap)
-					ThreadLocalMap.set(
+					ThreadContext.set(
 							new VncKeyword("*benchmark-val*"), 
 							new VncJust(result));
 				}
@@ -1776,7 +1776,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				return VncList.ofList(elapsed);
 			}
 			finally {
-				ThreadLocalMap.remove(new VncKeyword("*benchmark-val*"));
+				ThreadContext.remove(new VncKeyword("*benchmark-val*"));
 			}
 		}
 	}
@@ -2304,7 +2304,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				addFnArgsToEnv(args, localEnv);
 
 				if (switchToFunctionNamespaceAtRuntime) {
-					final ThreadLocalMap threadLocalMap = ThreadLocalMap.get();
+					final ThreadContext threadLocalMap = ThreadContext.get();
 					
 					final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 					final Namespace curr_ns = threadLocalMap.getCurrNS_();

@@ -85,7 +85,7 @@ public class Agent implements IDeref {
 						args,
 						SendType.SEND,
 						JavaInterop.getInterceptor(), 
-						ThreadLocalMap.snapshot()));
+						ThreadContext.snapshot()));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -96,7 +96,7 @@ public class Agent implements IDeref {
 						args, 
 						SendType.SEND_OFF,
 						JavaInterop.getInterceptor(),
-						ThreadLocalMap.snapshot()));
+						ThreadContext.snapshot()));
 	}
 
 	public void restart(final VncVal state) {
@@ -309,7 +309,7 @@ public class Agent implements IDeref {
 				final VncList fnArgs,
 				final SendType sendType,
 				final IInterceptor interceptor,
-				final ThreadLocalSnapshot parentThreadLocalSnapshot
+				final ThreadContextSnapshot parentThreadLocalSnapshot
 		) {
 			this.agent = agent;
 			this.fn = fn;
@@ -326,7 +326,7 @@ public class Agent implements IDeref {
 	
 		@Override
 		public void run() {
-			final CallStack callStack = ThreadLocalMap.getCallStack();
+			final CallStack callStack = ThreadContext.getCallStack();
 
 			final CallFrame callFrame = new CallFrame(
 											String.format(
@@ -340,8 +340,8 @@ public class Agent implements IDeref {
 				callStack.push(callFrame);
 
 				// inherit thread local values to the child thread
-				ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-				ThreadLocalMap.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
+				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+				ThreadContext.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				JavaInterop.register(interceptor);	
 				
 				if (agent.getError() == null || agent.continueOnError) {
@@ -374,7 +374,7 @@ public class Agent implements IDeref {
 				// clean up
 				callStack.pop();
 				JavaInterop.unregister();
-				ThreadLocalMap.remove();
+				ThreadContext.remove();
 			}
 		}
 		
@@ -383,7 +383,7 @@ public class Agent implements IDeref {
 		private final VncList fnArgs;
 		private final SendType sendType;
 		private final IInterceptor interceptor;
-		private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
+		private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
 	}
 	
 	private static class Value {

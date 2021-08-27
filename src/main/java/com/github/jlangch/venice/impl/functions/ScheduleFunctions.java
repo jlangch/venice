@@ -36,8 +36,8 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
@@ -76,14 +76,14 @@ public class ScheduleFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadLocalMap.snapshot());
+				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadLocalMap.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadContext.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
 						return fn.applyOf();
@@ -91,7 +91,7 @@ public class ScheduleFunctions {
 					finally {
 						// clean up
 						JavaInterop.unregister();
-						ThreadLocalMap.remove();
+						ThreadContext.remove();
 					}
 				};
 				
@@ -143,14 +143,14 @@ public class ScheduleFunctions {
 				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
 				
 				// thread local values from the parent thread
-				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadLocalMap.snapshot());
+				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Runnable taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadLocalMap.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadContext.clearCallStack();
 						JavaInterop.register(parentInterceptor);	
 						
 						fn.applyOf();
@@ -158,7 +158,7 @@ public class ScheduleFunctions {
 					finally {
 						// clean up
 						JavaInterop.unregister();
-						ThreadLocalMap.remove();
+						ThreadContext.remove();
 					}
 				};
 				

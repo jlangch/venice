@@ -32,7 +32,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
@@ -81,15 +81,15 @@ public class Namespaces {
 	}
 
 	public static VncSymbol getCurrentNS() {
-		return ThreadLocalMap.getCurrNS().getNS();
+		return ThreadContext.getCurrNS().getNS();
 	}
 
 	public static Namespace getCurrentNamespace() {
-		return ThreadLocalMap.getCurrNS();
+		return ThreadContext.getCurrNS();
 	}
 
 	public static void setCurrentNamespace(final Namespace ns) {
-		ThreadLocalMap.setCurrNS(ns);
+		ThreadContext.setCurrNS(ns);
 	}
 
 	

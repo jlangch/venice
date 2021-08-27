@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl;
 import java.util.concurrent.Callable;
 
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
@@ -40,7 +40,7 @@ public class SandboxedCallable<T> implements Callable<T> {
 	@Override
 	public T call() throws Exception {
 		try {
-			ThreadLocalMap.remove(); // clean thread locals			
+			ThreadContext.remove(); // clean thread locals			
 			JavaInterop.register(interceptor);
 			
 			return callable.call();
@@ -48,7 +48,7 @@ public class SandboxedCallable<T> implements Callable<T> {
 		finally {
 			// clean up
 			JavaInterop.unregister();
-			ThreadLocalMap.remove();
+			ThreadContext.remove();
 		}
 	}
 	

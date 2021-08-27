@@ -35,8 +35,8 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
@@ -66,7 +66,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		this.methods = methods;
 		
 		this.parentInterceptor = JavaInterop.getInterceptor();
-		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadLocalMap.snapshot());
+		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadContext.snapshot());
 
 	}
 		 
@@ -80,7 +80,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		if (fn != null) {
 			final VncList fnArgs = toVncArgs(args);
 				
-			final CallStack callStack = ThreadLocalMap.getCallStack();
+			final CallStack callStack = ThreadContext.getCallStack();
 			final CallFrame callFrameMethod = new CallFrame(
 													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
@@ -109,8 +109,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				// The callback function runs in another thread.	
 				// Inherit sandbox and thread local vars
 				try {
-					ThreadLocalMap.clear();
-					ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+					ThreadContext.clear();
+					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 					JavaInterop.register(parentInterceptor);
 					
 					callStack.push(callFrameProxy);
@@ -123,7 +123,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					callStack.pop();
 					
 					JavaInterop.unregister();
-					ThreadLocalMap.remove();
+					ThreadContext.remove();
 				}
 			}
 		}
@@ -182,5 +182,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	private final CallFrame callFrameProxy;
 	private final Map<String, VncFunction> methods;
 	private final IInterceptor parentInterceptor;
-	private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot;
+	private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot;
 }

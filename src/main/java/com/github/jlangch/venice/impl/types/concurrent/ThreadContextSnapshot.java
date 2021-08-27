@@ -7,9 +7,9 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class ThreadLocalSnapshot {
+public class ThreadContextSnapshot {
 
-	public ThreadLocalSnapshot(
+	public ThreadContextSnapshot(
 			final Map<VncKeyword,VncVal> values,
 			final DebugAgent agent
 	) {
