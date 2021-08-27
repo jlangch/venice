@@ -7,6 +7,7 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ThreadContextSnapshot {
@@ -16,12 +17,14 @@ public class ThreadContextSnapshot {
 			final Namespace ns,
 			final Map<VncKeyword,VncVal> values,
 			final DebugAgent agent,
+			final IInterceptor interceptor,
 			final MeterRegistry meterRegistry
 	) {
 		this.threadID = threadID;
 		this.ns = ns;
 		this.values = values;
 		this.agent = agent;
+		this.interceptor = interceptor;
 		this.meterRegistry = meterRegistry;
 	}
 
@@ -42,6 +45,10 @@ public class ThreadContextSnapshot {
 		return agent;
 	}
 	
+	public IInterceptor getInterceptor() {
+		return interceptor;
+	}
+	
 	public MeterRegistry getMeterRegistry() {
 		return meterRegistry;
 	}
@@ -60,5 +67,6 @@ public class ThreadContextSnapshot {
 	private final Namespace ns;
 	private final Map<VncKeyword,VncVal> values;
 	private final DebugAgent agent;
+	private final IInterceptor interceptor;
 	private final MeterRegistry meterRegistry;
 }

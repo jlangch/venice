@@ -29,7 +29,24 @@ import java.util.Set;
 public class RestrictedBlacklistedFunctions {
 
 	public static Set<String> getIoFunctions() {
-		return new HashSet<>(
+		return IO;
+	}
+
+	public static Set<String> getSpecialForms() {
+		return SPECIAL_FORMS;
+	}
+
+	public static Set<String> getAll() {
+		return ALL;
+	}
+
+	public static boolean contains(final String funcName) {
+		return ALL.contains(funcName);
+	}
+	
+
+	private static Set<String> IO =
+		new HashSet<>(
 				Arrays.asList(
 					// print
 					"print",
@@ -140,10 +157,9 @@ public class RestrictedBlacklistedFunctions {
 					"io/gzip-to-stream",
 					"io/ungzip",
 					"io/ungzip-to-stream"));
-	}
-
-	public static Set<String> getSpecialForms() {
-		return new HashSet<>(
+	
+	private static Set<String> SPECIAL_FORMS =
+		new HashSet<>(
 				Arrays.asList(
 					"set!",
 					"ns-remove",
@@ -156,12 +172,12 @@ public class RestrictedBlacklistedFunctions {
 					"dorun",
 					"dobench",
 					"prof"));
-	}
 	
-	public static Set<String> getAll() {
-		final Set<String> items = new HashSet<>(getIoFunctions());
-		items.addAll(getSpecialForms());
-		return items;
-	}
+	private static Set<String> ALL = merge(IO, SPECIAL_FORMS);
 
+	private static Set<String> merge(final Set<String> s1, Set<String> s2) {
+		final HashSet<String> set = new HashSet<>(s1);
+		set.addAll(s2);
+		return set;
+	}
 }

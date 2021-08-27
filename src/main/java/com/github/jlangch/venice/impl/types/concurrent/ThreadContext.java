@@ -40,6 +40,9 @@ import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class ThreadContext {
@@ -218,6 +221,24 @@ public class ThreadContext {
 								: registry;
 	}
 
+	public static IInterceptor getInterceptor() {
+		return get().interceptor;
+	}
+
+	public static void setInterceptor(final IInterceptor interceptor) {
+		get().interceptor = interceptor == null 
+								? REJECT_ALL_INTERCEPTOR 
+								: interceptor;
+	}
+
+	public static boolean isSandboxed() {
+		return !(get().interceptor instanceof AcceptAllInterceptor);
+	}
+	
+	public static Integer getMaxExecutionTimeSeconds() {
+		return get().interceptor.getMaxExecutionTimeSeconds();
+	}
+
 	public static void clearValues(final boolean preserveSystemValues) {
 		try {
 			if (preserveSystemValues) {
@@ -244,6 +265,7 @@ public class ThreadContext {
 		try {
 			final ThreadContext ctx = ThreadContext.get();
 			
+			ctx.interceptor = REJECT_ALL_INTERCEPTOR;
 			ctx.debugAgent = null;
 			ctx.values.clear();
 			ctx.callStack.clear();
@@ -294,7 +316,8 @@ public class ThreadContext {
 						Thread.currentThread().getId(),
 						ctx.ns,
 						vals, 
-						ctx.debugAgent, 
+						ctx.debugAgent,
+						ctx.interceptor,
 						ctx.meterRegistry);
 	}
 
@@ -306,6 +329,7 @@ public class ThreadContext {
 		ctx.ns = snapshot.getNamespace();
 		ctx.debugAgent = snapshot.getAgent();
 		ctx.meterRegistry = snapshot.getMeterRegistry();
+		ctx.interceptor = snapshot.getInterceptor();
 	}
 
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
@@ -335,7 +359,10 @@ public class ThreadContext {
 	private final CallStack callStack = new CallStack();
 	private Namespace ns;
 	private DebugAgent debugAgent;
+	private IInterceptor interceptor = null;
 	private MeterRegistry meterRegistry = new MeterRegistry(false);
+	
+	private static final IInterceptor REJECT_ALL_INTERCEPTOR = new RejectAllInterceptor();
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed

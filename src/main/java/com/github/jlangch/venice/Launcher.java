@@ -207,7 +207,7 @@ public class Launcher {
 			 "The launcher is configured as the Venice JAR's main-class. \n" +
 			 "\n" +
 			 "Running scripts: \n" +
-			 "    java -jar venice-1.9.10.jar -script \"(+ 1 1)\" \n" +
+			 "    java -jar venice-1.9.28.jar -script \"(+ 1 1)\" \n" +
 			 "\n" +
 			 "Running a REPL:  \n" +
 			 "    java \\ \n" +

@@ -21,40 +21,32 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
-import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class JavaInterop {
 
 	public static boolean isSandboxed() {
-		return !(getInterceptor() instanceof AcceptAllInterceptor);
+		return ThreadContext.isSandboxed();
 	}
 	
 	public static Integer getMaxExecutionTimeSeconds() {
-		return getInterceptor().getMaxExecutionTimeSeconds();
+		return ThreadContext.getMaxExecutionTimeSeconds();
 	}
 	
 	
 	public static void register(final IInterceptor interceptor) {
-		threadInterceptor.set(interceptor == null ? new AcceptAllInterceptor() : interceptor);
+		ThreadContext.setInterceptor(interceptor);
 	}
 
 	public static void unregister() {
-		try {
-			threadInterceptor.remove();
-		}
-		catch(Exception ex) {
-			// do not care
-		}
+		ThreadContext.setInterceptor(null);
 	}
 
 	
-	private static final ThreadLocal<IInterceptor> threadInterceptor = 
-			ThreadLocal.withInitial(() -> new RejectAllInterceptor());
-	
 	public static IInterceptor getInterceptor() {
-		return threadInterceptor.get();
+		return ThreadContext.getInterceptor();
 	}
+
 }

@@ -24,7 +24,6 @@ package com.github.jlangch.venice.javainterop;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
@@ -192,7 +191,7 @@ public class RejectAllInterceptor extends Interceptor {
 	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {
-		if (blacklistedVeniceFunctions.contains(funcName)) {
+		if (RestrictedBlacklistedFunctions.contains(funcName)) {
 			throw new SecurityException(String.format(
 					"%s: Access denied to Venice function %s.", 
 					PREFIX,
@@ -232,7 +231,7 @@ public class RejectAllInterceptor extends Interceptor {
 
 	
 	public List<String> getBlacklistedVeniceFunctions() {
-		final List<String> list = new ArrayList<>(blacklistedVeniceFunctions);
+		final List<String> list = new ArrayList<>(RestrictedBlacklistedFunctions.getAll());
 		Collections.sort(list); 
 		return list;
 	}
@@ -257,8 +256,6 @@ public class RejectAllInterceptor extends Interceptor {
 	private static final Integer MAX_EXECUTION_TIME_SECONDS = null; // null is unlimited
 
 	private static final Integer MAX_FUTURE_THREAD_POOL_SIZE = 5;
-
-	private final Set<String> blacklistedVeniceFunctions = RestrictedBlacklistedFunctions.getAll();
 	
 	private final long executionTimeDeadline;
 }
