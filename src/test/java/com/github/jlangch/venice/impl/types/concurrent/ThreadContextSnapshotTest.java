@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.concurrent;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,7 +56,7 @@ public class ThreadContextSnapshotTest {
 		final Runnable r = () -> diffrentThread.set(
 									ctxSnapshot.isDifferentFromCurrentThread());
 		
-		Thread th = new Thread(r);
+		final Thread th = new Thread(r);
 		th.start();
 		th.join();
 			
