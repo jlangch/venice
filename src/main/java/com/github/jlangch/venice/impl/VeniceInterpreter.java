@@ -126,17 +126,29 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	public VeniceInterpreter(
 			final IInterceptor interceptor
 	) {
+		this(interceptor, null);
+	}
+
+	public VeniceInterpreter(
+			final IInterceptor interceptor,
+			final MeterRegistry meterRegistry
+	) {
 		if (interceptor == null) {
 			throw new SecurityException("VeniceInterpreter can not run without an interceptor");
 		}
 		
+		final MeterRegistry mr = meterRegistry == null 
+									? new MeterRegistry(false)
+									: meterRegistry;
+		
 		this.interceptor = interceptor;
-		this.meterRegistry = interceptor.getMeterRegistry();
-
-		JavaInterop.register(interceptor);	
+		this.meterRegistry = mr;
 
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
+
+		JavaInterop.register(interceptor);	
+		ThreadContext.setMeterRegistry(mr);
 	}
 
 	

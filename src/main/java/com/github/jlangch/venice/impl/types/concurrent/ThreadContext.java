@@ -39,6 +39,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 
 public class ThreadContext {
@@ -49,11 +50,11 @@ public class ThreadContext {
 
 
 	public Namespace getCurrNS_() {
-		return nsCurr;
+		return ns;
 	}
 
 	public void setCurrNS_(final Namespace ns) {
-		nsCurr = ns;
+		this.ns = ns;
 	}
 
 	public DebugAgent getDebugAgent_() {
@@ -192,11 +193,11 @@ public class ThreadContext {
 	}
 
 	public static Namespace getCurrNS() {
-		return get().nsCurr;
+		return get().ns;
 	}
 
 	public static void setCurrNS(final Namespace ns) {
-		get().nsCurr = ns;
+		get().ns = ns;
 	}
 
 	public static DebugAgent getDebugAgent() {
@@ -205,6 +206,16 @@ public class ThreadContext {
 
 	public static void setDebugAgent(final DebugAgent agent) {
 		get().debugAgent = agent;
+	}
+	
+	public static MeterRegistry getMeterRegistry() {
+		return get().meterRegistry;
+	}
+
+	public static void setMeterRegistry(final MeterRegistry registry) {
+		get().meterRegistry = registry == null 
+								? new MeterRegistry(false)
+								: registry;
 	}
 
 	public static void clearValues(final boolean preserveSystemValues) {
@@ -236,6 +247,7 @@ public class ThreadContext {
 			ctx.debugAgent = null;
 			ctx.values.clear();
 			ctx.callStack.clear();
+			ctx.meterRegistry = new MeterRegistry(false);
 			ctx.initNS();
 		}
 		catch(Exception ex) {
@@ -272,21 +284,28 @@ public class ThreadContext {
 	}
 
 	public static ThreadContextSnapshot snapshot() {
-		final ThreadContext map = get();
+		final ThreadContext ctx = get();
 	
 		final Map<VncKeyword,VncVal> vals = new HashMap<>();
 		
-		copyValues(map.values, vals);
+		copyValues(ctx.values, vals);
 
-		return new ThreadContextSnapshot(vals, map.debugAgent);
+		return new ThreadContextSnapshot(
+						Thread.currentThread().getId(),
+						ctx.ns,
+						vals, 
+						ctx.debugAgent, 
+						ctx.meterRegistry);
 	}
 
 	public static void inheritFrom(final ThreadContextSnapshot snapshot) {
-		final ThreadContext map = get();
+		final ThreadContext ctx = get();
 
-		copyValues(snapshot.getValues(), map.values);
+		copyValues(snapshot.getValues(), ctx.values);
 
-		map.debugAgent = snapshot.getAgent();
+		ctx.ns = snapshot.getNamespace();
+		ctx.debugAgent = snapshot.getAgent();
+		ctx.meterRegistry = snapshot.getMeterRegistry();
 	}
 
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
@@ -308,14 +327,15 @@ public class ThreadContext {
 	}
 	
 	private void initNS() {
-		nsCurr = new Namespace(new VncSymbol("user"));
+		ns = new Namespace(new VncSymbol("user"));
 	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
-	private Namespace nsCurr;
+	private Namespace ns;
 	private DebugAgent debugAgent;
+	private MeterRegistry meterRegistry = new MeterRegistry(false);
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
