@@ -757,7 +757,6 @@ public class IOFunctions {
 					try {
 						// inherit thread local values to the child thread
 						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadContext.clearCallStack();
 						
 						runnable.run();
 					}

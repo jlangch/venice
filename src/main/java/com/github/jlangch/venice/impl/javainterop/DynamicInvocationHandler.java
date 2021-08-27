@@ -78,7 +78,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		if (fn != null) {
 			final VncList fnArgs = toVncArgs(args);
 				
-			final CallStack callStack = ThreadContext.getCallStack();
 			final CallFrame callFrameMethod = new CallFrame(
 													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
@@ -91,10 +90,10 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			
 			if (parentThreadLocalSnapshot.get().isSameAsCurrentThread()) {
 				// we run in the same security context (thread)
-				try {
-					callStack.push(callFrameProxy);
-					callStack.push(callFrameMethod);
-					
+				final CallStack callStack = ThreadContext.getCallStack();
+				callStack.push(callFrameProxy);
+				callStack.push(callFrameMethod);
+				try {			
 					return fn.apply(fnArgs).convertToJavaObject();
 				}
 				finally {
@@ -109,15 +108,13 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					ThreadContext.clear();
 					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 					
+					final CallStack callStack = ThreadContext.getCallStack();
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
 					
 					return fn.apply(fnArgs).convertToJavaObject();
 				}
 				finally {
-					callStack.pop();
-					callStack.pop();
-					
 					ThreadContext.remove();
 				}
 			}

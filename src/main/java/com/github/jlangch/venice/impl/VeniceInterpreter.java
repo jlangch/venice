@@ -756,9 +756,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final String fnName = fn.getQualifiedName();
 
 							final ThreadContext threadLocalMap = ThreadContext.get();
-
-							final CallStack callStack = threadLocalMap.getCallStack_();
-						
+							final CallStack callStack = threadLocalMap.getCallStack_();						
 							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
 							
 							if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {

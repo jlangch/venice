@@ -91,7 +91,6 @@ public class ScriptExecuter {
 				
 		final Callable<Boolean> task = () -> {
 			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadContext.clearCallStack();
 
 			try {
 				final VncVal result = venice.RE(script, "user", env);
@@ -155,7 +154,6 @@ public class ScriptExecuter {
 		// run the expression in another thread without debugger!! 
 		final Runnable task = () -> {
 			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadContext.clearCallStack();
 			DebugAgent.unregister();  // do not run under debugger!!
 
 			try {

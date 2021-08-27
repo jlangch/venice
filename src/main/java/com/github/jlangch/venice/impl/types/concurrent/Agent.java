@@ -320,8 +320,6 @@ public class Agent implements IDeref {
 	
 		@Override
 		public void run() {
-			final CallStack callStack = ThreadContext.getCallStack();
-
 			final CallFrame callFrame = new CallFrame(
 											String.format(
 													"agent->%s->%s", 
@@ -330,13 +328,15 @@ public class Agent implements IDeref {
 											fnArgs.getMeta());
 
 			try {				
-				callStack.clear();
-				callStack.push(callFrame);
 
 				// inherit thread local values to the child thread
 				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 				ThreadContext.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
-				
+
+				final CallStack callStack = ThreadContext.getCallStack();
+				callStack.clear();
+				callStack.push(callFrame);
+
 				if (agent.getError() == null || agent.continueOnError) {
 					final VncVal oldVal = agent.value.get().val;
 					try {
@@ -365,7 +365,6 @@ public class Agent implements IDeref {
 			}
 			finally {
 				// clean up
-				callStack.pop();
 				ThreadContext.remove();
 			}
 		}

@@ -351,6 +351,9 @@ public class ThreadContext {
 	}
 
 	
+	public static enum Options { COPY_CALLSTACK }
+	
+	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
 	private Namespace ns;
