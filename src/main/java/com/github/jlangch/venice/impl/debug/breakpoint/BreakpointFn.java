@@ -126,8 +126,8 @@ public class BreakpointFn implements Comparable<BreakpointFn> {
 	@Override
 	public String toString() {
 		return format(false)
-					.stream()
-					.collect(Collectors.joining("\n"));
+				.stream()
+				.collect(Collectors.joining("\n"));
 	}
 	
 	@Override

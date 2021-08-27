@@ -13,6 +13,7 @@ if [ `pwd` = "/workspace/venice" ]; then
     mkdir repl;
     cd repl;
     java -jar ../venice/build/libs/venice-*.jar -setup -colors-darkmode;
+    [ -d "./tmp" ] && rm -f ./tmp/*
     ./repl.sh
   fi
 fi
