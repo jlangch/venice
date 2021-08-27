@@ -249,7 +249,11 @@ public class ReplDebugClient {
 				break;
 				
 			default:
-				printlnErr("Invalid command '%s'. Use '!help' for help.", cmd);
+				printlnErr(
+						"Invalid debug command '%s'. Use '!help' for help.\n\n"
+						+ "To run a REPL non debug command, detach the debugger "
+						+ "first using '!detach'.", 
+						cmd);
 				break;
 		}
 	}

@@ -964,6 +964,7 @@
           (load-module :trace)
           """,
           """
+          ;; reloading a module
           (do
             (load-module :trace)
             ; reload the module

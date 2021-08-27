@@ -1367,24 +1367,28 @@ public class ConcurrencyFunctions {
 						"Thread local vars will be inherited by the future child thread. Changes " +
 						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
+						"(do                                        \n" + 
+						"   (defn wait [] (do (sleep 300) 100))     \n" + 
+						"   (let [f (future wait)]                  \n" + 
+						"        (deref f)))                          ",
+
+						"(do                                            \n" + 
+						"   (defn wait [x] (do (sleep 300) (+ x 100)))  \n" + 
+						"   (let [f (future (partial wait 10))]         \n" + 
+						"        (deref f)))                              ",
+
 						"(do                                          \n" + 
-						"   (def wait (fn [] (do (sleep 300) 100)))   \n" + 
-						"   (let [f (future wait)]                    \n" + 
+						"   (defn sum [x y] (+ x y))                  \n" + 
+						"   (let [f (future (partial sum 3 4))]       \n" + 
 						"        (deref f)))                            ",
-
-						"(do                                                 \n" + 
-						"   (def wait (fn [x] (do (sleep 300) (+ x 100))))   \n" + 
-						"   (let [f (future (partial wait 10))]              \n" + 
-						"        (deref f)))                                   ",
 					
-
-						";; demonstrates the use of thread locals with futures              \n" +
-						"(do                                                                \n" +
-						"   ;; parent thread locals                                         \n" +
-						"   (binding [a 10 b 20]                                            \n" +
-						"      ;; future with child thread locals                           \n" +
-						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]       \n" +
-						"         {:child @f :parent {:a a :b b}})))                          ")
+						";; demonstrates the use of thread locals with futures         \n" +
+						"(do                                                           \n" +
+						"   ;; parent thread locals                                    \n" +
+						"   (binding [a 10 b 20]                                       \n" +
+						"      ;; future with child thread locals                      \n" +
+						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]  \n" +
+						"         {:child @f :parent {:a a :b b}})))                     ")
 					.seeAlso("deref", "realized?", "future-done?", "future-cancel", "future-cancelled?", "futures-fork", "futures-wait")
 					.build()
 		) {		
