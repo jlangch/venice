@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -35,11 +36,12 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ScheduleFunctions {
@@ -71,20 +73,25 @@ public class ScheduleFunctions {
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncKeyword unit = Coerce.toVncKeyword(args.third());
 	
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+				
 				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadLocalMap.clearCallStack();
+						JavaInterop.register(parentInterceptor);	
 						
 						return fn.applyOf();
 					}
 					finally {
 						// clean up
-						ThreadContext.remove();
+						JavaInterop.unregister();
+						ThreadLocalMap.remove();
 					}
 				};
 				
@@ -133,20 +140,25 @@ public class ScheduleFunctions {
 				final VncLong period = Coerce.toVncLong(args.third());
 				final VncKeyword unit = Coerce.toVncKeyword(args.nth(3));
 		
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+				
 				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 				
 				final Runnable taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadLocalMap.clearCallStack();
+						JavaInterop.register(parentInterceptor);	
 						
 						fn.applyOf();
 					}
 					finally {
 						// clean up
-						ThreadContext.remove();
+						JavaInterop.unregister();
+						ThreadLocalMap.remove();
 					}
 				};
 				

@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
@@ -77,7 +77,7 @@ public class Venice {
 	 */
 	public Venice(final IInterceptor interceptor) {
 		this.interceptor = interceptor == null ? new AcceptAllInterceptor() : interceptor;
-		this.meterRegistry = new MeterRegistry(false);
+		this.meterRegistry = this.interceptor.getMeterRegistry();
 	}
 	
 	/**
@@ -117,15 +117,14 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 
-		ThreadContext.clear();
+		ThreadLocalMap.clear();
 
 		// Note: For security reasons use the RejectAllInterceptor because
 		//       macros can execute code while being expanded. Thus we need
 		//       to have a safe sandbox in-place if macros are misused to
 		//       execute code at expansion time.
 		final IVeniceInterpreter venice = new VeniceInterpreter(
-												new RejectAllInterceptor(),
-												meterRegistry);
+												new RejectAllInterceptor());
 		
 		final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
 							  .setStdoutPrintStream(null)
@@ -175,11 +174,9 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 		
-		ThreadContext.clear();
+		ThreadLocalMap.clear();
 
-		final IVeniceInterpreter venice = new VeniceInterpreter(
-													interceptor,
-													meterRegistry);
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		return runWithSandbox(venice, () -> {
 			final Env env = addParams(getPrecompiledEnv(), params);
@@ -275,11 +272,9 @@ public class Venice {
 
 		final long nanos = System.nanoTime();
 		
-		ThreadContext.clear();
+		ThreadLocalMap.clear();
 		
-		final IVeniceInterpreter venice = new VeniceInterpreter(
-												interceptor,
-												meterRegistry);
+		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		return runWithSandbox(venice, () -> {
 			final Env env = createEnv(venice, macroexpand, params);
@@ -431,18 +426,11 @@ public class Venice {
 			}
 
 			if (interceptor.getMaxExecutionTimeSeconds() == null) {
-				return new SandboxedCallable<Object>(
-								ThreadContext.getDebugAgent(),
-								interceptor, 
-								callable
-							).call();
+				return new SandboxedCallable<Object>(interceptor, callable).call();
 			}
 			else {
 				return runWithTimeout(
-						new SandboxedCallable<Object>(
-								ThreadContext.getDebugAgent(),
-								interceptor, 
-								callable), 
+						new SandboxedCallable<Object>(interceptor, callable), 
 						interceptor.getMaxExecutionTimeSeconds());
 			}
 		}
@@ -484,7 +472,7 @@ public class Venice {
 	private Env getPrecompiledEnv() {
 		Env env = precompiledEnv.get();
 		if (env == null) {
-			env = new VeniceInterpreter(interceptor, meterRegistry)
+			env = new VeniceInterpreter(interceptor)
 						.createEnv(true, false, RunMode.SCRIPT)
 						.setStdoutPrintStream(null)
 						.setStderrPrintStream(null)

@@ -67,8 +67,7 @@ public class DocGenerator {
 						"java",   "semver", "excel",  "hexdump",
 						"shell",  "geoip",  "benchmark"));
 		
-		final Env docEnv = new VeniceInterpreter(
-									new AcceptAllInterceptor())
+		final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
 								preloadedModules, 
 								false, 

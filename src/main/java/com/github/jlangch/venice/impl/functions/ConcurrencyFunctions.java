@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -57,12 +58,13 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ConcurrencyFunctions {
@@ -1397,22 +1399,27 @@ public class ConcurrencyFunctions {
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 		
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+				
 				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					// The future function is called from the JavaVM. Rig a
 					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadLocalMap.clearCallStack();
+						JavaInterop.register(parentInterceptor);	
 						
 						return fn.applyOf();
 					}
 					finally {
 						// clean up
-						ThreadContext.remove();
+						JavaInterop.unregister();
+						ThreadLocalMap.remove();
 					}
 				};
 				
@@ -1431,9 +1438,9 @@ public class ConcurrencyFunctions {
 //					// Venice context with the thread local vars and the sandbox
 //					try {
 //						// inherit thread local values to the child thread
-//						ThreadContext.setValues(parentThreadLocals.get());
-//						ThreadContext.clearCallStack();
-//						ThreadContext.setInterceptor(parentInterceptor);	
+//						ThreadLocalMap.setValues(parentThreadLocals.get());
+//						ThreadLocalMap.clearCallStack();
+//						JavaInterop.register(parentInterceptor);	
 //						
 //						try {
 //							completableFuture.complete(fn.applyOf());
@@ -1444,7 +1451,8 @@ public class ConcurrencyFunctions {
 //					}
 //					finally {
 //						// clean up
-//						ThreadContext.remove();
+//						JavaInterop.unregister();
+//						ThreadLocalMap.remove();
 //					}
 //				};
 //				

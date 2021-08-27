@@ -29,10 +29,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -252,7 +252,7 @@ public abstract class VncFunction
 	}
 	
 	protected void sandboxFunctionCallValidation() {
-		ThreadContext.getInterceptor().validateVeniceFunction(qualifiedName);
+		JavaInterop.getInterceptor().validateVeniceFunction(qualifiedName);
 	}
 	
 	

@@ -26,7 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 
 
 public class DynamicVar extends Var {
@@ -41,20 +41,20 @@ public class DynamicVar extends Var {
 	}
 	
 	public void setVal(final VncVal val) {
-		ThreadContext.set(th_keyword, val == null ? Nil : val);
+		ThreadLocalMap.set(th_keyword, val == null ? Nil : val);
 	}
 
 	public void pushVal(final VncVal val) {
-		ThreadContext.push(th_keyword, val == null ? Nil : val);
+		ThreadLocalMap.push(th_keyword, val == null ? Nil : val);
 	}
 
 	public VncVal peekVal() {
-		final VncVal thVal = ThreadContext.peek(th_keyword);
+		final VncVal thVal = ThreadLocalMap.peek(th_keyword);
 		return thVal == Nil ? super.getVal() : thVal;
 	}
 
 	public VncVal popVal() {
-		final VncVal thVal = ThreadContext.pop(th_keyword);
+		final VncVal thVal = ThreadLocalMap.pop(th_keyword);
 		return thVal == Nil ? super.getVal() : thVal;
 	}
 

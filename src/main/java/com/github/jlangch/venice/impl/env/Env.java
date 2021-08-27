@@ -47,7 +47,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
@@ -722,7 +722,7 @@ public class Env implements Serializable {
 			final String currNS = Namespaces.getCurrentNS().getName();
 			final String symNS = globalVarSym.hasNamespace() ? globalVarSym.getNamespace() : "core";
 			if (!currNS.equals(symNS)) {
-				final CallStack callStack = ThreadContext.getCallStack();
+				final CallStack callStack = ThreadLocalMap.getCallStack();
 				
 				try (WithCallStack cs = new WithCallStack(new CallFrame("symbol", sym.getMeta()))) {
 					throw new VncException(String.format(

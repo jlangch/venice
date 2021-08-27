@@ -70,8 +70,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -83,8 +85,8 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -92,6 +94,7 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class IOFunctions {
@@ -747,22 +750,27 @@ public class IOFunctions {
 					}
 				};
 				
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+				
 				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 
 				final Consumer<Runnable> wrapper = (runnable) -> {
 					// The watch-dir listeners is called from the JavaVM. Rig a
 					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
+						ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+						ThreadLocalMap.clearCallStack();
+						JavaInterop.register(parentInterceptor);	
 						
 						runnable.run();
 					}
 					finally {
 						// clean up
-						ThreadContext.remove();
+						JavaInterop.unregister();
+						ThreadLocalMap.remove();
 					}
 				};
 				
@@ -2459,17 +2467,17 @@ public class IOFunctions {
 				try {
 					if (Types.isVncString(name)) {
 						final String res = ((VncString)args.first()).getValue();
-						final byte[] data = ThreadContext.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncKeyword(name)) {
 						final String res = ((VncKeyword)args.first()).getValue();
-						final byte[] data = ThreadContext.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncSymbol(name)) {
 						final String res = ((VncSymbol)args.first()).getName();
-						final byte[] data = ThreadContext.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else {

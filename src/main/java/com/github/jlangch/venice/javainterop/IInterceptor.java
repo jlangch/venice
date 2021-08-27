@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.SecurityException;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 
 /**
@@ -211,5 +212,7 @@ public interface IInterceptor {
 	 * {@code Sandbox} is allowed to use.
 	 */
 	Integer getMaxFutureThreadPoolSize();
+	
+	MeterRegistry getMeterRegistry();
 
 }

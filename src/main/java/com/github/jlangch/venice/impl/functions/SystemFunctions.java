@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -56,8 +57,8 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -572,21 +573,26 @@ public class SystemFunctions {
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 
+				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
+
 				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
+				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+						new AtomicReference<>(ThreadLocalMap.snapshot());
 
 				Runtime.getRuntime().addShutdownHook(new Thread() {
 				    public void run() {
 						try {
 							// inherit thread local values to the child thread
-							ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
+							ThreadLocalMap.inheritFrom(parentThreadLocalSnapshot.get());
+							ThreadLocalMap.clearCallStack();
+							JavaInterop.register(parentInterceptor);
 
 							fn.apply(VncList.empty());
 						}
 						finally {
 							// clean up
-							ThreadContext.remove();
+							JavaInterop.unregister();
+							ThreadLocalMap.remove();
 						}
 				    }
 				});
@@ -617,7 +623,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				final CallStack stack = ThreadContext.getCallStack();
+				final CallStack stack = ThreadLocalMap.getCallStack();
 
 				return VncVector.ofList(
 						stack
@@ -779,7 +785,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				return VncBoolean.of(ThreadContext.isSandboxed());
+				return VncBoolean.of(JavaInterop.isSandboxed());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -799,7 +805,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				final IInterceptor interceptor = ThreadContext.getInterceptor();
+				final IInterceptor interceptor = JavaInterop.getInterceptor();
 				 
 				return interceptor == null
 						? Constants.Nil
@@ -833,7 +839,7 @@ public class SystemFunctions {
 											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 
-				final String val = ThreadContext.getInterceptor().onReadSystemProperty(key.getValue());
+				final String val = JavaInterop.getInterceptor().onReadSystemProperty(key.getValue());
 
 				return val == null ? defaultVal : new VncString(val);
 			}
@@ -864,7 +870,7 @@ public class SystemFunctions {
 											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 
-				final String val = ThreadContext.getInterceptor().onReadSystemEnv(key.getValue());
+				final String val = JavaInterop.getInterceptor().onReadSystemEnv(key.getValue());
 
 				return val == null ? defaultVal : new VncString(val);
 			}

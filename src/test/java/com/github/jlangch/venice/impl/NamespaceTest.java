@@ -29,8 +29,9 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -184,8 +185,8 @@ public class NamespaceTest {
 		// Macros are evaluated in the namespace they are called from!
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
-		ThreadContext.remove(); // clean thread locals			
-		ThreadContext.setInterceptor(interceptor);
+		ThreadLocalMap.remove(); // clean thread locals			
+		JavaInterop.register(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -231,8 +232,8 @@ public class NamespaceTest {
 		// Macros are evaluated in the namespace they are called from!
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
-		ThreadContext.remove(); // clean thread locals			
-		ThreadContext.setInterceptor(interceptor);
+		ThreadLocalMap.remove(); // clean thread locals			
+		JavaInterop.register(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -283,8 +284,8 @@ public class NamespaceTest {
 		// Macros are evaluated in the namespace they are called from!
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
-		ThreadContext.remove(); // clean thread locals			
-		ThreadContext.setInterceptor(interceptor);
+		ThreadLocalMap.remove(); // clean thread locals			
+		JavaInterop.register(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -339,8 +340,8 @@ public class NamespaceTest {
 		// Macros are evaluated in the namespace they are called from!
 
 		final IInterceptor interceptor = new AcceptAllInterceptor();
-		ThreadContext.remove(); // clean thread locals			
-		ThreadContext.setInterceptor(interceptor);
+		ThreadLocalMap.remove(); // clean thread locals			
+		JavaInterop.register(interceptor);
 
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 

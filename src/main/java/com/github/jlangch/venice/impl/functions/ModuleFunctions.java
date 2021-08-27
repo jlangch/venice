@@ -30,6 +30,7 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -39,7 +40,6 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -71,7 +71,7 @@ public class ModuleFunctions {
 					final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
 					
 					// sandbox: validate module load
-					final IInterceptor interceptor = ThreadContext.getInterceptor();
+					final IInterceptor interceptor = JavaInterop.getInterceptor();
 					interceptor.validateLoadModule(name);
 					
 					return new VncString(ModuleLoader.loadModule(name));
@@ -190,7 +190,7 @@ public class ModuleFunctions {
 					final boolean binary = VncBoolean.isTrue(options.get(new VncKeyword("binary")));
 					final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
-					final IInterceptor interceptor = ThreadContext.getInterceptor();
+					final IInterceptor interceptor = JavaInterop.getInterceptor();
 										
 					if (binary) {
 						final ByteBuffer data = interceptor.getLoadPaths().loadBinaryResource(new File(file));

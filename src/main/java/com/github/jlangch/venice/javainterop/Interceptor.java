@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.javainterop;
 
 import com.github.jlangch.venice.SecurityException;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
@@ -29,6 +30,7 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 public abstract class Interceptor implements IInterceptor {
  
 	public Interceptor(final ILoadPaths loadPaths) {
+		this.meterRegistry = new MeterRegistry(false);
 		this.loadPaths = loadPaths == null 
 							? LoadPathsFactory.rejectAll() 
 							: loadPaths;
@@ -163,6 +165,12 @@ public abstract class Interceptor implements IInterceptor {
 		return loadPaths;
 	}
 
+	@Override
+	public MeterRegistry getMeterRegistry() {
+		return meterRegistry;
+	}
+
 	
+	private final MeterRegistry meterRegistry;
 	private final ILoadPaths loadPaths;
 }

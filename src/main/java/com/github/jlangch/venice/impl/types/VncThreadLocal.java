@@ -29,7 +29,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 
 
@@ -71,11 +71,11 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public VncVal get(final VncKeyword key) {
-		return ThreadContext.get(key);
+		return ThreadLocalMap.get(key);
 	}
 
 	public VncVal get(final VncKeyword key, final VncVal defaultValue) {
-		return ThreadContext.get(key, defaultValue);
+		return ThreadLocalMap.get(key, defaultValue);
 	}
 
 	public VncVal get(final String key) {
@@ -87,15 +87,15 @@ public class VncThreadLocal extends VncVal {
 	}
 	
 	public void set(final VncKeyword key, final VncVal val) {
-		ThreadContext.set(key, val);
+		ThreadLocalMap.set(key, val);
 	}
 	
 	public void remove(final VncKeyword key) {
-		ThreadContext.remove(key);
+		ThreadLocalMap.remove(key);
 	}
 
 	public VncVal containsKey(final VncKeyword key) {
-		return VncBoolean.of(key != null && ThreadContext.containsKey(key));
+		return VncBoolean.of(key != null && ThreadLocalMap.containsKey(key));
 	}
 
 	public VncThreadLocal assoc(final VncVal... kvs) {
@@ -160,13 +160,13 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public VncThreadLocal clear(final boolean preserveSystemValues) {
-		ThreadContext.clearValues(preserveSystemValues);
+		ThreadLocalMap.clearValues(preserveSystemValues);
 		return this;
 	}
 
 	public static VncMap toMap() {
 		// do not disclose *in*, *out*, *err*
-		return new VncHashMap(ThreadContext.getValues())
+		return new VncHashMap(ThreadLocalMap.getValues())
 						.dissoc(new VncKeyword("*in*"))
 						.dissoc(new VncKeyword("*out*"))
 						.dissoc(new VncKeyword("*err*"));

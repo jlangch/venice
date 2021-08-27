@@ -39,25 +39,21 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallStack;
-import com.github.jlangch.venice.impl.util.MeterRegistry;
-import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
-import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
-public class ThreadContext {
+public class ThreadLocalMap {
 	
-	public ThreadContext() {
+	public ThreadLocalMap() {
 		initNS();
 	}
 
 
 	public Namespace getCurrNS_() {
-		return ns;
+		return nsCurr;
 	}
 
 	public void setCurrNS_(final Namespace ns) {
-		this.ns = ns;
+		nsCurr = ns;
 	}
 
 	public DebugAgent getDebugAgent_() {
@@ -94,17 +90,17 @@ public class ThreadContext {
 	
 	public static void set(final VncKeyword key, final VncVal val) {
 		if (key != null) {
-			final ThreadContext ctx = get();
-			final VncVal v = ctx.values.get(key);
+			final ThreadLocalMap tmap = get();
+			final VncVal v = tmap.values.get(key);
 			if (v == null) {
-				ctx.values.put(key, val == null ? Nil : val);
+				tmap.values.put(key, val == null ? Nil : val);
 			}
 			else if (v instanceof VncStack) {
 				((VncStack) v).clear();
 				((VncStack)v).push(val == null ? Nil : val);
 			}
 			else {
-				ctx.values.put(key, val);
+				tmap.values.put(key, val);
 			}
 		}
 	}
@@ -121,9 +117,9 @@ public class ThreadContext {
 
 	public static void push(final VncKeyword key, final VncVal val) {
 		if (key != null) {
-			final ThreadContext ctx = get();
-			if (ctx.values.containsKey(key)) {
-				final VncVal v = ctx.values.get(key);
+			final ThreadLocalMap tmap = get();
+			if (tmap.values.containsKey(key)) {
+				final VncVal v = tmap.values.get(key);
 				if (v instanceof VncStack) {
 					((VncStack)v).push(val == null ? Nil : val);
 				}
@@ -136,16 +132,16 @@ public class ThreadContext {
 			else {
 				final VncStack stack = new VncStack();
 				stack.push(val == null ? Nil : val);
-				ctx.values.put(key, stack);
+				tmap.values.put(key, stack);
 			}
 		}
 	}
 
 	public static VncVal pop(final VncKeyword key) {
 		if (key != null) {
-			final ThreadContext ctx = get();
-			if (ctx.values.containsKey(key)) {
-				final VncVal v = ctx.values.get(key);
+			final ThreadLocalMap tmap = get();
+			if (tmap.values.containsKey(key)) {
+				final VncVal v = tmap.values.get(key);
 				if (v instanceof VncStack) {
 					return ((VncStack)v).pop();
 				}
@@ -162,9 +158,9 @@ public class ThreadContext {
 
 	public static VncVal peek(final VncKeyword key) {
 		if (key != null) {
-			final ThreadContext ctx = get();
-			if (ctx.values.containsKey(key)) {
-				final VncVal v = ctx.values.get(key);
+			final ThreadLocalMap tmap = get();
+			if (tmap.values.containsKey(key)) {
+				final VncVal v = tmap.values.get(key);
 				if (v instanceof VncStack) {
 					return ((VncStack)v).peek();
 				}
@@ -196,11 +192,11 @@ public class ThreadContext {
 	}
 
 	public static Namespace getCurrNS() {
-		return get().ns;
+		return get().nsCurr;
 	}
 
 	public static void setCurrNS(final Namespace ns) {
-		get().ns = ns;
+		get().nsCurr = ns;
 	}
 
 	public static DebugAgent getDebugAgent() {
@@ -209,35 +205,6 @@ public class ThreadContext {
 
 	public static void setDebugAgent(final DebugAgent agent) {
 		get().debugAgent = agent;
-	}
-
-
-	public static MeterRegistry getMeterRegistry() {
-		return get().meterRegistry;
-	}
-
-	public static void setMeterRegistry(final MeterRegistry registry) {
-		get().meterRegistry = registry == null 
-								? new MeterRegistry(false)
-								: registry;
-	}
-
-	public static IInterceptor getInterceptor() {
-		return get().interceptor;
-	}
-
-	public static void setInterceptor(final IInterceptor interceptor) {
-		get().interceptor = interceptor == null 
-								? new RejectAllInterceptor() 
-								: interceptor;
-	}
-
-	public static boolean isSandboxed() {
-		return !(getInterceptor() instanceof AcceptAllInterceptor);
-	}
-	
-	public static Integer getMaxExecutionTimeSeconds() {
-		return getInterceptor().getMaxExecutionTimeSeconds();
 	}
 
 	public static void clearValues(final boolean preserveSystemValues) {
@@ -264,14 +231,12 @@ public class ThreadContext {
 
 	public static void clear() {
 		try {
-			final ThreadContext ctx = ThreadContext.get();
+			final ThreadLocalMap tl = ThreadLocalMap.get();
 			
-			ctx.interceptor = new RejectAllInterceptor();
-			ctx.debugAgent = null;
-			ctx.meterRegistry = new MeterRegistry(false);
-			ctx.values.clear();
-			ctx.callStack.clear();
-			ctx.initNS();
+			tl.debugAgent = null;
+			tl.values.clear();
+			tl.callStack.clear();
+			tl.initNS();
 		}
 		catch(Exception ex) {
 			// do not care
@@ -282,16 +247,16 @@ public class ThreadContext {
 		try {
 			clear();
 			
-			ThreadContext.context.set(null);
-			ThreadContext.context.remove();
+			ThreadLocalMap.context.set(null);
+			ThreadLocalMap.context.remove();
 		}
 		catch(Exception ex) {
 			// do not care
 		}
 	}
 	
-	public static ThreadContext get() {
-		return ThreadContext.context.get();
+	public static ThreadLocalMap get() {
+		return ThreadLocalMap.context.get();
 	}
 
 	public static PrintStream getStdOut() {
@@ -306,38 +271,22 @@ public class ThreadContext {
 		return Coerce.toVncJavaObject(peek(new VncKeyword(":*in*")), Reader.class);
 	}
 
-	public static ThreadContextSnapshot snapshot() {
-		final ThreadContext ctx = get();
+	public static ThreadLocalSnapshot snapshot() {
+		final ThreadLocalMap map = get();
 	
 		final Map<VncKeyword,VncVal> vals = new HashMap<>();
 		
-		copyValues(ctx.values, vals);
+		copyValues(map.values, vals);
 
-		return new ThreadContextSnapshot(
-						Thread.currentThread().getId(),
-						ctx.ns,
-						vals, 
-						ctx.debugAgent, 
-						ctx.interceptor, 
-						ctx.meterRegistry);
+		return new ThreadLocalSnapshot(vals, map.debugAgent);
 	}
 
-	public static void inheritFrom(
-			final ThreadContextSnapshot snapshot,
-			final boolean clearCallStack
-	) {
-		final ThreadContext ctx = get();
+	public static void inheritFrom(final ThreadLocalSnapshot snapshot) {
+		final ThreadLocalMap map = get();
 
-		copyValues(snapshot.getValues(), ctx.values);
+		copyValues(snapshot.getValues(), map.values);
 
-		ctx.ns = snapshot.getNamespace();
-		ctx.debugAgent = snapshot.getAgent();
-		ctx.interceptor = snapshot.getInterceptor();
-		ctx.meterRegistry = snapshot.getMeterRegistry();
-		
-		if (clearCallStack) {
-			ctx.callStack.clear();
-		}
+		map.debugAgent = snapshot.getAgent();
 	}
 
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
@@ -359,20 +308,18 @@ public class ThreadContext {
 	}
 	
 	private void initNS() {
-		ns = new Namespace(new VncSymbol("user"));
+		nsCurr = new Namespace(new VncSymbol("user"));
 	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
-	private Namespace ns;
+	private Namespace nsCurr;
 	private DebugAgent debugAgent;
-	private IInterceptor interceptor = new RejectAllInterceptor();
-	private MeterRegistry meterRegistry = new MeterRegistry(false);
 	
 	
-	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not
-	//       guaranteed to work in all cases!
-	private static ThreadLocal<ThreadContext> context = 
-			ThreadLocal.withInitial(() -> new ThreadContext()); 
+	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
+	//       to work in all cases!
+	private static ThreadLocal<ThreadLocalMap> context = 
+			ThreadLocal.withInitial(() -> new ThreadLocalMap()); 
 }

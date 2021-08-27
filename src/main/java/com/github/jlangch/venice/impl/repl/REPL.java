@@ -67,13 +67,14 @@ import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
+import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -93,7 +94,7 @@ public class REPL {
 	}
 	
 	public void run(final String[] args) {
-		ThreadContext.setInterceptor(interceptor);
+		JavaInterop.register(interceptor);
 
 		final CommandLineArgs cli = new CommandLineArgs(args);
 
@@ -256,7 +257,7 @@ public class REPL {
 			final BufferedReader in
 	) {
 		while (true) {
-			ThreadContext.clearCallStack(); // clear the Venice callstack
+			ThreadLocalMap.clearCallStack(); // clear the Venice callstack
 			Thread.interrupted(); // reset the thread's interrupt status
 			
 			resultHistory.mergeToEnv(env);
@@ -517,7 +518,7 @@ public class REPL {
 			printer.println("stdout", DocForm.highlight(new VncString(script), env).getValue());
 		}
 
-		ThreadContext.clearCallStack();
+		ThreadLocalMap.clearCallStack();
 
 		final String script = String.format("(load-file \"%s\")", file);
 		history.add(script);

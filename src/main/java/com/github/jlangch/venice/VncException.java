@@ -27,7 +27,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalMap;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -41,22 +41,22 @@ import com.github.jlangch.venice.util.StackFrame;
 public class VncException extends RuntimeException {
 
 	public VncException() {
-		callstack = ThreadContext.getCallStack().copy();
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 	
 	public VncException(final String message) {
 		super(message);
-		callstack = ThreadContext.getCallStack().copy();
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 
 	public VncException(final String message, final Throwable cause) {
 		super(message, cause);
-		callstack = ThreadContext.getCallStack().copy();
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 
 	public VncException(final Throwable cause) {
 		super(cause);
-		callstack = ThreadContext.getCallStack().copy();
+		callstack = ThreadLocalMap.getCallStack().copy();
 	}
 
 	public boolean hasCallStack() {
