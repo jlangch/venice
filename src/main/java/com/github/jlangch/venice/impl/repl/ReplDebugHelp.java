@@ -46,15 +46,14 @@ public class ReplDebugHelp {
 			"               script under debugging.\n" +
 			"  !info        Print detail info on the current debug session\n" +
 			"  !breakpoint  Manage breakpoints\n" +
-			"               o Add one or multiple breakpoints\n" +
-			"                  !breakpoint add n, n*\n" +
+			"               o Add a breakpoint\n" +
+			"                  !breakpoint add n\n" +
 			"                  E.g.: !breakpoint add foo/gauss\n" +
-			"                        !breakpoint add foo/gauss count\n" +
 			"                        Ancestor selectors:\n" +
 			"                          direct ancestor: !breakpoint add foo/gauss > filter\n" +
 			"                          any ancestor:    !breakpoint add foo/gauss + filter\n" +
-			"               o Remove one or multiple breakpoints\n" +
-			"                  !breakpoint remove n, n*\n" +
+			"               o Remove a breakpoint\n" +
+			"                  !breakpoint remove n\n" +
 			"                  E.g.: !breakpoint remove foo/gauss\n" +
 			"               o Temporarily skip/unskip all breakpoints\n" +
 			"                  !breakpoint skip\n" +

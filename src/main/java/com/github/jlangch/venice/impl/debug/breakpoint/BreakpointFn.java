@@ -32,7 +32,8 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
 /**
- * Defines a breakpoint given by qualified function name
+ * Defines a breakpoint given by a qualified function name and optional
+ * selectors for the function scope and the function's ancestor.
  */
 public class BreakpointFn implements Comparable<BreakpointFn> {
 
