@@ -23,10 +23,10 @@ package com.github.jlangch.venice.impl.env;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 
 
 public class DynamicVar extends Var {

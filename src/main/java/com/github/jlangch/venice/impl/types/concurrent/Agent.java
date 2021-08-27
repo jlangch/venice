@@ -30,6 +30,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -44,7 +47,6 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
-import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.Watchable;
 import com.github.jlangch.venice.impl.util.concurrent.StripedExecutorService;
 import com.github.jlangch.venice.impl.util.concurrent.StripedRunnable;

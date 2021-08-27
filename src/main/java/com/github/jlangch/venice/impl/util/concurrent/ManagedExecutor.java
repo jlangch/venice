@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
 
 
 public abstract class ManagedExecutor {

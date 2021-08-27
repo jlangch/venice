@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 
 
 public class ThreadLocalMapTest {

@@ -1,4 +1,4 @@
-package com.github.jlangch.venice.impl.types.concurrent;
+package com.github.jlangch.venice.impl.thread;
 
 import java.util.Map;
 

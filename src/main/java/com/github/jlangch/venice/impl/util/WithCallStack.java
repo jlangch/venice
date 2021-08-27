@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.util;
 
 import java.util.function.Supplier;
 
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 
 
 /**

@@ -27,7 +27,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.StringUtil;

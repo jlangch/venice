@@ -33,9 +33,9 @@ import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 
 
 public class ScriptExecuter {

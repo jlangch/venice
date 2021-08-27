@@ -63,6 +63,7 @@ import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -85,7 +86,6 @@ import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -388,11 +388,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						if (numArgs == 2 || numArgs == 3) {
 							final VncVal cond = evaluate(args.first(), env);
 
-							final ThreadContext threadLocalMap = ThreadContext.get();
-							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+							final ThreadContext threadCtx = ThreadContext.get();
+							final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 
 							if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
-								final CallStack callStack = threadLocalMap.getCallStack_();
+								final CallStack callStack = threadCtx.getCallStack_();
 								debugAgent.onBreakIf(FunctionEntry, VncVector.of(cond), a0.getMeta(), env, callStack);
 							}
 
@@ -419,8 +419,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						env = new Env(env);  // let introduces a new environment
 
-						final ThreadContext threadLocalMap = ThreadContext.get();
-						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+						final ThreadContext threadCtx = ThreadContext.get();
+						final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
@@ -452,7 +452,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
-							final CallStack callStack = threadLocalMap.getCallStack_();
+							final CallStack callStack = threadCtx.getCallStack_();
 							debugAgent.onBreakLet(FunctionEntry, vars, a0.getMeta(), env, callStack);
 						}
 						
@@ -516,8 +516,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							bindingNames.add(sym);
 						}
 
-						final ThreadContext threadLocalMap = ThreadContext.get();
-						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+						final ThreadContext threadCtx = ThreadContext.get();
+						final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 
 						recursionPoint = new RecursionPoint(
 												bindingNames,
@@ -532,7 +532,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								recursionPoint.getLoopBindingNames(), 
 								recursionPoint.getMeta(),
 								env,
-								threadLocalMap.getCallStack_());
+								threadCtx.getCallStack_());
 						}
 
 						if (expressions.size() == 1) {
@@ -567,8 +567,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 						// for performance reasons the DebugAgent is stored in the 
 						// RecursionPoint. Saves repeated ThreadLocal access!
-						final ThreadContext threadLocalMap = ThreadContext.get();
-						final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+						final ThreadContext threadCtx = ThreadContext.get();
+						final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
@@ -576,7 +576,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									recursionPoint.getLoopBindingNames(), 
 									recursionPoint.getMeta(),
 									env,
-									threadLocalMap.getCallStack_());
+									threadCtx.getCallStack_());
 						}
 
 						final VncList expressions = recursionPoint.getLoopExpressions();
@@ -755,9 +755,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						else { 
 							final String fnName = fn.getQualifiedName();
 
-							final ThreadContext threadLocalMap = ThreadContext.get();
-							final CallStack callStack = threadLocalMap.getCallStack_();						
-							final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
+							final ThreadContext threadCtx = ThreadContext.get();
+							final CallStack callStack = threadCtx.getCallStack_();						
+							final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 							
 							if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 								debugAgent.onBreakFnCall(fnName, fn, args, env, callStack);
@@ -2313,15 +2313,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				addFnArgsToEnv(args, localEnv);
 
 				if (switchToFunctionNamespaceAtRuntime) {
-					final ThreadContext threadLocalMap = ThreadContext.get();
+					final ThreadContext threadCtx = ThreadContext.get();
 					
-					final DebugAgent debugAgent = threadLocalMap.getDebugAgent_();
-					final Namespace curr_ns = threadLocalMap.getCurrNS_();
+					final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+					final Namespace curr_ns = threadCtx.getCurrNS_();
 					try {
-						threadLocalMap.setCurrNS_(ns);
+						threadCtx.setCurrNS_(ns);
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(getQualifiedName()))) {
-							final CallStack cs = threadLocalMap.getCallStack_();
+							final CallStack cs = threadCtx.getCallStack_();
 							try {
 								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv, cs);
 								if (hasPreConditions) {
@@ -2346,7 +2346,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					finally {
 						// switch always back to curr namespace, just in case (ns xyz)
 						// was executed within the function body!
-						threadLocalMap.setCurrNS_(curr_ns);
+						threadCtx.setCurrNS_(curr_ns);
 					}
 				}
 				else {
