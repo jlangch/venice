@@ -306,28 +306,36 @@ public class ThreadContext {
 		return Coerce.toVncJavaObject(peek(new VncKeyword(":*in*")), Reader.class);
 	}
 
-	public static ThreadLocalSnapshot snapshot() {
-		final ThreadContext map = get();
+	public static ThreadContextSnapshot snapshot() {
+		final ThreadContext ctx = get();
 	
 		final Map<VncKeyword,VncVal> vals = new HashMap<>();
 		
-		copyValues(map.values, vals);
+		copyValues(ctx.values, vals);
 
-		return new ThreadLocalSnapshot(
+		return new ThreadContextSnapshot(
+						Thread.currentThread().getId(),
 						vals, 
-						map.debugAgent, 
-						map.interceptor, 
-						map.meterRegistry);
+						ctx.debugAgent, 
+						ctx.interceptor, 
+						ctx.meterRegistry);
 	}
 
-	public static void inheritFrom(final ThreadLocalSnapshot snapshot) {
-		final ThreadContext map = get();
+	public static void inheritFrom(
+			final ThreadContextSnapshot snapshot,
+			final boolean clearCallStack
+	) {
+		final ThreadContext ctx = get();
 
-		copyValues(snapshot.getValues(), map.values);
+		copyValues(snapshot.getValues(), ctx.values);
 
-		map.debugAgent = snapshot.getAgent();
-		map.interceptor = snapshot.getInterceptor();
-		map.meterRegistry = snapshot.getMeterRegistry();
+		ctx.debugAgent = snapshot.getAgent();
+		ctx.interceptor = snapshot.getInterceptor();
+		ctx.meterRegistry = snapshot.getMeterRegistry();
+		
+		if (clearCallStack) {
+			ctx.callStack.clear();
+		}
 	}
 
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {

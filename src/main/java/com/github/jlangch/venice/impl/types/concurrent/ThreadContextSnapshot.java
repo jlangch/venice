@@ -9,20 +9,26 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
-public class ThreadLocalSnapshot {
+public class ThreadContextSnapshot {
 
-	public ThreadLocalSnapshot(
+	public ThreadContextSnapshot(
+			final Long threadID,
 			final Map<VncKeyword,VncVal> values,
 			final DebugAgent agent,
 			final IInterceptor interceptor,
 			final MeterRegistry meterRegistry
 	) {
+		this.threadID = threadID;
 		this.values = values;
 		this.agent = agent;
 		this.interceptor = interceptor;
 		this.meterRegistry = meterRegistry;
 	}
 
+	
+	public long getThreadID() {
+		return threadID;
+	}
 	
 	public Map<VncKeyword, VncVal> getValues() {
 		return values;
@@ -40,8 +46,16 @@ public class ThreadLocalSnapshot {
 		return meterRegistry;
 	}
 
+	public boolean isDifferentFromCurrentThread() {
+		return threadID != Thread.currentThread().getId();
+	}
 
+	public boolean isSameAsCurrentThread() {
+		return threadID == Thread.currentThread().getId();
+	}
 
+	
+	private final Long threadID;
 	private final Map<VncKeyword,VncVal> values;
 	private final DebugAgent agent;
 	private final IInterceptor interceptor;

@@ -35,7 +35,7 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 
 
 public class ScriptExecuter {
@@ -86,12 +86,11 @@ public class ScriptExecuter {
 		final Thread replThread = Thread.currentThread();
 		
 		// thread local values from the parent thread
-		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 				new AtomicReference<>(ThreadContext.snapshot());
 		
 		final Callable<Boolean> task = () -> {
-			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadContext.clearCallStack();
+			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
 
 			try {
 				final VncVal result = venice.RE(script, "user", env);
@@ -149,13 +148,12 @@ public class ScriptExecuter {
 			final Consumer<Exception> errorHandler
 	) {
 		// thread local values from the parent thread
-		final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 				new AtomicReference<>(ThreadContext.snapshot());
 
 		// run the expression in another thread without debugger!! 
 		final Runnable task = () -> {
-			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-			ThreadContext.clearCallStack();
+			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
 			DebugAgent.unregister();  // do not run under debugger!!
 
 			try {

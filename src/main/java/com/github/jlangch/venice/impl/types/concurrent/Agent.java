@@ -304,7 +304,7 @@ public class Agent implements IDeref {
 				final VncFunction fn, 
 				final VncList fnArgs,
 				final SendType sendType,
-				final ThreadLocalSnapshot parentThreadLocalSnapshot
+				final ThreadContextSnapshot parentThreadLocalSnapshot
 		) {
 			this.agent = agent;
 			this.fn = fn;
@@ -334,7 +334,7 @@ public class Agent implements IDeref {
 				callStack.push(callFrame);
 
 				// inherit thread local values to the child thread
-				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), false);
 				ThreadContext.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
 				
 				if (agent.getError() == null || agent.continueOnError) {
@@ -374,7 +374,7 @@ public class Agent implements IDeref {
 		private final VncFunction fn; 
 		private final VncList fnArgs;
 		private final SendType sendType;
-		private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
+		private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
 	}
 	
 	private static class Value {

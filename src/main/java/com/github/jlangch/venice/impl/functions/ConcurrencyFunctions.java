@@ -58,7 +58,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -1398,7 +1398,7 @@ public class ConcurrencyFunctions {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 		
 				// thread local values from the parent thread
-				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
@@ -1406,8 +1406,7 @@ public class ConcurrencyFunctions {
 					// Venice context with the thread local vars and the sandbox
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadContext.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
 						
 						return fn.applyOf();
 					}

@@ -57,7 +57,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -573,15 +573,14 @@ public class SystemFunctions {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 
 				// thread local values from the parent thread
-				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadContext.snapshot());
 
 				Runtime.getRuntime().addShutdownHook(new Thread() {
 				    public void run() {
 						try {
 							// inherit thread local values to the child thread
-							ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-							ThreadContext.clearCallStack();
+							ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
 
 							fn.apply(VncList.empty());
 						}

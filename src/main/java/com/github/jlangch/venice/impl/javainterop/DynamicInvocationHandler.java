@@ -36,12 +36,11 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 /**
@@ -90,8 +89,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			// sandbox. The Java callback parent could have forked a thread
 			// to run this Venice proxy callback!
 			
-			final IInterceptor proxyInterceptor = ThreadContext.getInterceptor();
-			if (proxyInterceptor == parentThreadLocalSnapshot.get().getInterceptor()) {
+			if (parentThreadLocalSnapshot.get().isSameAsCurrentThread()) {
 				// we run in the same security context (thread)
 				try {
 					callStack.push(callFrameProxy);
@@ -109,7 +107,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				// Inherit sandbox and thread local vars
 				try {
 					ThreadContext.clear();
-					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
+					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), false);
 					
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
@@ -117,9 +115,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					return fn.apply(fnArgs).convertToJavaObject();
 				}
 				finally {
-					callStack.pop();
-					callStack.pop();
-					
 					ThreadContext.remove();
 				}
 			}
@@ -178,5 +173,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	private final CallFrame callFrameProxy;
 	private final Map<String, VncFunction> methods;
-	private final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot;
+	private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot;
 }

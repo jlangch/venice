@@ -36,7 +36,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
-import com.github.jlangch.venice.impl.types.concurrent.ThreadLocalSnapshot;
+import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
@@ -72,14 +72,13 @@ public class ScheduleFunctions {
 				final VncKeyword unit = Coerce.toVncKeyword(args.third());
 	
 				// thread local values from the parent thread
-				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Callable<VncVal> taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadContext.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
 						
 						return fn.applyOf();
 					}
@@ -135,14 +134,13 @@ public class ScheduleFunctions {
 				final VncKeyword unit = Coerce.toVncKeyword(args.nth(3));
 		
 				// thread local values from the parent thread
-				final AtomicReference<ThreadLocalSnapshot> parentThreadLocalSnapshot = 
+				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadContext.snapshot());
 				
 				final Runnable taskWrapper = () -> {
 					try {
 						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						ThreadContext.clearCallStack();
+						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get(), true);
 						
 						fn.applyOf();
 					}
