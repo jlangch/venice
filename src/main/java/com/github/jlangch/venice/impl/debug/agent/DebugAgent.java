@@ -531,13 +531,16 @@ public class DebugAgent implements IDebugAgent {
 		
 		sb.append(String.format(
 					"Step mode:         %s\n", 
-					stepTmp.mode()));
+					StepModeFormatter.format(stepTmp.mode())));
 		
 		sb.append(String.format(
 					"Step bound to fn:  %s\n", 
 					stepTmp.boundToFnName() == null 
 						? "-" 
 						: stepTmp.boundToFnName()));
+		
+		sb.append(String.format(
+					"Breakpoints:       %d\n", breakpoints.size()));
 		
 		sb.append(String.format(
 					"Skip breakpoints:  %s", 

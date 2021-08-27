@@ -40,11 +40,11 @@ public class ReplDebugHelp {
 			"               the evaluated function parameters are available for inspection.\n" +
 			"\n" +
 			"Commands:\n" +
-			"  !attach      Attach the debugger to the REPL\n" +
-			"  !detach      Detach the debugger from the REPL\n" +
+			"  !attach      Attach the debugger to the REPL.\n" +
+			"  !detach      Detach the debugger from the REPL.\n" +
 			"  !terminate   Terminate a running debug session. Sends an interrupt to the\n" +
 			"               script under debugging.\n" +
-			"  !info        Print detail info on the current debug session\n" +
+			"  !info        Print detail info on the current debug session.\n" +
 			"  !breakpoint  Manage breakpoints\n" +
 			"               o Add a breakpoint\n" +
 			"                  !breakpoint add n\n" +
@@ -63,33 +63,33 @@ public class ReplDebugHelp {
 			"                  !breakpoint list\n" +
 			"                  E.g.: !breakpoint list\n" +
 			"               Short form: !b ...\n" +
-			"  !resume      Resume from current break\n" +
+			"  !resume      Resume from current break.\n" +
 			"               Short form: !r\n" +
-			"  !step-any    Step to the next available break at one of the four break\n" +
+			"  !step        Step to the next available break at one of the four break\n" +
 			"               levels within the current or the next function whatever is first.\n" +
-			"               Short form: !sa\n" +
-			"  !step-next   Step to next function at entry level\n" +
+			"               Short form: !s\n" +
+			"  !step-next   Step to next function at entry level.\n" +
 			"               Short form: !sn\n" +
 			"  !step-over   Step over the current function to next function entry.\n" +
 			"               Implicitely steps over functions involved with function\n" +
 			"               parameter evaluation.\n" +
 			"               Short form: !so\n" +
-			"  !step-call   Step to next function at call level\n" +
+			"  !step-call   Step to next function at call level.\n" +
 			"               Short form: !sc\n" +
-			"  !step-entry  Step to the entry level of the current function\n" +
+			"  !step-entry  Step to the entry level of the current function.\n" +
 			"               Short form: !se\n" +
-			"  !step-exit   Step to the exit level of the current function\n" +
+			"  !step-exit   Step to the exit level of the current function.\n" +
 			"               Short form: !sx\n" +
-			"  !break?      Checks if the debugger is in a break or not\n" +
-			"  !params      Print the function's parameters\n" +
+			"  !break?      Checks if the debugger is in a break.\n" +
+			"  !params      Print the function's parameters.\n" +
 			"               Short form: !p\n" +
-			"  !retval      Print the function's return value\n" +
+			"  !retval      Print the function's return value.\n" +
 			"               Short form: !ret\n" +
 			"  !ex          Print the function's exception\n" +
 			"  !locals x    Print the local vars from the level x. The level is optional\n" +
 			"               and defaults to the top level.\n" +
 			"               Short form: !l\n" +
-			"  !callstack   Print the current callstack\n" +
+			"  !callstack   Print the current callstack.\n" +
 			"  form         Runs a Venice form in the current break context. Useful to\n" +
 			"               inspect parameters, return values, or global/local vars.\n" +
 			"               Note: Debugging is suspended for the evaluating the form!\n" +

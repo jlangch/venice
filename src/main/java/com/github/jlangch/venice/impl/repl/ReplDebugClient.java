@@ -127,6 +127,8 @@ public class ReplDebugClient {
 				
 			case "step":
 			case "s":
+			case "step-any":
+			case "sa":
 				stepValidity = agent.isStepPossible(StepMode.StepToAny);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToAny);
