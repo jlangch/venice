@@ -2,6 +2,7 @@ package com.github.jlangch.venice.impl.types.concurrent;
 
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -13,12 +14,14 @@ public class ThreadContextSnapshot {
 
 	public ThreadContextSnapshot(
 			final Long threadID,
+			final Namespace ns,
 			final Map<VncKeyword,VncVal> values,
 			final DebugAgent agent,
 			final IInterceptor interceptor,
 			final MeterRegistry meterRegistry
 	) {
 		this.threadID = threadID;
+		this.ns = ns;
 		this.values = values;
 		this.agent = agent;
 		this.interceptor = interceptor;
@@ -28,6 +31,10 @@ public class ThreadContextSnapshot {
 	
 	public long getThreadID() {
 		return threadID;
+	}
+	
+	public Namespace getNamespace() {
+		return ns;
 	}
 	
 	public Map<VncKeyword, VncVal> getValues() {
@@ -56,6 +63,7 @@ public class ThreadContextSnapshot {
 
 	
 	private final Long threadID;
+	private final Namespace ns;
 	private final Map<VncKeyword,VncVal> values;
 	private final DebugAgent agent;
 	private final IInterceptor interceptor;

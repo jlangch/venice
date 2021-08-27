@@ -53,11 +53,11 @@ public class ThreadContext {
 
 
 	public Namespace getCurrNS_() {
-		return nsCurr;
+		return ns;
 	}
 
 	public void setCurrNS_(final Namespace ns) {
-		nsCurr = ns;
+		this.ns = ns;
 	}
 
 	public DebugAgent getDebugAgent_() {
@@ -196,11 +196,11 @@ public class ThreadContext {
 	}
 
 	public static Namespace getCurrNS() {
-		return get().nsCurr;
+		return get().ns;
 	}
 
 	public static void setCurrNS(final Namespace ns) {
-		get().nsCurr = ns;
+		get().ns = ns;
 	}
 
 	public static DebugAgent getDebugAgent() {
@@ -315,6 +315,7 @@ public class ThreadContext {
 
 		return new ThreadContextSnapshot(
 						Thread.currentThread().getId(),
+						ctx.ns,
 						vals, 
 						ctx.debugAgent, 
 						ctx.interceptor, 
@@ -329,6 +330,7 @@ public class ThreadContext {
 
 		copyValues(snapshot.getValues(), ctx.values);
 
+		ctx.ns = snapshot.getNamespace();
 		ctx.debugAgent = snapshot.getAgent();
 		ctx.interceptor = snapshot.getInterceptor();
 		ctx.meterRegistry = snapshot.getMeterRegistry();
@@ -357,13 +359,13 @@ public class ThreadContext {
 	}
 	
 	private void initNS() {
-		nsCurr = new Namespace(new VncSymbol("user"));
+		ns = new Namespace(new VncSymbol("user"));
 	}
 
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
-	private Namespace nsCurr;
+	private Namespace ns;
 	private DebugAgent debugAgent;
 	private IInterceptor interceptor = new RejectAllInterceptor();
 	private MeterRegistry meterRegistry = new MeterRegistry(false);
