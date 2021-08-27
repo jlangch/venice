@@ -112,18 +112,55 @@ public interface IDebugAgent {
 	 */
 	boolean hasBreakpointFor(BreakpointFnRef bpRef);
 
+	/**
+	 * Add a breakpoint listener that is call from the debug agent whenever
+	 * a breakpoint is reached.
+	 * 
+	 * <p>Note: As of now not more than one listener can be attached to the
+	 * debug agent.
+	 * 
+	 * @param listener A listener. Passing <code>null</code> will deactivate 
+	 * 					listening.
+	 */
 	void addBreakListener(IBreakListener listener);
 
+	/**
+	 * @return <code>true</code> if the debugger is currently in a break.
+	 */
 	boolean hasBreak();
 	
+	/**
+	 * @return Returns the break if the debugger is currently in a break
+	 *         otherwise <code>null</code>.
+	 */
 	Break getBreak();
 	
+	/**
+	 * Clears the current break and resumes processing for the next breakpoint.
+	 */
 	void clearBreak();
 
+	/**
+	 * Resumes processing for the next breakpoint.
+	 */
 	void resume();
 
+	/**
+	 * Enters a step mode.
+	 * 
+	 * @param mode A step mode
+	 * @return The validity if the step mode could be entered or the reason when
+	 *         not
+	 */
 	StepValidity step(StepMode mode);
 
+	/**
+	 * Checks a step mode is possible in the current debugger context.
+	 * 
+	 * @param mode A step mode
+	 * @return The validity if the step mode can be entered or the reason when
+	 *         not
+	 */
 	StepValidity isStepPossible(StepMode mode);
 
 }
