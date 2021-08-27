@@ -234,10 +234,6 @@ public class ThreadContext {
 	public static boolean isSandboxed() {
 		return !(get().interceptor instanceof AcceptAllInterceptor);
 	}
-	
-	public static Integer getMaxExecutionTimeSeconds() {
-		return get().interceptor.getMaxExecutionTimeSeconds();
-	}
 
 	public static void clearValues(final boolean preserveSystemValues) {
 		try {

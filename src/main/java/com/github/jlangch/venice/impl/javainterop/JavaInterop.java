@@ -26,15 +26,6 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class JavaInterop {
-
-	public static boolean isSandboxed() {
-		return ThreadContext.isSandboxed();
-	}
-	
-	public static Integer getMaxExecutionTimeSeconds() {
-		return ThreadContext.getMaxExecutionTimeSeconds();
-	}
-	
 	
 	public static void register(final IInterceptor interceptor) {
 		ThreadContext.setInterceptor(interceptor);
@@ -44,7 +35,6 @@ public class JavaInterop {
 		ThreadContext.setInterceptor(null);
 	}
 
-	
 	public static IInterceptor getInterceptor() {
 		return ThreadContext.getInterceptor();
 	}

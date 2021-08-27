@@ -785,7 +785,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				return VncBoolean.of(JavaInterop.isSandboxed());
+				return VncBoolean.of(ThreadContext.isSandboxed());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
