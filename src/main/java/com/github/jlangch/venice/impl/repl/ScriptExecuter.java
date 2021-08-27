@@ -33,11 +33,9 @@ import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContextSnapshot;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class ScriptExecuter {
@@ -90,13 +88,10 @@ public class ScriptExecuter {
 		// thread local values from the parent thread
 		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 				new AtomicReference<>(ThreadContext.snapshot());
-		
-		final IInterceptor interceptor = JavaInterop.getInterceptor();
-		
+				
 		final Callable<Boolean> task = () -> {
 			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 			ThreadContext.clearCallStack();
-			JavaInterop.register(interceptor);	
 
 			try {
 				final VncVal result = venice.RE(script, "user", env);
@@ -157,13 +152,10 @@ public class ScriptExecuter {
 		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 				new AtomicReference<>(ThreadContext.snapshot());
 
-		final IInterceptor interceptor = JavaInterop.getInterceptor();
-
 		// run the expression in another thread without debugger!! 
 		final Runnable task = () -> {
 			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 			ThreadContext.clearCallStack();
-			JavaInterop.register(interceptor);
 			DebugAgent.unregister();  // do not run under debugger!!
 
 			try {

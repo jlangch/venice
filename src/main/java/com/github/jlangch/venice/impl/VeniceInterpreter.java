@@ -147,7 +147,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
 
-		JavaInterop.register(interceptor);	
+		ThreadContext.setInterceptor(interceptor);	
 		ThreadContext.setMeterRegistry(mr);
 	}
 

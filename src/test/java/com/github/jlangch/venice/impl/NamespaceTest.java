@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.concurrent.ThreadContext;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -184,10 +183,9 @@ public class NamespaceTest {
 	public void test_namespace_in_macro_evaluation_runtime_2() {
 		// Macros are evaluated in the namespace they are called from!
 
-		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadContext.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
 
+		final IInterceptor interceptor = new AcceptAllInterceptor();
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		final boolean macroexpandOnLoad = false;
@@ -231,10 +229,9 @@ public class NamespaceTest {
 	public void test_namespace_in_macro_evaluation_runtime_3() {
 		// Macros are evaluated in the namespace they are called from!
 
-		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadContext.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
 
+		final IInterceptor interceptor = new AcceptAllInterceptor();
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		final boolean macroexpandOnLoad = false;
@@ -283,10 +280,9 @@ public class NamespaceTest {
 	public void test_namespace_in_macro_evaluation_upfront_1() {
 		// Macros are evaluated in the namespace they are called from!
 
-		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadContext.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
 
+		final IInterceptor interceptor = new AcceptAllInterceptor();
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		final boolean macroexpandOnLoad = true;
@@ -339,10 +335,9 @@ public class NamespaceTest {
 	public void test_namespace_in_macro_evaluation_upfront_2() {
 		// Macros are evaluated in the namespace they are called from!
 
-		final IInterceptor interceptor = new AcceptAllInterceptor();
 		ThreadContext.remove(); // clean thread locals			
-		JavaInterop.register(interceptor);
 
+		final IInterceptor interceptor = new AcceptAllInterceptor();
 		final VeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
 		// Start off with macroexpand = false

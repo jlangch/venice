@@ -70,7 +70,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.JavaInterop;
@@ -94,7 +93,6 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class IOFunctions {
@@ -750,8 +748,6 @@ public class IOFunctions {
 					}
 				};
 				
-				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-				
 				// thread local values from the parent thread
 				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadContext.snapshot());
@@ -763,13 +759,11 @@ public class IOFunctions {
 						// inherit thread local values to the child thread
 						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 						ThreadContext.clearCallStack();
-						JavaInterop.register(parentInterceptor);	
 						
 						runnable.run();
 					}
 					finally {
 						// clean up
-						JavaInterop.unregister();
 						ThreadContext.remove();
 					}
 				};

@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -49,7 +48,6 @@ import com.github.jlangch.venice.impl.util.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.util.Watchable;
 import com.github.jlangch.venice.impl.util.concurrent.StripedExecutorService;
 import com.github.jlangch.venice.impl.util.concurrent.StripedRunnable;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class Agent implements IDeref {
@@ -84,7 +82,6 @@ public class Agent implements IDeref {
 						fn, 
 						args,
 						SendType.SEND,
-						JavaInterop.getInterceptor(), 
 						ThreadContext.snapshot()));
 	}
 
@@ -95,7 +92,6 @@ public class Agent implements IDeref {
 						fn, 
 						args, 
 						SendType.SEND_OFF,
-						JavaInterop.getInterceptor(),
 						ThreadContext.snapshot()));
 	}
 
@@ -308,14 +304,12 @@ public class Agent implements IDeref {
 				final VncFunction fn, 
 				final VncList fnArgs,
 				final SendType sendType,
-				final IInterceptor interceptor,
 				final ThreadContextSnapshot parentThreadLocalSnapshot
 		) {
 			this.agent = agent;
 			this.fn = fn;
 			this.fnArgs = fnArgs;
 			this.sendType = sendType;
-			this.interceptor = interceptor;
 			this.parentThreadLocalSnapshot.set(parentThreadLocalSnapshot);
 		}
 		
@@ -342,7 +336,6 @@ public class Agent implements IDeref {
 				// inherit thread local values to the child thread
 				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 				ThreadContext.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
-				JavaInterop.register(interceptor);	
 				
 				if (agent.getError() == null || agent.continueOnError) {
 					final VncVal oldVal = agent.value.get().val;
@@ -373,7 +366,6 @@ public class Agent implements IDeref {
 			finally {
 				// clean up
 				callStack.pop();
-				JavaInterop.unregister();
 				ThreadContext.remove();
 			}
 		}
@@ -382,7 +374,6 @@ public class Agent implements IDeref {
 		private final VncFunction fn; 
 		private final VncList fnArgs;
 		private final SendType sendType;
-		private final IInterceptor interceptor;
 		private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
 	}
 	

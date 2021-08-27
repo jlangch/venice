@@ -573,8 +573,6 @@ public class SystemFunctions {
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 
-				final IInterceptor parentInterceptor = JavaInterop.getInterceptor();
-
 				// thread local values from the parent thread
 				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
 						new AtomicReference<>(ThreadContext.snapshot());
@@ -585,13 +583,11 @@ public class SystemFunctions {
 							// inherit thread local values to the child thread
 							ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
 							ThreadContext.clearCallStack();
-							JavaInterop.register(parentInterceptor);
 
 							fn.apply(VncList.empty());
 						}
 						finally {
 							// clean up
-							JavaInterop.unregister();
 							ThreadContext.remove();
 						}
 				    }

@@ -67,7 +67,6 @@ import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -94,7 +93,7 @@ public class REPL {
 	}
 	
 	public void run(final String[] args) {
-		JavaInterop.register(interceptor);
+		ThreadContext.setInterceptor(interceptor);
 
 		final CommandLineArgs cli = new CommandLineArgs(args);
 

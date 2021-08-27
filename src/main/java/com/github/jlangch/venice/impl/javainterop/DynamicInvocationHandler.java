@@ -41,7 +41,6 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
-import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 /**
@@ -65,7 +64,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;
 		
-		this.parentInterceptor = JavaInterop.getInterceptor();
 		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadContext.snapshot());
 
 	}
@@ -91,8 +89,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			// sandbox. The Java callback parent could have forked a thread
 			// to run this Venice proxy callback!
 			
-			final IInterceptor proxyInterceptor = JavaInterop.getInterceptor();
-			if (proxyInterceptor == parentInterceptor) {
+			if (parentThreadLocalSnapshot.get().isSameAsCurrentThread()) {
 				// we run in the same security context (thread)
 				try {
 					callStack.push(callFrameProxy);
@@ -111,7 +108,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				try {
 					ThreadContext.clear();
 					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-					JavaInterop.register(parentInterceptor);
 					
 					callStack.push(callFrameProxy);
 					callStack.push(callFrameMethod);
@@ -122,7 +118,6 @@ public class DynamicInvocationHandler implements InvocationHandler {
 					callStack.pop();
 					callStack.pop();
 					
-					JavaInterop.unregister();
 					ThreadContext.remove();
 				}
 			}
@@ -181,6 +176,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	private final CallFrame callFrameProxy;
 	private final Map<String, VncFunction> methods;
-	private final IInterceptor parentInterceptor;
 	private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot;
 }
