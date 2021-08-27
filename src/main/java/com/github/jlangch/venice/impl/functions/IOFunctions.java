@@ -72,7 +72,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -2461,17 +2460,17 @@ public class IOFunctions {
 				try {
 					if (Types.isVncString(name)) {
 						final String res = ((VncString)args.first()).getValue();
-						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = ThreadContext.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncKeyword(name)) {
 						final String res = ((VncKeyword)args.first()).getValue();
-						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = ThreadContext.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else if (Types.isVncSymbol(name)) {
 						final String res = ((VncSymbol)args.first()).getName();
-						final byte[] data = JavaInterop.getInterceptor().onLoadClassPathResource(res);
+						final byte[] data = ThreadContext.getInterceptor().onLoadClassPathResource(res);
 						return data == null ? Nil : new VncByteBuffer(data);
 					}
 					else {

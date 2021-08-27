@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
-import com.github.jlangch.venice.impl.javainterop.JavaInterop;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -801,7 +800,7 @@ public class SystemFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 0);
 
-				final IInterceptor interceptor = JavaInterop.getInterceptor();
+				final IInterceptor interceptor = ThreadContext.getInterceptor();
 				 
 				return interceptor == null
 						? Constants.Nil
@@ -835,7 +834,7 @@ public class SystemFunctions {
 											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 
-				final String val = JavaInterop.getInterceptor().onReadSystemProperty(key.getValue());
+				final String val = ThreadContext.getInterceptor().onReadSystemProperty(key.getValue());
 
 				return val == null ? defaultVal : new VncString(val);
 			}
@@ -866,7 +865,7 @@ public class SystemFunctions {
 											VncList.of(args.first())));
 				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
 
-				final String val = JavaInterop.getInterceptor().onReadSystemEnv(key.getValue());
+				final String val = ThreadContext.getInterceptor().onReadSystemEnv(key.getValue());
 
 				return val == null ? defaultVal : new VncString(val);
 			}

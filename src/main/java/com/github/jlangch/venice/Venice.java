@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
-import com.github.jlangch.venice.impl.SandboxedCallable;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
@@ -426,12 +425,25 @@ public class Venice {
 					.setMaximumFutureThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());
 			}
 
+			final Callable<Object> wrapped = () -> {
+				try {
+					ThreadContext.remove(); // clean thread locals			
+					ThreadContext.setInterceptor(interceptor);
+					
+					return callable.call();
+				}
+				finally {
+					// clean up
+					ThreadContext.remove();
+				}
+			};
+
 			if (interceptor.getMaxExecutionTimeSeconds() == null) {
-				return new SandboxedCallable<Object>(interceptor, callable).call();
+				return wrapped.call();
 			}
-			else {
+			else {		
 				return runWithTimeout(
-						new SandboxedCallable<Object>(interceptor, callable), 
+						wrapped, 
 						interceptor.getMaxExecutionTimeSeconds());
 			}
 		}
