@@ -34,6 +34,14 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
+
+/**
+ * The <code>ThreadBridge</code> properly runs functions in clients threads
+ * inheriting the correct environment from the calling parent function.
+ * 
+ * <p>Functions that are run in futures, agents, or schedulers are managed
+ * by this bridge.
+ */
 public class ThreadBridge {
 
 	private ThreadBridge(

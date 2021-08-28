@@ -45,6 +45,19 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
+/**
+ * The <code>ThreadContext</code> holds all thread local data that is used
+ * by Venice.
+ * 
+ * <ul>
+ *   <li>Current namespace</li>
+ *   <li>Thread local values</li>
+ *   <li>Callstack</li>
+ *   <li>Debug agent (mirrored across threads)</li>
+ *   <li>Sandbox interceptor (mirrored across threads)</li>
+ *   <li>Meter registry (mirrored across threads)</li>
+ * </ul>
+ */
 public class ThreadContext {
 	
 	public ThreadContext() {

@@ -25,6 +25,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 
+/**
+ * Creates a <code>ThreadPool</code> that creates daemon threads and gives
+ * the threads a unique name with an incremented index. So this threads can be
+ * always associated with a <code>ThreadPool</code> when analyzing Java VM 
+ * threads.
+ */
 public class ThreadPoolUtil {
 
 	public static ThreadFactory createThreadFactory(

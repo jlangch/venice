@@ -10,6 +10,10 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
+/**
+ * Holds a <code>ThreadContext</code> snapshot from a parent to be inherited
+ * to a child thread, when functions are to be run in other threads.
+ */
 public class ThreadContextSnapshot {
 
 	public ThreadContextSnapshot(
