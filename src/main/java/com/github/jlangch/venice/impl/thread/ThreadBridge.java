@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.thread;
 
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIVATE_DEBUG_AGENT;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +33,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
-
 
 public class ThreadBridge {
 
@@ -71,7 +73,7 @@ public class ThreadBridge {
 					// inherit thread local values to the child thread
 					ThreadContext.inheritFrom(parentThreadSnapshot);
 
-					if (options.contains(Options.DEACTIVATE_DEBUG_AGENT)) {
+					if (options.contains(DEACTIVATE_DEBUG_AGENT)) {
 						DebugAgent.unregister();
 					}
 
@@ -98,7 +100,7 @@ public class ThreadBridge {
 					// inherit thread local values to the child thread
 					ThreadContext.inheritFrom(parentThreadSnapshot);
 
-					if (options.contains(Options.DEACTIVATE_DEBUG_AGENT)) {
+					if (options.contains(DEACTIVATE_DEBUG_AGENT)) {
 						DebugAgent.unregister();
 					}
 					
@@ -115,13 +117,13 @@ public class ThreadBridge {
 	
 	
 	private void validateRunInSameThread() {
-		if (!options.contains(Options.ALLOW_SAME_THREAD)) {
+		if (!options.contains(ALLOW_SAME_THREAD)) {
 			throw new VncException(String.format(
 					"The ThreadBridge '%s' is not allowed to run in the "
 					+ "same thread!", 
 					name));
 		}
-		if (options.contains(Options.DEACTIVATE_DEBUG_AGENT)) {
+		if (options.contains(DEACTIVATE_DEBUG_AGENT)) {
 			throw new VncException(String.format(
 					"The ThreadBridge '%s' can not deactivate the "
 					+ "debugger if run in the same thread to prevent "
@@ -140,8 +142,8 @@ public class ThreadBridge {
 			final String name,
 			final Set<Options> options
 	) {
-		if (options.contains(Options.ALLOW_SAME_THREAD)
-				&& options.contains(Options.DEACTIVATE_DEBUG_AGENT)
+		if (options.contains(ALLOW_SAME_THREAD)
+				&& options.contains(DEACTIVATE_DEBUG_AGENT)
 		) {
 			throw new VncException(String.format(
 					"The ThreadBridge '%s' can not deactivate the "
