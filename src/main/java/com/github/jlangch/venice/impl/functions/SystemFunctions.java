@@ -38,14 +38,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -572,24 +571,12 @@ public class SystemFunctions {
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 
-				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
+				// Create a wrapper that inherits the Venice thread context
+				// from the parent thread to the executer thread!
+				final ThreadBridge threadBridge = ThreadBridge.create("shutdown-hook");				
+				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 
-				Runtime.getRuntime().addShutdownHook(new Thread() {
-				    public void run() {
-						try {
-							// inherit thread local values to the child thread
-							ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-
-							fn.apply(VncList.empty());
-						}
-						finally {
-							// clean up
-							ThreadContext.remove();
-						}
-				    }
-				});
+				Runtime.getRuntime().addShutdownHook(new Thread(taskWrapper));
 
 				return Nil;
 			}

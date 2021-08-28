@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.concurrent;
 
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
+
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -30,8 +32,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IDeref;
@@ -84,7 +86,10 @@ public class Agent implements IDeref {
 						fn, 
 						args,
 						SendType.SEND,
-						ThreadContext.snapshot()));
+						// Note: the agent's error handler is run in the same 
+						//       thread as the send function, hence the
+						//       ALLOW_SAME_THREAD option is required
+						ThreadBridge.create("send", ALLOW_SAME_THREAD)));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -94,7 +99,10 @@ public class Agent implements IDeref {
 						fn, 
 						args, 
 						SendType.SEND_OFF,
-						ThreadContext.snapshot()));
+						// Note: the agent's error handler is run in the same 
+						//       thread as the send-off function, hence the
+						//       ALLOW_SAME_THREAD option is required
+						ThreadBridge.create("send-off", ALLOW_SAME_THREAD)));
 	}
 
 	public void restart(final VncVal state) {
@@ -306,13 +314,13 @@ public class Agent implements IDeref {
 				final VncFunction fn, 
 				final VncList fnArgs,
 				final SendType sendType,
-				final ThreadContextSnapshot parentThreadLocalSnapshot
+				final ThreadBridge threadBridge
 		) {
 			this.agent = agent;
 			this.fn = fn;
 			this.fnArgs = fnArgs;
 			this.sendType = sendType;
-			this.parentThreadLocalSnapshot.set(parentThreadLocalSnapshot);
+			this.threadBridge = threadBridge;
 		}
 		
 		@Override
@@ -322,60 +330,57 @@ public class Agent implements IDeref {
 	
 		@Override
 		public void run() {
-			final CallFrame callFrame = new CallFrame(
-											String.format(
-													"agent->%s->%s", 
-													sendType.toString().toLowerCase(), 
-													fn.getQualifiedName()),
-											fnArgs.getMeta());
+			final Runnable task = threadBridge.bridgeRunnable(() -> {
+					ThreadContext.push(
+							new VncKeyword("*agent*"), 
+							new VncJavaObject(agent));
 
-			try {				
+					final CallFrame callFrame = new CallFrame(
+							String.format(
+									"agent->%s->%s", 
+									sendType.toString().toLowerCase(), 
+									fn.getQualifiedName()),
+							fnArgs.getMeta());
 
-				// inherit thread local values to the child thread
-				ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-				ThreadContext.push(new VncKeyword("*agent*"), new VncJavaObject(agent));
-
-				final CallStack callStack = ThreadContext.getCallStack();
-				callStack.clear();
-				callStack.push(callFrame);
-
-				if (agent.getError() == null || agent.continueOnError) {
-					final VncVal oldVal = agent.value.get().val;
-					try {
-						final VncList fnArgs_ = fnArgs.addAtStart(oldVal);
-						final VncVal newVal = fn.apply(fnArgs_);
-						
-						agent.validate(newVal);
-
-						agent.value.set(new Value(newVal, null));
-						agent.watchable.notifyWatches(new VncJavaObject(agent), oldVal, newVal);
-					}
-					catch(RuntimeException ex) {
-						if (!agent.continueOnError) {
-							agent.value.set(new Value(oldVal, ex));
+					final CallStack callStack = ThreadContext.getCallStack();
+					callStack.clear();
+					callStack.push(callFrame);
+	
+					if (agent.getError() == null || agent.continueOnError) {
+						final VncVal oldVal = agent.value.get().val;
+						try {
+							final VncList fnArgs_ = fnArgs.addAtStart(oldVal);
+							final VncVal newVal = fn.apply(fnArgs_);
+							
+							agent.validate(newVal);
+	
+							agent.value.set(new Value(newVal, null));
+							agent.watchable.notifyWatches(new VncJavaObject(agent), oldVal, newVal);
 						}
-						
-						final VncFunction handler = agent.errorHandler.get();
-						if (handler != null) {
-							handler.apply(
-									VncList.of(
-											new VncJavaObject(agent), 
-											new VncJavaObject(ex)));
+						catch(RuntimeException ex) {
+							if (!agent.continueOnError) {
+								agent.value.set(new Value(oldVal, ex));
+							}
+							
+							final VncFunction handler = agent.errorHandler.get();
+							if (handler != null) {
+								handler.apply(
+										VncList.of(
+												new VncJavaObject(agent), 
+												new VncJavaObject(ex)));
+							}
 						}
 					}
-				}
-			}
-			finally {
-				// clean up
-				ThreadContext.remove();
-			}
+				});
+			
+			task.run();
 		}
 		
 		private final Agent agent;
 		private final VncFunction fn; 
 		private final VncList fnArgs;
 		private final SendType sendType;
-		private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = new AtomicReference<>();
+		private final ThreadBridge threadBridge;
 	}
 	
 	private static class Value {

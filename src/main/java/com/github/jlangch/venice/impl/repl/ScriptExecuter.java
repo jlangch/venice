@@ -21,20 +21,19 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIVATE_DEBUG_AGENT;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
-import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -85,13 +84,10 @@ public class ScriptExecuter {
 
 		final Thread replThread = Thread.currentThread();
 		
-		// thread local values from the parent thread
-		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadContext.snapshot());
-				
-		final Callable<Boolean> task = () -> {
-			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-
+		// Create a wrapper that inherits the Venice thread context
+		// from the parent thread to the executer thread!
+		final ThreadBridge threadBridge = ThreadBridge.create("run-script-async");				
+		final Callable<Boolean> task = threadBridge.bridgeCallable(() ->  {
 			try {
 				final VncVal result = venice.RE(script, "user", env);
 	
@@ -105,7 +101,8 @@ public class ScriptExecuter {
 											"[%d] Async execution finished.", 
 											asyncID));
 				
-				// do not add the result for "*1", "*2", "*3", "**" to the result history 
+				// do not add the result for "*1", "*2", "*3", "**" to the 
+				// result history 
 				if (!resultHistory.isResultHistorySymbol(script)) {
 					resultHistory.add(result);
 				}
@@ -115,7 +112,9 @@ public class ScriptExecuter {
 				return true;
 			}
 			catch (InterruptedException ex) {
-				printer.println("debug", "Script under debugging interrupted and terminated!");
+				printer.println(
+					"debug", 
+					"Script under debugging interrupted and terminated!");
 				return false;
 			}
 			catch (Exception ex) {
@@ -123,12 +122,10 @@ public class ScriptExecuter {
 				return false;
 			}
 			finally {
-				ThreadContext.remove();
-
-				// Interrupt the LineReader of the REPLto display a new prompt
+				// Interrupt the LineReader of the REPL to display a new prompt
 				replThread.interrupt();
 			}
-		};
+		});
 
 		cancellableAsynScript = executor.submit(task);
 	}
@@ -147,15 +144,13 @@ public class ScriptExecuter {
 			final TerminalPrinter printer,
 			final Consumer<Exception> errorHandler
 	) {
-		// thread local values from the parent thread
-		final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-				new AtomicReference<>(ThreadContext.snapshot());
 
-		// run the expression in another thread without debugger!! 
-		final Runnable task = () -> {
-			ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-			DebugAgent.unregister();  // do not run under debugger!!
-
+		// Create a wrapper that inherits the Venice thread context
+		// from the parent thread to the executer thread!
+		final ThreadBridge threadBridge = ThreadBridge.create(
+											"run-script-as-debugger-expression", 
+											DEACTIVATE_DEBUG_AGENT);				
+		final Runnable task = threadBridge.bridgeRunnable(() -> {
 			try {
 				final Env safeEnv = new Env(env);
 				
@@ -165,10 +160,7 @@ public class ScriptExecuter {
 			catch (Exception ex) {
 				errorHandler.accept(ex);
 			}
-			finally {
-				ThreadContext.remove();
-			}
-		};
+		});
 
 		try {
 			executor.submit(task).get();

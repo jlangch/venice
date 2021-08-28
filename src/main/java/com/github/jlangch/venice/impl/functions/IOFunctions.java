@@ -64,7 +64,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -72,8 +71,8 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -746,52 +745,41 @@ public class IOFunctions {
 						default: return new VncKeyword("unknown");
 					}
 				};
-				
-				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
 
-				final Consumer<Runnable> wrapper = (runnable) -> {
-					// The watch-dir listeners is called from the JavaVM. Rig a
-					// Venice context with the thread local vars and the sandbox
-					try {
-						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						
-						runnable.run();
-					}
-					finally {
-						// clean up
-						ThreadContext.remove();
-					}
-				};
+				final ThreadBridge threadBridge = ThreadBridge.create("future");				
 				
 				final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
-						(path, event) -> wrapper.accept( () ->	
-											ConcurrencyFunctions.future.applyOf(
-												CoreFunctions.partial.applyOf(
-														eventFn,
-														new VncString(path.toString()),
-														convert.apply(event))));
-						
+						(path, event) -> threadBridge
+											.bridgeRunnable( () -> 
+												ConcurrencyFunctions.future.applyOf(
+													CoreFunctions.partial.applyOf(
+															eventFn,
+															new VncString(path.toString()),
+															convert.apply(event))))
+											.run();
+
 				final BiConsumer<Path,Exception> errorListener =
 						failFn == null 
 							? null
-							: (path, ex) -> wrapper.accept( () ->
-												ConcurrencyFunctions.future.applyOf(
-													CoreFunctions.partial.applyOf(
-														failFn,
-														new VncString(path.toString()),
-														new VncJavaObject(ex))));
+							: (path, ex) -> threadBridge
+												.bridgeRunnable( () ->
+													ConcurrencyFunctions.future.applyOf(
+														CoreFunctions.partial.applyOf(
+															failFn,
+															new VncString(path.toString()),
+															new VncJavaObject(ex))))
+												.run();
 							
 				final Consumer<Path> terminationListener =
 						termFn == null 
 							? null
-							: (path) -> wrapper.accept( () ->
-											ConcurrencyFunctions.future.applyOf(
-												CoreFunctions.partial.applyOf(
-													termFn,
-													new VncString(path.toString()))));
+							: (path) -> threadBridge
+											.bridgeRunnable( () ->
+												ConcurrencyFunctions.future.applyOf(
+													CoreFunctions.partial.applyOf(
+														termFn,
+														new VncString(path.toString()))))
+											.run();
 
 				try {
 					return new VncJavaObject(

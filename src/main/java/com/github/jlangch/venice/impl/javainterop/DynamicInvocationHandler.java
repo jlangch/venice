@@ -21,16 +21,18 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -62,9 +64,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
 			final Map<String, VncFunction> methods
 	) {
 		this.callFrameProxy = callFrameProxy;
-		this.methods = methods;
-		
-		this.parentThreadLocalSnapshot = new AtomicReference<>(ThreadContext.snapshot());
+		this.methods = methods;	
+		this.threadBridge = ThreadBridge.create("proxy", ALLOW_SAME_THREAD);
 
 	}
 		 
@@ -82,14 +83,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
 			
-			// [SECURITY]
-			//
-			// Ensure that the Venice callback function is running in the Venice's 
-			// sandbox. The Java callback parent could have forked a thread
-			// to run this Venice proxy callback!
-			
-			if (parentThreadLocalSnapshot.get().isSameAsCurrentThread()) {
-				// we run in the same security context (thread)
+			final Callable<Object> task = threadBridge.bridgeCallable(() ->  {
 				final CallStack callStack = ThreadContext.getCallStack();
 				callStack.push(callFrameProxy);
 				callStack.push(callFrameMethod);
@@ -99,25 +93,10 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				finally {
 					callStack.pop();
 					callStack.pop();
-				}
-			}
-			else {
-				// The callback function runs in another thread.	
-				// Inherit sandbox and thread local vars
-				try {
-					ThreadContext.clear();
-					ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-					
-					final CallStack callStack = ThreadContext.getCallStack();
-					callStack.push(callFrameProxy);
-					callStack.push(callFrameMethod);
-					
-					return fn.apply(fnArgs).convertToJavaObject();
-				}
-				finally {
-					ThreadContext.remove();
-				}
-			}
+				}		
+			});
+			
+			return task.call();
 		}
 		else {
 			throw new UnsupportedOperationException(
@@ -173,5 +152,5 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	
 	private final CallFrame callFrameProxy;
 	private final Map<String, VncFunction> methods;
-	private final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot;
+	private final ThreadBridge threadBridge;
 }

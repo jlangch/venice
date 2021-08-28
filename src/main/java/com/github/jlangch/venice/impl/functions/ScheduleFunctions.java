@@ -25,11 +25,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -70,23 +68,11 @@ public class ScheduleFunctions {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncKeyword unit = Coerce.toVncKeyword(args.third());
-	
-				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
-				
-				final Callable<VncVal> taskWrapper = () -> {
-					try {
-						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						
-						return fn.applyOf();
-					}
-					finally {
-						// clean up
-						ThreadContext.remove();
-					}
-				};
+
+				// Create a wrapper that inherits the Venice thread context
+				// from the parent thread to the executer thread!
+				final ThreadBridge threadBridge = ThreadBridge.create("schedule-delay");				
+				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
 				final ScheduledFuture<VncVal> future = mngdExecutor
 														.getExecutor()
@@ -132,23 +118,11 @@ public class ScheduleFunctions {
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncLong period = Coerce.toVncLong(args.third());
 				final VncKeyword unit = Coerce.toVncKeyword(args.nth(3));
-		
-				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
-				
-				final Runnable taskWrapper = () -> {
-					try {
-						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						
-						fn.applyOf();
-					}
-					finally {
-						// clean up
-						ThreadContext.remove();
-					}
-				};
+	
+				// Create a wrapper that inherits the Venice thread context
+				// from the parent thread to the executer thread!
+				final ThreadBridge threadBridge = ThreadBridge.create("schedule-at-fixed-rate");				
+				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 				
 				final ScheduledFuture<?> future = mngdExecutor
 													.getExecutor()

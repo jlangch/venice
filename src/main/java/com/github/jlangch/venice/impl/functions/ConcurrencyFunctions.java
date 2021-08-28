@@ -35,14 +35,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.MetaUtil;
-import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -1397,24 +1395,10 @@ public class ConcurrencyFunctions {
 
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				
-				// thread local values from the parent thread
-				final AtomicReference<ThreadContextSnapshot> parentThreadLocalSnapshot = 
-						new AtomicReference<>(ThreadContext.snapshot());
-				
-				final Callable<VncVal> taskWrapper = () -> {
-					// The future function is called from the JavaVM. Rig a
-					// Venice context with the thread local vars and the sandbox
-					try {
-						// inherit thread local values to the child thread
-						ThreadContext.inheritFrom(parentThreadLocalSnapshot.get());
-						
-						return fn.applyOf();
-					}
-					finally {
-						// clean up
-						ThreadContext.remove();
-					}
-				};
+				// Create a wrapper that inherits the Venice thread context
+				// from the parent thread to the executer thread!
+				final ThreadBridge threadBridge = ThreadBridge.create("future");				
+				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
 				final Future<VncVal> future = mngdExecutor
 												.getExecutor()
