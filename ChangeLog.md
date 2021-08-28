@@ -15,6 +15,10 @@ and this project adheres to
 
 - a custom mode to ansi/progress function to render the progress
 
+### Fixed
+
+- `io/watch-dir` when the optional error and termination listener are not passed
+
 
 
 ## [1.9.28] - 2021-08-14

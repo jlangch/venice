@@ -583,13 +583,18 @@ public class FileUtil {
 						// continue
 					}
 					catch(Exception ex) {
-						safeRun(() -> errorListener.accept(dir, ex)); 
+						if (errorListener != null) {
+							safeRun(() -> errorListener.accept(dir, ex)); 
+						}
 						// continue
 					}
 				}
 				
 				try { ws.close(); } catch(Exception e) {}
-				safeRun(() -> terminationListener.accept(dir)); 
+				
+				if (terminationListener != null) {
+					safeRun(() -> terminationListener.accept(dir));
+				}
 			};
 		
 		final Thread th = new Thread(runnable);
