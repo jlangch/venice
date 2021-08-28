@@ -579,7 +579,7 @@ public class ConcurrencyFunctionsTest {
 				"         (send relay relay-fn 0 msg)))                                      \n" +
 				"                                                                            \n" +
 				"   (process (create-relay 5) \"hello\")                                     \n" +
-				"   (sleep 1200)                                                              \n" +
+				"   (sleep 3000)                                                             \n" +
 				"   (with-out-str (print @logger)))                                            ";
 
 		assertEquals(
