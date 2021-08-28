@@ -36,11 +36,11 @@ public class ThreadBridge {
 
 	private ThreadBridge(
 			final String name,
-			final ThreadContextSnapshot snapshot,
+			final ThreadContextSnapshot parentThreadSnapshot,
 			final Collection<Options> options
 	) {
 		this.name = name;
-		this.snapshot = snapshot;
+		this.parentThreadSnapshot = parentThreadSnapshot;
 		this.options.addAll(options);
 	}
 	
@@ -61,7 +61,7 @@ public class ThreadBridge {
 	
 	public <T> Callable<T> bridgeCallable(final Callable<T> callable) {
 		final Callable<T> wrapper = () -> {
-			if (snapshot.isSameAsCurrentThread()) {
+			if (parentThreadSnapshot.isSameAsCurrentThread()) {
 				validateRunInSameThread();
 				
 				return callable.call();
@@ -69,7 +69,7 @@ public class ThreadBridge {
 			else {
 				try {
 					// inherit thread local values to the child thread
-					ThreadContext.inheritFrom(snapshot);
+					ThreadContext.inheritFrom(parentThreadSnapshot);
 
 					if (options.contains(Options.DEACTIVATE_DEBUG_AGENT)) {
 						DebugAgent.unregister();
@@ -88,7 +88,7 @@ public class ThreadBridge {
 	
 	public Runnable bridgeRunnable(final Runnable runnable) {
 		final Runnable wrapper = () -> {
-			if (snapshot.isSameAsCurrentThread()) {
+			if (parentThreadSnapshot.isSameAsCurrentThread()) {
 				validateRunInSameThread();
 				
 				runnable.run();
@@ -96,7 +96,7 @@ public class ThreadBridge {
 			else {
 				try {
 					// inherit thread local values to the child thread
-					ThreadContext.inheritFrom(snapshot);
+					ThreadContext.inheritFrom(parentThreadSnapshot);
 
 					if (options.contains(Options.DEACTIVATE_DEBUG_AGENT)) {
 						DebugAgent.unregister();
@@ -130,9 +130,7 @@ public class ThreadBridge {
 		}
 	}
 	
-	private static void validateName(
-			final String name
-	) {
+	private static void validateName(final String name) {
 		if (StringUtil.isBlank(name)) {
 			throw new VncException("A ThreadBridge name must not be blank!");
 		}
@@ -161,6 +159,6 @@ public class ThreadBridge {
 	
 	
 	private final String name;
-	private final ThreadContextSnapshot snapshot;
+	private final ThreadContextSnapshot parentThreadSnapshot;
 	private final Set<Options> options = new HashSet<>();
 }
