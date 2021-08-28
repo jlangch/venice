@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.thread;
 
 import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
 import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIVATE_DEBUG_AGENT;
-import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.FORCE_INHERIT_ON_SAME_THREAD;
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.FORCE_INHERIT_ALWAYS;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,13 +48,13 @@ public class ThreadBridge {
 			final String name,
 			final ThreadContextSnapshot parentThreadSnapshot,
 			final boolean allowSameThread,
-			final boolean forceInheritOnSameThread,
+			final boolean forceInheritAlways,
 			final boolean deactivateDebugAgent
 	) {
 		this.name = name;
 		this.parentThreadSnapshot = parentThreadSnapshot;
 		this.allowSameThread = allowSameThread;
-		this.forceInheritOnSameThread = forceInheritOnSameThread;
+		this.forceInheritAlways = forceInheritAlways;
 		this.deactivateDebugAgent = deactivateDebugAgent;
 	}
 	
@@ -65,7 +65,7 @@ public class ThreadBridge {
 		final Set<Options> opts = new HashSet<>(CollectionUtil.toList(options));
 
 		final boolean allowSameThread = opts.contains(ALLOW_SAME_THREAD);
-		final boolean forceInheritOnSameThread = opts.contains(FORCE_INHERIT_ON_SAME_THREAD);
+		final boolean forceInheritAlways = opts.contains(FORCE_INHERIT_ALWAYS);
 		final boolean deactivateDebugAgent = opts.contains(DEACTIVATE_DEBUG_AGENT);
 
 		validateName(name);
@@ -73,20 +73,20 @@ public class ThreadBridge {
 		validateOptions(
 				name, 
 				allowSameThread, 
-				forceInheritOnSameThread, 
+				forceInheritAlways, 
 				deactivateDebugAgent);
 
 		return new ThreadBridge(
 						name,
 						ThreadContext.snapshot(),
 						allowSameThread,
-						forceInheritOnSameThread,
+						forceInheritAlways,
 						deactivateDebugAgent);
 	}
 	
 	public <T> Callable<T> bridgeCallable(final Callable<T> callable) {
 		final Callable<T> wrapper = () -> {
-			if (parentThreadSnapshot.isSameAsCurrentThread() && !forceInheritOnSameThread) {
+			if (parentThreadSnapshot.isSameAsCurrentThread() && !forceInheritAlways) {
 				validateRunInSameThread();
 				
 				return callable.call();
@@ -113,7 +113,7 @@ public class ThreadBridge {
 	
 	public Runnable bridgeRunnable(final Runnable runnable) {
 		final Runnable wrapper = () -> {
-			if (parentThreadSnapshot.isSameAsCurrentThread() && !forceInheritOnSameThread) {
+			if (parentThreadSnapshot.isSameAsCurrentThread() && !forceInheritAlways) {
 				validateRunInSameThread();
 				
 				runnable.run();
@@ -179,7 +179,7 @@ public class ThreadBridge {
 	
 	public static enum Options { 
 		ALLOW_SAME_THREAD,
-		FORCE_INHERIT_ON_SAME_THREAD,
+		FORCE_INHERIT_ALWAYS,
 		DEACTIVATE_DEBUG_AGENT
 	};
 	
@@ -187,6 +187,6 @@ public class ThreadBridge {
 	private final String name;
 	private final ThreadContextSnapshot parentThreadSnapshot;
 	private final boolean allowSameThread;
-	private final boolean forceInheritOnSameThread;
+	private final boolean forceInheritAlways;
 	private final boolean deactivateDebugAgent;
 }

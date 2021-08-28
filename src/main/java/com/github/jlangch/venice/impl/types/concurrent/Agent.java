@@ -92,7 +92,7 @@ public class Agent implements IDeref {
 						ThreadBridge.create(
 								"send", 
 								ALLOW_SAME_THREAD,
-								FORCE_INHERIT_ON_SAME_THREAD)));
+								FORCE_INHERIT_ALWAYS)));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -108,7 +108,7 @@ public class Agent implements IDeref {
 						ThreadBridge.create(
 								"send-off", 
 								ALLOW_SAME_THREAD,
-								FORCE_INHERIT_ON_SAME_THREAD)));
+								FORCE_INHERIT_ALWAYS)));
 	}
 
 	public void restart(final VncVal state) {
