@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
@@ -553,6 +554,7 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	@Disabled
 	public void test_agent_relay() {
 		final Venice venice = new Venice();
 
@@ -579,7 +581,7 @@ public class ConcurrencyFunctionsTest {
 				"         (send relay relay-fn 0 msg)))                                      \n" +
 				"                                                                            \n" +
 				"   (process (create-relay 5) \"hello\")                                     \n" +
-				"   (sleep 3000)                                                             \n" +
+				"   (sleep 500)                                                              \n" +
 				"   (with-out-str (print @logger)))                                            ";
 
 		assertEquals(
