@@ -34,13 +34,13 @@ public class ThreadLocalMapTest {
 
 	@Test
 	public void test() {
-		ThreadContext.set(new VncKeyword("alpha"), new VncLong(100));
-		ThreadContext.set(new VncKeyword("beta"), new VncLong(200));
-		ThreadContext.set(new VncKeyword("gamma"), new VncLong(300));
+		ThreadContext.setValue(new VncKeyword("alpha"), new VncLong(100));
+		ThreadContext.setValue(new VncKeyword("beta"), new VncLong(200));
+		ThreadContext.setValue(new VncKeyword("gamma"), new VncLong(300));
 		
-		assertEquals(100L, ((VncLong)ThreadContext.get(new VncKeyword("alpha"))).getValue().longValue());
-		assertEquals(200L, ((VncLong)ThreadContext.get(new VncKeyword("beta"))).getValue().longValue());
-		assertEquals(300L, ((VncLong)ThreadContext.get(new VncKeyword("gamma"))).getValue().longValue());
+		assertEquals(100L, ((VncLong)ThreadContext.getValue(new VncKeyword("alpha"))).getValue().longValue());
+		assertEquals(200L, ((VncLong)ThreadContext.getValue(new VncKeyword("beta"))).getValue().longValue());
+		assertEquals(300L, ((VncLong)ThreadContext.getValue(new VncKeyword("gamma"))).getValue().longValue());
 	}
 	
 }

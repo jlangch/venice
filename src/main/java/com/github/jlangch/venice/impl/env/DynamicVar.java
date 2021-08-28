@@ -41,20 +41,20 @@ public class DynamicVar extends Var {
 	}
 	
 	public void setVal(final VncVal val) {
-		ThreadContext.set(th_keyword, val == null ? Nil : val);
+		ThreadContext.setValue(th_keyword, val == null ? Nil : val);
 	}
 
 	public void pushVal(final VncVal val) {
-		ThreadContext.push(th_keyword, val == null ? Nil : val);
+		ThreadContext.pushValue(th_keyword, val == null ? Nil : val);
 	}
 
 	public VncVal peekVal() {
-		final VncVal thVal = ThreadContext.peek(th_keyword);
+		final VncVal thVal = ThreadContext.peekValue(th_keyword);
 		return thVal == Nil ? super.getVal() : thVal;
 	}
 
 	public VncVal popVal() {
-		final VncVal thVal = ThreadContext.pop(th_keyword);
+		final VncVal thVal = ThreadContext.popValue(th_keyword);
 		return thVal == Nil ? super.getVal() : thVal;
 	}
 

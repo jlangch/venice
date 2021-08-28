@@ -71,11 +71,11 @@ public class VncThreadLocal extends VncVal {
 	}
 
 	public VncVal get(final VncKeyword key) {
-		return ThreadContext.get(key);
+		return ThreadContext.getValue(key);
 	}
 
 	public VncVal get(final VncKeyword key, final VncVal defaultValue) {
-		return ThreadContext.get(key, defaultValue);
+		return ThreadContext.getValue(key, defaultValue);
 	}
 
 	public VncVal get(final String key) {
@@ -87,11 +87,11 @@ public class VncThreadLocal extends VncVal {
 	}
 	
 	public void set(final VncKeyword key, final VncVal val) {
-		ThreadContext.set(key, val);
+		ThreadContext.setValue(key, val);
 	}
 	
 	public void remove(final VncKeyword key) {
-		ThreadContext.remove(key);
+		ThreadContext.removeValue(key);
 	}
 
 	public VncVal containsKey(final VncKeyword key) {

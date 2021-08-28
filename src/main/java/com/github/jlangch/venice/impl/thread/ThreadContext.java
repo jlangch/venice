@@ -85,11 +85,11 @@ public class ThreadContext {
 		return callStack;
 	}
 	
-	public static VncVal get(final VncKeyword key) {
-		return get(key, Nil);
+	public static VncVal getValue(final VncKeyword key) {
+		return getValue(key, Nil);
 	}
 	
-	public static VncVal get(final VncKeyword key, final VncVal defaultValue) {
+	public static VncVal getValue(final VncKeyword key, final VncVal defaultValue) {
 		if (key == null) {
 			return Nil;
 		}
@@ -105,7 +105,7 @@ public class ThreadContext {
 		}
 	}
 	
-	public static void set(final VncKeyword key, final VncVal val) {
+	public static void setValue(final VncKeyword key, final VncVal val) {
 		if (key != null) {
 			final ThreadContext ctx = get();
 			final VncVal v = ctx.values.get(key);
@@ -122,7 +122,7 @@ public class ThreadContext {
 		}
 	}
 
-	public static void remove(final VncKeyword key) {
+	public static void removeValue(final VncKeyword key) {
 		if (key != null) {
 			get().values.remove(key);
 		}
@@ -132,7 +132,7 @@ public class ThreadContext {
 		return key == null ? false : get().values.containsKey(key);
 	}
 
-	public static void push(final VncKeyword key, final VncVal val) {
+	public static void pushValue(final VncKeyword key, final VncVal val) {
 		if (key != null) {
 			final ThreadContext ctx = get();
 			if (ctx.values.containsKey(key)) {
@@ -154,7 +154,7 @@ public class ThreadContext {
 		}
 	}
 
-	public static VncVal pop(final VncKeyword key) {
+	public static VncVal popValue(final VncKeyword key) {
 		if (key != null) {
 			final ThreadContext ctx = get();
 			if (ctx.values.containsKey(key)) {
@@ -173,7 +173,7 @@ public class ThreadContext {
 		return Nil;
 	}
 
-	public static VncVal peek(final VncKeyword key) {
+	public static VncVal peekValue(final VncKeyword key) {
 		if (key != null) {
 			final ThreadContext ctx = get();
 			if (ctx.values.containsKey(key)) {
@@ -192,20 +192,20 @@ public class ThreadContext {
 		return Nil;
 	}
 
-	public static void clearCallStack() {
-		get().callStack.clear();
-	}
-
-	public static CallStack getCallStack() {
-		return  get().callStack;
-	}
-
 	public static Map<VncKeyword,VncVal> getValues() {
 		final Map<VncKeyword,VncVal> copy = new HashMap<>();
 		
 		copyValues(get().values, copy);
 		
 		return copy;  // return a copy of the values
+	}
+
+	public static void clearCallStack() {
+		get().callStack.clear();
+	}
+
+	public static CallStack getCallStack() {
+		return  get().callStack;
 	}
 
 	public static Namespace getCurrNS() {
@@ -303,15 +303,15 @@ public class ThreadContext {
 	}
 
 	public static PrintStream getStdOut() {
-		return Coerce.toVncJavaObject(peek(new VncKeyword(":*out*")), PrintStream.class);
+		return Coerce.toVncJavaObject(peekValue(new VncKeyword(":*out*")), PrintStream.class);
 	}
 
 	public static PrintStream getStdErr() {
-		return Coerce.toVncJavaObject(peek(new VncKeyword(":*err*")), PrintStream.class);
+		return Coerce.toVncJavaObject(peekValue(new VncKeyword(":*err*")), PrintStream.class);
 	}
 
 	public static Reader getStdIn() {
-		return Coerce.toVncJavaObject(peek(new VncKeyword(":*in*")), Reader.class);
+		return Coerce.toVncJavaObject(peekValue(new VncKeyword(":*in*")), Reader.class);
 	}
 
 	public static ThreadContextSnapshot snapshot() {
@@ -341,6 +341,7 @@ public class ThreadContext {
 		ctx.interceptor = snapshot.getInterceptor();
 	}
 
+	
 	private static void copyValues(final Map<VncKeyword,VncVal> from, final Map<VncKeyword,VncVal> to) {
 		to.clear();
 		
@@ -363,9 +364,7 @@ public class ThreadContext {
 		ns = new Namespace(new VncSymbol("user"));
 	}
 
-	
-	public static enum Options { COPY_CALLSTACK }
-	
+		
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();

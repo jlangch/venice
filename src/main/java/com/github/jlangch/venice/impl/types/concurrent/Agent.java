@@ -337,7 +337,7 @@ public class Agent implements IDeref {
 		@Override
 		public void run() {
 			final Runnable task = threadBridge.bridgeRunnable(() -> {
-					ThreadContext.push(
+					ThreadContext.pushValue(
 							new VncKeyword("*agent*"), 
 							new VncJavaObject(agent));
 

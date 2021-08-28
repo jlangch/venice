@@ -1742,7 +1742,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					// Store value to a mutable place to prevent JIT from optimizing 
 					// too much. Wrap the result so a VncStack can be used as result
 					// too (VncStack is a special value in ThreadLocalMap)
-					ThreadContext.set(
+					ThreadContext.setValue(
 							new VncKeyword("*benchmark-val*"), 
 							new VncJust(result));
 				}
@@ -1750,7 +1750,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				return first;
 			}
 			finally {
-				ThreadContext.remove(new VncKeyword("*benchmark-val*"));
+				ThreadContext.removeValue(new VncKeyword("*benchmark-val*"));
 			}
 		}
 	}
@@ -1777,7 +1777,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					// Store value to a mutable place to prevent JIT from optimizing 
 					// too much. Wrap the result so a VncStack can be used as result
 					// too (VncStack is a special value in ThreadLocalMap)
-					ThreadContext.set(
+					ThreadContext.setValue(
 							new VncKeyword("*benchmark-val*"), 
 							new VncJust(result));
 				}
@@ -1785,7 +1785,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				return VncList.ofList(elapsed);
 			}
 			finally {
-				ThreadContext.remove(new VncKeyword("*benchmark-val*"));
+				ThreadContext.removeValue(new VncKeyword("*benchmark-val*"));
 			}
 		}
 	}
