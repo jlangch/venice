@@ -23,8 +23,8 @@ package com.github.jlangch.venice.impl.thread;
 
 import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
 import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIVATE_DEBUG_AGENT;
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.FORCE_INHERIT_ON_SAME_THREAD;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -47,11 +47,15 @@ public class ThreadBridge {
 	private ThreadBridge(
 			final String name,
 			final ThreadContextSnapshot parentThreadSnapshot,
-			final Collection<Options> options
+			final boolean allowSameThread,
+			final boolean forceInheritOnSameThread,
+			final boolean deactivateDebugAgent
 	) {
 		this.name = name;
 		this.parentThreadSnapshot = parentThreadSnapshot;
-		this.options.addAll(options);
+		this.allowSameThread = allowSameThread;
+		this.forceInheritOnSameThread = forceInheritOnSameThread;
+		this.deactivateDebugAgent = deactivateDebugAgent;
 	}
 	
 	public static ThreadBridge create(
@@ -59,19 +63,30 @@ public class ThreadBridge {
 			final Options... options
 	) {
 		final Set<Options> opts = new HashSet<>(CollectionUtil.toList(options));
-		
+
+		final boolean allowSameThread = opts.contains(ALLOW_SAME_THREAD);
+		final boolean forceInheritOnSameThread = opts.contains(FORCE_INHERIT_ON_SAME_THREAD);
+		final boolean deactivateDebugAgent = opts.contains(DEACTIVATE_DEBUG_AGENT);
+
 		validateName(name);
-		validateOptions(name, opts);
 		
+		validateOptions(
+				name, 
+				allowSameThread, 
+				forceInheritOnSameThread, 
+				deactivateDebugAgent);
+
 		return new ThreadBridge(
 						name,
 						ThreadContext.snapshot(),
-						opts);
+						allowSameThread,
+						forceInheritOnSameThread,
+						deactivateDebugAgent);
 	}
 	
 	public <T> Callable<T> bridgeCallable(final Callable<T> callable) {
 		final Callable<T> wrapper = () -> {
-			if (parentThreadSnapshot.isSameAsCurrentThread()) {
+			if (parentThreadSnapshot.isSameAsCurrentThread() && !forceInheritOnSameThread) {
 				validateRunInSameThread();
 				
 				return callable.call();
@@ -81,7 +96,7 @@ public class ThreadBridge {
 					// inherit thread local values to the child thread
 					ThreadContext.inheritFrom(parentThreadSnapshot);
 
-					if (options.contains(DEACTIVATE_DEBUG_AGENT)) {
+					if (deactivateDebugAgent) {
 						DebugAgent.unregister();
 					}
 
@@ -98,7 +113,7 @@ public class ThreadBridge {
 	
 	public Runnable bridgeRunnable(final Runnable runnable) {
 		final Runnable wrapper = () -> {
-			if (parentThreadSnapshot.isSameAsCurrentThread()) {
+			if (parentThreadSnapshot.isSameAsCurrentThread() && !forceInheritOnSameThread) {
 				validateRunInSameThread();
 				
 				runnable.run();
@@ -108,7 +123,7 @@ public class ThreadBridge {
 					// inherit thread local values to the child thread
 					ThreadContext.inheritFrom(parentThreadSnapshot);
 
-					if (options.contains(DEACTIVATE_DEBUG_AGENT)) {
+					if (deactivateDebugAgent) {
 						DebugAgent.unregister();
 					}
 					
@@ -125,13 +140,13 @@ public class ThreadBridge {
 	
 	
 	private void validateRunInSameThread() {
-		if (!options.contains(ALLOW_SAME_THREAD)) {
+		if (!allowSameThread) {
 			throw new VncException(String.format(
 					"The ThreadBridge '%s' is not allowed to run in the "
 					+ "same thread!", 
 					name));
 		}
-		if (options.contains(DEACTIVATE_DEBUG_AGENT)) {
+		if (deactivateDebugAgent) {
 			throw new VncException(String.format(
 					"The ThreadBridge '%s' can not deactivate the "
 					+ "debugger if run in the same thread to prevent "
@@ -148,11 +163,11 @@ public class ThreadBridge {
 	
 	private static void validateOptions(
 			final String name,
-			final Set<Options> options
+			final boolean allowSameThread,
+			final boolean forceInheritOnSameThread,
+			final boolean deactivateDebugAgent
 	) {
-		if (options.contains(ALLOW_SAME_THREAD)
-				&& options.contains(DEACTIVATE_DEBUG_AGENT)
-		) {
+		if (allowSameThread&& deactivateDebugAgent) {
 			throw new VncException(String.format(
 					"The ThreadBridge '%s' can not deactivate the "
 					+ "debugger if run in the same thread to prevent "
@@ -164,11 +179,14 @@ public class ThreadBridge {
 	
 	public static enum Options { 
 		ALLOW_SAME_THREAD,
+		FORCE_INHERIT_ON_SAME_THREAD,
 		DEACTIVATE_DEBUG_AGENT
 	};
 	
 	
 	private final String name;
 	private final ThreadContextSnapshot parentThreadSnapshot;
-	private final Set<Options> options = new HashSet<>();
+	private final boolean allowSameThread;
+	private final boolean forceInheritOnSameThread;
+	private final boolean deactivateDebugAgent;
 }

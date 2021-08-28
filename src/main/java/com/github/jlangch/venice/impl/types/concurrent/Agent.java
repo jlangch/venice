@@ -21,7 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.concurrent;
 
-import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
+import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.*;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -89,7 +89,10 @@ public class Agent implements IDeref {
 						// Note: the agent's error handler is run in the same 
 						//       thread as the send function, hence the
 						//       ALLOW_SAME_THREAD option is required
-						ThreadBridge.create("send", ALLOW_SAME_THREAD)));
+						ThreadBridge.create(
+								"send", 
+								ALLOW_SAME_THREAD,
+								FORCE_INHERIT_ON_SAME_THREAD)));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -102,7 +105,10 @@ public class Agent implements IDeref {
 						// Note: the agent's error handler is run in the same 
 						//       thread as the send-off function, hence the
 						//       ALLOW_SAME_THREAD option is required
-						ThreadBridge.create("send-off", ALLOW_SAME_THREAD)));
+						ThreadBridge.create(
+								"send-off", 
+								ALLOW_SAME_THREAD,
+								FORCE_INHERIT_ON_SAME_THREAD)));
 	}
 
 	public void restart(final VncVal state) {
