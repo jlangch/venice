@@ -52,6 +52,7 @@ start () {
 
 rebuild () {
   ./gradlew --warning-mode all clean shadowJar
+  rm ${REPL_HOME}/libs/venice-*.jar
   cp build/libs/venice-*.jar ${REPL_HOME}/libs
   echo "Starting new REPL..."
   start

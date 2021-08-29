@@ -51,7 +51,7 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
  * 
  * <ul>
  *   <li>Current namespace</li>
- *   <li>Thread local values</li>
+ *   <li>Thread local vars</li>
  *   <li>Callstack</li>
  *   <li>Debug agent (mirrored across threads)</li>
  *   <li>Sandbox interceptor (mirrored across threads)</li>
@@ -75,10 +75,6 @@ public class ThreadContext {
 
 	public DebugAgent getDebugAgent_() {
 		return debugAgent;
-	}
-
-	public void setDebugAgent_(final DebugAgent agent) {
-		debugAgent = agent;
 	}
 
 	public CallStack getCallStack_() {

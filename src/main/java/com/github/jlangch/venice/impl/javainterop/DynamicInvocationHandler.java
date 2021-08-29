@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
-import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.ALLOW_SAME_THREAD;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -65,8 +63,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	) {
 		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;	
-		this.threadBridge = ThreadBridge.create("proxy", ALLOW_SAME_THREAD);
-
+		this.threadBridge = ThreadBridge.create("proxy");
 	}
 		 
 	@Override
@@ -83,7 +80,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
 													fn.getMeta());
 			
-			final Callable<Object> task = threadBridge.bridgeCallable(() ->  {
+			final Callable<Object> impl = () -> {
 				final CallStack callStack = ThreadContext.getCallStack();
 				callStack.push(callFrameProxy);
 				callStack.push(callFrameMethod);
@@ -93,10 +90,18 @@ public class DynamicInvocationHandler implements InvocationHandler {
 				finally {
 					callStack.pop();
 					callStack.pop();
-				}		
-			});
+				}};
+				
 			
-			return task.call();
+			if (threadBridge.isSameAsCurrentThread()) {
+				// we're running in the same thread as the caller (parent)
+				return impl.call();		
+			}
+			else {
+				// we're running in an other thread
+				return threadBridge.bridgeCallable(() -> impl.call())
+								   .call();
+			}
 		}
 		else {
 			throw new UnsupportedOperationException(
