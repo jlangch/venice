@@ -26,13 +26,21 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * Creates a <code>ThreadPool</code> that creates daemon threads and gives
+ * Creates a <code>ThreadFactory</code> that creates daemon threads and gives
  * the threads a unique name with an incremented index. So this threads can be
- * always associated with a <code>ThreadPool</code> when analyzing Java VM 
+ * always associated with a <code>ThreadFactory</code> when analyzing Java VM 
  * threads.
  */
 public class ThreadPoolUtil {
 
+	/**
+	 * Creates a new <code>ThreadFactory</code>
+	 * 
+	 * @param poolNameFormat a pool name format like: "venice-future-pool-%d"
+	 * @param threadPoolCounter the thread pool counter
+	 * @param deamon if <code>true</code> create daemon threads
+	 * @return the <code>ThreadFactory</code>
+	 */
 	public static ThreadFactory createThreadFactory(
 			final String poolNameFormat, 
 			final AtomicLong threadPoolCounter,
