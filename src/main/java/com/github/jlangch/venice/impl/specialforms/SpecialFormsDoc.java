@@ -1157,7 +1157,8 @@ public class SpecialFormsDoc {
 					.doc(
 						"If form represents a macro form, returns its expansion, else " + 
 						"returns form.\n\n" +
-						"To recursively expand all macros in a form use (macroexpand-all form).")
+						"To recursively expand all macros in a form use " +
+						"`(macroexpand-all form)`.")
 					.examples("(macroexpand '(-> c (+ 3) (* 2)))")
 					.seeAlso("defmacro", "macroexpand-all")
 					.build()
