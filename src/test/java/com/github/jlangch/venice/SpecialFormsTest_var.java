@@ -26,13 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 
-public class SpecialFormsTest {
+public class SpecialFormsTest_var {
 	
 	@Test
 	public void test_var_ns() {
 		assertEquals("core", new Venice().eval("(var-ns +)"));					
 		assertEquals("core", new Venice().eval("(var-ns core/+)"));					
 		assertEquals("str", new Venice().eval("(var-ns str/split)"));					
+		assertEquals(null, new Venice().eval("(let [x 100] (var-ns x))"));					
 	}
 	
 	@Test
@@ -40,5 +41,6 @@ public class SpecialFormsTest {
 		assertEquals("+", new Venice().eval("(var-name +)"));					
 		assertEquals("+", new Venice().eval("(var-name core/+)"));					
 		assertEquals("split", new Venice().eval("(var-name str/split)"));					
+		assertEquals("x", new Venice().eval("(let [x 100] (var-name x))"));					
 	}
 }

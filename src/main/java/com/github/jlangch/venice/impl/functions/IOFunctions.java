@@ -708,12 +708,22 @@ public class IOFunctions {
 						"Returns a *watcher* that is activley watching a directory. The *watcher* is \n" +
 						"a resource which should be closed with `(io/close-watcher w)`.")
 					.examples(
-						"(do                                                           \n" +
-					    "  (defn log [msg] (locking log (println msg)))                \n" +
-						"                                                              \n" +
-						"  (let [w (io/watch-dir \"/tmp\" #(log (str %1 \" \" %2)))]   \n" +
-					    "    (sleep 30 :seconds)                                       \n" +
-						"    (io/close-watcher w)))                                      ")
+						"(do                                                  \n" +
+					    "  (defn log [msg] (locking log (println msg)))       \n" +
+						"                                                     \n" +
+						"  (let [w (io/watch-dir \"/tmp\"                     \n" +
+						"                        #(log (str %1 \" \" %2))     \n" +
+					    "    (sleep 30 :seconds)                              \n" +
+						"    (io/close-watcher w)))",
+						"(do                                                                \n" +
+					    "  (defn log [msg] (locking log (println msg)))                     \n" +
+						"                                                                   \n" +
+						"  (let [w (io/watch-dir \"/tmp\"                                   \n" +
+						"                        #(log (str %1 \" \" %2))                   \n" +
+						"                        #(log (str \"failure \" (:message %2)))    \n" +
+						"                        #(log (str \"terminated watching \" %1)))] \n" +
+					    "    (sleep 30 :seconds)                                            \n" +
+						"    (io/close-watcher w)))")
 					.seeAlso("io/await-for")
 					.build()
 		) {
