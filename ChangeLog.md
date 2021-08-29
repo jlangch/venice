@@ -18,6 +18,7 @@ and this project adheres to
 ### Fixed
 
 - `ns-remove` to not remove the current namespace
+- `ns-list` 
 - `io/watch-dir` when the optional error and termination listener are not passed
 
 

@@ -1260,7 +1260,6 @@ public class SpecialFormsDoc {
 						"  (ns yyy)                             \n" + 
 						"  (def yoo 1)                          \n" + 
 						"  (ns-remove xxx)                      \n" + 
-						"  (ns-remove *ns*)                     \n" +
 						"  (println \"ns xxx:\" (ns-list xxx))  \n" + 
 						"  (println \"ns yyy:\" (ns-list yyy)))   ")
 					.seeAlso("ns", "ns-unmap", "ns-list", "namespace", "var-ns")

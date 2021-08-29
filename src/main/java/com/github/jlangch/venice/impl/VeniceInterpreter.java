@@ -1507,18 +1507,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			specialFormCallValidation("ns-list");
 			assertArity("ns-list", FnType.SpecialForm, args, 1);
 
-			final VncSymbol ns = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluate(args.first(), env));
-
-			final String nsName = ((VncSymbol)ns).getName();
-			
+			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
+			final String nsName = ns.getName();
+						
 			return VncList.ofList(
 				env.getAllGlobalSymbols()
 					.keySet()
 					.stream()
-					.map(s -> { final String n = env.getNamespace(s); 
-								return new VncSymbol(n, s.getSimpleName(), Nil); })
 					.filter(s -> nsName.equals(s.getNamespace()))
 					.sorted()
 					.collect(Collectors.toList()));
