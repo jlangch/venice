@@ -421,14 +421,15 @@ public class Venice {
 	) {
 		try {
 			if (interceptor.getMaxFutureThreadPoolSize() != null) {
-				ConcurrencyFunctions
-					.setMaximumFutureThreadPoolSize(interceptor.getMaxFutureThreadPoolSize());
+				ConcurrencyFunctions.setMaximumFutureThreadPoolSize(
+						interceptor.getMaxFutureThreadPoolSize());
 			}
 
 			final Callable<Object> wrapped = () -> {
 				try {
 					ThreadContext.remove(); // clean thread locals			
 					ThreadContext.setInterceptor(interceptor);
+					ThreadContext.setMeterRegistry(meterRegistry);
 					
 					return callable.call();
 				}
