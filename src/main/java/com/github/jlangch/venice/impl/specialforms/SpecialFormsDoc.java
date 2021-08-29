@@ -1107,22 +1107,26 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(locking x & exprs)")
 					.doc(
-						"Executes exprs in an implicit do, while holding the monitor of x. \n" + 
-						"Will release the monitor of x in all circumstances. \n" +
-						"Locking operates like the synchronized keyword in Java.")
+						"Executes `exprs` in an implicit do, while holding the " + 
+						"monitor of `x`. Will release the monitor of `x` in all " +
+						"circumstances. Locking operates like the synchronized " +
+						"keyword in Java.")
 					.examples(
 						"(do                        \n" +
 						"   (def x 1)               \n" +
 						"   (locking x              \n" +
 						"      (println 100)        \n" +
-						"      (println 200)))        ",
+						"      (println 200)))",
 						";; Locks are reentrant     \n" +
 						"(do                        \n" +
 						"   (def x 1)               \n" +
 						"   (locking x              \n" +
 						"      (locking x           \n" +
 						"         (println \"in\")) \n" +
-						"      (println \"out\")))    ")
+						"      (println \"out\"))) ",
+						"(do                                             \n" +
+					    "  (defn log [msg] (locking log (println msg)))  \n" +
+						"  (log \"message\"))")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
