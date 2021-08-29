@@ -1467,9 +1467,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertArity("ns-remove", FnType.SpecialForm, args, 1);
 
 			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
+			final VncSymbol nsCurr = Namespaces.getCurrentNS();
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 				// prevent Venice's system namespaces from being altered
 				throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
+			}
+			else if (ns.equals(nsCurr)) {
+				// prevent removing the current namespace
+				throw new VncException("The current samespace '" + nsCurr.getName() + "' cannot be removed!");
 			}
 			else {
 				env.removeGlobalSymbolsByNS(ns);
