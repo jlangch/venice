@@ -117,7 +117,7 @@ public class ScheduleFunctions {
 				final VncFunction fn = Coerce.toVncFunction(args.first());
 				final VncLong delay = Coerce.toVncLong(args.second());
 				final VncLong period = Coerce.toVncLong(args.third());
-				final VncKeyword unit = Coerce.toVncKeyword(args.nth(3));
+				final VncKeyword unit = Coerce.toVncKeyword(args.fourth());
 	
 				// Create a wrapper that inherits the Venice thread context
 				// from the parent thread to the executer thread!

@@ -360,10 +360,10 @@ public class BytebufFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 4);
 
-				final ByteBuffer dst = Coerce.toVncByteBuffer(args.nth(0)).getValue();
-				final ByteBuffer src = Coerce.toVncByteBuffer(args.nth(1)).getValue();
-				final VncLong src_offset = Coerce.toVncLong(args.nth(2));
-				final VncLong length = Coerce.toVncLong(args.nth(3));
+				final ByteBuffer dst = Coerce.toVncByteBuffer(args.first()).getValue();
+				final ByteBuffer src = Coerce.toVncByteBuffer(args.second()).getValue();
+				final VncLong src_offset = Coerce.toVncLong(args.third());
+				final VncLong length = Coerce.toVncLong(args.fourth());
 
 				dst.put(
 					src.array(), 

@@ -1449,8 +1449,8 @@ public class MathFunctions {
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
-				final VncLong scale = Coerce.toVncLong(args.nth(2));
-				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
+				final VncLong scale = Coerce.toVncLong(args.third());
+				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.fourth()));
 
 				return new VncBigDecimal(op1.getValue()
 								.add(op2.getValue())
@@ -1479,8 +1479,8 @@ public class MathFunctions {
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
-				final VncLong scale = Coerce.toVncLong(args.nth(2));
-				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
+				final VncLong scale = Coerce.toVncLong(args.third());
+				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.fourth()));
 
 				return new VncBigDecimal(op1.getValue().subtract(op2.getValue()).setScale(scale.getValue().intValue(), roundingMode));
 			}
@@ -1507,8 +1507,8 @@ public class MathFunctions {
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
-				final VncLong scale = Coerce.toVncLong(args.nth(2));
-				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
+				final VncLong scale = Coerce.toVncLong(args.third());
+				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.fourth()));
 
 				return new VncBigDecimal(op1.getValue().multiply(op2.getValue()).setScale(scale.getValue().intValue(), roundingMode));
 			}
@@ -1535,8 +1535,8 @@ public class MathFunctions {
 
 				final VncBigDecimal op1 = Coerce.toVncBigDecimal(args.first());
 				final VncBigDecimal op2 = Coerce.toVncBigDecimal(args.second());
-				final VncLong scale = Coerce.toVncLong(args.nth(2));
-				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.nth(3)));
+				final VncLong scale = Coerce.toVncLong(args.third());
+				final RoundingMode roundingMode = VncBigDecimal.toRoundingMode(Coerce.toVncString(args.fourth()));
 
 				return new VncBigDecimal(op1.getValue().divide(op2.getValue(), scale.getValue().intValue(), roundingMode));
 			}

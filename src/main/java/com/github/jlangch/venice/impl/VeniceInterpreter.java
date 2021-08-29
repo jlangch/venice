@@ -1419,7 +1419,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						multiFnName.getName(),
 						multiFn.getParams().size()));
 			}
-			final VncVector preConditions = getFnPreconditions(args.nth(3), env);
+			final VncVector preConditions = getFnPreconditions(args.fourth(), env);
 			final VncList body = args.slice(preConditions == null ? 3 : 4);
 			final VncFunction fn = buildFunction(
 										multiFnName.getName(),
