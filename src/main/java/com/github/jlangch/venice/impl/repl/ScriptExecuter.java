@@ -124,8 +124,7 @@ public class ScriptExecuter {
 			finally {
 				// Interrupt the LineReader of the REPL to display a new prompt
 				replThread.interrupt();
-			}
-		});
+			}});
 
 		cancellableAsynScript = executor.submit(task);
 	}
@@ -159,8 +158,7 @@ public class ScriptExecuter {
 			}
 			catch (Exception ex) {
 				errorHandler.accept(ex);
-			}
-		});
+			}});
 
 		try {
 			executor.submit(task).get();
