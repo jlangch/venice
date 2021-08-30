@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -1508,13 +1509,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertArity("ns-list", FnType.SpecialForm, args, 1);
 
 			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
-			final String nsName = ns.getName();
+
+			final String nsCore = Namespaces.NS_CORE.getName();
+			final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
 						
 			return VncList.ofList(
 				env.getAllGlobalSymbols()
 					.keySet()
 					.stream()
-					.filter(s -> nsName.equals(s.getNamespace()))
+					.filter(s -> Objects.equals(nsName, s.getNamespace()))
 					.sorted()
 					.collect(Collectors.toList()));
 		}
