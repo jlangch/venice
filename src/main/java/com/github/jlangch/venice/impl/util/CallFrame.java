@@ -22,25 +22,54 @@
 package com.github.jlangch.venice.impl.util;
 
 import com.github.jlangch.venice.impl.MetaUtil;
+import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.util.StackFrame;
 
 
 public class CallFrame {
 
 	public CallFrame(final VncFunction fn) {
-		this(fn.getQualifiedName(), fn.getMeta());
+		this.fnName = fn.getQualifiedName();
+		this.args = null;
+		this.meta = fn.getMeta();
+		this.env = null;
 	}
-		
+	
 	public CallFrame(final String fnName, final VncVal meta) {
 		this.fnName = fnName;
+		this.args = null;
 		this.meta = meta;
+		this.env = null;
+	}
+	
+	public CallFrame(final String fnName, final VncList args, final VncVal meta) {
+		this.fnName = fnName;
+		this.args = args;
+		this.meta = meta;
+		this.env = null;
+	}
+		
+	public CallFrame(final String fnName, final VncList args, final VncVal meta, final Env env) {
+		this.fnName = fnName;
+		this.args = args;
+		this.meta = meta;
+		this.env = env;
 	}
 
 
 	public String getFnName() {
 		return fnName;
+	}
+
+	public VncList getArgs() {
+		return args;
+	}
+
+	public Env getEnv() {
+		return env;
 	}
 	
 	public boolean hasFnName(final String fnName) {
@@ -83,5 +112,7 @@ public class CallFrame {
 
 	
 	private final String fnName;
-	private final VncVal meta; 
+	private final VncList args;
+	private final VncVal meta;
+	private final Env env;
 }

@@ -203,7 +203,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 	@Override
 	public VncVal MACROEXPAND(final VncVal ast, final Env env) {
-		return macroexpand_all(new CallFrame("macroexpand-all", ast.getMeta()), ast, env);
+		return macroexpand_all(
+					new CallFrame("macroexpand-all", ast.getMeta()), 
+					ast, 
+					env);
 	}
 
 	@Override
@@ -404,7 +407,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						else {
 							// only create callstack when needed!
-							try (WithCallStack cs = new WithCallStack(new CallFrame("if", a0.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("if", args, a0.getMeta()))) {
 								assertArity("if", FnType.SpecialForm, args, 2, 3);
 							}
 						}
@@ -414,7 +417,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "let": { // (let [bindings*] exprs*)
 						if (args.isEmpty()) {
 							// only create callstack when needed!
-							try (WithCallStack cs = new WithCallStack(new CallFrame("let", a0.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("let", args, a0.getMeta()))) {
 								assertMinArity("let", FnType.SpecialForm, args, 1);					
 							}
 						}
@@ -431,13 +434,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						while(bindingsIter.hasNext()) {
 							final VncVal sym = bindingsIter.next();
 							if (!bindingsIter.hasNext()) {
-								try (WithCallStack cs = new WithCallStack(new CallFrame("let", a0.getMeta()))) {
+								try (WithCallStack cs = new WithCallStack(new CallFrame("let", args, a0.getMeta()))) {
 									throw new VncException("let requires an even number of forms in the binding vector!");					
 								}
 							}
 							if (sym instanceof VncSymbol && ((VncSymbol)sym).hasNamespace()) {
 								final VncSymbol s = (VncSymbol)sym;
-								final CallFrame cf = new CallFrame(s.getQualifiedName(), s.getMeta());
+								final CallFrame cf = new CallFrame(s.getQualifiedName(), args, s.getMeta());
 								try (WithCallStack cs = new WithCallStack(cf)) {
 									throw new VncException("Can't use qualified symbols with let!");					
 								}
@@ -471,7 +474,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "quasiquote": // (quasiquote form)
 					if (args.size() != 1) {
 						// only create callstack when needed!
-						try (WithCallStack cs = new WithCallStack(new CallFrame("quasiquote", a0.getMeta()))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("quasiquote", args, a0.getMeta()))) {
 							assertArity("quasiquote", FnType.SpecialForm, args, 1);
 						}
 					}
@@ -481,7 +484,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "quote": // (quote form)
 					if (args.size() != 1) {
 						// only create callstack when needed!
-						try (WithCallStack cs = new WithCallStack(new CallFrame("quote", a0.getMeta()))) {
+						try (WithCallStack cs = new WithCallStack(new CallFrame("quote", args, a0.getMeta()))) {
 							assertArity("quote", FnType.SpecialForm, args, 1);
 						}
 					}
@@ -491,7 +494,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						recursionPoint = null;
 						if (args.size() < 2) {
 							// only create callstack when needed!
-							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", a0.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", args, a0.getMeta()))) {
 								assertMinArity("loop", FnType.SpecialForm, args, 2);
 							}
 						}
@@ -502,7 +505,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final VncVal meta = a0.getMeta();
 						
 						if (bindings.size() % 2 != 0) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", meta))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", args, meta))) {
 								throw new VncException("loop requires an even number of forms in the binding vector!");					
 							}
 						}
@@ -550,13 +553,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "recur":  { // (recur exprs*)
 						// Note: (recur) is valid, it's used by the while macro
 						if (recursionPoint == null) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", args, a0.getMeta()))) {
 								throw new NotInTailPositionException(
 										"The recur expression is not in tail position!");
 							}
 						}
 						if (args.size() != recursionPoint.getLoopBindingNamesCount()) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", a0.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", args, a0.getMeta()))) {
 								throw new VncException(String.format(
 										"The recur args (%d) do not match the loop args (%d) !",
 										args.size(), 
@@ -593,113 +596,113 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					break;
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
-					return fn_(new CallFrame("fn", a0.getMeta()), args, env);
+					return fn_(new CallFrame("fn", args, a0.getMeta()), args, env);
 
 				case "eval": // (eval expr*)
-					return eval_(new CallFrame("eval", a0.getMeta()), args, env);
+					return eval_(new CallFrame("eval", args, a0.getMeta()), args, env);
 
 				case "def":  // (def name value)
-					return def_(new CallFrame("def", a0.getMeta()), args, env);
+					return def_(new CallFrame("def", args, a0.getMeta()), args, env);
 
 				case "defonce": // (defonce name value)
-					return defonce_(new CallFrame("defonce", a0.getMeta()), args, env);
+					return defonce_(new CallFrame("defonce", args, a0.getMeta()), args, env);
 
 				case "def-dynamic": // (def-dynamic name value)
-					return def_dynamic_(new CallFrame("def-dynamic", a0.getMeta()), args, env);
+					return def_dynamic_(new CallFrame("def-dynamic", args, a0.getMeta()), args, env);
 
 				case "defmacro":
-					return defmacro_(new CallFrame("defmacro", a0.getMeta()), args, env);
+					return defmacro_(new CallFrame("defmacro", args, a0.getMeta()), args, env);
 
 				case "deftype": // (deftype type fields validationFn*)
-					return deftype_(new CallFrame("deftype", a0.getMeta()), args, env);
+					return deftype_(new CallFrame("deftype", args, a0.getMeta()), args, env);
 
 				case "deftype?": // (deftype? type)
-					return deftypeQ_(new CallFrame("deftype?", a0.getMeta()), args, env);
+					return deftypeQ_(new CallFrame("deftype?", args, a0.getMeta()), args, env);
 
 				case "deftype-of": // (deftype-of type base-type validationFn*)
-					return deftype_of_(new CallFrame("deftype-of", a0.getMeta()), args, env);
+					return deftype_of_(new CallFrame("deftype-of", args, a0.getMeta()), args, env);
 
 				case "deftype-or":  // (deftype-or type vals*)
-					return deftype_or_(new CallFrame("deftype-or", a0.getMeta()), args, env);
+					return deftype_or_(new CallFrame("deftype-or", args, a0.getMeta()), args, env);
 
 				case ".:": // (.: type args*)
-					return deftype_create_(new CallFrame(".:", a0.getMeta()), args, env);
+					return deftype_create_(new CallFrame(".:", args, a0.getMeta()), args, env);
 
 				case "defmulti":  // (defmulti name dispatch-fn)
-					return defmulti_(new CallFrame("defmulti", a0.getMeta()), args, env, a0.getMeta());
+					return defmulti_(new CallFrame("defmulti", args, a0.getMeta()), args, env, a0.getMeta());
 
 				case "defmethod": // (defmethod multifn-name dispatch-val & fn-tail)
-					return defmethod_(new CallFrame("defmethod", a0.getMeta()), args, env, a0.getMeta());
+					return defmethod_(new CallFrame("defmethod", args, a0.getMeta()), args, env, a0.getMeta());
 
 				case "ns": // (ns alpha)
-					return ns_(new CallFrame("ns", a0.getMeta()), args, env);
+					return ns_(new CallFrame("ns", args, a0.getMeta()), args, env);
 
 				case "ns-remove": // (ns-remove ns)
-					return ns_remove_(new CallFrame("ns-remove", a0.getMeta()), args, env);
+					return ns_remove_(new CallFrame("ns-remove", args, a0.getMeta()), args, env);
 
 				case "ns-unmap": // (ns-unmap ns sym)
-					return ns_unmap_(new CallFrame("ns-unmap", a0.getMeta()), args, env);
+					return ns_unmap_(new CallFrame("ns-unmap", args, a0.getMeta()), args, env);
 
 				case "ns-list": // (ns-list ns)
-					return ns_list_(new CallFrame("ns-list", a0.getMeta()), args, env);
+					return ns_list_(new CallFrame("ns-list", args, a0.getMeta()), args, env);
 
 				case "import":
-					return import_(new CallFrame("import", a0.getMeta()), args, env);
+					return import_(new CallFrame("import", args, a0.getMeta()), args, env);
 
 				case "imports":
-					return imports_(new CallFrame("imports", a0.getMeta()), args, env);
+					return imports_(new CallFrame("imports", args, a0.getMeta()), args, env);
 
 				case "namespace": // (namespace x)
-					return namespace_(new CallFrame("namespace", a0.getMeta()), args, env);
+					return namespace_(new CallFrame("namespace", args, a0.getMeta()), args, env);
 
 				case "resolve": // (resolve sym)
-					return resolve_(new CallFrame("resolve", a0.getMeta()), args, env);
+					return resolve_(new CallFrame("resolve", args, a0.getMeta()), args, env);
 				
 				case "var-get": // (var-get v)
-					return var_get_(new CallFrame("var-get", a0.getMeta()), args, env);
+					return var_get_(new CallFrame("var-get", args, a0.getMeta()), args, env);
 
 				case "var-ns": // (var-ns v)
-					return var_ns_(new CallFrame("var-ns", a0.getMeta()), args, env);
+					return var_ns_(new CallFrame("var-ns", args, a0.getMeta()), args, env);
 
 				case "var-name": // (var-name v)
-					return var_name_(new CallFrame("var-name", a0.getMeta()), args, env);
+					return var_name_(new CallFrame("var-name", args, a0.getMeta()), args, env);
 
 				case "var-local?": // (var-local? v)
-					return var_localQ_(new CallFrame("var-local?", a0.getMeta()), args, env);
+					return var_localQ_(new CallFrame("var-local?", args, a0.getMeta()), args, env);
 
 				case "var-thread-local?": // (var-thread-local? v)
-					return var_thread_localQ_(new CallFrame("var-thread-local?", a0.getMeta()), args, env);
+					return var_thread_localQ_(new CallFrame("var-thread-local?", args, a0.getMeta()), args, env);
 
 				case "var-global?": // (var-global? v)
-					return var_globalQ_(new CallFrame("var-global?", a0.getMeta()), args, env);
+					return var_globalQ_(new CallFrame("var-global?", args, a0.getMeta()), args, env);
 
 				case "set!": // (set! name expr)
-					return setBANG_(new CallFrame("set!", a0.getMeta()), args, env);
+					return setBANG_(new CallFrame("set!", args, a0.getMeta()), args, env);
 				
 				case "inspect": // (inspect sym)
-					return inspect_(new CallFrame("inspect", a0.getMeta()), args, env);
+					return inspect_(new CallFrame("inspect", args, a0.getMeta()), args, env);
 
 				case "macroexpand": // (macroexpand form)
 					return macroexpand(
-							new CallFrame("macroexpand", a0.getMeta()), args, env);
+							new CallFrame("macroexpand", args, a0.getMeta()), args, env);
 
 				case "macroexpand-all*":  // (macroexpand-all* form)
 					// Note: This special form is exposed through the public Venice function 
 					//       'core/macroexpand-all' in the 'core' module.
 					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
 					return macroexpand_all(
-								new CallFrame("macroexpand-all*", a0.getMeta()), 
+								new CallFrame("macroexpand-all*", args, a0.getMeta()), 
 								evaluate(args.first(), env), 
 								env);
 
 				case "doc": // (doc sym)
-					return doc_(new CallFrame("doc", a0.getMeta()), args, env);
+					return doc_(new CallFrame("doc", args, a0.getMeta()), args, env);
 
 				case "print-highlight": // (print-highlight form)
-					return print_highlight_(new CallFrame("print-highlight", a0.getMeta()), args, env);
+					return print_highlight_(new CallFrame("print-highlight", args, a0.getMeta()), args, env);
 
 				case "modules": // (modules )
-					return modules_(new CallFrame("modules", a0.getMeta()), args, env);
+					return modules_(new CallFrame("modules", args, a0.getMeta()), args, env);
 
 				case "binding":  // (binding [bindings*] exprs*)
 					return binding_(args, new Env(env), a0.getMeta());
@@ -711,28 +714,30 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return new VncLong(env.globalsCount());
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_(new CallFrame("try", a0.getMeta()), args, new Env(env));
+					return try_(new CallFrame("try", args, a0.getMeta()), args, new Env(env));
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_with_(new CallFrame("try-with", a0.getMeta()), args, new Env(env));
+					return try_with_(new CallFrame("try-with", args, a0.getMeta()), args, new Env(env));
 
 				case "locking":
-					return locking_(new CallFrame("locking", a0.getMeta()), args, env);
+					return locking_(new CallFrame("locking", args, a0.getMeta()), args, env);
 
 				case "dorun":
 					specialFormCallValidation("dorun");
-					return dorun_(new CallFrame("dorun", a0.getMeta()), args, env);
+					return dorun_(new CallFrame("dorun", args, a0.getMeta()), args, env);
 
 				case "dobench":
 					specialFormCallValidation("dobench");
-					return dobench_(new CallFrame("dobench", a0.getMeta()), args, env);
+					return dobench_(new CallFrame("dobench", args, a0.getMeta()), args, env);
 
 				case "prof":
 					specialFormCallValidation("prof");
-					return prof_(new CallFrame("prof", a0.getMeta()), args, env);
+					return prof_(new CallFrame("prof", args, a0.getMeta()), args, env);
 				
 				case "tail-pos": 
-					return tail_pos_check(tailPosition, new CallFrame("tail-pos", a0.getMeta()), args, env);
+					return tail_pos_check(
+								tailPosition, 
+								new CallFrame("tail-pos", args, a0.getMeta()), args, env);
 
 				default: { // functions, macros, collections/keywords as functions
 					final VncVal fn0 = a0 instanceof VncSymbol
@@ -771,7 +776,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							// validate function call allowed by sandbox
 							if (checkSandbox) {
-								try (WithCallStack cs = new WithCallStack(new CallFrame(fnName, a0.getMeta()))) {
+								try (WithCallStack cs = new WithCallStack(
+																new CallFrame(
+																		fnName, 
+																		fnArgs, 
+																		a0.getMeta(),
+																		env))
+								) {
 									interceptor.validateVeniceFunction(fnName);	
 								}
 								interceptor.validateMaxExecutionTime();
@@ -803,7 +814,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							else {
 								// invoke function with a new call frame
 								try {
-									callStack.push(new CallFrame(fnName, a0.getMeta()));
+									callStack.push(new CallFrame(fnName, fnArgs, a0.getMeta(), env));
 
 									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 										// Debugging handled for native functions only.
@@ -848,14 +859,25 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					}
 					else if (fn0 instanceof IVncFunction) {
 						// collection/keyword as function
-						try (WithCallStack cs = new WithCallStack(new CallFrame(fn0.getType().toString(), a0.getMeta()))) {
+						try (WithCallStack cs = new WithCallStack(
+														new CallFrame(
+																fn0.getType().toString(), 
+																args,
+																a0.getMeta(),
+																env))
+						) {
 							final IVncFunction fn = (IVncFunction)fn0;
 							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 							return fn.apply(fnArgs);
 						}
 					}
 					else {
-						try (WithCallStack cs = new WithCallStack(new CallFrame(a0sym, a0.getMeta()))) {
+						try (WithCallStack cs = new WithCallStack(
+														new CallFrame(
+																a0sym, 
+																args, 
+																a0.getMeta()))
+						) {
 							throw new VncException(String.format(
 									"Expected a function or keyword/set/map/vector as "
 										+ "s-expression symbol value but got a value "
@@ -980,7 +1002,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			expandedMacros++; 
 
-			try (WithCallStack cs = new WithCallStack(new CallFrame(macro.getQualifiedName(), a0.getMeta()))) {
+			try (WithCallStack cs = new WithCallStack(
+											new CallFrame(
+													macro.getQualifiedName(), 
+													macroArgs, 
+													a0.getMeta()))
+			) {
 				if (meterRegistry.enabled) {
 					final long nanosRun = System.nanoTime();
 					
@@ -1671,7 +1698,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal inspect_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal inspect_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("inspect", FnType.SpecialForm, args, 1);
 			specialFormCallValidation("inspect");
@@ -1680,7 +1711,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 	
-	private VncVal doc_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal doc_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("doc", FnType.SpecialForm, args, 1);
 			final VncString doc = DocForm.doc(args.first(), env);
@@ -1689,7 +1724,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 	
-	private VncVal print_highlight_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal print_highlight_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("print-highlight", FnType.SpecialForm, args, 1);
 			final VncString form = DocForm.highlight(Coerce.toVncString(args.first()), env);
@@ -1698,7 +1737,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal modules_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal modules_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			return VncList.ofList(
 						Modules
@@ -1711,7 +1754,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal eval_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal eval_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("eval", FnType.SpecialForm, args, 0);
 			specialFormCallValidation("eval");
@@ -1793,7 +1840,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal locking_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal locking_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("locking", FnType.SpecialForm, args, 2);
 			
@@ -1825,7 +1876,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncFunction fn_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncFunction fn_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
 		// single arity:  (fn name? [params*] condition-map? expr*)
 		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
 
@@ -1982,7 +2037,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		final VncList expressions = args.rest();
 
 		if (bindings.size() % 2 != 0) {
-			try (WithCallStack cs = new WithCallStack(new CallFrame("bindings", meta))) {
+			try (WithCallStack cs = new WithCallStack(new CallFrame("bindings", args, meta))) {
 				throw new VncException("bindings requires an even number of forms in the binding vector!");					
 			}
 		}
@@ -2388,7 +2443,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			 		final Env local = new Env(env);	
 			 		for(VncVal v : preConditions) {
 						if (!isFnConditionTrue(evaluate(v, local))) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame(name, v.getMeta()))) {
+							try (WithCallStack cs = new WithCallStack(
+															new CallFrame(
+																	name, 
+																	v.getMeta()))
+							) {
 								throw new AssertionException(String.format(
 										"pre-condition assert failed: %s",
 										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
@@ -2547,7 +2606,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			// do not allow to hijack another namespace
 			final String ns = sym.getNamespace();
 			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(specialFormName, sym.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(
+												new CallFrame(
+														specialFormName, 
+														sym.getMeta()))
+				) {
 					throw new VncException(String.format(
 							"Special form '%s': Invalid use of namespace. "
 								+ "The symbol '%s' can only be defined for the current namespace '%s'.",
