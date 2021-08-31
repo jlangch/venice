@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ParseError;
@@ -52,6 +53,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
 
 
 /**
@@ -103,6 +105,12 @@ public class ReplDebugClient {
 		return DEBUG_COMMANDS.contains(cmd);
 	}
 
+	public Env getEnv() {
+		return currCallFrame == null
+				? agent.getBreak().getEnv()
+				: currCallFrame.getEnv();
+	}
+	
 	public void handleCommand(final String cmdLine) {
 		final List<String> params = Arrays.asList(cmdLine.split(" +"));
 
@@ -112,7 +120,10 @@ public class ReplDebugClient {
 		switch(cmd) {
 			case "info":
 			case "i":
-				printer.println("stdout", agent.toString());
+				printer.println("stdout", agent.toString()); 
+				printer.println("stdout", "Current CallFrame: " 
+											+ (currCallFrame == null 
+													? "-" : currCallFrame));
 				break;
 
 			case "breakpoint":
@@ -122,6 +133,7 @@ public class ReplDebugClient {
 
 			case "resume":
 			case "r":
+				currCallFrame = null;
 				agent.resume();
 				break;
 				
@@ -129,6 +141,7 @@ public class ReplDebugClient {
 			case "s":
 			case "step-any":
 			case "sa":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepToAny);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToAny);
@@ -141,6 +154,7 @@ public class ReplDebugClient {
 				
 			case "step-next":
 			case "sn":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepToNextFunction);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToNextFunction);
@@ -153,6 +167,7 @@ public class ReplDebugClient {
 				
 			case "step-next-":
 			case "sn-":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepToNextNonSystemFunction);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToNextNonSystemFunction);
@@ -165,6 +180,7 @@ public class ReplDebugClient {
 				
 			case "step-call":
 			case "sc":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepToNextFunctionCall);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToNextFunctionCall);
@@ -177,6 +193,7 @@ public class ReplDebugClient {
 				
 			case "step-over":
 			case "so":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepOverFunction);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepOverFunction);
@@ -189,6 +206,7 @@ public class ReplDebugClient {
 				
 			case "step-entry":
 			case "se":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepToFunctionEntry);
 				if (stepValidity.isValid()) {
 					println("Stepping to entry of function %s ...",
@@ -203,6 +221,7 @@ public class ReplDebugClient {
 				
 			case "step-exit":
 			case "sx":
+				currCallFrame = null;
 				stepValidity = agent.isStepPossible(StepMode.StepToFunctionExit);
 				if (stepValidity.isValid()) {
 					println("Stepping to exit of function %s ...",
@@ -221,7 +240,7 @@ public class ReplDebugClient {
 				
 			case "callstack": 
 			case "cs":
-				callstack();
+				handleCallstackCmd(drop(params, 1));
 				break;
 				
 			case "params": 
@@ -309,6 +328,54 @@ public class ReplDebugClient {
 		}
 	}
 	
+	private void handleCallstackCmd(final List<String> params) {
+		if (!agent.hasBreak()) {
+			println("Not in a debug break!");
+			return;
+		}
+		
+		if (params.isEmpty())  {
+			printCallstack();
+		}
+		else {
+			try {
+				final String cmd = trimToEmpty(params.get(0));
+				switch(cmd) {
+					case "list":
+						printCallstack();
+						break;
+
+					case "select":
+						final Break br = agent.getBreak();
+						final List<CallFrame> frames = br.getCallStack().callstack();
+						final int level = parseCallStackLevel(params.get(1), frames.size());
+						currCallFrame = frames.get(level-1);						
+						println("Selected call frame -> [%d/%d]: %s", 
+								level,
+								frames.size(),
+								currCallFrame);
+						break;
+
+					case "deselect":
+						println("Cleared call frame operations") ;
+						currCallFrame = null;
+						break;
+
+
+					default:
+						printlnErr(
+							"Invalid callstack command '%s'. Use one of "
+								+ "'list', 'select', or 'deselect'.", 
+							cmd);
+						break;
+				}
+			}
+			catch(ParseError ex) {
+				printer.println("error", ex.getMessage());
+			}
+		}
+	}
+	
 	private void isBreak() {
 		if (!agent.hasBreak()) {
 			println("Not in a debug break!");
@@ -318,16 +385,12 @@ public class ReplDebugClient {
 		}
 	}
 	
-	private void callstack() {
-		if (!agent.hasBreak()) {
-			println("Not in a debug break!");
-			return;
-		}
-		
+	private void printCallstack() {
 		final Break br = agent.getBreak();
 
 		println(formatBreak(br));
-		println(br.getCallStack().toString());
+		println();
+		println(formatCallstack(br.getCallStack(), true));
 	}
 	
 	private void printBreakpoints() {
@@ -359,23 +422,28 @@ public class ReplDebugClient {
 
 		final Break br = agent.getBreak();
 
-		println(formatBreak(br));
-
-		if (br.getBreakpoint().getQualifiedName().equals("if")) {
-			println(renderIfSpecialFormParams(br));
-		}
-		else if (br.isBreakInNativeFn()) {
-			println(renderNativeFnParams(br));
-		}
-		else {
-			final VncVector spec = br.getFn().getParams();	
-			final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(spec);
-			if (plainSymbolParams) {
-				println(renderFnNoDestructuring(br));
+		if (currCallFrame == null) {
+			println(formatBreak(br));
+	
+			if (br.getBreakpoint().getQualifiedName().equals("if")) {
+				println(renderIfSpecialFormParams(br));
+			}
+			else if (br.isBreakInNativeFn()) {
+				println(renderNativeFnParams(br));
 			}
 			else {
-				println(renderFnDestructuring(br));
+				final VncVector spec = br.getFn().getParams();	
+				final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(spec);
+				if (plainSymbolParams) {
+					println(renderFnNoDestructuring(br));
+				}
+				else {
+					println(renderFnDestructuring(br));
+				}
 			}
+		}
+		else {
+			println(renderCallFrameParams(currCallFrame));
 		}
 	}
 	
@@ -389,7 +457,10 @@ public class ReplDebugClient {
 
 		println(formatBreak(br));
 
-		Env env = agent.getBreak().getEnv();
+		final Env env = currCallFrame == null
+							? agent.getBreak().getEnv()
+							: currCallFrame.getEnv();
+		
 		if (env == null) {
 			println("No information on local vars available");
 		}
@@ -407,7 +478,14 @@ public class ReplDebugClient {
 										  .map(v -> formatVar(v))
 										  .collect(Collectors.joining("\n"));
 	
-			println("Local vars at level %d/%d:\n%s", level, maxLevel, info);
+			if (currCallFrame != null) {
+				println(
+					"Local vars at level %d/%d of call frame %s:\n%s", 
+					level, maxLevel, currCallFrame, info);
+			}
+			else {
+				println("Local vars at level %d/%d:\n%s", level, maxLevel, info);
+			}
 		}
 	}
 			
@@ -450,6 +528,8 @@ public class ReplDebugClient {
 	}
 	
 	private void breakpointListener(final Break b) {
+		currCallFrame = null;
+		
 		printer.println("debug", formatStop(b));
 
 		// Interrupt the LineReader to display a new prompt
@@ -472,6 +552,20 @@ public class ReplDebugClient {
 		return sb.toString();
 	}
 
+	private String renderCallFrameParams(final CallFrame frame) {
+		final VncList args = frame.getArgs();
+
+		final StringBuilder sb = new StringBuilder();
+		
+		sb.append(String.format(
+					"Arguments passed to the call frame %s:",
+					frame));
+		
+		sb.append(renderIndexedParams(args));
+		
+		return sb.toString();
+	}
+
 	private String renderNativeFnParams(final Break br) {
 		final VncFunction fn = br.getFn();
 		final VncList args = br.getArgs();
@@ -482,21 +576,7 @@ public class ReplDebugClient {
 					"Arguments passed to native function %s:",
 					fn.getQualifiedName()));
 		
-		VncList args_ = args;
-		
-		for(int ii=0; ii<10; ii++) {
-			sb.append("\n");
-			sb.append(formatVar(ii, args_.first()));
-			
-			args_ = args_.rest();
-			if (args_.isEmpty()) break;
-		}
-		
-		if (args_.size() > 0) {
-			sb.append(String.format(
-						"\n... %d more arguments not displayed", 
-						args_.size()));
-		}
+		sb.append(renderIndexedParams(args));
 		
 		if (br.getRetVal() != null) {
 			sb.append('\n');
@@ -571,6 +651,28 @@ public class ReplDebugClient {
 
 		return sb.toString();
 	}
+
+	private String renderIndexedParams(final VncList args) {
+		final StringBuilder sb = new StringBuilder();
+
+		VncList args_ = args;
+		
+		for(int ii=0; ii<10; ii++) {
+			sb.append("\n");
+			sb.append(formatVar(ii, args_.first()));
+			
+			args_ = args_.rest();
+			if (args_.isEmpty()) break;
+		}
+		
+		if (args_.size() > 0) {
+			sb.append(String.format(
+						"\n... %d more arguments not displayed", 
+						args_.size()));
+		}
+		
+		return sb.toString();
+	}
 	
 	private String formatVar(final Var v) {
 		return formatVar(v.getName(), v.getVal());
@@ -603,7 +705,36 @@ public class ReplDebugClient {
 				fn.getQualifiedName(),
 				br.getBreakpointScope().description());
 	}
-	
+
+	private String formatCallstack(final CallStack cs, final boolean showLevel) {
+		if (showLevel) {
+			String format;
+			if (cs.size() < 10) {
+				format = "%d: %s";
+			}
+			else if (cs.size() < 100) {
+				format = "%2d: %s";
+			}
+			else {
+				format = "%3d: %s";
+			}
+			
+			final AtomicLong idx = new AtomicLong(1);
+			return cs.toList()
+					 .stream()
+					 .map(f -> String.format(
+							 	format, 
+							 	idx.getAndIncrement(), 
+							 	f.toString()))
+					 .collect(Collectors.joining("\n"));
+		}
+		else {
+			return cs.toList()
+					 .stream()
+					 .collect(Collectors.joining("\n"));
+		}
+	}
+
 	private String formatStop(final Break br) {	
 		final VncFunction fn = br.getFn();
 
@@ -642,6 +773,28 @@ public class ReplDebugClient {
 		else {
 			return sVal;
 		}
+	}
+	
+	private int parseCallStackLevel(final String level, final int max) {
+		try {
+			final int lvl = Integer.parseInt(level);
+			if (lvl < 1 || lvl > max) {
+				throw new RuntimeException(String.format(
+						"Invalid callstack level '%d'. Must be a in the range [1..%d].", 
+						level,
+						max));
+			}
+			return lvl;
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(String.format(
+						"Invalid callstack level '%s'. Must be a number.", 
+						level));
+		}
+	}
+	
+	private void println() {
+		printer.println("debug", "");
 	}
 	
 	private void println(final String format, final Object... args) {
@@ -683,7 +836,12 @@ public class ReplDebugClient {
 					"retval",         "ret",
 					"ex" ));
 	
-   
+
+	// if the 'currCallFrame' is not null the debug commands !params and
+	// !list operate on the args/env current call frame instead of the
+	// args/env function in the break
+	private CallFrame currCallFrame;
+	
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
 	private final Thread replThread;

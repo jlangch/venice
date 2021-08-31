@@ -304,11 +304,7 @@ public class REPL {
 								break;
 								
 							default:
-								new ReplDebugClient(
-										agent, 
-										printer, 
-										Thread.currentThread()
-									).handleCommand(cmd);
+								debugClient.handleCommand(cmd);
 								break;
 						}
 					}
@@ -318,7 +314,7 @@ public class REPL {
 					}
 					else if (agent.hasBreak()) {
 						// run the expression in the context of the break
-						runDebuggerExprAsync(line, agent.getBreak().getEnv());
+						runDebuggerExprAsync(line, debugClient.getEnv());
 					}
 					else {
 						// run the s-expr read from the line reader
@@ -380,6 +376,8 @@ public class REPL {
 	}
 	
 	private void switchToRegularREPL() {
+		debugClient = null;
+		
 		final DebugAgent agent = DebugAgent.current();
 		if (agent != null) {
 			agent.storeBreakpoints();
@@ -403,6 +401,10 @@ public class REPL {
 			DebugAgent.register(agent);
 			agent.restoreBreakpoints();
 			printer.println("debug", "Debugger: attached");
+			debugClient = new ReplDebugClient(
+								agent, 
+								printer, 
+								Thread.currentThread());
 		}
 		changePrompt(promptDebug);
 	}
@@ -1298,6 +1300,7 @@ public class REPL {
 	private String prompt;
 	private String secondaryPrompt;
 	private String resultPrefix = "=> ";
+	private ReplDebugClient debugClient = null;
 
 	private final ScriptExecuter scriptExec = new ScriptExecuter();
 }
