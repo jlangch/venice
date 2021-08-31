@@ -133,7 +133,7 @@ public class ReplDebugClient {
 
 			case "resume":
 			case "r":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				agent.resume();
 				break;
 				
@@ -141,7 +141,7 @@ public class ReplDebugClient {
 			case "s":
 			case "step-any":
 			case "sa":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepToAny);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToAny);
@@ -154,7 +154,7 @@ public class ReplDebugClient {
 				
 			case "step-next":
 			case "sn":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepToNextFunction);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToNextFunction);
@@ -167,7 +167,7 @@ public class ReplDebugClient {
 				
 			case "step-next-":
 			case "sn-":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepToNextNonSystemFunction);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToNextNonSystemFunction);
@@ -180,7 +180,7 @@ public class ReplDebugClient {
 				
 			case "step-call":
 			case "sc":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepToNextFunctionCall);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepToNextFunctionCall);
@@ -193,7 +193,7 @@ public class ReplDebugClient {
 				
 			case "step-over":
 			case "so":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepOverFunction);
 				if (stepValidity.isValid()) {
 					stepValidity = agent.step(StepMode.StepOverFunction);
@@ -206,7 +206,7 @@ public class ReplDebugClient {
 				
 			case "step-entry":
 			case "se":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepToFunctionEntry);
 				if (stepValidity.isValid()) {
 					println("Stepping to entry of function %s ...",
@@ -221,7 +221,7 @@ public class ReplDebugClient {
 				
 			case "step-exit":
 			case "sx":
-				currCallFrame = null;
+				clearCurrCallFrame();
 				stepValidity = agent.isStepPossible(StepMode.StepToFunctionExit);
 				if (stepValidity.isValid()) {
 					println("Stepping to exit of function %s ...",
@@ -345,15 +345,38 @@ public class ReplDebugClient {
 						printCallstack();
 						break;
 
-					case "select":
-						final Break br = agent.getBreak();
-						final List<CallFrame> frames = br.getCallStack().callstack();
-						final int level = parseCallStackLevel(params.get(1), frames.size());
-						currCallFrame = frames.get(level-1);						
-						println("Selected call frame -> [%d/%d]: %s", 
-								level,
-								frames.size(),
-								currCallFrame);
+					case "select": {
+							final List<CallFrame> frames = getCallFrames(agent.getBreak());
+							final int level = parseCallStackLevel(params.get(1), frames.size());
+							currCallFrameLevel = level;						
+							currCallFrame = frames.get(level-1);						
+							println("Selected call frame -> [%d/%d]: %s", 
+									level,
+									frames.size(),
+									currCallFrame);
+						}
+						break;
+
+					case "up": {
+							final List<CallFrame> frames = getCallFrames(agent.getBreak());
+							currCallFrameLevel = limit(currCallFrameLevel + 1, 1, frames.size());
+							currCallFrame = frames.get(currCallFrameLevel-1); 						
+							println("Selected call frame -> [%d/%d]: %s", 
+									currCallFrameLevel,
+									frames.size(),
+									currCallFrame);
+						}
+						break;
+
+					case "down": {
+							final List<CallFrame> frames = getCallFrames(agent.getBreak());
+							currCallFrameLevel = limit(currCallFrameLevel - 1, 1, frames.size());
+							currCallFrame = frames.get(currCallFrameLevel-1); 						
+							println("Selected call frame -> [%d/%d]: %s", 
+									currCallFrameLevel,
+									frames.size(),
+									currCallFrame);
+						}
 						break;
 
 					case "deselect":
@@ -528,7 +551,7 @@ public class ReplDebugClient {
 	}
 	
 	private void breakpointListener(final Break b) {
-		currCallFrame = null;
+		clearCurrCallFrame();
 		
 		printer.println("debug", formatStop(b));
 
@@ -811,7 +834,19 @@ public class ReplDebugClient {
 		}
 	}
 	
+	private void clearCurrCallFrame() {
+		currCallFrame = null;
+		currCallFrameLevel = 0;
+	}
 	
+	private List<CallFrame> getCallFrames(final Break br) {
+		return br.getCallStack().callstack();
+	}
+	
+	private int limit(final int val, final int min, final int max) {
+		return Math.max(Math.min(val, max), min);
+	}
+
 	
 	private static final Set<String> DEBUG_COMMANDS = new HashSet<>(
 			Arrays.asList(
@@ -841,6 +876,7 @@ public class ReplDebugClient {
 	// !list operate on the args/env current call frame instead of the
 	// args/env function in the break
 	private CallFrame currCallFrame;
+	private int currCallFrameLevel = 0;
 	
 	private final TerminalPrinter printer;
 	private final IDebugAgent agent;
