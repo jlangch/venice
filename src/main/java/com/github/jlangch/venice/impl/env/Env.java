@@ -329,8 +329,9 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public void addLocalVars(final List<Var> vars) {
+	public Env addLocalVars(final List<Var> vars) {
 		for(Var b : vars) setLocal(b);
+		return this;
 	}
 
 	public List<Var> getLocalVars(final int level) {
