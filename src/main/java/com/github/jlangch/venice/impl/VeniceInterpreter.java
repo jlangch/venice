@@ -38,8 +38,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -709,9 +709,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 				case "bound?": // (bound? sym)
 					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
-
-				case "global-vars-count": // (global-vars-count)
-					return new VncLong(env.globalsCount());
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
 					return try_(new CallFrame("try", args, a0.getMeta()), args, new Env(env));
@@ -1619,11 +1616,26 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("var-ns", FnType.SpecialForm, args, 1);
 			specialFormCallValidation("var-ns");
+			
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluate(args.first(), env));
-			final String ns = env.getNamespace(sym);
-			return ns == null ? Nil : new VncString(ns);
+			
+			if (sym.hasNamespace()) {
+				return new VncString(sym.getNamespace());
+			}
+			else if (env.isLocal(sym)) {
+				return Nil;
+			}
+			else {
+				final Var v = env.getGlobalVarOrNull(sym);
+				return v == null
+						? Nil
+						: new VncString(
+									v.getName().hasNamespace()
+										? v.getName().getNamespace()
+										: Namespaces.NS_CORE.getName());
+			}
 		}
 	}
 
@@ -1654,7 +1666,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncSymbol sym = Types.isVncSymbol(args.first())
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluate(args.first(), env));
-			return VncBoolean.of(env.isThreadLocal(sym));
+			return VncBoolean.of(env.isDynamic(sym));
 		}
 	}
 

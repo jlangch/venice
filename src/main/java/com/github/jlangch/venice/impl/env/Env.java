@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.env;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Serializable;
@@ -52,8 +51,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.WithCallStack;
-import com.github.jlangch.venice.util.NullInputStream;
-import com.github.jlangch.venice.util.NullOutputStream;
+import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 
 public class Env implements Serializable {
@@ -126,7 +124,7 @@ public class Env implements Serializable {
 		final VncVal val = getOrElse(sym, null);
 		if (val != null) return val;
 
-		try (WithCallStack cs = new WithCallStack(callframe(sym))) {
+		try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 			throw new SymbolNotFoundException(
 					String.format("Symbol '%s' not found.", sym.getQualifiedName()),
 					sym.getQualifiedName()); 
@@ -145,12 +143,12 @@ public class Env implements Serializable {
 	}
 
 	/**
-	 * Checks if a symbol is thread local
+	 * Checks if a symbol is dynamic (thread local)
 	 *
 	 * @param sym a symbol
-	 * @return returns true if a symbol is thread local else false
+	 * @return returns true if a symbol is dynamic else false
 	 */
-	public boolean isThreadLocal(final VncSymbol sym) {
+	public boolean isDynamic(final VncSymbol sym) {
 		final Var dv = getGlobalVar(sym);
 		return dv != null && dv instanceof DynamicVar;
 	}
@@ -179,40 +177,6 @@ public class Env implements Serializable {
 		else {
 			final Var v = findLocalVar(sym);
 			return v != null ? true : getGlobalVar(sym) != null;
-		}
-	}
-
-	/**
-	 * Returns the symbol's namespace or null if the symbol is local
-	 *
-	 * @param sym a symbol
-	 * @return returns the symbol'snamespace
-	 */
-	public String getNamespace(final VncSymbol sym) {
-		if (sym.hasNamespace()) {
-			return sym.getNamespace();
-		}
-		else {
-			if (findLocalVar(sym) != null) {
-				return null;
-			}
-			else {
-				final String name = sym.getName();
-				final VncSymbol ns = Namespaces.getCurrentNS();
-				
-				if (!Namespaces.isCoreNS(ns)) {
-					final VncSymbol qualifiedKey = new VncSymbol(
-														ns.getName(), 
-														name, 
-														Constants.Nil);
-					final Var v = getGlobalVarRaw(qualifiedKey);
-					if (v != null) {
-						return Namespaces.getCurrentNS().getName();
-					}
-				}
-
-				return Namespaces.NS_CORE.getName();
-			}
 		}
 	}
 
@@ -307,7 +271,7 @@ public class Env implements Serializable {
 		final VncSymbol sym = localVar.getName();
 		
 		if (ReservedSymbols.isReserved(sym)) {
-			try (WithCallStack cs = new WithCallStack(callframe(sym))) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 				throw new VncException(String.format(
 							"Rejected setting local var with name '%s'. Use another name, please.", 
 							sym.getName()));
@@ -322,7 +286,7 @@ public class Env implements Serializable {
 			// e.g.:   (do (defonce x 1) (let [x 10 y 20] (+ x y)))
 			//         (let [+ 10] (core/+ + 20))
 			if (globVar != null && !globVar.isOverwritable() && Types.isVncFunction(globVar.getVal())) {
-				try (WithCallStack cs = new WithCallStack(callframe(sym))) {
+				try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 					throw new VncException(String.format(
 								"The global var '%s' must not be shadowed by a local var!", 
 								sym.getQualifiedName()));
@@ -339,7 +303,7 @@ public class Env implements Serializable {
 		final VncSymbol sym = val.getName();
 
 		if (ReservedSymbols.isSpecialForm(sym.getName())) {
-			try (WithCallStack cs = new WithCallStack(callframe(sym))) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 				throw new VncException(String.format(
 							"Rejected setting var %s with name of a special form", 
 							sym.getName()));
@@ -348,7 +312,7 @@ public class Env implements Serializable {
 
 		final Var v = getGlobalVar(sym);
 		if (v != null && !v.isOverwritable()) {
-			try (WithCallStack cs = new WithCallStack(callframe(sym))) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 				throw new VncException(String.format(
 							"The existing global var '%s' must not be overwritten!", 
 							sym.getQualifiedName()));
@@ -451,47 +415,12 @@ public class Env implements Serializable {
 			.filter(s -> nsName.equals(s.getNamespace()))
 			.forEach(s -> globalSymbols.remove(s));
 	}
-
-	public Env getEnvAtLevel(final int level) {
-		Env env = this;
-		if (env.level == level) {
-			return env;
-		}
-		else {
-			while (env.outer != null) {
-				env = env.outer;
-				if (env.level == level) {
-					return env;
-				}
-			}
-		}
-		
-		throw new VncException(String.format("No env level %d", level));
-	}
-	
-	public int globalsCount() {
-		if (precompiledGlobalSymbols != null) {
-			return precompiledGlobalSymbols.size();
-		}
-		else {
-			return globalSymbols.size();
-		}
-	}
-	
-	@Override
-	public String toString() {
-		return new StringBuilder()
-					.append("level ").append(level).append(":")
-					.append("\n   [local]\n").append(toString(localSymbols, "      "))
-					.append("\n   [global]\n").append(toString(getAllGlobalSymbols(), "      "))
-					.toString();
-	}
 		
 	public Env setStdoutPrintStream(final PrintStream ps) {
 		replaceGlobalDynamic(
 				new VncSymbol("*out*"), 
 				VncJavaObject.from(
-						ps != null ? ps : nullPrintStream(),
+						ps != null ? ps : IOStreamUtil.nullPrintStream(),
 						PrintStream.class));
 		
 		return this;
@@ -501,7 +430,7 @@ public class Env implements Serializable {
 		replaceGlobalDynamic(
 				new VncSymbol("*err*"), 
 				VncJavaObject.from(
-						ps != null ? ps : nullPrintStream(),
+						ps != null ? ps : IOStreamUtil.nullPrintStream(),
 						PrintStream.class));
 		
 		return this;
@@ -518,7 +447,7 @@ public class Env implements Serializable {
 		if (rd == null) {
 			replaceGlobalDynamic(
 					new VncSymbol("*in*"), 
-					VncJavaObject.from(nullBufferedReader(), Reader.class));
+					VncJavaObject.from(IOStreamUtil.nullBufferedReader(), Reader.class));
 		}
 		else if (rd instanceof BufferedReader) {
 			replaceGlobalDynamic(
@@ -533,21 +462,6 @@ public class Env implements Serializable {
 		
 		return this;
 	}
-
-	private String toString(
-			final Map<VncSymbol,Var> vars, 
-			final String indent
-	) {
-		return vars.values()
-				   .stream()
-				   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
-				   .map(v -> String.format(
-								"%s%s (:%s)", 
-								indent,
-								v.getName().getName(),
-								Types.getType(v.getVal()).getValue()))
-				   .collect(Collectors.joining("\n"));
-	}
 	
 	private DynamicVar findGlobalDynamicVar(final VncSymbol sym) {
 		final Var dv = getGlobalVar(sym);
@@ -556,7 +470,7 @@ public class Env implements Serializable {
 				return (DynamicVar)dv;
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(callframe(sym))) {
+				try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 					throw new VncException(String.format(
 								"The var '%s' is not defined as dynamic", 
 								sym.getQualifiedName()));
@@ -707,14 +621,6 @@ public class Env implements Serializable {
 	}
 
 	
-	private PrintStream nullPrintStream() {
-		return new PrintStream(new NullOutputStream(), true);
-	}
-
-	private BufferedReader nullBufferedReader() {
-		return new BufferedReader(new InputStreamReader(new NullInputStream()));
-	}
-
 	private void rejectPrivateSymbolAccess(final VncSymbol sym, final Var globalVar) {
 		final VncSymbol globalVarSym = globalVar.getName();
 		if (globalVarSym.isPrivate()) {
@@ -737,9 +643,6 @@ public class Env implements Serializable {
 		}	
 	}
 	
-	private CallFrame callframe(final VncSymbol sym) {
-		return new CallFrame(sym.getQualifiedName(), sym.getMeta());
-	}
 	
 	
 	private static final long serialVersionUID = 9002640180394221858L;

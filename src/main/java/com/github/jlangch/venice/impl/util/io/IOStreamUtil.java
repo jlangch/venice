@@ -21,13 +21,19 @@
  */
 package com.github.jlangch.venice.impl.util.io;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.charset.Charset;
+
+import com.github.jlangch.venice.util.NullInputStream;
+import com.github.jlangch.venice.util.NullOutputStream;
 
 
 public class IOStreamUtil {
@@ -145,5 +151,14 @@ public class IOStreamUtil {
 		}
 		
 		os.flush();
+	}
+
+
+	public static PrintStream nullPrintStream() {
+		return new PrintStream(new NullOutputStream(), true);
+	}
+
+	public static BufferedReader nullBufferedReader() {
+		return new BufferedReader(new InputStreamReader(new NullInputStream()));
 	}
 }

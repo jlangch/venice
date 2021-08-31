@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.util;
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.util.StackFrame;
@@ -59,7 +60,11 @@ public class CallFrame {
 		this.env = env;
 	}
 
+	public static CallFrame from(final VncSymbol sym) {
+		return new CallFrame(sym.getQualifiedName(), sym.getMeta());
+	}
 
+	
 	public String getFnName() {
 		return fnName;
 	}
