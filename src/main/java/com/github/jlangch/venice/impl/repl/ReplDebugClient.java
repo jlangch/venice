@@ -47,9 +47,6 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncSequence;
-import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
@@ -400,12 +397,9 @@ public class ReplDebugClient {
 	}
 	
 	private void isBreak() {
-		if (!agent.hasBreak()) {
-			println("Not in a debug break!");
-		}
-		else {
-			println(formatStop(agent.getBreak()));
-		}
+		println(agent.hasBreak()
+					? formatStop(agent.getBreak())
+					: "Not in a debug break!");
 	}
 	
 	private void printCallstack() {
@@ -777,19 +771,7 @@ public class ReplDebugClient {
 		final String sVal = truncate(val.toString(true), maxLen, "...");
 		final String type = Types.getType(val).toString();
 		
-		if (val instanceof VncSequence) {
-			final int size = ((VncSequence)val).size();
-			return String.format("%s [%d]: %s", type, size, sVal);
-		}
-		else if (val instanceof VncMap) {
-			final int size = ((VncMap)val).size();
-			return String.format("%s [%d]: %s", type, size, sVal);
-		}
-		else if (val instanceof VncSet) {
-			final int size = ((VncSet)val).size();
-			return String.format("%s [%d]: %s", type, size, sVal);
-		}
-		else if (val instanceof VncCollection) {
+		if (val instanceof VncCollection) {
 			final int size = ((VncCollection)val).size();
 			return String.format("%s [%d]: %s", type, size, sVal);
 		}
