@@ -134,7 +134,12 @@ public class Reader {
 			final boolean errorOnUnbalancedStringQuotes,
 			final boolean errorOnIncompleteEscapeChars
 	) {
-		return Tokenizer.tokenize(str, filename, true, errorOnUnbalancedStringQuotes, errorOnIncompleteEscapeChars);
+		return Tokenizer.tokenize(
+				str, 
+				filename, 
+				true, 
+				errorOnUnbalancedStringQuotes, 
+				errorOnIncompleteEscapeChars);
 	}
 
 	private static VncVal read_atom(final Reader rdr) {
@@ -412,7 +417,12 @@ public class Reader {
 		}
 	}
 	
-	public static VncVal interpolate(final String s, final String filename, final int line, final int column) {
+	public static VncVal interpolate(
+			final String s, 
+			final String filename, 
+			final int line, 
+			final int column
+	) {
 		// this is a reader macro implemented in Java
 		
 		int pos = getFirstInterpolationFormStartPos(s);

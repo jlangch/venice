@@ -26,9 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespace;
@@ -138,7 +136,8 @@ public class ThreadContext {
 				}
 				else {
 					throw new VncException(String.format(
-							"The var %s is not defined as dynamic on the thread-local map",
+							"The var %s is not defined as dynamic on the "
+							+ "thread-local context",
 							key.getValue()));
 				}
 			}
@@ -160,7 +159,8 @@ public class ThreadContext {
 				}
 				else {
 					throw new VncException(String.format(
-							"The var %s is not defined as dynamic on the thread-local map",
+							"The var %s is not defined as dynamic on the "
+							+ "thread-local context",
 							key.getValue()));
 				}
 			}
@@ -179,7 +179,8 @@ public class ThreadContext {
 				}
 				else {
 					throw new VncException(String.format(
-							"The var %s is not defined as dynamic on the thread-local map",
+							"The var %s is not defined as dynamic on the "
+							+ "thread-local context",
 							key.getValue()));
 				}
 			}
@@ -249,13 +250,17 @@ public class ThreadContext {
 			if (preserveSystemValues) {
 				final Map<VncKeyword, VncVal> values = get().values;
 				
-				// clear all values except the system values
-				final Set<VncKeyword> keys = new HashSet<>(values.keySet());
-				keys.remove(new VncKeyword("*in*"));
-				keys.remove(new VncKeyword("*out*"));
-				keys.remove(new VncKeyword("*err*"));
+				// save
+				final VncVal stdIn = values.get(STD_IN);
+				final VncVal stdOut = values.get(STD_OUT);
+				final VncVal stdErr = values.get(STD_ERR);
+
+				values.clear();
 				
-				keys.forEach(k -> values.remove(k));
+				// restore
+				values.put(STD_IN, stdIn);
+				values.put(STD_OUT, stdOut);
+				values.put(STD_ERR, stdErr);
 			}
 			else {
 				get().values.clear();
@@ -299,15 +304,15 @@ public class ThreadContext {
 	}
 
 	public static PrintStream getStdOut() {
-		return Coerce.toVncJavaObject(peekValue(new VncKeyword(":*out*")), PrintStream.class);
+		return Coerce.toVncJavaObject(peekValue(STD_OUT), PrintStream.class);
 	}
 
 	public static PrintStream getStdErr() {
-		return Coerce.toVncJavaObject(peekValue(new VncKeyword(":*err*")), PrintStream.class);
+		return Coerce.toVncJavaObject(peekValue(STD_ERR), PrintStream.class);
 	}
 
 	public static Reader getStdIn() {
-		return Coerce.toVncJavaObject(peekValue(new VncKeyword(":*in*")), Reader.class);
+		return Coerce.toVncJavaObject(peekValue(STD_IN), Reader.class);
 	}
 
 	public static ThreadContextSnapshot snapshot() {
@@ -370,6 +375,9 @@ public class ThreadContext {
 	private MeterRegistry meterRegistry = new MeterRegistry(false);
 	
 	private static final IInterceptor REJECT_ALL_INTERCEPTOR = new RejectAllInterceptor();
+	private static final VncKeyword STD_IN = new VncKeyword("*in*");
+	private static final VncKeyword STD_OUT = new VncKeyword("*out*");
+	private static final VncKeyword STD_ERR = new VncKeyword("*err*");
 	
 	
 	// Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed
