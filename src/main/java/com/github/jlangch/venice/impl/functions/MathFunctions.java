@@ -67,6 +67,9 @@ public class MathFunctions {
 						"(+ 1I 2I)",
 						"(+ 1 2.5)",
 						"(+ 1 2.5M)")
+					.seeAlso(
+						"-", "*", "/", 
+						"dec/add", "dec/sub", "dec/mul", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -99,6 +102,9 @@ public class MathFunctions {
 						"(- 5I 2I)",
 						"(- 8 2.5)",
 						"(- 8 1.5M)")
+					.seeAlso(
+							"+", "*", "/", 
+							"dec/add", "dec/sub", "dec/mul", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -153,6 +159,9 @@ public class MathFunctions {
 						"(* 4I 3I)",
 						"(* 6.0 2)",
 						"(* 6 1.5M)")
+					.seeAlso(
+							"+", "-", "/", 
+							"dec/add", "dec/sub", "dec/mul", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -186,6 +195,9 @@ public class MathFunctions {
 							"(/ 12I 3I)",
 							"(/ 6.0 2)",
 							"(/ 6 1.5M)")
+					.seeAlso(
+							"+", "-", "*", 
+							"dec/add", "dec/sub", "dec/mul", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -292,6 +304,7 @@ public class MathFunctions {
 						"(inc 10I)",
 						"(inc 10.1)",
 						"(inc 10.12M)")
+					.seeAlso("dec")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -335,6 +348,7 @@ public class MathFunctions {
 						"(dec 10I)",
 						"(dec 10.1)",
 						"(dec 10.12M)")
+					.seeAlso("inc")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -379,6 +393,7 @@ public class MathFunctions {
 						"(max 1.0)", "(max 1.0 2.0)", "(max 4.0 3.0 2.0 1.0)",
 						"(max 1.0M)", "(max 1.0M 2.0M)", "(max 4.0M 3.0M 2.0M 1.0M)",
 						"(max 1.0M 2)")
+					.seeAlso("min")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -419,6 +434,7 @@ public class MathFunctions {
 						"(min 1.0)", "(min 1.0 2.0)", "(min 4.0 3.0 2.0 1.0)",
 						"(min 1.0M)", "(min 1.0M 2.0M)", "(min 4.0M 3.0M 2.0M 1.0M)",
 						"(min 1.0M 2)")
+					.seeAlso("max")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -459,6 +475,7 @@ public class MathFunctions {
 						"(abs -10I)",
 						"(abs -10.1)",
 						"(abs -10.12M)")
+					.seeAlso("sgn", "negate")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -511,6 +528,7 @@ public class MathFunctions {
 						"(sgn -10I)",
 						"(sgn -10.1)",
 						"(sgn -10.12M)")
+					.seeAlso("abs", "negate")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -558,6 +576,7 @@ public class MathFunctions {
 						"(negate 10I)",
 						"(negate 1.23)",
 						"(negate 1.23M)")
+					.seeAlso("abs", "sgn")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -602,6 +621,7 @@ public class MathFunctions {
 						"(floor -1.4)",
 						"(floor 1.23M)",
 						"(floor -1.23M)")
+					.seeAlso("ceil")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -650,6 +670,7 @@ public class MathFunctions {
 						"(ceil -1.4)",
 						"(ceil 1.23M)",
 						"(ceil -1.23M)")
+					.seeAlso("floor")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -698,6 +719,7 @@ public class MathFunctions {
 						"(square 10I)",
 						"(square 10.23)",
 						"(square 10.23M)")
+					.seeAlso("sqrt")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -722,6 +744,7 @@ public class MathFunctions {
 						"(sqrt 10.23)",
 						"(sqrt 10.23M)",
 						"(sqrt 10N)")
+					.seeAlso("square")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -744,6 +767,7 @@ public class MathFunctions {
 						"(sin 1)",
 						"(sin 1.23)",
 						"(sin 1.23M)")
+					.seeAlso("cos", "tan")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -766,6 +790,7 @@ public class MathFunctions {
 						"(cos 1)",
 						"(cos 1.23)",
 						"(cos 1.23M)")
+					.seeAlso("sin", "tan")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -788,6 +813,7 @@ public class MathFunctions {
 						"(tan 1)",
 						"(tan 1.23)",
 						"(tan 1.23M)")
+					.seeAlso("sin", "cos")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -810,6 +836,7 @@ public class MathFunctions {
 						"(to-radians 90)",
 						"(to-radians 90.0)",
 						"(to-radians 90.0M)")
+					.seeAlso("to-degrees")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -832,6 +859,7 @@ public class MathFunctions {
 						"(to-degrees 3)",
 						"(to-degrees 3.1415926)",
 						"(to-degrees 3.1415926M)")
+					.seeAlso("to-radians")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -854,6 +882,7 @@ public class MathFunctions {
 						"(log 10)",
 						"(log 10.23)",
 						"(log 10.23M)")
+					.seeAlso("log10")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -875,7 +904,10 @@ public class MathFunctions {
 					.examples(
 						"(log10 10)",
 						"(log10 10.23)",
-						"(log10 10.23M)")
+						"(log10 10.23M)",
+						";; the number of digits\n" +
+						"(long (+ (floor (log10 235)) 1))")
+					.seeAlso("log")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -922,6 +954,7 @@ public class MathFunctions {
 						"(mean 10 20 30)",
 						"(mean 1.4 3.6)",
 						"(mean 2.8M 6.4M)")
+					.seeAlso("median", "standard-deviation", "quantile", "quartiles")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -957,6 +990,7 @@ public class MathFunctions {
 						"(standard-deviation :population '(10 8 30 22 15))",
 						"(standard-deviation :sample '(1.4 3.6 7.8 9.0 2.2))",
 						"(standard-deviation :sample '(2.8M 6.4M 2.0M 4.4M))")
+					.seeAlso("mean", "median", "quantile", "quartiles")
 					.build()
 		) {
 		    // see: https://www.calculator.net/standard-deviation-calculator.html
@@ -1005,6 +1039,7 @@ public class MathFunctions {
 						"(median '(3 2 1 4))",
 						"(median '(3.6 1.4 4.8))",
 						"(median '(3.6M 1.4M 4.8M))")
+					.seeAlso("mean", "standard-deviation", "quantile", "quartiles")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1037,6 +1072,7 @@ public class MathFunctions {
 					.examples(
 						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
 						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
+					.seeAlso("mean", "median", "standard-deviation", "quantile")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1074,6 +1110,7 @@ public class MathFunctions {
 					.examples(
 						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
 						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
+					.seeAlso("mean", "median", "standard-deviation", "quartiles")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1136,6 +1173,7 @@ public class MathFunctions {
 					.examples(
 						"(rand-long)",
 						"(rand-long 100)")
+					.seeAlso("rand-double", "rand-gaussian")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1173,6 +1211,7 @@ public class MathFunctions {
 					.examples(
 						"(rand-double)",
 						"(rand-double 100.0)")
+					.seeAlso("rand-long", "rand-gaussian")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1213,6 +1252,7 @@ public class MathFunctions {
 					.examples(
 						"(rand-gaussian)",
 						"(rand-gaussian 0.0 5.0)")
+					.seeAlso("rand-long", "rand-double")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1244,6 +1284,7 @@ public class MathFunctions {
 						"(zero? (int 0))",
 						"(zero? 0.0)",
 						"(zero? 0.0M)")
+					.seeAlso("neg?", "pos?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1288,6 +1329,7 @@ public class MathFunctions {
 						"(pos? (int 3))",
 						"(pos? 3.2)",
 						"(pos? 3.2M)")
+					.seeAlso("zero?", "neg?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1332,6 +1374,7 @@ public class MathFunctions {
 						"(neg? (int -3))",
 						"(neg? -3.2)",
 						"(neg? -3.2M)")
+					.seeAlso("zero?", "pos?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1374,6 +1417,7 @@ public class MathFunctions {
 						"(even? 4)",
 						"(even? 3)",
 						"(even? (int 3))")
+					.seeAlso("odd?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1407,6 +1451,7 @@ public class MathFunctions {
 						"(odd? 3)",
 						"(odd? 4)",
 						"(odd? (int 4))")
+					.seeAlso("even?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1442,6 +1487,7 @@ public class MathFunctions {
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
 					.examples(
 						"(dec/add 2.44697M 1.79882M 3 :HALF_UP)")
+					.seeAlso("dec/sub", "dec/mul", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1472,6 +1518,7 @@ public class MathFunctions {
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
 					.examples(
 						"(dec/sub 2.44697M 1.79882M 3 :HALF_UP)")
+					.seeAlso("dec/add", "dec/mul", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1500,6 +1547,7 @@ public class MathFunctions {
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
 					.examples(
 						"(dec/mul 2.44697M 1.79882M 5 :HALF_UP)")
+					.seeAlso("dec/add", "dec/sub", "dec/div", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1528,6 +1576,7 @@ public class MathFunctions {
 						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
 					.examples(
 						"(dec/div 2.44697M 1.79882M 5 :HALF_UP)")
+					.seeAlso("dec/add", "dec/sub", "dec/mul", "dec/scale")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1560,6 +1609,7 @@ public class MathFunctions {
 						"(dec/scale 2.44697M 2 :HALF_UP)",
 						"(dec/scale 2.44697M 3 :HALF_UP)",
 						"(dec/scale 2.44697M 10 :HALF_UP)")
+					.seeAlso("dec/add", "dec/sub", "dec/mul", "dec/div")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
