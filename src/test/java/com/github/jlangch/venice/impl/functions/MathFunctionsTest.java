@@ -199,6 +199,52 @@ public class MathFunctionsTest {
 		assertEquals(1D, venice.eval("(double 1N)"));
 		assertEquals(1.23D, venice.eval("(double \"1.23\")"));
 	}
+	
+	@Test
+	public void test_digits() {
+		final Venice venice = new Venice();
+
+		// Integer
+		assertEquals(1L, venice.eval("(digits 0I)"));
+		assertEquals(1L, venice.eval("(digits 1I)"));
+		assertEquals(1L, venice.eval("(digits 9I)"));
+		assertEquals(2L, venice.eval("(digits 10I)"));
+		assertEquals(2L, venice.eval("(digits 99I)"));
+		assertEquals(3L, venice.eval("(digits 134I)"));
+		assertEquals(1L, venice.eval("(digits -1I)"));
+		assertEquals(1L, venice.eval("(digits -9I)"));
+		assertEquals(2L, venice.eval("(digits -10I)"));
+		assertEquals(2L, venice.eval("(digits -99I)"));
+		assertEquals(3L, venice.eval("(digits -134I)"));
+
+		// Long
+		assertEquals(1L, venice.eval("(digits 0)"));
+		assertEquals(1L, venice.eval("(digits 1)"));
+		assertEquals(1L, venice.eval("(digits 9)"));
+		assertEquals(2L, venice.eval("(digits 10)"));
+		assertEquals(2L, venice.eval("(digits 99)"));
+		assertEquals(3L, venice.eval("(digits 134)"));
+		assertEquals(1L, venice.eval("(digits -1)"));
+		assertEquals(1L, venice.eval("(digits -9)"));
+		assertEquals(2L, venice.eval("(digits -10)"));
+		assertEquals(2L, venice.eval("(digits -99)"));
+		assertEquals(3L, venice.eval("(digits -134)"));
+
+		// BigInteger
+		assertEquals(1L, venice.eval("(digits 0N)"));
+		assertEquals(1L, venice.eval("(digits 1N)"));
+		assertEquals(1L, venice.eval("(digits 9N)"));
+		assertEquals(2L, venice.eval("(digits 10N)"));
+		assertEquals(2L, venice.eval("(digits 99N)"));
+		assertEquals(3L, venice.eval("(digits 134N)"));
+		assertEquals(30L, venice.eval("(digits 111111111111111111111111111111N)"));
+		assertEquals(1L, venice.eval("(digits -1N)"));
+		assertEquals(1L, venice.eval("(digits -9N)"));
+		assertEquals(2L, venice.eval("(digits -10N)"));
+		assertEquals(2L, venice.eval("(digits -99N)"));
+		assertEquals(3L, venice.eval("(digits -134N)"));
+		assertEquals(30L, venice.eval("(digits -111111111111111111111111111111N)"));
+	}	
 
 	@Test
 	public void test_div() {

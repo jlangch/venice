@@ -357,6 +357,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("pow"));
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
+		arithmetic.addItem(getDocItem("digits"));
 
 		final DocSection convert = new DocSection("Convert", "primitives.convert");
 		numbers.addSection(convert);

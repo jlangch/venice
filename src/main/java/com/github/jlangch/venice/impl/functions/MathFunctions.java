@@ -943,6 +943,55 @@ public class MathFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction digits =
+		new VncFunction(
+				"digits",
+				VncFunction
+					.meta()
+					.arglists("(digits x)")
+					.doc("Returns the number of digits of x. The number x must "+ 
+						 "be of type integer, long, or bigint")
+					.examples(
+						"(digits 124)",
+						"(digits -10)",
+						"(digits 11111111111111111111111111111111N)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal val = args.first();
+				
+				if (Types.isVncInteger(val) || Types.isVncLong(val)) {
+					final long v = ((VncNumber)val).toJavaLong();
+					return new VncLong(
+							v == 0
+								? 1
+								:((int)Math.floor(Math.log10(Math.abs(v)))) + 1);
+				}
+				else if (Types.isVncBigInteger(val)) {
+					final BigInteger v = ((VncBigInteger)val).getValue().abs();
+					if (v.equals(BigInteger.ZERO)) {
+						return new VncLong(1);
+					}
+					else {
+						final double factor = Math.log(2) / Math.log(10);
+						final int count = (int)(factor * v.bitLength() + 1);
+						return BigInteger.TEN.pow(count-1).compareTo(v) > 0
+								? new VncLong(count -1)
+								: new VncLong(count);
+					}
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'digits' does not allow %s as value",
+							Types.getType(val)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction mean =
 		new VncFunction(
 				"mean",
@@ -1851,6 +1900,8 @@ public class MathFunctions {
 					.add(rand_gaussian)
 
 					.add(range)
+
+					.add(digits)
 
 					.toMap();
 
