@@ -408,7 +408,7 @@ public class ReplDebugClient {
 	private void printCallstack() {
 		final Break br = agent.getBreak();
 
-		println(formatBreak(br));
+		println(formatBreakOverview(br));
 		println();
 		println("Callstack:");
 		println(formatCallstack(br.getCallStack(), true));
@@ -444,7 +444,7 @@ public class ReplDebugClient {
 		final Break br = agent.getBreak();
 
 		if (currCallFrame == null) {
-			println(formatBreak(br));
+			println(formatBreakOverview(br));
 	
 			if (br.getBreakpoint().getQualifiedName().equals("if")) {
 				println(renderIfSpecialFormParams(br));
@@ -476,7 +476,7 @@ public class ReplDebugClient {
 		
 		final Break br = agent.getBreak();
 
-		println(formatBreak(br));
+		println(formatBreakOverview(br));
 
 		final Env env = currCallFrame == null
 							? agent.getBreak().getEnv()
@@ -490,10 +490,10 @@ public class ReplDebugClient {
 			int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
 			level = Math.max(Math.min(maxLevel, level), 1);
 			
-			final List<Var> vars = env.getLocalVars(level-1);
+			final List<Var> vars = env.getLocalVars(level);
 			final String info = vars.isEmpty()
 									? String.format(
-										"   <no local vars at level %d>",
+										"   <no local vars at env level %d>",
 										level)	
 									: vars.stream()
 										  .map(v -> formatVar(v))
@@ -501,11 +501,11 @@ public class ReplDebugClient {
 	
 			if (currCallFrame != null) {
 				println(
-					"Local vars at level %d/%d of call frame %s:\n%s", 
-					currCallFrameLevel, maxLevel, currCallFrame, info);
+					"Local vars at env level %d/%d of call frame %s:\n%s", 
+					level, maxLevel, currCallFrame, info);
 			}
 			else {
-				println("Local vars at level %d/%d:\n%s", level, maxLevel, info);
+				println("Local vars at env level %d/%d:\n%s", level, maxLevel, info);
 			}
 		}
 	}
@@ -518,7 +518,7 @@ public class ReplDebugClient {
 		
 		final Break br = agent.getBreak();
 
-		println(formatBreak(br));
+		println(formatBreakOverview(br));
 
 		final VncVal v = br.getRetVal();
 		if (v == null) {
@@ -537,7 +537,7 @@ public class ReplDebugClient {
 	
 		final Break br = agent.getBreak();
 
-		println(formatBreak(br));
+		println(formatBreakOverview(br));
 
 		final Exception e = br.getException();
 		if (e == null) {
@@ -714,7 +714,7 @@ public class ReplDebugClient {
 		return String.format("[return] -> %s", sval);
 	}
 
-	private String formatBreak(final Break br) {
+	private String formatBreakOverview(final Break br) {
 		final VncFunction fn = br.getFn();
 
 		return String.format(
@@ -728,16 +728,10 @@ public class ReplDebugClient {
 
 	private String formatCallstack(final CallStack cs, final boolean showLevel) {
 		if (showLevel) {
-			String format;
-			if (cs.size() < 10) {
-				format = "%s%d: %s";
-			}
-			else if (cs.size() < 100) {
-				format = "%s%2d: %s";
-			}
-			else {
-				format = "%s%3d: %s";
-			}
+			final int digits = cs.isEmpty() 
+								? 1 
+								: ((int)Math.floor(Math.log10(cs.size()))) + 1;
+			final String format = "%s%" + digits + "d: %s";
 			
 			final boolean printMarker = currCallFrame != null;
 			

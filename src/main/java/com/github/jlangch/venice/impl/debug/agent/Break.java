@@ -152,8 +152,8 @@ public class Break {
 			
 		sb.append("\n");
 		sb.append(String.format(
-						"Callstack:    level %d", 
-						getCallStack().level()));
+						"Callstack:    %d frames", 
+						getCallStack().size()));
 		
 		
 		return sb.toString();

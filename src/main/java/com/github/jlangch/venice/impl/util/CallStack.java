@@ -93,15 +93,6 @@ public class CallStack {
 	}
 	
     /**
-     * Returns the call stack's level
-     *
-     * @return the call stack's level
-     */
-	public int level() {
-		return queue.size();
-	}
-	
-    /**
      * Removes all of the elements from this call stack.
      * The call stack will be empty after this call returns.
      */
