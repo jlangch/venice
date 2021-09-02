@@ -283,22 +283,28 @@ public class ReplDebugClient {
 				final String cmd = trimToEmpty(params.get(0));
 				switch(cmd) {
 					case "add":
+					case "a":
 						agent.addBreakpoints(parseBreakpoints(drop(params, 1)));
 						break;
 						
 					case "remove":
+					case "rem":
+					case "r":
 						agent.removeBreakpoints(parseBreakpoints(drop(params, 1)));
 						break;
 						
 					case "clear":
+					case "c":
 						agent.removeAllBreakpoints();
 						break;
 						
 					case "skip":
+					case "s":
 						agent.skipBreakpoints(true);
 						break;
 						
 					case "unskip":
+					case "u":
 						agent.skipBreakpoints(false);
 						break;
 						
@@ -307,6 +313,7 @@ public class ReplDebugClient {
 						break;
 						
 					case "list":
+					case "l":
 						printBreakpoints();
 						break;
 						
@@ -478,35 +485,25 @@ public class ReplDebugClient {
 
 		println(formatBreakOverview(br));
 
-		final Env env = currCallFrame == null
-							? agent.getBreak().getEnv()
-							: currCallFrame.getEnv();
-		
-		if (env == null) {
-			println("No information on local vars available");
+		if (currCallFrame == null) {
+			final Env env = agent.getBreak().getEnv();
+
+			final int maxLevel = env.level() + 1;
+			final int level = parseEnvLevel(sLevel, 1, maxLevel);
+
+			println(
+				"Local vars at breakpoint env level %d/%d:\n%s", 
+				level, maxLevel, renderLocalCars(env, level));
 		}
 		else {
-			int maxLevel = env.level() + 1;
-			int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
-			level = Math.max(Math.min(maxLevel, level), 1);
-			
-			final List<Var> vars = env.getLocalVars(level);
-			final String info = vars.isEmpty()
-									? String.format(
-										"   <no local vars at env level %d>",
-										level)	
-									: vars.stream()
-										  .map(v -> formatVar(v))
-										  .collect(Collectors.joining("\n"));
-	
-			if (currCallFrame != null) {
-				println(
-					"Local vars at env level %d/%d of call frame %s:\n%s", 
-					level, maxLevel, currCallFrame, info);
-			}
-			else {
-				println("Local vars at env level %d/%d:\n%s", level, maxLevel, info);
-			}
+			final Env env = currCallFrame.getEnv();
+
+			final int maxLevel = env.level() + 1;
+			final int level = parseEnvLevel(sLevel, 1, maxLevel);
+
+			println(
+				"Local vars at env level %d/%d of call frame %s:\n%s", 
+				level, maxLevel, currCallFrame, renderLocalCars(env, level));
 		}
 	}
 			
@@ -694,6 +691,17 @@ public class ReplDebugClient {
 		return sb.toString();
 	}
 	
+	private String renderLocalCars(final Env env, final int level) {
+		final List<Var> vars = env.getLocalVars(level-1);
+		return vars == null || vars.isEmpty()
+				? String.format(
+					"   <no local vars at env level %d>",
+					level)	
+				: vars.stream()
+					  .map(v -> formatVar(v))
+					  .collect(Collectors.joining("\n"));
+	}
+	
 	private String formatVar(final Var v) {
 		return formatVar(v.getName(), v.getVal());
 	}
@@ -731,6 +739,7 @@ public class ReplDebugClient {
 			final int digits = cs.isEmpty() 
 								? 1 
 								: ((int)Math.floor(Math.log10(cs.size()))) + 1;
+			
 			final String format = "%s%" + digits + "d: %s";
 			
 			final boolean printMarker = currCallFrame != null;
@@ -801,6 +810,22 @@ public class ReplDebugClient {
 			throw new RuntimeException(String.format(
 						"Invalid callstack level '%s'. Must be a number.", 
 						level));
+		}
+	}
+	
+	private int parseEnvLevel(
+			final String sLevel, 
+			final int min, 
+			final int max
+	) {
+		try {
+			final int level = sLevel == null ? 1 : Integer.parseInt(sLevel);
+			return limit(level, min, max);
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(String.format(
+						"Invalid env level '%s'. Must be a number.", 
+						sLevel));
 		}
 	}
 	

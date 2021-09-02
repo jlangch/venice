@@ -97,6 +97,9 @@ public class Env implements Serializable {
 		return outer;
 	}
 
+	/**
+	 * @return the 0-based environment level
+	 */
 	public int level() {
 		return level;
 	}
@@ -334,9 +337,18 @@ public class Env implements Serializable {
 		return this;
 	}
 
-	public List<Var> getLocalVars(final int level) {
+	/**
+	 * Get the local vars from an arbitrary level.
+	 * 
+	 * @param levelsUp how many env levels the function should move up through
+	 *                 the outer levels starting from the current level.
+	 *                 Stops on the last available level.
+	 *                 Must a value of 0,1,2,3,...
+	 * @return the local vars
+	 */
+	public List<Var> getLocalVars(final int levelsUp) {
 		Env env = this;
-		for(int ii=0; ii<level; ii++) {
+		for(int ii=0; ii<levelsUp; ii++) {
 			env = env == null ? null : env.outer;
 		}
 		

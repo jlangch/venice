@@ -294,10 +294,14 @@ public class REPL {
 					if (ReplParser.isCommand(line)) {
 						final String cmd = trimToEmpty(line.trim().substring(1));
 						switch(cmd) {
+							case "attach":
+								printer.println("debug", "The debugger is already attached!");
+								break;
+								
 							case "detach":
 								switchToRegularREPL();
 								break;
-								
+							
 							case "terminate":
 								scriptExec.cancelAsyncScript();
 								agent.clearBreak();
