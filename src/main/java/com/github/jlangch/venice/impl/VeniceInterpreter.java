@@ -773,13 +773,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							// validate function call allowed by sandbox
 							if (checkSandbox) {
-								try (WithCallStack cs = new WithCallStack(
-																new CallFrame(
-																		fnName, 
-																		fnArgs, 
-																		a0.getMeta(),
-																		env))
-								) {
+								final CallFrame cf = new CallFrame(fnName, fnArgs, a0.getMeta(), env);
+								try (WithCallStack cs = new WithCallStack(cf)) {
 									interceptor.validateVeniceFunction(fnName);	
 								}
 								interceptor.validateMaxExecutionTime();
@@ -813,18 +808,23 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								try {
 									callStack.push(new CallFrame(fnName, fnArgs, a0.getMeta(), env));
 
-									if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-										// Debugging handled for native functions only.
-										env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
-										try {
-											debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env, callStack);
-											final VncVal retVal = fn.apply(fnArgs);
-											debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env, callStack);
-											return retVal;
+									if (fn.isNative()) {
+										if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+											// Debugging handled for native functions only.
+											env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
+											try {
+												debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env, callStack);
+												final VncVal retVal = fn.apply(fnArgs);
+												debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env, callStack);
+												return retVal;
+											}
+											catch(Exception ex) {
+												debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env, callStack);
+												throw ex;
+											}
 										}
-										catch(Exception ex) {
-											debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env, callStack);
-											throw ex;
+										else {
+											return fn.apply(fnArgs);
 										}
 									}
 									else {
