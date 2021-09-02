@@ -393,6 +393,9 @@ public class ReplDebugClient {
 			catch(ParseError ex) {
 				printer.println("error", ex.getMessage());
 			}
+			catch(RuntimeException ex) {
+				printer.println("error", ex.getMessage());
+			}
 		}
 	}
 	
@@ -407,6 +410,7 @@ public class ReplDebugClient {
 
 		println(formatBreak(br));
 		println();
+		println("Callstack:");
 		println(formatCallstack(br.getCallStack(), true));
 	}
 	
@@ -498,7 +502,7 @@ public class ReplDebugClient {
 			if (currCallFrame != null) {
 				println(
 					"Local vars at level %d/%d of call frame %s:\n%s", 
-					level, maxLevel, currCallFrame, info);
+					currCallFrameLevel, maxLevel, currCallFrame, info);
 			}
 			else {
 				println("Local vars at level %d/%d:\n%s", level, maxLevel, info);
@@ -672,17 +676,16 @@ public class ReplDebugClient {
 	private String renderIndexedParams(final VncList args) {
 		final StringBuilder sb = new StringBuilder();
 
-		VncList args_ = args;
+		VncList args_ = args.take(10);
 		
-		for(int ii=0; ii<10; ii++) {
-			sb.append("\n");
-			sb.append(formatVar(ii, args_.first()));
-			
+		int ii = 0;
+		while(!args_.isEmpty()) {
+			sb.append("\n" + formatVar(ii, args_.first()));
 			args_ = args_.rest();
-			if (args_.isEmpty()) break;
 		}
 		
-		if (args_.size() > 0) {
+		args_ = args.drop(10);
+		if (!args_.isEmpty()) {
 			sb.append(String.format(
 						"\n... %d more arguments not displayed", 
 						args_.size()));
@@ -727,20 +730,25 @@ public class ReplDebugClient {
 		if (showLevel) {
 			String format;
 			if (cs.size() < 10) {
-				format = "%d: %s";
+				format = "%s%d: %s";
 			}
 			else if (cs.size() < 100) {
-				format = "%2d: %s";
+				format = "%s%2d: %s";
 			}
 			else {
-				format = "%3d: %s";
+				format = "%s%3d: %s";
 			}
+			
+			final boolean printMarker = currCallFrame != null;
 			
 			final AtomicLong idx = new AtomicLong(1);
 			return cs.toList()
 					 .stream()
 					 .map(f -> String.format(
 							 	format, 
+							 	printMarker
+							 		? idx.get() == currCallFrameLevel ? "* " : "  "
+							 		: "",
 							 	idx.getAndIncrement(), 
 							 	f.toString()))
 					 .collect(Collectors.joining("\n"));
@@ -781,15 +789,19 @@ public class ReplDebugClient {
 	}
 	
 	private int parseCallStackLevel(final String level, final int max) {
+		final int lvl = parseCallStackLevel(level);		
+		if (lvl < 1 || lvl > max) {
+			throw new RuntimeException(String.format(
+					"Invalid callstack level '%d'. Must be a in the range [1..%d].", 
+					lvl,
+					max));
+		}
+		return lvl;
+	}
+	
+	private int parseCallStackLevel(final String level) {
 		try {
-			final int lvl = Integer.parseInt(level);
-			if (lvl < 1 || lvl > max) {
-				throw new RuntimeException(String.format(
-						"Invalid callstack level '%d'. Must be a in the range [1..%d].", 
-						level,
-						max));
-			}
-			return lvl;
+			return Integer.parseInt(level);
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(String.format(
