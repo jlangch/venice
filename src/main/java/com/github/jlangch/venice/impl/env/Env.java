@@ -340,11 +340,12 @@ public class Env implements Serializable {
 	/**
 	 * Get the local vars from an arbitrary level.
 	 * 
-	 * @param levelsUp how many env levels the function should move up through
-	 *                 the outer levels starting from the current level.
-	 *                 Stops on the last available level.
-	 *                 Must a value of 0,1,2,3,...
-	 * @return the local vars
+	 * @param levelsUp the number of levels the to move up through the outer
+	 *                 levels starting from the current level. Stops on the last
+	 *                 available level.
+	 *                 Must be greater or equal to 0. Negative values are 
+	 *                 treated as 0.
+	 * @return the local vars at the referenced level.
 	 */
 	public List<Var> getLocalVars(final int levelsUp) {
 		Env env = this;
