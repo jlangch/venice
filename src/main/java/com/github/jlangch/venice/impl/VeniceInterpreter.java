@@ -782,7 +782,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							
 							final Thread currThread = Thread.currentThread();
 	
-							checkInterrupted(currThread, fnName);
+							checkInterrupted(currThread, fn);
 							
 
 							// Automatic TCO (tail call optimization)
@@ -809,7 +809,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									callStack.push(new CallFrame(fnName, fnArgs, a0.getMeta(), env));
 
 									if (fn.isNative()) {
-										if (debugAgent != null && fn.isNative() && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+										if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 											// Debugging handled for native functions only.
 											env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
 											try {
@@ -836,7 +836,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								}
 								finally {
 									callStack.pop();
-									checkInterrupted(currThread, fnName);
+									
+									checkInterrupted(currThread, fn);
 									if (checkSandbox) {
 										interceptor.validateMaxExecutionTime();
 									}
@@ -850,7 +851,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 											meterRegistry.record(fnName, elapsed);
 										}
 									}
-								}
+								}	
 							}
 						}
 					}
@@ -887,7 +888,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 	}
-
+	
 	private VncVal evaluate_values(final VncVal ast, final Env env) {
 		if (ast == Nil) {
 			return Nil;
@@ -1799,7 +1800,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				for(int ii=1; ii<count; ii++) {
 					final VncVal result = evaluate(expr, env);
 	
-					checkInterrupted("dorun");
+					checkInterrupted(Thread.currentThread(), "dorun");
 	
 					// Store value to a mutable place to prevent JIT from optimizing 
 					// too much. Wrap the result so a VncStack can be used as result
@@ -1834,7 +1835,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					final long end = System.nanoTime();
 					elapsed.add(new VncLong(end-start));
 	
-					checkInterrupted("dobench");
+					checkInterrupted(Thread.currentThread(), "dobench");
 	
 					// Store value to a mutable place to prevent JIT from optimizing 
 					// too much. Wrap the result so a VncStack can be used as result
@@ -2570,8 +2571,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					.resolveClassName(className);
 	}
 	
-	private void checkInterrupted(final String fnName) {
-		checkInterrupted(Thread.currentThread(), fnName);
+	private void checkInterrupted(final Thread thread, final VncFunction fn) {
+		if (thread.isInterrupted()) {
+			throw new com.github.jlangch.venice.InterruptedException(
+						"Interrupted while processing function " + fn.getQualifiedName());
+		}
 	}
 	
 	private void checkInterrupted(final Thread thread, final String fnName) {
