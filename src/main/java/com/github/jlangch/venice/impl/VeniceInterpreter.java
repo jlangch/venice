@@ -719,7 +719,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_(new CallFrame("try", args, a0.getMeta()), args, new Env(env));
+					return try_(new CallFrame("try", args, a0.getMeta()), args, new Env(env), a0.getMeta());
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
 					return try_with_(new CallFrame("try-with", args, a0.getMeta()), args, new Env(env), a0.getMeta());
@@ -2083,45 +2083,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal try_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal try_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			VncVal result = Nil;
-
-			try {
-				result = evaluateBody(getTryBody(args), env, true);
-			} 
-			catch (RuntimeException ex) {
-				// unchecked exceptions
-				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, ex);
-				if (catchBlock == null) {
-					throw ex;
-				}
-				else {
-					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));			
-					return evaluateBody(catchBlock.getBody(), env, false);
-				}
-			}
-			catch (Exception ex) {
-				// checked exceptions
-				final RuntimeException wrappedEx = new RuntimeException(ex);
-
-				final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, wrappedEx);
-				if (catchBlock == null) {
-					throw ex;
-				}
-				else {
-					env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
-					return evaluateBody(catchBlock.getBody(), env, false);
-				}
-			}
-			finally {
-				final VncList finallyBlock = findFirstFinallyBlock(args);
-				if (finallyBlock != null) {
-					evaluateBody(finallyBlock, env, false);
-				}
-			}
-			
-			return result;
+			return handleTryCatchFinally(
+					"try",
+					args,
+					env,
+					meta,
+					new ArrayList<Var>());
 		}
 	}
 
@@ -2147,38 +2116,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				}
 			}
 	
-
-			final ThreadContext threadCtx = ThreadContext.get();
-			final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-
-			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_BINDINGS)) {
-				final CallStack callStack = threadCtx.getCallStack_();
-				debugAgent.onBreakSpecialForm(
-						"try-with", FunctionEntry, boundResources, meta, env, callStack);
-			}
-			
-			VncVal result = Nil;
 			try {
-				try {
-					result = evaluateBody(getTryBody(args), env, true);
-				} 
-				catch (Throwable th) {
-					final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, th);
-					if (catchBlock == null) {
-						throw th;
-					}
-					else {
-						env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(th)));					
-						return evaluateBody(catchBlock.getBody(), env, false);
-					}
-				}
-				finally {
-					// finally is only for side effects
-					final VncList finallyBlock = findFirstFinallyBlock(args);
-					if (finallyBlock != null) {
-						evaluateBody(finallyBlock, env, false);
-					}
-				}
+				return handleTryCatchFinally(
+							"try-with",
+							args.rest(),
+							env,
+							meta,
+							boundResources);
 			}
 			finally {
 				// close resources in reverse order
@@ -2201,11 +2145,63 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					}
 				});
 			}
-			
-			return result;
 		}
 	}
 
+	private VncVal handleTryCatchFinally(
+			final String specialForm,
+			final VncList args,
+			final Env env, 
+			final VncVal meta,
+			final List<Var> bindings
+	) {
+		final ThreadContext threadCtx = ThreadContext.get();
+		final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+
+		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(specialForm))) {
+			final CallStack callStack = threadCtx.getCallStack_();
+			debugAgent.onBreakSpecialForm(
+					specialForm, FunctionEntry, bindings, meta, env, callStack);
+		}
+		
+		try {
+			return evaluateBody(getTryBody(args), env, true);
+		} 
+		catch (RuntimeException ex) {
+			// unchecked exceptions
+			final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, ex);
+			if (catchBlock == null) {
+				throw ex;
+			}
+			else {
+				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));
+				catchBlockDebug(threadCtx, debugAgent, meta, env, catchBlock.getExSym(), ex);
+				return evaluateBody(catchBlock.getBody(), env, false);
+			}
+		}
+		catch (Exception ex) {
+			// checked exceptions
+			final RuntimeException wrappedEx = new RuntimeException(ex);
+			
+			final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, wrappedEx);
+			if (catchBlock == null) {
+				throw ex;
+			}
+			else {
+				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
+				catchBlockDebug(threadCtx, debugAgent, meta, env, catchBlock.getExSym(), wrappedEx);
+				return evaluateBody(catchBlock.getBody(), env, false);
+			}
+		}
+		finally {
+			final VncList finallyBlock = findFirstFinallyBlock(args);
+			if (finallyBlock != null) {
+				finallyBlockDebug(threadCtx, debugAgent, meta, env);
+				evaluateBody(finallyBlock, env, false);
+			}
+		}
+	}
+	
 	private VncList getTryBody(final VncList args) {
 		final List<VncVal> body = new ArrayList<>();
  		for(VncVal e : args) {
@@ -2341,6 +2337,46 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 		return null;
+	}
+	
+	private void catchBlockDebug(
+			final ThreadContext threadCtx,
+			final DebugAgent debugAgent,
+			final VncVal meta,
+			final Env env,
+			final VncSymbol exSymbol,
+			final RuntimeException ex
+	) {
+		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef("catch"))) {
+			final CallStack callStack = threadCtx.getCallStack_();
+			debugAgent.onBreakSpecialForm(
+					"catch", 
+					FunctionEntry, 
+					VncVector.of(exSymbol), 
+					VncList.of(new VncJavaObject(ex)), 
+					meta, 
+					env, 
+					callStack);
+		}
+	}
+	
+	private void finallyBlockDebug(
+			final ThreadContext threadCtx,
+			final DebugAgent debugAgent,
+			final VncVal meta,
+			final Env env
+	) {
+		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef("finally"))) {
+			final CallStack callStack = threadCtx.getCallStack_();
+			debugAgent.onBreakSpecialForm(
+					"finally", 
+					FunctionEntry, 
+					VncVector.empty(), 
+					VncList.empty(), 
+					meta, 
+					env, 
+					callStack);
+		}
 	}
 	
 	private VncFunction buildFunction(
