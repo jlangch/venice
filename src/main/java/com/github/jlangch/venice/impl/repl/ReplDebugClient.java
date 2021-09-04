@@ -349,7 +349,8 @@ public class ReplDebugClient {
 						printCallstack();
 						break;
 
-					case "select": {
+					case "select":
+					case "s": {
 							final List<CallFrame> frames = getCallFrames(agent.getBreak());
 							final int level = parseCallStackLevel(params.get(1), frames.size());
 							currCallFrameLevel = level;						
@@ -383,7 +384,8 @@ public class ReplDebugClient {
 						}
 						break;
 
-					case "deselect":
+					case "dselect":
+					case "d":
 						println("Cleared call frame operations") ;
 						currCallFrame = null;
 						break;
@@ -392,7 +394,7 @@ public class ReplDebugClient {
 					default:
 						printlnErr(
 							"Invalid callstack command '%s'. Use one of "
-								+ "'list', 'select', or 'deselect'.", 
+								+ "'list', 'select', 'up', 'down', or 'deselect'.", 
 							cmd);
 						break;
 				}

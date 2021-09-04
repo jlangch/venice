@@ -90,6 +90,13 @@ public class ReplDebugHelp {
 			"               and defaults to the top level.\n" +
 			"               Short form: !l\n" +
 			"  !callstack   Print the current callstack.\n" +
+			"               Short form: !cs\n" +
+			"  !callstack x Callstack command\n" +
+			"               o Select a callframe. The !list and !params commands work on\n" +
+			"                 the current callstack  callframe if one is selected.\n" +
+			"                  !callstack select n\n" +
+			"               o Unselect the callframe\n" +
+			"                  !callstack unselect\n" +
 			"  form         Runs a Venice form in the current break context. Useful to\n" +
 			"               inspect parameters, return values, or global/local vars.\n" +
 			"               Note: Debugging is suspended for the evaluating the form!\n" +
