@@ -2083,7 +2083,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal try_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
+	private VncVal try_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env, 
+			final VncVal meta
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			return handleTryCatchFinally(
 					"try",
@@ -2094,7 +2099,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal try_with_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
+	private VncVal try_with_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env, 
+			final VncVal meta
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			final VncSequence bindings = Coerce.toVncSequence(args.first());
 			final List<Var> boundResources = new ArrayList<>();
