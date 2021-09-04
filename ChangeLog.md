@@ -21,7 +21,7 @@ and this project adheres to
 
 ### Added
 
-- a custom mode to ansi/progress function to render the progress
+- a custom mode to `ansi/progress`
 
 ### Fixed
 

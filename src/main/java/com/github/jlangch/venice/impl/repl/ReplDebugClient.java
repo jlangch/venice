@@ -504,8 +504,9 @@ public class ReplDebugClient {
 			final int level = parseEnvLevel(sLevel, 1, maxLevel);
 
 			println(
-				"Local vars at env level %d/%d of call frame %s:\n%s", 
-				level, maxLevel, currCallFrame, renderLocalCars(env, level));
+				"Local vars at env level %d/%d of call frame (%d) of %s:\n%s", 
+				level, maxLevel, currCallFrameLevel, currCallFrame, 
+				renderLocalCars(env, level));
 		}
 	}
 			
