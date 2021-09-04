@@ -238,7 +238,7 @@ public class BreakpointParser {
 	}
 
 	public static Set<String> SUPPORTED_SPECIAL_FORMS = new HashSet<>(
-			Arrays.asList("if", "let", "bindings", "loop"));
+			Arrays.asList("if", "let", "bindings", "loop", "try-with"));
 
 	private static final String BREAKPOINT_SCOPE_REGEX = "^[>(!)]+$";
 }

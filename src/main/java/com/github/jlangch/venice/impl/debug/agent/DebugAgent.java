@@ -210,18 +210,20 @@ public class DebugAgent implements IDebugAgent {
 		breakListener = listener;
 	}
 
-	public void onBreakIf(
+	public void onBreakSpecialForm(
+			final String specialForm,
 			final FunctionScope scope,
 			final VncVector params,
+			final VncList args,
 			final VncVal meta,
 			final Env env,
 			final CallStack callstack
 	) {
-		if (isStopOnFunction("if", true, FunctionEntry)) {
+		if (isStopOnFunction(specialForm, true, FunctionEntry)) {
 			final Break br = new Break(
-									new BreakpointFnRef("if"),
-									new SpecialFormVirtualFunction("if", params, meta), 
-									params.toVncList(),
+									new BreakpointFnRef(specialForm),
+									new SpecialFormVirtualFunction(specialForm, params, meta), 
+									args,
 									env, 
 									callstack,
 									FunctionEntry);
@@ -230,7 +232,7 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 
-	public void onBreakVarBindings(
+	public void onBreakSpecialForm(
 			final String varBindingForm,
 			final FunctionScope scope,
 			final List<Var> vars,

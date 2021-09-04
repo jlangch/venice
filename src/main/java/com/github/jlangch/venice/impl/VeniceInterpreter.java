@@ -397,8 +397,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 
 							if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
-								final CallStack callStack = threadCtx.getCallStack_();
-								debugAgent.onBreakIf(FunctionEntry, VncVector.of(cond), a0.getMeta(), env, callStack);
+								debugAgent.onBreakSpecialForm(
+										"if", 
+										FunctionEntry, 
+										VncVector.of(new VncString("cond")), 
+										VncList.of(cond), 
+										a0.getMeta(), 
+										env, 
+										threadCtx.getCallStack_());
 							}
 
 							orig_ast = VncBoolean.isFalseOrNil(cond) 
@@ -458,7 +464,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
 							final CallStack callStack = threadCtx.getCallStack_();
-							debugAgent.onBreakVarBindings("let", FunctionEntry, vars, a0.getMeta(), env, callStack);
+							debugAgent.onBreakSpecialForm(
+									"let", FunctionEntry, vars, a0.getMeta(), env, callStack);
 						}
 						
 						if (expressions.size() == 1) {
@@ -715,7 +722,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return try_(new CallFrame("try", args, a0.getMeta()), args, new Env(env));
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_with_(new CallFrame("try-with", args, a0.getMeta()), args, new Env(env));
+					return try_with_(new CallFrame("try-with", args, a0.getMeta()), args, new Env(env), a0.getMeta());
 
 				case "locking":
 					return locking_(new CallFrame("locking", args, a0.getMeta()), args, env);
@@ -2062,9 +2069,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final ThreadContext threadCtx = ThreadContext.get();
 			final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 
-			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
+			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_BINDINGS)) {
 				final CallStack callStack = threadCtx.getCallStack_();
-				debugAgent.onBreakVarBindings("bindings", FunctionEntry, bindingVars, meta, env, callStack);
+				debugAgent.onBreakSpecialForm(
+						"bindings", FunctionEntry, bindingVars, meta, env, callStack);
 			}
 
 			evaluate_sequence_values(expressions.butlast(), env);
@@ -2117,7 +2125,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal try_with_(final CallFrame callframe, final VncList args, final Env env) {
+	private VncVal try_with_(final CallFrame callframe, final VncList args, final Env env, final VncVal meta) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			final VncSequence bindings = Coerce.toVncSequence(args.first());
 			final List<Var> boundResources = new ArrayList<>();
@@ -2139,6 +2147,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				}
 			}
 	
+
+			final ThreadContext threadCtx = ThreadContext.get();
+			final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+
+			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_BINDINGS)) {
+				final CallStack callStack = threadCtx.getCallStack_();
+				debugAgent.onBreakSpecialForm(
+						"try-with", FunctionEntry, boundResources, meta, env, callStack);
+			}
 			
 			VncVal result = Nil;
 			try {
@@ -2663,6 +2680,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 	private static final BreakpointFnRef BREAKPOINT_REF_IF = new BreakpointFnRef("if");
 	private static final BreakpointFnRef BREAKPOINT_REF_LET = new BreakpointFnRef("let");
+	private static final BreakpointFnRef BREAKPOINT_REF_BINDINGS = new BreakpointFnRef("bindings");
 	private static final BreakpointFnRef BREAKPOINT_REF_LOOP = new BreakpointFnRef("loop");
 		
 	private final IInterceptor interceptor;	
