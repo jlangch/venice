@@ -2547,7 +2547,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		};
 	}
 	
-	private Env buildRecursionEnv(final VncList args, final Env env, final RecursionPoint recursionPoint) {
+	private Env buildRecursionEnv(
+			final VncList args, 
+			final Env env, 
+			final RecursionPoint recursionPoint
+	) {
 		final Env recur_env = recursionPoint.getLoopEnv();
 		
 		final int argCount = args.size();
@@ -2702,7 +2706,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				) {
 					throw new VncException(String.format(
 							"Special form '%s': Invalid use of namespace. "
-								+ "The symbol '%s' can only be defined for the current namespace '%s'.",
+								+ "The symbol '%s' can only be defined for the "
+								+ "current namespace '%s'.",
 							specialFormName,
 							sym.getSimpleName(),
 							Namespaces.getCurrentNS().toString()));
