@@ -677,7 +677,7 @@ public class ReplDebugClient {
 		
 		int ii = 0;
 		while(!args_.isEmpty()) {
-			sb.append("\n" + formatVar(ii, args_.first()));
+			sb.append("\n" + formatVar(ii++, args_.first()));
 			args_ = args_.rest();
 		}
 		
