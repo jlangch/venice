@@ -25,7 +25,7 @@ and this project adheres to
 
 ### Fixed
 
-- `ns-remove` to not remove the current namespace
+- `ns-remove` to not allow the removal of the current namespace
 - an edge case with special form `ns-list` 
 - `io/watch-dir` when the optional error and termination listener are not passed
 
