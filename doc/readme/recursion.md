@@ -302,7 +302,7 @@ See the execution time and the number of function calls the profiler reveals.
 
 The profiler reveals that the TCO variant is way more efficient. The simple recursion 
 computes the same fibonacci number over and over again. Only with memoization it almost
-compete with the TCO variant. Moreover the simple recursion suffers from a memory problem 
+competes with the TCO variant. Moreover the simple recursion suffers from a memory problem 
 and stack overflow when applied for larger numbers.
 
 The TCO variant is more than 200 times faster than the simple recursion.
