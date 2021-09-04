@@ -22,7 +22,7 @@ Java can be downloaded from
 
 ### 2. Get the Venice JAR file
 
-Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.9.15/jar)
+Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.9.29/jar)
 
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
