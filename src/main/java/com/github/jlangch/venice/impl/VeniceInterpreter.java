@@ -458,7 +458,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
 							final CallStack callStack = threadCtx.getCallStack_();
-							debugAgent.onBreakLet(FunctionEntry, vars, a0.getMeta(), env, callStack);
+							debugAgent.onBreakVarBindings("let", FunctionEntry, vars, a0.getMeta(), env, callStack);
 						}
 						
 						if (expressions.size() == 1) {
@@ -2058,7 +2058,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				
 				bindingVars.addAll(vars);
 			}
-			
+
+			final ThreadContext threadCtx = ThreadContext.get();
+			final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+
+			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
+				final CallStack callStack = threadCtx.getCallStack_();
+				debugAgent.onBreakVarBindings("bindings", FunctionEntry, bindingVars, meta, env, callStack);
+			}
+
 			evaluate_sequence_values(expressions.butlast(), env);
 			return evaluate(expressions.last(), env);
 		}

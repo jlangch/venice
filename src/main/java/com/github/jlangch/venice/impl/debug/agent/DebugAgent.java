@@ -230,18 +230,19 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 
-	public void onBreakLet(
+	public void onBreakVarBindings(
+			final String varBindingForm,
 			final FunctionScope scope,
 			final List<Var> vars,
 			final VncVal meta,
 			final Env env,
 			final CallStack callstack
 	) {
-		if (isStopOnFunction("let", true, FunctionEntry)) {
+		if (isStopOnFunction(varBindingForm, true, FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
 			final Break br = new Break(
-									new BreakpointFnRef("let"),
-									new SpecialFormVirtualFunction("let", vars, meta), 
+									new BreakpointFnRef(varBindingForm),
+									new SpecialFormVirtualFunction(varBindingForm, vars, meta), 
 									VncList.ofColl(
 										vars.stream()
 											.map(v -> v.getVal())
