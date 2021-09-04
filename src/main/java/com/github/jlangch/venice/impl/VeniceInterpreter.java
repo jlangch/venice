@@ -92,6 +92,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -806,9 +807,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							else {
 								// invoke function with a new call frame
 								try {
-									callStack.push(new CallFrame(fnName, fnArgs, a0.getMeta(), env));
-
 									if (fn.isNative()) {
+										callStack.push(new CallFrame(fnName, fnArgs, a0.getMeta(), env));
+
 										if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 											// Debugging handled for native functions only.
 											env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
@@ -831,11 +832,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										// Debugging for non native functions is handled in 
 										// VncFunction::apply. See the builder
 										// VeniceInterpreter::buildFunction(..)
+										threadCtx.setCallFrameFnData_(new CallFrameFnData(fnName, a0.getMeta()));
 										return fn.apply(fnArgs);
 									}
 								}
 								finally {
-									callStack.pop();
+									threadCtx.setCallFrameFnData_(null);
+									if (fn.isNative()) {
+										callStack.pop();
+									}
 									
 									checkInterrupted(currThread, fn);
 									if (checkSandbox) {
@@ -857,25 +862,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					}
 					else if (fn0 instanceof IVncFunction) {
 						// collection/keyword as function
-						try (WithCallStack cs = new WithCallStack(
-														new CallFrame(
-																fn0.getType().toString(), 
-																args,
-																a0.getMeta(),
-																env))
-						) {
+						final CallFrame cf = new CallFrame(fn0.getType().toString(), args, a0.getMeta(), env);
+						try (WithCallStack cs = new WithCallStack(cf)) {
 							final IVncFunction fn = (IVncFunction)fn0;
 							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
 							return fn.apply(fnArgs);
 						}
 					}
 					else {
-						try (WithCallStack cs = new WithCallStack(
-														new CallFrame(
-																a0sym, 
-																args, 
-																a0.getMeta()))
-						) {
+						final CallFrame cf = new CallFrame(a0sym, args, a0.getMeta());
+						try (WithCallStack cs = new WithCallStack(cf)) {
 							throw new VncException(String.format(
 									"Expected a function or keyword/set/map/vector as "
 										+ "s-expression symbol value but got a value "
@@ -1000,12 +996,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			expandedMacros++; 
 
-			try (WithCallStack cs = new WithCallStack(
-											new CallFrame(
-													macro.getQualifiedName(), 
-													macroArgs, 
-													a0.getMeta()))
-			) {
+			final CallFrame cf = new CallFrame(macro.getQualifiedName(), macroArgs, a0.getMeta());
+			try (WithCallStack cs = new WithCallStack(cf)) {
 				if (meterRegistry.enabled) {
 					final long nanosRun = System.nanoTime();
 					
@@ -2378,32 +2370,41 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								getArgLists()));
 				}
 
+				final ThreadContext threadCtx = ThreadContext.get();
 				
+				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
+				threadCtx.setCallFrameFnData_(null);
+								
 				final Env localEnv = new Env(env);
 
 				addFnArgsToEnv(args, localEnv);
 
-				if (switchToFunctionNamespaceAtRuntime) {
-					final ThreadContext threadCtx = ThreadContext.get();
-					
+				if (switchToFunctionNamespaceAtRuntime) {	
+					final CallStack callStack = threadCtx.getCallStack_();						
 					final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 					final Namespace curr_ns = threadCtx.getCurrNS_();
+					final String fnName = getQualifiedName();
+					
+					if (callFrameFnData != null && callFrameFnData.matchesFnName(fnName)) {
+						callStack.push(new CallFrame(fnName, args, callFrameFnData.getFnMeta(), localEnv));
+					}
+					
 					try {
 						threadCtx.setCurrNS_(ns);
 
-						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(getQualifiedName()))) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 							final CallStack cs = threadCtx.getCallStack_();
 							try {
-								debugAgent.onBreakFnEnter(getQualifiedName(), this, args, localEnv, cs);
+								debugAgent.onBreakFnEnter(fnName, this, args, localEnv, cs);
 								if (hasPreConditions) {
 									validateFnPreconditions(localEnv);
 								}
 								final VncVal retVal = evaluateBody(body, localEnv, true);
-								debugAgent.onBreakFnExit(getQualifiedName(), this, args, retVal, localEnv, cs);
+								debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
 								return retVal;
 							}
 							catch(Exception ex) {
-								debugAgent.onBreakFnException(getQualifiedName(), this, args, ex, localEnv, cs);
+								debugAgent.onBreakFnException(fnName, this, args, ex, localEnv, cs);
 								throw ex;
 							}
 						}
@@ -2418,6 +2419,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						// switch always back to curr namespace, just in case (ns xyz)
 						// was executed within the function body!
 						threadCtx.setCurrNS_(curr_ns);
+						
+						if (callFrameFnData != null) {
+							callStack.pop();
+						}
 					}
 				}
 				else {
@@ -2456,11 +2461,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			 		final Env local = new Env(env);	
 			 		for(VncVal v : preConditions) {
 						if (!isFnConditionTrue(evaluate(v, local))) {
-							try (WithCallStack cs = new WithCallStack(
-															new CallFrame(
-																	name, 
-																	v.getMeta()))
-							) {
+							final CallFrame cf = new CallFrame(name, v.getMeta());
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								throw new AssertionException(String.format(
 										"pre-condition assert failed: %s",
 										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));

@@ -2605,11 +2605,9 @@ public class CoreFunctionsTest {
 				"(do                                  " +
 				"   (def counter (atom 0))            " +
 				"                                     " +
-				"   (def test                         " +
-				"        (fn [a]                      " +
-				"            (do                      " +
-				"               (swap! counter inc)   " +
-				"               (+ a 100))))          " +
+				"   (defn test [a]                    " +
+				"      (swap! counter inc)            " +
+				"      (+ a 100))                     " +
 				"                                     " +
 				"   (def test-memo (memoize test))    " +
 				"                                     " +

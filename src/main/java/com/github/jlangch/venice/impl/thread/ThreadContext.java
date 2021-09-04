@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.util.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -78,6 +79,15 @@ public class ThreadContext {
 	public CallStack getCallStack_() {
 		return callStack;
 	}
+
+	public CallFrameFnData getCallFrameFnData_() {
+		return callFrameFnData;
+	}
+
+	public void setCallFrameFnData_(final CallFrameFnData data) {
+		callFrameFnData = data;
+	}
+	
 	
 	public static VncVal getValue(final VncKeyword key) {
 		return getValue(key, Nil);
@@ -369,10 +379,11 @@ public class ThreadContext {
 	
 	private final Map<VncKeyword,VncVal> values = new HashMap<>();
 	private final CallStack callStack = new CallStack();
-	private Namespace ns;
-	private DebugAgent debugAgent;
+	private Namespace ns = null;
+	private DebugAgent debugAgent = null;
 	private IInterceptor interceptor = null;
 	private MeterRegistry meterRegistry = new MeterRegistry(false);
+	private CallFrameFnData callFrameFnData = null;
 	
 	private static final IInterceptor REJECT_ALL_INTERCEPTOR = new RejectAllInterceptor();
 	private static final VncKeyword STD_IN = new VncKeyword("*in*");
