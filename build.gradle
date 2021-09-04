@@ -480,6 +480,13 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'doc/readme', includes: 'start.md')
         }
+        ant.replaceregexp(
+                match:   "/venice/${version_regex}/", 
+                replace: "/venice/${project.version}/", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'doc/readme', includes: 'start.md')
+        }
         
         println "Updating version ${project.version} -> 'repl.sh', 'repl.bat'"
         ant.replaceregexp(
