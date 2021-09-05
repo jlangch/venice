@@ -720,10 +720,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_(new CallFrame("try", args, a0.getMeta()), args, new Env(env), a0.getMeta());
+					return try_(new CallFrame("try", args, a0.getMeta()), args, env, a0.getMeta());
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return try_with_(new CallFrame("try-with", args, a0.getMeta()), args, new Env(env), a0.getMeta());
+					return try_with_(new CallFrame("try-with", args, a0.getMeta()), args, env, a0.getMeta());
 
 				case "locking":
 					return locking_(new CallFrame("locking", args, a0.getMeta()), args, env);
@@ -2107,16 +2107,17 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncVal meta
 	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
+			final Env localEnv = new Env(env);
 			final VncSequence bindings = Coerce.toVncSequence(args.first());
 			final List<Var> boundResources = new ArrayList<>();
 			
 			for(int i=0; i<bindings.size(); i+=2) {
 				final VncVal sym = bindings.nth(i);
-				final VncVal val = evaluate(bindings.nth(i+1), env);
+				final VncVal val = evaluate(bindings.nth(i+1), localEnv);
 	
 				if (Types.isVncSymbol(sym)) {
 					final Var binding = new Var((VncSymbol)sym, val);
-					env.setLocal(binding);
+					localEnv.setLocal(binding);
 					boundResources.add(binding);
 				}
 				else {
@@ -2131,7 +2132,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				return handleTryCatchFinally(
 							"try-with",
 							args.rest(),
-							env,
+							localEnv,
 							meta,
 							boundResources);
 			}
@@ -2176,7 +2177,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 		
 		try {
-			return evaluateBody(getTryBody(args), env, true);
+			final Env bodyEnv = new Env(env);
+			return evaluateBody(getTryBody(args), bodyEnv, true);
 		} 
 		catch (RuntimeException ex) {
 			// unchecked exceptions
@@ -2185,9 +2187,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				throw ex;
 			}
 			else {
-				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));
-				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), env, catchBlock.getExSym(), ex);
-				return evaluateBody(catchBlock.getBody(), env, false);
+				final Env catchEnv = new Env(env);
+				catchEnv.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));
+				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), catchEnv, catchBlock.getExSym(), ex);
+				return evaluateBody(catchBlock.getBody(), catchEnv, false);
 			}
 		}
 		catch (Exception ex) {
@@ -2199,16 +2202,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				throw ex;
 			}
 			else {
-				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
-				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), env, catchBlock.getExSym(), wrappedEx);
-				return evaluateBody(catchBlock.getBody(), env, false);
+				final Env catchEnv = new Env(env);
+				catchEnv.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
+				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), catchEnv, catchBlock.getExSym(), wrappedEx);
+				return evaluateBody(catchBlock.getBody(), catchEnv, false);
 			}
 		}
 		finally {
 			final FinallyBlock finallyBlock = findFirstFinallyBlock(args);
 			if (finallyBlock != null) {
-				finallyBlockDebug(threadCtx, debugAgent, finallyBlock.getMeta(), env);
-				evaluateBody(finallyBlock.getBody(), env, false);
+				final Env finallyEnv = new Env(env);
+				finallyBlockDebug(threadCtx, debugAgent, finallyBlock.getMeta(), finallyEnv);
+				evaluateBody(finallyBlock.getBody(), finallyEnv, false);
 			}
 		}
 	}

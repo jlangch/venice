@@ -15,6 +15,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- the isolation of the try - catch - finally local vars against each other
+
 
 
 ## [1.9.29] - 2021-09-02
