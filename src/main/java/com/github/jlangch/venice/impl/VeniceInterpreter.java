@@ -2456,7 +2456,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					final Namespace curr_ns = threadCtx.getCurrNS_();
 					final String fnName = getQualifiedName();
 					
-					if (callFrameFnData != null && callFrameFnData.matchesFnName(fnName)) {
+					final boolean pushCallstack = callFrameFnData != null 
+													&& callFrameFnData.matchesFnName(fnName);
+					if (pushCallstack) {
 						callStack.push(new CallFrame(fnName, args, callFrameFnData.getFnMeta(), localEnv));
 					}
 					
@@ -2491,7 +2493,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						// was executed within the function body!
 						threadCtx.setCurrNS_(curr_ns);
 						
-						if (callFrameFnData != null) {
+						if (pushCallstack) {
 							callStack.pop();
 						}
 					}
