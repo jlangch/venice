@@ -64,6 +64,7 @@ import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
+import com.github.jlangch.venice.impl.specialforms.FinallyBlock;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.INamespaceAware;
@@ -2185,7 +2186,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 			else {
 				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));
-				catchBlockDebug(threadCtx, debugAgent, meta, env, catchBlock.getExSym(), ex);
+				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), env, catchBlock.getExSym(), ex);
 				return evaluateBody(catchBlock.getBody(), env, false);
 			}
 		}
@@ -2199,15 +2200,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 			else {
 				env.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
-				catchBlockDebug(threadCtx, debugAgent, meta, env, catchBlock.getExSym(), wrappedEx);
+				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), env, catchBlock.getExSym(), wrappedEx);
 				return evaluateBody(catchBlock.getBody(), env, false);
 			}
 		}
 		finally {
-			final VncList finallyBlock = findFirstFinallyBlock(args);
+			final FinallyBlock finallyBlock = findFirstFinallyBlock(args);
 			if (finallyBlock != null) {
-				finallyBlockDebug(threadCtx, debugAgent, meta, env);
-				evaluateBody(finallyBlock, env, false);
+				finallyBlockDebug(threadCtx, debugAgent, finallyBlock.getMeta(), env);
+				evaluateBody(finallyBlock.getBody(), env, false);
 			}
 		}
 	}
@@ -2245,7 +2246,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					if (isCatchBlockMatchingThrowable(env, block, th)) {
 						return new CatchBlock(
 									Coerce.toVncSymbol(block.third()), 
-									block.slice(3));
+									block.slice(3),
+									catchSym.getMeta());
 					}
 				}
 			}
@@ -2255,9 +2257,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 	
 	private boolean isCatchBlockMatchingThrowable(
-		final Env env,
-		final VncList block, 
-		final Throwable th
+			final Env env,
+			final VncList block, 
+			final Throwable th
 	) {
 		final VncVal selector = evaluate(block.second(), env);
 
@@ -2336,13 +2338,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 	
-	private VncList findFirstFinallyBlock(final VncList blocks) {
+	private FinallyBlock findFirstFinallyBlock(final VncList blocks) {
 		for(VncVal b : blocks) {
 			if (Types.isVncList(b)) {
 				final VncList block = ((VncList)b);
 				final VncVal first = block.first();
 				if (Types.isVncSymbol(first) && ((VncSymbol)first).getName().equals("finally")) {
-					return block.rest();
+					return new FinallyBlock(block.rest(), first.getMeta());
 				}
 			}
 		}
@@ -2489,13 +2491,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 					}
 					finally {
-						// switch always back to curr namespace, just in case (ns xyz)
-						// was executed within the function body!
-						threadCtx.setCurrNS_(curr_ns);
-						
 						if (pushCallstack) {
 							callStack.pop();
 						}
+
+						// switch always back to curr namespace, just in case (ns xyz)
+						// was executed within the function body!
+						threadCtx.setCurrNS_(curr_ns);
 					}
 				}
 				else {

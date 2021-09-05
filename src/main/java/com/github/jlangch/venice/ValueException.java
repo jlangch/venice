@@ -49,7 +49,27 @@ public class ValueException extends VncException {
 	public String getType() { 
 		return type; 
 	}
+
+	@Override
+    public String toString() {
+        String s = getClass().getName();
+        return value == null
+        		? s + ": null"
+        		: s + ": (" + type + ") " + format(value);
+    }
 	
+	private static String format(final Object value) {
+		if (value == null) {
+			return null;
+		}
+		else if (value instanceof VncVal) {
+			return ((VncVal)value).toString(true);
+		}
+		else {
+			return value.toString();
+		}
+	}
+
 	private static String type(final Object value) {
 		if (value == null) {
 			return Constants.Nil.getType().toString();

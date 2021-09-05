@@ -21,28 +21,21 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class CatchBlock {
+public class FinallyBlock {
 
-	public CatchBlock(
-			final VncSymbol exSym,
+	public FinallyBlock(
 			final VncList body,
 			final VncVal meta
 	) {
-		this.exSym = exSym;
 		this.body = body;
 		this.meta = meta;
 	}
 	
 		
-	public VncSymbol getExSym() {
-		return exSym;
-	}
-	
 	public VncList getBody() {
 		return body;
 	}
@@ -53,17 +46,10 @@ public class CatchBlock {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("SYM: ");
-		sb.append(exSym);
-		sb.append("\n");
-		sb.append(body);
-		
-		return sb.toString();
+		return body.toString();
 	}
 	
 
-	private final VncSymbol exSym;
 	private final VncList body;
 	private final VncVal meta;
 }
