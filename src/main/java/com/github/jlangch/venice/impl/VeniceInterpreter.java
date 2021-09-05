@@ -2388,8 +2388,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			debugAgent.onBreakSpecialForm(
 					"finally", 
 					FunctionEntry, 
-					VncVector.empty(), 
-					VncList.empty(), 
+					new ArrayList<Var>(), 
 					meta, 
 					env, 
 					callStack);
