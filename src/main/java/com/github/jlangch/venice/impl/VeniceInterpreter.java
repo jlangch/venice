@@ -725,7 +725,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return specialFormHandler.prof_(new CallFrame("prof", args, a0.getMeta()), args, env);
 				
 				case "tail-pos": 
-					return tail_pos_check(
+					return specialFormHandler.tail_pos_check(
 								tailPosition, 
 								new CallFrame("tail-pos", args, a0.getMeta()), args, env);
 
@@ -1392,8 +1392,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final Env env
 	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("eval", FnType.SpecialForm, args, 0);
 			specialFormCallValidation("eval");
+			assertMinArity("eval", FnType.SpecialForm, args, 0);
 			final Namespace ns = Namespaces.getCurrentNamespace();
 			try {
 				return evaluate(Coerce.toVncSequence(evaluate_sequence_values(args, env)).last(), env);
@@ -1401,26 +1401,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			finally {
 				Namespaces.setCurrentNamespace(ns);
 			}
-		}
-	}
-	
-	private VncVal tail_pos_check(
-			final boolean inTailPosition, 
-			final CallFrame callframe, 
-			final VncList args, 
-			final Env env
-	) {
-		if (!inTailPosition) {
-			final VncString name = Coerce.toVncString(args.nthOrDefault(0, VncString.empty()));
-			try (WithCallStack cs = new WithCallStack(callframe)) {
-				throw new NotInTailPositionException(
-						name.isEmpty() 
-							? "Not in tail position"
-							: String.format("Not '%s' in tail position", name.getValue()));
-			}
-		}
-		else {
-			return Nil;
 		}
 	}
 

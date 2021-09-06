@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -87,6 +88,7 @@ public class SpecialFormsHandler {
 		this.meterRegistry = meterRegistry;
 		this.sealedSystemNS = sealedSystemNS;
 	}
+
 
 	
 	public VncVal import_(final CallFrame callframe, final VncList args, final Env env) {
@@ -724,6 +726,26 @@ public class SpecialFormsHandler {
 					}
 				});
 			}
+		}
+	}
+	
+	public VncVal tail_pos_check(
+			final boolean inTailPosition, 
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env
+	) {
+		if (!inTailPosition) {
+			final VncString name = Coerce.toVncString(args.nthOrDefault(0, VncString.empty()));
+			try (WithCallStack cs = new WithCallStack(callframe)) {
+				throw new NotInTailPositionException(
+						name.isEmpty() 
+							? "Not in tail position"
+							: String.format("Not '%s' in tail position", name.getValue()));
+			}
+		}
+		else {
+			return Nil;
 		}
 	}
 
