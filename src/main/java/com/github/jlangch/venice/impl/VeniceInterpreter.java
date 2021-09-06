@@ -2027,12 +2027,20 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final VncVal opt2 = args.third();
 						
 						String title = "Metrics";
-						if (Types.isVncString(opt1) && !Types.isVncKeyword(opt1)) title = ((VncString)opt1).getValue();
-						if (Types.isVncString(opt2) && !Types.isVncKeyword(opt2)) title = ((VncString)opt2).getValue();
+						if (Types.isVncString(opt1) && !Types.isVncKeyword(opt1)) {
+							title = ((VncString)opt1).getValue();
+						}
+						if (Types.isVncString(opt2) && !Types.isVncKeyword(opt2)) {
+							title = ((VncString)opt2).getValue();
+						}
 	
 						boolean anonFn = false;
-						if (Types.isVncKeyword(opt1)) anonFn = anonFn || ((VncKeyword)opt1).hasValue("anon-fn");
-						if (Types.isVncKeyword(opt2)) anonFn = anonFn || ((VncKeyword)opt2).hasValue("anon-fn");
+						if (Types.isVncKeyword(opt1)) {
+							anonFn = anonFn || ((VncKeyword)opt1).hasValue("anon-fn");
+						}
+						if (Types.isVncKeyword(opt2)) {
+							anonFn = anonFn || ((VncKeyword)opt2).hasValue("anon-fn");
+						}
 	
 						return new VncString(meterRegistry.getTimerDataFormatted(title, anonFn));
 				}
@@ -2051,7 +2059,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 		if (bindings.size() % 2 != 0) {
 			try (WithCallStack cs = new WithCallStack(new CallFrame("bindings", args, meta))) {
-				throw new VncException("bindings requires an even number of forms in the binding vector!");					
+				throw new VncException(
+						"bindings requires an even number of forms in the "
+						+ "binding vector!");					
 			}
 		}
 
@@ -2123,7 +2133,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				else {
 					throw new VncException(
 							String.format(
-									"Invalid 'try-with' destructuring symbol value type %s. Expected symbol.",
+									"Invalid 'try-with' destructuring symbol "
+									+ "value type %s. Expected symbol.",
 									Types.getType(sym)));
 				}
 			}
@@ -2180,26 +2191,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final Env bodyEnv = new Env(env);
 			return evaluateBody(getTryBody(args), bodyEnv, true);
 		} 
-		catch (RuntimeException ex) {
-			// unchecked exceptions
+		catch (Exception ex) {
+			final RuntimeException wrappedEx = ex instanceof RuntimeException 
+													? (RuntimeException)ex 
+													: new RuntimeException(ex);
+			
 			final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, ex);
 			if (catchBlock == null) {
-				throw ex;
-			}
-			else {
-				final Env catchEnv = new Env(env);
-				catchEnv.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(ex)));
-				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), catchEnv, catchBlock.getExSym(), ex);
-				return evaluateBody(catchBlock.getBody(), catchEnv, false);
-			}
-		}
-		catch (Exception ex) {
-			// checked exceptions
-			final RuntimeException wrappedEx = new RuntimeException(ex);
-			
-			final CatchBlock catchBlock = findCatchBlockMatchingThrowable(env, args, wrappedEx);
-			if (catchBlock == null) {
-				throw ex;
+				throw wrappedEx;
 			}
 			else {
 				final Env catchEnv = new Env(env);
@@ -2365,7 +2364,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final RuntimeException ex
 	) {
 		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef("catch"))) {
-			final CallStack callStack = threadCtx.getCallStack_();
 			debugAgent.onBreakSpecialForm(
 					"catch", 
 					FunctionEntry, 
@@ -2373,7 +2371,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					VncList.of(new VncJavaObject(ex)), 
 					meta, 
 					env, 
-					callStack);
+					threadCtx.getCallStack_());
 		}
 	}
 	
@@ -2384,14 +2382,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final Env env
 	) {
 		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef("finally"))) {
-			final CallStack callStack = threadCtx.getCallStack_();
 			debugAgent.onBreakSpecialForm(
 					"finally", 
 					FunctionEntry, 
 					new ArrayList<Var>(), 
 					meta, 
 					env, 
-					callStack);
+					threadCtx.getCallStack_());
 		}
 	}
 	
@@ -2450,7 +2447,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				final ThreadContext threadCtx = ThreadContext.get();
 				
 				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
-				threadCtx.setCallFrameFnData_(null);
+				threadCtx.setCallFrameFnData_(null); // we've got it
 								
 				final Env localEnv = new Env(env);
 
