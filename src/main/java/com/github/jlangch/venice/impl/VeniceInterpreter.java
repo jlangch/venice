@@ -2496,8 +2496,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							callStack.pop();
 						}
 
-						// switch always back to curr namespace, just in case (ns xyz)
-						// was executed within the function body!
+						// switch always back to current namespace, just in case
+						// the namespace was changed within the function body!
 						threadCtx.setCurrNS_(curr_ns);
 					}
 				}

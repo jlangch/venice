@@ -822,7 +822,10 @@ public class CoreFunctions {
 					.arglists(
 						"(read-string s)",
 						"(read-string s origin)")
-					.doc("Reads from s")
+					.doc(
+						"Reads Venice source from a string and transforms its " +
+						"content into a Venice data structure, following the " +
+						"rules of the Venice syntax.")
 					.examples(
 						"(do                                             \n" +
 						"  (eval (read-string \"(def x 100)\" \"test\")) \n" +
@@ -836,7 +839,7 @@ public class CoreFunctions {
 
 					String origin = null;
 					
-					if (args.size() == 2 && Types.isVncString(args.second())) {
+					if (args.size() == 2) {
 						origin = Coerce.toVncString(args.second()).getValue();									
 						origin = origin.substring(origin.lastIndexOf('/') + 1);
 					}
