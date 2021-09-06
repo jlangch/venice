@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.jlangch.venice.EofException;
-import com.github.jlangch.venice.impl.SpecialForms;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms;
 
 
 public class HighlightParser {

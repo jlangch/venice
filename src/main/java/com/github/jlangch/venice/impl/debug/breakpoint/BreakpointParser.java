@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ParseError;
-import com.github.jlangch.venice.impl.SpecialForms;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
