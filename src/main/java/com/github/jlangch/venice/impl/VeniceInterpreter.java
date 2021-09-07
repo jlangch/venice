@@ -585,22 +585,22 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return specialFormHandler.quote_(args, env, a0meta);
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
-					return fn_(new CallFrame("fn", args, a0meta), args, env);
+					return fn_(args, env, a0meta);
 
 				case "eval": // (eval expr*)
-					return eval_(new CallFrame("eval", args, a0meta), args, env);
+					return eval_(args, env, a0meta);
 
 				case "def":  // (def name value)
-					return def_(new CallFrame("def", args, a0meta), args, env);
+					return def_(args, env, a0meta);
 
 				case "defonce": // (defonce name value)
-					return defonce_(new CallFrame("defonce", args, a0meta), args, env);
+					return defonce_(args, env, a0meta);
 
 				case "def-dynamic": // (def-dynamic name value)
-					return def_dynamic_(new CallFrame("def-dynamic", args, a0meta), args, env);
+					return def_dynamic_(args, env, a0meta);
 
 				case "defmacro":
-					return defmacro_(new CallFrame("defmacro", args, a0meta), args, env);
+					return defmacro_(args, env, a0meta);
 
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);
@@ -675,13 +675,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return macroexpand(args, env, a0meta);
 
 				case "macroexpand-all*":  // (macroexpand-all* form)
-					// Note: This special form is exposed through the public Venice function 
-					//       'core/macroexpand-all' in the 'core' module.
-					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
+					// Note: This special form is exposed through the public Venice
+					//       function 'core/macroexpand-all' in the 'core' module.
 					return macroexpand_all(
-								new CallFrame("macroexpand-all*", args, a0meta), 
-								evaluate(args.first(), env), 
-								env);
+							new CallFrame("macroexpand-all*", args, a0meta), 
+							evaluate(args.first(), env), 
+							env);
 
 				case "doc": // (doc sym)
 					return specialFormHandler.doc_(args, env, a0meta);
@@ -1135,9 +1134,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-
-	private VncVal defmacro_(final CallFrame callframe, final VncList args, final Env env) {
-		try (WithCallStack cs = new WithCallStack(callframe)) {
+	private VncVal defmacro_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame cf = new CallFrame("defmacro", args, meta); 
+		try (WithCallStack cs = new WithCallStack(cf)) {
 			assertMinArity("defmacro", FnType.SpecialForm, args, 2);
 			return defmacro_(args, env);
 		}
@@ -1230,8 +1229,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal def_(final CallFrame callframe, final VncList args, final Env env) {
-		try (WithCallStack cs = new WithCallStack(callframe)) {
+	private VncVal def_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame cf = new CallFrame("def", args, meta); 
+		try (WithCallStack cs = new WithCallStack(cf)) {
 			assertArity("def", FnType.SpecialForm, args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										Namespaces.qualifySymbolWithCurrNS(
@@ -1246,8 +1246,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}				
 	}
 
-	private VncVal defonce_(final CallFrame callframe, final VncList args, final Env env) {
-		try (WithCallStack cs = new WithCallStack(callframe)) {
+	private VncVal defonce_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame cf = new CallFrame("defonce", args, meta); 
+		try (WithCallStack cs = new WithCallStack(cf)) {
 			assertArity("defonce", FnType.SpecialForm, args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										Namespaces.qualifySymbolWithCurrNS(
@@ -1262,8 +1263,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal def_dynamic_(final CallFrame callframe, final VncList args, final Env env) {
-		try (WithCallStack cs = new WithCallStack(callframe)) {
+	private VncVal def_dynamic_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame cf = new CallFrame("def-dynamic", args, meta); 
+		try (WithCallStack cs = new WithCallStack(cf)) {
 			assertArity("def-dynamic", FnType.SpecialForm, args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
 										Namespaces.qualifySymbolWithCurrNS(
@@ -1298,7 +1300,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 			else {
 				final VncList fnAst = Coerce.toVncList(args.second());
-				dispatchFn = fn_(callframe, fnAst.rest(), env);
+				dispatchFn = fn_(fnAst.rest(), env, meta);
 			}
 
 			final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
@@ -1330,7 +1332,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						multiFnName.getName(),
 						multiFn.getParams().size()));
 			}
-			final VncVector preConditions = getFnPreconditions(args.fourth(), env);
+			final VncVector preConditions = getFnPreconditions(args.fourth());
 			final VncList body = args.slice(preConditions == null ? 3 : 4);
 			final VncFunction fn = buildFunction(
 										multiFnName.getName(),
@@ -1347,10 +1349,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 
 	private VncVal eval_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env, 
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("eval", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("eval");
 			assertMinArity("eval", FnType.SpecialForm, args, 0);
@@ -1365,13 +1368,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 
 	private VncFunction fn_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env, 
+			final VncVal callMeta
 	) {
 		// single arity:  (fn name? [params*] condition-map? expr*)
 		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
 
+		final CallFrame callframe = new CallFrame("fn", args, callMeta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("fn", FnType.SpecialForm, args, 1);
 	
@@ -1399,7 +1403,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				
 				argPos++;
 				final VncVector params = (VncVector)paramsOrSig;				
-				final VncVector preCon = getFnPreconditions(args.nthOrDefault(argPos, null), env);
+				final VncVector preCon = getFnPreconditions(args.nthOrDefault(argPos, null));
 				if (preCon != null) argPos++;
 				
 				final VncList body = args.slice(argPos);
@@ -1429,7 +1433,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					
 					final VncList sig = Coerce.toVncList(s);					
 					final VncVector params = Coerce.toVncVector(sig.nth(pos++));					
-					final VncVector preCon = getFnPreconditions(sig.nth(pos), env);
+					final VncVector preCon = getFnPreconditions(sig.nth(pos));
 					if (preCon != null) pos++;
 					
 					final VncList body = sig.slice(pos);
@@ -1527,8 +1531,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return new VncFunction(name, params, macro, preConditions, meta) {
 			@Override
 			public VncVal apply(final VncList args) {
+				final ThreadContext threadCtx = ThreadContext.get();
+				
+				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
+				threadCtx.setCallFrameFnData_(null); // we've got it, reset it
+								
 				if (hasVariadicArgs()) {
 					if (args.size() < getFixedArgsCount()) {
+						final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
+						final CallFrame cf = new CallFrame(getQualifiedName(), meta);
+						try (WithCallStack cs = new WithCallStack(cf)) {
 							throw new ArityException(
 									formatVariadicArityExMsg(
 										getQualifiedName(), 
@@ -1536,23 +1548,23 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										args.size(), 
 										getFixedArgsCount(),
 										getArgLists()));
+						}
 					}
 				}
 				else if (args.size() != getFixedArgsCount()) {
-					throw new ArityException(
-							formatArityExMsg(
-								getQualifiedName(), 
-								macro ? FnType.Macro : FnType.Function,
-								args.size(), 
-								getFixedArgsCount(),
-								getArgLists()));
+					final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
+					final CallFrame cf = new CallFrame(getQualifiedName(), meta);
+					try (WithCallStack cs = new WithCallStack(cf)) {
+						throw new ArityException(
+								formatArityExMsg(
+									getQualifiedName(), 
+									macro ? FnType.Macro : FnType.Function,
+									args.size(), 
+									getFixedArgsCount(),
+									getArgLists()));
+					}
 				}
 
-				final ThreadContext threadCtx = ThreadContext.get();
-				
-				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
-				threadCtx.setCallFrameFnData_(null); // we've got it, reset it
-								
 				final Env localEnv = new Env(env);
 
 				addFnArgsToEnv(args, localEnv);
@@ -1705,7 +1717,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return recur_env;
 	}
 
-	private VncVector getFnPreconditions(final VncVal prePostConditions, final Env env) {
+	private VncVector getFnPreconditions(final VncVal prePostConditions) {
 		if (Types.isVncMap(prePostConditions)) {
 			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
 			if (Types.isVncVector(val)) {
