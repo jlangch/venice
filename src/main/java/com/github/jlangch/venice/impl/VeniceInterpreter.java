@@ -467,25 +467,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					}
 					break;
 
-				case "quasiquote": // (quasiquote form)
-					if (args.size() != 1) {
-						// only create callstack when needed!
-						try (WithCallStack cs = new WithCallStack(new CallFrame("quasiquote", args, a0.getMeta()))) {
-							assertArity("quasiquote", FnType.SpecialForm, args, 1);
-						}
-					}
-					orig_ast = quasiquote(args.first());
-					break;
-
-				case "quote": // (quote form)
-					if (args.size() != 1) {
-						// only create callstack when needed!
-						try (WithCallStack cs = new WithCallStack(new CallFrame("quote", args, a0.getMeta()))) {
-							assertArity("quote", FnType.SpecialForm, args, 1);
-						}
-					}
-					return args.first();
-
 				case "loop": { // (loop [bindings*] exprs*)
 						recursionPoint = null;
 						if (args.size() < 2) {
@@ -590,6 +571,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						tailPosition = true;
 					}
 					break;
+
+				case "quasiquote": // (quasiquote form)
+					orig_ast = specialFormHandler.quasiquote_(args, env, a0.getMeta());
+					break;
+
+				case "quote": // (quote form)
+					return specialFormHandler.quote_(args, env, a0.getMeta());
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
 					return fn_(new CallFrame("fn", args, a0.getMeta()), args, env);
@@ -1141,35 +1129,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 	}
-	
-	private static boolean isNonEmptySequence(final VncVal x) {
-		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
-	}
 
-	private static VncVal quasiquote(final VncVal ast) {
-		if (isNonEmptySequence(ast)) {
-			final VncVal a0 = Coerce.toVncSequence(ast).first();
-			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
-				return ((VncSequence)ast).second();
-			} 
-			else if (isNonEmptySequence(a0)) {
-				final VncVal a00 = Coerce.toVncSequence(a0).first();
-				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
-					return VncList.of(
-								new VncSymbol("concat"),
-								Coerce.toVncSequence(a0).second(),
-								quasiquote(((VncSequence)ast).rest()));
-				}
-			}
-			return VncList.of(
-						new VncSymbol("cons"),
-						quasiquote(a0),
-						quasiquote(((VncSequence)ast).rest()));
-		}
-		else {
-			return VncList.of(new VncSymbol("quote"), ast);
-		}
-	}
 
 	private VncVal defmacro_(final CallFrame callframe, final VncList args, final Env env) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
