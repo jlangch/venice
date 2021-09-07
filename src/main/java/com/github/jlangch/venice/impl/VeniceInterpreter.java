@@ -363,8 +363,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 
 			final VncVal a0 = ast.first();		
+			final VncVal a0meta = a0.getMeta();
 			final String a0sym = (a0 instanceof VncSymbol) ? ((VncSymbol)a0).getName() : "__<*fn*>__";
-			final VncList args = ast.rest();		
+			final VncList args = ast.rest();
 
 			// special form / function dispatcher
 			switch (a0sym) {
@@ -390,7 +391,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										FunctionEntry, 
 										VncVector.of(new VncString("cond")), 
 										VncList.of(cond), 
-										a0.getMeta(), 
+										a0meta, 
 										env, 
 										threadCtx.getCallStack_());
 							}
@@ -402,7 +403,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 						else {
 							// only create callstack when needed!
-							try (WithCallStack cs = new WithCallStack(new CallFrame("if", args, a0.getMeta()))) {
+							final CallFrame cf = new CallFrame("if", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								assertArity("if", FnType.SpecialForm, args, 2, 3);
 							}
 						}
@@ -412,7 +414,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "let": { // (let [bindings*] exprs*)
 						if (args.isEmpty()) {
 							// only create callstack when needed!
-							try (WithCallStack cs = new WithCallStack(new CallFrame("let", args, a0.getMeta()))) {
+							final CallFrame cf = new CallFrame("let", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								assertMinArity("let", FnType.SpecialForm, args, 1);					
 							}
 						}
@@ -429,7 +432,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						while(bindingsIter.hasNext()) {
 							final VncVal sym = bindingsIter.next();
 							if (!bindingsIter.hasNext()) {
-								try (WithCallStack cs = new WithCallStack(new CallFrame("let", args, a0.getMeta()))) {
+								final CallFrame cf = new CallFrame("let", args, a0meta);
+								try (WithCallStack cs = new WithCallStack(cf)) {
 									throw new VncException("let requires an even number of forms in the binding vector!");					
 								}
 							}
@@ -453,7 +457,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
 							final CallStack callStack = threadCtx.getCallStack_();
 							debugAgent.onBreakSpecialForm(
-									"let", FunctionEntry, vars, a0.getMeta(), env, callStack);
+									"let", FunctionEntry, vars, a0meta, env, callStack);
 						}
 						
 						if (expressions.size() == 1) {
@@ -471,7 +475,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						recursionPoint = null;
 						if (args.size() < 2) {
 							// only create callstack when needed!
-							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", args, a0.getMeta()))) {
+							final CallFrame cf = new CallFrame("loop", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								assertMinArity("loop", FnType.SpecialForm, args, 2);
 							}
 						}
@@ -479,10 +484,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
-						final VncVal meta = a0.getMeta();
 						
 						if (bindings.size() % 2 != 0) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("loop", args, meta))) {
+							final CallFrame cf = new CallFrame("loop", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								throw new VncException("loop requires an even number of forms in the binding vector!");					
 							}
 						}
@@ -504,7 +509,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 												bindingNames,
 												expressions,
 												env,
-												meta,
+												a0meta,
 												debugAgent);
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
@@ -530,13 +535,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "recur":  { // (recur exprs*)
 						// Note: (recur) is valid, it's used by the while macro
 						if (recursionPoint == null) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", args, a0.getMeta()))) {
+							final CallFrame cf = new CallFrame("recur", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								throw new NotInTailPositionException(
 										"The recur expression is not in tail position!");
 							}
 						}
 						if (args.size() != recursionPoint.getLoopBindingNamesCount()) {
-							try (WithCallStack cs = new WithCallStack(new CallFrame("recur", args, a0.getMeta()))) {
+							final CallFrame cf = new CallFrame("recur", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
 								throw new VncException(String.format(
 										"The recur args (%d) do not match the loop args (%d) !",
 										args.size(), 
@@ -548,16 +555,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 						// for performance reasons the DebugAgent is stored in the 
 						// RecursionPoint. Saves repeated ThreadLocal access!
-						final ThreadContext threadCtx = ThreadContext.get();
-						final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-
+						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
 							debugAgent.onBreakLoop(
 									FunctionEntry,
 									recursionPoint.getLoopBindingNames(), 
 									recursionPoint.getMeta(),
 									env,
-									threadCtx.getCallStack_());
+									ThreadContext.getCallStack());
 						}
 
 						final VncList expressions = recursionPoint.getLoopExpressions();
@@ -573,147 +578,146 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					break;
 
 				case "quasiquote": // (quasiquote form)
-					orig_ast = specialFormHandler.quasiquote_(args, env, a0.getMeta());
+					orig_ast = specialFormHandler.quasiquote_(args, env, a0meta);
 					break;
 
 				case "quote": // (quote form)
-					return specialFormHandler.quote_(args, env, a0.getMeta());
+					return specialFormHandler.quote_(args, env, a0meta);
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
-					return fn_(new CallFrame("fn", args, a0.getMeta()), args, env);
+					return fn_(new CallFrame("fn", args, a0meta), args, env);
 
 				case "eval": // (eval expr*)
-					return eval_(new CallFrame("eval", args, a0.getMeta()), args, env);
+					return eval_(new CallFrame("eval", args, a0meta), args, env);
 
 				case "def":  // (def name value)
-					return def_(new CallFrame("def", args, a0.getMeta()), args, env);
+					return def_(new CallFrame("def", args, a0meta), args, env);
 
 				case "defonce": // (defonce name value)
-					return defonce_(new CallFrame("defonce", args, a0.getMeta()), args, env);
+					return defonce_(new CallFrame("defonce", args, a0meta), args, env);
 
 				case "def-dynamic": // (def-dynamic name value)
-					return def_dynamic_(new CallFrame("def-dynamic", args, a0.getMeta()), args, env);
+					return def_dynamic_(new CallFrame("def-dynamic", args, a0meta), args, env);
 
 				case "defmacro":
-					return defmacro_(new CallFrame("defmacro", args, a0.getMeta()), args, env);
+					return defmacro_(new CallFrame("defmacro", args, a0meta), args, env);
 
 				case "deftype": // (deftype type fields validationFn*)
-					return specialFormHandler.deftype_(this, args, env, a0.getMeta());
+					return specialFormHandler.deftype_(this, args, env, a0meta);
 
 				case "deftype?": // (deftype? type)
-					return specialFormHandler.deftypeQ_(args, env, a0.getMeta());
+					return specialFormHandler.deftypeQ_(args, env, a0meta);
 
 				case "deftype-of": // (deftype-of type base-type validationFn*)
-					return specialFormHandler.deftype_of_(this, args, env, a0.getMeta());
+					return specialFormHandler.deftype_of_(this, args, env, a0meta);
 
 				case "deftype-or":  // (deftype-or type vals*)
-					return specialFormHandler.deftype_or_(this, args, env, a0.getMeta());
+					return specialFormHandler.deftype_or_(this, args, env, a0meta);
 
 				case ".:": // (.: type args*)
-					return specialFormHandler.deftype_create_(this, args, env, a0.getMeta());
+					return specialFormHandler.deftype_create_(this, args, env, a0meta);
 
 				case "defmulti":  // (defmulti name dispatch-fn)
-					return defmulti_(args, env, a0.getMeta());
+					return defmulti_(args, env, a0meta);
 
 				case "defmethod": // (defmethod multifn-name dispatch-val & fn-tail)
-					return defmethod_(args, env, a0.getMeta());
+					return defmethod_(args, env, a0meta);
 
 				case "ns": // (ns alpha)
-					return specialFormHandler.ns_(args, env, a0.getMeta());
+					return specialFormHandler.ns_(args, env, a0meta);
 
 				case "ns-remove": // (ns-remove ns)
-					return specialFormHandler.ns_remove_(args, env, a0.getMeta());
+					return specialFormHandler.ns_remove_(args, env, a0meta);
 
 				case "ns-unmap": // (ns-unmap ns sym)
-					return specialFormHandler.ns_unmap_(args, env, a0.getMeta());
+					return specialFormHandler.ns_unmap_(args, env, a0meta);
 
 				case "ns-list": // (ns-list ns)
-					return specialFormHandler.ns_list_(args, env, a0.getMeta());
+					return specialFormHandler.ns_list_(args, env, a0meta);
 
 				case "import":
-					return specialFormHandler.import_(args, env, a0.getMeta());
+					return specialFormHandler.import_(args, env, a0meta);
 
 				case "imports":
-					return specialFormHandler.imports_(args, env, a0.getMeta());
+					return specialFormHandler.imports_(args, env, a0meta);
 
 				case "namespace": // (namespace x)
-					return specialFormHandler.namespace_(args, env, a0.getMeta());
+					return specialFormHandler.namespace_(args, env, a0meta);
 
 				case "resolve": // (resolve sym)
-					return specialFormHandler.resolve_(args, env, a0.getMeta());
+					return specialFormHandler.resolve_(args, env, a0meta);
 				
 				case "var-get": // (var-get v)
-					return specialFormHandler.var_get_(args, env, a0.getMeta());
+					return specialFormHandler.var_get_(args, env, a0meta);
 
 				case "var-ns": // (var-ns v)
-					return specialFormHandler.var_ns_(args, env, a0.getMeta());
+					return specialFormHandler.var_ns_(args, env, a0meta);
 
 				case "var-name": // (var-name v)
-					return specialFormHandler.var_name_(args, env, a0.getMeta());
+					return specialFormHandler.var_name_(args, env, a0meta);
 
 				case "var-local?": // (var-local? v)
-					return specialFormHandler.var_localQ_(args, env, a0.getMeta());
+					return specialFormHandler.var_localQ_(args, env, a0meta);
 
 				case "var-thread-local?": // (var-thread-local? v)
-					return specialFormHandler.var_thread_localQ_(args, env, a0.getMeta());
+					return specialFormHandler.var_thread_localQ_(args, env, a0meta);
 
 				case "var-global?": // (var-global? v)
-					return specialFormHandler.var_globalQ_(args, env, a0.getMeta());
+					return specialFormHandler.var_globalQ_(args, env, a0meta);
 
 				case "set!": // (set! name expr)
-					return specialFormHandler.setBANG_(args, env, a0.getMeta());
+					return specialFormHandler.setBANG_(args, env, a0meta);
 				
 				case "inspect": // (inspect sym)
-					return specialFormHandler.inspect_(args, env, a0.getMeta());
+					return specialFormHandler.inspect_(args, env, a0meta);
 
 				case "macroexpand": // (macroexpand form)
-					return macroexpand(
-							new CallFrame("macroexpand", args, a0.getMeta()), args, env);
+					return macroexpand(args, env, a0meta);
 
 				case "macroexpand-all*":  // (macroexpand-all* form)
 					// Note: This special form is exposed through the public Venice function 
 					//       'core/macroexpand-all' in the 'core' module.
 					//       The VeniceInterpreter::MACROEXPAND function makes use of it.
 					return macroexpand_all(
-								new CallFrame("macroexpand-all*", args, a0.getMeta()), 
+								new CallFrame("macroexpand-all*", args, a0meta), 
 								evaluate(args.first(), env), 
 								env);
 
 				case "doc": // (doc sym)
-					return specialFormHandler.doc_(args, env, a0.getMeta());
+					return specialFormHandler.doc_(args, env, a0meta);
 
 				case "print-highlight": // (print-highlight form)
-					return specialFormHandler.print_highlight_(args, env, a0.getMeta());
+					return specialFormHandler.print_highlight_(args, env, a0meta);
 
 				case "modules": // (modules )
-					return specialFormHandler.modules_(args, env, a0.getMeta());
+					return specialFormHandler.modules_(args, env, a0meta);
 
 				case "binding":  // (binding [bindings*] exprs*)
-					return binding_(args, new Env(env), a0.getMeta());
+					return binding_(args, new Env(env), a0meta);
 
 				case "bound?": // (bound? sym)
 					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return specialFormHandler.try_(args, env, a0.getMeta());
+					return specialFormHandler.try_(args, env, a0meta);
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return specialFormHandler.try_with_(args, env, a0.getMeta());
+					return specialFormHandler.try_with_(args, env, a0meta);
 
 				case "locking":
-					return specialFormHandler.locking_(args, env, a0.getMeta());
+					return specialFormHandler.locking_(args, env, a0meta);
 
 				case "dorun":
-					return specialFormHandler.dorun_(new CallFrame("dorun", args, a0.getMeta()), args, env, a0.getMeta());
+					return specialFormHandler.dorun_(new CallFrame("dorun", args, a0meta), args, env, a0meta);
 
 				case "dobench":
-					return specialFormHandler.dobench_(args, env, a0.getMeta());
+					return specialFormHandler.dobench_(args, env, a0meta);
 
 				case "prof":
-					return specialFormHandler.prof_(args, env, a0.getMeta());
+					return specialFormHandler.prof_(args, env, a0meta);
 				
 				case "tail-pos": 
-					return specialFormHandler.tail_pos_check(tailPosition, args, env, a0.getMeta());
+					return specialFormHandler.tail_pos_check(tailPosition, args, env, a0meta);
 
 				default: { // functions, macros, collections/keywords as functions
 					final VncVal fn0 = a0 instanceof VncSymbol
@@ -725,7 +729,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						if (fn.isMacro()) { 
 							// macro
-							final VncVal expandedAst = macroexpand(ast, env);
+							final VncVal expandedAst = doMacroexpand(ast, env);
 							if (expandedAst instanceof VncList) {					
 								orig_ast = expandedAst;
 								continue;
@@ -752,7 +756,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 							// validate function call allowed by sandbox
 							if (checkSandbox) {
-								final CallFrame cf = new CallFrame(fnName, fnArgs, a0.getMeta(), env);
+								final CallFrame cf = new CallFrame(fnName, fnArgs, a0meta, env);
 								try (WithCallStack cs = new WithCallStack(cf)) {
 									interceptor.validateVeniceFunction(fnName);	
 								}
@@ -771,14 +775,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									&& fnName.equals(callStack.peek().getFnName())
 							) {
 								// fn may be a normal function, a multi-arity, or a multi-method function							
-								final VncFunction f = fn.getFunctionForArgs(fnArgs);
-								env.addLocalVars(Destructuring.destructure(f.getParams(), fnArgs));
+								final VncFunction effFn = fn.getFunctionForArgs(fnArgs);
+								env.addLocalVars(Destructuring.destructure(effFn.getParams(), fnArgs));
 								
 								if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-									debugAgent.onBreakFnEnter(fnName, f, fnArgs, env, callStack);
+									debugAgent.onBreakFnEnter(fnName, effFn, fnArgs, env, callStack);
 								}
 								
-								final VncList body = (VncList)f.getBody();
+								final VncList body = (VncList)effFn.getBody();
 								evaluate_sequence_values(body.butlast(), env);
 								orig_ast = body.last();
 							}
@@ -786,7 +790,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								// invoke function with a new call frame
 								try {
 									if (fn.isNative()) {
-										callStack.push(new CallFrame(fnName, fnArgs, a0.getMeta(), env));
+										callStack.push(new CallFrame(fnName, fnArgs, a0meta, env));
 
 										if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 											// Debugging handled for native functions only.
@@ -810,7 +814,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										// Debugging for non native functions is handled in 
 										// VncFunction::apply. See the builder
 										// VeniceInterpreter::buildFunction(..)
-										threadCtx.setCallFrameFnData_(new CallFrameFnData(fnName, a0.getMeta()));
+										threadCtx.setCallFrameFnData_(new CallFrameFnData(fnName, a0meta));
 										return fn.apply(fnArgs);
 									}
 								}
@@ -840,7 +844,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					}
 					else if (fn0 instanceof IVncFunction) {
 						// collection/keyword as function
-						final CallFrame cf = new CallFrame(fn0.getType().toString(), args, a0.getMeta(), env);
+						final CallFrame cf = new CallFrame(fn0.getType().toString(), args, a0meta, env);
 						try (WithCallStack cs = new WithCallStack(cf)) {
 							final IVncFunction fn = (IVncFunction)fn0;
 							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
@@ -848,7 +852,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 					}
 					else {
-						final CallFrame cf = new CallFrame(a0sym, args, a0.getMeta());
+						final CallFrame cf = new CallFrame(a0sym, args, a0meta);
 						try (WithCallStack cs = new WithCallStack(cf)) {
 							throw new VncException(String.format(
 									"Expected a function or keyword/set/map/vector as "
@@ -947,7 +951,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	 * @param env env
 	 * @return the expanded macro
 	 */
-	private VncVal macroexpand(
+	private VncVal doMacroexpand(
 			final VncVal ast, 
 			final Env env
 	) {
@@ -999,14 +1003,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 
 	private VncVal macroexpand(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("macroexpand", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("macroexpand", FnType.SpecialForm, args, 1);
 			final VncVal ast = evaluate(args.first(), env);
-			return macroexpand(ast, env);
+			return doMacroexpand(ast, env);
 		}		
 	}
 
@@ -1063,7 +1068,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							}
 							else {
 								// try to expand
-								return macroexpand(list, env);
+								return doMacroexpand(list, env);
 							}
 						}
 					}
@@ -1768,11 +1773,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			// do not allow to hijack another namespace
 			final String ns = sym.getNamespace();
 			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
-				try (WithCallStack cs = new WithCallStack(
-												new CallFrame(
-														specialFormName, 
-														sym.getMeta()))
-				) {
+				final CallFrame cf = new CallFrame(specialFormName, sym.getMeta());
+				try (WithCallStack cs = new WithCallStack(cf)) {
 					throw new VncException(String.format(
 							"Special form '%s': Invalid use of namespace. "
 								+ "The symbol '%s' can only be defined for the "
