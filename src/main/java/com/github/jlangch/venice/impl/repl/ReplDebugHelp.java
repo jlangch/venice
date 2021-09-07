@@ -99,7 +99,8 @@ public class ReplDebugHelp {
 			"                  !callstack unselect\n" +
 			"  form         Runs a Venice form in the current break context. Useful to\n" +
 			"               inspect parameters, return values, or global/local vars.\n" +
-			"               Note: Debugging is suspended for the evaluating the form!\n" +
+			"               Note: Debugging is suspended for evaluating the form if a\n" +
+			"                     break is active!\n" +
 			"               E.g.:  (first param1)";
 
 }
