@@ -118,11 +118,11 @@ public class Destructuring {
 						bindings);
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", bindVal.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(callframe(bindVal))) {
 					throw new VncException(
 							String.format(
-									"Invalid sequential destructuring bind value type %s. Expected list, "
-										+ "vector, or string.",
+									"Invalid sequential destructuring bind value type %s. "
+									+ "Expected list, vector, or string.",
 									Types.getType(bindVal)));
 				}
 			}
@@ -134,7 +134,7 @@ public class Destructuring {
 				associative_map_destructure((VncMap)symVal, (VncMap)bindVal, bindings);
 			}
 			else if (Types.isVncVector(bindVal)) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", bindVal.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(callframe(bindVal))) {
 					throw new VncException(
 							String.format(
 									"Associative destructuring on vector is not yet implemented."));
@@ -144,7 +144,7 @@ public class Destructuring {
 				associative_map_destructure((VncMap)symVal, new VncHashMap(), bindings);
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", bindVal.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(callframe(bindVal))) {
 					throw new VncException(
 							String.format(
 									"Invalid associative destructuring bind value type %s. Expected map.",
@@ -153,7 +153,7 @@ public class Destructuring {
 			}
 		}
 		else {
-			try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symVal.getMeta()))) {
+			try (WithCallStack cs = new WithCallStack(callframe(symVal))) {
 				throw new VncException(
 						String.format(
 								"Invalid destructuring sym value type %s. Expected symbol.",
@@ -273,10 +273,11 @@ public class Destructuring {
 					}
 				}
 				else {
-					try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symbol.getMeta()))) {
+					try (WithCallStack cs = new WithCallStack(callframe(symbol))) {
 						throw new VncException(
 									String.format(
-											"Invalid associative destructuring with :keys symbol type %s. Expected vector.",
+											"Invalid associative destructuring with :keys symbol "
+											+ "type %s. Expected vector.",
 											Types.getType(symbol)));
 					}
 				}					
@@ -291,10 +292,11 @@ public class Destructuring {
 					}
 				}
 				else {
-					try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symbol.getMeta()))) {
+					try (WithCallStack cs = new WithCallStack(callframe(symbol))) {
 						throw new VncException(
 									String.format(
-											"Invalid associative destructuring with :syms symbol type %s. Expected vector.",
+											"Invalid associative destructuring with :syms "
+											+ "symbol type %s. Expected vector.",
 											Types.getType(symbol)));
 					}
 				}					
@@ -309,10 +311,11 @@ public class Destructuring {
 					}
 				}
 				else {
-					try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symbol.getMeta()))) {
+					try (WithCallStack cs = new WithCallStack(callframe(symbol))) {
 						throw new VncException(
 								String.format(
-										"Invalid associative destructuring with :strs symbol type %s. Expected vector.",
+										"Invalid associative destructuring with "
+										+ ":strs symbol type %s. Expected vector.",
 										Types.getType(symbol)));
 					}
 				}					
@@ -373,7 +376,7 @@ public class Destructuring {
 				local_bindings.add(new Var((VncSymbol)symValName, v));								
 			}
 			else {
-				try (WithCallStack cs = new WithCallStack(new CallFrame("destructuring", symValName.getMeta()))) {
+				try (WithCallStack cs = new WithCallStack(callframe(symValName))) {
 					throw new VncException(
 							String.format(
 									"Invalid associative destructuring name type %s.",
@@ -421,6 +424,9 @@ public class Destructuring {
 		return n.equals(KEYWORD_AS) || n.equals(KEYWORD_OR);
 	}
 	
+	private static CallFrame callframe(final VncVal val) {
+		return new CallFrame("destructuring", val.getMeta());
+	}
 	
 	
 	private static final VncKeyword KEYWORD_AS = new VncKeyword(":as");

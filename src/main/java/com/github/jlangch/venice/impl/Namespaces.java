@@ -91,7 +91,27 @@ public class Namespaces {
 	public static void setCurrentNamespace(final Namespace ns) {
 		ThreadContext.setCurrNS(ns);
 	}
-
+	
+	public static VncSymbol qualifySymbolWithCurrNS(final VncSymbol sym) {
+		if (sym == null) {
+			return null;
+		}	
+		else if (sym.hasNamespace()) {
+			return new VncSymbol(
+						sym.getName(),
+						MetaUtil.setNamespace(sym.getMeta(), sym.getNamespace()));
+		}
+		else {
+			final VncSymbol ns = Namespaces.getCurrentNS();			
+			final VncVal newMeta = MetaUtil.setNamespace(sym.getMeta(), ns.getName());
+			
+			return Namespaces.isCoreNS(ns)
+					? new VncSymbol(sym.getName(), newMeta)
+					: new VncSymbol(ns.getName(), sym.getName(), newMeta);
+		}
+	}
+	
+	
 	
 	public static final String NS_CURRENT_NAME = "*ns*";
 	public static final VncSymbol NS_CURRENT_SYMBOL = new VncSymbol("*ns*");

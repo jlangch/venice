@@ -1146,7 +1146,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private VncFunction defmacro_(final VncList args, final Env env) {
 		int argPos = 0;
 		
-		final VncSymbol macroName = qualifySymbolWithCurrNS(
+		final VncSymbol macroName = Namespaces.qualifySymbolWithCurrNS(
 										evaluateSymbolMetaData(args.nth(argPos++), env));
 		VncVal meta = macroName.getMeta();
 		
@@ -1181,9 +1181,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			argPos++;
 			final VncVector params = (VncVector)paramsOrSig;
-
-			final VncList body = args.slice(argPos);
-	
+			final VncList body = args.slice(argPos);	
 			final VncFunction macroFn = buildFunction(
 											macroName_.getName(), 
 											params, 
@@ -1205,12 +1203,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncVal meta_ = meta;
 
 			args.slice(argPos).forEach(s -> {
-				int pos = 0;
-				
-				final VncList fnSig = Coerce.toVncList(s);
-				
-				final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));
-				
+				int pos = 0;				
+				final VncList fnSig = Coerce.toVncList(s);				
+				final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));				
 				final VncList fnBody = fnSig.slice(pos);
 				
 				fns.add(buildFunction(
@@ -1239,7 +1234,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("def", FnType.SpecialForm, args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
-										qualifySymbolWithCurrNS(
+										Namespaces.qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
 										"def");
 			
@@ -1255,7 +1250,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("defonce", FnType.SpecialForm, args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
-										qualifySymbolWithCurrNS(
+										Namespaces.qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
 										"defonce");
 							
@@ -1271,7 +1266,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("def-dynamic", FnType.SpecialForm, args, 1, 2);
 			final VncSymbol name = validateSymbolWithCurrNS(
-										qualifySymbolWithCurrNS(
+										Namespaces.qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
 										"def-dynamic");
 			
@@ -1289,7 +1284,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("defmulti", FnType.SpecialForm, args, 2);
 			final VncSymbol name =  validateSymbolWithCurrNS(
-										qualifySymbolWithCurrNS(
+										Namespaces.qualifySymbolWithCurrNS(
 												evaluateSymbolMetaData(args.first(), env)),
 										"defmulti");
 			
@@ -1317,7 +1312,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		final CallFrame callframe = new CallFrame("defmethod", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("defmethod", FnType.SpecialForm, args, 2);
-			final VncSymbol multiFnName = qualifySymbolWithCurrNS(
+			final VncSymbol multiFnName = Namespaces.qualifySymbolWithCurrNS(
 											Coerce.toVncSymbol(args.first()));
 			final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
 			if (multiFnVal == null) {
@@ -1395,7 +1390,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				meta = args.second().getMeta();
 			}
 	
-			final VncSymbol fnName = qualifySymbolWithCurrNS(name);
+			final VncSymbol fnName = Namespaces.qualifySymbolWithCurrNS(name);
 			ReservedSymbols.validateNotReservedSymbol(fnName);
 	
 			final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
@@ -1403,8 +1398,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				// single arity:
 				
 				argPos++;
-				final VncVector params = (VncVector)paramsOrSig;
-				
+				final VncVector params = (VncVector)paramsOrSig;				
 				final VncVector preCon = getFnPreconditions(args.nthOrDefault(argPos, null), env);
 				if (preCon != null) argPos++;
 				
@@ -1433,10 +1427,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				args.slice(argPos).forEach(s -> {
 					int pos = 0;
 					
-					final VncList sig = Coerce.toVncList(s);
-					
-					final VncVector params = Coerce.toVncVector(sig.nth(pos++));
-					
+					final VncList sig = Coerce.toVncList(s);					
+					final VncVector params = Coerce.toVncVector(sig.nth(pos++));					
 					final VncVector preCon = getFnPreconditions(sig.nth(pos), env);
 					if (preCon != null) pos++;
 					
@@ -1559,7 +1551,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				final ThreadContext threadCtx = ThreadContext.get();
 				
 				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
-				threadCtx.setCallFrameFnData_(null); // we've got it
+				threadCtx.setCallFrameFnData_(null); // we've got it, reset it
 								
 				final Env localEnv = new Env(env);
 
@@ -1744,25 +1736,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 	private static <T> List<T> toEmpty(final List<T> list) {
 		return list == null ? new ArrayList<T>() : list;
-	}
-	
-	private VncSymbol qualifySymbolWithCurrNS(final VncSymbol sym) {
-		if (sym == null) {
-			return null;
-		}	
-		else if (sym.hasNamespace()) {
-			return new VncSymbol(
-						sym.getName(),
-						MetaUtil.setNamespace(sym.getMeta(), sym.getNamespace()));
-		}
-		else {
-			final VncSymbol ns = Namespaces.getCurrentNS();			
-			final VncVal newMeta = MetaUtil.setNamespace(sym.getMeta(), ns.getName());
-			
-			return Namespaces.isCoreNS(ns)
-					? new VncSymbol(sym.getName(), newMeta)
-					: new VncSymbol(ns.getName(), sym.getName(), newMeta);
-		}
 	}
 	
 	private VncSymbol validateSymbolWithCurrNS(
