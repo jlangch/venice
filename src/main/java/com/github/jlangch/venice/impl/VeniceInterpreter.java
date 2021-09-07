@@ -1538,31 +1538,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								
 				if (hasVariadicArgs()) {
 					if (args.size() < getFixedArgsCount()) {
-						final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
-						final CallFrame cf = new CallFrame(getQualifiedName(), meta);
-						try (WithCallStack cs = new WithCallStack(cf)) {
-							throw new ArityException(
-									formatVariadicArityExMsg(
-										getQualifiedName(), 
-										macro ? FnType.Macro : FnType.Function,
-										args.size(), 
-										getFixedArgsCount(),
-										getArgLists()));
-						}
+						throwVariadicArityException(this, args, callFrameFnData);
 					}
 				}
 				else if (args.size() != getFixedArgsCount()) {
-					final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
-					final CallFrame cf = new CallFrame(getQualifiedName(), meta);
-					try (WithCallStack cs = new WithCallStack(cf)) {
-						throw new ArityException(
-								formatArityExMsg(
-									getQualifiedName(), 
-									macro ? FnType.Macro : FnType.Function,
-									args.size(), 
-									getFixedArgsCount(),
-									getArgLists()));
-					}
+					throwFixedArityException(this, args, callFrameFnData);
 				}
 
 				final Env localEnv = new Env(env);
@@ -1774,6 +1754,41 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return sym;
 	}
 	
+	private void throwVariadicArityException(
+			final VncFunction fn,
+			final VncList args,
+			final CallFrameFnData callFrameFnData
+	) {
+		final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
+		final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
+		try (WithCallStack cs = new WithCallStack(cf)) {
+			throw new ArityException(
+					formatVariadicArityExMsg(
+						fn.getQualifiedName(), 
+						fn.isMacro() ? FnType.Macro : FnType.Function,
+						args.size(), 
+						fn.getFixedArgsCount(),
+						fn.getArgLists()));
+		}
+	}
+	
+	private void throwFixedArityException(
+			final VncFunction fn,
+			final VncList args,
+			final CallFrameFnData callFrameFnData
+	) {
+		final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
+		final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
+		try (WithCallStack cs = new WithCallStack(cf)) {
+			throw new ArityException(
+					formatArityExMsg(
+						fn.getQualifiedName(), 
+						fn.isMacro() ? FnType.Macro : FnType.Function,
+						args.size(), 
+						fn.getFixedArgsCount(),
+						fn.getArgLists()));
+		}
+	}
 	
 	private void specialFormCallValidation(final String name) {
 		ThreadContext.getInterceptor().validateVeniceFunction(name);
