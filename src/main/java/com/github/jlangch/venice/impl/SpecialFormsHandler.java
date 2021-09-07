@@ -91,7 +91,12 @@ public class SpecialFormsHandler {
 
 
 	
-	public VncVal import_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal import_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("import", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("import", FnType.SpecialForm, args, 0);
 			args.forEach(i -> Namespaces
@@ -103,10 +108,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal imports_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("imports", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			if (args.isEmpty()) {
 				return Namespaces.getCurrentNamespace().getJavaImportsAsVncList();
@@ -127,7 +133,12 @@ public class SpecialFormsHandler {
 	}
 
 
-	public VncVal ns_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal ns_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("ns", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns");
 			assertArity("ns", FnType.SpecialForm, args, 1);
@@ -154,7 +165,12 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal ns_remove_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal ns_remove_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("ns-remove", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-remove");
 			assertArity("ns-remove", FnType.SpecialForm, args, 1);
@@ -177,7 +193,12 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal ns_unmap_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal ns_unmap_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("ns-unmap", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-unmap");
 			assertArity("ns-unmap", FnType.SpecialForm, args, 2);
@@ -195,7 +216,12 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal ns_list_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal ns_list_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("ns-list", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("ns-list");
 			assertArity("ns-list", FnType.SpecialForm, args, 1);
@@ -216,10 +242,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal locking_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("locking", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("locking", FnType.SpecialForm, args, 2);
 			
@@ -232,10 +259,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal setBANG_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("set!", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("set!");
 			assertArity("set!", FnType.SpecialForm, args, 2);
@@ -266,10 +294,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal modules_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("modules", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			return VncList.ofList(
 						Modules
@@ -283,10 +312,11 @@ public class SpecialFormsHandler {
 	}
 	
 	public VncVal namespace_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("namespace", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("namespace", FnType.SpecialForm, args, 1);
 			final VncVal val = evaluator.evaluate(args.first(), env, false);
@@ -301,7 +331,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal resolve_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal resolve_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("resolve", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("resolve");
 			assertArity("resolve", FnType.SpecialForm, args, 1);
@@ -309,7 +344,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_get_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal var_get_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("var-get", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("var-get");
 			assertArity("var-get", FnType.SpecialForm, args, 1);
@@ -320,7 +360,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_ns_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal var_ns_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("var-ns", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("var-ns");
 			assertArity("var-ns", FnType.SpecialForm, args, 1);
@@ -347,7 +392,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_name_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal var_name_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("var-name", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("var-name");
 			assertArity("var-name", FnType.SpecialForm, args, 1);
@@ -358,7 +408,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_localQ_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal var_localQ_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("var-local?", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("var-local?", FnType.SpecialForm, args, 1);
 			final VncSymbol sym = Types.isVncSymbol(args.first())
@@ -368,7 +423,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_thread_localQ_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal var_thread_localQ_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("var-thread-local?", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("var-thread-local?", FnType.SpecialForm, args, 1);
 			final VncSymbol sym = Types.isVncSymbol(args.first())
@@ -378,7 +438,12 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_globalQ_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal var_globalQ_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("var-global?", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("var-global?", FnType.SpecialForm, args, 1);
 			final VncSymbol sym = Types.isVncSymbol(args.first())
@@ -390,10 +455,11 @@ public class SpecialFormsHandler {
 	
 	public VncVal deftype_(
 			final IVeniceInterpreter interpreter, 
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("deftype", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("deftype", FnType.SpecialForm, args, 2, 3);
 			final VncKeyword type = Coerce.toVncKeyword(evaluator.evaluate(args.first(), env, false));
@@ -407,10 +473,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal deftypeQ_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("deftype?", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("deftype?", FnType.SpecialForm, args, 1);
 			final VncVal type = evaluator.evaluate(args.first(), env, false);
@@ -420,10 +487,11 @@ public class SpecialFormsHandler {
 
 	public VncVal deftype_of_(
 			final IVeniceInterpreter interpreter, 
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("deftype-of", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("deftype-of", FnType.SpecialForm, args, 2);
 			final VncKeyword type = Coerce.toVncKeyword(evaluator.evaluate(args.first(), env, false));
@@ -443,10 +511,11 @@ public class SpecialFormsHandler {
 
 	public VncVal deftype_or_(
 			final IVeniceInterpreter interpreter, 
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("deftype-or", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("deftype-or", FnType.SpecialForm, args, 2);
 			final VncKeyword type = Coerce.toVncKeyword(evaluator.evaluate(args.first(), env, false));
@@ -458,10 +527,11 @@ public class SpecialFormsHandler {
 
 	public VncVal deftype_create_(
 			final IVeniceInterpreter interpreter, 
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame(".:", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity(".:", FnType.SpecialForm, args, 1);
 			final List<VncVal> evaluatedArgs = new ArrayList<>();
@@ -473,10 +543,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal inspect_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("inspect", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("inspect");
 			assertArity("inspect", FnType.SpecialForm, args, 1);
@@ -486,10 +557,11 @@ public class SpecialFormsHandler {
 	}
 	
 	public VncVal doc_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("doc", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("doc", FnType.SpecialForm, args, 1);
 			final VncString doc = DocForm.doc(args.first(), env);
@@ -499,10 +571,11 @@ public class SpecialFormsHandler {
 	}
 	
 	public VncVal print_highlight_(
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("print-highlight", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("print-highlight", FnType.SpecialForm, args, 1);
 			final VncString form = DocForm.highlight(Coerce.toVncString(args.first()), env);
@@ -511,7 +584,12 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal dobench_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal dobench_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("dobench", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("dobench");
 			assertArity("dobench", FnType.SpecialForm, args, 2);
@@ -547,7 +625,12 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal dorun_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal dorun_(
+			final CallFrame callframe, 
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("dorun");
 			assertArity("dorun", FnType.SpecialForm, args, 2);
@@ -581,7 +664,11 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal prof_(final CallFrame callframe, final VncList args, final Env env) {
+	public VncVal prof_( 
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
 		// Note on profiling recursive functions: 
 		// For recursive functions the profiler reports the 'time with children
 		// for the particular recursive function resulting in much higher measured 
@@ -590,6 +677,7 @@ public class SpecialFormsHandler {
 		//
 		// See:  - https://smartbear.com/learn/code-profiling/fundamentals-of-performance-profiling/
 		//       - https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
+		final CallFrame callframe = new CallFrame("prof", args, meta); 
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("prof");
 			assertArity("prof", FnType.SpecialForm, args, 1, 2, 3);
@@ -653,11 +741,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal try_(
-			final CallFrame callframe, 
 			final VncList args, 
 			final Env env, 
 			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("try", args, meta); 
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			return handleTryCatchFinally(
 					"try",
@@ -669,11 +757,11 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal try_with_(
-			final CallFrame callframe, 
 			final VncList args, 
 			final Env env, 
 			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("try-with", args, meta); 
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			final Env localEnv = new Env(env);
 			final VncSequence bindings = Coerce.toVncSequence(args.first());
@@ -731,11 +819,12 @@ public class SpecialFormsHandler {
 	
 	public VncVal tail_pos_check(
 			final boolean inTailPosition, 
-			final CallFrame callframe, 
 			final VncList args, 
-			final Env env
+			final Env env,
+			final VncVal meta
 	) {
 		if (!inTailPosition) {
+			final CallFrame callframe = new CallFrame("tail-pos", args, meta);
 			final VncString name = Coerce.toVncString(args.nthOrDefault(0, VncString.empty()));
 			try (WithCallStack cs = new WithCallStack(callframe)) {
 				throw new NotInTailPositionException(
