@@ -220,15 +220,14 @@ public class DebugAgent implements IDebugAgent {
 			final CallStack callstack
 	) {
 		if (isStopOnFunction(specialForm, true, FunctionEntry)) {
-			final Break br = new Break(
-									new BreakpointFnRef(specialForm),
-									new SpecialFormVirtualFunction(specialForm, params, meta), 
-									args,
-									env, 
-									callstack,
-									FunctionEntry);
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef(specialForm),
+							new SpecialFormVirtualFunction(specialForm, params, meta), 
+							args,
+							env, 
+							callstack,
+							FunctionEntry));
 		}
 	}
 
@@ -242,18 +241,17 @@ public class DebugAgent implements IDebugAgent {
 	) {
 		if (isStopOnFunction(varBindingForm, true, FunctionEntry)) {
 			Collections.sort(vars, Comparator.comparing(v -> v.getName()));
-			final Break br = new Break(
-									new BreakpointFnRef(varBindingForm),
-									new SpecialFormVirtualFunction(varBindingForm, vars, meta), 
-									VncList.ofColl(
-										vars.stream()
-											.map(v -> v.getVal())
-											.collect(Collectors.toList())),
-									env, 
-									callstack,
-									FunctionEntry);
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef(varBindingForm),
+							new SpecialFormVirtualFunction(varBindingForm, vars, meta), 
+							VncList.ofColl(
+								vars.stream()
+									.map(v -> v.getVal())
+									.collect(Collectors.toList())),
+							env, 
+							callstack,
+							FunctionEntry));
 		}
 	}
 
@@ -265,23 +263,22 @@ public class DebugAgent implements IDebugAgent {
 			final CallStack callstack
 	) {
 		if (isStopOnFunction("loop", true, FunctionEntry)) {
-			final Break br = new Break(
-									new BreakpointFnRef("loop"),
-									new SpecialFormVirtualFunction(
-											"loop", 
-											VncVector.ofColl(loopBindingNames), 
-											meta), 
-									VncList.ofColl(
-											loopBindingNames
-											  .stream()
-											  .map(s -> env.findLocalVar(s))
-											  .map(v -> v == null ? Nil : v.getVal())
-											  .collect(Collectors.toList())),
-									env,
-									callstack,
-									FunctionEntry);
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef("loop"),
+							new SpecialFormVirtualFunction(
+									"loop", 
+									VncVector.ofColl(loopBindingNames), 
+									meta), 
+							VncList.ofColl(
+									loopBindingNames
+									  .stream()
+									  .map(s -> env.findLocalVar(s))
+									  .map(v -> v == null ? Nil : v.getVal())
+									  .collect(Collectors.toList())),
+							env,
+							callstack,
+							FunctionEntry));
 		}
 	}
 	
@@ -293,16 +290,14 @@ public class DebugAgent implements IDebugAgent {
 			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionCall)) {
-			final Break br = new Break(
-									new BreakpointFnRef(fnName),
-									fn,
-									unevaluatedArgs,
-									env,
-									callstack,
-									FunctionCall);
-			
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef(fnName),
+							fn,
+							unevaluatedArgs,
+							env,
+							callstack,
+							FunctionCall));
 		}
 	}
 	
@@ -314,16 +309,14 @@ public class DebugAgent implements IDebugAgent {
 			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionEntry)) {
-			final Break br = new Break(
-									new BreakpointFnRef(fnName),
-									fn,
-									evaluatedArgs,
-									env,
-									callstack,
-									FunctionEntry);
-			
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef(fnName),
+							fn,
+							evaluatedArgs,
+							env,
+							callstack,
+							FunctionEntry));
 		}
 	}
 	
@@ -336,18 +329,16 @@ public class DebugAgent implements IDebugAgent {
 			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionExit)) {
-			final Break br = new Break(
-									new BreakpointFnRef(fnName),
-									fn,
-									evaluatedArgs,
-									retVal,
-									null,
-									env,
-									callstack,
-									FunctionExit);
-			
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef(fnName),
+							fn,
+							evaluatedArgs,
+							retVal,
+							null,
+							env,
+							callstack,
+							FunctionExit));
 		}
 	}
 	
@@ -360,18 +351,16 @@ public class DebugAgent implements IDebugAgent {
 			final CallStack callstack
 	) {
 		if (isStopOnFunction(fnName, false, FunctionException)) {
-			final Break br = new Break(
-									new BreakpointFnRef(fnName),
-									fn,
-									evaluatedArgs,
-									null,
-									ex,
-									env,
-									callstack,
-									FunctionException);
-
-			notifyOnBreak(br);
-			waitOnBreak(br);
+			handleBreak(
+					new Break(
+							new BreakpointFnRef(fnName),
+							fn,
+							evaluatedArgs,
+							null,
+							ex,
+							env,
+							callstack,
+							FunctionException));
 		}
 	}
 
@@ -552,6 +541,11 @@ public class DebugAgent implements IDebugAgent {
 		return sb.toString();
 	}
 
+	private void handleBreak(final Break br) {
+		notifyOnBreak(br);
+		waitOnBreak(br);
+	}
+	
 	private void notifyOnBreak(final Break br) {
 		activeBreak = br;
 		

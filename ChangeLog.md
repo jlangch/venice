@@ -17,7 +17,7 @@ and this project adheres to
 
 ### Fixed
 
-- the isolation of the try - catch - finally local vars against each other
+- the isolation of the try-catch-finally local vars against each other
 - arity exceptions to carry a callstack
 
 

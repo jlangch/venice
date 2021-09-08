@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.debug.agent;
 
+import java.util.UUID;
+
 import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
@@ -158,8 +160,33 @@ public class Break {
 		
 		return sb.toString();
 	}
-	
 
+	
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Break other = (Break) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+
+
+	private final String id = UUID.randomUUID().toString();
 	private final BreakpointFnRef breakpoint;
 	private final VncFunction fn;
 	private final VncList args;
