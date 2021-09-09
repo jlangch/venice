@@ -37,6 +37,9 @@ import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
+/**
+ * Represents a break with its context information
+ */
 public class Break {
 
 	public Break(

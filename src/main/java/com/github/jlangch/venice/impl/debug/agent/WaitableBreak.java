@@ -26,6 +26,9 @@ import static com.github.jlangch.venice.impl.util.StringUtil.padRight;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
+/**
+ * Enhances the {@link Break} class with a debugger 'waitable' flag.
+ */
 public class WaitableBreak {
 
 	public WaitableBreak(final Break br) {
