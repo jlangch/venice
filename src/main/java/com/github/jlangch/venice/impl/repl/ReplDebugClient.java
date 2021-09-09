@@ -936,6 +936,8 @@ public class ReplDebugClient {
 					"step-over",      "so",
 					"step-entry",     "se",
 					"step-exit",      "sx",
+					"breaks",
+					"switch-break",   "sb",
 					"break?",         "b?",
 					"callstack",      "cs",
 					"params",         "p",
