@@ -1363,20 +1363,20 @@ public class ConcurrencyFunctions {
 						"Thread local vars will be inherited by the future child thread. Changes " +
 						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
-						"(do                                        \n" + 
-						"   (defn wait [] (do (sleep 300) 100))     \n" + 
-						"   (let [f (future wait)]                  \n" + 
-						"        (deref f)))                          ",
+						"(do                                       \n" + 
+						"   (defn wait [] (sleep 300) 100)         \n" + 
+						"   (let [f (future wait)]                 \n" + 
+						"        (deref f)))                         ",
 
-						"(do                                            \n" + 
-						"   (defn wait [x] (do (sleep 300) (+ x 100)))  \n" + 
-						"   (let [f (future (partial wait 10))]         \n" + 
-						"        (deref f)))                              ",
+						"(do                                       \n" + 
+						"   (defn wait [x] (sleep 300) (+ x 100))  \n" + 
+						"   (let [f (future (partial wait 10))]    \n" + 
+						"        (deref f)))                         ",
 
-						"(do                                          \n" + 
-						"   (defn sum [x y] (+ x y))                  \n" + 
-						"   (let [f (future (partial sum 3 4))]       \n" + 
-						"        (deref f)))                            ",
+						"(do                                       \n" + 
+						"   (defn sum [x y] (+ x y))               \n" + 
+						"   (let [f (future (partial sum 3 4))]    \n" + 
+						"        (deref f)))                         ",
 					
 						";; demonstrates the use of thread locals with futures         \n" +
 						"(do                                                           \n" +
@@ -1441,7 +1441,7 @@ public class ConcurrencyFunctions {
 					.doc( "Returns true if f is a Future is done otherwise false")
 					.examples(
 						"(do                                                            \n" +
-						"   (def wait (fn [] (do (sleep 200) 100)))                     \n" +
+						"   (def wait (fn [] (sleep 200) 100))                          \n" +
 						"   (let [f (future wait)]                                      \n" +
 						"      (sleep 50)                                               \n" +
 						"      (printf \"After 50ms: done=%b\\n\" (future-done? f))     \n" +
@@ -1481,7 +1481,7 @@ public class ConcurrencyFunctions {
 					.doc("Cancels the future")
 					.examples(
 						"(do                                                                     \n" +
-						"   (def wait (fn [] (do (sleep 400) 100)))                              \n" +
+						"   (def wait (fn [] (sleep 400) 100))                                   \n" +
 						"   (let [f (future wait)]                                               \n" +
 						"      (sleep 50)                                                        \n" +
 						"      (printf \"After 50ms: cancelled=%b\\n\" (future-cancelled? f))    \n" +
