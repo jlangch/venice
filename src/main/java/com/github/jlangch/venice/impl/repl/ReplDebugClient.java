@@ -133,6 +133,12 @@ public class ReplDebugClient {
 				clearCurrCallFrame();
 				agent.resume();
 				break;
+
+			case "resume-all":
+			case "ra":
+				clearCurrCallFrame();
+				agent.resumeAll();
+				break;
 				
 			case "step":
 			case "s":

@@ -65,6 +65,8 @@ public class ReplDebugHelp {
 			"               Short form: !b ...\n" +
 			"  !resume      Resume from current break.\n" +
 			"               Short form: !r\n" +
+			"  !resume-all  Resume from all breaks.\n" +
+			"               Short form: !ra\n" +
 			"  !step        Step to the next available break at one of the four break\n" +
 			"               levels within the current or the next function whatever is first.\n" +
 			"               Short form: !s\n" +
@@ -80,6 +82,9 @@ public class ReplDebugHelp {
 			"               Short form: !se\n" +
 			"  !step-exit   Step to the exit level of the current function.\n" +
 			"               Short form: !sx\n" +
+			"  !breaks      List all breaks.\n" +
+			"  !break n     Switch to break n as the current break. n is an index from the\n" +
+			"               !breaks command). \n" +
 			"  !break?      Checks if the debugger is in a break.\n" +
 			"  !params      Print the function's parameters.\n" +
 			"               Short form: !p\n" +

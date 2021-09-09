@@ -155,9 +155,14 @@ public interface IDebugAgent {
 	void clearBreaks();
 
 	/**
-	 * Resumes processing for the next breakpoint.
+	 * Resumes processing for the next breakpoint in the active break.
 	 */
 	void resume();
+
+	/**
+	 * Resumes processing for the next breakpoint in all breaks.
+	 */
+	void resumeAll();
 
 	/**
 	 * Enters a step mode.

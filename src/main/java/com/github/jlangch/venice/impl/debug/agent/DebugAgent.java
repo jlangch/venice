@@ -427,6 +427,17 @@ public class DebugAgent implements IDebugAgent {
 
 	@Override
 	public void resume() {
+		step = step.clear();
+		
+		final WaitableBreak br = getActiveWaitableBreak();
+		if (br != null) {
+			br.stopWaitingOnBreak();
+			breaks.remove(br);
+		}
+	}
+
+	@Override
+	public void resumeAll() {
 		clearBreaks();
 	}
 
