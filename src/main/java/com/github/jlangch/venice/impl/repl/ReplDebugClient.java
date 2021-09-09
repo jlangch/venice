@@ -947,7 +947,7 @@ public class ReplDebugClient {
 	
 
 	// if the 'currCallFrame' is not null the debug commands !params and
-	// !list operate on the args/env current call frame instead of the
+	// !list operate on the args/env of the current call frame instead of the
 	// args/env function in the break
 	private CallFrame currCallFrame;
 	private int currCallFrameLevel = 0;

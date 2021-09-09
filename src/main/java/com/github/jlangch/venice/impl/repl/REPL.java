@@ -303,7 +303,7 @@ public class REPL {
 								break;
 							
 							case "terminate":
-								scriptExec.cancelAsyncScript();
+								scriptExec.cancelAsyncScripts();
 								agent.clearBreaks();
 								break;
 								

@@ -21,19 +21,21 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
-import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIVATE_DEBUG_AGENT;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
+import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -114,7 +116,7 @@ public class ScriptExecuter {
 			catch (InterruptedException ex) {
 				printer.println(
 					"debug", 
-					"Script under debugging interrupted and terminated!");
+					"\nScript under debugging interrupted and terminated!");
 				return false;
 			}
 			catch (Exception ex) {
@@ -126,14 +128,7 @@ public class ScriptExecuter {
 				replThread.interrupt();
 			}});
 
-		cancellableAsynScript = executor.submit(task);
-	}
-	
-	public void cancelAsyncScript() {
-		final Future<Boolean> future = cancellableAsynScript;
-		if (future != null) {
-			future.cancel(true);
-		}
+		futures.add(executor.submit(task));
 	}
 
 	public void runDebuggerExpressionAsync(
@@ -143,25 +138,24 @@ public class ScriptExecuter {
 			final TerminalPrinter printer,
 			final Consumer<Exception> errorHandler
 	) {
-
 		// Create a wrapper that inherits the Venice thread context
 		// from the parent thread to the executer thread!
-		final ThreadBridge threadBridge = ThreadBridge.create(
-											"run-script-as-debugger-expression", 
-											DEACTIVATE_DEBUG_AGENT);				
-		final Runnable task = threadBridge.bridgeRunnable(() -> {
+		final ThreadBridge threadBridge = ThreadBridge.create("run-script-async");				
+		final Callable<Boolean> task = threadBridge.bridgeCallable(() -> {
 			try {
 				final Env safeEnv = new Env(env);
 				
 				final VncVal result = venice.RE(expr, "debugger", safeEnv);
 				printer.println("debug", venice.PRINT(result));
+				return true;
 			}
 			catch (Exception ex) {
 				errorHandler.accept(ex);
+				return false;
 			}});
 
 		try {
-			executor.submit(task).get();
+			futures.add(executor.submit(task));
 		}
 		catch(Exception ex) {
 			errorHandler.accept(ex);
@@ -192,12 +186,26 @@ public class ScriptExecuter {
 		}
 	}
 	
+	public void cancelAsyncScripts() {
+		futures.forEach(f -> f.cancel(true));
+		
+		futures = futures
+					.stream()
+					.filter(f -> !f.isDone())
+					.collect(Collectors.toList());
+	}
 	
 	
-	private volatile Future<Boolean> cancellableAsynScript = null;
+	
+	private List<Future<Boolean>> futures = new ArrayList<>();
 	
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
+	private final AtomicLong threadPoolCounter = new AtomicLong(0L);
 
-	// need at least 2 parallel threads!!
-	private final ExecutorService executor = Executors.newFixedThreadPool(4);
+	private final ExecutorService executor = 
+			Executors.newCachedThreadPool(
+					ThreadPoolUtil.createThreadFactory(
+							"repl-async-pool-%d", 
+							threadPoolCounter,
+							true /* daemon threads */));
 }
