@@ -237,13 +237,12 @@ public class ReplDebugClient {
 				}
 				break;
 				
-			case "switch-break":
-			case "sb":
-				switchBreak(drop(params, 1));
-				break;
-				
 			case "breaks": 
 				printBreakList();
+				break;
+				
+			case "break":
+				switchBreak(first(drop(params, 1)));
 				break;
 				
 			case "break?": 
@@ -424,14 +423,14 @@ public class ReplDebugClient {
 	}
 
 	
-	private void switchBreak(final List<String> params) {
+	private void switchBreak(final String sIndex) {
 		final int breakCount = agent.getAllBreaks().size();
 
 		if (breakCount == 0) {
 			printlnErr("No breaks available!");
 		}
 		else {
-			final int index = parseBreakIndex(first(params));
+			final int index = parseBreakIndex(sIndex);
 			if (index < 1 || index > breakCount) {
 				printlnErr(
 					"Invalid break index %d. Must be in the range [1..%d].",
@@ -466,12 +465,18 @@ public class ReplDebugClient {
 	}
 	
 	private void printBreakList() {
+		final List<Break> breaks = agent.getAllBreaks();
+		
 		final AtomicLong idx = new AtomicLong(1L);
-		println("Breaks");
-		agent.getAllBreaks()
-			 .forEach(b -> println("  [%d]: %s", 
-								   idx.getAndIncrement(), 
-					 			   b.getBreakFnInfo(false)));
+		if (breaks.isEmpty()) {
+			println("No breaks available!");
+		}
+		else {
+			println("Breaks");
+			breaks.forEach(b -> println("  [%d]: %s", 
+									    idx.getAndIncrement(), 
+						 			    b.getBreakFnInfo(false)));
+		}
 	}
 	
 	private void printBreakpoints() {
