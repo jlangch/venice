@@ -593,12 +593,14 @@ public class DebugAgent implements IDebugAgent {
 						: "Break\n" + indent(br.toString(), 23)));
 
 		if (breaks.size() > 1) {
+			sb.append("All breaks:\n");
+			
 			final AtomicLong idx = new AtomicLong(1L);
 			breaks.forEach(b -> sb.append(String.format(
 									"%s %s\n", 
 									padRight(
 										String.format(
-												"All breaks [%d]:", 
+												"  [%d]:", 
 												idx.getAndIncrement()), 
 										padLen),
 									b.getBreak().getBreakFnInfo(false))));			

@@ -82,7 +82,7 @@ public class ReplDebugHelp {
 			"               Short form: !se\n" +
 			"  !step-exit   Step to the exit level of the current function.\n" +
 			"               Short form: !sx\n" +
-			"  !breaks      List all breaks.\n" +
+			"  !breaks      List all breaks. The first break listed is the current break.\n" +
 			"  !break n     Switch to break n as the current break. n is an index from the\n" +
 			"               !breaks command). \n" +
 			"  !break?      Checks if the debugger is in a break.\n" +
