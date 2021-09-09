@@ -127,18 +127,32 @@ public interface IDebugAgent {
 	/**
 	 * @return <code>true</code> if the debugger is currently in a break.
 	 */
-	boolean hasBreak();
+	boolean hasActiveBreak();
 	
 	/**
 	 * @return Returns the break if the debugger is currently in a break
 	 *         otherwise <code>null</code>.
 	 */
-	Break getBreak();
-	
+	Break getActiveBreak();
+
+	/**
+	 * switches the active break
+	 * 
+	 * @param index the index of the break in the range [1..n]
+	 * @return the active break or <code>null</code> if the break could not
+	 * 		   be switched.
+	 */
+	Break switchActiveBreak(int index);
+
+	/**
+	 * @return all breaks
+	 */
+	List<Break> getAllBreaks();
+
 	/**
 	 * Clears the current break and resumes processing for the next breakpoint.
 	 */
-	void clearBreak();
+	void clearBreaks();
 
 	/**
 	 * Resumes processing for the next breakpoint.

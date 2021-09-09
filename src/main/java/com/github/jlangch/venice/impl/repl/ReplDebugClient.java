@@ -104,7 +104,7 @@ public class ReplDebugClient {
 
 	public Env getEnv() {
 		return currCallFrame == null
-				? agent.getBreak().getEnv()
+				? agent.getActiveBreak().getEnv()
 				: currCallFrame.getEnv();
 	}
 	
@@ -118,7 +118,7 @@ public class ReplDebugClient {
 			case "info":
 			case "i":
 				printer.println("stdout", agent.toString()); 
-				printer.println("stdout", "Current CallFrame: " 
+				printer.println("stdout", "Current CallFrame:  " 
 											+ (currCallFrame == null 
 													? "-" : currCallFrame));
 				break;
@@ -207,7 +207,7 @@ public class ReplDebugClient {
 				stepValidity = agent.isStepPossible(StepMode.StepToFunctionEntry);
 				if (stepValidity.isValid()) {
 					println("Stepping to entry of function %s ...",
-							agent.getBreak().getFn().getQualifiedName());
+							agent.getActiveBreak().getFn().getQualifiedName());
 					stepValidity = agent.step(StepMode.StepToFunctionEntry);
 				}
 				if (!stepValidity.isValid()) {
@@ -222,13 +222,22 @@ public class ReplDebugClient {
 				stepValidity = agent.isStepPossible(StepMode.StepToFunctionExit);
 				if (stepValidity.isValid()) {
 					println("Stepping to exit of function %s ...",
-							agent.getBreak().getFn().getQualifiedName());
+							agent.getActiveBreak().getFn().getQualifiedName());
 					stepValidity = agent.step(StepMode.StepToFunctionExit);
 				}
 				if (!stepValidity.isValid()) {
 					printer.println("stdout", agent.toString());
 					printlnErr(stepValidity);
 				}
+				break;
+				
+			case "switch-break":
+			case "sb":
+				switchBreak(drop(params, 1));
+				break;
+				
+			case "breaks": 
+				printBreakList();
 				break;
 				
 			case "break?": 
@@ -333,7 +342,7 @@ public class ReplDebugClient {
 	}
 	
 	private void handleCallstackCmd(final List<String> params) {
-		if (!agent.hasBreak()) {
+		if (!agent.hasActiveBreak()) {
 			println("Not in a debug break!");
 			return;
 		}
@@ -351,10 +360,10 @@ public class ReplDebugClient {
 
 					case "select":
 					case "s": {
-							final List<CallFrame> frames = getCallFrames(agent.getBreak());
+							final List<CallFrame> frames = getCallFrames(agent.getActiveBreak());
 							final int level = parseCallStackLevel(params.get(1), frames.size());
-							currCallFrameLevel = level;						
-							currCallFrame = frames.get(level-1);						
+							currCallFrameLevel = level;
+							currCallFrame = frames.get(level-1);
 							println("Selected call frame -> [%d/%d]: %s", 
 									level,
 									frames.size(),
@@ -363,9 +372,9 @@ public class ReplDebugClient {
 						break;
 
 					case "up": {
-							final List<CallFrame> frames = getCallFrames(agent.getBreak());
+							final List<CallFrame> frames = getCallFrames(agent.getActiveBreak());
 							currCallFrameLevel = limit(currCallFrameLevel + 1, 1, frames.size());
-							currCallFrame = frames.get(currCallFrameLevel-1); 						
+							currCallFrame = frames.get(currCallFrameLevel-1);
 							println("Selected call frame -> [%d/%d]: %s", 
 									currCallFrameLevel,
 									frames.size(),
@@ -374,9 +383,9 @@ public class ReplDebugClient {
 						break;
 
 					case "down": {
-							final List<CallFrame> frames = getCallFrames(agent.getBreak());
+							final List<CallFrame> frames = getCallFrames(agent.getActiveBreak());
 							currCallFrameLevel = limit(currCallFrameLevel - 1, 1, frames.size());
-							currCallFrame = frames.get(currCallFrameLevel-1); 						
+							currCallFrame = frames.get(currCallFrameLevel-1); 
 							println("Selected call frame -> [%d/%d]: %s", 
 									currCallFrameLevel,
 									frames.size(),
@@ -407,20 +416,56 @@ public class ReplDebugClient {
 			}
 		}
 	}
+
 	
+	private void switchBreak(final List<String> params) {
+		final int breakCount = agent.getAllBreaks().size();
+
+		if (breakCount == 0) {
+			printlnErr("No breaks available!");
+		}
+		else {
+			final int index = parseBreakIndex(first(params));
+			if (index < 1 || index > breakCount) {
+				printlnErr(
+					"Invalid break index %d. Must be in the range [1..%d].",
+					index,
+					breakCount);
+			}
+			else {
+				final Break br = agent.switchActiveBreak(index);
+				if (br != null) {
+					println("Active break -> %s", br.getBreakFnInfo(false));
+				}
+				else {
+					printlnErr("Failed switching active break!");
+				}
+			}
+		}
+	}
+
 	private void isBreak() {
-		println(agent.hasBreak()
-					? formatStop(agent.getBreak())
+		println(agent.hasActiveBreak()
+					? formatStop(agent.getActiveBreak())
 					: "Not in a debug break!");
 	}
 	
 	private void printCallstack() {
-		final Break br = agent.getBreak();
+		final Break br = agent.getActiveBreak();
 
 		println(formatBreakOverview(br));
 		println();
 		println("Callstack:");
 		println(formatCallstack(br.getCallStack(), true));
+	}
+	
+	private void printBreakList() {
+		final AtomicLong idx = new AtomicLong(1L);
+		println("Breaks");
+		agent.getAllBreaks()
+			 .forEach(b -> println("  [%d]: %s", 
+								   idx.getAndIncrement(), 
+					 			   b.getBreakFnInfo(false)));
 	}
 	
 	private void printBreakpoints() {
@@ -445,12 +490,12 @@ public class ReplDebugClient {
 	}
 	
 	private void params(final List<String> params) {
-		if (!agent.hasBreak()) {
+		if (!agent.hasActiveBreak()) {
 			println("Not in a debug break!");
 			return;
 		}
 
-		final Break br = agent.getBreak();
+		final Break br = agent.getActiveBreak();
 
 		if (currCallFrame == null) {
 			println(formatBreakOverview(br));
@@ -478,17 +523,17 @@ public class ReplDebugClient {
 	}
 	
 	private void locals(final String sLevel) {
-		if (!agent.hasBreak()) {
+		if (!agent.hasActiveBreak()) {
 			println("Not in a debug break!");
 			return;
 		}
 		
-		final Break br = agent.getBreak();
+		final Break br = agent.getActiveBreak();
 
 		println(formatBreakOverview(br));
 
 		if (currCallFrame == null) {
-			final Env env = agent.getBreak().getEnv();
+			final Env env = agent.getActiveBreak().getEnv();
 
 			final int maxLevel = env.level() + 1;
 			final int level = parseEnvLevel(sLevel, 1, maxLevel);
@@ -511,12 +556,12 @@ public class ReplDebugClient {
 	}
 			
 	private void retval() {
-		if (!agent.hasBreak()) {
+		if (!agent.hasActiveBreak()) {
 			println("Not in a debug break!");
 			return;
 		}
 		
-		final Break br = agent.getBreak();
+		final Break br = agent.getActiveBreak();
 
 		println(formatBreakOverview(br));
 
@@ -530,12 +575,12 @@ public class ReplDebugClient {
 	}
 	
 	private void ex() {
-		if (!agent.hasBreak()) {
+		if (!agent.hasActiveBreak()) {
 			println("Not in a debug break!");
 			return;
 		}
 	
-		final Break br = agent.getBreak();
+		final Break br = agent.getActiveBreak();
 
 		println(formatBreakOverview(br));
 
@@ -829,6 +874,17 @@ public class ReplDebugClient {
 			throw new RuntimeException(String.format(
 						"Invalid env level '%s'. Must be a number.", 
 						sLevel));
+		}
+	}
+	
+	private int parseBreakIndex(final String sIndex) {
+		try {
+			return Integer.parseInt(sIndex);
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(String.format(
+						"Invalid env level '%s'. Must be a number.", 
+						sIndex));
 		}
 	}
 	

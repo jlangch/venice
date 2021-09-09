@@ -507,6 +507,11 @@ public class StringUtil {
 		}
 	}
 
+	public static String padRight(final String s, final int len) {
+		final int padLen = len - s.length();
+		return padLen > 0 ? s + StringUtil.repeat(' ', padLen) : s;
+	}
+
 	private static List<String> stripIndent(final String indent, final List<String> lines) {
 		final int skipChars = indent.length();
 		return lines

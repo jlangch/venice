@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.debug.agent;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.padRight;
+
 import java.util.UUID;
 
 import com.github.jlangch.venice.impl.MetaUtil;
@@ -43,9 +45,10 @@ public class Break {
 			final VncList args,
 			final Env env,
 			final CallStack callStack,
-			final FunctionScope scope
+			final FunctionScope scope,
+			final String threadName
 	) {
-		this(breakpoint, fn, args, null, null, env, callStack, scope);
+		this(breakpoint, fn, args, null, null, env, callStack, scope, threadName);
 	}
 
 	public Break(
@@ -56,7 +59,8 @@ public class Break {
 			final Exception ex,
 			final Env env,
 			final CallStack callStack,
-			final FunctionScope scope
+			final FunctionScope scope,
+			final String threadName
 	) {
 		this.breakpoint = breakpoint;
 		this.fn = fn;
@@ -66,6 +70,7 @@ public class Break {
 		this.env = env;
 		this.callStack = callStack;
 		this.scope = scope;
+		this.threadName = threadName;
 	}
 
 	
@@ -112,51 +117,73 @@ public class Break {
 	public boolean isBreakInNativeFn() {
 		return fn.isNative();
 	}
+
+	public String getThreadName() {
+		return threadName;
+	}
 	
+	public String getBreakFnInfo(final boolean pad) {
+		final int padLen = pad ? FORMAT_PAD_LEN : 0;
+		
+		if (isBreakInSpecialForm()) {
+			return String.format(
+						"%s %s", 
+						padRight("Special Form:", padLen),
+						fn.getQualifiedName());
+		}
+		else if (fn.isMacro()) {
+			return String.format(
+						"%s %s defined in %s at line %d", 
+						padRight("Macro:", padLen),
+						fn.getQualifiedName(),
+						MetaUtil.getFile(fn.getMeta()),
+						MetaUtil.getLine(fn.getMeta()));
+		}
+		else if (fn.isNative()) {
+			return String.format(
+						"%s %s (native, no source line info)", 
+						padRight("Function:", padLen),
+						fn.getQualifiedName());
+		}
+		else {
+			return String.format(
+						"%s %s defined in %s at line %d", 
+						padRight("Function:", padLen),
+						fn.getQualifiedName(),
+						MetaUtil.getFile(fn.getMeta()),
+						MetaUtil.getLine(fn.getMeta()));
+		}
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		
 		sb.append(String.format(
-						"Breakpoint:   %s",
+						"%s %s",
+						padRight("Breakpoint:", FORMAT_PAD_LEN),
 						breakpoint.toString()));
 		
 		sb.append("\n");
+		sb.append(getBreakFnInfo(true));
+		
+		sb.append("\n");
 		sb.append(String.format(
-						"Scope:        %s", 
+						"%s %s", 
+						padRight("Scope:", FORMAT_PAD_LEN),
 						scope));
 		
 		sb.append("\n");
-		if (isBreakInSpecialForm()) {
-			sb.append(String.format(
-						"Special Form: %s", 
-						fn.getQualifiedName()));
-		}
-		else if (fn.isMacro()) {
-			sb.append(String.format(
-						"Macro:        %s defined in %s at line %d", 
-						fn.getQualifiedName(),
-						MetaUtil.getFile(fn.getMeta()),
-						MetaUtil.getLine(fn.getMeta())));
-		}
-		else if (fn.isNative()) {
-			sb.append(String.format(
-						"Function:     %s (native, no source line info)", 
-						fn.getQualifiedName()));
-		}
-		else {
-			sb.append(String.format(
-						"Function:     %s defined in %s at line %d", 
-						fn.getQualifiedName(),
-						MetaUtil.getFile(fn.getMeta()),
-						MetaUtil.getLine(fn.getMeta())));
-		}
+		sb.append(String.format(
+						"%s %s", 
+						padRight("Thread:", FORMAT_PAD_LEN),
+						threadName));	
 			
 		sb.append("\n");
 		sb.append(String.format(
-						"Callstack:    %d frames", 
-						getCallStack().size()));
-		
+						"%s %d frames", 
+						padRight("Callstack:", FORMAT_PAD_LEN),
+						getCallStack().size()));	
 		
 		return sb.toString();
 	}
@@ -185,6 +212,7 @@ public class Break {
 	}
 
 
+	public static int FORMAT_PAD_LEN = 14;
 
 	private final String id = UUID.randomUUID().toString();
 	private final BreakpointFnRef breakpoint;
@@ -195,4 +223,5 @@ public class Break {
 	private final Env env;
 	private final CallStack callStack;
 	private final FunctionScope scope;
+	private final String threadName;
 }

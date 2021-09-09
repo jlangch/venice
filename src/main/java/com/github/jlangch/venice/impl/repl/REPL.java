@@ -304,7 +304,7 @@ public class REPL {
 							
 							case "terminate":
 								scriptExec.cancelAsyncScript();
-								agent.clearBreak();
+								agent.clearBreaks();
 								break;
 								
 							default:
@@ -313,10 +313,10 @@ public class REPL {
 						}
 					}
 					else if (ReplParser.isDroppedVeniceScriptFile(line)) {
-						agent.clearBreak();
+						agent.clearBreaks();
 						handleDroppedFileName(line, env, history, resultHistory, resultPrefix);
 					}
-					else if (agent.hasBreak()) {
+					else if (agent.hasActiveBreak()) {
 						// run the expression in the context of the break
 						runDebuggerExprAsync(line, debugClient.getEnv());
 					}
@@ -1263,7 +1263,7 @@ public class REPL {
 
 	private boolean hasActiveDebugSession() {
 		final DebugAgent agent = DebugAgent.current();
-		return agent != null && agent.hasBreak();
+		return agent != null && agent.hasActiveBreak();
 	}
 	
 	private String getDebuggerStatus() {

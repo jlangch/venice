@@ -35,11 +35,14 @@ import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.Func
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionExit;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.StringUtil.indent;
+import static com.github.jlangch.venice.impl.util.StringUtil.padRight;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Namespaces;
@@ -227,7 +230,8 @@ public class DebugAgent implements IDebugAgent {
 							args,
 							env, 
 							callstack,
-							FunctionEntry));
+							FunctionEntry,
+							Thread.currentThread().getName()));
 		}
 	}
 
@@ -251,7 +255,8 @@ public class DebugAgent implements IDebugAgent {
 									.collect(Collectors.toList())),
 							env, 
 							callstack,
-							FunctionEntry));
+							FunctionEntry,
+							Thread.currentThread().getName()));
 		}
 	}
 
@@ -278,7 +283,8 @@ public class DebugAgent implements IDebugAgent {
 									  .collect(Collectors.toList())),
 							env,
 							callstack,
-							FunctionEntry));
+							FunctionEntry,
+							Thread.currentThread().getName()));
 		}
 	}
 	
@@ -297,7 +303,8 @@ public class DebugAgent implements IDebugAgent {
 							unevaluatedArgs,
 							env,
 							callstack,
-							FunctionCall));
+							FunctionCall,
+							Thread.currentThread().getName()));
 		}
 	}
 	
@@ -316,7 +323,8 @@ public class DebugAgent implements IDebugAgent {
 							evaluatedArgs,
 							env,
 							callstack,
-							FunctionEntry));
+							FunctionEntry,
+							Thread.currentThread().getName()));
 		}
 	}
 	
@@ -338,7 +346,8 @@ public class DebugAgent implements IDebugAgent {
 							null,
 							env,
 							callstack,
-							FunctionExit));
+							FunctionExit,
+							Thread.currentThread().getName()));
 		}
 	}
 	
@@ -360,23 +369,65 @@ public class DebugAgent implements IDebugAgent {
 							ex,
 							env,
 							callstack,
-							FunctionException));
+							FunctionException,
+							Thread.currentThread().getName()));
 		}
 	}
 
 	@Override
-	public Break getBreak() {
-		return activeBreak;
+	public Break getActiveBreak() {
+		cleanBreaks();
+		
+		final WaitableBreak wbr = getActiveWaitableBreak();
+		return wbr == null ? null : wbr.getBreak();
 	}
 
 	@Override
-	public boolean hasBreak() {
-		return activeBreak != null;
+	public boolean hasActiveBreak() {
+		return getActiveBreak() != null;
+	}
+
+	@Override
+	public Break switchActiveBreak(final int index) {
+		try {
+			final int collIdx = index - 1; 
+			
+			if (collIdx == 0) {
+				return getActiveBreak();
+			}
+			else if (collIdx > 0 && collIdx < breaks.size()) {
+				WaitableBreak br = breaks.remove(collIdx);
+				breaks.add(0, br);
+				return getActiveBreak();
+			}
+			else {
+				return null;
+			}
+		}
+		catch(Exception ex) {
+			return null;
+		}
+	}
+
+	@Override
+	public List<Break> getAllBreaks() {
+		return breaks.stream()
+					 .filter(w -> w.isWaitingOnBreak())
+					 .map(w -> w.getBreak())
+					 .collect(Collectors.toList());
+	}
+	
+	@Override
+	public void clearBreaks() {
+		step = step.clear();
+		
+		breaks.forEach(b -> b.stopWaitingOnBreak());
+		breaks.clear();
 	}
 
 	@Override
 	public void resume() {
-		clearBreak();
+		clearBreaks();
 	}
 
 	@Override
@@ -386,7 +437,14 @@ public class DebugAgent implements IDebugAgent {
 			return validity;
 		}
 		
-		final Break br = activeBreak;
+		final WaitableBreak wbr = getActiveWaitableBreak();
+		if (wbr == null) {
+			return StepValidity.invalid(
+					"Cannot step when there is no active break!");
+		}
+
+		final Break br = wbr.getBreak();
+
 		final String brFnQualifiedName = br.getFn().getQualifiedName();
 		
 		switch(mode) {
@@ -434,23 +492,25 @@ public class DebugAgent implements IDebugAgent {
 				break;
 		}
 
-		activeBreak = null;  // leave current break
+		wbr.stopWaitingOnBreak();  // leave current break
 
 		return StepValidity.valid();
 	}
 
 	@Override
 	public StepValidity isStepPossible(final StepMode mode) {
-		final Break br = activeBreak;
+		final WaitableBreak wbr = getActiveWaitableBreak();
 
 		if (mode == null) {
 			throw new RuntimeException("A step mode must not be null");
 		}
-		if (br == null) {
+		if (wbr == null) {
 			return StepValidity.invalid(
 					"Cannot step when there is no active break!");
 		}
-		
+	
+		final Break br = wbr.getBreak();
+
 		switch(mode) {
 			case StepToAny:
 			case StepToNextFunction:
@@ -502,55 +562,95 @@ public class DebugAgent implements IDebugAgent {
 				return StepValidity.invalid("Unsupported step mode: " + mode);
 		}		
 	}
-	
-	@Override
-	public void clearBreak() {
-		step = step.clear();
-		activeBreak = null;
-	}
 
 	@Override
 	public String toString() {
+		cleanBreaks();
+		
 		final Step stepTmp = step;
 
+		final WaitableBreak br = getActiveWaitableBreak();
+		
 		final StringBuilder sb = new StringBuilder();
+		final int padLen = 19;
 		
 		sb.append(String.format(
-					"Active break:      %s\n", 
-					activeBreak == null
+					"%s %s\n", 
+					padRight("Active break:", padLen),
+					br == null
 						?  "no" 
-						: "Break\n" + indent(activeBreak.toString(), 25)));
+						: "Break\n" + indent(br.toString(), 23)));
+
+		if (breaks.size() > 1) {
+			final AtomicLong idx = new AtomicLong(1L);
+			breaks.forEach(b -> sb.append(String.format(
+									"%s %s\n", 
+									padRight(
+										String.format(
+												"All breaks [%d]:", 
+												idx.getAndIncrement()), 
+										padLen),
+									b.getBreak().getBreakFnInfo(false))));			
+		}
 		
 		sb.append(String.format(
-					"Step mode:         %s\n", 
+					"%s %s\n", 
+					padRight("Step mode:", padLen),
 					StepModeFormatter.format(stepTmp.mode())));
 		
 		sb.append(String.format(
-					"Step bound to fn:  %s\n", 
+					"%s %s\n", 
+					padRight("Step bound to fn:", padLen),
 					stepTmp.boundToFnName() == null 
 						? "-" 
 						: stepTmp.boundToFnName()));
 		
 		sb.append(String.format(
-					"Breakpoints:       %d\n", breakpoints.size()));
+					"%s %d\n", 
+					padRight("Breakpoints:", padLen),
+					breakpoints.size()));
 		
 		sb.append(String.format(
-					"Skip breakpoints:  %s", 
+					"%s %s", 
+					padRight("Skip breakpoints:", padLen),
 					skipBreakpoints ? "yes" : "no"));
 		
 		return sb.toString();
 	}
 
 	private void handleBreak(final Break br) {
-		notifyOnBreak(br);
-		waitOnBreak(br);
+		final WaitableBreak wbr = new WaitableBreak(br);
+		cleanBreaks();
+		
+		notifyOnBreak(wbr);
+		waitOnBreak(wbr);
 	}
 	
-	private void notifyOnBreak(final Break br) {
-		activeBreak = br;
+	private void notifyOnBreak(final WaitableBreak wbr) {
+		wbr.startWaitingOnBreak();
+		breaks.add(wbr);
 		
 		if (breakListener != null) {
-			breakListener.onBreak(activeBreak);
+			breakListener.onBreak(wbr.getBreak());
+		}
+	}
+
+	private void waitOnBreak(final WaitableBreak wbr) {
+		try {
+			while(wbr.isWaitingOnBreak()) {
+				Thread.sleep(BREAK_LOOP_SLEEP_MILLIS);
+			}
+		}
+		catch(InterruptedException iex) {
+			throw new com.github.jlangch.venice.InterruptedException(
+					String.format(
+							"Interrupted while waiting for leaving breakpoint "
+								+ "in function '%s' (%s).",
+							wbr.getBreak().getFn().getQualifiedName(),
+							wbr.getBreak().getBreakpointScope()));
+		}
+		finally {
+			breaks.remove(wbr);
 		}
 	}
 	
@@ -617,30 +717,27 @@ public class DebugAgent implements IDebugAgent {
 		}
 	}
 
-	private void waitOnBreak(final Break br) {
-		try {
-			while(hasBreak()) {
-				Thread.sleep(BREAK_LOOP_SLEEP_MILLIS);
-			}
-		}
-		catch(InterruptedException iex) {
-			throw new com.github.jlangch.venice.InterruptedException(
-					String.format(
-							"Interrupted while waiting for leaving breakpoint "
-								+ "in function '%s' (%s).",
-							br.getFn().getQualifiedName(),
-							br.getBreakpointScope()));
-		}
-		finally {
-			activeBreak = null;
-		}
-	}
-
 	private void clearAll() {
 		step = step.clear();
 		skipBreakpoints = false;
 		breakpoints.clear();
-		activeBreak = null;
+		
+		breaks.forEach(b -> b.stopWaitingOnBreak());
+		breaks.clear();
+	}
+
+	private WaitableBreak getActiveWaitableBreak() {
+		try {
+			final WaitableBreak br = breaks.get(0);
+			return br.isWaitingOnBreak() ? br : null;
+		}
+		catch(Exception ex) {
+			return null;
+		}
+	}
+
+	private void cleanBreaks() {
+		breaks.removeIf(b -> !b.isWaitingOnBreak());
 	}
 
 	private boolean matchesWithBreakpoint(
@@ -696,7 +793,7 @@ public class DebugAgent implements IDebugAgent {
 	private static final ConcurrentHashMap<BreakpointFnRef,BreakpointFn> memorized =
 			new ConcurrentHashMap<>();
 
-	private volatile Break activeBreak = null;
+	private final List<WaitableBreak> breaks = new CopyOnWriteArrayList<>();
 	private volatile Step step = new Step();
 	private volatile boolean skipBreakpoints = false;
 
