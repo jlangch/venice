@@ -24,6 +24,11 @@
 (do
   (ns foo)
 
+  (defn wait [x] (sleep 300) (println x))
+
+  (defn async-wait [x]
+    (future (partial wait x)))
+
   (defn calc [& x]
     (let [a (first x) b (second x)]
       (->> x
