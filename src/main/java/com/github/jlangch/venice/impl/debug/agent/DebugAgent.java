@@ -632,17 +632,17 @@ public class DebugAgent implements IDebugAgent {
 	}
 
 	private void handleBreak(final Break br) {
-		final WaitableBreak wbr = new WaitableBreak(br);
 		cleanBreaks();
-		
+
+		final WaitableBreak wbr = new WaitableBreak(br);
+		wbr.startWaitingOnBreak();
+		breaks.add(wbr);
+
 		notifyOnBreak(wbr);
 		waitOnBreak(wbr);
 	}
 	
 	private void notifyOnBreak(final WaitableBreak wbr) {
-		wbr.startWaitingOnBreak();
-		breaks.add(wbr);
-		
 		if (breakListener != null) {
 			breakListener.onBreak(wbr.getBreak());
 		}
@@ -658,20 +658,12 @@ public class DebugAgent implements IDebugAgent {
 			throw new com.github.jlangch.venice.InterruptedException(
 					String.format(
 							"Interrupted while waiting for leaving breakpoint "
-								+ "in function '%s' (%s).",
-							wbr.getBreak().getFn().getQualifiedName(),
-							wbr.getBreak().getBreakpointScope()));
+								+ "in function '%s'.",
+							wbr.getBreak().getFn().getQualifiedName()));
 		}
 		finally {
 			breaks.remove(wbr);
 		}
-	}
-	
-	private boolean hasSystemNS(final String qualifiedName) {
-		final int pos = qualifiedName.indexOf('/');
-		return pos < 1 
-				? true 
-				: Namespaces.isSystemNS(qualifiedName.substring(0, pos));
 	}
 	
 	private boolean isStopOnFunction(
@@ -751,6 +743,13 @@ public class DebugAgent implements IDebugAgent {
 
 	private void cleanBreaks() {
 		breaks.removeIf(b -> !b.isWaitingOnBreak());
+	}
+	
+	private boolean hasSystemNS(final String qualifiedName) {
+		final int pos = qualifiedName.indexOf('/');
+		return pos < 1 
+				? true 
+				: Namespaces.isSystemNS(qualifiedName.substring(0, pos));
 	}
 
 	private boolean matchesWithBreakpoint(
