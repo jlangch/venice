@@ -31,8 +31,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class WaitableBreak {
 
-	public WaitableBreak(final Break br) {
+	public WaitableBreak(final Break br, final boolean waiting) {
+		if (br == null) {
+			throw new IllegalArgumentException("A break must not be null");
+		}
+		
 		this.br = br;
+		this.waiting.set(waiting);
 	}
 
 
@@ -72,19 +77,7 @@ public class WaitableBreak {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WaitableBreak other = (WaitableBreak) obj;
-		if (br == null) {
-			if (other.br != null)
-				return false;
-		} else if (!br.equals(other.br))
-			return false;
-		return true;
+		return obj instanceof WaitableBreak && br.equals(((WaitableBreak)obj).br);
 	}
 
 

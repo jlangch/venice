@@ -634,8 +634,7 @@ public class DebugAgent implements IDebugAgent {
 	private void handleBreak(final Break br) {
 		cleanBreaks();
 
-		final WaitableBreak wbr = new WaitableBreak(br);
-		wbr.startWaitingOnBreak();
+		final WaitableBreak wbr = new WaitableBreak(br, true);
 		breaks.add(wbr);
 
 		notifyOnBreak(wbr);
