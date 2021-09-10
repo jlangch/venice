@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.Watchable;
 
 

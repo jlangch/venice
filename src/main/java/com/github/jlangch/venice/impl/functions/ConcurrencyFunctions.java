@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncAtom;
@@ -61,6 +60,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
 
 

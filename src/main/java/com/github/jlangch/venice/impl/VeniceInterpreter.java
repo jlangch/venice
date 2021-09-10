@@ -82,6 +82,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;

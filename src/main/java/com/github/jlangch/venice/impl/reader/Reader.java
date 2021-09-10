@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.ParseError;
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
@@ -50,6 +49,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ErrorMessage;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 

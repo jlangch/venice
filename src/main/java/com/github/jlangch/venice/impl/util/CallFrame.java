@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util;
 
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;

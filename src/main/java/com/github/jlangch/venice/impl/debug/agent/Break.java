@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.util.StringUtil.padRight;
 
 import java.util.UUID;
 
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
@@ -35,6 +34,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 /**

@@ -27,9 +27,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.MetaUtil;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncVal implements Comparable<VncVal>, Serializable {

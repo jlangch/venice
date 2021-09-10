@@ -19,12 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.reader.Token;
@@ -76,16 +73,14 @@ public class MetaUtil {
 	}
 
 	public static VncVal mergeMeta(final VncVal meta1, VncVal meta2) {		
-		if (meta1 == Nil) {
-			return meta2;
+		if (meta1 == Nil || meta1 == null) {
+			return meta2 == null ? Nil : meta2;
 		}
-		else if (meta2 == Nil) {
-			return meta1;
+		else if (meta2 == Nil || meta2 == null) {
+			return meta1 == null ? Nil : meta1;
 		}
 		else if (Types.isVncMap(meta1) && Types.isVncMap(meta2)) {
-			final Map<VncVal,VncVal> m = new HashMap<>(((VncMap)meta1).getJavaMap());
-			m.putAll(((VncMap)meta2).getJavaMap());						
-			return new VncHashMap(m);
+			return ((VncMap)meta1).putAll((VncMap)meta2);
 		}
 		else {
 			throw new VncException(String.format(
@@ -96,10 +91,7 @@ public class MetaUtil {
 	}
 
 	public static boolean isPrivate(final VncVal meta) {
-		if (meta == Nil) {
-			return false;
-		}
-		else if (meta instanceof VncHashMap) {
+		if (meta instanceof VncHashMap) {
 			return VncBoolean.isTrue(((VncHashMap)meta).get(PRIVATE));
 		}
 		else {
@@ -108,10 +100,7 @@ public class MetaUtil {
 	}
 
 	public static String getNamespace(final VncVal meta) {
-		if (meta == Nil) {
-			return null;
-		}
-		else if (meta instanceof VncHashMap) {
+		if (meta instanceof VncHashMap) {
 			final VncVal ns = ((VncHashMap)meta).get(NS);
 			return ns == Nil ? null : ((VncString)ns).getValue();
 		}
