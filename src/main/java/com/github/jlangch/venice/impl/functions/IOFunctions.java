@@ -87,6 +87,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
@@ -756,7 +757,9 @@ public class IOFunctions {
 					}
 				};
 
-				final ThreadBridge threadBridge = ThreadBridge.create("future");				
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"future", 
+													new CallFrame(this));				
 				
 				final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
 						(path, event) -> threadBridge

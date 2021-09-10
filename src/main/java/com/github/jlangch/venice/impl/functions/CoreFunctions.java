@@ -93,6 +93,8 @@ import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
@@ -6449,12 +6451,24 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 1);
 
-				final IVncFunction fn = Coerce.toIVncFunction(args.first());
+				final VncVal first = args.first();
+				final IVncFunction fn = Coerce.toIVncFunction(first);
 				final VncList fnArgs = args.rest();
 
 				return new VncFunction(createAnonymousFuncName("partial")) {
 					public VncVal apply(final VncList args) {
-						return fn.apply(fnArgs.addAllAtEnd(args));
+						final CallStack cs = ThreadContext.getCallStack();
+						try {
+							cs.push(fn instanceof VncFunction
+										? new CallFrame((VncFunction)fn)
+										: new CallFrame(
+												Types.getType(first).getQualifiedName(),
+												first.getMeta()));
+							return fn.apply(fnArgs.addAllAtEnd(args));
+						}
+						finally {
+							cs.pop();
+						}
 					}
 
 					private static final long serialVersionUID = -1L;

@@ -88,7 +88,7 @@ public class ScriptExecuter {
 		
 		// Create a wrapper that inherits the Venice thread context
 		// from the parent thread to the executer thread!
-		final ThreadBridge threadBridge = ThreadBridge.create("run-script-async");				
+		final ThreadBridge threadBridge = ThreadBridge.create("run-script-async", null);				
 		final Callable<Boolean> task = threadBridge.bridgeCallable(() ->  {
 			try {
 				final VncVal result = venice.RE(script, "user", env);
@@ -140,7 +140,7 @@ public class ScriptExecuter {
 	) {
 		// Create a wrapper that inherits the Venice thread context
 		// from the parent thread to the executer thread!
-		final ThreadBridge threadBridge = ThreadBridge.create("run-script-async");				
+		final ThreadBridge threadBridge = ThreadBridge.create("run-script-async", null);				
 		final Callable<Boolean> task = threadBridge.bridgeCallable(() -> {
 			try {
 				final Env safeEnv = new Env(env);

@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -45,14 +46,17 @@ public class ThreadBridge {
 	private ThreadBridge(
 			final String name,
 			final ThreadContextSnapshot parentThreadSnapshot,
-			final boolean deactivateDebugAgent
+			final boolean deactivateDebugAgent,
+			final CallFrame callFrame
 	) {
 		this.parentThreadSnapshot = parentThreadSnapshot;
 		this.deactivateDebugAgent = deactivateDebugAgent;
+		this.callFrame = callFrame;
 	}
 	
 	public static ThreadBridge create(
 			final String name,
+			final CallFrame callFrame,
 			final Options... options
 	) {
 		final Set<Options> opts = new HashSet<>(CollectionUtil.toList(options));
@@ -64,7 +68,8 @@ public class ThreadBridge {
 		return new ThreadBridge(
 						name,
 						ThreadContext.snapshot(),
-						deactivateDebugAgent);
+						deactivateDebugAgent,
+						callFrame);
 	}
 	
 	public <T> Callable<T> bridgeCallable(final Callable<T> callable) {
@@ -73,6 +78,10 @@ public class ThreadBridge {
 				// inherit thread local values to the child thread
 				ThreadContext.inheritFrom(parentThreadSnapshot);
 
+				if (callFrame != null) {
+					ThreadContext.getCallStack().push(callFrame);
+				}
+				
 				if (deactivateDebugAgent) {
 					DebugAgent.unregister();
 				}
@@ -126,4 +135,5 @@ public class ThreadBridge {
 	
 	private final ThreadContextSnapshot parentThreadSnapshot;
 	private final boolean deactivateDebugAgent;
+	private final CallFrame callFrame;
 }

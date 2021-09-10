@@ -84,7 +84,7 @@ public class Agent implements IDeref {
 						fn, 
 						args,
 						SendType.SEND,
-						ThreadBridge.create("send")));
+						ThreadBridge.create("send", new CallFrame(fn))));
 	}
 
 	public void send_off(final VncFunction fn, final VncList args) {
@@ -94,7 +94,7 @@ public class Agent implements IDeref {
 						fn, 
 						args, 
 						SendType.SEND_OFF,
-						ThreadBridge.create("send-off")));
+						ThreadBridge.create("send-off", new CallFrame(fn))));
 	}
 
 	public void restart(final VncVal state) {

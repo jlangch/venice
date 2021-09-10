@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
 
 
@@ -1397,7 +1398,9 @@ public class ConcurrencyFunctions {
 				
 				// Create a wrapper that inherits the Venice thread context
 				// from the parent thread to the executer thread!
-				final ThreadBridge threadBridge = ThreadBridge.create("future");				
+				final ThreadBridge threadBridge = ThreadBridge.create(
+														"future",
+														new CallFrame(fn));				
 				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
 				// Note: Do NOT use a CompletableFuture

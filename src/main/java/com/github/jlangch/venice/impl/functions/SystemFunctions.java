@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ReturnValue;
@@ -573,7 +574,9 @@ public class SystemFunctions {
 
 				// Create a wrapper that inherits the Venice thread context
 				// from the parent thread to the executer thread!
-				final ThreadBridge threadBridge = ThreadBridge.create("shutdown-hook");				
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"shutdown-hook",
+													new CallFrame(fn));				
 				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 
 				Runtime.getRuntime().addShutdownHook(new Thread(taskWrapper));
