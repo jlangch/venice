@@ -93,6 +93,11 @@ test {
 [Socket REPL explore](https://oli.me.uk/exploring-repl-tooling-with-prepl/)
 
 
+### Configurator
+
+[clj-configurator](https://github.com/unrelentingtech/clj-configurator)
+
+
 ### Debugger
 
 [Cursive Debugger](https://www.youtube.com/watch?v=ql77RwhcCK0)
