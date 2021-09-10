@@ -53,17 +53,13 @@ public class WaitableBreak {
 		waiting.set(false);
 	}
 
-	
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(br.toString());
-		sb.append("\n");
-		sb.append(String.format(
-					"%s %b", 
+		return String.format(
+					"%s\n%s %b",
+					br.toString(),
 					padRight("Waiting:", Break.FORMAT_PAD_LEN),
-					waiting.get()));
-		return sb.toString();
+					waiting.get());
 	}
 
 	@Override
@@ -75,7 +71,6 @@ public class WaitableBreak {
 	public boolean equals(Object obj) {
 		return obj instanceof WaitableBreak && br.equals(((WaitableBreak)obj).br);
 	}
-
 
 
 	private final Break br;
