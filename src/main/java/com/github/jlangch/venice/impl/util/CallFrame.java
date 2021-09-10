@@ -38,6 +38,13 @@ public class CallFrame {
 		this.env = null;
 	}
 	
+	public CallFrame(final VncFunction fn, final VncList args) {
+		this.fnName = fn.getQualifiedName();
+		this.args = args;
+		this.meta = fn.getMeta();
+		this.env = null;
+	}
+	
 	public CallFrame(final String fnName, final VncVal meta) {
 		this.fnName = fnName;
 		this.args = null;

@@ -576,7 +576,9 @@ public class SystemFunctions {
 				// from the parent thread to the executer thread!
 				final ThreadBridge threadBridge = ThreadBridge.create(
 													"shutdown-hook",
-													new CallFrame(fn));				
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});				
 				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 
 				Runtime.getRuntime().addShutdownHook(new Thread(taskWrapper));

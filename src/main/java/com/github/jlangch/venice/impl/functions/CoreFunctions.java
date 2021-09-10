@@ -6459,12 +6459,17 @@ public class CoreFunctions {
 					public VncVal apply(final VncList args) {
 						final CallStack cs = ThreadContext.getCallStack();
 						try {
+							final VncList fnArgsAll = fnArgs.addAllAtEnd(args);
+							
 							cs.push(fn instanceof VncFunction
-										? new CallFrame((VncFunction)fn)
+										? new CallFrame(
+												(VncFunction)fn, 
+												fnArgsAll)
 										: new CallFrame(
 												Types.getType(first).getQualifiedName(),
+												fnArgsAll,
 												first.getMeta()));
-							return fn.apply(fnArgs.addAllAtEnd(args));
+							return fn.apply(fnArgsAll);
 						}
 						finally {
 							cs.pop();

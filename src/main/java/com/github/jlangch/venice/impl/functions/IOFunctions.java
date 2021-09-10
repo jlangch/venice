@@ -758,8 +758,8 @@ public class IOFunctions {
 				};
 
 				final ThreadBridge threadBridge = ThreadBridge.create(
-													"future", 
-													new CallFrame(this));				
+													"io/watch-dir", 
+													new CallFrame(this, args));				
 				
 				final BiConsumer<Path,WatchEvent.Kind<?>> eventListener =
 						(path, event) -> threadBridge

@@ -74,7 +74,9 @@ public class ScheduleFunctions {
 				// from the parent thread to the executer thread!
 				final ThreadBridge threadBridge = ThreadBridge.create(
 													"schedule-delay",
-													new CallFrame(fn));				
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});				
 				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
 				final ScheduledFuture<VncVal> future = mngdExecutor
@@ -126,7 +128,9 @@ public class ScheduleFunctions {
 				// from the parent thread to the executer thread!
 				final ThreadBridge threadBridge = ThreadBridge.create(
 													"schedule-at-fixed-rate",
-													new CallFrame(fn));				
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});				
 				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 				
 				final ScheduledFuture<?> future = mngdExecutor

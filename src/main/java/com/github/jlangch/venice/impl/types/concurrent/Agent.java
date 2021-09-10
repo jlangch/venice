@@ -77,24 +77,40 @@ public class Agent implements IDeref {
 		return value.get().getException();
 	}
 
-	public void send(final VncFunction fn, final VncList args) {
+	public void send(
+			final CallFrame parentCallFrame, 
+			final VncFunction fn, 
+			final VncList args
+	) {
 		sendExecutor.execute(
 				new Action(
 						this, 
 						fn, 
 						args,
 						SendType.SEND,
-						ThreadBridge.create("send", new CallFrame(fn))));
+						ThreadBridge.create(
+								"send", 
+								new CallFrame[] {
+									parentCallFrame,
+									new CallFrame(fn, args) })));
 	}
 
-	public void send_off(final VncFunction fn, final VncList args) {
+	public void send_off(
+			final CallFrame parentCallFrame, 
+			final VncFunction fn, 
+			final VncList args
+	) {
 		sendOffExecutor.execute(
 				new Action(
 						this, 
 						fn, 
 						args, 
 						SendType.SEND_OFF,
-						ThreadBridge.create("send-off", new CallFrame(fn))));
+						ThreadBridge.create(
+								"send-off", 
+								new CallFrame[] {
+									parentCallFrame,
+									new CallFrame(fn, args) })));
 	}
 
 	public void restart(final VncVal state) {
@@ -139,7 +155,11 @@ public class Agent implements IDeref {
 		return sb.toString();
 	}
 		
-	public static boolean await(final List<Agent> agents, final long timeoutMillis) {		
+	public static boolean await(
+			final CallFrame parentCallFrame, 
+			final List<Agent> agents, 
+			final long timeoutMillis
+	) {		
 		final CountDownLatch latch = new CountDownLatch(agents.size() * 2);
 		
 		final VncFunction fn = new VncFunction(VncFunction.createAnonymousFuncName()) {
@@ -151,8 +171,8 @@ public class Agent implements IDeref {
 		};
 		
 		try {
-			agents.forEach(a -> a.send(fn, VncList.empty()));			
-			agents.forEach(a -> a.send_off(fn, VncList.empty()));			
+			agents.forEach(a -> a.send(parentCallFrame, fn, VncList.empty()));			
+			agents.forEach(a -> a.send_off(parentCallFrame, fn, VncList.empty()));			
 			
 			if (timeoutMillis <= 0) {
 				latch.await(); 

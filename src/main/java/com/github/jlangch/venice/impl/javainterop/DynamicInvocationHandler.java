@@ -63,7 +63,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
 	) {
 		this.callFrameProxy = callFrameProxy;
 		this.methods = methods;	
-		this.threadBridge = ThreadBridge.create("proxy", null);
+		this.threadBridge = ThreadBridge.create("proxy");
 	}
 		 
 	@Override

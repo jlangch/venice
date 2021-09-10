@@ -758,7 +758,7 @@ public class ConcurrencyFunctions {
 					final VncFunction fn = Coerce.toVncFunction(args.second());		
 					final VncList fnArgs = args.slice(2);		
 					
-					agent.send(fn, fnArgs);
+					agent.send(new CallFrame(this, args), fn, fnArgs);
 					return args.first();
 				}
 				else {
@@ -802,7 +802,7 @@ public class ConcurrencyFunctions {
 					final VncFunction fn = Coerce.toVncFunction(args.second());		
 					final VncList fnArgs = args.slice(2);		
 					
-					agent.send_off(fn, fnArgs);
+					agent.send_off(new CallFrame(this, args), fn, fnArgs);
 					return args.first();
 				}
 				else {
@@ -1001,7 +1001,11 @@ public class ConcurrencyFunctions {
 				
 				return agents.isEmpty() 
 						? True
-						: VncBoolean.of(Agent.await(agents, -1));
+						: VncBoolean.of(
+								Agent.await(
+										new CallFrame(this, args), 
+										agents, 
+										-1));
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1044,7 +1048,11 @@ public class ConcurrencyFunctions {
 				
 				return agents.isEmpty() 
 						? True
-						: VncBoolean.of(Agent.await(agents, timeoutMillis));
+						: VncBoolean.of(
+								Agent.await(
+										new CallFrame(this, args), 
+										agents, 
+										timeoutMillis));
 			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1400,7 +1408,9 @@ public class ConcurrencyFunctions {
 				// from the parent thread to the executer thread!
 				final ThreadBridge threadBridge = ThreadBridge.create(
 														"future",
-														new CallFrame(fn));				
+														new CallFrame[] {
+															new CallFrame(this, args),
+															new CallFrame(fn)});				
 				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
 				// Note: Do NOT use a CompletableFuture
