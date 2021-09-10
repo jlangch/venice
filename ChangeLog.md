@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- improvements to callstack when threads are used
 
 ### Fixed
 
