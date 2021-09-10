@@ -49,10 +49,6 @@ public class WaitableBreak {
 		return waiting.get();
 	}
 
-	public void startWaitingOnBreak() {
-		waiting.set(true);
-	}
-
 	public void stopWaitingOnBreak() {
 		waiting.set(false);
 	}
