@@ -157,6 +157,24 @@ $ ./repl.sh
 ```
 
 
+### Useful VSCode extensions
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-VsCodeExtensions.png">
+
+
+### VSCode settings.json
+
+```json
+{
+    "files.associations": {
+        "*.venice": "clojure"
+    },
+    
+    "workbench.colorTheme": "Tomorrow Night Blue",
+    "redhat.telemetry.enabled": false    
+}
+```
+
 
 ## Where to head next
 
