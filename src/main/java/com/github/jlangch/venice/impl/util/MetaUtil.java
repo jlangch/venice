@@ -77,7 +77,7 @@ public class MetaUtil {
 			return meta2 == null ? Nil : meta2;
 		}
 		else if (meta2 == Nil || meta2 == null) {
-			return meta1 == null ? Nil : meta1;
+			return meta1;
 		}
 		else if (Types.isVncMap(meta1) && Types.isVncMap(meta2)) {
 			return ((VncMap)meta1).putAll((VncMap)meta2);
