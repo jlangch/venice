@@ -159,7 +159,7 @@ $ ./repl.sh
 
 ### Useful VSCode extensions
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-VsCodeExtensions.png">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-VsCodeExtensions.png" width="300">
 
 
 ### VSCode settings.json
