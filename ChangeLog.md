@@ -17,6 +17,8 @@ and this project adheres to
 
 ### Fixed
 
+- the HTML cheatsheet link in the README. Prepended the Markdown URL with
+  `https://htmlpreview.github.io/?` to make it work again.
 - generated HTML cheatsheet to pass HTML validator without warnings and errors
 - the isolation of the try-catch-finally local vars against each other
 - arity exceptions to carry a callstack
