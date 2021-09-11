@@ -900,7 +900,7 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(java-version)")
-					.doc("Returns the Java VM version (1.8.0_252, 11.0.7, ...")
+					.doc("Returns the Java VM version (1.8.0_252, 11.0.7, ...)")
 					.examples("(java-version)")
 					.seeAlso("java-major-version", "java-version-info")
 					.build()
@@ -972,8 +972,11 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(java-source-location class)")
-					.doc("Returns the path of the source location of a class (fully qualified class name).")
-					.examples("(java-source-location :com.github.jlangch.venice.Venice)")
+					.doc(
+						"Returns the path of the source location of a class (fully " +
+						"qualified class name).")
+					.examples(
+						"(java-source-location :com.github.jlangch.venice.Venice)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1057,8 +1060,8 @@ public class SystemFunctions {
 					.arglists("(load-jar url)")
 					.doc(
 						"Dynamically load a JAR into the classpath. \n\n" +
-						"Dynamically loading JARs is experimental and for security reasons " +
-						"available in the REPL only!")
+						"Dynamically loading JARs is experimental and for security " +
+						"reasons available in the REPL only!")
 					.examples(
 						"(do                                                              \n" +
 						"  (load-module :maven)                                           \n" +
@@ -1084,9 +1087,9 @@ public class SystemFunctions {
 				}
 				else {
 					throw new VncException(
-							"There is no thread context ClassLoader available to dynamically " +
-							"load a JAR. For security reasons dynamically loading JARs is only " +
-							"available in the REPL!");
+							"There is no thread context ClassLoader available to " +
+							"dynamically load a JAR. For security reasons dynamically " +
+							"loading JARs is only available in the REPL!");
 				}
 			}
 			
