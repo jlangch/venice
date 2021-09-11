@@ -17,8 +17,7 @@ and this project adheres to
 
 ### Fixed
 
-- HTML cheatsheet to be rendered as HTML and not as plain text when opened 
-  from Github
+- generated HTML cheatsheet to pass HTML validator without warnings and errors
 - the isolation of the try-catch-finally local vars against each other
 - arity exceptions to carry a callstack
 

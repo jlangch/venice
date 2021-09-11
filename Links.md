@@ -23,6 +23,11 @@
 [My task… what’s wrong with your Gradle task?](https://blog.softwaremill.com/my-task-whats-wrong-with-your-gradle-task-82312100c595)
 
 
+## HTML Validator
+
+[HTML Validator](https://validator.w3.org/#validate_by_upload)
+
+
 ### BFG Repo-Cleaner
 
 [BFG Repo-Cleaner](https://rtyley.github.io/bfg-repo-cleaner/)

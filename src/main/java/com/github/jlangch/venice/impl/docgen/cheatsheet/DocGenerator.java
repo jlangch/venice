@@ -320,17 +320,17 @@ public class DocGenerator {
 		
 		final DocSection lit = new DocSection("Literals", "primitives.literals");
 		section.addSection(lit);		
-		lit.addLiteralIem("Nil",                  "nil");
-		lit.addLiteralIem("Boolean",              "true, false");
-		lit.addLiteralIem("Integer",              "150I, 1_000_000I, 0x1FFI");
-		lit.addLiteralIem("Long",                 "1500, 1_000_000, 0x00A055FF");
-		lit.addLiteralIem("Double",               "3.569, 2.0E+10");
-		lit.addLiteralIem("BigDecimal",           "6.897M, 2.345E+10M");
-		lit.addLiteralIem("BigInteger",           "1000N, 1_000_000N");
-		lit.addLiteralIem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"");
-		lit.addLiteralIem("",                     "\"\"\"{ \"age\": 42 }\"\"\"");
-		lit.addLiteralIem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"");
-		lit.addLiteralIem("",                     "\"~(inc x)\", \"\"\"~(inc x)\"\"\"");
+		lit.addLiteralIem("Nil",                  "nil",                                     id());
+		lit.addLiteralIem("Boolean",              "true, false",                             id());
+		lit.addLiteralIem("Integer",              "150I, 1_000_000I, 0x1FFI",                id());
+		lit.addLiteralIem("Long",                 "1500, 1_000_000, 0x00A055FF",             id());
+		lit.addLiteralIem("Double",               "3.569, 2.0E+10",                          id());
+		lit.addLiteralIem("BigDecimal",           "6.897M, 2.345E+10M",                      id());
+		lit.addLiteralIem("BigInteger",           "1000N, 1_000_000N",                       id());
+		lit.addLiteralIem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", id());
+		lit.addLiteralIem("",                     "\"\"\"{ \"age\": 42 }\"\"\"",             id());
+		lit.addLiteralIem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"",              id());
+		lit.addLiteralIem("",                     "\"~(inc x)\", \"\"\"~(inc x)\"\"\"",      id());
 
 		
 		final DocSection numbers = new DocSection("Numbers", "primitives.numbers");
