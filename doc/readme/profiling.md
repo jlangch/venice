@@ -30,7 +30,7 @@ Benchmarking an expression incorporates four phases:
 ```clojure
 (do
   (load-module :benchmark)
-  (bench/benchmark (+ 1 2 3 4) 1000000 30000))
+  (bench/benchmark (+ 1 2 3 4) 120000 10000))
 ```
 
 The benchmark output: 
@@ -40,14 +40,14 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples :   30000
-          Execution time mean : 672,000 ns
- Execution time std-deviation :  20,048 ns
-Execution time lower quartile : 660,000 ns (25%)
-Execution time upper quartile : 692,000 ns (75%)
-Execution time lower quantile : 653,000 ns (2.5%)
-Execution time upper quantile : 727,000 ns (97.5%)
-                     Outliers :     326
+                      Samples :   10000
+          Execution time mean :  460.000ns
+ Execution time std-deviation :   67.452ns
+Execution time lower quartile :  455.000ns (25%)
+Execution time upper quartile :  574.000ns (75%)
+Execution time lower quantile :  420.000ns (2.5%)
+Execution time upper quantile :  616.000ns (97.5%)
+                     Outliers :      18
 ```
 
 ### Outliers
@@ -88,7 +88,7 @@ Saved chart to 'benchmark.png'.
 
 
 ```clojure
-(bench/benchmark (+ 1 2 3 4) 100000 30000 :chart true)
+(bench/benchmark (+ 1 2 3 4) 120000 10000 :chart true)
 ```
 
 ```text
@@ -96,16 +96,16 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples :   30000
-          Execution time mean : 698,000 ns
- Execution time std-deviation :   9,098 ns
-Execution time lower quartile : 694,000 ns (25%)
-Execution time upper quartile : 705,000 ns (75%)
-Execution time lower quantile : 687,000 ns (2.5%)
-Execution time upper quantile : 727,000 ns (97.5%)
-                     Outliers :     436
+                      Samples :   10000
+          Execution time mean :  462.000ns
+ Execution time std-deviation :   85.202ns
+Execution time lower quartile :  456.000ns (25%)
+Execution time upper quartile :  576.000ns (75%)
+Execution time lower quantile :  421.000ns (2.5%)
+Execution time upper quantile :  845.000ns (97.5%)
+                     Outliers :      64
 Generating chart...
-Quantization step width: 288 ns
+Quantization step width: 141ns
 Saved chart to 'benchmark.png'.
 ```
 
