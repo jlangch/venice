@@ -7095,6 +7095,61 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction merge_deep =
+		new VncFunction(
+				"merge-deep",
+				VncFunction
+					.meta()
+					.arglists(
+						"(merge-deep values)", 
+						"(merge-deep strategy & values)")
+					.doc(
+						"Recursively merges maps.\n\n" +
+						"If the first parameter is a keyword it defines the strategy to\n" +
+						"use when merging non-map collections. Options are:\n\n" +
+						"1. *:replace*, the default, the last value is used\n" +
+						"2. *:into*, if the value in every map is a collection they are\n" +
+						"   concatenated using `into`. Thus the type of (first) value is\n" +
+						"   maintained.")
+					.examples(
+						"(merge-deep {:a {:c 2}} {:a {:b 1}})",
+						"(merge-deep :replace {:a [1]} {:a [2]})",
+						"(merge-deep :into {:a [1]} {:a [2]})",
+						"(merge-deep {:a 1} nil)")
+					.seeAlso("merge", "merge-with")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final boolean hasStrategy = Types.isVncKeyword(args.first());
+				
+				final VncList values = hasStrategy ? args.rest() : args;
+
+				final VncKeyword strategy = hasStrategy
+												? (VncKeyword)args.first()
+												: new VncKeyword(":replace");
+
+				final boolean strategyInto = new VncKeyword(":into").equals(strategy);
+				
+				if (VncBoolean.isTrue(every_Q.applyOf(map_Q, values))) {
+					return apply.applyOf(
+									merge_with,
+									partial.applyOf(merge_deep, strategy),
+									values);
+				}
+				else if (strategyInto && VncBoolean.isTrue(every_Q.applyOf(coll_Q, values))) {
+					return reduce.applyOf(into, values);
+				}
+				else {
+					return values.last();
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
 	public static VncFunction disj =
 		new VncFunction(
 				"disj",
@@ -7853,6 +7908,7 @@ public class CoreFunctions {
 
 				.add(merge)
 				.add(merge_with)
+				.add(merge_deep)
 				.add(disj)
 				.add(seq)
 				.add(repeat)
