@@ -844,6 +844,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("reduce-kv"));
 		map_modify.addItem(getDocItem("merge"));
 		map_modify.addItem(getDocItem("merge-with"));
+		map_modify.addItem(getDocItem("merge-deep"));
 		map_modify.addItem(getDocItem("map-invert"));
 		map_modify.addItem(getDocItem("map-keys"));
 		map_modify.addItem(getDocItem("map-vals"));

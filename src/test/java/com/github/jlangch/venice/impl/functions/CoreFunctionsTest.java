@@ -2653,6 +2653,16 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_merge_deep() {
+		final Venice venice = new Venice();
+
+		assertEquals("{:a {:b 1 :c 2}}", venice.eval("(str (merge-deep {:a {:c 2}} {:a {:b 1}}))"));
+		assertEquals("{:a [2]}",         venice.eval("(str (merge-deep :replace {:a [1]} {:a [2]}))"));
+		assertEquals("{:a [1 2]}",       venice.eval("(str (merge-deep :into {:a [1]} {:a [2]}))"));
+		assertNull(venice.eval("(merge-deep {:a 1} nil)"));
+	}
+
+	@Test
 	public void test_merge_with() {
 		final Venice venice = new Venice();
 

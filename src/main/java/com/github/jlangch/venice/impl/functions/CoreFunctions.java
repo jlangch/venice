@@ -7010,6 +7010,7 @@ public class CoreFunctions {
 						"(merge {:a 1} nil)",
 						"(merge nil {:a 1})",
 						"(merge nil nil)")
+					.seeAlso("merge-with", "merge-deep")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7047,6 +7048,7 @@ public class CoreFunctions {
 					.examples(
 						"(merge-with + {:a 1 :b 2} {:a 9 :b 98 :c 0})",
 						"(merge-with into {:a [1] :b [2]} {:b [3 4] :c [5 6]})")
+					.seeAlso("merge", "merge-deep")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
