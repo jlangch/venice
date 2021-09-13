@@ -1497,7 +1497,7 @@ public class IOFunctions {
 					.doc(
 						"Reads the content of file f as text (string) or binary (bytebuf). " +
 						"f may be a file, a string file path, a `java.io.InputStream`, " +
-						"or a `java.io.Reader`. \n\n" +
+						"a `java.io.Reader`, or a `java.net.URL`. \n\n" +
 						"Options: \n\n" +
 						"| :binary true/false | e.g :binary true, defaults to false |\n" +
 						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
@@ -1572,6 +1572,27 @@ public class IOFunctions {
 							}
 							else {
 								return new VncString(s);
+							}
+						}
+					}
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from a :java.io.Reader", ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, URL.class)) {
+					try {
+						final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						
+						try (InputStream is = url.openStream()) {
+							if (VncBoolean.isTrue(binary)) {
+								final byte[] data = IOStreamUtil.copyIStoByteArray(is);
+								return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
+							}
+							else {
+								final VncVal encVal = options.get(new VncKeyword("encoding"));
+								final String encoding = encoding(encVal);
+		
+								return new VncString(IOStreamUtil.copyIStoString(is, encoding));
 							}
 						}
 					}
