@@ -47,6 +47,10 @@
             (as-> s (map keyword s)))))
 
 
+(defn- read-json [s reader-opts]
+  (apply json/read-string s reader-opts))
+
+
 (defn- read-system [prefix properties]
   (reduce (fn [acc [k v]]
             (if-let [ks (->ks prefix k)]
@@ -56,12 +60,8 @@
           properties))
 
 
-(defn- read-json [s reader-opts]
-  (apply json/read-string s reader-opts))
-
-
-(defn- read-env-file [env-file reader-opts]
-  (-> env-file
+(defn- read-json-file [file reader-opts]
+  (-> file
       (io/slurp :binary false)
       (read-json reader-opts)))
 
@@ -71,12 +71,12 @@
           "(resource path)",
           "(resource path reader-opts)")
      :doc """
-          Reads configuration part from given path in classpath.
+          Reads JSON configuration part from given path in classpath.
           """ }
 
   resource [path & reader-opts]
 
-  (read-env-file (io/load-classpath-resource path) reader-opts))
+  (read-json-file (io/load-classpath-resource path) reader-opts))
 
 
 (defn
@@ -84,12 +84,12 @@
           "(file file-path)",
           "(file file-path reader-opts)")
      :doc """
-          Reads configuration part from given path in filesystem.
+          Reads JSON configuration part from given path in filesystem.
           """ }
 
   file [file-path & reader-opts]
 
-  (read-env-file (io/file file-path) reader-opts))
+  (read-json-file (io/file file-path) reader-opts))
 
 
 (defn
@@ -134,28 +134,28 @@
     (env-var name path nil))
 
   ([name path default-val]
-    (when-let [value (system-env name default-val)]
+    (when-let [value (core/system-env name default-val)]
       (assoc-in {} path value))))
 
 
 (defn
   ^{ :arglists '(
-          "(system-prop name path)",
-          "(system-prop name path default-val)")
+          "(property-var name path)",
+          "(property-var name path default-val)")
      :doc """
           Reads a configuration value from an system property and
           associates it to the given path in a map.
 
-          `(system-prop "SERVER_PORT" [:http :port])`  ; => {:http {:port "8080"}}
+          `(property-var "SERVER_PORT" [:http :port])`  ; => {:http {:port "8080"}}
           """ }
 
-  system-prop
+  property-var
 
   ([name path]
-    (system-prop name path nil))
+    (property-var name path nil))
 
   ([name path default-val]
-    (when-let [value (system-prop name default-val)]
+    (when-let [value (core/system-prop name default-val)]
       (assoc-in {} path value))))
 
 
@@ -175,31 +175,3 @@
 
   ; Filter nils out, (merge-deep {...} nil) -> nil
   (apply merge-deep {} (filter identity parts)))
-
-
-(defn
-  ^{ :arglists '(
-          "(read-config! prefix)",
-          "(read-config! prefix override)")
-     :doc """
-          Read and merge config from several sources:
-
-          * config-defaults.json classpath resource
-          * environment variables (filtered by prefix)
-          * system properties (filtered by prefix)
-          * config-local.json file in current directory
-          * override parameter
-          """ }
-
-  read-config!
-
-  ([prefix]
-    (read-config! prefix nil))
-
-  ([prefix override]
-    (build-config
-      (resource "config-defaults.json")
-      (env prefix)
-      (properties prefix)
-      (file "./config-local.json")
-      override)))
