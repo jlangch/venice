@@ -1,0 +1,205 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2021 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice configuration module
+
+;;;; Thanks to Juho Teperi and his clojure 'maailma' project
+;;;; (https://github.com/metosin/maailma).
+
+
+(ns config)
+
+(defn
+  ^{ :arglists '("(->ks prefix s)")
+     :doc """
+          Normalize the string, split and map to keywords.
+          Returns nil if the string doesn't match the app property prefix.
+          """ }
+
+  ->ks [prefix s]
+
+  (let [prefix (str prefix ".")
+        select (fn [s] (if (str/starts-with? s prefix)
+                           (str/strip-start s prefix)
+                           nil))]
+    (some-> (str/lower-case s)
+            (str/replace-all "_" ".")
+            (select)
+            (str/split "[.]")
+            (as-> s (map keyword s)))))
+
+
+(defn- read-system [prefix properties]
+  (reduce (fn [acc [k v]]
+            (if-let [ks (->ks prefix k)]
+              (assoc-in acc ks v)
+              acc))
+          {}
+          properties))
+
+
+(defn- read-json [s reader-opts]
+  (apply json/read-string s reader-opts))
+
+
+(defn- read-env-file [env-file reader-opts]
+  (-> env-file
+      (io/slurp :binary false)
+      (read-json reader-opts)))
+
+
+(defn
+  ^{ :arglists '(
+          "(resource path)",
+          "(resource path reader-opts)")
+     :doc """
+          Reads configuration part from given path in classpath.
+          """ }
+
+  resource [path & reader-opts]
+
+  (read-env-file (io/load-classpath-resource path) reader-opts))
+
+
+(defn
+  ^{ :arglists '(
+          "(file file-path)",
+          "(file file-path reader-opts)")
+     :doc """
+          Reads configuration part from given path in filesystem.
+          """ }
+
+  file [file-path & reader-opts]
+
+  (read-env-file (io/file file-path) reader-opts))
+
+
+(defn
+  ^{ :arglists '("(env prefix)")
+     :doc """
+          Reads configuration part from envinronment variables, filtered by a
+          prefix.
+          """ }
+
+  env [prefix]
+
+  (read-system prefix (. :java.lang.System :getenv)))
+
+
+(defn
+  ^{ :arglists '("(properties prefix)")
+     :doc """
+          Reads configuration part from system properties, filtered by a prefix.
+          """ }
+
+  properties [prefix]
+
+  (->> (. :java.lang.System :getProperties)
+       (into {})
+       (read-system prefix)))
+
+
+(defn
+  ^{ :arglists '(
+          "(env-var name path)",
+          "(env-var name path default-val)")
+     :doc """
+          Reads a configuration value from an environment variable and
+          associates it to the given path in a map.
+
+          `(env-var "SERVER_PORT" [:http :port])`  ; => {:http {:port "8080"}}
+          """ }
+
+  env-var
+
+  ([name path]
+    (env-var name path nil))
+
+  ([name path default-val]
+    (when-let [value (system-env name default-val)]
+      (assoc-in {} path value))))
+
+
+(defn
+  ^{ :arglists '(
+          "(system-prop name path)",
+          "(system-prop name path default-val)")
+     :doc """
+          Reads a configuration value from an system property and
+          associates it to the given path in a map.
+
+          `(system-prop "SERVER_PORT" [:http :port])`  ; => {:http {:port "8080"}}
+          """ }
+
+  system-prop
+
+  ([name path]
+    (system-prop name path nil))
+
+  ([name path default-val]
+    (when-let [value (system-prop name default-val)]
+      (assoc-in {} path value))))
+
+
+(defn
+  ^{ :arglists '("(build & parts)")
+     :doc "Merges given configuration parts."
+     :examples '(
+          """
+          (config/build
+            (config/resource "config-defaults.json")
+            (config/file "./config-local.json")
+            (config/env-var "SERVER_PORT" [:http :port])
+            (config/env-var "MASTER_PWD" [:app :master-pwd]))
+          """) }
+
+  build [& parts]
+
+  ; Filter nils out, (merge-deep {...} nil) -> nil
+  (apply merge-deep {} (filter identity parts)))
+
+
+(defn
+  ^{ :arglists '(
+          "(read-config! prefix)",
+          "(read-config! prefix override)")
+     :doc """
+          Read and merge config from several sources:
+
+          * config-defaults.json classpath resource
+          * environment variables (filtered by prefix)
+          * system properties (filtered by prefix)
+          * config-local.json file in current directory
+          * override parameter
+          """ }
+
+  read-config!
+
+  ([prefix]
+    (read-config! prefix nil))
+
+  ([prefix override]
+    (build-config
+      (resource "config-defaults.json")
+      (env prefix)
+      (properties prefix)
+      (file "./config-local.json")
+      override)))

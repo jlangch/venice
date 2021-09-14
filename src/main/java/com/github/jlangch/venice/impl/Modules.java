@@ -47,6 +47,7 @@ public class Modules {
 							"ansi", 
 							"app", 
 							"benchmark", 
+							"config", 
 							"core", 
 							"crypt", 
 							"excel", 

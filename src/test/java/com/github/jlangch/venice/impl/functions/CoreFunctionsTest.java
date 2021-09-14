@@ -149,6 +149,14 @@ public class CoreFunctionsTest {
 		assertEquals("{:a {}}", venice.eval("(str (assoc {:a 1} :a {}))"));
 		assertEquals("{:a {:c {:d 200}}}", venice.eval("(str (assoc-in {:a {:c 100}} [:a :c :d] 200))"));
 
+		// assoc-in should work like assoc on single level
+		assertEquals("{:a 100}", venice.eval("(str (assoc {} :a 100))"));
+		assertEquals("{:a 100}", venice.eval("(str (assoc-in {} [:a] 100))"));
+		assertEquals("{:a 100}", venice.eval("(str (assoc {:a 1} :a 100))"));
+		assertEquals("{:a 100}", venice.eval("(str (assoc-in {:a 1} [:a] 100))"));
+		assertEquals("{:a 100 :b 200}", venice.eval("(str (assoc {:a 100} :b 200))"));
+		assertEquals("{:a 100 :b 200}", venice.eval("(str (assoc-in {:a 100} [:b] 200))"));
+		
 		// vector
 		assertEquals("[100]", venice.eval("(str (assoc-in [] [0] 100))"));
 		assertEquals("[0 100]", venice.eval("(str (assoc-in [0] [1] 100))"));
