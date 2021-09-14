@@ -29,7 +29,7 @@ import com.github.jlangch.venice.Venice;
 public class ConfigModuleTest {
 
 	@Test
-	public void test_thread_ks_1() {
+	public void test_thread_ks() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -55,7 +55,7 @@ public class ConfigModuleTest {
 	}
 
 	@Test
-	public void test_thread_ks_2() {
+	public void test_thread_ks_empty_prefix() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -81,7 +81,7 @@ public class ConfigModuleTest {
 	}
 
 	@Test
-	public void test_thread_ks_3() {
+	public void test_thread_ks_nil_prefix() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -107,7 +107,7 @@ public class ConfigModuleTest {
 	}
 
 	@Test
-	public void test_thread_ks_4() {
+	public void test_thread_ks_unmatching_prefix() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -129,7 +129,7 @@ public class ConfigModuleTest {
 	}
 
 	@Test
-	public void test_thread_ks_5() {
+	public void test_thread_ks_prefix_with_dot() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -153,4 +153,31 @@ public class ConfigModuleTest {
 
 		venice.eval(script);
 	}
+
+	@Test
+	public void test_thread_ks_lowercase_underscore_mapping() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java\" nil))))               \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java\" \"java\"))))          \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java\" \"java_\"))))         \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:home)                                    \n" +
+				"              (config/->ks \"java\" \"java_home\"))))     \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:home :vm)                                \n" +
+				"              (config/->ks \"jaVa\" \"Java_Home_Vm\"))))    "; 
+
+		venice.eval(script);
+	}
+
 }

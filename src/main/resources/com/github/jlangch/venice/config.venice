@@ -32,7 +32,9 @@
      :doc """
           Normalize the string, split and map the elements to keywords.
           Returns `nil` if the string doesn't match the app property 'prefix'.¶
-          The 'prefix' may be `nil` or any string (even an empty string).
+          The 'prefix' may be `nil` or any string (even an empty string). The
+          string and the prefix get normalize prior to processing, meaning they
+          are translated to lower case and '_' are replaced by '.'.
           """
      :examples '(
           """(config/->ks "" "java.vendor.name")"""
@@ -41,7 +43,7 @@
 
   ->ks [prefix s]
 
-  (let [prefix      (str (str/strip-end prefix ".") ".")
+  (let [prefix      (str (str/strip-end (str/lower-case prefix) ".") ".")
         select      (fn [s] (if (str/starts-with? s prefix)
                                 (str/strip-start s prefix)
                                 nil))
