@@ -34,12 +34,83 @@ public class ConfigModuleTest {
 	public void test_thread_ks() {
 		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                         \n" +
-				"   (load-module :config)                    \n" +
-				"   (pr-str (config/->ks \"java\" \"java.home.vm\")))   "; 
+		final String script1 =
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java\" nil))))               \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java\" \"java\"))))          \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java\" \"java.\"))))         \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:home)                                    \n" +
+				"              (config/->ks \"java\" \"java.home\"))))     \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:home :vm)                                \n" +
+				"              (config/->ks \"java\" \"java.home.vm\"))))    "; 
 
-		assertEquals("(:home :vm)", venice.eval(script));
+		final String script2 =
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"\" nil))))                   \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java)                                    \n" +
+				"              (config/->ks \"\" \"java\"))))              \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java)                                    \n" +
+				"              (config/->ks \"\" \"java.\"))))             \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java :home)                              \n" +
+				"              (config/->ks \"\" \"java.home\"))))         \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java :home :vm)                          \n" +
+				"              (config/->ks \"\" \"java.home.vm\"))))        "; 
+
+		final String script3 =
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks nil nil))))                    \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java)                                    \n" +
+				"              (config/->ks nil \"java\"))))               \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java)                                    \n" +
+				"              (config/->ks nil \"java.\"))))              \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java :home)                              \n" +
+				"              (config/->ks nil \"java.home\"))))          \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:java :home :vm)                          \n" +
+				"              (config/->ks nil \"java.home.vm\"))))        "; 
+
+		final String script4 =
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"kava\" \"java\"))))          \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"kava\" \"java.\"))))         \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"kava\" \"java.home\"))))     \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"kava\" \"java.home.vm\"))))    "; 
+
+		venice.eval(script1);
+		venice.eval(script2);
+		venice.eval(script3);
+		venice.eval(script4);
 	}
 
 }

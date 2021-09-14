@@ -30,21 +30,24 @@
 (defn
   ^{ :arglists '("(->ks prefix s)")
      :doc """
-          Normalize the string, split and map to keywords.
-          Returns nil if the string doesn't match the app property prefix.
+          Normalize the string, split and map the elements to keywords.
+          Returns `nil` if the string doesn't match the app property 'prefix'.¶
+          The 'prefix' may be `nil` or an empty string.
           """ }
 
   ->ks [prefix s]
 
-  (let [prefix (str prefix ".")
-        select (fn [s] (if (str/starts-with? s prefix)
-                           (str/strip-start s prefix)
-                           nil))]
+  (let [prefix      (str prefix ".")
+        select      (fn [s] (if (str/starts-with? s prefix)
+                                (str/strip-start s prefix)
+                                nil))
+        trim-to-nil (fn [c] (if (empty? c) nil c))]
     (some-> (str/lower-case s)
             (str/replace-all "_" ".")
             (select)
             (str/split "[.]")
-            (as-> s (map keyword s)))))
+            (as-> s (map keyword s))
+            (trim-to-nil))))
 
 
 (defn- read-json [s reader-opts]
