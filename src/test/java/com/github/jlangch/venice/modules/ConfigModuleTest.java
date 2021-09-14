@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.modules;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
@@ -31,10 +29,10 @@ import com.github.jlangch.venice.Venice;
 public class ConfigModuleTest {
 
 	@Test
-	public void test_thread_ks() {
+	public void test_thread_ks_1() {
 		final Venice venice = new Venice();
 
-		final String script1 =
+		final String script =
 				"(do                                                       \n" +
 				"   (load-module :config)                                  \n" +
 				"                                                          \n" +
@@ -53,7 +51,14 @@ public class ConfigModuleTest {
 				"   (assert (= '(:home :vm)                                \n" +
 				"              (config/->ks \"java\" \"java.home.vm\"))))    "; 
 
-		final String script2 =
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_thread_ks_2() {
+		final Venice venice = new Venice();
+
+		final String script =
 				"(do                                                       \n" +
 				"   (load-module :config)                                  \n" +
 				"                                                          \n" +
@@ -72,7 +77,14 @@ public class ConfigModuleTest {
 				"   (assert (= '(:java :home :vm)                          \n" +
 				"              (config/->ks \"\" \"java.home.vm\"))))        "; 
 
-		final String script3 =
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_thread_ks_3() {
+		final Venice venice = new Venice();
+
+		final String script =
 				"(do                                                       \n" +
 				"   (load-module :config)                                  \n" +
 				"                                                          \n" +
@@ -91,7 +103,14 @@ public class ConfigModuleTest {
 				"   (assert (= '(:java :home :vm)                          \n" +
 				"              (config/->ks nil \"java.home.vm\"))))        "; 
 
-		final String script4 =
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_thread_ks_4() {
+		final Venice venice = new Venice();
+
+		final String script =
 				"(do                                                       \n" +
 				"   (load-module :config)                                  \n" +
 				"                                                          \n" +
@@ -106,11 +125,32 @@ public class ConfigModuleTest {
 				"                                                          \n" +
 				"   (assert (= nil                                         \n" +
 				"              (config/->ks \"kava\" \"java.home.vm\"))))    "; 
-
-		venice.eval(script1);
-		venice.eval(script2);
-		venice.eval(script3);
-		venice.eval(script4);
+		venice.eval(script);
 	}
 
+	@Test
+	public void test_thread_ks_5() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java.\" nil))))              \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java.\" \"java\"))))         \n" + 
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/->ks \"java.\" \"java.\"))))        \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:home)                                    \n" +
+				"              (config/->ks \"java.\" \"java.home\"))))    \n" + 
+				"                                                          \n" +
+				"   (assert (= '(:home :vm)                                \n" +
+				"              (config/->ks \"java.\" \"java.home.vm\"))))    "; 
+
+		venice.eval(script);
+	}
 }
