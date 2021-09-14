@@ -145,6 +145,9 @@ public class CoreFunctionsTest {
 		assertEquals("{:a 200}", venice.eval("(str (assoc-in {:a 100} [:a] 200))"));
 		assertEquals("{:a {:b {:c 100}}}", venice.eval("(str (assoc-in {} [:a :b :c] 100))"));
 		assertEquals("{:a {:c 100}}", venice.eval("(str (assoc-in {:a {}} [:a :c] 100))"));
+		
+		assertEquals("{:a {}}", venice.eval("(str (assoc {:a 1} :a {}))"));
+		assertEquals("{:a {:c {:d 200}}}", venice.eval("(str (assoc-in {:a {:c 100}} [:a :c :d] 200))"));
 
 		// vector
 		assertEquals("[100]", venice.eval("(str (assoc-in [] [0] 100))"));
@@ -161,19 +164,7 @@ public class CoreFunctionsTest {
 		// vector / map
 		assertEquals("[0 1 {:a 1 :b {:c 9}}]", venice.eval("(str (assoc-in [0 1 {:a 1 :b {:c 2}}] [2 :b :c] 9))"));
 	}
-	
-	@Test
-	public void test_assoc_in_invalid() {
-		final Venice venice = new Venice();
-
-		try {
-			venice.eval("(str (assoc-in {:a {:c 100}} [:a :c :d] 200))");
-		}
-		catch(VncException ex) {
-			assertTrue(ex.getMessage().contains("a nested collection cannot be added"));
-		}
-	}
-	
+		
 	@Test
 	public void test_bigint() {
 		final Venice venice = new Venice();

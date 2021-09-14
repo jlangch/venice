@@ -3299,23 +3299,17 @@ public class CoreFunctions {
 				}
 				else {
 					final VncVal childColl = get.applyOf(coll, key);
-					if (childColl == Nil || childColl instanceof VncMap) {
+					if (childColl == Nil || childColl instanceof VncSequence || childColl instanceof VncMap) {
 						return assoc.applyOf(
 									coll,
 									key,
 									assoc_in.applyOf(childColl, keyRest, val));
 					}
 					else {
-						throw new VncException(
-								"Failure in function 'assoc-in': a nested " +
-								"collection cannot be added because there is " +
-								"already a scalar value at the particular " +
-								"position in the map. \n" +
-								"All I have is the last key in the sequence of " + 
-								"keys ks = [... " + key.toString(true) + "].\n\n" +
-								"E.g.:  (-> {} \n" +
-								"           (assoc-in [:vendor ] \"Foo Inc.\") \n" +
-								"           (assoc-in [:vendor :version ] \"1.1.0\"))");
+						return assoc.applyOf(
+								coll,
+								key,
+								assoc_in.applyOf(VncHashMap.empty(), keyRest, val));
 					}
 				}
 			}
