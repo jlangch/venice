@@ -163,6 +163,18 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_assoc_in_invalid() {
+		final Venice venice = new Venice();
+
+		try {
+			venice.eval("(str (assoc-in {:a {:c 100}} [:a :c :d] 200))");
+		}
+		catch(VncException ex) {
+			assertTrue(ex.getMessage().contains("a nested collection cannot be added"));
+		}
+	}
+	
+	@Test
 	public void test_bigint() {
 		final Venice venice = new Venice();
 

@@ -3289,21 +3289,34 @@ public class CoreFunctions {
 
 				final VncVal coll = args.first(); // may be Nil
 				final VncSequence keys = Coerce.toVncSequence(args.second());
-				final VncVal val = args.nth(2);
+				final VncVal val = args.third();
 
 				final VncVal key = keys.first();
 				final VncSequence keyRest = keys.rest();
 
 				if (keyRest.isEmpty()) {
-					return assoc.apply(VncList.of(coll, key, val));
+					return assoc.applyOf(coll, key, val);
 				}
 				else {
-					final VncVal childColl = get.apply(VncList.of(coll, key));
-					return assoc.apply(
-							VncList.of(
+					final VncVal childColl = get.applyOf(coll, key);
+					if (childColl == Nil || childColl instanceof VncMap) {
+						return assoc.applyOf(
 									coll,
 									key,
-									assoc_in.apply(VncList.of(childColl, keyRest, val))));
+									assoc_in.applyOf(childColl, keyRest, val));
+					}
+					else {
+						throw new VncException(
+								"Failure in function 'assoc-in': a nested " +
+								"collection cannot be added because there is " +
+								"already a scalar value at the particular " +
+								"position in the map. \n" +
+								"All I have is the last key in the sequence of " + 
+								"keys ks = [... " + key.toString(true) + "].\n\n" +
+								"E.g.:  (-> {} \n" +
+								"           (assoc-in [:vendor ] \"Foo Inc.\") \n" +
+								"           (assoc-in [:vendor :version ] \"1.1.0\"))");
+					}
 				}
 			}
 
