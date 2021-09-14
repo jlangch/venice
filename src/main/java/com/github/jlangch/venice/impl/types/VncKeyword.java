@@ -54,7 +54,11 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		this(namespace, 
 			 simpleName, 
 			 namespace == null ? simpleName : namespace + "/" + simpleName, 
-			 meta); 
+			 meta);
+		
+		if (simpleName == null || simpleName.isEmpty()) {
+			throw new VncException("The name of a keyword must not be empty!");
+		}
 	}
 	
 	private VncKeyword(final QualifiedName qn, final VncVal meta) { 
@@ -271,8 +275,16 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 	}
 	
 
-	private static String stripColon(final String name) { 
-		return name.charAt(0) == ':' ? name.substring(1) : name;
+	private static String stripColon(final String name) {
+		if (name == null || name.isEmpty()) {
+			return name;
+		}
+		else if (name.charAt(0) == ':') {
+			return name.length() > 1 ? name.substring(1) : "";
+		}
+		else {
+			return name;
+		}
 	}
 	
     public static final VncKeyword TYPE = new VncKeyword(":core/keyword");
