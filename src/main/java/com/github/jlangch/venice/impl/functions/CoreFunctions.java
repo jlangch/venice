@@ -3299,7 +3299,10 @@ public class CoreFunctions {
 				}
 				else {
 					final VncVal childColl = get.applyOf(coll, key);
-					if (childColl == Nil || childColl instanceof VncSequence || childColl instanceof VncMap) {
+					if (childColl == Nil 
+							|| childColl instanceof VncSequence 
+							|| childColl instanceof VncMap
+					) {
 						return assoc.applyOf(
 									coll,
 									key,

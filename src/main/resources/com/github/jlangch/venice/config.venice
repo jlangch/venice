@@ -44,17 +44,22 @@
 
   ->ks [prefix s]
 
-  (let [prefix      (str (str/strip-end (str/lower-case prefix) ".") ".")
-        select      (fn [s] (if (str/starts-with? s prefix)
-                                (str/strip-start s prefix)
-                                nil))
-        trim-to-nil (fn [c] (if (empty? c) nil c))]
+  (let [prefix    (when-not (nil? (str/trim-to-nil prefix))
+                    (-> (str/lower-case prefix) (str/strip-end ".") (str ".")))
+        prefixed? (fn [s] (str/starts-with? s prefix))
+        select    (fn [s] (cond
+                            (nil? prefix)  s
+                            (prefixed? s)  (str/strip-start s prefix)
+                            :else          nil))]
     (some-> (str/lower-case s)
             (str/replace-all "_" ".")
+            (str/replace-first (regex/pattern "^[.]+") "")
             (select)
             (str/split "[.]")
+            (as-> s (map empty-to-nil s))
+            (as-> s (filter some? s))
             (as-> s (map keyword s))
-            (trim-to-nil))))
+            (empty-to-nil))))
 
 
 (defn- read-json [s reader-opts]
@@ -80,9 +85,7 @@
   ^{ :arglists '(
           "(resource path)",
           "(resource path reader-opts)")
-     :doc """
-          Reads JSON configuration part from given path in classpath.
-          """ }
+     :doc "Reads JSON configuration part from given path in classpath." }
 
   resource [path & reader-opts]
 
@@ -93,9 +96,7 @@
   ^{ :arglists '(
           "(file file-path)",
           "(file file-path reader-opts)")
-     :doc """
-          Reads JSON configuration part from given path in filesystem.
-          """ }
+     :doc "Reads JSON configuration part from given path in filesystem." }
 
   file [file-path & reader-opts]
 
