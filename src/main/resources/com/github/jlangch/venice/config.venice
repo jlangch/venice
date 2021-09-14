@@ -31,9 +31,10 @@
   ^{ :arglists '("(->ks prefix s)")
      :doc """
           Normalize the string, split and map the elements to keywords.
-          Returns `nil` if the string doesn't match the app property 'prefix'.¶
+          Returns `nil` if the string doesn't match the passed 'prefix'.
+
           The 'prefix' may be `nil` or any string (even an empty string). The
-          string and the prefix get normalize prior to processing, meaning they
+          string and the prefix are normalized prior to processing, meaning they
           are translated to lower case and '_' are replaced by '.'.
           """
      :examples '(
