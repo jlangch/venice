@@ -99,10 +99,12 @@
 
 (defn
   ^{ :arglists '(
-          "(file file-path)",
-          "(file file-path reader-opts)")
+          "(file f)",
+          "(file f reader-opts)")
      :doc """
-          Reads JSON configuration part from given path in filesystem.
+          Reads JSON configuration part from given file f in the filesystem.
+          f may be a `file`, a string file path, a `java.io.InputStream`,
+          a `java.io.Reader`, or a `java.net.URL`.
 
           The optional 'reader-opts' are defined by `json/read-str`.¶
           E.g.: `:key-fn keyword` will convert all config keys to keywords
@@ -110,9 +112,9 @@
      :see-also '(
           "config/resource" "config/build" "json/read-str") }
 
-  file [file-path & reader-opts]
+  file [f & reader-opts]
 
-  (read-json-file (io/file file-path) reader-opts))
+  (read-json-file f reader-opts))
 
 
 (defn

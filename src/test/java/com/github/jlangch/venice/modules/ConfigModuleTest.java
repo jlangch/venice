@@ -23,8 +23,11 @@ package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 
 
@@ -299,7 +302,7 @@ public class ConfigModuleTest {
 	}
 
 	@Test
-	public void test_build() {
+	public void test_build_json() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -318,6 +321,47 @@ public class ConfigModuleTest {
 				"            (-> (config) :http :port)]))                            ";
 
 		assertEquals("[\"123\" \"8000\"]", venice.eval(script));
+	}
+
+	@Test
+	public void test_build_json_file() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                             \n" +
+				"  (load-module :config)                         \n" +
+				"                                                \n" +
+				"  (defn config []                               \n" + 
+				"    (config/build                               \n" + 
+				"      (config/file file-name :key-fn keyword)   \n" +
+				"      (config/env-var \"M_SERVER_PORT\"         \n" +
+				"                      [:http :port]             \n" +
+				"                      \"8000\")))               \n" +
+				"                                                \n" +
+				"  (pr-str [ (-> (config) :app :pwd)             \n" +
+				"            (-> (config) :http :port)]))          ";
+
+		try {
+			final File file = File.createTempFile("from__", ".json");
+			file.deleteOnExit();
+			final String fileName = file.getAbsolutePath();
+			
+			// write
+			venice.eval(
+					"(io/spit (io/file file-name) \n" +
+					"           \"\"\"{\"app\": {\"pwd\": \"123\"}}\"\"\")", 
+					Parameters.of("file-name", fileName));
+
+			// test
+			assertEquals(
+					"[\"123\" \"8000\"]", 
+					venice.eval(
+							script, 
+							Parameters.of("file-name", fileName)));
+		}
+		catch(Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

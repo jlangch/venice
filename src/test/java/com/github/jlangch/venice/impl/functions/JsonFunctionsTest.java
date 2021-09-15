@@ -275,7 +275,7 @@ public class JsonFunctionsTest {
 			
 			// write
 			venice.eval(
-					"(json/spit (io/file file-name) {:a 100 :b 100}))", 
+					"(json/spit (io/file file-name) {:a 100 :b 100})", 
 					Parameters.of("file-name", fileName));
 
 			// read
