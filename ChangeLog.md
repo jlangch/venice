@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- function `merge-deep`
+- functions `merge-deep`, `io/->url`, `io/->uri`, 
 - the module `:config` to simplify application configuration
 - support for `java.net.URL` with `io/slurp`
 - improvements to cheatsheet rendering for inline code sections

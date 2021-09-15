@@ -41,6 +41,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
@@ -598,6 +601,99 @@ public class IOFunctions {
 				}
 				else {
 					return Nil;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_to_url =
+		new VncFunction(
+				"io/->url",
+				VncFunction
+					.meta()
+					.arglists(
+						"(io/->url file)")
+					.doc(
+						"Coverts a file or a `java.net.URI` to a `java.net.URL`.")
+					.examples(
+						"(io/->url \"/tmp/test.txt\")",
+						"(io/->url (io/file \"/temp\"))",
+						"(io/->url (io/->uri (io/file \"/temp\")))",
+						"(str (io/->url \"/tmp/test.txt\"))")
+					.seeAlso("io/file", "io/->uri")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				if (Types.isVncJavaObject(args.first(), URL.class)) {
+					return args.first();
+				}
+				else if (Types.isVncJavaObject(args.first(), URI.class)) {
+					final VncJavaObject obj = (VncJavaObject)args.first();
+					try {
+						return new VncJavaObject(((URI)obj.getDelegate()).toURL());
+					}
+					catch(MalformedURLException ex) {
+						throw new VncException("Malformed URL.", ex);
+					}
+				}
+				else {
+					final File file = convertToFile(
+										args.first(),
+										"Function 'io/->url' does not allow %s as argument");
+			
+					try {
+						return new VncJavaObject(file.toURI().toURL());
+					}
+					catch(MalformedURLException ex) {
+						throw new VncException("Malformed URL: " + args.first(), ex);
+					}
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_to_uri =
+		new VncFunction(
+				"io/->uri",
+				VncFunction
+					.meta()
+					.arglists(
+						"(io/->uri file)")
+					.doc(
+						"Coverts a file or a `java.net.URL` to a `java.net.URI`.")
+					.examples(
+						"(io/->uri \"/tmp/test.txt\")",
+						"(io/->uri (io/file \"/temp\"))",
+						"(io/->uri (io/->url (io/file \"/temp\")))",
+						"(str (io/->uri \"/tmp/test.txt\"))")
+					.seeAlso("io/file", "io/->url")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				if (Types.isVncJavaObject(args.first(), URI.class)) {
+					return args.first();
+				}
+				else if (Types.isVncJavaObject(args.first(), URL.class)) {
+					final VncJavaObject obj = (VncJavaObject)args.first();
+					try {
+						return new VncJavaObject(((URL)obj.getDelegate()).toURI());
+					}
+					catch(URISyntaxException ex) {
+						throw new VncException("URI syntax exception.", ex);
+					}
+				}
+				else {
+					final File file = convertToFile(
+										args.first(),
+										"Function 'io/->uri' does not allow %s as argument");
+	
+					return new VncJavaObject(file.toURI());
 				}
 			}
 
@@ -1497,7 +1593,7 @@ public class IOFunctions {
 					.doc(
 						"Reads the content of file f as text (string) or binary (bytebuf). " +
 						"f may be a file, a string file path, a `java.io.InputStream`, " +
-						"a `java.io.Reader`, or a `java.net.URL`. \n\n" +
+						"a `java.io.Reader`, a `java.net.URL`, or a `java.net.URI`. \n\n" +
 						"Options: \n\n" +
 						"| :binary true/false | e.g :binary true, defaults to false |\n" +
 						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
@@ -1597,7 +1693,28 @@ public class IOFunctions {
 						}
 					}
 					catch (Exception ex) {
-						throw new VncException("Failed to slurp data from a :java.io.Reader", ex);
+						throw new VncException("Failed to slurp data from a :java.net.URL", ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, URI.class)) {
+					try {
+						final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						
+						try (InputStream is = uri.toURL().openStream()) {
+							if (VncBoolean.isTrue(binary)) {
+								final byte[] data = IOStreamUtil.copyIStoByteArray(is);
+								return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
+							}
+							else {
+								final VncVal encVal = options.get(new VncKeyword("encoding"));
+								final String encoding = encoding(encVal);
+		
+								return new VncString(IOStreamUtil.copyIStoString(is, encoding));
+							}
+						}
+					}
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from a :java.net.URI", ex);
 					}
 				}
 				else {
@@ -2667,6 +2784,8 @@ public class IOFunctions {
 					.add(io_file_can_execute_Q)
 					.add(io_file_hidden_Q)
 					.add(io_file_symbolicl_link_Q)
+					.add(io_to_url)
+					.add(io_to_uri)
 					.add(io_await_for)	
 					.add(io_watch_dir)
 					.add(io_close_watcher)
