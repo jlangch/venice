@@ -21,9 +21,6 @@
 
 ;;;; Venice configuration module
 
-;;;; Thanks to Juho Teperi and his clojure 'maailma' project
-;;;; (https://github.com/metosin/maailma).
-
 
 (ns config)
 
@@ -54,6 +51,7 @@
     (some-> (str/lower-case s)
             (str/replace-all "_" ".")
             (str/replace-first (regex/pattern "^[.]+") "")
+            (str/trim-to-nil)
             (select)
             (str/split "[.]")
             (as-> s (map empty-to-nil s))
@@ -85,7 +83,12 @@
   ^{ :arglists '(
           "(resource path)",
           "(resource path reader-opts)")
-     :doc "Reads JSON configuration part from given path in classpath." }
+     :doc """
+          Reads JSON configuration part from given path in classpath.
+
+          The optional 'reader-opts' are defined by `json/read-str`.
+          """
+     :see-also '("config/file" "config/build" "json/read-str") }
 
   resource [path & reader-opts]
 
@@ -96,7 +99,12 @@
   ^{ :arglists '(
           "(file file-path)",
           "(file file-path reader-opts)")
-     :doc "Reads JSON configuration part from given path in filesystem." }
+     :doc """
+          Reads JSON configuration part from given path in filesystem.
+
+          The optional 'reader-opts' are defined by `json/read-str`.
+          """
+     :see-also '("config/resource" "config/build" "json/read-str") }
 
   file [file-path & reader-opts]
 
@@ -106,9 +114,10 @@
 (defn
   ^{ :arglists '("(env prefix)")
      :doc """
-          Reads configuration part from envinronment variables, filtered by a
+          Reads configuration part from environment variables, filtered by a
           prefix.
-          """ }
+          """
+     :see-also '("config/env-var" "config/build") }
 
   env [prefix]
 
@@ -119,7 +128,8 @@
   ^{ :arglists '("(properties prefix)")
      :doc """
           Reads configuration part from system properties, filtered by a prefix.
-          """ }
+          """
+     :see-also '("config/property-var" "config/build") }
 
   properties [prefix]
 
@@ -135,9 +145,11 @@
      :doc """
           Reads a configuration value from an environment variable and
           associates it to the given path in a map.
-
-          `(env-var "SERVER_PORT" [:http :port])`  ; => {:http {:port "8080"}}
-          """ }
+          """
+     :examples '(
+          """(config/env-var "SERVER_PORT" [:http :port])"""
+          """(config/env-var "SERVER_PORT" [:http :port] "8080")""")
+     :see-also '("config/property-var" "config/env" "config/build") }
 
   env-var
 
@@ -154,11 +166,13 @@
           "(property-var name path)",
           "(property-var name path default-val)")
      :doc """
-          Reads a configuration value from an system property and
-          associates it to the given path in a map.
-
-          `(property-var "SERVER_PORT" [:http :port])`  ; => {:http {:port "8080"}}
-          """ }
+          Reads a configuration value from an system property and associates it
+          to the given path in a map.
+          """
+     :examples '(
+          """(config/property-var "SERVER_PORT" [:http :port])"""
+          """(config/property-var "SERVER_PORT" [:http :port] "8080")""")
+     :see-also '("config/env-var" "config/properties" "config/build") }
 
   property-var
 
@@ -180,7 +194,11 @@
             (config/file "./config-local.json")
             (config/env-var "SERVER_PORT" [:http :port])
             (config/env-var "MASTER_PWD" [:app :master-pwd]))
-          """) }
+          """)
+     :see-also '(
+          "config/file" "config/resource"
+          "config/env-var" "config/property-var"
+          "config/env" "config/properties") }
 
   build [& parts]
 

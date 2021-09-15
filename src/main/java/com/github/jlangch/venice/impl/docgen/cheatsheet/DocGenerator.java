@@ -62,10 +62,10 @@ public class DocGenerator {
 	public DocGenerator() {
 		preloadedModules
 			.addAll(Arrays.asList(
-						"app",    "xml",    "crypt",  "gradle", 
-						"trace",  "ansi",   "maven",  "kira",
-						"java",   "semver", "excel",  "hexdump",
-						"shell",  "geoip",  "benchmark"));
+						"app",    "xml",    "crypt",     "gradle", 
+						"trace",  "ansi",   "maven",     "kira",
+						"java",   "semver", "excel",     "hexdump",
+						"shell",  "geoip",  "benchmark", "config"));
 		
 		final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -241,6 +241,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
 		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
 		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
+		extmod.addSection(new DocSection("Configuration", "modules.config"));
 		content.add(extmod);
 
 		return content;
@@ -297,7 +298,8 @@ public class DocGenerator {
 				getModuleHexdumpSection(),
 				getModuleSemverSection(),
 				getModuleGeoipSection(),
-				getModuleExcelSection());
+				getModuleExcelSection(),
+				getModuleConfigSection());
 	}
 
 	private List<DocItem> getDocItems(final List<DocSection> sections) {
@@ -2281,6 +2283,34 @@ public class DocGenerator {
 		final DocSection colors = new DocSection("Utils", id());
 		all.addSection(colors);
 		colors.addItem(getDocItem("bench/benchmark", false));
+
+		return section;
+	}
+
+	private DocSection getModuleConfigSection() {
+		final DocSection section = new DocSection("Configuration", "modules.config");
+
+		final DocSection all = new DocSection("(load-module :config)", id());
+		section.addSection(all);
+
+		final DocSection build = new DocSection("Build", id());
+		all.addSection(build);
+		build.addItem(getDocItem("config/build", false));
+
+		final DocSection file = new DocSection("File", id());
+		all.addSection(file);
+		file.addItem(getDocItem("config/file", false));
+		file.addItem(getDocItem("config/resource", false));
+		
+		final DocSection env = new DocSection("Env", id());
+		all.addSection(env);
+		env.addItem(getDocItem("config/env-var", true));
+		env.addItem(getDocItem("config/env", false));
+
+		final DocSection prop = new DocSection("Properties", id());
+		all.addSection(prop);
+		prop.addItem(getDocItem("config/property-var", true));
+		prop.addItem(getDocItem("config/properties", false));
 
 		return section;
 	}
