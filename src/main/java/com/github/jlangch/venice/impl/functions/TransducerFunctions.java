@@ -71,7 +71,7 @@ public class TransducerFunctions {
 						"(transduce xform f init coll)")
 					.doc(
 						"Reduce with a transformation of a reduction function f (xf). " +
-						"If init is not supplied, (f) will be called to produce it. " +
+						"If init is not supplied, `(f)` will be called to produce it. " +
 						"f should be a reducing step function that accepts both 1 and " +
 						"2 arguments. Returns the result of applying (the transformed) " +
 						"xf to init and the first item in coll, then applying xf to " +
@@ -410,7 +410,7 @@ public class TransducerFunctions {
 					.arglists("(filter predicate coll)")
 					.doc(
 						"Returns a collection of the items in coll for which " +
-						"(predicate item) returns logical true.¶" +
+						"`(predicate item)` returns logical true.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(filter even? [1 2 3 4 5 6 7])",
@@ -553,7 +553,7 @@ public class TransducerFunctions {
 					.arglists("(drop-while predicate coll)")
 					.doc(
 						"Returns a list of the items in coll starting from the " +
-						"first item for which (predicate item) returns logical false.¶" +
+						"first item for which `(predicate item)` returns logical false.¶" +
 						"Returns a stateful transducer when no collection is provided.")
 					.examples("(drop-while neg? [-2 -1 0 1 2 3])")
 					.build()
@@ -701,7 +701,7 @@ public class TransducerFunctions {
 					.arglists("(take-while predicate coll)")
 					.doc(
 						"Returns a list of successive items from coll while " +
-						"(predicate item) returns logical true.¶" +
+						"`(predicate item)` returns logical true.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples("(take-while neg? [-2 -1 0 1 2 3])")
 					.build()
@@ -774,7 +774,7 @@ public class TransducerFunctions {
 					.meta()
 					.arglists("(keep f coll)")
 					.doc(
-						"Returns a sequence of the non-nil results of (f item). Note, " +
+						"Returns a sequence of the non-nil results of `(f item)`. Note, " +
 						"this means false return values will be included. f must be " +
 						"free of side-effects.¶" +
 						"Returns a transducer when no collection is provided.")
@@ -924,7 +924,7 @@ public class TransducerFunctions {
 					.arglists("(remove predicate coll)")
 					.doc(
 						"Returns a collection of the items in coll for which " +
-						"(predicate item) returns logical false.¶" +
+						"`(predicate item)` returns logical false.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(remove even? [1 2 3 4 5 6 7])",
@@ -1199,7 +1199,7 @@ public class TransducerFunctions {
 					.doc(
 						"Takes any nested combination of collections (lists, vectors, " +
 						"etc.) and returns their contents as a single, flat sequence. " +
-						"(flatten nil) returns an empty list.¶" +
+						"`(flatten nil)` returns an empty list.¶" +
 						"Returns a transducer when no collection is provided.")
 					.examples(
 						"(flatten [])",

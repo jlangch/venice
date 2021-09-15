@@ -47,7 +47,7 @@ public class SpecialFormsDoc {
 					.doc(
 						"Prints documentation for a var or special form given x as its name. " +
 						"Prints the definition of custom types. \n\n" +
-						"Displays the source of a module if x is a module: (doc :ansi)")
+						"Displays the source of a module if x is a module: `(doc :ansi)`")
 					.examples(
 						"(doc +)",
 						"(doc def)",
@@ -1023,6 +1023,7 @@ public class SpecialFormsDoc {
 						"   (throw (ex :RuntimeException \"message\"))     \n" +
 						"   (catch :RuntimeException e (ex-message e)))     ",
 						
+						";; exception type selector:                       \n" +
 						"(try                                              \n" +
 						"   (throw [1 2 3])                                \n" +
 						"   (catch :ValueException e (ex-value e))         \n" +
@@ -1082,7 +1083,7 @@ public class SpecialFormsDoc {
 						"(try-with [bindings*] expr* (catch selector ex-sym expr*)*)",
 						"(try-with [bindings*] expr* (catch selector ex-sym expr*)* (finally expr))")		
 					.doc(
-						"try-with-resources allows the declaration of resources to be used in a try block " +
+						"*try-with-resources* allows the declaration of resources to be used in a try block " +
 						"with the assurance that the resources will be closed after execution " +
 						"of that block. The resources declared must implement the Closeable or " +
 						"AutoCloseable interface.")
@@ -1107,8 +1108,8 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(locking x & exprs)")
 					.doc(
-						"Executes `exprs` in an implicit do, while holding the " + 
-						"monitor of `x`. Will release the monitor of `x` in all " +
+						"Executes 'exprs' in an implicit do, while holding the " + 
+						"monitor of 'x'. Will release the monitor of 'x' in all " +
 						"circumstances. Locking operates like the synchronized " +
 						"keyword in Java.")
 					.examples(
