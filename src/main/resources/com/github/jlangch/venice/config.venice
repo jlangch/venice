@@ -61,7 +61,7 @@
 
 
 (defn- read-json [s reader-opts]
-  (apply json/read-string s reader-opts))
+  (apply json/read-str s reader-opts))
 
 
 (defn- read-system [prefix properties]
@@ -211,4 +211,4 @@
   build [& parts]
 
   ; Filter nils out, (merge-deep {...} nil) -> nil
-  (apply merge-deep {} (filter identity parts)))
+  (apply merge-deep {} (filter identity (coalesce parts '[]))))
