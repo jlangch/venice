@@ -219,14 +219,17 @@ public class ConfigModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                        \n" +
-				"   (load-module :config)                                                   \n" +
-				"                                                                           \n" +
-				"   (assert (= nil                                                          \n" +
-				"              (config/env-var \"M_SERVER_PORT\" [:http :port])))           \n" + 
-				"                                                                           \n" +
-				"   (assert (= {:http {:port \"8080\"}}                                     \n" +
-				"              (config/env-var \"M_SERVER_PORT\" [:http :port] \"8080\"))))  "; 
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/env-var \"M_SERVER_PORT\"           \n" + 
+				"                              [:http :port])))            \n" + 
+				"                                                          \n" +
+				"   (assert (= {:http {:port \"8080\"}}                    \n" +
+				"              (config/env-var \"M_SERVER_PORT\"           \n" +
+				"                                   [:http :port]          \n" +
+				"                                   \"8080\"))))             "; 
 
 		venice.eval(script);
 	}
@@ -236,14 +239,17 @@ public class ConfigModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                             \n" +
-				"   (load-module :config)                                                        \n" +
-				"                                                                                \n" +
-				"   (assert (= nil                                                               \n" +
-				"              (config/property-var \"M_SERVER_PORT\" [:http :port])))           \n" + 
-				"                                                                                \n" +
-				"   (assert (= {:http {:port \"8080\"}}                                          \n" +
-				"              (config/property-var \"M_SERVER_PORT\" [:http :port] \"8080\"))))   "; 
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/property-var \"M_SERVER_PORT\"      \n" +
+				"                                   [:http :port])))       \n" + 
+				"                                                          \n" +
+				"   (assert (= {:http {:port \"8080\"}}                    \n" +
+				"              (config/property-var \"M_SERVER_PORT\"      \n" +
+				"                                   [:http :port]          \n" +
+				"                                   \"8080\"))))             "; 
 
 		venice.eval(script);
 	}
