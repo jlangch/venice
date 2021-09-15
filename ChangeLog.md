@@ -16,6 +16,8 @@ and this project adheres to
 - function `merge-deep`
 - the module `:config` to simplify application configuration
 - support for `java.net.URL` with `io/slurp`
+- improvements to cheatsheet rendering for inline code sections
+
 
 
 
