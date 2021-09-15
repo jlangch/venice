@@ -14,7 +14,8 @@ and this project adheres to
 ### Added
 
 - function `merge-deep`
-- support for 'java.net.URL' with `io/slurp`
+- the module `:config` to simplify application configuration
+- support for `java.net.URL` with `io/slurp`
 
 
 
