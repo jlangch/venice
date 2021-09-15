@@ -84,11 +84,13 @@
           "(resource path)",
           "(resource path reader-opts)")
      :doc """
-          Reads JSON configuration part from given path in classpath.
+          Reads a JSON configuration part from given path in classpath.
 
           The optional 'reader-opts' are defined by `json/read-str`.¶
           E.g.: `:key-fn keyword` will convert all config keys to keywords
           """
+     :examples '(
+          """(config/resource "org/foo/app/config-defaults.json" :key-fn keyword)""")
      :see-also '(
           "config/file" "config/build" "json/read-str") }
 
@@ -102,13 +104,21 @@
           "(file f)",
           "(file f reader-opts)")
      :doc """
-          Reads JSON configuration part from given file f in the filesystem.
-          f may be a `file`, a string file path, a `java.io.InputStream`,
-          a `java.io.Reader`, or a `java.net.URL`.
+          Reads a JSON configuration part from given file f.
+
+          f may be a:
+
+          * string file path, e.g: "/temp/foo.json"
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.InputStream`
+          * `java.io.Reader`
+          * `java.net.URL`
 
           The optional 'reader-opts' are defined by `json/read-str`.¶
           E.g.: `:key-fn keyword` will convert all config keys to keywords
           """
+     :examples '(
+          """(config/file "/foo/app/config-production.json" :key-fn keyword)""")
      :see-also '(
           "config/resource" "config/build" "json/read-str") }
 
