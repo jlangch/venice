@@ -190,26 +190,26 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 background-color: #ebebeb;
             }
             div.section-title h1 {
-				margin: 0;
-			}
-			div.section .sub-header {
-				margin-top: 1.5em;
-				margin-bottom: 0.5em;
-				font-size: 1.17em;
-				font-weight: 400;
-				line-height: 1.5em;
-			}
-			div.section .sub-header-module {
-				margin-bottom: 0.5em;
-				font-size: 1em;
-				font-weight: 400;
+                margin: 0;
+            }
+            div.section .sub-header {
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+                font-size: 1.17em;
+                font-weight: 400;
+                line-height: 1.5em;
+            }
+            div.section .sub-header-module {
+                margin-bottom: 0.5em;
+                font-size: 1em;
+                font-weight: 400;
                 font-family: 'Source Code Pro', sans-serif;
-			}
-			div.section .footer {
-				margin: 0.5em 0 0 0;
-				padding: 0.5em;
+            }
+            div.section .footer {
+                margin: 0.5em 0 0 0;
+                padding: 0.5em;
                 background-color: #f5f5f5;
-			}
+            }
             .embedding {
                 background-color: white;
                 margin: 0.5em 0 0 0;
@@ -270,9 +270,9 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 padding: 0.5em;
             }
             .detail .header {
-				font-size: 1.8em;
-				line-height: 2em;
-				font-weight: 300;
+                font-size: 1.8em;
+                line-height: 2em;
+                font-weight: 300;
                 color: #4165a2;
                 background-color: #f5f5f5;
                 margin: 0.1em 0 0.5em 0;
@@ -331,22 +331,37 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             }
             div.md-text-italic {
                 display: inline;
-				font-style: italic;
+                font-style: italic;
             }
             div.md-text-bold {
                 display: inline;
-				font-weight: 800;
+                font-weight: 800;
             }
             div.md-text-bold-italic {
                 display: inline;
-				font-style: italic;
-				font-weight: 800;
+                font-style: italic;
+                font-weight: 800;
             }
             div.md-inline-code {
                 display: inline;
                 white-space: pre-wrap;
                 font-family: 'Source Code Pro', sans-serif;
                 font-weight: 400;
+                margin: 0;
+                
+                ${(when pdfmode}$
+                  padding: 0em 0.4em;
+                  font-size: 90%;
+                  border-radius: 4px;
+                  background-color: #ebebeb;
+                ${)}$
+                
+                ${(when-not pdfmode}$
+                  padding: 0.2em 0.4em;
+                  font-size: 85%;
+                  border-radius: 6px;
+                  background-color: rgba(175,184,193,0.2);
+                ${)}$
             }
             a.md-url {
                 text-decoration: none;
@@ -392,7 +407,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             }
         </style>
     </head>
-
+    
     <body>
         <div class="main">
             <div class="title">
@@ -456,7 +471,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
                     </div>
-                    ${ ) }$                 
+                    ${ ) }$
                 </div>
                 ${ ) }$
             </div>
@@ -490,17 +505,17 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
                     </div>
-                    ${ ) }$                 
+                    ${ ) }$
                 </div>
                 ${ ) }$
             </div>
-
+            
             <div style="clear: both;"></div>
-
+            
             <div class="section-title" id="modules" style="page-break-before: always;">
                <h1>Modules</h1>
             </div>
- 
+            
             <div class="column">
                  ${ (doseq [s1 left-modules] }$
                  <div class="section" id="${= (:id s1) }$">
@@ -530,7 +545,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
                     </div>
-                    ${ ) }$                 
+                    ${ ) }$
                 </div>
                 ${ ) }$
             </div>
@@ -564,32 +579,32 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                     <div class="footer">
                       ${= (:footerXmlStyled s1) }$
                     </div>
-                    ${ ) }$                 
+                    ${ ) }$
                 </div>
                 ${ ) }$
             </div>
-
+            
             <div style="clear: both;"></div>
-
+            
             <div class="section-title" id="embedding" style="page-break-before: always;">
                <h1>Embedding in Java</h1>
             </div>
-
+            
             <div class="embedding">
                ${ (doseq [s snippets] }$ 
                <div class="code-example">
-	               <h2>${= (kira/escape-xml (:title s)) }$</h2>
-	               <div class="code-snippet">
-	                   <code>${= (kira/escape-xml (:code s)) }$</code>
-	               </div>
+                   <h2>${= (kira/escape-xml (:title s)) }$</h2>
+                   <div class="code-snippet">
+                       <code>${= (kira/escape-xml (:code s)) }$</code>
+                   </div>
                </div>
                ${ ) }$
             </div>
-
+            
             <div class="section-title" id="details" style="page-break-before: always;">
                <h1>Function Details</h1>
             </div>
-           
+            
             <div class="details">
                 ${ (doseq [it details] }$ 
                 ${ (when (:id it) }$
@@ -640,5 +655,5 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             </div>
         </div>
     </body>
-
+    
 </html>

@@ -504,7 +504,7 @@ public class ConcurrencyFunctions {
 					.arglists("(swap! box f & args)")		
 					.doc(
 						"Atomically swaps the value of an atom or a volatile to be: " + 
-						"(apply f current-value-of-box args). Note that f may be called " + 
+						"`(apply f current-value-of-box args)`. Note that f may be called " + 
 						"multiple times, and thus should be free of side effects. " + 
 						"Returns the value that was swapped in.")
 					.examples(
@@ -564,7 +564,7 @@ public class ConcurrencyFunctions {
 					.arglists("(swap-vals! atom f & args)")		
 					.doc(
 						"Atomically swaps the value of an atom to be: " + 
-						"(apply f current-value-of-atom args). Note that f may be called " + 
+						"`(apply f current-value-of-atom args)`. Note that f may be called " + 
 						"multiple times, and thus should be free of side effects. " + 
 						"Returns [old new], the value of the atom before and after the swap.")
 					.examples(
@@ -1727,7 +1727,7 @@ public class ConcurrencyFunctions {
 				VncFunction
 					.meta()
 					.arglists("(force x)")		
-					.doc("If x is a Delay, returns its value, else returns x")
+					.doc("If x is a delay, returns its value, else returns x")
 					.examples(
 						"(do                                              \n" +
 						"   (def x (delay (println \"working...\") 100))  \n" +
@@ -1892,7 +1892,7 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Returns the identifier of this Thread. The thread ID is a " +
 						"positive number generated when this thread was created. " +
-						"The thread ID  is unique and remains unchanged during its " +
+						"The thread ID is unique and remains unchanged during its " +
 						"lifetime. When a thread is terminated, this thread ID may " +
 						"be reused.")
 					.examples("(thread-id)")

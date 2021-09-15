@@ -111,7 +111,7 @@ public class ShellFunctions {
 						"              instead. |\n" + 
 						"\n" +
 						"You can bind :env, :dir for multiple operations using `with-sh-env` or " + 
-						"`with-sh-dir`. `with-sh-throw` is binds :throw-ex as true.\n" + 
+						"`with-sh-dir`. `with-sh-throw` is binds *:throw-ex* as *true*.\n" + 
 						"\n" +
 						"sh returns a map of\n\n" +
 						"```\n" +
@@ -191,7 +191,7 @@ public class ShellFunctions {
 				VncFunction
 					.meta()
 					.arglists("(sh/open)")
-					.doc("Opens a file or an url with the associated platform specific application.")
+					.doc("Opens a *file* or an *URL* with the associated platform specific application.")
 					.examples(
 						"(sh/open \"sample.pdf\")",
 						"(sh/open \"https://github.com/jlangch/venice\")")

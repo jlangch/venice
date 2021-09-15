@@ -86,9 +86,11 @@
      :doc """
           Reads JSON configuration part from given path in classpath.
 
-          The optional 'reader-opts' are defined by `json/read-str`.
+          The optional 'reader-opts' are defined by `json/read-str`.¶
+          E.g.: `:key-fn keyword` will convert all config keys to keywords
           """
-     :see-also '("config/file" "config/build" "json/read-str") }
+     :see-also '(
+          "config/file" "config/build" "json/read-str") }
 
   resource [path & reader-opts]
 
@@ -102,9 +104,11 @@
      :doc """
           Reads JSON configuration part from given path in filesystem.
 
-          The optional 'reader-opts' are defined by `json/read-str`.
+          The optional 'reader-opts' are defined by `json/read-str`.¶
+          E.g.: `:key-fn keyword` will convert all config keys to keywords
           """
-     :see-also '("config/resource" "config/build" "json/read-str") }
+     :see-also '(
+          "config/resource" "config/build" "json/read-str") }
 
   file [file-path & reader-opts]
 
@@ -117,7 +121,8 @@
           Reads configuration part from environment variables, filtered by a
           prefix.
           """
-     :see-also '("config/env-var" "config/build") }
+     :see-also '(
+          "config/env-var" "config/build") }
 
   env [prefix]
 
@@ -129,7 +134,8 @@
      :doc """
           Reads configuration part from system properties, filtered by a prefix.
           """
-     :see-also '("config/property-var" "config/build") }
+     :see-also '(
+          "config/property-var" "config/build") }
 
   properties [prefix]
 
@@ -149,7 +155,8 @@
      :examples '(
           """(config/env-var "SERVER_PORT" [:http :port])"""
           """(config/env-var "SERVER_PORT" [:http :port] "8080")""")
-     :see-also '("config/property-var" "config/env" "config/build") }
+     :see-also '(
+          "config/property-var" "config/env" "config/build") }
 
   env-var
 
@@ -172,7 +179,8 @@
      :examples '(
           """(config/property-var "SERVER_PORT" [:http :port])"""
           """(config/property-var "SERVER_PORT" [:http :port] "8080")""")
-     :see-also '("config/env-var" "config/properties" "config/build") }
+     :see-also '(
+          "config/env-var" "config/properties" "config/build") }
 
   property-var
 
@@ -190,15 +198,15 @@
      :examples '(
           """
           (config/build
-            (config/resource "config-defaults.json")
-            (config/file "./config-local.json")
+            (config/resource "config-defaults.json" :key-fn keyword)
+            (config/file "./config-local.json" :key-fn keyword)
             (config/env-var "SERVER_PORT" [:http :port])
             (config/env-var "MASTER_PWD" [:app :master-pwd]))
           """)
      :see-also '(
-          "config/file" "config/resource"
-          "config/env-var" "config/property-var"
-          "config/env" "config/properties") }
+          "config/file"     "config/resource"
+          "config/env-var"  "config/property-var"
+          "config/env"      "config/properties") }
 
   build [& parts]
 
