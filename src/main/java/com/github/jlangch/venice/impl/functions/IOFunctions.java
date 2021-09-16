@@ -31,6 +31,7 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1591,12 +1592,17 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/slurp f & options)")
 					.doc(
-						"Reads the content of file f as text (string) or binary (bytebuf). " +
-						"f may be a file, a string file path, a `java.io.InputStream`, " +
-						"a `java.io.Reader`, a `java.net.URL`, or a `java.net.URI`. \n\n" +
-						"Options: \n\n" +
-						"| :binary true/false | e.g :binary true, defaults to false |\n" +
-						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 |\n")
+						"Reads the content of file f as text (string) or binary (bytebuf). \n\n" +
+						"f may be a:                                                       \n\n" +
+						" * string file path, e.g: \"/temp/foo.json\"                      \n" +
+						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+						" * `java.io.InputStream`                                          \n" +
+						" * `java.io.Reader`                                               \n" +
+						" * `java.net.URL`                                                 \n\n" +
+						" * `java.net.URI`                                                 \n\n" +
+						"Options:                                                          \n\n" +
+						"| :binary true/false | e.g :binary true, defaults to false |      \n" +
+						"| :encoding enc      | e.g :encoding :utf-8, defaults to :utf-8 | \n")
 					.seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1608,27 +1614,14 @@ public class IOFunctions {
 				final VncVal arg = args.first();
 
 				final VncHashMap options = VncHashMap.ofAll(args.rest());
-				final VncVal binary = options.get(new VncKeyword("binary"));
 
 				if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
 					final File file = Types.isVncString(arg)
 										? new File(((VncString)arg).getValue())
 										:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 					try {
-						validateReadableFile(file);
-	
-						if (VncBoolean.isTrue(binary)) {
-							final byte[] data = Files.readAllBytes(file.toPath());
-							return new VncByteBuffer(ByteBuffer.wrap(data));
-						}
-						else {
-							final VncVal encVal = options.get(new VncKeyword("encoding"));
-							final String encoding = encoding(encVal);
-	
-							final byte[] data = Files.readAllBytes(file.toPath());
-	
-							return new VncString(new String(data, encoding));
-						}
+						validateReadableFile(file);						
+						return slurp(options, new FileInputStream(file));
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
@@ -1637,17 +1630,7 @@ public class IOFunctions {
 				else if (Types.isVncJavaObject(arg, InputStream.class)) {
 					try {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-	
-						if (VncBoolean.isTrue(binary)) {
-							final byte[] data = IOStreamUtil.copyIStoByteArray(is);
-							return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
-						}
-						else {
-							final VncVal encVal = options.get(new VncKeyword("encoding"));
-							final String encoding = encoding(encVal);
-	
-							return new VncString(IOStreamUtil.copyIStoString(is, encoding));
-						}
+						return slurp(options, is);
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp data from a :java.io.InputStream", ex);
@@ -1656,20 +1639,7 @@ public class IOFunctions {
 				else if (Types.isVncJavaObject(arg, Reader.class)) {
 					try {
 						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
-						
-						try (BufferedReader brd = new BufferedReader(rd)) {
-							final String s = brd.lines().collect(Collectors.joining(System.lineSeparator()));
-	
-							if (VncBoolean.isTrue(binary)) {
-								final VncVal encVal = options.get(new VncKeyword("encoding"));
-								final String encoding = encoding(encVal);
-	
-								return new VncByteBuffer(s.getBytes(encoding));
-							}
-							else {
-								return new VncString(s);
-							}
-						}
+						return slurp(options, rd);
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp data from a :java.io.Reader", ex);
@@ -1678,19 +1648,7 @@ public class IOFunctions {
 				else if (Types.isVncJavaObject(arg, URL.class)) {
 					try {
 						final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
-						
-						try (InputStream is = url.openStream()) {
-							if (VncBoolean.isTrue(binary)) {
-								final byte[] data = IOStreamUtil.copyIStoByteArray(is);
-								return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
-							}
-							else {
-								final VncVal encVal = options.get(new VncKeyword("encoding"));
-								final String encoding = encoding(encVal);
-		
-								return new VncString(IOStreamUtil.copyIStoString(is, encoding));
-							}
-						}
+						return slurp(options, url.openStream());
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp data from a :java.net.URL", ex);
@@ -1699,19 +1657,7 @@ public class IOFunctions {
 				else if (Types.isVncJavaObject(arg, URI.class)) {
 					try {
 						final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
-						
-						try (InputStream is = uri.toURL().openStream()) {
-							if (VncBoolean.isTrue(binary)) {
-								final byte[] data = IOStreamUtil.copyIStoByteArray(is);
-								return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
-							}
-							else {
-								final VncVal encVal = options.get(new VncKeyword("encoding"));
-								final String encoding = encoding(encVal);
-		
-								return new VncString(IOStreamUtil.copyIStoString(is, encoding));
-							}
-						}
+						return slurp(options, uri.toURL().openStream());
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp data from a :java.net.URI", ex);
@@ -2731,7 +2677,47 @@ public class IOFunctions {
 		}
 	}
 
+	private static VncVal slurp(
+			final VncHashMap options,
+			final InputStream inStream
+	) throws Exception {
+		final VncVal binary = options.get(new VncKeyword("binary"));
 
+		try (InputStream is = inStream) {
+			if (VncBoolean.isTrue(binary)) {
+				final byte[] data = IOStreamUtil.copyIStoByteArray(is);
+				return data == null ? Nil : new VncByteBuffer(ByteBuffer.wrap(data));
+			}
+			else {
+				final VncVal encVal = options.get(new VncKeyword("encoding"));
+				final String encoding = encoding(encVal);
+
+				return new VncString(IOStreamUtil.copyIStoString(is, encoding));
+			}
+		}
+	}
+
+	private static VncVal slurp(
+			final VncHashMap options,
+			final Reader rd
+	) throws Exception {
+		final VncVal binary = options.get(new VncKeyword("binary"));
+
+		try (BufferedReader brd = new BufferedReader(rd)) {
+			final String s = brd.lines().collect(Collectors.joining(System.lineSeparator()));
+
+			if (VncBoolean.isTrue(binary)) {
+				final VncVal encVal = options.get(new VncKeyword("encoding"));
+				final String encoding = encoding(encVal);
+
+				return new VncByteBuffer(s.getBytes(encoding));
+			}
+			else {
+				return new VncString(s);
+			}
+		}
+	}
+	
 	private static void updateDownloadProgress(
 			final VncFunction fn,
 			final long percentage,

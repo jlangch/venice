@@ -113,6 +113,7 @@
           * `java.io.InputStream`
           * `java.io.Reader`
           * `java.net.URL`
+          * `java.net.URI`
 
           The optional 'reader-opts' are defined by `json/read-str`.¶
           E.g.: `:key-fn keyword` will convert all config keys to keywords
