@@ -1571,9 +1571,15 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/slurp-lines f & options)")
 					.doc(
-						"Read all lines from f. f may be a file, a string file path, " +
-						"a `java.io.InputStream`, or a `java.io.Reader`. \n\n" +
-						"Options: \n\n" +
+						"Read all lines from f.                                            \n\n" +
+						"f may be a:                                                       \n\n" +
+						" * string file path, e.g: \"/temp/foo.json\"                      \n" +
+						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+						" * `java.io.InputStream`                                          \n" +
+						" * `java.io.Reader`                                               \n" +
+						" * `java.net.URL`                                                 \n" +
+						" * `java.net.URI`                                                 \n\n" +
+						"Options:                                                          \n\n" +
 						"| :encoding enc | e.g :encoding :utf-8, defaults to :utf-8 |\n")
 					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
 					.build()
@@ -1591,20 +1597,9 @@ public class IOFunctions {
 					final File file = Types.isVncString(arg)
 										? new File(((VncString)arg).getValue())
 										:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
 					try {
-						validateReadableFile(file);
-	
-						final VncVal encVal = options.get(new VncKeyword("encoding"));
-						final String encoding = encoding(encVal);
-	
-						final List<VncString> lines =
-								Files.readAllLines(file.toPath(), Charset.forName(encoding))
-									 .stream()
-									 .map(s -> new VncString(s))
-									 .collect(Collectors.toList());
-	
-						return VncList.ofList(lines);
+						validateReadableFile(file);						
+						return slurpLines(options, new FileInputStream(file));
 					}
 					catch (Exception ex) {
 						throw new VncException(
@@ -1615,13 +1610,7 @@ public class IOFunctions {
 				else if (Types.isVncJavaObject(arg, InputStream.class)) {
 					try {
 						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-	
-						final VncVal encVal = options.get(new VncKeyword("encoding"));
-						final String encoding = encoding(encVal);
-	
-						try (BufferedReader rd = new BufferedReader(new InputStreamReader(is, encoding))) {
-							return VncList.ofList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
-						}
+						return slurpLines(options, is);
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp text lines from a :java.io.InputStream", ex);
@@ -1629,14 +1618,29 @@ public class IOFunctions {
 				}
 				else if (Types.isVncJavaObject(arg, Reader.class)) {
 					try {
-						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
-												
-						try (BufferedReader brd = new BufferedReader(rd)) {
-							return VncList.ofList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
-						}
+						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());					
+						return slurpLines(options, rd);
 					}
 					catch (Exception ex) {
 						throw new VncException("Failed to slurp text lines from a :java.io.Reader", ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, URL.class)) {
+					try {
+						final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						return slurpLines(options, url.openStream());
+					}
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from a :java.net.URL", ex);
+					}
+				}
+				else if (Types.isVncJavaObject(arg, URI.class)) {
+					try {
+						final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						return slurpLines(options, uri.toURL().openStream());
+					}
+					catch (Exception ex) {
+						throw new VncException("Failed to slurp data from a :java.net.URI", ex);
 					}
 				}
 				else {
@@ -2781,7 +2785,28 @@ public class IOFunctions {
 			}
 		}
 	}
-	
+
+	private static VncVal slurpLines(
+			final VncHashMap options,
+			final InputStream inStream
+	) throws Exception {
+		final VncVal encVal = options.get(new VncKeyword("encoding"));
+		final String encoding = encoding(encVal);
+
+		try (BufferedReader rd = new BufferedReader(new InputStreamReader(inStream, encoding))) {
+			return VncList.ofList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+		}
+	}
+
+	private static VncVal slurpLines(
+			final VncHashMap options,
+			final Reader rd
+	) throws Exception {
+		try (BufferedReader brd = new BufferedReader(rd)) {
+			return VncList.ofList(brd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
+		}
+	}
+
 	private static void updateDownloadProgress(
 			final VncFunction fn,
 			final long percentage,
