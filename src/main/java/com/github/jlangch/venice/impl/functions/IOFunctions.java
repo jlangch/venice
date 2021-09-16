@@ -614,43 +614,54 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(io/->url file)")
+						"(io/->url s)")
 					.doc(
-						"Coverts a file or a `java.net.URI` to a `java.net.URL`.")
+						"Converts s to an URL.       \n\n" +
+						"s may be:                   \n\n" +
+						"  * a string (an URL spec)    \n" +
+						"  * a `java.io.File`          \n" +
+						"  * a `java.nio.file.Path`    \n" +
+						"  * a `java.net.URI`")
 					.examples(
-						"(io/->url \"/tmp/test.txt\")",
-						"(io/->url (io/file \"/temp\"))",
-						"(io/->url (io/->uri (io/file \"/temp\")))",
-						"(str (io/->url \"/tmp/test.txt\"))")
+						"(io/->url \"file:/tmp/test.txt\")",
+						"(io/->url (io/file \"/tmp/test.txt\"))",
+						"(io/->url (io/->uri (io/file \"/tmp/test.txt\")))",
+						"(str (io/->url (io/file \"/tmp/test.txt\")))",
+						";; to create an URL from spec details: \n" +
+						"(. :java.net.URL :new \"http\" \"foo.org\" 8080 \"/info.html\")")
 					.seeAlso("io/file", "io/->uri")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				if (Types.isVncJavaObject(args.first(), URL.class)) {
-					return args.first();
-				}
-				else if (Types.isVncJavaObject(args.first(), URI.class)) {
-					final VncJavaObject obj = (VncJavaObject)args.first();
-					try {
-						return new VncJavaObject(((URI)obj.getDelegate()).toURL());
+				final VncVal f = args.first();
+				
+				try {
+					if (Types.isVncString(f)) {
+						return new VncJavaObject(new URL(((VncString)f).getValue()));
 					}
-					catch(MalformedURLException ex) {
-						throw new VncException("Malformed URL.", ex);
-					}
-				}
-				else {
-					final File file = convertToFile(
-										args.first(),
-										"Function 'io/->url' does not allow %s as argument");
-			
-					try {
+					else if (Types.isVncJavaObject(f, File.class)) {
+						final File file = (File)((VncJavaObject)f).getDelegate();
 						return new VncJavaObject(file.toURI().toURL());
 					}
-					catch(MalformedURLException ex) {
-						throw new VncException("Malformed URL: " + args.first(), ex);
+					else if (Types.isVncJavaObject(f, Path.class)) {
+						final Path path = (Path)((VncJavaObject)f).getDelegate();
+						return new VncJavaObject(path.toUri().toURL());
 					}
+					else if (Types.isVncJavaObject(args.first(), URL.class)) {
+						return args.first();
+					}
+					else if (Types.isVncJavaObject(args.first(), URI.class)) {
+						final VncJavaObject obj = (VncJavaObject)args.first();
+						return new VncJavaObject(((URI)obj.getDelegate()).toURL());
+					}
+					else {
+						throw new VncException("Function 'io/->url' does not allow %s as argument");
+					}
+				}
+				catch(MalformedURLException ex) {
+					throw new VncException("Malformed URL: " + args.first(), ex);
 				}
 			}
 
@@ -663,38 +674,54 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(io/->uri file)")
+						"(io/->uri s)")
 					.doc(
-						"Coverts a file or a `java.net.URL` to a `java.net.URI`.")
+						"Converts s to an URI.       \n\n" +
+						"s may be:                   \n\n" +
+						"  * a string (an URI spec)    \n" +
+						"  * a `java.io.File`          \n" +
+						"  * a `java.nio.file.Path`    \n" +
+						"  * a `java.net.URL`")
 					.examples(
-						"(io/->uri \"/tmp/test.txt\")",
-						"(io/->uri (io/file \"/temp\"))",
-						"(io/->uri (io/->url (io/file \"/temp\")))",
-						"(str (io/->uri \"/tmp/test.txt\"))")
+						"(io/->uri \"file:/tmp/test.txt\")",
+						"(io/->uri (io/file \"/tmp/test.txt\"))",
+						"(io/->uri (io/->url (io/file \"/tmp/test.txt\")))",
+						"(str (io/->uri (io/file \"/tmp/test.txt\")))",
+						";; to create an URL from spec details: \n" +
+						"(. :java.net.URI :new \"http\" nil \"foo.org\" 8080 \"/info.html\" nil nil)")
 					.seeAlso("io/file", "io/->url")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				if (Types.isVncJavaObject(args.first(), URI.class)) {
-					return args.first();
-				}
-				else if (Types.isVncJavaObject(args.first(), URL.class)) {
-					final VncJavaObject obj = (VncJavaObject)args.first();
-					try {
+				final VncVal f = args.first();
+				
+				try {
+					if (Types.isVncString(f)) {
+						return new VncJavaObject(new URI(((VncString)f).getValue()));
+					}
+					else if (Types.isVncJavaObject(f, File.class)) {
+						final File file = (File)((VncJavaObject)f).getDelegate();
+						return new VncJavaObject(file.toURI());
+					}
+					else if (Types.isVncJavaObject(f, Path.class)) {
+						final Path path = (Path)((VncJavaObject)f).getDelegate();
+						return new VncJavaObject(path.toUri());
+					}
+					else if (Types.isVncJavaObject(args.first(), URI.class)) {
+						return args.first();
+					}
+					else if (Types.isVncJavaObject(args.first(), URL.class)) {
+						final VncJavaObject obj = (VncJavaObject)args.first();
 						return new VncJavaObject(((URL)obj.getDelegate()).toURI());
 					}
-					catch(URISyntaxException ex) {
-						throw new VncException("URI syntax exception.", ex);
+					else {
+						throw new VncException("Function 'io/->uri' does not allow %s as argument");
 					}
 				}
-				else {
-					final File file = convertToFile(
-										args.first(),
-										"Function 'io/->uri' does not allow %s as argument");
-	
-					return new VncJavaObject(file.toURI());
+				catch(URISyntaxException ex) {
+					throw new VncException("Malformed URI: " + args.first(), ex);
 				}
 			}
 

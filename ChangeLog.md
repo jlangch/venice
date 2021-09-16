@@ -15,7 +15,7 @@ and this project adheres to
 
 - functions `merge-deep`, `io/->url`, `io/->uri`, 
 - the module `:config` to simplify application configuration
-- support for `java.net.URL` with `io/slurp`
+- support for `java.net.URL` and `java.net.URI` with `io/slurp`
 - improvements to cheatsheet rendering for inline code sections
 
 
