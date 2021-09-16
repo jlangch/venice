@@ -614,9 +614,10 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(io/->url s)")
+						"(io/->url s)",
+						"(io/->url protocol host port file)")
 					.doc(
-						"Converts s to an URL.       \n\n" +
+						"Converts s to an URL or builds an URL from its spec elements. \n\n" +
 						"s may be:                   \n\n" +
 						"  * a string (an URL spec)    \n" +
 						"  * a `java.io.File`          \n" +
@@ -628,36 +629,50 @@ public class IOFunctions {
 						"(io/->url (io/->uri (io/file \"/tmp/test.txt\")))",
 						"(str (io/->url (io/file \"/tmp/test.txt\")))",
 						";; to create an URL from spec details: \n" +
-						"(. :java.net.URL :new \"http\" \"foo.org\" 8080 \"/info.html\")")
+						"(io/->url \"http\" \"foo.org\" 8080 \"/info.html\")")
 					.seeAlso("io/file", "io/->uri")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
+				ArityExceptions.assertArity(this, args, 1, 4);
 
-				final VncVal f = args.first();
-				
 				try {
-					if (Types.isVncString(f)) {
-						return new VncJavaObject(new URL(((VncString)f).getValue()));
-					}
-					else if (Types.isVncJavaObject(f, File.class)) {
-						final File file = (File)((VncJavaObject)f).getDelegate();
-						return new VncJavaObject(file.toURI().toURL());
-					}
-					else if (Types.isVncJavaObject(f, Path.class)) {
-						final Path path = (Path)((VncJavaObject)f).getDelegate();
-						return new VncJavaObject(path.toUri().toURL());
-					}
-					else if (Types.isVncJavaObject(args.first(), URL.class)) {
-						return args.first();
-					}
-					else if (Types.isVncJavaObject(args.first(), URI.class)) {
-						final VncJavaObject obj = (VncJavaObject)args.first();
-						return new VncJavaObject(((URI)obj.getDelegate()).toURL());
+					if (args.size() == 1) {
+						final VncVal f = args.first();
+					
+						if (Types.isVncString(f)) {
+							return new VncJavaObject(new URL(((VncString)f).getValue()));
+						}
+						else if (Types.isVncJavaObject(f, File.class)) {
+							final File file = (File)((VncJavaObject)f).getDelegate();
+							return new VncJavaObject(file.toURI().toURL());
+						}
+						else if (Types.isVncJavaObject(f, Path.class)) {
+							final Path path = (Path)((VncJavaObject)f).getDelegate();
+							return new VncJavaObject(path.toUri().toURL());
+						}
+						else if (Types.isVncJavaObject(args.first(), URL.class)) {
+							return args.first();
+						}
+						else if (Types.isVncJavaObject(args.first(), URI.class)) {
+							final VncJavaObject obj = (VncJavaObject)args.first();
+							return new VncJavaObject(((URI)obj.getDelegate()).toURL());
+						}
+						else {
+							throw new VncException("Function 'io/->url' does not allow %s as argument");
+						}
 					}
 					else {
-						throw new VncException("Function 'io/->url' does not allow %s as argument");
+						final VncVal protocol = args.nth(0);
+						final VncVal host = args.nth(1);
+						final VncVal port = args.nth(2);
+						final VncVal file = args.nth(3);
+						
+						return new VncJavaObject(
+									new URL(protocol == Nil ? null : Coerce.toVncString(protocol).getValue(),
+											host == Nil     ? null : Coerce.toVncString(host).getValue(),
+											port == Nil     ? -1   : Coerce.toVncLong(port).getIntValue(),
+											file == Nil     ? null : Coerce.toVncString(file).getValue()));
 					}
 				}
 				catch(MalformedURLException ex) {
@@ -674,9 +689,10 @@ public class IOFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(io/->uri s)")
+						"(io/->uri s)",
+						"(io/->uri scheme user-info host port path query fragment)")
 					.doc(
-						"Converts s to an URI.       \n\n" +
+						"Converts s to an URI or builds an URI from its spec elements.\n\n" +
 						"s may be:                   \n\n" +
 						"  * a string (an URI spec)    \n" +
 						"  * a `java.io.File`          \n" +
@@ -688,36 +704,57 @@ public class IOFunctions {
 						"(io/->uri (io/->url (io/file \"/tmp/test.txt\")))",
 						"(str (io/->uri (io/file \"/tmp/test.txt\")))",
 						";; to create an URL from spec details: \n" +
-						"(. :java.net.URI :new \"http\" nil \"foo.org\" 8080 \"/info.html\" nil nil)")
+						"(io/->uri \"http\" nil \"foo.org\" 8080 \"/info.html\" nil nil)")
 					.seeAlso("io/file", "io/->url")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
+				ArityExceptions.assertArity(this, args, 1, 7);
 
-				final VncVal f = args.first();
 				
 				try {
-					if (Types.isVncString(f)) {
-						return new VncJavaObject(new URI(((VncString)f).getValue()));
-					}
-					else if (Types.isVncJavaObject(f, File.class)) {
-						final File file = (File)((VncJavaObject)f).getDelegate();
-						return new VncJavaObject(file.toURI());
-					}
-					else if (Types.isVncJavaObject(f, Path.class)) {
-						final Path path = (Path)((VncJavaObject)f).getDelegate();
-						return new VncJavaObject(path.toUri());
-					}
-					else if (Types.isVncJavaObject(args.first(), URI.class)) {
-						return args.first();
-					}
-					else if (Types.isVncJavaObject(args.first(), URL.class)) {
-						final VncJavaObject obj = (VncJavaObject)args.first();
-						return new VncJavaObject(((URL)obj.getDelegate()).toURI());
+					if (args.size() == 1) {
+						final VncVal f = args.first();
+						
+						if (Types.isVncString(f)) {
+							return new VncJavaObject(new URI(((VncString)f).getValue()));
+						}
+						else if (Types.isVncJavaObject(f, File.class)) {
+							final File file = (File)((VncJavaObject)f).getDelegate();
+							return new VncJavaObject(file.toURI());
+						}
+						else if (Types.isVncJavaObject(f, Path.class)) {
+							final Path path = (Path)((VncJavaObject)f).getDelegate();
+							return new VncJavaObject(path.toUri());
+						}
+						else if (Types.isVncJavaObject(args.first(), URI.class)) {
+							return args.first();
+						}
+						else if (Types.isVncJavaObject(args.first(), URL.class)) {
+							final VncJavaObject obj = (VncJavaObject)args.first();
+							return new VncJavaObject(((URL)obj.getDelegate()).toURI());
+						}
+						else {
+							throw new VncException("Function 'io/->uri' does not allow %s as argument");
+						}
 					}
 					else {
-						throw new VncException("Function 'io/->uri' does not allow %s as argument");
+						final VncVal scheme = args.nth(0);
+						final VncVal userInfo = args.nth(1);
+						final VncVal host = args.nth(2);
+						final VncVal port = args.nth(3);
+						final VncVal path = args.nth(4);
+						final VncVal query = args.nth(5);
+						final VncVal fragment = args.nth(6);
+						
+						return new VncJavaObject(
+								new URI(scheme == Nil   ? null : Coerce.toVncString(scheme).getValue(),
+										userInfo == Nil ? null : Coerce.toVncString(userInfo).getValue(),
+										host == Nil     ? null : Coerce.toVncString(host).getValue(),
+										port == Nil     ? -1   : Coerce.toVncLong(port).getIntValue(),
+										path == Nil     ? null : Coerce.toVncString(path).getValue(),
+										query == Nil    ? null : Coerce.toVncString(query).getValue(),
+										fragment == Nil ? null : Coerce.toVncString(fragment).getValue()));
 					}
 				}
 				catch(URISyntaxException ex) {
