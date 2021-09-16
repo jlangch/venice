@@ -1598,7 +1598,7 @@ public class IOFunctions {
 						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
 						" * `java.io.InputStream`                                          \n" +
 						" * `java.io.Reader`                                               \n" +
-						" * `java.net.URL`                                                 \n\n" +
+						" * `java.net.URL`                                                 \n" +
 						" * `java.net.URI`                                                 \n\n" +
 						"Options:                                                          \n\n" +
 						"| :binary true/false | e.g :binary true, defaults to false |      \n" +
