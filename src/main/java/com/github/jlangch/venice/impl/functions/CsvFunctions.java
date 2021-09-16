@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,9 +62,15 @@ public class CsvFunctions {
 					.meta()
 					.arglists("(csv/read source & options)")		
 					.doc(
-						"Reads CSV-data from a source. The source may be a a string, " + 
-						"a bytebuf, a file, a Java InputStream, or a Java Reader.\n" + 
-						"\n" + 
+						"Reads CSV-data from a source.                                     \n\n" + 
+						"The source may be a:                                              \n\n" +
+						" * `string`                                                       \n" +
+						" * `bytebuf`                                                      \n" +
+						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+						" * `java.io.InputStream`                                          \n" +
+						" * `java.io.Reader`                                               \n" +
+						" * `java.net.URL`                                                 \n" +
+						" * `java.net.URI`                                                 \n\n" +
 						"Options:\n\n" + 
 						"| :encoding enc  | used when reading from a binary data source " + 
 						"                   e.g :encoding :utf-8, defaults to :utf-8 |\n" + 
@@ -89,36 +97,56 @@ public class CsvFunctions {
 					if (Types.isVncString(source)) {
 						return map(parser.parse(((VncString)source).getValue()));
 					}
-					else {
-						if (Types.isVncJavaObject(source, File.class)) {
-							final File file = Types.isVncString(source)
-												? new File(((VncString)source).getValue())
-												: (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
-		
-							IOFunctions.validateReadableFile(file);
-		
-							final VncVal encVal = options.get(new VncKeyword("encoding"));
+					else if (Types.isVncJavaObject(source, File.class)) {
+						final File file = Types.isVncString(source)
+											? new File(((VncString)source).getValue())
+											: (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
 	
-							try(FileInputStream is = new FileInputStream(file)) {
-								return map(parser.parse(is, IOFunctions.encoding(encVal)));
-							}
-						}
-						else if (Types.isVncJavaObject(source, InputStream.class)) {
-							final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						IOFunctions.validateReadableFile(file);
+	
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
 
-							final VncVal encVal = options.get(new VncKeyword("encoding"));
-
+						try(FileInputStream is = new FileInputStream(file)) {
 							return map(parser.parse(is, IOFunctions.encoding(encVal)));
 						}
-						else if (Types.isVncJavaObject(source, Reader.class)) {
-							final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
-							return map(parser.parse(rd));
+					}
+					else if (Types.isVncJavaObject(source, InputStream.class)) {
+						final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
+
+						try(InputStream is_ = is) {
+							return map(parser.parse(is_, IOFunctions.encoding(encVal)));
 						}
-						else {
-							throw new VncException(String.format(
-									"Function 'csv/read' does not allow %s as f",
-									Types.getType(args.first())));
+					}
+					else if (Types.isVncJavaObject(source, URL.class)) {
+						final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
+
+						try(InputStream is = url.openStream()) {
+							return map(parser.parse(is, IOFunctions.encoding(encVal)));
 						}
+					}
+					else if (Types.isVncJavaObject(source, URI.class)) {
+						final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
+
+						final VncVal encVal = options.get(new VncKeyword("encoding"));
+
+						try(InputStream is = uri.toURL().openStream()) {
+							return map(parser.parse(is, IOFunctions.encoding(encVal)));
+						}
+					}
+					else if (Types.isVncJavaObject(source, Reader.class)) {
+						final Reader rd = (Reader)(Coerce.toVncJavaObject(args.first()).getDelegate());
+						try(Reader rd_ = rd) {
+							return map(parser.parse(rd_));
+						}
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'csv/read' does not allow %s as f",
+								Types.getType(args.first())));
 					}
 				}
 				catch (VncException ex) {
@@ -170,8 +198,10 @@ public class CsvFunctions {
 
 					if (Types.isVncJavaObject(vWriter, Writer.class)) {
 						final Writer writer = (Writer)(Coerce.toVncJavaObject(vWriter).getDelegate());
-	
-						csvWriter.write(writer, Coerce.toVncSequence(args.second()));
+
+						try(Writer wr = writer) {
+							csvWriter.write(wr, Coerce.toVncSequence(args.second()));
+						}
 						
 						return Constants.Nil;
 					}

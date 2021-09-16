@@ -35,6 +35,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -276,27 +278,34 @@ public class JsonFunctions {
 				"json/slurp", 
 				VncFunction
 					.meta()
-					.arglists("(json/slurp in & options)")		
+					.arglists("(json/slurp source & options)")		
 					.doc(
-						"Slurps a JSON string from the input and returns it as a Venice datatype." +
-						"in maybe a file, a Java InputStream, or a Java Reader. \n\n" +
+						"Slurps a JSON data from a source and returns it as a Venice  \n" +
+						"data.                                                        \n\n" +
+						"The source may be a:                                         \n\n" +
+						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`       \n" +
+						" * `java.io.InputStream`                                     \n" +
+						" * `java.io.Reader`                                          \n" +
+						" * `java.net.URL`                                            \n" +
+						" * `java.net.URI`                                            \n\n" +
 						"Options: \n\n" +
-						"| :key-fn fn   | Single-argument function called on JSON property names; " +
-						"                 return value will replace the property names in the output. " +
-						"                 Default is 'identity', use 'keyword' to get keyword " +
-						"                 properties. |\n" +
+						"| :key-fn fn   | Single-argument function called on JSON property " +
+						"                 names; return value will replace the property names " +
+						"                 in the output. Default is 'identity', use 'keyword' " +
+						"                 to get keyword properties. |\n" +
 						"| :value-fn fn | Function to transform values in JSON objects in " + 
-						"                 the output. For each JSON property, value-fn is called with " + 
-						"                 two arguments: the property name (transformed by key-fn) and " + 
-						"                 the value. The return value of value-fn will replace the value " + 
-						"                 in the output. The default value-fn returns the value unchanged. |\n" + 
-						"| :decimal b   | If true use BigDecimal for decimal numbers instead of Double. " + 
-						"                 Default is false. |\n" +
+						"                 the output. For each JSON property, value-fn is " + 
+						"                 called with two arguments: the property name " + 
+						"                 (transformed by key-fn) and the value. The return " + 
+						"                 value of value-fn will replace the value in the output. " + 
+						"                 The default value-fn returns the value unchanged. |\n" + 
+						"| :decimal b   | If true use BigDecimal for decimal numbers instead " + 
+						"                 of Double. Default is false. |\n" +
 						"| :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |")
 					.examples(
 						"(let [json (json/write-str {:a 100 :b 100})             \n" +
 						"      data (bytebuf-from-string json :utf-8)            \n" +
-						"      in (. :java.io.ByteArrayInputStream :new data)]   \n" +
+						"      in   (. :java.io.ByteArrayInputStream :new data)] \n" +
 						"  (str (json/slurp in)))                                  ")
 					.seeAlso("json/write-str", "json/read-str", "json/spit", "json/pretty-print")
 					.build()
@@ -337,12 +346,24 @@ public class JsonFunctions {
 								return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
 							}
 						}
+						else if (in instanceof URL) {
+							try (BufferedReader br = new BufferedReader(new InputStreamReader(((URL)in).openStream(), encoding))) {
+								return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
+							}
+						}
+						else if (in instanceof URI) {
+							try (BufferedReader br = new BufferedReader(new InputStreamReader(((URI)in).toURL().openStream(), encoding))) {
+								return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
+							}
+						}
 						else if (in instanceof Reader) {
-							return new VncJsonReader(JsonReader.from((Reader)in), keyFN, valueFN, toDecimal).read();
+							try (Reader rd = (Reader)in) {
+								return new VncJsonReader(JsonReader.from(rd), keyFN, valueFN, toDecimal).read();
+							}
 						}
 						else {
 							throw new VncException(String.format(
-									"Function 'json/slurp' does not allow %s as in",
+									"Function 'json/slurp' does not allow %s as source!",
 									Types.getType(args.first())));
 						}
 					}
