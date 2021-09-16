@@ -219,14 +219,17 @@ public class ConfigModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                        \n" +
-				"   (load-module :config)                                                   \n" +
-				"                                                                           \n" +
-				"   (assert (= nil                                                          \n" +
-				"              (config/env-var \"M_SERVER_PORT\" [:http :port])))           \n" + 
-				"                                                                           \n" +
-				"   (assert (= {:http {:port \"8080\"}}                                     \n" +
-				"              (config/env-var \"M_SERVER_PORT\" [:http :port] \"8080\"))))  "; 
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/env-var \"M_SERVER_PORT\"           \n" + 
+				"                              [:http :port])))            \n" + 
+				"                                                          \n" +
+				"   (assert (= {:http {:port \"8080\"}}                    \n" +
+				"              (config/env-var \"M_SERVER_PORT\"           \n" +
+				"                                   [:http :port]          \n" +
+				"                                   \"8080\"))))             "; 
 
 		venice.eval(script);
 	}
@@ -236,14 +239,17 @@ public class ConfigModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                             \n" +
-				"   (load-module :config)                                                        \n" +
-				"                                                                                \n" +
-				"   (assert (= nil                                                               \n" +
-				"              (config/property-var \"M_SERVER_PORT\" [:http :port])))           \n" + 
-				"                                                                                \n" +
-				"   (assert (= {:http {:port \"8080\"}}                                          \n" +
-				"              (config/property-var \"M_SERVER_PORT\" [:http :port] \"8080\"))))   "; 
+				"(do                                                       \n" +
+				"   (load-module :config)                                  \n" +
+				"                                                          \n" +
+				"   (assert (= nil                                         \n" +
+				"              (config/property-var \"M_SERVER_PORT\"      \n" +
+				"                                   [:http :port])))       \n" + 
+				"                                                          \n" +
+				"   (assert (= {:http {:port \"8080\"}}                    \n" +
+				"              (config/property-var \"M_SERVER_PORT\"      \n" +
+				"                                   [:http :port]          \n" +
+				"                                   \"8080\"))))             "; 
 
 		venice.eval(script);
 	}
@@ -306,19 +312,20 @@ public class ConfigModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                               \n" +
-				"  (load-module :config)                                           \n" +
-				"                                                                  \n" +
-				"  (defn config []                                                 \n" + 
-				"    (config/build                                                 \n" + 
-				"      (json/read-str \"\"\"{\"app\": {\"pwd\": \"123\"}}\"\"\"    \n" +
-				"                     :key-fn keyword)                             \n" +
-				"      (config/env-var \"M_SERVER_PORT\"                           \n" +
-				"                      [:http :port]                               \n" +
-				"                      \"8000\")))                                 \n" +
-				"                                                                  \n" +
-				"  (pr-str [ (-> (config) :app :pwd)                               \n" +
-				"            (-> (config) :http :port)]))                            ";
+				"(do                                                       \n" +
+				"  (load-module :config)                                   \n" +
+				"                                                          \n" +
+				"  (def app-cfg \"\"\"{\"app\": {\"pwd\": \"123\"}}\"\"\") \n" +
+				"                                                          \n" +
+				"  (defn config []                                         \n" + 
+				"    (config/build                                         \n" + 
+				"      (json/read-str app-cfg :key-fn keyword)             \n" +
+				"      (config/env-var \"M_SERVER_PORT\"                   \n" +
+				"                      [:http :port]                       \n" +
+				"                      \"8000\")))                         \n" +
+				"                                                          \n" +
+				"  (pr-str [ (-> (config) :app :pwd)                       \n" +
+				"            (-> (config) :http :port)]))                    ";
 
 		assertEquals("[\"123\" \"8000\"]", venice.eval(script));
 	}
