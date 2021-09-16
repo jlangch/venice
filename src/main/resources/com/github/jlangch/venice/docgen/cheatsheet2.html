@@ -395,6 +395,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             }
             table.md-table tr td:last-child  {
                 padding-right: 0;
+                width: 100%;  /* fixes a PDF problem with line wraps */
             }
             table.md-table tr td.md-align-left {
                 text-align: left;

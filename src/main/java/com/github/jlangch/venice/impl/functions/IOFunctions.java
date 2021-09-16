@@ -1580,7 +1580,7 @@ public class IOFunctions {
 						" * `java.net.URL`                                                 \n" +
 						" * `java.net.URI`                                                 \n\n" +
 						"Options:                                                          \n\n" +
-						"| :encoding enc | e.g.: :encoding :utf-8, defaults to :utf-8 |\n")
+						"| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
 					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1669,8 +1669,8 @@ public class IOFunctions {
 						" * `java.net.URL`                                                 \n" +
 						" * `java.net.URI`                                                 \n\n" +
 						"Options:                                                          \n\n" +
-						"| :binary true/false | e.g.: :binary true, defaults to false |      \n" +
-						"| :encoding enc      | e.g.: :encoding :utf-8, defaults to :utf-8 | \n")
+						"| :binary true/false | e.g.: `:binary true`, defaults to false |      \n" +
+						"| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n")
 					.seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit")
 					.build()
 		) {
@@ -1752,8 +1752,8 @@ public class IOFunctions {
 						"f may be a file or a string (file path). " +
 						"The content may be a string or a bytebuf.\n\n" +
 						"Options: \n\n" +
-						"| :append true/false | e.g.: :append true, defaults to false |\n" +
-						"| :encoding enc      | e.g.: :encoding :utf-8, defaults to :utf-8 |\n")
+						"| :append true/false | e.g.: `:append true`, defaults to false |\n" +
+						"| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
 					.seeAlso("io/spit-stream", "io/slurp", "io/slurp-lines")
 					.build()
 		) {
@@ -1822,20 +1822,20 @@ public class IOFunctions {
 						"Downloads the content from the uri and reads it as text (string) " +
 						"or binary (bytebuf). \n\n" +
 						"Options: \n\n" +
-						"| :binary true/false | e.g.: :binary true, defaults to false |\n" +
-						"| :user-agent agent  | e.g.: :user-agent \"Mozilla\", defaults to nil |\n" +
-						"| :encoding enc      | e.g.: :encoding :utf-8, defaults to :utf-8 |\n" +
-						"| :conn-timeout val  | e.g.: :conn-timeout 10000`, " +
+						"| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
+						"| :user-agent agent  | e.g.: `:user-agent \"Mozilla\"`, defaults to nil |\n" +
+						"| :encoding enc      | e.g.: `:encoding :utf-8,` defaults to :utf-8 |\n" +
+						"| :conn-timeout val  | e.g.: `:conn-timeout 10000`, " +
 						"                       connection timeout in milliseconds. ¶" +
 						"                       0 is interpreted as an infinite timeout. |\n" +
-						"| :read-timeout val  | e.g.: :read-timeout 10000, " +
+						"| :read-timeout val  | e.g.: `:read-timeout 10000`, " +
 						"                       read timeout in milliseconds. ¶" +
 						"                       0 is interpreted as an infinite timeout. |\n" +
 						"| :progress-fn fn    | a progress function that takes 2 args ¶" +
 						"                       [1] progress (0..100%) ¶" +
 						"                       [2] status {:start :progress :end :failed}|\n\n" +
 						"Note:¶" +
-						"If the server returns the HTTP response status code 403 (Access Denied) " +
+						"If the server returns the HTTP response status code 403 (*Access Denied*) " +
 						"sending a user agent like \"Mozilla\" may fool the website and solve the " +
 						"problem.")
 					.examples(
@@ -2058,8 +2058,8 @@ public class IOFunctions {
 						"Supports the option :binary to either slurp binary or string data. " +
 						"For string data an optional encoding can be specified.\n\n" +
 						"Options: \n\n" +
-						"| :binary true/false | e.g.: :binary true, defaults to false |\n" +
-						"| :encoding enc      | e.g.: :encoding :utf-8, defaults to :utf-8 |\n")
+						"| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
+						"| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
 					.examples(
 						"(do \n" +
 						"   (import :java.io.FileInputStream) \n" +
