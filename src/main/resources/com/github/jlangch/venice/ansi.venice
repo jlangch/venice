@@ -289,7 +289,9 @@
           | :caption txt    | A caption text. Defaults to empty.                |
           | :start-msg msg  | A start message. Defaults to "{caption} started". |
           | :end-msg msg    | An end message. Defaults to "{caption} ok".       |
+          | :end-col col    | An end message ansi color code.                   |
           | :failed-msg msg | A failed message. Defaults to "{caption} failed". |
+          | :failed-col col | A failed message ansi color code.                 |
           | :mode m         | A mode {:percent, :custom}. Defaults to :percent. |
           """
      :examples '("""
@@ -315,8 +317,10 @@
         percent-mode?  (= :percent (:mode options :percent))
         caption        (:caption options "")
         start-msg      (:start-msg options "~{caption} started")
-        end-msg        (:end-msg options "~{caption} ok")
-        failed-msg     (:failed-msg options "~{caption} failed")
+        end-col        (:end-col options)
+        end-msg        (:end-msg options (str "~{caption} " (ansi/style "ok" end-col)))
+        failed-col     (:failed-col options)
+        failed-msg     (:failed-msg options (str "~{caption} " (ansi/style "failed" failed-col)))
         percent-styles (:percent-styles options [])
         limiter        (if percent-mode?
                          #(max 0 (min 100 (long %)))
@@ -338,7 +342,7 @@
                                     " "))
               :end      (println end-msg)
               :failed   (println failed-msg)
-                        (println (str "Invalid status '" status "'")))
+                        (println "Invalid status '~{status}'"))
             nil))
       (fn progress-handler [percent status]
         (case status
@@ -346,7 +350,7 @@
           :progress nil
           :end      (println end-msg)
           :failed   (println failed-msg)
-                    (println (str "Invalid status '" status "'")))
+                    (println "Invalid status '~{status}'"))
         nil))))
 
 
@@ -369,7 +373,9 @@
           | :width val         | The width of the bar in chars. Defaults to 25.     |
           | :start-msg msg     | A start message. Defaults to "{caption} started".  |
           | :end-msg msg       | An end message. Defaults to "{caption} ok".        |
+          | :end-col col       | An end message ansi color code.                    |
           | :failed-msg msg    | A failed message. Defaults to "{caption} failed".  |
+          | :failed-col col    | A failed message ansi color code.                  |
           | :show-percent bool | If true shows the percentage. Defaults to 'false'. |
           """
      :examples '("""
@@ -406,8 +412,10 @@
                             (str/expand caption-width " " :end)))
         width         (min (max (:width options 25) 10) 100)
         start-msg     (:start-msg options "~{caption} started")
-        end-msg       (:end-msg options "~{caption} ok")
-        failed-msg    (:failed-msg options "~{caption} failed")
+        end-col       (:end-col options)
+        end-msg       (:end-msg options (str "~{caption} " (ansi/style "ok" end-col)))
+        failed-col    (:failed-col options)
+        failed-msg    (:failed-msg options (str "~{caption} " (ansi/style "failed" failed-col)))
         show-percent  (:show-percent options false)
         bar           (fn [percent]
                         (let [w1    (/ (* percent width) 100)
@@ -430,7 +438,7 @@
             :progress (print (bar percent))
             :end      (println end-msg)
             :failed   (println failed-msg)
-                      (println (str "Invalid status '" status "'")))
+                      (println "Invalid status '~{status}'"))
           nil))
       (fn progress-handler [percent status]
         (case status
@@ -438,7 +446,7 @@
           :progress nil
           :end      (println end-msg)
           :failed   (println failed-msg)
-                    (println (str "Invalid status '" status "'")))
+                    (println "Invalid status '~{status}'"))
         nil))))
 
 

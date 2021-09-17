@@ -158,7 +158,9 @@
       (ansi/without-cursor
         (io/download url
                      :user-agent "Mozilla"
-                     :progress-fn (ansi/progress :caption caption)))))
+                     :progress-fn (ansi/progress :caption caption
+                                                 :end-col :green
+                                                 :failed-col :red)))))
 
   (defn load-countries-html-data! [country-names]
     (->> (map load-country-html-data! country-names)
@@ -175,7 +177,9 @@
     (let [caption  (str/expand "Loading country population data:" 38 " ")
           counter  (atom 0.0)
           delta    (/ 100.0 (count countries-iso))
-          pg       (ansi/progress :caption caption)]
+          pg       (ansi/progress :caption caption
+                                  :end-col :green
+                                  :failed-col :red)]
       (ansi/without-cursor
         (try
           (pg 0 :progress)
@@ -197,7 +201,9 @@
       (ansi/without-cursor
         (->> (io/download vaccinations-url
                           :user-agent "Mozilla"
-                          :progress-fn (ansi/progress :caption caption))
+                          :progress-fn (ansi/progress :caption caption
+                                                      :end-col :green
+                                                      :failed-col :red))
              (json/read-str)
              (map #(list (get % "iso_code")
                          (format (get (last (get % "data"))
