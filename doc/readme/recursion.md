@@ -34,7 +34,7 @@ void doSomething(final boolean isDone) {
 The drawback of this simple recursion is the large amount of memory overhead 
 because of added stack frames for each recursion iteration.
 
-Functional languages with immutable data structures support *tail call optimization* 
+Functional languages with immutable data structures support **tail call optimization**
 (TCO) to provide memory efficient recursion. While Venice supports 
 automated tail call optimization and self recursion through the
 *loop..recur* syntax. The latter is a way to mimic TCO. 
