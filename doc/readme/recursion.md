@@ -85,9 +85,10 @@ a value from. There are no more forms evaluated after the form in the tail
 position is evaluated.
 
 *Remember:*  Venice offers various alternative solutions to recursion to solve
- loops like `(+ 1 2 3 4 5 6)` to sum up a list of numbers or the powerful `reduce` 
- function: `(reduce + [1 2 3 4 5])`. Many Venice functions accept an arbitrary 
- number of arguments to prevent you from writing loops.
+loops like `(+ 1 2 3 4 5 6)` to sum up a list of numbers or the powerful `reduce` 
+function: `(reduce + [1 2 3 4 5])`. Many Venice functions accept an arbitrary 
+number of arguments to prevent you from writing loops.
+
 
 Example 1: Recursively sum up the numbers 0..n:
 
@@ -106,6 +107,7 @@ Example 1: Recursively sum up the numbers 0..n:
    (sum 100000)) ; => 5000050000
 ```
 
+
 Example 2: Recursively compute the factorial of a number:
 
 ```clojure
@@ -123,6 +125,7 @@ Example 2: Recursively compute the factorial of a number:
    (factorial 5)      ; => 120N
    (factorial 10000)) ; => 284625968091...00000N  (35661 digits)
 ```
+
 
 Example 3: Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
 
@@ -157,6 +160,7 @@ Example 1: Lazy Fibonacci number sequence computed by a recursive function:
    (doall (take 7 (fib))))  ; => (0 1 1 2 3 5 8)
 ```
 
+
 Example 2: Factorial numbers:
 
 ```clojure
@@ -187,6 +191,7 @@ The function `trampoline` is defined simplified as
       (let [ret (f)]
          (if (fn? ret) (recur ret) ret)))))
 ```
+
 
 Examples:
 
