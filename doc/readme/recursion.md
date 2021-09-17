@@ -83,7 +83,11 @@ behind the scene into a plain loop.
 *Definition:*  The tail position is a position which an expression would return 
 a value from. There are no more forms evaluated after the form in the tail 
 position is evaluated.
- 
+
+*Remember:*  Venice offers various alternative solutions to recursion to solve
+ loops like `(+ 1 2 3 4 5 6)` to sum up a list of numbers or the powerful `reduce` 
+ function: `(reduce + [1 2 3 4 5])`. Many Venice functions accept an arbitrary 
+ number of arguments to prevent you from writing loops.
 
 Example 1: Recursively sum up the numbers 0..n:
 

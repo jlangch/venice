@@ -418,7 +418,8 @@ Simple recursion with multimethods:
 )
 ```
 
-_Note: simple recursion suffers from Java's stack depth limit._
+**Note:** Simple recursion suffers from Java's stack depth limit. See 
+[Recursion](recursion.md) how to apply it in Venice.  
 
 
 ## Functions calling each other
