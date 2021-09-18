@@ -189,12 +189,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	public VncVal EVAL(final VncVal ast, final Env env) {
 		if (meterRegistry.enabled) {
 			final long nanos = System.nanoTime();
-			final VncVal val = evaluate(ast, env);
+			final VncVal val = evaluate(ast, env, false);
 			meterRegistry.record("venice.eval", System.nanoTime() - nanos);			
 			return val;
 		}
 		else {
-			return evaluate(ast, env);
+			return evaluate(ast, env, false);
 		}
 	}
 
@@ -323,23 +323,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		loadedModules.add(new VncKeyword(module));
 	}
 	
-	/**
-	 * Evaluate the passed ast as s-expr, simple value, or collection of values.
-	 * 
-	 * <p>An s-expr is a list with at least one value and the first value being a 
-	 * symbol.
-	 * 
-	 * @param ast_ an ast
-	 * @param env_ the env
-	 * @return the result
-	 */
-	private VncVal evaluate(
-			final VncVal ast_, 
-			final Env env_
-	) {
-		return evaluate(ast_, env_, false);
-	}
-	
 	private VncVal evaluate(
 			final VncVal ast_, 
 			final Env env_, 
@@ -381,7 +364,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "if": { // (if cond expr-true expr-false*)
 						final int numArgs = args.size();
 						if (numArgs == 2 || numArgs == 3) {
-							final VncVal cond = evaluate(args.first(), env);
+							final VncVal cond = evaluate(args.first(), env, false);
 
 							final ThreadContext threadCtx = ThreadContext.get();
 							final DebugAgent debugAgent = threadCtx.getDebugAgent_();
@@ -446,7 +429,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								}
 							}
 							
-							final VncVal val = evaluate(bindingsIter.next(), env);
+							final VncVal val = evaluate(bindingsIter.next(), env, false);
 							final List<Var> varTmp = Destructuring.destructure(sym, val);
 							env.addLocalVars(varTmp);
 							
@@ -497,7 +480,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final Iterator<VncVal> bindingsIter = bindings.iterator();
 						while(bindingsIter.hasNext()) {
 							final VncSymbol sym = Coerce.toVncSymbol(bindingsIter.next());
-							final VncVal val = evaluate(bindingsIter.next(), env);
+							final VncVal val = evaluate(bindingsIter.next(), env, false);
 
 							env.setLocal(new Var(sym, val));
 							bindingNames.add(sym);
@@ -680,7 +663,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					//       function 'core/macroexpand-all' in the 'core' module.
 					return macroexpand_all(
 							new CallFrame("macroexpand-all*", args, a0meta), 
-							evaluate(args.first(), env), 
+							evaluate(args.first(), env, false), 
 							env);
 
 				case "doc": // (doc sym)
@@ -696,7 +679,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return binding_(args, new Env(env), a0meta);
 
 				case "bound?": // (bound? sym)
-					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env))));
+					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env, false))));
 
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
 					return specialFormHandler.try_(args, env, a0meta);
@@ -721,8 +704,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 				default: { // functions, macros, collections/keywords as functions
 					final VncVal fn0 = a0 instanceof VncSymbol
-											? env.get((VncSymbol)a0)  // (+ 1 2)
-											: evaluate(a0, env);      // ((resolve '+) 1 2)
+											? env.get((VncSymbol)a0)  	// (+ 1 2)
+											: evaluate(a0, env, false); // ((resolve '+) 1 2)
 										
 					if (fn0 instanceof VncFunction) { 
 						final VncFunction fn = (VncFunction)fn0;
@@ -883,8 +866,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final Map<VncVal,VncVal> vals = new HashMap<>(map.size());
 			for(Entry<VncVal,VncVal> e: map.getJavaMap().entrySet()) {
 				vals.put(
-					evaluate(e.getKey(), env), 
-					evaluate(e.getValue(), env));
+					evaluate(e.getKey(), env, false), 
+					evaluate(e.getValue(), env, false));
 			}
 			return map.withValues(vals);
 		} 
@@ -893,7 +876,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			final List<VncVal> vals = new ArrayList<>(set.size());
 			for(VncVal v: set) {
-				vals.add(evaluate(v, env));
+				vals.add(evaluate(v, env, false));
 			}
 			return set.withValues(vals);
 		} 
@@ -912,24 +895,24 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				return seq;
 			case 1:
 				return seq.withVariadicValues(
-							evaluate(seq.first(), env));
+							evaluate(seq.first(), env, false));
 			case 2: 
 				return seq.withVariadicValues(
-							evaluate(seq.first(), env), 
-							evaluate(seq.second(), env));
+							evaluate(seq.first(), env, false), 
+							evaluate(seq.second(), env, false));
 			case 3: 
 				return seq.withVariadicValues(
-							evaluate(seq.first(), env), 
-							evaluate(seq.second(), env),
-							evaluate(seq.third(), env));
+							evaluate(seq.first(), env, false), 
+							evaluate(seq.second(), env, false),
+							evaluate(seq.third(), env, false));
 			case 4: 
 				return seq.withVariadicValues(
-							evaluate(seq.first(), env), 
-							evaluate(seq.second(), env),
-							evaluate(seq.third(), env),
-							evaluate(seq.fourth(), env));
+							evaluate(seq.first(), env, false), 
+							evaluate(seq.second(), env, false),
+							evaluate(seq.third(), env, false),
+							evaluate(seq.fourth(), env, false));
 			default:
-				return seq.map(v -> evaluate(v, env));
+				return seq.map(v -> evaluate(v, env, false));
 		}
 	}
 
@@ -1010,7 +993,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		final CallFrame callframe = new CallFrame("macroexpand", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("macroexpand", FnType.SpecialForm, args, 1);
-			final VncVal ast = evaluate(args.first(), env);
+			final VncVal ast = evaluate(args.first(), env, false);
 			return doMacroexpand(ast, env);
 		}		
 	}
@@ -1241,7 +1224,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			final VncVal val = args.second();
 			
-			final VncVal res = evaluate(val, env).withMeta(name.getMeta());
+			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
 			env.setGlobal(new Var(name, res, true));
 			return name;
 		}				
@@ -1258,7 +1241,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							
 			final VncVal val = args.second();
 
-			final VncVal res = evaluate(val, env).withMeta(name.getMeta());
+			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
 			env.setGlobal(new Var(name, res, false));
 			return name;
 		}
@@ -1275,7 +1258,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			final VncVal val = args.second();
 			
-			final VncVal res = evaluate(val, env).withMeta(name.getMeta());
+			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
 			env.setGlobalDynamic(name, res);
 			return name;
 		}
@@ -1360,7 +1343,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertMinArity("eval", FnType.SpecialForm, args, 0);
 			final Namespace ns = Namespaces.getCurrentNamespace();
 			try {
-				return evaluate(Coerce.toVncSequence(evaluate_sequence_values(args, env)).last(), env);
+				return evaluate(
+						Coerce.toVncSequence(evaluate_sequence_values(args, env)).last(), 
+						env, 
+						false);
 			}
 			finally {
 				Namespaces.setCurrentNamespace(ns);
@@ -1476,7 +1462,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try {
 			for(int i=0; i<bindings.size(); i+=2) {
 				final VncVal sym = bindings.nth(i);
-				final VncVal val = evaluate(bindings.nth(i+1), env);
+				final VncVal val = evaluate(bindings.nth(i+1), env, false);
 		
 				final List<Var> vars = Destructuring.destructure(sym, val);
 				vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
@@ -1494,7 +1480,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 
 			evaluate_sequence_values(expressions.butlast(), env);
-			return evaluate(expressions.last(), env);
+			return evaluate(expressions.last(), env, false);
 		}
 		finally {
 			bindingVars.forEach(v -> env.popGlobalDynamic(v.getName()));
@@ -1633,7 +1619,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				if (preConditions != null && !preConditions.isEmpty()) {
 			 		final Env local = new Env(env);	
 			 		for(VncVal v : preConditions) {
-						if (!isFnConditionTrue(evaluate(v, local))) {
+						if (!isFnConditionTrue(evaluate(v, local, false))) {
 							final CallFrame cf = new CallFrame(name, v.getMeta());
 							try (WithCallStack cs = new WithCallStack(cf)) {
 								throw new AssertionException(String.format(
@@ -1724,7 +1710,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private VncSymbol evaluateSymbolMetaData(final VncVal symVal, final Env env) {
 		final VncSymbol sym = Coerce.toVncSymbol(symVal);
 		ReservedSymbols.validateNotReservedSymbol(sym);
-		return sym.withMeta(evaluate(sym.getMeta(), env));
+		return sym.withMeta(evaluate(sym.getMeta(), env, false));
 	}
 
 	private static <T> List<T> toEmpty(final List<T> list) {
