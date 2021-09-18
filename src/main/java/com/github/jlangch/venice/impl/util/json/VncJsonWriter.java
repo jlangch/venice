@@ -36,6 +36,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
+import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
@@ -104,6 +105,9 @@ public class VncJsonWriter {
 		}
 		else if (Types.isVncBigDecimal(val)) {
 			write_VncBigDecimal(key, (VncBigDecimal)val);
+		}
+		else if (Types.isVncBigInteger(val)) {
+			write_VncBigInteger(key, (VncBigInteger)val);
 		}
 		else if (Types.isVncKeyword(val)) {
 			write_VncKeyword(key, (VncKeyword)val);
@@ -258,6 +262,16 @@ public class VncJsonWriter {
 			else {
 				writer.value(key, v);
 			}
+		}
+	}
+
+	private void write_VncBigInteger(final String key, final VncBigInteger val) {
+		final String v = val.getValue().toString();
+		if (key == null) {
+			writer.value(v);
+		}
+		else {
+			writer.value(key, v);
 		}
 	}
 
