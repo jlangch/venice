@@ -93,7 +93,7 @@ public class VncBigDecimal extends VncNumber {
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
-				? Arrays.asList(TYPE, VncVal.TYPE)
+				? Arrays.asList(TYPE, VncNumber.TYPE, VncVal.TYPE)
 				: Arrays.asList(VncNumber.TYPE, VncVal.TYPE);
 	}
 	
