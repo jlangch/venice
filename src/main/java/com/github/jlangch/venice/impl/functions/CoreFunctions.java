@@ -7592,7 +7592,7 @@ public class CoreFunctions {
 						"(supertype 5)",
 						"(supertype [1 2])",
 						"(supertype (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("type", "instance-of?", "number?")
+					.seeAlso("type", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
