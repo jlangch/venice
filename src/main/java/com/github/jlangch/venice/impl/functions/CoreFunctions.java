@@ -5822,7 +5822,7 @@ public class CoreFunctions {
 						.examples(
 							"(instance-of? :long 500)",
 							"(instance-of? :java.math.BigInteger 500)")
-						.seeAlso("type", "supertype")
+						.seeAlso("type", "supertype", "supertypes")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -7570,7 +7570,7 @@ public class CoreFunctions {
 						"(type 5)",
 						"(type [1 2])",
 						"(type (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("supertype", "instance-of?")
+					.seeAlso("supertype", "supertypes", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7592,7 +7592,7 @@ public class CoreFunctions {
 						"(supertype 5)",
 						"(supertype [1 2])",
 						"(supertype (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("supertypes", "type", "instance-of?")
+					.seeAlso("type", "supertypes", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7614,7 +7614,7 @@ public class CoreFunctions {
 						"(supertypes 5)",
 						"(supertypes [1 2])",
 						"(supertypes (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("supertype", "type", "instance-of?")
+					.seeAlso("type", "supertype", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
