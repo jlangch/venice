@@ -44,6 +44,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.github.jlangch.venice.FileException;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 
 
 /**
@@ -598,13 +599,15 @@ public class FileUtil {
 			};
 		
 		final Thread th = new Thread(runnable);
-		th.setDaemon(true);
 		th.setName("venice-watch-dir");
+		th.setDaemon(true);
+		th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
 		th.start();
 		
 		return ws;
 	}
 
+	
 	private static boolean awaitFileEarlyReturnCheck(
 			final Path target, 
 			final Set<WatchEvent.Kind<?>> watchEvents

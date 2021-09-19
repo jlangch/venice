@@ -140,6 +140,15 @@ public class ThreadBridge {
 		return parentThreadSnapshot.isSameAsCurrentThread();
 	}
 	
+	public static void handleUncaughtException(final Thread t, final Throwable e) {
+		if (e instanceof VncException) {
+			((VncException)e).printVeniceStackTrace(System.err);
+		}
+		else {
+			e.printStackTrace(System.err);
+		}
+	}
+	
 	
 	private static void validateName(final String name) {
 		if (StringUtil.isBlank(name)) {

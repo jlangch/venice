@@ -581,7 +581,10 @@ public class SystemFunctions {
 														new CallFrame(fn)});				
 				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 
-				Runtime.getRuntime().addShutdownHook(new Thread(taskWrapper));
+				final Thread hook = new Thread(taskWrapper);
+				hook.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
+				
+				Runtime.getRuntime().addShutdownHook(hook);
 
 				return Nil;
 			}
@@ -1111,6 +1114,7 @@ public class SystemFunctions {
 		}
 	}
 
+	
 	public static long javaMajorVersion() {
 		String version = System.getProperty("java.version");
 		
