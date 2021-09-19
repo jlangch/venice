@@ -94,7 +94,7 @@ public class VncInteger extends VncNumber {
 	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
 				? Arrays.asList(TYPE, VncVal.TYPE)
-				: super.getAllSupertypes();
+				: Arrays.asList(VncNumber.TYPE, VncVal.TYPE);
 	}
 	
 	public VncInteger negate() { 

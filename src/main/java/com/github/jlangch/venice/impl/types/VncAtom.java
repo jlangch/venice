@@ -70,7 +70,7 @@ public class VncAtom extends VncVal implements IDeref {
 	
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
-		return Arrays.asList(getSupertype());
+		return Arrays.asList(VncVal.TYPE);
 	}
 
 	public VncVal reset(final VncVal newVal) {

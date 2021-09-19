@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.types;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
@@ -55,9 +56,13 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	
 	public abstract VncKeyword getType();
 	
-	public abstract VncKeyword getSupertype();
+	public VncKeyword getSupertype() {
+		return null;
+	}
 	
-	public abstract List<VncKeyword> getAllSupertypes();
+	public List<VncKeyword> getAllSupertypes() {
+		return new ArrayList<>();
+	}
 	
 	public VncWrappingTypeDef getWrappingTypeDef() {
 		return wrappingTypeDef;
