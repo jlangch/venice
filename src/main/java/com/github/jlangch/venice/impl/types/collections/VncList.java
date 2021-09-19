@@ -139,7 +139,7 @@ public class VncList extends VncSequence {
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
-		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
+		return Arrays.asList(VncSequence.TYPE, VncCollection.TYPE, VncVal.TYPE);
 	}
 
     @Override

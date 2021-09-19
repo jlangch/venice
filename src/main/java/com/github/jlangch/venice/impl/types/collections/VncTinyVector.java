@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.types.collections;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -157,17 +156,17 @@ public class VncTinyVector extends VncVector {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
+		return super.getType();
 	}
 	
 	@Override
 	public VncKeyword getSupertype() {
-		return VncSequence.TYPE;
+		return super.getSupertype();
 	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
-		return Arrays.asList(VncSequence.TYPE, VncVal.TYPE);
+		return super.getAllSupertypes();
 	}
 
     @Override
@@ -702,7 +701,7 @@ public class VncTinyVector extends VncVector {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/vector");
+	public static final VncKeyword TYPE = VncVector.TYPE;
 	public static final VncTinyVector EMPTY = new VncTinyVector();
 	public static final int MAX_ELEMENTS = 4;
 
