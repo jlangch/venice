@@ -7592,12 +7592,34 @@ public class CoreFunctions {
 						"(supertype 5)",
 						"(supertype [1 2])",
 						"(supertype (. :java.math.BigInteger :valueOf 100))")
-					.seeAlso("type", "instance-of?")
+					.seeAlso("supertypes", "type", "instance-of?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 				return Types.getSupertype(args.first());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction supertypes =
+		new VncFunction(
+				"supertypes",
+				VncFunction
+					.meta()
+					.arglists("(supertypes x)")
+					.doc("Returns the super types of x.")
+					.examples(
+						"(supertypes 5)",
+						"(supertypes [1 2])",
+						"(supertypes (. :java.math.BigInteger :valueOf 100))")
+					.seeAlso("supertype", "type", "instance-of?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+				return VncList.ofColl(Types.getSupertypes(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7934,6 +7956,7 @@ public class CoreFunctions {
 				.add(name)
 				.add(type)
 				.add(supertype)
+				.add(supertypes)
 				.add(instance_of_Q)
 				.add(highlight)
 

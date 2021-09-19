@@ -1282,10 +1282,14 @@ public class DocGenerator {
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
+		final DocSection util = new DocSection("Util", "types.util");
+		all.addSection(util);		
+		util.addItem(getDocItem("type"));
+		util.addItem(getDocItem("supertype"));
+		util.addItem(getDocItem("supertypes"));
+
 		final DocSection test = new DocSection("Test", "types.test");
 		all.addSection(test);		
-		test.addItem(getDocItem("type"));
-		test.addItem(getDocItem("supertype"));
 		test.addItem(getDocItem("instance-of?"));
 		test.addItem(getDocItem("deftype?"));
 
