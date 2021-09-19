@@ -408,6 +408,7 @@ public class Types {
 			case "core/long":		return true;
 			case "core/integer":	return true;
 			case "core/double":		return true;
+			case "core/bigint":		return true;
 			case "core/decimal":	return true;
 			case "core/string":		return true;
 			case "core/char":		return true;
