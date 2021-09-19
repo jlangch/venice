@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,6 @@ import com.github.jlangch.venice.impl.functions.ArrayFunctions;
 import com.github.jlangch.venice.impl.javainterop.Invoker;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -119,7 +117,14 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
-		return Arrays.asList(VncMap.TYPE, VncCollection.TYPE, VncVal.TYPE);
+		final List<VncKeyword> list = new ArrayList<>();
+		
+		Class<?> superClass = delegate.getClass().getSuperclass();
+		while(superClass != null) {
+			list.add(new VncKeyword(superClass.getName()));
+		    superClass = superClass.getSuperclass();
+		}
+		return list;
 	}
 
 	public VncJavaObject castTo(final Class<?> clazz) {
