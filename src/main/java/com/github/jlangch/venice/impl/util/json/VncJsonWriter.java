@@ -34,7 +34,7 @@ import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncAtom;
+import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -52,10 +52,9 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
 import com.github.jlangch.venice.impl.types.collections.VncJavaMap;
 import com.github.jlangch.venice.impl.types.collections.VncJavaSet;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
-import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 
@@ -115,17 +114,14 @@ public class VncJsonWriter {
 		else if (Types.isVncSymbol(val)) {
 			write_VncSymbol(key, (VncSymbol)val);
 		}
-		else if (Types.isVncList(val)) {
-			write_VncList(key, (VncList)val);
-		}
-		else if (Types.isVncVector(val)) {
-			write_VncVector(key, (VncVector)val);
+		else if (Types.isVncJavaObject(val)) {
+			write_VncJavaObject(key, (VncJavaObject)val);
 		}
 		else if (Types.isVncJavaList(val)) {
 			write_VncJavaList(key, (VncJavaList)val);
 		}
-		else if (Types.isVncJavaObject(val)) {
-			write_VncJavaObject(key, (VncJavaObject)val);
+		else if (Types.isVncSequence(val)) {
+			write_VncSequence(key, (VncSequence)val);
 		}
 		else if (Types.isVncJavaMap(val)) {
 			write_VncJavaMap(key, (VncJavaMap)val);
@@ -133,17 +129,17 @@ public class VncJsonWriter {
 		else if (Types.isVncMap(val)) {
 			write_VncMap(key, (VncMap)val);
 		}
-		else if (Types.isVncSet(val)) {
-			write_VncSet(key, (VncSet)val);
-		}
 		else if (Types.isVncJavaSet(val)) {
 			write_VncJavaSet(key, (VncJavaSet)val);
+		}
+		else if (Types.isVncSet(val)) {
+			write_VncSet(key, (VncSet)val);
 		}
 		else if (Types.isVncByteBuffer(val)) {
 			write_VncByteBuffer(key, (VncByteBuffer)val);
 		}
-		else if (Types.isVncAtom(val)) {
-			write(key, ((VncAtom)val).deref()); // delegate to deref value
+		else if (val instanceof IDeref) {
+			write(key, ((IDeref)val).deref()); // delegate to deref value
 		}
 		else {
 			throw new VncException(String.format(
@@ -295,15 +291,7 @@ public class VncJsonWriter {
 		}
 	}
 
-	private void write_VncList(final String key, final VncList val) {
-		final Iterator<VncVal> iter = val.iterator();
-
-		array(key);
-		while(iter.hasNext()) write(null, iter.next());
-		end();
-	}
-
-	private void write_VncVector(final String key, final VncVector val) {
+	private void write_VncSequence(final String key, final VncSequence val) {
 		final Iterator<VncVal> iter = val.iterator();
 
 		array(key);
