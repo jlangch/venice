@@ -24,12 +24,11 @@ package com.github.jlangch.venice.impl.types;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
@@ -58,7 +57,7 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	public abstract VncKeyword getType();
 	
 	public List<VncKeyword> getAllSupertypes() {
-		return new ArrayList<>();
+		return Arrays.asList();
 	}
 	
 	public VncWrappingTypeDef getWrappingTypeDef() {
@@ -137,7 +136,7 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	}
 	
     
-    public static final VncKeyword TYPE = new VncKeyword(":core/val", MetaUtil.typeMeta(() -> VncList.empty()));
+    public static final VncKeyword TYPE = new VncKeyword(":core/val");
  	
     private static final long serialVersionUID = -1848883965231344442L;
 

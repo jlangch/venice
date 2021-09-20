@@ -145,9 +145,13 @@ public class MetaUtil {
 	@SuppressWarnings("unchecked")
 	public static VncList getSupertypes(final VncVal meta) {
 		final VncVal supertypesSupplier = getMetaVal(meta, MetaUtil.SUPERTYPES);
-		return supertypesSupplier instanceof VncJavaObject 
-				? ((Supplier<VncList>)((VncJavaObject)supertypesSupplier).getDelegate()).get()
-				: VncList.empty();		
+		if (supertypesSupplier instanceof VncJavaObject) {
+			final Object delegate = ((VncJavaObject)supertypesSupplier).getDelegate();
+			return ((Supplier<VncList>)delegate).get();
+		}
+		else {
+			return VncList.empty();	
+		}
 	}
 
 	public static VncVal typeMeta(final Supplier<VncList> supertypesSupplier) {
