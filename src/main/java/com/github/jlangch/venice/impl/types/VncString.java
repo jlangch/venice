@@ -75,11 +75,6 @@ public class VncString extends VncVal {
 	}
 	
 	@Override
-	public VncKeyword getSupertype() {
-		return isWrapped() ? TYPE : VncVal.TYPE;
-	}
-	
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
 				? Arrays.asList(TYPE, VncVal.TYPE)

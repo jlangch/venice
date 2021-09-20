@@ -31,11 +31,6 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 	public TypeRank typeRank() {
 		return TypeRank.CUSTOM_TYPE_DEF;
 	}
-
-	@Override
-	public VncKeyword getSupertype() {
-		return VncVal.TYPE;
-	}
 	
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

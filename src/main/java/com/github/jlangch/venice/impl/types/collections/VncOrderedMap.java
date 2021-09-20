@@ -131,11 +131,6 @@ public class VncOrderedMap extends VncMap {
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncMap.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

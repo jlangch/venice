@@ -53,11 +53,6 @@ public class VncMultiFunction extends VncFunction {
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncFunction.TYPE_FUNCTION;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

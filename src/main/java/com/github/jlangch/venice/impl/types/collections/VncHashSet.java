@@ -103,11 +103,6 @@ public class VncHashSet extends VncSet {
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncSet.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

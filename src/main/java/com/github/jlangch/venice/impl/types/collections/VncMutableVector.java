@@ -119,11 +119,6 @@ public class VncMutableVector extends VncSequence {
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncSequence.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

@@ -70,11 +70,6 @@ public class VncQueue extends VncCollection {
 	}
 	
 	@Override
-	public VncKeyword getSupertype() {
-		return VncCollection.TYPE;
-	}
-
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}

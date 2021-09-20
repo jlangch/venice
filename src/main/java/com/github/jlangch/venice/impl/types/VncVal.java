@@ -29,6 +29,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
@@ -55,10 +56,6 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	public abstract VncVal withMeta(final VncVal meta);
 	
 	public abstract VncKeyword getType();
-	
-	public VncKeyword getSupertype() {
-		return null;
-	}
 	
 	public List<VncKeyword> getAllSupertypes() {
 		return new ArrayList<>();
@@ -140,8 +137,8 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	}
 	
     
-    public static final VncKeyword TYPE = new VncKeyword(":core/val");
-	
+    public static final VncKeyword TYPE = new VncKeyword(":core/val", MetaUtil.typeMeta(() -> VncList.empty()));
+ 	
     private static final long serialVersionUID = -1848883965231344442L;
 
 	private final VncVal meta;

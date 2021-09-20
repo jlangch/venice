@@ -283,7 +283,8 @@ public class Types {
 	}
 
 	public static VncKeyword getSupertype(final VncVal val) {
-		return val.getSupertype();
+		final List<VncKeyword> supertypes = val.getAllSupertypes();
+		return supertypes.isEmpty() ? null : supertypes.get(0);
 	}
 
 	public static List<VncKeyword> getSupertypes(final VncVal val) {

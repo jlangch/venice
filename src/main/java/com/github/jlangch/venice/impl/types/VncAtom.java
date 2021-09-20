@@ -64,11 +64,6 @@ public class VncAtom extends VncVal implements IDeref {
 	}
 	
 	@Override
-	public VncKeyword getSupertype() {
-		return VncVal.TYPE;
-	}
-	
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(VncVal.TYPE);
 	}

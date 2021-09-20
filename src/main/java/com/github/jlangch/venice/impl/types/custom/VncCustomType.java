@@ -98,11 +98,6 @@ public class VncCustomType extends VncMap {
 	}
 
 	@Override
-	public VncKeyword getSupertype() {
-		return TYPE;
-	}
-
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(
 					TYPE, 

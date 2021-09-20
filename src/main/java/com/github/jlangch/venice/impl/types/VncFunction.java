@@ -106,11 +106,6 @@ public abstract class VncFunction
 	public VncKeyword getType() {
 		return isMacro() ? TYPE_MACRO : TYPE_FUNCTION;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncVal.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

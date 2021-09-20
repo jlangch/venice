@@ -75,11 +75,6 @@ public class VncMultiArityFunction extends VncFunction {
 	public VncKeyword getType() {
 		return isMacro() ? VncFunction.TYPE_MACRO : VncFunction.TYPE_FUNCTION;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncVal.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

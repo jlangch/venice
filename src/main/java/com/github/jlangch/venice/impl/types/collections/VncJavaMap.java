@@ -93,15 +93,10 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	public VncKeyword getType() {
 		return new VncKeyword(value.getClass().getName());
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return new VncKeyword(value.getClass().getSuperclass().getName());
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
-		return Arrays.asList(getSupertype());
+		return Arrays.asList(new VncKeyword(value.getClass().getSuperclass().getName()));
 	}
 
 	@Override

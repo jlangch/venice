@@ -45,11 +45,6 @@ public class VncVolatile extends VncVal implements IDeref {
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncVal.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

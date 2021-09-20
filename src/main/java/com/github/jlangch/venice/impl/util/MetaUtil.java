@@ -23,15 +23,19 @@ package com.github.jlangch.venice.impl.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.util.function.Supplier;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.reader.Token;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -134,6 +138,25 @@ public class MetaUtil {
 	}
 	
 	
+	public static boolean isType(final VncVal meta) {
+		return getMetaVal(meta, MetaUtil.TYPE) != Nil;		
+	}
+
+	@SuppressWarnings("unchecked")
+	public static VncList getSupertypes(final VncVal meta) {
+		final VncVal supertypesSupplier = getMetaVal(meta, MetaUtil.SUPERTYPES);
+		return supertypesSupplier instanceof VncJavaObject 
+				? ((Supplier<VncList>)((VncJavaObject)supertypesSupplier).getDelegate()).get()
+				: VncList.empty();		
+	}
+
+	public static VncVal typeMeta(final Supplier<VncList> supertypesSupplier) {
+		return VncHashMap.of(
+					TYPE, VncBoolean.True, 
+					SUPERTYPES, new VncJavaObject(supertypesSupplier));	
+	}
+
+	
 	// Var documentation
 	public static final VncKeyword ARGLIST = new VncKeyword(":arglists"); 
 	public static final VncKeyword DOC = new VncKeyword(":doc"); 
@@ -149,4 +172,8 @@ public class MetaUtil {
 	public static final VncKeyword MACRO = new VncKeyword(":macro"); 
 	public static final VncKeyword NS = new VncKeyword(":ns"); 
     public static final VncKeyword PRIVATE = new VncKeyword(":private");
+
+	// Type info
+	public static final VncKeyword TYPE = new VncKeyword(":type*"); 
+	public static final VncKeyword SUPERTYPES = new VncKeyword(":supertypes*"); 
 }

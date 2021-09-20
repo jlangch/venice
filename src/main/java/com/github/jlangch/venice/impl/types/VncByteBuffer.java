@@ -69,12 +69,7 @@ public class VncByteBuffer extends VncVal {
 	public VncKeyword getType() {
 		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return isWrapped() ? TYPE : VncVal.TYPE;
-	}
-	
+		
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 

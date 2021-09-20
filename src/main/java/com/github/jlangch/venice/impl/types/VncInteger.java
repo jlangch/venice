@@ -86,11 +86,6 @@ public class VncInteger extends VncNumber {
 	}
 	
 	@Override
-	public VncKeyword getSupertype() {
-		return isWrapped() ? TYPE : super.getType();
-	}
-	
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return isWrapped() 
 				? Arrays.asList(TYPE, VncNumber.TYPE, VncVal.TYPE)

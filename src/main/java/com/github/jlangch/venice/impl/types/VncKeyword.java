@@ -187,11 +187,6 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 	}
 	
 	@Override
-	public VncKeyword getSupertype() {
-		return VncString.TYPE;
-	}
-	
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(VncString.TYPE, VncVal.TYPE);
 	}

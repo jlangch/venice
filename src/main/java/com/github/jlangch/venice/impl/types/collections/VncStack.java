@@ -60,11 +60,6 @@ public class VncStack extends VncCollection {
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncCollection.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {

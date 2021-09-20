@@ -53,11 +53,6 @@ public class VncConstant extends VncVal {
 	}
 	
 	@Override
-	public VncKeyword getSupertype() {
-		return VncVal.TYPE;
-	}
-	
-	@Override
 	public List<VncKeyword> getAllSupertypes() {
 		return Arrays.asList(VncVal.TYPE);
 	}

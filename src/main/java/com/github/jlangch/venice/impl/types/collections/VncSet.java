@@ -73,11 +73,6 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 	public VncKeyword getType() {
 		return TYPE;
 	}
-	
-	@Override
-	public VncKeyword getSupertype() {
-		return VncCollection.TYPE;
-	}
 
 	@Override
 	public List<VncKeyword> getAllSupertypes() {
