@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -102,12 +101,12 @@ public class VncHashSet extends VncSet {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncSet.TYPE, VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncSet.TYPE), 
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 	
 	@Override
@@ -233,7 +232,7 @@ public class VncHashSet extends VncSet {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/hash-set", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/hash-set";
 
 	private static final long serialVersionUID = -1848883965231344442L;
 

@@ -7619,7 +7619,7 @@ public class CoreFunctions {
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
-				return VncList.ofColl(Types.getSupertypes(args.first()));
+				return Types.getSupertypes(args.first());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

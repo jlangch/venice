@@ -1,8 +1,5 @@
 package com.github.jlangch.venice.impl.types.custom;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -25,17 +22,13 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 
 	@Override
 	public VncKeyword getType() {
-		return type;
+		return type.withMeta(
+				MetaUtil.typeMeta(new VncKeyword(VncVal.TYPE)));
 	}
 
 	@Override 
 	public TypeRank typeRank() {
 		return TypeRank.CUSTOM_TYPE_DEF;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncVal.TYPE);
 	}
 	
 	@Override

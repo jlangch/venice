@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.custom;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -95,16 +94,12 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public VncKeyword getType() {
-		return type;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(
-					TYPE, 
-					VncMap.TYPE,
-					VncCollection.TYPE,
-					VncVal.TYPE);
+		return type.withMeta(
+						MetaUtil.typeMeta(
+							new VncKeyword(VncCustomType.TYPE), 
+							new VncKeyword(VncMap.TYPE),
+							new VncKeyword(VncCollection.TYPE),
+							new VncKeyword(VncVal.TYPE)));
 	}
 
 	public VncCustomTypeDef getTypeDef() {
@@ -279,10 +274,10 @@ public class VncCustomType extends VncMap {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/custom-type", MetaUtil.typeMeta());
-		
 	private static final long serialVersionUID = -1848883965231344442L;
 	
+	public static final String TYPE = ":core/custom-type";
+
 	private final VncKeyword type;
 	private final VncCustomTypeDef typeDef;
 	private final VncMap values;

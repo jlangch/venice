@@ -22,12 +22,12 @@
 package com.github.jlangch.venice.impl.types;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncMultiArityFunction extends VncFunction {
@@ -73,12 +73,10 @@ public class VncMultiArityFunction extends VncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return isMacro() ? VncFunction.TYPE_MACRO : VncFunction.TYPE_FUNCTION;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncVal.TYPE);
+		return new VncKeyword(
+					isMacro() ? TYPE_MACRO : TYPE_FUNCTION, 
+					MetaUtil.typeMeta(
+						new VncKeyword(VncVal.TYPE)));
 	}
 
 	@Override

@@ -23,11 +23,15 @@ package com.github.jlangch.venice.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class MetaUtilTest {
@@ -82,6 +86,27 @@ public class MetaUtilTest {
 	@Test
 	public void testGetNamespaceNillMeta() {
 		assertNull(MetaUtil.getNamespace(Constants.Nil));
+	}
+	
+	@Test
+	public void testIsType_1() {
+		final VncVal meta = MetaUtil.typeMeta();
+		assertTrue(MetaUtil.isType(meta));
+	}
+	
+	@Test
+	public void testIsType_2() {
+		final VncVal meta = MetaUtil.typeMeta(new VncKeyword("core/val"));
+		assertTrue(MetaUtil.isType(meta));
+	}
+	
+	@Test
+	public void testSuperTypes() {
+		final VncVal meta = MetaUtil.typeMeta(new VncKeyword("core/val"));
+		final VncVal types = MetaUtil.getMetaVal(meta, MetaUtil.SUPERTYPES);
+		assertTrue(types instanceof VncList);
+		assertEquals(1, ((VncList)types).size());
+		assertEquals(":core/val", ((VncList)types).first().toString(true));
 	}
 
 }

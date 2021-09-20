@@ -108,19 +108,18 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(delegate.getClass().getName(), MetaUtil.typeMeta());
-	}
+		final Class<?> type = delegate.getClass();
 
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		final List<VncKeyword> list = new ArrayList<>();
-		
-		Class<?> superClass = delegate.getClass().getSuperclass();
+		final List<VncKeyword> superclasses = new ArrayList<>();
+		Class<?> superClass = type.getSuperclass();
 		while(superClass != null) {
-			list.add(new VncKeyword(superClass.getName(), MetaUtil.typeMeta()));
+			superclasses.add(new VncKeyword(superClass.getName(), MetaUtil.typeMeta()));
 		    superClass = superClass.getSuperclass();
 		}
-		return list;
+		
+		return new VncKeyword(
+					type.getName(), 
+					MetaUtil.typeMeta(superclasses.toArray(new VncKeyword[0])));
 	}
 
 	public VncJavaObject castTo(final Class<?> clazz) {

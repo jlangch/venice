@@ -130,12 +130,12 @@ public class VncOrderedMap extends VncMap {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncMap.TYPE, VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncMap.TYPE), 
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 	
 	@Override
@@ -298,7 +298,7 @@ public class VncOrderedMap extends VncMap {
 	}
 		
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/ordered-map", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/ordered-map";
 
     private static final long serialVersionUID = -1848883965231344442L;
 

@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -67,12 +66,11 @@ public class VncQueue extends VncCollection {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 
 	@Override
@@ -229,7 +227,7 @@ public class VncQueue extends VncCollection {
 	}
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/queue", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/queue";
 
 	private static final long serialVersionUID = -564531670922145260L;
 

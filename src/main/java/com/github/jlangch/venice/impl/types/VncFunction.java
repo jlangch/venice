@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.types;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -104,12 +103,10 @@ public abstract class VncFunction
 	
 	@Override
 	public VncKeyword getType() {
-		return isMacro() ? TYPE_MACRO : TYPE_FUNCTION;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncVal.TYPE);
+		return new VncKeyword(
+					isMacro() ? TYPE_MACRO : TYPE_FUNCTION, 
+					MetaUtil.typeMeta(
+						new VncKeyword(VncVal.TYPE)));
 	}
 
 	@Override
@@ -349,8 +346,8 @@ public abstract class VncFunction
 
 	
 	
-    public static final VncKeyword TYPE_FUNCTION = new VncKeyword(":core/function", MetaUtil.typeMeta());
-    public static final VncKeyword TYPE_MACRO = new VncKeyword(":core/macro", MetaUtil.typeMeta());
+    public static final String TYPE_FUNCTION = ":core/function";
+    public static final String TYPE_MACRO = ":core/macro";
 
     private static final long serialVersionUID = -1848883965231344442L;
 

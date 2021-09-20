@@ -26,6 +26,8 @@ import java.util.Set;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJust;
@@ -39,14 +41,16 @@ public class CustomWrappableTypes {
 
 	public CustomWrappableTypes() {
 		types = CollectionUtil.toSet(
-					VncBoolean.TYPE,
-					VncString.TYPE,
-					VncLong.TYPE,
-					VncInteger.TYPE,
-					VncDouble.TYPE,
-					VncBigDecimal.TYPE,
-					VncBigInteger.TYPE,
-					VncJust.TYPE);
+					new VncKeyword(VncBoolean.TYPE),
+					new VncKeyword(VncChar.TYPE),
+					new VncKeyword(VncString.TYPE),
+					new VncKeyword(VncLong.TYPE),
+					new VncKeyword(VncInteger.TYPE),
+					new VncKeyword(VncDouble.TYPE),
+					new VncKeyword(VncBigDecimal.TYPE),
+					new VncKeyword(VncBigInteger.TYPE),
+					new VncKeyword(VncByteBuffer.TYPE),
+					new VncKeyword(VncJust.TYPE));
 	}
 
 	public boolean isWrappable(final VncKeyword type) {

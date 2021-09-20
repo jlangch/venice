@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -71,14 +68,15 @@ public class VncBoolean extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return isWrapped() 
-				? Arrays.asList(TYPE, VncVal.TYPE)
-				: Arrays.asList(VncVal.TYPE);
+		return isWrapped() ?  new VncKeyword(
+									getWrappingTypeDef().getType().getQualifiedName(),
+									MetaUtil.typeMeta(
+											new VncKeyword(VncBoolean.TYPE), 
+											new VncKeyword(VncVal.TYPE)))
+						   : new VncKeyword(
+									VncBoolean.TYPE, 
+									MetaUtil.typeMeta(
+										new VncKeyword(VncVal.TYPE)));
 	}
 
 	public Boolean getValue() { 
@@ -134,7 +132,7 @@ public class VncBoolean extends VncVal {
 	public static final VncBoolean True = new VncBoolean(true);
 	public static final VncBoolean False = new VncBoolean(false);
     
-    public static final VncKeyword TYPE = new VncKeyword(":core/boolean", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/boolean";
 
     private static final long serialVersionUID = -1848883965231344442L;
 

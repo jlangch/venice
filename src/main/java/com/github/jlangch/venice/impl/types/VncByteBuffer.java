@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.types;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -68,14 +67,15 @@ public class VncByteBuffer extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
-	}
-		
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return isWrapped() 
-				? Arrays.asList(TYPE, VncVal.TYPE)
-				: Arrays.asList(VncVal.TYPE);
+		return isWrapped() ?  new VncKeyword(
+									getWrappingTypeDef().getType().getQualifiedName(),
+									MetaUtil.typeMeta(
+											new VncKeyword(VncByteBuffer.TYPE), 
+											new VncKeyword(VncVal.TYPE)))
+						   : new VncKeyword(
+									VncByteBuffer.TYPE, 
+									MetaUtil.typeMeta(
+										new VncKeyword(VncVal.TYPE)));
 	}
 
 	public ByteBuffer getValue() { 
@@ -167,7 +167,7 @@ public class VncByteBuffer extends VncVal {
 	}
 
 
-    public static final VncKeyword TYPE = new VncKeyword(":core/bytebuf", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/bytebuf";
 
 	private static final long serialVersionUID = -1848883965231344442L;
 

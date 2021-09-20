@@ -126,11 +126,6 @@ public class VncTinyList extends VncList {
 		return super.getType();
 	}
 
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return super.getSupertypes();
-	}
-
     @Override
     public Iterator<VncVal> iterator() {
         return isEmpty() ? EmptyIterator.empty() : new MappingIterator(this);
@@ -659,7 +654,6 @@ public class VncTinyList extends VncList {
 	}
 
 	
-	public static final VncKeyword TYPE = VncList.TYPE;
 	public static final VncTinyList EMPTY = new VncTinyList();
 	public static final int MAX_ELEMENTS = 4;
 

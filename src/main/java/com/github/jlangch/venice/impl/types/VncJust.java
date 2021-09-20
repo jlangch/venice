@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -69,14 +66,15 @@ public class VncJust extends VncVal implements IDeref {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return isWrapped() 
-				? Arrays.asList(TYPE, VncVal.TYPE)
-				: Arrays.asList(VncVal.TYPE);
+		return isWrapped() ?  new VncKeyword(
+									getWrappingTypeDef().getType().getQualifiedName(),
+									MetaUtil.typeMeta(
+											new VncKeyword(VncJust.TYPE), 
+											new VncKeyword(VncVal.TYPE)))
+						   : new VncKeyword(
+									VncJust.TYPE, 
+									MetaUtil.typeMeta(
+										new VncKeyword(VncVal.TYPE)));
 	}
 
 	@Override 
@@ -136,7 +134,7 @@ public class VncJust extends VncVal implements IDeref {
 	}
 	
 
-    public static final VncKeyword TYPE = new VncKeyword(":core/just", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/just";
 
     private static final long serialVersionUID = -1848883965231344442L;
  

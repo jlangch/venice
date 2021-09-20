@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -35,8 +34,8 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncSet extends VncCollection implements IVncFunction, Iterable<VncVal> {
@@ -72,12 +71,11 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 
 	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
@@ -118,7 +116,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 	}
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/set", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/set";
 
     private static final long serialVersionUID = -1848883965231344442L;
 }

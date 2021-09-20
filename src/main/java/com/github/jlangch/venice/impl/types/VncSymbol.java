@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -101,12 +98,10 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncVal.TYPE)));
 	}
 
 	public String getName() { 
@@ -194,7 +189,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/symbol", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/symbol";
 
     private static final long serialVersionUID = -1848883965231344442L;
 

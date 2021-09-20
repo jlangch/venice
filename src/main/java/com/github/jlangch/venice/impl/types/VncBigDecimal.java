@@ -24,8 +24,6 @@ package com.github.jlangch.venice.impl.types;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.List;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
@@ -83,14 +81,17 @@ public class VncBigDecimal extends VncNumber {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() ? getWrappingTypeDef().getType() : TYPE;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return isWrapped() 
-				? Arrays.asList(TYPE, VncNumber.TYPE, VncVal.TYPE)
-				: Arrays.asList(VncNumber.TYPE, VncVal.TYPE);
+		return isWrapped() ? new VncKeyword(
+								getWrappingTypeDef().getType().getQualifiedName(),
+								MetaUtil.typeMeta(
+											new VncKeyword(VncBigDecimal.TYPE), 
+											new VncKeyword(VncNumber.TYPE), 
+											new VncKeyword(VncVal.TYPE)))
+						   : new VncKeyword(
+									VncBigDecimal.TYPE, 
+									MetaUtil.typeMeta(
+										new VncKeyword(VncNumber.TYPE), 
+										new VncKeyword(VncVal.TYPE)));
 	}
 	
 	public VncBigDecimal negate() { 
@@ -193,7 +194,7 @@ public class VncBigDecimal extends VncNumber {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/decimal", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/decimal";
 
     private static final long serialVersionUID = -1848883965231344442L;
 

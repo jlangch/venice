@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -138,11 +139,20 @@ public class MetaUtil {
 		return getMetaVal(meta, MetaUtil.TYPE) != Nil;		
 	}
 
-	public static VncVal typeMeta() {
-		return VncHashMap.of(TYPE, VncBoolean.True);	
+	public static VncVal typeMeta(final VncKeyword... supertypes) {
+		return VncHashMap.of(
+					TYPE, VncBoolean.True, 
+					SUPERTYPES, supertypes == null 
+									? VncList.empty() 
+									: VncList.of(supertypes));	
+	}
+	
+	public static VncList getSupertypes(final VncVal meta) {	
+		final VncVal v = getMetaVal(meta, MetaUtil.SUPERTYPES);
+		return v instanceof VncList ? (VncList)v : VncList.empty();
 	}
 
-	
+
 	// Var documentation
 	public static final VncKeyword ARGLIST = new VncKeyword(":arglists"); 
 	public static final VncKeyword DOC = new VncKeyword(":doc"); 
@@ -160,5 +170,6 @@ public class MetaUtil {
     public static final VncKeyword PRIVATE = new VncKeyword(":private");
 
 	// Type info
-	public static final VncKeyword TYPE = new VncKeyword(":type*"); 
+	public static final VncKeyword TYPE = new VncKeyword(":type_"); 
+	public static final VncKeyword SUPERTYPES = new VncKeyword(":supertypes_"); 
 }

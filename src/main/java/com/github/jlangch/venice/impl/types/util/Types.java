@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.types.util;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.Namespaces;
@@ -77,6 +76,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class Types {
 
@@ -282,13 +282,13 @@ public class Types {
 		return val.getType();
 	}
 
-	public static VncKeyword getSupertype(final VncVal val) {
-		final List<VncKeyword> types = val.getSupertypes();
-		return types.isEmpty() ? null : types.get(0);
+	public static VncVal getSupertype(final VncVal val) {
+		// may not have a supertype -> return nil
+		return MetaUtil.getSupertypes(val.getType().getMeta()).first();
 	}
 
-	public static List<VncKeyword> getSupertypes(final VncVal val) {
-		return val.getSupertypes();
+	public static VncList getSupertypes(final VncVal val) {
+		return MetaUtil.getSupertypes(val.getType().getMeta());
 	}
 
 	public static boolean isInstanceOf(final VncKeyword type, final VncVal val) {
@@ -351,7 +351,7 @@ public class Types {
 						if (((VncCustomType)val).getType().equals(type)) {
 							return true;
 						}
-						else if (((VncCustomType)val).getSupertypes().contains(type)) {
+						else if (getSupertypes(val).getJavaList().contains(type)) {
 							return true;
 						}
 						else if (val.isWrapped()) {

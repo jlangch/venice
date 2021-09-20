@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.Constants;
@@ -65,12 +64,10 @@ public class VncMapEntry extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncVal.TYPE)));
 	}
 	
 	@Override 
@@ -100,7 +97,7 @@ public class VncMapEntry extends VncVal {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/map-entry", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/map-entry";
 
     private static final long serialVersionUID = 7943559441888855596L;
 	

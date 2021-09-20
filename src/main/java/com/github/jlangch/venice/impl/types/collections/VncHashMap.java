@@ -137,12 +137,12 @@ public class VncHashMap extends VncMap {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncMap.TYPE, VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncMap.TYPE), 
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 	
 	@Override
@@ -343,7 +343,7 @@ public class VncHashMap extends VncMap {
 	}
 	
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/hash-map", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/hash-map";
 
 	public static final VncHashMap EMPTY = new VncHashMap();
 

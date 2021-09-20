@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
@@ -132,12 +131,12 @@ public class VncLazySeq extends VncSequence {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncSequence.TYPE, VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncSequence.TYPE), 
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 
     @Override
@@ -380,7 +379,7 @@ public class VncLazySeq extends VncSequence {
 
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/lazyseq";
 
 	private static final long serialVersionUID = -1848883965231344442L;
  

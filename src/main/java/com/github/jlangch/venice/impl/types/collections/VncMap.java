@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +33,8 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncMap extends VncCollection implements IVncFunction {
@@ -88,12 +87,11 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncCollection.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 	
 	public abstract Map<VncVal,VncVal> getJavaMap();
@@ -133,7 +131,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/map", MetaUtil.typeMeta());
+	public static final String TYPE = ":core/map";
 
 	private static final long serialVersionUID = -1848883965231344442L;
 }

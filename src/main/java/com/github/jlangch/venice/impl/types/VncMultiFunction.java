@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.VncException;
@@ -52,12 +50,11 @@ public class VncMultiFunction extends VncFunction {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncFunction.TYPE_FUNCTION, VncVal.TYPE);
+		return new VncKeyword(
+						":core/multi-function", 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncFunction.TYPE_FUNCTION),
+							new VncKeyword(VncVal.TYPE)));
 	}
 	
 	public VncMultiFunction addFn(final VncVal dispatchVal, final VncFunction fn) {
@@ -137,7 +134,7 @@ public class VncMultiFunction extends VncFunction {
 	}
 	
 
-    public static final VncKeyword TYPE = new VncKeyword(":core/multi-function", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/multi-function";
 
 	private static final long serialVersionUID = -1848883965231344442L;
 	

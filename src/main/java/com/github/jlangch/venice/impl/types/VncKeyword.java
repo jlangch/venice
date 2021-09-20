@@ -21,9 +21,6 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -31,8 +28,8 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncKeyword extends VncString implements IVncFunction, INamespaceAware {
@@ -81,14 +78,6 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		this.namespace = namespace;
 		this.simpleName = simpleName;
 		this.qualifiedName = qualifiedName;
-	}
-
-	private VncKeyword(final String[] elements, final VncVal meta) { 
-		super(elements[2], meta);
-
-		this.namespace = elements[0];
-		this.simpleName = elements[1];
-		this.qualifiedName = elements[2];
 	}
 
 	private VncKeyword(final VncKeyword other, final VncVal meta) { 
@@ -184,12 +173,11 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncString.TYPE, VncVal.TYPE);
+		return new VncKeyword(
+						":core/keyword", 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncString.TYPE), 
+							new VncKeyword(VncVal.TYPE)));
 	}
 
 	@Override
@@ -286,7 +274,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		}
 	}
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/keyword", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/keyword";
 	
     private static final long serialVersionUID = -1848883965231344442L;
     

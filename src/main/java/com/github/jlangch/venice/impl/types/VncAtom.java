@@ -23,8 +23,6 @@ package com.github.jlangch.venice.impl.types;
 
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.VncException;
@@ -60,12 +58,10 @@ public class VncAtom extends VncVal implements IDeref {
 	
 	@Override
 	public VncKeyword getType() {
-		return TYPE;
-	}
-	
-	@Override
-	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(VncVal.TYPE);
+		return new VncKeyword(
+						TYPE, 
+						MetaUtil.typeMeta(
+							new VncKeyword(VncVal.TYPE)));
 	}
 
 	public VncVal reset(final VncVal newVal) {
@@ -171,7 +167,7 @@ public class VncAtom extends VncVal implements IDeref {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/atom", MetaUtil.typeMeta());
+    public static final String TYPE = ":core/atom";
 	
     private static final long serialVersionUID = -1848883965231344442L;
 	
