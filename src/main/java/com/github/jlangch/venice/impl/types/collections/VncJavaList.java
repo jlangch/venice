@@ -120,7 +120,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(new VncKeyword(value.getClass().getSuperclass().getName()));
 	}
 

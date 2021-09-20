@@ -98,7 +98,7 @@ public class VncMutableSet extends VncSet {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncSet.TYPE, VncCollection.TYPE, VncVal.TYPE);
 	}
 	

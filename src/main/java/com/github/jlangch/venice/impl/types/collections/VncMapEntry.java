@@ -68,7 +68,7 @@ public class VncMapEntry extends VncVal {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncVal.TYPE);
 	}
 	

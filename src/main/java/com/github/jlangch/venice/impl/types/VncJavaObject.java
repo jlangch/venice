@@ -111,7 +111,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		final List<VncKeyword> list = new ArrayList<>();
 		
 		Class<?> superClass = delegate.getClass().getSuperclass();

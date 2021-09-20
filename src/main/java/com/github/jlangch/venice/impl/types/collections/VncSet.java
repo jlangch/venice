@@ -75,7 +75,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 

@@ -127,8 +127,8 @@ public class VncTinyList extends VncList {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
-		return super.getAllSupertypes();
+	public List<VncKeyword> getSupertypes() {
+		return super.getSupertypes();
 	}
 
     @Override

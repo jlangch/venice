@@ -108,7 +108,7 @@ public abstract class VncFunction
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncVal.TYPE);
 	}
 

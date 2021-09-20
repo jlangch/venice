@@ -91,7 +91,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 	

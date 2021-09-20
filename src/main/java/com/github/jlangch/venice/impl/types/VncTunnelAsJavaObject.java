@@ -37,7 +37,7 @@ public class VncTunnelAsJavaObject extends VncJavaObject {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncVal.TYPE);
 	}
 

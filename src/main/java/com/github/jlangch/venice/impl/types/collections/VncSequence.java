@@ -59,7 +59,7 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncCollection.TYPE, VncVal.TYPE);
 	}
 

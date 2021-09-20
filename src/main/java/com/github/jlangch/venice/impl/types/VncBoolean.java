@@ -74,7 +74,7 @@ public class VncBoolean extends VncVal {
 	}
 	
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return isWrapped() 
 				? Arrays.asList(TYPE, VncVal.TYPE)
 				: Arrays.asList(VncVal.TYPE);

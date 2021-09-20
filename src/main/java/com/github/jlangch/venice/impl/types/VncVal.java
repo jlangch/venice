@@ -56,7 +56,7 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	
 	public abstract VncKeyword getType();
 	
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList();
 	}
 	

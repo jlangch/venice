@@ -55,7 +55,7 @@ public class VncMultiFunction extends VncFunction {
 	}
 
 	@Override
-	public List<VncKeyword> getAllSupertypes() {
+	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList(VncFunction.TYPE_FUNCTION, VncVal.TYPE);
 	}
 	

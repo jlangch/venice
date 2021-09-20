@@ -283,12 +283,12 @@ public class Types {
 	}
 
 	public static VncKeyword getSupertype(final VncVal val) {
-		final List<VncKeyword> types = val.getAllSupertypes();
+		final List<VncKeyword> types = val.getSupertypes();
 		return types.isEmpty() ? null : types.get(0);
 	}
 
 	public static List<VncKeyword> getSupertypes(final VncVal val) {
-		return val.getAllSupertypes();
+		return val.getSupertypes();
 	}
 
 	public static boolean isInstanceOf(final VncKeyword type, final VncVal val) {
@@ -351,7 +351,7 @@ public class Types {
 						if (((VncCustomType)val).getType().equals(type)) {
 							return true;
 						}
-						else if (((VncCustomType)val).getAllSupertypes().contains(type)) {
+						else if (((VncCustomType)val).getSupertypes().contains(type)) {
 							return true;
 						}
 						else if (val.isWrapped()) {
