@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncVector extends VncSequence implements IVncFunction {
@@ -407,7 +408,7 @@ public class VncVector extends VncSequence implements IVncFunction {
 	}
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/vector");
+	public static final VncKeyword TYPE = new VncKeyword(":core/vector", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 

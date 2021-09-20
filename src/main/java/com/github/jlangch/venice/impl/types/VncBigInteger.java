@@ -29,6 +29,7 @@ import java.util.List;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncBigInteger extends VncNumber {
@@ -189,7 +190,7 @@ public class VncBigInteger extends VncNumber {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/bigint");
+    public static final VncKeyword TYPE = new VncKeyword(":core/bigint", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 

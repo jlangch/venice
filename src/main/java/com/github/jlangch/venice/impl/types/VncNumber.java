@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncNumber extends VncVal {
@@ -61,7 +62,7 @@ public abstract class VncNumber extends VncVal {
 	public abstract BigDecimal toJavaBigDecimal();
 	public abstract BigDecimal toJavaBigDecimal(final int scale);
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/number");
+	public static final VncKeyword TYPE = new VncKeyword(":core/number", MetaUtil.typeMeta());
 	
     private static final long serialVersionUID = -1848883965231344442L;
 }

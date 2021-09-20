@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncJust extends VncVal implements IDeref {
@@ -135,7 +136,7 @@ public class VncJust extends VncVal implements IDeref {
 	}
 	
 
-    public static final VncKeyword TYPE = new VncKeyword(":core/just");
+    public static final VncKeyword TYPE = new VncKeyword(":core/just", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
  

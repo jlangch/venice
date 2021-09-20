@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncQueue extends VncCollection {
@@ -228,7 +229,7 @@ public class VncQueue extends VncCollection {
 	}
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/queue");
+	public static final VncKeyword TYPE = new VncKeyword(":core/queue", MetaUtil.typeMeta());
 
 	private static final long serialVersionUID = -564531670922145260L;
 

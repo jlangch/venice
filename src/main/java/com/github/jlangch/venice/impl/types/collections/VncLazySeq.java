@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.vavr.Streams;
 
 import io.vavr.collection.Stream;
@@ -379,7 +380,7 @@ public class VncLazySeq extends VncSequence {
 
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq");
+	public static final VncKeyword TYPE = new VncKeyword(":core/lazyseq", MetaUtil.typeMeta());
 
 	private static final long serialVersionUID = -1848883965231344442L;
  

@@ -29,6 +29,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -200,7 +201,7 @@ public class VncString extends VncVal {
     
     public static final VncString EMPTY = new VncString("");
     
-    public static final VncKeyword TYPE = new VncKeyword(":core/string");
+    public static final VncKeyword TYPE = new VncKeyword(":core/string", MetaUtil.typeMeta());
 
     
     private static final long serialVersionUID = -1848883965231344442L;

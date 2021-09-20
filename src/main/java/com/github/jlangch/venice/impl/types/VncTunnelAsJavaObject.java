@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.types;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.util.MetaUtil;
+
 public class VncTunnelAsJavaObject extends VncJavaObject {
 	public VncTunnelAsJavaObject(final VncVal val) {
 		super(null);
@@ -52,7 +54,7 @@ public class VncTunnelAsJavaObject extends VncJavaObject {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/tunneled-java-object");
+	public static final VncKeyword TYPE = new VncKeyword(":core/tunneled-java-object", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
     

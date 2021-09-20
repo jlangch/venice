@@ -54,7 +54,9 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	
 	public abstract VncVal withMeta(final VncVal meta);
 	
-	public abstract VncKeyword getType();
+	public VncKeyword getType() {
+		return TYPE;
+	}
 	
 	public List<VncKeyword> getSupertypes() {
 		return Arrays.asList();
@@ -136,7 +138,7 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 	}
 	
     
-    public static final VncKeyword TYPE = new VncKeyword(":core/val");
+    public static final VncKeyword TYPE = new VncKeyword(":core/val", MetaUtil.typeMeta());
  	
     private static final long serialVersionUID = -1848883965231344442L;
 

@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncCustomType extends VncMap {
@@ -278,7 +279,7 @@ public class VncCustomType extends VncMap {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/custom-type");
+	public static final VncKeyword TYPE = new VncKeyword(":core/custom-type", MetaUtil.typeMeta());
 		
 	private static final long serialVersionUID = -1848883965231344442L;
 	

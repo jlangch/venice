@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
@@ -216,7 +217,10 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		return namespace != null;
 	}
 	
-	
+	public boolean isTypeName() {
+		return MetaUtil.isType(getMeta());
+	}
+
 	public VncSymbol toSymbol() {
 		return new VncSymbol(qualifiedName);
 	}
@@ -282,7 +286,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		}
 	}
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/keyword");
+    public static final VncKeyword TYPE = new VncKeyword(":core/keyword", MetaUtil.typeMeta());
 	
     private static final long serialVersionUID = -1848883965231344442L;
     

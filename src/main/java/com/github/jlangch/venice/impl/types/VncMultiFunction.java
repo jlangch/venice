@@ -29,6 +29,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncMultiFunction extends VncFunction {
@@ -136,7 +137,7 @@ public class VncMultiFunction extends VncFunction {
 	}
 	
 
-    public static final VncKeyword TYPE = new VncKeyword(":core/multi-function");
+    public static final VncKeyword TYPE = new VncKeyword(":core/multi-function", MetaUtil.typeMeta());
 
 	private static final long serialVersionUID = -1848883965231344442L;
 	

@@ -171,7 +171,7 @@ public class VncAtom extends VncVal implements IDeref {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/atom");
+    public static final VncKeyword TYPE = new VncKeyword(":core/atom", MetaUtil.typeMeta());
 	
     private static final long serialVersionUID = -1848883965231344442L;
 	

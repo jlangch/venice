@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 
@@ -297,7 +298,7 @@ public class VncOrderedMap extends VncMap {
 	}
 		
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/ordered-map");
+	public static final VncKeyword TYPE = new VncKeyword(":core/ordered-map", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 

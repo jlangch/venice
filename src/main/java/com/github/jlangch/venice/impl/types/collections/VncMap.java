@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
@@ -132,7 +133,7 @@ public abstract class VncMap extends VncCollection implements IVncFunction {
 	}
 
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/map");
+	public static final VncKeyword TYPE = new VncKeyword(":core/map", MetaUtil.typeMeta());
 
 	private static final long serialVersionUID = -1848883965231344442L;
 }

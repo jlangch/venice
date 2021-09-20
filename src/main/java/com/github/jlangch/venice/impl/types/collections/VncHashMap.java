@@ -343,7 +343,7 @@ public class VncHashMap extends VncMap {
 	}
 	
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/hash-map");
+	public static final VncKeyword TYPE = new VncKeyword(":core/hash-map", MetaUtil.typeMeta());
 
 	public static final VncHashMap EMPTY = new VncHashMap();
 

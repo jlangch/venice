@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 
@@ -131,7 +132,7 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 
 	
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/sequence");
+	public static final VncKeyword TYPE = new VncKeyword(":core/sequence", MetaUtil.typeMeta());
 
 	private static final long serialVersionUID = -1848883965231344442L;
 }

@@ -27,6 +27,7 @@ import java.util.List;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncCollection extends VncVal {
@@ -68,7 +69,7 @@ public abstract class VncCollection extends VncVal {
 	public abstract boolean isEmpty();
 	
 	
-	public static final VncKeyword TYPE = new VncKeyword(":core/collection");
+	public static final VncKeyword TYPE = new VncKeyword(":core/collection", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 }

@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncThreadLocal extends VncVal {
@@ -188,7 +189,7 @@ public class VncThreadLocal extends VncVal {
 			   || "*err*".equals(key.getSimpleName());
 	}
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/thread-local");
+	public static final VncKeyword TYPE = new VncKeyword(":core/thread-local", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 }

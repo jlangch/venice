@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -107,7 +108,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(delegate.getClass().getName());
+		return new VncKeyword(delegate.getClass().getName(), MetaUtil.typeMeta());
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 		
 		Class<?> superClass = delegate.getClass().getSuperclass();
 		while(superClass != null) {
-			list.add(new VncKeyword(superClass.getName()));
+			list.add(new VncKeyword(superClass.getName(), MetaUtil.typeMeta()));
 		    superClass = superClass.getSuperclass();
 		}
 		return list;

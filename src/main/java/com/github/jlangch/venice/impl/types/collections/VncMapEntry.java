@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncMapEntry extends VncVal {
@@ -99,7 +100,7 @@ public class VncMapEntry extends VncVal {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/map-entry");
+    public static final VncKeyword TYPE = new VncKeyword(":core/map-entry", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = 7943559441888855596L;
 	

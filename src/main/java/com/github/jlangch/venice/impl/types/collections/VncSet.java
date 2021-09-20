@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 
 
@@ -117,7 +118,7 @@ public abstract class VncSet extends VncCollection implements IVncFunction, Iter
 	}
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/set");
+	public static final VncKeyword TYPE = new VncKeyword(":core/set", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 }

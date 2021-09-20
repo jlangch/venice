@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
@@ -132,7 +133,7 @@ public class VncChar extends VncVal {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/char");
+    public static final VncKeyword TYPE = new VncKeyword(":core/char", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 

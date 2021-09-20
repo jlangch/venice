@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncStack extends VncCollection {
@@ -131,7 +132,7 @@ public class VncStack extends VncCollection {
 	}
 
 
-	public static final VncKeyword TYPE = new VncKeyword(":core/stack");
+	public static final VncKeyword TYPE = new VncKeyword(":core/stack", MetaUtil.typeMeta());
 
 	private static final long serialVersionUID = -564531670922145260L;
 

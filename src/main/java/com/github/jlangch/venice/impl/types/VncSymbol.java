@@ -27,6 +27,7 @@ import java.util.List;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncSymbol extends VncVal implements INamespaceAware {
@@ -193,7 +194,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	}
 
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/symbol");
+    public static final VncKeyword TYPE = new VncKeyword(":core/symbol", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 

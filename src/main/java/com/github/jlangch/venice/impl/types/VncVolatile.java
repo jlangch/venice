@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncVolatile extends VncVal implements IDeref {
@@ -87,7 +88,7 @@ public class VncVolatile extends VncVal implements IDeref {
 	}
 	
 	
-    public static final VncKeyword TYPE = new VncKeyword(":core/volatile");
+    public static final VncKeyword TYPE = new VncKeyword(":core/volatile", MetaUtil.typeMeta());
 	
     private static final long serialVersionUID = -1848883965231344442L;
 	

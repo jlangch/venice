@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class VncConstant extends VncVal {
@@ -128,7 +129,7 @@ public class VncConstant extends VncVal {
 	}
    
 	
-    public static final VncKeyword TYPE_NIL = new VncKeyword(":core/nil");
+    public static final VncKeyword TYPE_NIL = new VncKeyword(":core/nil", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 

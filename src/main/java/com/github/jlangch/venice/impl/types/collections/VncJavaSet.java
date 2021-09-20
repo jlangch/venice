@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.EmptyIterator;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
@@ -109,12 +110,12 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 	
 	@Override
 	public VncKeyword getType() {
-		return new VncKeyword(value.getClass().getName());
+		return new VncKeyword(value.getClass().getName(), MetaUtil.typeMeta());
 	}
 
 	@Override
 	public List<VncKeyword> getSupertypes() {
-		return Arrays.asList(new VncKeyword(value.getClass().getSuperclass().getName()));
+		return Arrays.asList(new VncKeyword(value.getClass().getSuperclass().getName(), MetaUtil.typeMeta()));
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncCustomBaseTypeDef extends VncVal {
@@ -14,7 +15,7 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 	public VncCustomBaseTypeDef(final VncKeyword type) {	
 		super(Constants.Nil);
 		
-		this.type = type;
+		this.type = type.withMeta(MetaUtil.typeMeta());
 	}
 	
 	@Override

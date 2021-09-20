@@ -349,8 +349,8 @@ public abstract class VncFunction
 
 	
 	
-    public static final VncKeyword TYPE_FUNCTION = new VncKeyword(":core/function");
-    public static final VncKeyword TYPE_MACRO = new VncKeyword(":core/macro");
+    public static final VncKeyword TYPE_FUNCTION = new VncKeyword(":core/function", MetaUtil.typeMeta());
+    public static final VncKeyword TYPE_MACRO = new VncKeyword(":core/macro", MetaUtil.typeMeta());
 
     private static final long serialVersionUID = -1848883965231344442L;
 
