@@ -95,6 +95,8 @@ test {
 
 [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
 
+[Experts Talk](https://m.youtube.com/watch?v=wASCH_gPnDw&list=FLja1emBmXUue0Jtah4OYYzw&index=18)
+
 [Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
 
 
