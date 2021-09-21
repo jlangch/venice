@@ -17,6 +17,7 @@ and this project adheres to
 - the module `:config` to simplify application configuration
 - support for `java.net.URL` and `java.net.URI` with `io/slurp` and `io/slurp-lines`
 - improvements to cheatsheet rendering for inline code sections
+- multimethods to support `isa?` semantic when dispatching on data types
 
 
 

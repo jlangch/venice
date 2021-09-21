@@ -51,7 +51,7 @@ public class VncMultiFunction extends VncFunction {
 	@Override
 	public VncKeyword getType() {
 		return new VncKeyword(
-						":core/multi-function", 
+						TYPE, 
 						MetaUtil.typeMeta(
 							new VncKeyword(VncFunction.TYPE_FUNCTION),
 							new VncKeyword(VncVal.TYPE)));
@@ -101,11 +101,27 @@ public class VncMultiFunction extends VncFunction {
 	public VncFunction getFunctionForArgs(final VncList args) {
 		final VncVal dispatchVal = discriminatorFn.apply(args);
 		
+		// equal?
 		final VncFunction fn = functions.get(dispatchVal);
 		if (fn != null) {
 			return fn;
 		}
 
+		// isa?
+		if (isTypeKeyword(dispatchVal)) {
+			final VncKeyword type = (VncKeyword)dispatchVal;			
+			final VncVal fn_ = MetaUtil
+								.getSupertypes(type.getMeta())
+								.map(t -> functions.get(t))
+								.filter(f -> f != null)
+								.first();
+			
+			if (fn_ != Constants.Nil) {
+				return (VncFunction)fn_;
+			}
+		}
+		
+		// default
 		final VncFunction defaultFn = functions.get(DEFAULT_METHOD);
 		if (defaultFn != null) {
 			return defaultFn;
@@ -133,7 +149,11 @@ public class VncMultiFunction extends VncFunction {
 		return "multi-fn " + getQualifiedName();
 	}
 	
-
+	private boolean isTypeKeyword(final VncVal val) {
+		return (val instanceof VncKeyword) && MetaUtil.isType(val.getMeta());
+	}
+	
+	
     public static final String TYPE = ":core/multi-function";
 
 	private static final long serialVersionUID = -1848883965231344442L;

@@ -47,7 +47,7 @@ public abstract class VncCollection extends VncVal {
 	@Override
 	public VncKeyword getType() {
 		return new VncKeyword(
-						":core/collection", 
+						TYPE, 
 						MetaUtil.typeMeta(
 							new VncKeyword(VncVal.TYPE)));
 	}

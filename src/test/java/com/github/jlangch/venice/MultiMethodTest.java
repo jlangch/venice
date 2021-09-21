@@ -221,4 +221,32 @@ public class MultiMethodTest {
 	
 		assertEquals("[2 3 4 9]", venice.eval("(str " + s + ")"));
 	}
+
+	@Test
+	public void test_defmulti_isa() {
+		final Venice venice = new Venice();
+
+		final String s = 
+				"(do                                                \n" +
+				"   (defmulti test (fn [x] (type x)))               \n" +
+				"                                                   \n" +
+				"   (defmethod test :core/number  [x] 2)            \n" +
+				"   (defmethod test :core/string  [x] 3)            \n" +
+				"   (defmethod test :core/boolean [x] 4)            \n" +
+				"   (defmethod test :default      [x] 9)            \n" +
+				"                                                   \n" +
+				"   [(test 1)                                       \n" +
+				"    (test 1I)                                      \n" +
+				"    (test 1.0)                                     \n" +
+				"    (test 1I)                                      \n" +
+				"    (test 1.0M)                                    \n" +
+				"    (test 1N)                                      \n" +
+				"    (test \"abc\")                                 \n" +
+				"    (test true)                                    \n" +
+				"    (test '(1))                                    \n" +
+				"    (test [1])]                                    \n" +
+				")                                                    ";
+	
+		assertEquals("[2 2 2 2 2 2 3 4 9 9]", venice.eval("(str " + s + ")"));
+	}
 }
