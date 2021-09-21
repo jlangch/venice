@@ -422,19 +422,34 @@ public class SpecialFormsDoc {
 					.arglists("(defmulti name dispatch-fn)")
 					.doc("Creates a new multimethod with the associated dispatch function.")
 					.examples(
-						"(do                                                                       \n" +
-						"   ;;defmulti with dispatch function                                      \n" +
-						"   (defmulti salary (fn [amount] (amount :t)))                            \n" +
-						"                                                                          \n" +
-						"   ;;defmethod provides a function implementation for a particular value  \n" +
-						"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
-						"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
-						"   (defmethod salary :default  [amount] (:b amount))                      \n" +
-						"                                                                          \n" +
-						"   [(salary {:t \"com\" :b 1000})                                         \n" +
-						"    (salary {:t \"bon\" :b 1000})                                         \n" +
-						"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
-						")                                                                           ")
+						"(do                                                                         \n" +
+						"   ;;defmulti with dispatch function                                        \n" +
+						"   (defmulti salary (fn [amount] (amount :t)))                              \n" +
+						"                                                                            \n" +
+						"   ;;defmethod provides a function implementation for a particular value    \n" +
+						"   (defmethod salary \"com\"   [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+						"   (defmethod salary \"bon\"   [amount] (+ (:b amount) 99))                 \n" +
+						"   (defmethod salary :default  [amount] (:b amount))                        \n" +
+						"                                                                            \n" +
+						"   [(salary {:t \"com\" :b 1000})                                           \n" +
+						"    (salary {:t \"bon\" :b 1000})                                           \n" +
+						"    (salary {:t \"xxx\" :b 1000})]                                          \n" +
+						")                                                                             ",
+						"(do                                                \n" +
+						"   ;;dispatch on type                              \n" +
+						"   (defmulti test (fn [x] (type x)))               \n" +
+						"                                                   \n" +
+						"   (defmethod test :core/number  [x] [x :number])  \n" +
+						"   (defmethod test :core/string  [x] [x :string])  \n" +
+						"   (defmethod test :core/boolean [x] [x :boolean]) \n" +
+						"   (defmethod test :default      [x] [x :default]) \n" +
+						"                                                   \n" +
+						"   [(test 1)                                       \n" +
+						"    (test 1.0)                                     \n" +
+						"    (test 1.0M)                                    \n" +
+						"    (test \"abc\")                                 \n" +
+						"    (test [1])]                                    \n" +
+						")                                                    ")
 					.seeAlso("defmethod")
 					.build()
 		) {
