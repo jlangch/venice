@@ -91,6 +91,11 @@ test {
 
 ## Clojure
 
+### Talks
+
+[Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
+
+
 
 ### Stateful Components
 
