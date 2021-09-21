@@ -1,9 +1,5 @@
 # Links
 
-## LGTM (Semmle) Code Quality
-
-[LGTM](https://lgtm.com/dashboard)
-
 
 ## Release to Maven
 
@@ -90,30 +86,6 @@ test {
 
 
 ## Clojure
-
-### Talks
-
-[Simple Made Easy](https://m.youtube.com/watch?v=LKtk3HCgTa8)
-
-[Clojure Made Simple](https://www.youtube.com/watch?v=VSdnJDO-xdg)
-
-[Value of Values](https://m.youtube.com/watch?v=-6BsiVyC1kM)
-
-[Experts Talk](https://m.youtube.com/watch?v=wASCH_gPnDw&list=FLja1emBmXUue0Jtah4OYYzw&index=18)
-
-[Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
-
-
-### Stateful Components
-
-[Stuart Sierra, Components](https://github.com/stuartsierra/component#references--more-information)
-
-[Stateful Components Part 1](https://medium.com/@TheLaddersEng/stateful-components-in-clojure-part-1-6e819f51db14)
-
-[Stateful Components Part 2](https://medium.com/@TheLaddersEng/stateful-components-in-clojure-part-2-897aa28112da)
-
-[Stateful Components Part 3](https://medium.com/@TheLaddersEng/stateful-components-in-clojure-part-3-on-testing-b02e994a54a7)
-
 
 
 ### Socket REPL
