@@ -93,8 +93,6 @@ test {
 
 ### Talks
 
-[Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
-
 [Simple Made Easy](https://m.youtube.com/watch?v=LKtk3HCgTa8)
 
 [Clojure Made Simple](https://www.youtube.com/watch?v=VSdnJDO-xdg)
