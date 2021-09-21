@@ -95,6 +95,12 @@ test {
 
 [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
 
+[Simple Made Easy](https://m.youtube.com/watch?v=LKtk3HCgTa8)
+
+[Clojure Made Simple](https://www.youtube.com/watch?v=VSdnJDO-xdg)
+
+[Value of Values](https://m.youtube.com/watch?v=-6BsiVyC1kM)
+
 [Experts Talk](https://m.youtube.com/watch?v=wASCH_gPnDw&list=FLja1emBmXUue0Jtah4OYYzw&index=18)
 
 [Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
