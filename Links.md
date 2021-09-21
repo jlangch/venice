@@ -95,6 +95,7 @@ test {
 
 [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
 
+[Every Clojure Talk Ever](https://m.youtube.com/watch?v=jlPaby7suOc)
 
 
 ### Stateful Components
