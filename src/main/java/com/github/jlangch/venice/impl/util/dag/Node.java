@@ -24,8 +24,6 @@ package com.github.jlangch.venice.impl.util.dag;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 
 
 public class Node<T> {
@@ -58,19 +56,6 @@ public class Node<T> {
 		}
 		else {
 			child.addParent(this);
-		}
-	}
-
-	public void visitDepthFirst(
-			final Consumer<Node<T>> consumer, 
-			final Set<Node<T>> visited
-	) {
-		if (visited.contains(this)) return;
-		consumer.accept(this);
-		visited.add(this);
-		for (Node<T> node : children) {
-			if (visited.contains(node)) continue;
-			node.visitDepthFirst(consumer, visited);
 		}
 	}
 

@@ -25,13 +25,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
@@ -47,8 +44,7 @@ public class DAG<T> {
 	 * dag.addEdge("B", "C");
 	 * dag.update();
 	 * 		
-	 * List<String> sorted = new ArrayList<>();
-	 * dag.visit(n -> sorted.add(n.getValue()));
+	 * List<String> sorted = dag.topologicalSort();
 	 * String path = String.join(" -> ", sorted); // "A -> B -> C"
 	 * </pre>
 	 */
@@ -90,19 +86,6 @@ public class DAG<T> {
 
 	public Collection<Node<T>> getNodes() {
 		return Collections.unmodifiableCollection(nodes.values());
-	}
-
-	/**
-	 * Depth first sort.
-	 * 
-	 * @return the sorted values
-	 * 
-	 * @see <a href="https://en.wikipedia.org/wiki/Topological_sorting">Topological Sorting</a>
-	 */
-	public List<T> sortDepthFirst() {
-		final List<T> sorted = new ArrayList<>();
-		visitDepthFirst(n -> sorted.add(n.getValue()));
-		return sorted;
 	}
 
 	/**
@@ -237,15 +220,6 @@ public class DAG<T> {
 		return path.stream()
 				   .map(n -> String.valueOf(n.getValue()))
 				   .collect(Collectors.joining(" -> "));
-	}
-
-	private void visitDepthFirst(final Consumer<Node<T>> consumer) {
-		final Set<Node<T>> visited = new HashSet<>();
-		for (Node<T> node : roots) {
-			consumer.accept(node);
-			visited.add(node);
-			node.getChildren().forEach(n -> n.visitDepthFirst(consumer, visited));
-		}
 	}
 
 	
