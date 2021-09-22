@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- a DAG (direct acyclic graph) with topological sorting.
+- a DAG (directed acyclic graph) with topological sorting.
   E.g.: `(topological-sort (dag ["A" "B"] ["B" "C"]))`
 
 
