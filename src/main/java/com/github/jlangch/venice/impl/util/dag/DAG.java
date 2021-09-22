@@ -120,6 +120,10 @@ public class DAG<T> {
 	 * @see <a href="https://de.wikipedia.org/wiki/Topologische_Sortierung">Topological Sorting</a>
 	 */
 	public synchronized List<T> topologicalSort() throws DagCycleException {
+		if (edges.isEmpty()) {
+			throw new RuntimeException("The graph is empty (no edges defined)!");
+		}
+		
 		// --- Prepare Data ---------------------------------------------------
 
 		final List<Node<T>> nodes = new ArrayList<>(this.nodes.values());

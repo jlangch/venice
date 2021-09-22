@@ -34,6 +34,9 @@ import com.github.jlangch.venice.impl.util.dag.DAG;
 import com.github.jlangch.venice.impl.util.dag.DagCycleException;
 
 
+/**
+ * DAG (directed acyclic graph)
+ */
 public class VncDAG extends VncCollection {
 	
 	public VncDAG(final VncVal meta) {
@@ -72,8 +75,13 @@ public class VncDAG extends VncCollection {
 	}
 
 	public VncDAG addEdge(final VncVal from, final VncVal to) {
-		dag.addEdge(from, to);
-		return this;
+		try {
+			dag.addEdge(from, to);
+			return this;
+		}
+		catch(DagCycleException ex) {
+			throw new VncException("The edge is a cycle", ex);
+		}
 	}
 
 	public VncDAG addEdges(final VncSequence edges) {
@@ -85,14 +93,15 @@ public class VncDAG extends VncCollection {
 				}
 				else {
 					throw new VncException(String.format(
-							"Invalid DAG (direct acyclic graph) edge sequence with %d elements. "
-							+ "Two elements are required to define an edge, e.g.: [\"A\" \"B\"].",
+							"Invalid DAG (directed acyclic graph) edge sequence with "
+							+ "%d elements. Two sequence elements are required to "
+							+ "define an edge, e.g.: [\"A\" \"B\"].",
 							nodes.size()));
 				}
 			}
 			else {
 				throw new VncException(String.format(
-						"%s is not allowed to pass a DAG (direct acyclic graph) edge. "
+						"%s is not allowed to pass a DAG (directed acyclic graph) edge. "
 						+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
 						Types.getType(e)));
 			}

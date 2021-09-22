@@ -2886,7 +2886,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(dag)", "(dag edges*)")
-					.doc("Creates a new DAG (direct acyclic graph)")
+					.doc("Creates a new DAG (directed acyclic graph)")
 					.examples(
 						"(dag)",
 						"(dag [\"A\" \"B\"] [\"B\" \"C\"])")

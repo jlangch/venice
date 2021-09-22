@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.dag;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -100,6 +101,74 @@ public class DAGTest {
 		final List<String> sorted = dag.topologicalSort();
 
 		assertEquals("D C A B E", String.join(" ", sorted));
+	}
+	
+	@Test
+	public void test_topologicalSort_6() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	   A  E
+		dag.addEdge("B", "C");      //	   |  |
+		dag.addEdge("C", "D");      //     B  F
+		dag.addEdge("E", "F");      //     | / \
+		dag.addEdge("F", "C");      //     C   G
+		dag.addEdge("F", "G");      //      \ /
+		dag.addEdge("G", "D");      //       D
+		dag.update();
+		
+		final List<String> sorted = dag.topologicalSort();
+
+		assertEquals("E F G A B C D", String.join(" ", sorted));
+	}
+
+	@Test
+	public void test_cyles_1() {
+		final DAG<String> dag = new DAG<>();
+		
+		assertThrows(DagCycleException.class, () -> dag.addEdge("A", "A"));
+	}
+
+	@Test
+	public void test_cyles_2() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B"); 
+		dag.addEdge("B", "A");
+		
+		assertThrows(DagCycleException.class, () -> dag.update());
+	}
+
+	@Test
+	public void test_cycles_3() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	   A  E
+		dag.addEdge("B", "C");      //	   |  |
+		dag.addEdge("C", "D");      //     B  F <--+
+		dag.addEdge("E", "F");      //     | / \   |
+		dag.addEdge("F", "C");      //     C   G   |
+		dag.addEdge("F", "G");      //      \ /    |
+		dag.addEdge("G", "D");      //       D-----+
+		dag.addEdge("D", "F");
+		
+		dag.update();  // !! does not throw DagCycleException
+		
+		assertThrows(DagCycleException.class, () -> dag.topologicalSort());
+	}
+
+	@Test
+	public void test_cycles_4() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //     A  C <--+
+		dag.addEdge("B", "E");      //     | /     |
+		dag.addEdge("C", "B");      //     B   D   |
+		dag.addEdge("D", "E");      //      \ /    |
+		dag.addEdge("E", "C");      //       E-----+
+		
+		dag.update();  // !! does not throw DagCycleException
+		
+		assertThrows(DagCycleException.class, () -> dag.topologicalSort());
 	}
 
 }
