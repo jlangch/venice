@@ -51,7 +51,14 @@ public class DagFunctions {
 					.doc("Creates a new DAG (directed acyclic graph)")
 					.examples(
 						"(dag/dag)",
-						"(dag/dag [\"A\" \"B\"] [\"B\" \"C\"])")
+						"(dag/dag [\"A\" \"B\"] [\"B\" \"C\"])",
+						"(dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"         [\"B\", \"C\"]  ;    |  |   \n" +
+						"         [\"C\", \"D\"]  ;    B  F   \n" +
+						"         [\"E\", \"F\"]  ;    | / \\ \n" +
+						"         [\"F\", \"C\"]  ;    C    G \n" +
+						"         [\"F\", \"G\"]  ;     \\  / \n" +
+						"         [\"G\", \"D\"]) ;      D      ")
 					.seeAlso(
 						"dag/dag?", 
 						"dag/add-edges", 
@@ -122,7 +129,15 @@ public class DagFunctions {
 					.arglists("(topological-sort dag)")
 					.doc("Topological sort of a DAG")
 					.examples(
-						"(dag/topological-sort (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))")
+						"(dag/topological-sort (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))",
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/topological-sort))                ")
 					.seeAlso(
 						"dag/dag", "dag/add-edges")
 					.build()
@@ -194,7 +209,15 @@ public class DagFunctions {
 					.arglists("(children dag node)")
 					.doc("Returns the child nodes")
 					.examples(
-						"(dag/children (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"A\")")
+						"(dag/children (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"A\")",
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/children \"F\"))                  ")
 					.seeAlso(
 						"dag/dag", "dag/add-edges", "dag/edges")
 					.build()
@@ -218,7 +241,15 @@ public class DagFunctions {
 					.arglists("(parents dag node)")
 					.doc("Returns the parent nodes")
 					.examples(
-						"(dag/parents (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"C\")")
+						"(dag/parents (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"C\")",
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/parents \"C\"))                   ")
 					.seeAlso(
 						"dag/dag", "dag/add-edges", "dag/edges")
 					.build()
@@ -242,7 +273,15 @@ public class DagFunctions {
 					.arglists("(roots dag)")
 					.doc("Returns the root nodes of a DAG")
 					.examples(
-						"(dag/roots (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))")
+						"(dag/roots (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))",
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/roots))                           ")
 					.seeAlso(
 						"dag/dag", "dag/add-edges", "dag/edges")
 					.build()
