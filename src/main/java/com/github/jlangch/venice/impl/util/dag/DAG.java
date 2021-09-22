@@ -26,8 +26,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -106,6 +110,46 @@ public class DAG<T> {
 
 	public synchronized boolean isEmpty() {
 		return nodes.isEmpty();
+	}
+
+	public synchronized List<T> children(final T value) {
+		final Node<T> node = nodes.get(value);
+		if (node == null) {
+			throw new NoSuchElementException("Node not found: " + value);
+		}
+		
+		final Set<Node<T>> children = new LinkedHashSet<>();
+		final List<Node<T>> toVisit = new LinkedList<>(node.getChildren());
+				
+		while(!toVisit.isEmpty()) {
+			final Node<T> n = toVisit.remove(0);
+			if (!children.contains(n)) {
+				children.add(n);
+				toVisit.addAll(n.getChildren());
+			}
+		}
+		
+		return convert(children);
+	}
+
+	public synchronized List<T> parents(final T value) {
+		final Node<T> node = nodes.get(value);
+		if (node == null) {
+			throw new NoSuchElementException("Node not found: " + value);
+		}
+		
+		final Set<Node<T>> parents = new LinkedHashSet<>();
+		final List<Node<T>> toVisit = new LinkedList<>(node.getParents());
+				
+		while(!toVisit.isEmpty()) {
+			final Node<T> n = toVisit.remove(0);
+			if (!parents.contains(n)) {
+				parents.add(n);
+				toVisit.addAll(n.getParents());
+			}
+		}
+		
+		return convert(parents);
 	}
 
 	/**
@@ -190,9 +234,7 @@ public class DAG<T> {
 			}
 		}
 
-		return sorted.stream()
-				.map(n -> n.getValue())
-				.collect(Collectors.toList());
+		return convert(sorted);
 	}
 
 	@Override
@@ -247,7 +289,14 @@ public class DAG<T> {
 				   .map(n -> String.valueOf(n.getValue()))
 				   .collect(Collectors.joining(" -> "));
 	}
-
+	
+	private List<T> convert(final Collection<Node<T>> nodes) {
+		return nodes
+				.stream()
+				.map(n -> n.getValue())
+				.collect(Collectors.toList());
+	}
+	
 	
 	private final Map<T, Node<T>> nodes = new LinkedHashMap<>();
 	private final List<Node<T>> roots = new ArrayList<>();
