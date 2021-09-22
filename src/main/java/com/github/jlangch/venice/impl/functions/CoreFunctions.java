@@ -69,6 +69,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
+import com.github.jlangch.venice.impl.types.collections.VncDAG;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -2874,6 +2875,49 @@ public class CoreFunctions {
 				ArityExceptions.assertArity(this, args, 2);
 
 				return new VncMapEntry(args.first(), args.second());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction new_dag =
+		new VncFunction(
+				"dag",
+				VncFunction
+					.meta()
+					.arglists("(dag)", "(dag edges*)")
+					.doc("Creates a new DAG")
+					.examples(
+						"(dag)",
+						"(dag [\"A\" \"B\"] [\"B\" \"C\"])")
+					.seeAlso("topological-sort", "add-edge")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				final VncDAG dag = new VncDAG(Nil);
+				
+				args.forEach(e -> {
+					if (Types.isVncSequence(e)) {
+						final VncSequence nodes = (VncSequence)e;
+						if (nodes.size() == 2) {
+							dag.addEdge(nodes.first(), nodes.second());
+						}
+						else {
+							throw new VncException(String.format(
+									"Function 'dag' does not allow edges with %d elements. "
+									+ "Two elements are required to define an edge.",
+									nodes.size()));
+						}
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'dag' does not allow %s as edge. "
+								+ "A sequence with two elements is required.",
+								Types.getType(e)));
+					}
+				});
+				
+				return dag;
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7840,6 +7884,7 @@ public class CoreFunctions {
 				.add(new_map_entry)
 				.add(new_stack)
 				.add(new_queue)
+				.add(new_dag)
 				.add(assoc)
 				.add(assoc_BANG)
 				.add(assoc_in)
