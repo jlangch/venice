@@ -28,6 +28,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.dag.DAG;
 import com.github.jlangch.venice.impl.util.dag.DagCycleException;
@@ -72,6 +73,35 @@ public class VncDAG extends VncCollection {
 
 	public VncDAG addEdge(final VncVal from, final VncVal to) {
 		dag.addEdge(from, to);
+		return this;
+	}
+
+	public VncDAG addEdges(final VncSequence edges) {
+		edges.forEach(e -> {
+			if (Types.isVncSequence(e)) {
+				final VncSequence nodes = (VncSequence)e;
+				if (nodes.size() == 2) {
+					dag.addEdge(nodes.first(), nodes.second());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'dag' does not allow edges with %d elements. "
+							+ "Two elements are required to define an edge.",
+							nodes.size()));
+				}
+			}
+			else {
+				throw new VncException(String.format(
+						"Function 'dag' does not allow %s as edge. "
+						+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
+						Types.getType(e)));
+			}
+		});
+		
+		if (!edges.isEmpty()) {
+			dag.update();
+		}
+
 		return this;
 	}
 	

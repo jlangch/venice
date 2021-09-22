@@ -2899,32 +2899,7 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				final VncDAG dag = new VncDAG(Nil);
 				
-				args.forEach(e -> {
-					if (Types.isVncSequence(e)) {
-						final VncSequence nodes = (VncSequence)e;
-						if (nodes.size() == 2) {
-							dag.addEdge(nodes.first(), nodes.second());
-						}
-						else {
-							throw new VncException(String.format(
-									"Function 'dag' does not allow edges with %d elements. "
-									+ "Two elements are required to define an edge.",
-									nodes.size()));
-						}
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'dag' does not allow %s as edge. "
-								+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
-								Types.getType(e)));
-					}
-				});
-				
-				if (!args.isEmpty()) {
-					dag.update();
-				}
-				
-				return dag;
+				return dag.addEdges(args);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7782,34 +7757,7 @@ public class CoreFunctions {
 
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 
-				final VncList edges = args.rest();
-				
-				edges.forEach(e -> {
-					if (Types.isVncSequence(e)) {
-						final VncSequence nodes = (VncSequence)e;
-						if (nodes.size() == 2) {
-							dag.addEdge(nodes.first(), nodes.second());
-						}
-						else {
-							throw new VncException(String.format(
-									"Function 'dag' does not allow edges with %d elements. "
-									+ "Two elements are required to define an edge.",
-									nodes.size()));
-						}
-					}
-					else {
-						throw new VncException(String.format(
-								"Function 'dag' does not allow %s as edge. "
-								+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
-								Types.getType(e)));
-					}
-				});
-				
-				if (!edges.isEmpty()) {
-					dag.update();
-				}
-	
-				return dag;
+				return dag.addEdges(args.rest());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
