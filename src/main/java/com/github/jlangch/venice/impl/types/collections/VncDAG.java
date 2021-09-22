@@ -23,12 +23,14 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.dag.DAG;
+import com.github.jlangch.venice.impl.util.dag.DagCycleException;
 
 
 public class VncDAG extends VncCollection {
@@ -74,8 +76,14 @@ public class VncDAG extends VncCollection {
 	}
 	
 	public VncDAG update() {
-		dag.update();
-		return this;
+		try {
+			dag.update();
+			return this;
+		}
+		catch(DagCycleException ex) {
+			throw new VncException("The graph has cycles", ex);
+		}
+
 	}
 	
 	public VncList nodes() {
@@ -95,7 +103,12 @@ public class VncDAG extends VncCollection {
 	}
 	
 	public VncVector topologicalSort() {
-		return VncVector.ofColl(dag.topologicalSort());
+		try {
+			return VncVector.ofColl(dag.topologicalSort());
+		}
+		catch(DagCycleException ex) {
+			throw new VncException("The graph has cycles", ex);
+		}
 	}
 		
 	@Override

@@ -113,11 +113,13 @@ public class DAG<T> {
 	 * 
 	 * @return the sorted values
 	 * 
+	 * @throws DagCycleException if cycle is found
+	 * 
 	 * @see <a href="https://en.wikipedia.org/wiki/Topological_sorting">Topological Sorting</a>
 	 * @see <a href="https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/">Topological Sorting</a>
 	 * @see <a href="https://de.wikipedia.org/wiki/Topologische_Sortierung">Topological Sorting</a>
 	 */
-	public synchronized List<T> topologicalSort() {
+	public synchronized List<T> topologicalSort() throws DagCycleException {
 		// --- Prepare Data ---------------------------------------------------
 
 		final List<Node<T>> nodes = new ArrayList<>(this.nodes.values());
