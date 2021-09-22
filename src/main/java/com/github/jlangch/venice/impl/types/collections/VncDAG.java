@@ -73,6 +73,11 @@ public class VncDAG extends VncCollection {
 		return this;
 	}
 	
+	public VncDAG update() {
+		dag.update();
+		return this;
+	}
+	
 	public VncVector topologicalSort() {
 		return VncVector.ofColl(dag.topologicalSort());
 	}

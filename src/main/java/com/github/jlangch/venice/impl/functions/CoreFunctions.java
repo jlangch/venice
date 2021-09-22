@@ -2890,7 +2890,7 @@ public class CoreFunctions {
 					.examples(
 						"(dag)",
 						"(dag [\"A\" \"B\"] [\"B\" \"C\"])")
-					.seeAlso("topological-sort", "add-edge")
+					.seeAlso("topological-sort", "add-edges")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2916,6 +2916,10 @@ public class CoreFunctions {
 								Types.getType(e)));
 					}
 				});
+				
+				if (!args.isEmpty()) {
+					dag.update();
+				}
 				
 				return dag;
 			}
@@ -3073,6 +3077,25 @@ public class CoreFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 
 				return VncBoolean.of(Types.isVncQueue(args.first()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction dag_Q =
+		new VncFunction(
+				"dag?",
+				VncFunction
+					.meta()
+					.arglists("(dag? coll)")
+					.doc("Returns true if coll is a DAG")
+					.examples("(dag? (dag))")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				return VncBoolean.of(Types.isVncDAG(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7877,6 +7900,7 @@ public class CoreFunctions {
 				.add(mutable_map_Q)
 				.add(stack_Q)
 				.add(queue_Q)
+				.add(dag_Q)
 				.add(new_hash_map)
 				.add(new_ordered_map)
 				.add(new_sorted_map)
