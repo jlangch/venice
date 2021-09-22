@@ -934,6 +934,9 @@ public class DocGenerator {
 		dag_access.addItem(getDocItem("dag/topological-sort"));
 		dag_access.addItem(getDocItem("dag/edges"));
 		dag_access.addItem(getDocItem("dag/nodes"));
+		dag_access.addItem(getDocItem("dag/children"));
+		dag_access.addItem(getDocItem("dag/parents"));
+		dag_access.addItem(getDocItem("dag/roots"));
 		dag_access.addItem(getDocItem("count"));
 	
 		final DocSection dag_test = new DocSection("Test", "collections.dag.test");

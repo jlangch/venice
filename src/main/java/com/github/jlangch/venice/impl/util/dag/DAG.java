@@ -112,6 +112,10 @@ public class DAG<T> {
 		return nodes.isEmpty();
 	}
 
+	public synchronized Node<T> node(final T value) {
+		return nodes.get(value);
+	}
+
 	public synchronized List<T> children(final T value) {
 		final Node<T> node = nodes.get(value);
 		if (node == null) {
@@ -150,6 +154,10 @@ public class DAG<T> {
 		}
 		
 		return convert(parents);
+	}
+
+	public synchronized List<T> roots() {
+		return convert(roots);
 	}
 
 	/**

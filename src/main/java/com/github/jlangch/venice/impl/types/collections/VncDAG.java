@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -140,6 +141,28 @@ public class VncDAG extends VncCollection {
 				   .collect(Collectors.toList()));
 	}
 	
+	public VncList children(final VncVal val) {
+		try {
+			return VncList.ofColl(dag.children(val));
+		}
+		catch(NoSuchElementException ex) {
+			throw new VncException("Node not found: " + val.toString(true));
+		}
+	}
+	
+	public VncList parents(final VncVal val) {
+		try {
+			return VncList.ofColl(dag.parents(val));
+		}
+		catch(NoSuchElementException ex) {
+			throw new VncException("Node not found: " + val.toString(true));
+		}
+	}
+	
+	public VncList roots() {
+		return VncList.ofColl(dag.roots());
+	}
+
 	public VncVector topologicalSort() {
 		try {
 			return VncVector.ofColl(dag.topologicalSort());

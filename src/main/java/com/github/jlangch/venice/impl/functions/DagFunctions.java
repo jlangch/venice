@@ -128,7 +128,7 @@ public class DagFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 				
@@ -152,7 +152,7 @@ public class DagFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 		
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 				
@@ -176,11 +176,83 @@ public class DagFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
+				ArityExceptions.assertArity(this, args, 1);
 		
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 				
 				return dag.nodes();
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction children =
+		new VncFunction(
+				"dag/children",
+				VncFunction
+					.meta()
+					.arglists("(children dag node)")
+					.doc("Returns the child nodes")
+					.examples(
+						"(dag/children (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"A\")")
+					.seeAlso(
+						"dag/dag", "dag/add-edges", "dag/edges")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.children(args.second());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction parents =
+		new VncFunction(
+				"dag/parents",
+				VncFunction
+					.meta()
+					.arglists("(parents dag node)")
+					.doc("Returns the parent nodes")
+					.examples(
+						"(dag/parents (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"C\")")
+					.seeAlso(
+						"dag/dag", "dag/add-edges", "dag/edges")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.parents(args.second());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction roots =
+		new VncFunction(
+				"dag/roots",
+				VncFunction
+					.meta()
+					.arglists("(roots dag)")
+					.doc("Returns the root nodes of a DAG")
+					.examples(
+						"(dag/roots (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))")
+					.seeAlso(
+						"dag/dag", "dag/add-edges", "dag/edges")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.roots();
 			}
 		
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -200,5 +272,8 @@ public class DagFunctions {
 					.add(add_edges)
 					.add(edges)
 					.add(nodes)
+					.add(children)
+					.add(parents)
+					.add(roots)
 					.toMap();	
 }
