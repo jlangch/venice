@@ -243,6 +243,7 @@ public class DAG<T> {
 		final Set<Node<T>> visited = new HashSet<>();
 		for (Node<T> node : roots) {
 			consumer.accept(node);
+			visited.add(node);
 			node.getChildren().forEach(n -> n.visitDepthFirst(consumer, visited));
 		}
 	}

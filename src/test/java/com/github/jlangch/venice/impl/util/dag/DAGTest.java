@@ -69,7 +69,7 @@ public class DAGTest {
 		
 		final List<String> sorted = dag.sortDepthFirst();
 
-		assertEquals("A B D C D", String.join(" ", sorted));
+		assertEquals("A B D C", String.join(" ", sorted));
 	}
 
 	@Test
@@ -93,13 +93,13 @@ public class DAGTest {
 		
 		dag.addEdge("A", "B");      //     A  C
 		dag.addEdge("B", "E");      //     | /
-		dag.addEdge("C", "E");      //     B   D
+		dag.addEdge("C", "B");      //     B   D
 		dag.addEdge("D", "E");      //      \ /
 		dag.update();               //       E
 		
 		final List<String> sorted = dag.sortDepthFirst();
 
-		assertEquals("A B E C E D E", String.join(" ", sorted));
+		assertEquals("A B E C D", String.join(" ", sorted));
 	}
 
 
@@ -166,7 +166,7 @@ public class DAGTest {
 		
 		dag.addEdge("A", "B");      //     A  C
 		dag.addEdge("B", "E");      //     | /
-		dag.addEdge("C", "E");      //     B   D
+		dag.addEdge("C", "B");      //     B   D
 		dag.addEdge("D", "E");      //      \ /
 		dag.update();               //       E
 		

@@ -65,6 +65,7 @@ public class Node<T> {
 			final Consumer<Node<T>> consumer, 
 			final Set<Node<T>> visited
 	) {
+		if (visited.contains(this)) return;
 		consumer.accept(this);
 		visited.add(this);
 		for (Node<T> node : children) {
