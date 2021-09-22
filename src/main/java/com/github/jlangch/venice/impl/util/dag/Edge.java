@@ -24,20 +24,20 @@ package com.github.jlangch.venice.impl.util.dag;
 
 public class Edge<T> {
 
-	public Edge(final T src, final T dst) {
-		this.src = src;
-		this.dst = dst;
+	public Edge(final T parent, final T child) {
+		this.parent = parent;
+		this.child = child;
 	}
 
-	public T getSrc() {
-		return src;
+	public T getParent() {
+		return parent;
 	}
 	
-	public T getDst() {
-		return dst;
+	public T getChild() {
+		return child;
 	}
 
 	
-	private final T src;
-	private final T dst;
+	private final T parent;
+	private final T child;
 }

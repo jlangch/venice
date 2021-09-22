@@ -136,7 +136,7 @@ public class VncDAG extends VncCollection {
 		return VncList.ofColl(
 				dag.getEdges()
 				   .stream()
-				   .map(e -> VncVector.of(e.getSrc().getValue(), e.getDst().getValue()))
+				   .map(e -> VncVector.of(e.getParent().getValue(), e.getChild().getValue()))
 				   .collect(Collectors.toList()));
 	}
 	

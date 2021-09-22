@@ -179,14 +179,14 @@ public class DAG<T> {
 		final Map<Node<T>,Integer> indegree = new HashMap<>();
 
 		for(Edge<Node<T>> e : edges) {
-			// add an edge from source to destination
-			if (!adjList.containsKey(e.getSrc())) {
-				adjList.put(e.getSrc(), new ArrayList<Node<T>>());
+			// add an edge from parent to child
+			if (!adjList.containsKey(e.getParent())) {
+				adjList.put(e.getParent(), new ArrayList<Node<T>>());
 			}			
-			adjList.get(e.getSrc()).add(e.getDst());
+			adjList.get(e.getParent()).add(e.getChild());
 
 			// increment in-degree of destination vertex by 1
-			indegree.put(e.getDst(), indegree.getOrDefault(e.getDst(), 0) + 1);
+			indegree.put(e.getChild(), indegree.getOrDefault(e.getChild(), 0) + 1);
 		}
 		
 		for(Node<T> n : nodes) {
