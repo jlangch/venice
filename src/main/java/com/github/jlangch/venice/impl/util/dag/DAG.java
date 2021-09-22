@@ -149,30 +149,30 @@ public class DAG<T> {
 		// --- Topological Sort -----------------------------------------------
 		
 		// list to store the sorted elements
-		final List<Node<T>> L = new ArrayList<>();
+		final List<Node<T>> sorted = new ArrayList<>();
 
 		// Set of all nodes with no incoming edges
-		final Stack<Node<T>> S = new Stack<>();
+		final Stack<Node<T>> stack = new Stack<>();
 		for (Node<T> node : nodes) {
 			if (indegree.getOrDefault(node, 0) == 0) {
-				S.add(node);
+				stack.add(node);
 			}
 		}
 
-		while (!S.isEmpty()) {
-			// remove node `n` from `S`
-			final Node<T> n = S.pop();
+		while (!stack.isEmpty()) {
+			// remove node `n` from `stack`
+			final Node<T> n = stack.pop();
 
-			// add `n` at the tail of `L`
-			L.add(n);
+			// add `n` at the tail of `sorted`
+			sorted.add(n);
 
 			for (Node<T> m : adjList.get(n)) {
 				// remove an edge from `n` to `m` from the graph
 				indegree.put(m, indegree.getOrDefault(m, 0) - 1);
 
-				// if `m` has no other incoming edges, insert `m` into `S`
+				// if `m` has no other incoming edges, insert `m` into `stack`
 				if (indegree.getOrDefault(m, 0) == 0) {
-					S.add(m);
+					stack.add(m);
 				}
 			}
 		}
@@ -184,7 +184,7 @@ public class DAG<T> {
 			}
 		}
 
-		return L.stream()
+		return sorted.stream()
 				.map(n -> n.getValue())
 				.collect(Collectors.toList());
 	}
