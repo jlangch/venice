@@ -120,6 +120,24 @@ public class DAGTest {
 
 		assertEquals("E F G A B C D", String.join(" ", sorted));
 	}
+	
+	@Test
+	public void test_topologicalSort_7() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	     A
+		dag.addEdge("B", "D");      //	    / \ 
+		dag.addEdge("A", "C");      //     B   C
+		dag.addEdge("B", "D");      //      \ /
+		dag.addEdge("C", "D");      //       D 
+		dag.addEdge("D", "E");      //      / \
+		dag.addEdge("D", "F");      //     E   F
+		dag.update();
+		
+		final List<String> sorted = dag.topologicalSort();
+
+		assertEquals("A C B D F E", String.join(" ", sorted));
+	}
 
 	@Test
 	public void test_cyles_1() {
