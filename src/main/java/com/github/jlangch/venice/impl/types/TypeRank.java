@@ -54,7 +54,8 @@ public enum TypeRank {
 	MUTABLESET (133),
 	
 	QUEUE (140),
-	STACK (141);
+	STACK (141),
+	DAG (142);
 	
 
 	private TypeRank(final int rank) {

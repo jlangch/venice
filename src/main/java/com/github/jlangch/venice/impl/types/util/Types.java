@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
+import com.github.jlangch.venice.impl.types.collections.VncDAG;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -234,6 +235,10 @@ public class Types {
 
 	public static boolean isVncQueue(final VncVal val) {
 		return val != null && (val instanceof VncQueue);
+	}
+
+	public static boolean isVncDAG(final VncVal val) {
+		return val != null && (val instanceof VncDAG);
 	}
 
 	public static boolean isIVncFunction(final VncVal val) {

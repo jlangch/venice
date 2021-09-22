@@ -57,11 +57,11 @@ public class DAG<T> {
 	 * @param value the node's value
 	 * @return the created node
 	 */
-	public Node<T> addNode(final T value) {
+	public synchronized Node<T> addNode(final T value) {
 		return getNodeOrCreate(value);
 	}
 
-	public void addEdge(final T parent, final T child) {
+	public synchronized void addEdge(final T parent, final T child) {
 		final Node<T> parentNode = getNodeOrCreate(parent);
 		final Node<T> childNode = getNodeOrCreate(child);
 		parentNode.addChild(childNode);
@@ -74,18 +74,34 @@ public class DAG<T> {
 	 * 
 	 * @throws DagCycleException if cycle is found
 	 */
-	public void update() throws DagCycleException {
+	public synchronized void update() throws DagCycleException {
 		roots.clear();
 		findRoots();
 		checkForCycles();
 	}
 
-	public Node<T> getNode(final T value) {
+	public synchronized Node<T> getNode(final T value) {
 		return nodes.get(value);
 	}
 
-	public Collection<Node<T>> getNodes() {
+	public synchronized Collection<Node<T>> getNodes() {
 		return Collections.unmodifiableCollection(nodes.values());
+	}
+
+	public synchronized Collection<T> getValues() {
+		return Collections.unmodifiableCollection(
+				nodes.values()
+					 .stream()
+					 .map(n -> n.getValue())
+					 .collect(Collectors.toList()));
+	}
+
+	public synchronized int size() {
+		return nodes.size();
+	}
+
+	public synchronized boolean isEmpty() {
+		return nodes.isEmpty();
 	}
 
 	/**
@@ -97,7 +113,7 @@ public class DAG<T> {
 	 * @see <a href="https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/">Topological Sorting</a>
 	 * @see <a href="https://de.wikipedia.org/wiki/Topologische_Sortierung">Topological Sorting</a>
 	 */
-	public List<T> topologicalSort() {
+	public synchronized List<T> topologicalSort() {
 		// --- Prepare Data ---------------------------------------------------
 
 		final List<Node<T>> nodes = new ArrayList<>(this.nodes.values());
@@ -170,7 +186,7 @@ public class DAG<T> {
 	}
 
 	@Override
-	public String toString() {
+	public synchronized String toString() {
 		return String.format("DAG{nodes=%d}", nodes.size());
 	}
 
