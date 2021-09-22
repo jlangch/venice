@@ -446,9 +446,9 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             <div class="column">
                  ${ (doseq [s1 left] }$
                  <div class="section" id="${= (:id s1) }$">
-                    <h2>${= (kira/escape-xml (:title s1)) }$</h2>
+                    <h2>${= (kira/escape-xml (:formattedTitle s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<div class="sub-header" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header" id="${= (:id s2) }$">${= (kira/escape-xml (:formattedTitle s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -480,9 +480,9 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             <div class="column">
                 ${ (doseq [s1 right] }$
                 <div class="section" id="${= (:id s1) }$">
-                    <h2>${= (kira/escape-xml (:title s1)) }$</h2>
+                    <h2>${= (kira/escape-xml (:formattedTitle s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<div class="sub-header" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header" id="${= (:id s2) }$">${= (kira/escape-xml (:formattedTitle s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -522,7 +522,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                  <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:formattedTitle s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$
@@ -556,7 +556,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 <div class="section" id="${= (:id s1) }$">
                     <h2>${= (kira/escape-xml (:title s1)) }$</h2>
                     ${ (doseq [s2 (:sections s1)] }$
-                    ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:title s2)) }$</div>${ ) }$
+                    ${ (when (:title s2) }$<div class="sub-header-module" id="${= (:id s2) }$">${= (kira/escape-xml (:formattedTitle s2)) }$</div>${ ) }$
                     <table>
                         <tbody>
                             ${ (doseq [s3 (:sections s2)] }$

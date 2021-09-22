@@ -30,30 +30,46 @@ import com.github.jlangch.venice.impl.util.markdown.Markdown;
 public class DocSection {
 	
 	public DocSection(final String title, final String id) {
-		this(title, id, (String)null, (String)null);
+		this(title, null, id, null, null);
 	}
-	
+
 	public DocSection(
 			final String title, 
+			final String subtitle, 
+			final String id
+	) {
+		this(title, subtitle, id, null, null);
+	}
+
+	public DocSection(
+			final String title, 
+			final String subtitle, 
 			final String id, 
 			final String header, 
 			final String footer
 	) {
 		this.title = title;
+		this.subtitle = subtitle;
 		this.id = id;
 		if (header != null) {
 			this.headers.add(header);
 		}
-		this.footerXmlStyled = footer == null 
-									? null 
-									: Markdown.parse(footer).renderToHtml();
+		this.footerXmlStyled = styleFooter(footer);
 	}
 	
 	
 	public String getTitle() {
 		return title;
 	}
-	
+
+	public String getFormattedTitle() {
+		return subtitle == null ? title : title + "\u00A0\u00A0(" + subtitle + ")";
+	}
+
+	public String getSubtitle() {
+		return subtitle;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -100,8 +116,20 @@ public class DocSection {
 		return items.isEmpty();
 	}
 	
+	@Override
+	public String toString() {
+		return getFormattedTitle() + ", id=" + id;
+	}
+	
+	private static String styleFooter(final String footer) {
+		return footer == null 
+				? null 
+				: Markdown.parse(footer).renderToHtml();	
+	}
+
 	
 	private final String title;
+	private final String subtitle;
 	private final String id;
 	private final List<String> headers = new ArrayList<>();
 	private final String footerXmlStyled;

@@ -921,7 +921,7 @@ public class DocGenerator {
 		queues_test.addItem(getDocItem("queue?"));
 
 		
-		final DocSection dag = new DocSection("DAG", "collections.dag");
+		final DocSection dag = new DocSection("DAG", "directed acyclic graph", "collections.dag");
 		section.addSection(dag);
 
 		final DocSection dag_create = new DocSection("Create", "collections.dag.create");
@@ -1959,7 +1959,7 @@ public class DocGenerator {
 							  "* com.github.librepdf:openpdf:1.3.26\n" +
 							  "* com.github.librepdf:pdf-toolbox:1.3.26\n";
 
-		final DocSection section = new DocSection("PDF", "pdf", null, footer);
+		final DocSection section = new DocSection("PDF", null, "pdf", null, footer);
 
 		
 		final DocSection all = new DocSection("", id());
@@ -2355,7 +2355,7 @@ public class DocGenerator {
 							  "* org.apache.commons:commons-math3:3.6.1\n" +
 							  "* org.apache.xmlbeans:xmlbeans:3.1.0\n";
 
-		final DocSection section = new DocSection("Excel", "modules.excel", null, footer);
+		final DocSection section = new DocSection("Excel", null, "modules.excel", null, footer);
 
 		final DocSection all = new DocSection("(load-module :excel)", id());
 		section.addSection(all);
