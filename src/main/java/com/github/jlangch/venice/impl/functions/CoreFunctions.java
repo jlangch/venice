@@ -2890,7 +2890,10 @@ public class CoreFunctions {
 					.examples(
 						"(dag)",
 						"(dag [\"A\" \"B\"] [\"B\" \"C\"])")
-					.seeAlso("topological-sort", "add-edges")
+					.seeAlso(
+						"topological-sort", "add-edges", 
+						"edges", "nodes",
+						"dag?", "empty?", "count")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7762,6 +7765,124 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
+	public static VncFunction dag_add_edges =
+		new VncFunction(
+				"add-edges",
+				VncFunction
+					.meta()
+					.arglists("(add-edges edges*)")
+					.doc("Add edges to a DAG")
+					.examples(
+						"(add-edges (dag) [\"A\" \"B\"] [\"B\" \"C\"])")
+					.seeAlso("dag", "topological-sort")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+
+				final VncList edges = args.rest();
+				
+				edges.forEach(e -> {
+					if (Types.isVncSequence(e)) {
+						final VncSequence nodes = (VncSequence)e;
+						if (nodes.size() == 2) {
+							dag.addEdge(nodes.first(), nodes.second());
+						}
+						else {
+							throw new VncException(String.format(
+									"Function 'dag' does not allow edges with %d elements. "
+									+ "Two elements are required to define an edge.",
+									nodes.size()));
+						}
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'dag' does not allow %s as edge. "
+								+ "A sequence with two elements is required.",
+								Types.getType(e)));
+					}
+				});
+				
+				if (!edges.isEmpty()) {
+					dag.update();
+				}
+	
+				return dag;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+				
+	public static VncFunction dag_topological_sort =
+		new VncFunction(
+				"topological-sort",
+				VncFunction
+					.meta()
+					.arglists("(topological-sort dag)")
+					.doc("Topological sort of a DAG")
+					.examples(
+						"(topological-sort (dag [\"A\" \"B\"] [\"B\" \"C\"]))")
+					.seeAlso("dag", "add-edges")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.topologicalSort();
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction edges =
+		new VncFunction(
+				"edges",
+				VncFunction
+					.meta()
+					.arglists("(edges dag)")
+					.doc("Returns the edges of a DAG")
+					.examples(
+						"(edges (dag [\"A\" \"B\"] [\"B\" \"C\"]))")
+					.seeAlso("dag", "add-edges", "nodes")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.edges();
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncFunction nodes =
+		new VncFunction(
+				"nodes",
+				VncFunction
+					.meta()
+					.arglists("(nodes dag)")
+					.doc("Returns the nodes of a DAG")
+					.examples(
+						"(nodes (dag [\"A\" \"B\"] [\"B\" \"C\"]))")
+					.seeAlso("dag", "add-edges", "edges")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.nodes();
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 		
 		
 		
@@ -8016,6 +8137,11 @@ public class CoreFunctions {
 				.add(repeatedly)
 				.add(cycle)
 
+				.add(dag_topological_sort)
+				.add(dag_add_edges)
+				.add(edges)
+				.add(nodes)
+				
 				.add(meta)
 				.add(with_meta)
 				.add(vary_meta)

@@ -87,6 +87,10 @@ public class DAG<T> {
 	public synchronized Collection<Node<T>> getNodes() {
 		return Collections.unmodifiableCollection(nodes.values());
 	}
+	
+	public synchronized List<Edge<Node<T>>> getEdges() {
+		return Collections.unmodifiableList(edges);
+	}
 
 	public synchronized Collection<T> getValues() {
 		return Collections.unmodifiableCollection(

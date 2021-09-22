@@ -167,6 +167,7 @@ public class DocGenerator {
 		collections.addSection(new DocSection("LazySeq", "lazyseq"));
 		collections.addSection(new DocSection("Stack", "collections.stack"));
 		collections.addSection(new DocSection("Queue", "collections.queue"));
+		collections.addSection(new DocSection("DAG", "collections.dag"));
 		collections.addSection(new DocSection("Array", "arrays"));
 		collections.addSection(new DocSection("ByteBuf", "bytebuf"));
 		content.add(collections);
@@ -885,15 +886,13 @@ public class DocGenerator {
 		stacks.addSection(stacks_create);
 		stacks_create.addItem(getDocItem("stack"));
 		
-
 		final DocSection stacks_access = new DocSection("Access", "collections.stack.access");
 		stacks.addSection(stacks_access);
 		stacks_access.addItem(getDocItem("peek"));
 		stacks_access.addItem(getDocItem("pop!"));
 		stacks_access.addItem(getDocItem("push!"));
 		stacks_access.addItem(getDocItem("count"));
-
-		
+	
 		final DocSection stacks_test = new DocSection("Test", "collections.stack.test");
 		stacks.addSection(stacks_test);
 		stacks_test.addItem(getDocItem("empty?"));
@@ -920,6 +919,27 @@ public class DocGenerator {
 		queues.addSection(queues_test);
 		queues_test.addItem(getDocItem("empty?"));
 		queues_test.addItem(getDocItem("queue?"));
+
+		
+		final DocSection dag = new DocSection("DAG", "collections.dag");
+		section.addSection(dag);
+
+		final DocSection dag_create = new DocSection("Create", "collections.dag.create");
+		dag.addSection(dag_create);
+		dag_create.addItem(getDocItem("dag"));
+		
+		final DocSection dag_access = new DocSection("Access", "collections.dag.access");
+		dag.addSection(dag_access);
+		dag_access.addItem(getDocItem("add-edges"));
+		dag_access.addItem(getDocItem("topological-sort"));
+		dag_access.addItem(getDocItem("edges"));
+		dag_access.addItem(getDocItem("nodes"));
+		dag_access.addItem(getDocItem("count"));
+	
+		final DocSection dag_test = new DocSection("Test", "collections.dag.test");
+		dag.addSection(dag_test);
+		dag_test.addItem(getDocItem("empty?"));
+		dag_test.addItem(getDocItem("dag?"));
 
 		return section;
 	}		

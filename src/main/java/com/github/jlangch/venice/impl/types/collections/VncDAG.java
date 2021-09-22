@@ -78,6 +78,22 @@ public class VncDAG extends VncCollection {
 		return this;
 	}
 	
+	public VncList nodes() {
+		return VncList.ofColl(
+				dag.getNodes()
+				   .stream()
+				   .map(n -> n.getValue())
+				   .collect(Collectors.toList()));
+	}
+	
+	public VncList edges() {
+		return VncList.ofColl(
+				dag.getEdges()
+				   .stream()
+				   .map(e -> VncVector.of(e.getSrc().getValue(), e.getDst().getValue()))
+				   .collect(Collectors.toList()));
+	}
+	
 	public VncVector topologicalSort() {
 		return VncVector.ofColl(dag.topologicalSort());
 	}
@@ -138,11 +154,11 @@ public class VncDAG extends VncCollection {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(toVncVector(), " ", true) + ")";
+		return "(" + Printer.join(edges(), " ", true) + ")";
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(toVncVector(), " ", print_readably) + ")";
+		return "(" + Printer.join(edges(), " ", print_readably) + ")";
 	}
 	
 	
