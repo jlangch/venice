@@ -85,14 +85,14 @@ public class VncDAG extends VncCollection {
 				}
 				else {
 					throw new VncException(String.format(
-							"Invalid DAG edge sequence with %d elements. "
+							"Invalid DAG (direct acyclic graph) edge sequence with %d elements. "
 							+ "Two elements are required to define an edge, e.g.: [\"A\" \"B\"].",
 							nodes.size()));
 				}
 			}
 			else {
 				throw new VncException(String.format(
-						"%s is not allowed to pass a DAG edge. "
+						"%s is not allowed to pass a DAG (direct acyclic graph) edge. "
 						+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
 						Types.getType(e)));
 			}
