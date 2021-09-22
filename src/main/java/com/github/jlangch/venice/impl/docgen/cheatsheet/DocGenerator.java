@@ -926,20 +926,20 @@ public class DocGenerator {
 
 		final DocSection dag_create = new DocSection("Create", "collections.dag.create");
 		dag.addSection(dag_create);
-		dag_create.addItem(getDocItem("dag"));
+		dag_create.addItem(getDocItem("dag/dag"));
 		
 		final DocSection dag_access = new DocSection("Access", "collections.dag.access");
 		dag.addSection(dag_access);
-		dag_access.addItem(getDocItem("add-edges"));
-		dag_access.addItem(getDocItem("topological-sort"));
-		dag_access.addItem(getDocItem("edges"));
-		dag_access.addItem(getDocItem("nodes"));
+		dag_access.addItem(getDocItem("dag/add-edges"));
+		dag_access.addItem(getDocItem("dag/topological-sort"));
+		dag_access.addItem(getDocItem("dag/edges"));
+		dag_access.addItem(getDocItem("dag/nodes"));
 		dag_access.addItem(getDocItem("count"));
 	
 		final DocSection dag_test = new DocSection("Test", "collections.dag.test");
 		dag.addSection(dag_test);
+		dag_test.addItem(getDocItem("dag/dag?"));
 		dag_test.addItem(getDocItem("empty?"));
-		dag_test.addItem(getDocItem("dag?"));
 
 		return section;
 	}		

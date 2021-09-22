@@ -50,6 +50,7 @@ public class Modules {
 							"config", 
 							"core", 
 							"crypt", 
+							"dag", 
 							"excel", 
 							"esr", 
 							"fam", 

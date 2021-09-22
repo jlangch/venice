@@ -69,7 +69,6 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
-import com.github.jlangch.venice.impl.types.collections.VncDAG;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -2880,31 +2879,6 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_dag =
-		new VncFunction(
-				"dag",
-				VncFunction
-					.meta()
-					.arglists("(dag)", "(dag edges*)")
-					.doc("Creates a new DAG (directed acyclic graph)")
-					.examples(
-						"(dag)",
-						"(dag [\"A\" \"B\"] [\"B\" \"C\"])")
-					.seeAlso(
-						"topological-sort", "add-edges", 
-						"edges", "nodes",
-						"dag?", "empty?", "count")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				final VncDAG dag = new VncDAG(Nil);
-				
-				return dag.addEdges(args);
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
 	public static VncFunction map_Q =
 		new VncFunction(
 				"map?",
@@ -3055,25 +3029,6 @@ public class CoreFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 
 				return VncBoolean.of(Types.isVncQueue(args.first()));
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction dag_Q =
-		new VncFunction(
-				"dag?",
-				VncFunction
-					.meta()
-					.arglists("(dag? coll)")
-					.doc("Returns true if coll is a DAG")
-					.examples("(dag? (dag))")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
-
-				return VncBoolean.of(Types.isVncDAG(args.first()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -7740,97 +7695,6 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
-	public static VncFunction dag_add_edges =
-		new VncFunction(
-				"add-edges",
-				VncFunction
-					.meta()
-					.arglists("(add-edges edges*)")
-					.doc("Add edges to a DAG")
-					.examples(
-						"(add-edges (dag) [\"A\" \"B\"] [\"B\" \"C\"])")
-					.seeAlso("dag", "topological-sort")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
-
-				final VncDAG dag = Coerce.toVncDAG(args.first());
-
-				return dag.addEdges(args.rest());
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-				
-	public static VncFunction dag_topological_sort =
-		new VncFunction(
-				"topological-sort",
-				VncFunction
-					.meta()
-					.arglists("(topological-sort dag)")
-					.doc("Topological sort of a DAG")
-					.examples(
-						"(topological-sort (dag [\"A\" \"B\"] [\"B\" \"C\"]))")
-					.seeAlso("dag", "add-edges")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
-
-				final VncDAG dag = Coerce.toVncDAG(args.first());
-				
-				return dag.topologicalSort();
-			}
-
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction edges =
-		new VncFunction(
-				"edges",
-				VncFunction
-					.meta()
-					.arglists("(edges dag)")
-					.doc("Returns the edges of a DAG")
-					.examples(
-						"(edges (dag [\"A\" \"B\"] [\"B\" \"C\"]))")
-					.seeAlso("dag", "add-edges", "nodes")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
-		
-				final VncDAG dag = Coerce.toVncDAG(args.first());
-				
-				return dag.edges();
-			}
-		
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	public static VncFunction nodes =
-		new VncFunction(
-				"nodes",
-				VncFunction
-					.meta()
-					.arglists("(nodes dag)")
-					.doc("Returns the nodes of a DAG")
-					.examples(
-						"(nodes (dag [\"A\" \"B\"] [\"B\" \"C\"]))")
-					.seeAlso("dag", "add-edges", "edges")
-					.build()
-		) {
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
-		
-				final VncDAG dag = Coerce.toVncDAG(args.first());
-				
-				return dag.nodes();
-			}
-		
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
 		
 		
 		
@@ -7969,7 +7833,6 @@ public class CoreFunctions {
 				.add(mutable_map_Q)
 				.add(stack_Q)
 				.add(queue_Q)
-				.add(dag_Q)
 				.add(new_hash_map)
 				.add(new_ordered_map)
 				.add(new_sorted_map)
@@ -7977,7 +7840,6 @@ public class CoreFunctions {
 				.add(new_map_entry)
 				.add(new_stack)
 				.add(new_queue)
-				.add(new_dag)
 				.add(assoc)
 				.add(assoc_BANG)
 				.add(assoc_in)
@@ -8084,11 +7946,6 @@ public class CoreFunctions {
 				.add(repeat)
 				.add(repeatedly)
 				.add(cycle)
-
-				.add(dag_topological_sort)
-				.add(dag_add_edges)
-				.add(edges)
-				.add(nodes)
 				
 				.add(meta)
 				.add(with_meta)
