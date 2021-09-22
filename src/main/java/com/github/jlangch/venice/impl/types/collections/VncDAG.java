@@ -83,7 +83,6 @@ public class VncDAG extends VncCollection {
 		catch(DagCycleException ex) {
 			throw new VncException("The graph has cycles", ex);
 		}
-
 	}
 	
 	public VncList nodes() {
