@@ -2886,7 +2886,7 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(dag)", "(dag edges*)")
-					.doc("Creates a new DAG")
+					.doc("Creates a new DAG (direct acyclic graph)")
 					.examples(
 						"(dag)",
 						"(dag [\"A\" \"B\"] [\"B\" \"C\"])")
@@ -2915,7 +2915,7 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'dag' does not allow %s as edge. "
-								+ "A sequence with two elements is required.",
+								+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
 								Types.getType(e)));
 					}
 				});
@@ -7800,7 +7800,7 @@ public class CoreFunctions {
 					else {
 						throw new VncException(String.format(
 								"Function 'dag' does not allow %s as edge. "
-								+ "A sequence with two elements is required.",
+								+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
 								Types.getType(e)));
 					}
 				});
