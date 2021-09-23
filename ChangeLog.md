@@ -13,8 +13,8 @@ and this project adheres to
 
 ### Added
 
-- a DAG (directed acyclic graph) with topological sorting.
-  E.g.: `(topological-sort (dag ["A" "B"] ["B" "C"]))`
+- a DAG (directed acyclic graph) with topological sorting using 
+  [Kahn's algorithm](https://en.wikipedia.org/wiki/Topological_sorting)
 
 
 
