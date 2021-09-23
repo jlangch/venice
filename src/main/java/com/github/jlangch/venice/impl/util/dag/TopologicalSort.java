@@ -35,9 +35,11 @@ import java.util.stream.Collectors;
 /**
  * Topological Sort using Kahn's algorithm.
  *
- * @see <a href="https://en.wikipedia.org/wiki/Topological_sorting">Topological Sorting</a>
- * @see <a href="https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/">Topological Sorting</a>
- * @see <a href="https://de.wikipedia.org/wiki/Topologische_Sortierung">Topological Sorting</a>
+ * @see <a href="https://www.baeldung.com/cs/dag-topological-sort">Topological Sorting 1</a>
+ * @see <a href="https://www.baeldung.com/java-depth-first-search">Topological Sorting 2</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Topological_sorting">Topological Sorting 3</a>
+ * @see <a href="https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/">Topological Sorting 4</a>
+ * @see <a href="https://de.wikipedia.org/wiki/Topologische_Sortierung">Topological Sorting 5</a>
  */
 public class TopologicalSort<T> {
 
@@ -57,7 +59,7 @@ public class TopologicalSort<T> {
 			throw new RuntimeException("The graph is empty (no edges defined)!");
 		}
 		
-		// --- Prepare Data ---------------------------------------------------
+		// --- Init Data ------------------------------------------------------
 
 		// A list of lists to represent an adjacency list
 		final Map<Node<T>,List<Node<T>>> adjList = new HashMap<>();	
@@ -66,6 +68,9 @@ public class TopologicalSort<T> {
 		// stores in-degree of a vertex, defaults to 0
 		final Map<Node<T>,Integer> indegree = new HashMap<>();
 
+		
+		// --- Prepare adjacent list and in-degree counts ---------------------
+		
 		for(Edge<Node<T>> e : edges) {
 			// add an edge from parent to child
 			if (!adjList.containsKey(e.getParent())) {
@@ -78,12 +83,11 @@ public class TopologicalSort<T> {
 		}
 		
 			
-		// --- Topological Sort -----------------------------------------------
+		// --- Sort ----------------------------------------------------------
 		
-		// list to store the sorted elements
 		final List<Node<T>> sorted = new ArrayList<>();
 
-		// Set of all nodes with no incoming edges
+		// All nodes with no incoming edges (in-degree = 0)
 		final Stack<Node<T>> stack = new Stack<>();
 		for (Node<T> node : nodes) {
 			if (indegree.getOrDefault(node, 0) == 0) {
@@ -109,7 +113,7 @@ public class TopologicalSort<T> {
 			}
 		}
 
-		// if a graph has edges, then the graph has at least one cycle
+		// if there is an edge left, then the graph has at least one cycle
 		for (Node<T> node : nodes) {
 			if (indegree.getOrDefault(node, 0) != 0) {
 				throw new DagCycleException("The graph has at least one cycle");
