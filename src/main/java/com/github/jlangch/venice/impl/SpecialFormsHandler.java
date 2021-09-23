@@ -554,6 +554,20 @@ public class SpecialFormsHandler {
 		}
 	}
 
+	public VncVal deftype_describe_(
+			final IVeniceInterpreter interpreter, 
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame(".:", args, meta);
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertArity("deftype-describe", FnType.SpecialForm, args, 1);
+			final VncVal evaluatedArg = evaluator.evaluate(args.first(), env, false);
+			return DefTypeForm.describeType(evaluatedArg, env);
+		}
+	}
+
 	public VncVal deftype_create_(
 			final IVeniceInterpreter interpreter, 
 			final VncList args, 

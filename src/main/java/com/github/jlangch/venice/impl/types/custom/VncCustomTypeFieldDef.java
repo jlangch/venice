@@ -21,8 +21,11 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 public class VncCustomTypeFieldDef  {
 
@@ -55,7 +58,15 @@ public class VncCustomTypeFieldDef  {
 		return nillable;
 	}
 
+	public VncMap toVncMap() {
+		return VncHashMap.of(
+				new VncKeyword(":name"),     name,
+				new VncKeyword(":type"),     type,
+				new VncKeyword(":index"),    index,
+				new VncKeyword(":nillable"), VncBoolean.of(nillable));
+	}
 
+	
 	private final VncKeyword name;
 	private final VncKeyword type;
 	private final VncInteger index;

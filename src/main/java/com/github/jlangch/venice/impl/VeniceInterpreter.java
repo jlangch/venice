@@ -598,6 +598,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "deftype-or":  // (deftype-or type vals*)
 					return specialFormHandler.deftype_or_(this, args, env, a0meta);
 
+				case "deftype-describe":  // (deftype-describe type)
+					return specialFormHandler.deftype_describe_(this, args, env, a0meta);
+
 				case ".:": // (.: type args*)
 					return specialFormHandler.deftype_create_(this, args, env, a0meta);
 

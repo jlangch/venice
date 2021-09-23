@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
@@ -39,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -283,6 +285,34 @@ public class DefTypeForm {
 		}
 	}
 
+	public static VncVal describeType(final VncVal arg, final Env env) {
+		final VncKeyword type = Coerce.toVncKeyword(arg);
+		final VncKeyword qualifiedType = type.hasNamespace() 
+											? type 
+											: type.withNamespace(Namespaces.getCurrentNS());
+
+		final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
+		if (typeDef == null) {
+			throw new VncException(String.format(
+					"The custom type %s is not defined.", 
+					qualifiedType.toString())); 
+		}
+		else if (typeDef instanceof VncCustomTypeDef) {
+			return describeCustomType((VncCustomTypeDef)typeDef);
+		}
+		else if (typeDef instanceof VncWrappingTypeDef) {
+			return describeWrappedType((VncWrappingTypeDef)typeDef);
+		}
+		else if (typeDef instanceof VncChoiceTypeDef) {
+			return describeChoiceType((VncChoiceTypeDef)typeDef);
+		}
+		else {
+			throw new VncException(String.format(
+					"The type %s is not a custom type.", 
+					qualifiedType.toString())); 
+		}
+	}
+
 	public static VncCustomType createCustomType(
 			final VncCustomTypeDef typeDef, 
 			final List<VncVal> typeArgs
@@ -418,6 +448,33 @@ public class DefTypeForm {
 					typeDef.getType().toString(), 
 					type.toString())); 
 		}
+	}
+
+	public static VncVal describeCustomType(final VncCustomTypeDef typeDef) {
+		final List<VncMap> fieldDefs = typeDef
+										.getFieldDefs()
+										.stream()
+										.map(o -> o.toVncMap())
+										.collect(Collectors.toList());
+		
+		return VncHashMap.of(
+				new VncKeyword(":type"),		typeDef.getType(),
+				new VncKeyword(":custom-type"), new VncKeyword(":record"),
+				new VncKeyword(":field-defs"),  VncList.ofColl(fieldDefs));
+	}
+
+	public static VncVal describeWrappedType(final VncWrappingTypeDef typeDef) {
+		return VncHashMap.of(
+				new VncKeyword(":type"),		typeDef.getType(),
+				new VncKeyword(":custom-type"), new VncKeyword(":wrapping"),
+				new VncKeyword(":base-type"),   typeDef.getBaseType());
+	}
+
+	public static VncVal describeChoiceType(final VncChoiceTypeDef typeDef) {
+		return VncHashMap.of(
+				new VncKeyword(":type"),		typeDef.getType(),
+				new VncKeyword(":custom-type"), new VncKeyword(":choice"),
+				new VncKeyword(":values"),		typeDef.values());
 	}
 
 	private static void validateTypeCompatibility(
