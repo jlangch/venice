@@ -48,8 +48,8 @@ public class TopologicalSort<T> {
 		this.edges.addAll(edges);
 		this.isolatedNodes.addAll(isolatedNodes);
 		
-		final Set<Node<T>> nodes = new HashSet<>();
-		nodes.addAll(isolatedNodes);
+		// all nodes in the graph (isolated and edge nodes)
+		final Set<Node<T>> nodes = new HashSet<>(isolatedNodes);
 		for(Edge<Node<T>> e : edges) {
 			nodes.add(e.getParent());
 			nodes.add(e.getChild());
@@ -57,6 +57,7 @@ public class TopologicalSort<T> {
 		this.nodes = new ArrayList<>(nodes);
 	}
 
+	
 	public List<T> sort() throws DagCycleException {
 		if (nodes.isEmpty()) {
 			throw new RuntimeException("The graph is empty!");
@@ -68,17 +69,14 @@ public class TopologicalSort<T> {
 		final Map<Node<T>,List<Node<T>>> adjList = new HashMap<>();	
 		nodes.forEach(n -> adjList.put(n, new ArrayList<Node<T>>()));
 
-		// stores in-degree of a vertex, defaults to 0
+		// stores in-degree of a node, defaults to 0
 		final Map<Node<T>,Integer> indegree = new HashMap<>();
 
 		
 		// --- Prepare adjacent list and in-degree counts ---------------------
 		
 		for(Edge<Node<T>> e : edges) {
-			// add an edge from parent to child
-			if (!adjList.containsKey(e.getParent())) {
-				adjList.put(e.getParent(), new ArrayList<Node<T>>());
-			}			
+			// add edge parent/child to the adjacency list
 			adjList.get(e.getParent()).add(e.getChild());
 
 			// increment in-degree of destination vertex by 1
@@ -114,7 +112,7 @@ public class TopologicalSort<T> {
 			}
 		}
 
-		// if there is an edge left, then the graph has at least one cycle
+		// if there is a node left, then the graph has at least one cycle
 		for (Node<T> node : nodes) {
 			if (indegree.getOrDefault(node, 0) != 0) {
 				throw new DagCycleException("The graph has at least one cycle!");
