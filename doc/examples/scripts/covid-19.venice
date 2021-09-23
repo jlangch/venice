@@ -26,7 +26,9 @@
 ;;;; internet:
 ;;;;   1. Covid-19 country cases         https://www.worldometers.info/coronavirus/
 ;;;;   2. Covid-19 country vaccinations  https://github.com/owid/covid-19-data/
-;;;;   3. Country population             https://restcountries.eu/
+;;;;   3. Country population             https://restcountries.eu/  (offline)
+;;;;                                     https://restcountries.com/
+;;;;                                     https://github.com/apilayer/restcountries/
 
 (do
   (ns covid-19)
@@ -38,11 +40,11 @@
     "Switzerland"     "Romania"         "Austria"         "Hungary"
     "Germany"         "Italy"           "France"          "Sweden"
     "Greece"          "Spain"           "UK"              "Netherlands"
-    "Iceland"         "Israel" ])
+    "Iceland"         "Denmark" ])
 
   (def country-set-2 [
     "Gibraltar"       "Croatia"         "Portugal"        "Belgium"
-    "Luxembourg"      "Norway"          "Finland"         "Denmark"
+    "Luxembourg"      "Norway"          "Finland"         "Israel"
     "Ireland"         "Slovenia"        "Poland"          "US"
     "Czech-Republic"  "Turkey" ])
 
@@ -121,7 +123,7 @@
   (def sample-days 7)
 
   ;; the start/end date for the cases
-  (def start-date (time/local-date 2021 4 1))
+  (def start-date (time/local-date 2021 6 1))
   (def end-date nil)
 
   ;; chart rendering
@@ -133,7 +135,8 @@
   (def worldometers-url "https://www.worldometers.info/coronavirus/country/")
 
   ;; country population REST URL
-  (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
+  ; (def rest-population-url "https://restcountries.eu/rest/v2/alpha/")
+  (def rest-population-url "https://restcountries.com/v2/alpha/")
 
   ;; Covid-19 vaccination data
   ;; https://www.google.com/search?q=schweiz+covid
@@ -383,6 +386,6 @@
   ;;; Main ---------------------------------------------------------------------
 
   (process! "covid-19_1.png" country-set-1)
-  ;(process! "covid-19_2.png" country-set-2)
+  (process! "covid-19_2.png" country-set-2)
   ;(process! "covid-19_3.png" country-set-3)
 )
