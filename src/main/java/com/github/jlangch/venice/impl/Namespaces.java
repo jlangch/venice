@@ -124,7 +124,8 @@ public class Namespaces {
 			Collections.unmodifiableSet(
 					new HashSet<>(
 						Arrays.asList(
-								"core", "cidr", "csv", "io", "json", "pdf", "sh", "str", "regex", "time", "repl")));
+								"core", "cidr", "csv", "dag", "io", "json", 
+								"pdf", "sh", "str", "regex", "time", "repl")));
 
 	public static final Set<String> RESERVED_NAMESPACES = 
 			Collections.unmodifiableSet(
@@ -132,7 +133,7 @@ public class Namespaces {
 					Arrays.asList(
 							"local",
 							"core", "cidr", "csv", "io", "json", "pdf", "sh", "str", "regex", "time", "repl",							
-							"crypt", "xml", "bench", "excel",
+							"crypt", "xml", "bench", "excel", "component", "dag",
 							"test", "shell",
 							"xchart", "kira", "parsatron",
 							"tc", "ring", 

@@ -49,6 +49,7 @@ public class Modules {
 							"benchmark", 
 							"config", 
 							"core", 
+							"component", 
 							"crypt", 
 							"dag", 
 							"excel", 
