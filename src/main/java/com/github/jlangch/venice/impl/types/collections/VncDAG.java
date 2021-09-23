@@ -76,9 +76,9 @@ public class VncDAG extends VncCollection {
 		return this;
 	}
 
-	public VncDAG addEdge(final VncVal from, final VncVal to) {
+	public VncDAG addEdge(final VncVal parent, final VncVal child) {
 		try {
-			dag.addEdge(from, to);
+			dag.addEdge(parent, child);
 			return this;
 		}
 		catch(DagCycleException ex) {
@@ -96,14 +96,14 @@ public class VncDAG extends VncCollection {
 				else {
 					throw new VncException(String.format(
 							"Invalid DAG (directed acyclic graph) edge sequence with "
-							+ "%d elements. Two sequence elements are required to "
+							+ "%d elements! Two sequence elements are required to "
 							+ "define an edge, e.g.: [\"A\" \"B\"].",
 							nodes.size()));
 				}
 			}
 			else {
 				throw new VncException(String.format(
-						"%s is not allowed to pass a DAG (directed acyclic graph) edge. "
+						"%s is not allowed to pass a DAG (directed acyclic graph) edge! "
 						+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
 						Types.getType(e)));
 			}
@@ -122,7 +122,7 @@ public class VncDAG extends VncCollection {
 			return this;
 		}
 		catch(DagCycleException ex) {
-			throw new VncException("The graph has cycles", ex);
+			throw new VncException("The graph has cycles!", ex);
 		}
 	}
 	
@@ -169,7 +169,7 @@ public class VncDAG extends VncCollection {
 			return VncVector.ofColl(dag.topologicalSort());
 		}
 		catch(DagCycleException ex) {
-			throw new VncException("The graph has cycles", ex);
+			throw new VncException("The graph has cycles!", ex);
 		}
 	}
 	
@@ -178,7 +178,7 @@ public class VncDAG extends VncCollection {
 			return VncBoolean.of(dag.isParentOf(parent, value));
 		}
 		catch(NoSuchElementException ex) {
-			throw new VncException("Node not found");
+			throw new VncException("Node not found!");
 		}
 	}
 	
@@ -187,7 +187,7 @@ public class VncDAG extends VncCollection {
 			return VncBoolean.of(dag.isChildOf(child, value));
 		}
 		catch(NoSuchElementException ex) {
-			throw new VncException("Node not found");
+			throw new VncException("Node not found!");
 		}
 	}
 	
