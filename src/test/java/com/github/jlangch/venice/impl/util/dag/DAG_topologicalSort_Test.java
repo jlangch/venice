@@ -103,7 +103,7 @@ public class DAG_topologicalSort_Test {
 	}
 	
 	@Test
-	public void test_topologicalSort_6() {
+	public void test_topologicalSort_6a() {
 		final DAG<String> dag = new DAG<>();
 		
 		dag.addEdge("A", "B");      //	   A  E
@@ -121,9 +121,26 @@ public class DAG_topologicalSort_Test {
 	}
 	
 	@Test
-	public void test_topologicalSort_7() {
+	public void test_topologicalSort_6b() {
 		final DAG<String> dag = new DAG<>();
 		
+		dag.addEdge("B", "A");      //       D
+		dag.addEdge("C", "B");      //      / \
+		dag.addEdge("D", "C");      //     C   G
+		dag.addEdge("F", "E");      //     | \ /
+		dag.addEdge("C", "F");      //     B  F
+		dag.addEdge("G", "F");      //	   |  |
+		dag.addEdge("D", "G");      //	   A  E
+		dag.update();
+		
+		final List<String> sorted = dag.topologicalSort();
+
+		assertEquals("D G C F E B A", String.join(" ", sorted));
+	}
+	
+	@Test
+	public void test_topologicalSort_7a() {
+		final DAG<String> dag = new DAG<>();
 		dag.addEdge("A", "B");      //	     A
 		dag.addEdge("A", "C");      //	    / \ 
 		dag.addEdge("B", "D");      //     B   C
@@ -135,6 +152,23 @@ public class DAG_topologicalSort_Test {
 		final List<String> sorted = dag.topologicalSort();
 
 		assertEquals("A C B D F E", String.join(" ", sorted));
+	}
+	
+	@Test
+	public void test_topologicalSort_7b() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("B", "A");      //     E   F
+		dag.addEdge("C", "A");      //      \ /
+		dag.addEdge("D", "B");      //       D 
+		dag.addEdge("D", "C");      //      / \
+		dag.addEdge("E", "D");      //     B   C 
+		dag.addEdge("F", "D");      //      \ /
+		dag.update();               //       A
+		
+		final List<String> sorted = dag.topologicalSort();
+
+		assertEquals("F E D C B A", String.join(" ", sorted));
 	}
 
 }

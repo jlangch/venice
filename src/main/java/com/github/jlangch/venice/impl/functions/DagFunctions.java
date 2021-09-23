@@ -219,7 +219,7 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/children \"F\"))                  ")
 					.seeAlso(
-						"dag/dag", "dag/add-edges", "dag/edges")
+						"dag/dag", "dag/parents", "dag/roots", "dag/topological-sort")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -251,7 +251,7 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/parents \"C\"))                   ")
 					.seeAlso(
-						"dag/dag", "dag/add-edges", "dag/edges")
+						"dag/dag", "dag/children", "dag/roots", "dag/topological-sort")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -283,7 +283,7 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/roots))                           ")
 					.seeAlso(
-						"dag/dag", "dag/add-edges", "dag/edges")
+						"dag/dag", "dag/parents", "dag/children")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

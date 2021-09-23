@@ -49,6 +49,24 @@ public class DAG_children_Test {
 	}
 
 	@Test
+	public void test_children_1a() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	     A
+		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("B", "D");      //     B   C
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D  |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
+		
+		final List<String> sorted = dag.children("A");
+
+		assertEquals("B C D F E", String.join(" ", sorted));
+	}
+
+	@Test
 	public void test_children_2() {
 		final DAG<String> dag = new DAG<>();
 		
@@ -59,6 +77,24 @@ public class DAG_children_Test {
 		dag.addEdge("D", "E");      //       D 
 		dag.addEdge("D", "F");      //      / \
 		dag.update();               //     E   F
+		
+		final List<String> sorted = dag.children("B");
+
+		assertEquals("D E F", String.join(" ", sorted));
+	}
+
+	@Test
+	public void test_children_2a() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	     A
+		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("B", "D");      //     B   C
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D   |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
 		
 		final List<String> sorted = dag.children("B");
 
@@ -83,6 +119,24 @@ public class DAG_children_Test {
 	}
 
 	@Test
+	public void test_children_3a() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	     A
+		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("B", "D");      //     B   C
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D   |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
+		
+		final List<String> sorted = dag.children("C");
+
+		assertEquals("D F E", String.join(" ", sorted));
+	}
+
+	@Test
 	public void test_children_4() {
 		final DAG<String> dag = new DAG<>();
 		
@@ -100,6 +154,24 @@ public class DAG_children_Test {
 	}
 
 	@Test
+	public void test_children_4a() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	     A
+		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("B", "D");      //     B   C
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D   |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
+		
+		final List<String> sorted = dag.children("D");
+
+		assertEquals("E F", String.join(" ", sorted));
+	}
+
+	@Test
 	public void test_children_5() {
 		final DAG<String> dag = new DAG<>();
 		
@@ -110,6 +182,24 @@ public class DAG_children_Test {
 		dag.addEdge("D", "E");      //       D 
 		dag.addEdge("D", "F");      //      / \
 		dag.update();               //     E   F
+		
+		final List<String> sorted = dag.children("E");
+
+		assertEquals("", String.join(" ", sorted));
+	}
+
+	@Test
+	public void test_children_5a() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addEdge("A", "B");      //	     A
+		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("B", "D");      //     B   C
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D   |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
 		
 		final List<String> sorted = dag.children("E");
 
