@@ -21,9 +21,11 @@
  */
 package com.github.jlangch.venice.impl.util.dag;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Node<T> {
@@ -91,7 +93,13 @@ public class Node<T> {
 		return true;
 	}
 
+	public static <T> List<T> toValues(final Collection<Node<T>> nodes) {
+		return nodes.stream()
+					.map(n -> n.getValue())
+					.collect(Collectors.toList());
+	}
 
+	
 	private void addParent(final Node<T> parent) {
 		if (parent == this) {
 			throw new DagCycleException(this.toString() + "->" + this.toString());

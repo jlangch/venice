@@ -131,7 +131,7 @@ public class DAG<T> {
 			}
 		}
 		
-		return convert(children);
+		return Node.toValues(children);
 	}
 
 	public synchronized List<T> parents(final T value) {
@@ -151,11 +151,11 @@ public class DAG<T> {
 			}
 		}
 		
-		return convert(parents);
+		return Node.toValues(parents);
 	}
 
 	public synchronized List<T> roots() {
-		return convert(roots);
+		return Node.toValues(roots);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class DAG<T> {
 
 	private void checkForCycles() throws DagCycleException {
 		if (roots.isEmpty() && nodes.size() > 1) {
-			throw new DagCycleException("No childless node found to be selected as root");
+			throw new DagCycleException("No childless node found to be selected as root!");
 		}
 		
 		final List<Node<T>> cycleCrawlerPath = new ArrayList<>();
@@ -240,13 +240,6 @@ public class DAG<T> {
 					.stream()
 					.filter(n -> n.isWithoutRelations())
 					.collect(Collectors.toList());
-	}
-
-	private List<T> convert(final Collection<Node<T>> nodes) {
-		return nodes
-				.stream()
-				.map(n -> n.getValue())
-				.collect(Collectors.toList());
 	}
 	
 	

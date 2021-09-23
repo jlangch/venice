@@ -22,14 +22,12 @@
 package com.github.jlangch.venice.impl.util.dag;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 
 /**
@@ -92,16 +90,14 @@ public class TopologicalSort<T> {
 		
 		final List<Node<T>> sorted = new ArrayList<>();
 
-		// All nodes with no incoming edges (in-degree = 0)
 		final Stack<Node<T>> stack = new Stack<>();
-		for (Node<T> node : nodes) {
-			if (indegree.getOrDefault(node, 0) == 0) {
-				stack.add(node);
-			}
-		}
+		
+		// Put all nodes with no incoming edges (in-degree = 0) onto the stack
+		nodes.stream()
+		     .filter(n -> indegree.getOrDefault(n, 0) == 0)
+		     .forEach(n -> stack.push(n));
 
 		while (!stack.isEmpty()) {
-			// remove node `n` from `stack`
 			final Node<T> n = stack.pop();
 
 			// add `n` at the tail of `sorted`
@@ -111,9 +107,9 @@ public class TopologicalSort<T> {
 				// remove an edge from `n` to `m` from the graph
 				indegree.put(m, indegree.getOrDefault(m, 0) - 1);
 
-				// if `m` has no other incoming edges, insert `m` into `stack`
+				// if `m` has no other incoming edges, put `m` onto the `stack`
 				if (indegree.getOrDefault(m, 0) == 0) {
-					stack.add(m);
+					stack.push(m);
 				}
 			}
 		}
@@ -121,18 +117,11 @@ public class TopologicalSort<T> {
 		// if there is an edge left, then the graph has at least one cycle
 		for (Node<T> node : nodes) {
 			if (indegree.getOrDefault(node, 0) != 0) {
-				throw new DagCycleException("The graph has at least one cycle");
+				throw new DagCycleException("The graph has at least one cycle!");
 			}
 		}
 
-		return convert(sorted);
-	}
-
-	private List<T> convert(final Collection<Node<T>> nodes) {
-		return nodes
-				.stream()
-				.map(n -> n.getValue())
-				.collect(Collectors.toList());
+		return Node.toValues(sorted);
 	}
 
 	
