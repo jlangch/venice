@@ -1328,6 +1328,10 @@ public class DocGenerator {
 		final DocSection create = new DocSection("Create", "types.create");
 		all.addSection(create);
 		create.addItem(getDocItem(".:"));
+
+		final DocSection describe = new DocSection("Describe", "types.describe");
+		all.addSection(describe);
+		describe.addItem(getDocItem("deftype-describe"));
 		
 		return section;
 	}

@@ -659,6 +659,33 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
+	public static VncFunction deftype_describe = 
+		new SpecialFormsDocFunction(
+				"deftype-describe",
+				VncFunction
+					.meta()
+					.arglists(
+						"(deftype-describe type)")
+					.doc(
+						"Describes a custom type.")
+					.examples(
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype :complex [real :long, imaginary :long])		       \n" +
+						"  (deftype-describe :complex))	                               \n",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :port :long)		                               \n" +
+						"  (deftype-describe :port))	                               \n",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
+						"  (deftype-describe :digit))                                    ")
+				.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction deftype_new = 
 		new SpecialFormsDocFunction(
 				".:",
@@ -1499,6 +1526,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("deftype?"),			deftypeQ)
 					.put(new VncSymbol("deftype-of"),		deftype_of)
 					.put(new VncSymbol("deftype-or"),		deftype_or)
+					.put(new VncSymbol("deftype-describe"),	deftype_describe)
 					.put(new VncSymbol(".:"),				deftype_new)
 					.put(new VncSymbol("def-dynamic"),		def_dynamic)
 					.put(new VncSymbol("binding"),			binding)

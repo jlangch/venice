@@ -57,6 +57,7 @@ public class SpecialForms {
 					"deftype-of",
 					"deftype-or",
 					".:",
+					"deftype-describe",
 					"def-dynamic",
 					"binding",
 					"bound?",
