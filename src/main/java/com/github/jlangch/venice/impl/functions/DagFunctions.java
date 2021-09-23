@@ -187,7 +187,7 @@ public class DagFunctions {
 					.examples(
 						"(dag/nodes (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))")
 					.seeAlso(
-						"dag/dag", "dag/add-edges", "dag/edges")
+						"dag/dag", "dag/node?", "dag/add-edges", "dag/edges")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -296,8 +296,101 @@ public class DagFunctions {
 		
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+	public static VncFunction parent_of_Q =
+		new VncFunction(
+				"dag/parent-of?",
+				VncFunction
+					.meta()
+					.arglists("(parent-of? dag p v)")
+					.doc("Returns `true` if p is a transtive parent of v")
+					.examples(
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/parent-of? \"E\" \"G\"))         ")
+					.seeAlso(
+						"dag/dag", "dag/parents", "dag/child-of?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.isParentOf(args.second(), args.third());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
-	
+	public static VncFunction child_of_Q =
+		new VncFunction(
+				"dag/child-of?",
+				VncFunction
+					.meta()
+					.arglists("(child-of? dag c v)")
+					.doc("Returns `true` if c is a transtive child of v")
+					.examples(
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/child-of? \"G\" \"E\"))         ")
+					.seeAlso(
+						"dag/dag", "dag/children", "dag/parent-of?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.isChildOf(args.second(), args.third());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction node_Q =
+		new VncFunction(
+				"dag/node?",
+				VncFunction
+					.meta()
+					.arglists("(node? dag v)")
+					.doc("Returns `true` if v is a node in the DAG")
+					.examples(
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/node? \"G\"))                     ")
+					.seeAlso(
+						"dag/dag", "dag/nodes")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.isNode(args.second());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
 	///////////////////////////////////////////////////////////////////////////
@@ -314,5 +407,8 @@ public class DagFunctions {
 					.add(children)
 					.add(parents)
 					.add(roots)
+					.add(parent_of_Q)
+					.add(child_of_Q)
+					.add(node_Q)
 					.toMap();	
 }

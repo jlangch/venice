@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -170,6 +171,28 @@ public class VncDAG extends VncCollection {
 		catch(DagCycleException ex) {
 			throw new VncException("The graph has cycles", ex);
 		}
+	}
+	
+	public VncBoolean isParentOf(final VncVal parent, final VncVal value) {
+		try {
+			return VncBoolean.of(dag.parentOf(parent, value));
+		}
+		catch(NoSuchElementException ex) {
+			throw new VncException("Node not found");
+		}
+	}
+	
+	public VncBoolean isChildOf(final VncVal child, final VncVal value) {
+		try {
+			return VncBoolean.of(dag.childOf(child, value));
+		}
+		catch(NoSuchElementException ex) {
+			throw new VncException("Node not found");
+		}
+	}
+	
+	public VncBoolean isNode(final VncVal value) {
+		return VncBoolean.of(dag.isNode(value));
 	}
 		
 	@Override

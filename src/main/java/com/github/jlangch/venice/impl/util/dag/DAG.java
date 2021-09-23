@@ -166,7 +166,19 @@ public class DAG<T> {
 	 * @throws DagCycleException if cycle is found
 	 */
 	public synchronized List<T> topologicalSort() throws DagCycleException {
-		return new TopologicalSort<T>(edges).sort();
+		return new TopologicalSort<T>(edges, getIsolatedNodes()).sort();
+	}
+
+	public synchronized boolean parentOf(final T parent, final T value)  {
+		return parents(value).contains(parent);
+	}
+
+	public synchronized boolean childOf(final T child, final T value)  {
+		return children(value).contains(child);
+	}
+
+	public synchronized boolean isNode(final T value)  {
+		return nodes.containsKey(value);
 	}
 
 	@Override
@@ -221,7 +233,15 @@ public class DAG<T> {
 				   .map(n -> String.valueOf(n.getValue()))
 				   .collect(Collectors.joining(" -> "));
 	}
-	
+
+	private List<Node<T>> getIsolatedNodes() {
+		// nodes without parent and children
+		return nodes.values()
+					.stream()
+					.filter(n -> n.isWithoutRelations())
+					.collect(Collectors.toList());
+	}
+
 	private List<T> convert(final Collection<Node<T>> nodes) {
 		return nodes
 				.stream()

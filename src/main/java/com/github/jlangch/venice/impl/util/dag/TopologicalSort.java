@@ -43,10 +43,15 @@ import java.util.stream.Collectors;
  */
 public class TopologicalSort<T> {
 
-	public TopologicalSort(final List<Edge<Node<T>>> edges) {
+	public TopologicalSort(
+			final List<Edge<Node<T>>> edges,
+			final List<Node<T>> isolatedNodes
+	) {
 		this.edges.addAll(edges);
+		this.isolatedNodes.addAll(isolatedNodes);
 		
 		final Set<Node<T>> nodes = new HashSet<>();
+		nodes.addAll(isolatedNodes);
 		for(Edge<Node<T>> e : edges) {
 			nodes.add(e.getParent());
 			nodes.add(e.getChild());
@@ -55,8 +60,8 @@ public class TopologicalSort<T> {
 	}
 
 	public List<T> sort() throws DagCycleException {
-		if (edges.isEmpty()) {
-			throw new RuntimeException("The graph is empty (no edges defined)!");
+		if (nodes.isEmpty()) {
+			throw new RuntimeException("The graph is empty!");
 		}
 		
 		// --- Init Data ------------------------------------------------------
@@ -132,5 +137,6 @@ public class TopologicalSort<T> {
 
 	
 	private final List<Edge<Node<T>>> edges = new ArrayList<>();
+	private final List<Node<T>> isolatedNodes = new ArrayList<>();
 	private final List<Node<T>> nodes;
 }

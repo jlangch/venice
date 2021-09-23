@@ -51,12 +51,13 @@ public class Node<T> {
 		
 		children.add(child);
 		
-		if (child.getParents().contains(this)) {
-			return;
-		}
-		else {
+		if (!child.getParents().contains(this)) {
 			child.addParent(this);
 		}
+	}
+	
+	public boolean isWithoutRelations() {
+		return parents.isEmpty() && children.isEmpty();
 	}
 
 	@Override
@@ -97,10 +98,7 @@ public class Node<T> {
 		}
 		
 		parents.add(parent);
-		if (parent.getChildren().contains(this)) {
-			return;
-		}
-		else {
+		if (!parent.getChildren().contains(this)) {
 			parent.addChild(this);
 		}
 	}

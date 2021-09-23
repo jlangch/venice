@@ -942,6 +942,9 @@ public class DocGenerator {
 		final DocSection dag_test = new DocSection("Test", "collections.dag.test");
 		dag.addSection(dag_test);
 		dag_test.addItem(getDocItem("dag/dag?"));
+		dag_test.addItem(getDocItem("dag/node?"));
+		dag_test.addItem(getDocItem("dag/parent-of?"));
+		dag_test.addItem(getDocItem("dag/child-of?"));
 		dag_test.addItem(getDocItem("empty?"));
 
 		return section;
