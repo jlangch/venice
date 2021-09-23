@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.util.dag;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 
@@ -166,83 +164,9 @@ public class DAG<T> {
 	 * @return the sorted values
 	 * 
 	 * @throws DagCycleException if cycle is found
-	 * 
-	 * @see <a href="https://en.wikipedia.org/wiki/Topological_sorting">Topological Sorting</a>
-	 * @see <a href="https://www.geeksforgeeks.org/topological-sorting-indegree-based-solution/">Topological Sorting</a>
-	 * @see <a href="https://de.wikipedia.org/wiki/Topologische_Sortierung">Topological Sorting</a>
 	 */
 	public synchronized List<T> topologicalSort() throws DagCycleException {
-		if (edges.isEmpty()) {
-			throw new RuntimeException("The graph is empty (no edges defined)!");
-		}
-		
-		// --- Prepare Data ---------------------------------------------------
-
-		final List<Node<T>> nodes = new ArrayList<>(this.nodes.values());
-
-		// A list of lists to represent an adjacency list
-		final Map<Node<T>,List<Node<T>>> adjList = new HashMap<>();
-
-		// stores indegree of a vertex, defaults to 0
-		final Map<Node<T>,Integer> indegree = new HashMap<>();
-
-		for(Edge<Node<T>> e : edges) {
-			// add an edge from parent to child
-			if (!adjList.containsKey(e.getParent())) {
-				adjList.put(e.getParent(), new ArrayList<Node<T>>());
-			}			
-			adjList.get(e.getParent()).add(e.getChild());
-
-			// increment in-degree of destination vertex by 1
-			indegree.put(e.getChild(), indegree.getOrDefault(e.getChild(), 0) + 1);
-		}
-		
-		for(Node<T> n : nodes) {
-			if (!adjList.containsKey(n)) {
-				adjList.put(n, new ArrayList<Node<T>>());
-			}			
-		}
-		
-			
-		// --- Topological Sort -----------------------------------------------
-		
-		// list to store the sorted elements
-		final List<Node<T>> sorted = new ArrayList<>();
-
-		// Set of all nodes with no incoming edges
-		final Stack<Node<T>> stack = new Stack<>();
-		for (Node<T> node : nodes) {
-			if (indegree.getOrDefault(node, 0) == 0) {
-				stack.add(node);
-			}
-		}
-
-		while (!stack.isEmpty()) {
-			// remove node `n` from `stack`
-			final Node<T> n = stack.pop();
-
-			// add `n` at the tail of `sorted`
-			sorted.add(n);
-
-			for (Node<T> m : adjList.get(n)) {
-				// remove an edge from `n` to `m` from the graph
-				indegree.put(m, indegree.getOrDefault(m, 0) - 1);
-
-				// if `m` has no other incoming edges, insert `m` into `stack`
-				if (indegree.getOrDefault(m, 0) == 0) {
-					stack.add(m);
-				}
-			}
-		}
-
-		// if a graph has edges, then the graph has at least one cycle
-		for (Node<T> node : nodes) {
-			if (indegree.getOrDefault(node, 0) != 0) {
-				throw new DagCycleException("The graph has at least one cycle");
-			}
-		}
-
-		return convert(sorted);
+		return new TopologicalSort<T>(edges).sort();
 	}
 
 	@Override
