@@ -169,11 +169,11 @@ public class DAG<T> {
 		return new TopologicalSort<T>(edges, getIsolatedNodes()).sort();
 	}
 
-	public synchronized boolean parentOf(final T parent, final T value)  {
+	public synchronized boolean isParentOf(final T parent, final T value)  {
 		return parents(value).contains(parent);
 	}
 
-	public synchronized boolean childOf(final T child, final T value)  {
+	public synchronized boolean isChildOf(final T child, final T value)  {
 		return children(value).contains(child);
 	}
 

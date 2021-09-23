@@ -175,7 +175,7 @@ public class VncDAG extends VncCollection {
 	
 	public VncBoolean isParentOf(final VncVal parent, final VncVal value) {
 		try {
-			return VncBoolean.of(dag.parentOf(parent, value));
+			return VncBoolean.of(dag.isParentOf(parent, value));
 		}
 		catch(NoSuchElementException ex) {
 			throw new VncException("Node not found");
@@ -184,7 +184,7 @@ public class VncDAG extends VncCollection {
 	
 	public VncBoolean isChildOf(final VncVal child, final VncVal value) {
 		try {
-			return VncBoolean.of(dag.childOf(child, value));
+			return VncBoolean.of(dag.isChildOf(child, value));
 		}
 		catch(NoSuchElementException ex) {
 			throw new VncException("Node not found");

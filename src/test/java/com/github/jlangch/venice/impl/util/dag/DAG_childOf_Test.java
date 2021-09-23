@@ -42,20 +42,20 @@ public class DAG_childOf_Test {
 		dag.addEdge("D", "G");      //	   A  E
 		dag.update();
 		
-		assertTrue(dag.childOf("C", "D"));
-		assertTrue(dag.childOf("B", "D"));
-		assertTrue(dag.childOf("A", "D"));
-		assertTrue(dag.childOf("G", "D"));
-		assertTrue(dag.childOf("F", "D"));
-		assertTrue(dag.childOf("E", "D"));
+		assertTrue(dag.isChildOf("C", "D"));
+		assertTrue(dag.isChildOf("B", "D"));
+		assertTrue(dag.isChildOf("A", "D"));
+		assertTrue(dag.isChildOf("G", "D"));
+		assertTrue(dag.isChildOf("F", "D"));
+		assertTrue(dag.isChildOf("E", "D"));
 		
-		assertTrue(dag.childOf("E", "C"));
-		assertTrue(dag.childOf("E", "G"));
+		assertTrue(dag.isChildOf("E", "C"));
+		assertTrue(dag.isChildOf("E", "G"));
 		
-		assertFalse(dag.childOf("B", "G"));
-		assertFalse(dag.childOf("A", "G"));
-		assertFalse(dag.childOf("A", "F"));
-		assertFalse(dag.childOf("A", "E"));
+		assertFalse(dag.isChildOf("B", "G"));
+		assertFalse(dag.isChildOf("A", "G"));
+		assertFalse(dag.isChildOf("A", "F"));
+		assertFalse(dag.isChildOf("A", "E"));
 	}
 
 }

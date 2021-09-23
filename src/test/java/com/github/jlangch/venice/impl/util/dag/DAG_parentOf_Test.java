@@ -42,17 +42,17 @@ public class DAG_parentOf_Test {
 		dag.addEdge("D", "G");      //	   A  E
 		dag.update();
 		
-		assertTrue(dag.parentOf("D", "A"));
-		assertTrue(dag.parentOf("D", "E"));
+		assertTrue(dag.isParentOf("D", "A"));
+		assertTrue(dag.isParentOf("D", "E"));
 		
-		assertTrue(dag.parentOf("C", "A"));
-		assertTrue(dag.parentOf("C", "E"));
+		assertTrue(dag.isParentOf("C", "A"));
+		assertTrue(dag.isParentOf("C", "E"));
 		
-		assertTrue(dag.parentOf("B", "A"));
-		assertFalse(dag.parentOf("B", "E"));
+		assertTrue(dag.isParentOf("B", "A"));
+		assertFalse(dag.isParentOf("B", "E"));
 		
-		assertTrue(dag.parentOf("G", "E"));
-		assertFalse(dag.parentOf("G", "A"));
+		assertTrue(dag.isParentOf("G", "E"));
+		assertFalse(dag.isParentOf("G", "A"));
 	}
 
 }
