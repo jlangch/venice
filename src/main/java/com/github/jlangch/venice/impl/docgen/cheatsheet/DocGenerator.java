@@ -2488,12 +2488,14 @@ public class DocGenerator {
 		if (runExamples) {
 			final Venice runner = new Venice();
 	
+			final AtomicLong exampleNr = new AtomicLong(0);
 			try {
 				return examples
 							.stream()
 							.filter(e -> !StringUtil.isEmpty(e))
 							.map(e -> runExample(
 										runner, 
+										exampleNr.incrementAndGet(),
 										name, 
 										e, 
 										run, 
@@ -2501,8 +2503,10 @@ public class DocGenerator {
 							.collect(Collectors.toList());
 			}
 			catch(RuntimeException ex) {
-				throw new RuntimeException(String.format(
-						"Failed to run examples for %s", name), 
+				throw new RuntimeException(
+						String.format(
+								"Failed to run examples #%d (of %d) for %s", 
+								exampleNr.get(), examples.size(), name), 
 						ex);
 			}
 		}
@@ -2513,6 +2517,7 @@ public class DocGenerator {
 	
 	private ExampleOutput runExample(
 			final Venice runner,
+			final long exampleNr,
 			final String name, 
 			final String example, 
 			final boolean run,
@@ -2551,7 +2556,7 @@ public class DocGenerator {
 				}
 				else {
 					throw new RuntimeException(
-							String.format("Failed to run example for '%s'", name), 
+							String.format("Failed to run example #%d for '%s'", exampleNr, name), 
 							ex);
 				}
 			}

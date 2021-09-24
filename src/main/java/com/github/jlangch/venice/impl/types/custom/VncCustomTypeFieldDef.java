@@ -58,7 +58,7 @@ public class VncCustomTypeFieldDef  {
 		return nillable;
 	}
 
-	public VncMap toVncMap() {
+	public VncMap toMap() {
 		return VncHashMap.of(
 				new VncKeyword(":name"),     name,
 				new VncKeyword(":type"),     type,

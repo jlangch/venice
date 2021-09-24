@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.impl.types.custom;
 
 import com.github.jlangch.venice.AssertionException;
-import com.github.jlangch.venice.impl.types.Constants;
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -65,7 +65,7 @@ public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
 		if (validationFn != null) {
 			try {
 				final VncVal valid = validationFn.apply(VncList.of(val));
-				if (valid == Constants.Nil || VncBoolean.isFalse(valid)) {
+				if (valid == Nil || VncBoolean.isFalse(valid)) {
 					throw new AssertionException(String.format(
 							"Invalid value for custom type :%s",
 							getType().getValue()));
@@ -89,8 +89,8 @@ public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
 		return VncHashMap.of(
 				new VncKeyword(":type"),			getType(),
 				new VncKeyword(":custom-type"), 	new VncKeyword(":wrapping"),
-				new VncKeyword(":base-type"),   	getBaseType(),
-				new VncKeyword(":validation-fn"),	getValidationFn());
+				new VncKeyword(":base-type"),   	baseType,
+				new VncKeyword(":validation-fn"),	validationFn == null ? Nil : validationFn);
 	}
 
 	

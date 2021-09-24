@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -102,16 +104,16 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 	
 	@Override
 	public VncMap toMap() {
-		final List<VncMap> fieldDefs = getFieldDefs()
-										.stream()
-										.map(o -> o.toVncMap())
-										.collect(Collectors.toList());
+		final List<VncMap> defs = fieldDefs
+									.stream()
+									.map(o -> o.toMap())
+									.collect(Collectors.toList());
 		
 		return VncHashMap.of(
 				new VncKeyword(":type"),			getType(),
 				new VncKeyword(":custom-type"), 	new VncKeyword(":record"),
-				new VncKeyword(":field-defs"),  	VncList.ofColl(fieldDefs),
-				new VncKeyword(":validation-fn"),	getValidationFn());
+				new VncKeyword(":field-defs"),  	VncList.ofColl(defs),
+				new VncKeyword(":validation-fn"),	validationFn == null ? Nil : validationFn);
 	}
 	
 
