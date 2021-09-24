@@ -492,7 +492,15 @@ public class SpecialFormsDoc {
 						"(deftype name fields)",
 						"(deftype name fields validator)")
 					.doc(
-						"Defines a new custom type for the name with the fields.")
+						"Defines a new custom type for the name with the fields. \n\n" +
+						"Venice implicitly creates a builder and a type check " +
+						"function suffixed with a dot and a question mark:\n\n" +
+						"```venice                                        \n" +
+						"(deftype :complex [real :long, imaginary :long]) \n" +
+						"                                                 \n" +
+						"(complex. 200 300)             ; builder         \n" +
+						"(complex? (complex. 200 300))  ; type check      \n" +
+						"```")
 					.examples(
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
@@ -539,7 +547,8 @@ public class SpecialFormsDoc {
 						"  (pr-str y))                                         "
 )
 					.seeAlso(
-						"deftype?", "deftype-of", "deftype-or", ".:", "assoc", "dissoc")
+						"deftype?", "deftype-of", "deftype-or", ".:", 
+						"deftype-describe", "assoc", "dissoc")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -568,7 +577,9 @@ public class SpecialFormsDoc {
 						"  (deftype :complex [real :long, imaginary :long])  \n" +
 						"  (def x (complex. 100 200))                        \n" +
 						"  (deftype? (type x)))                                ")
-					.seeAlso("deftype", "deftype-of", "deftype-or", ".:")
+					.seeAlso(
+						"deftype", "deftype-of", "deftype-or", ".:", 
+						"deftype-describe")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -583,7 +594,15 @@ public class SpecialFormsDoc {
 						"(deftype-of name base-type)",
 						"(deftype-of name base-type validator)")
 					.doc(
-						"Defines a new custom type wrapper based on a base type.")
+						"Defines a new custom type wrapper based on a base type. \n\n" +
+						"Venice implicitly creates a builder and a type check " +
+						"function suffixed with a dot and a question mark:\n\n" +
+						"```venice                           \n" +
+						"(deftype-of :port :long)            \n" +
+						"                                    \n" +
+						"(port. 8080)          ; builder     \n" +
+						"(port? (port. 8080))  ; type check  \n" +
+						"```")
 					.examples(
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
@@ -619,7 +638,8 @@ public class SpecialFormsDoc {
 						"  (ns foo)                                                    \n" +
 						"  (deftype-of :my-long :long)                                 \n" +
 						"  (+ 10 (my-long. 100000)))                                     ")
-					.seeAlso("deftype", "deftype?", "deftype-or", ".:")
+					.seeAlso(
+						"deftype", "deftype?", "deftype-or", ".:", "deftype-describe")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -633,7 +653,15 @@ public class SpecialFormsDoc {
 					.arglists(
 						"(deftype-or name val*)")
 					.doc(
-						"Defines a new custom or type.")
+						"Defines a new custom or type. \n\n" +
+						"Venice implicitly creates a builder and a type check " +
+						"function suffixed with a dot and a question mark:\n\n" +
+						"```venice                                 \n" +
+						"(deftype-or :color :red :green :blue)     \n" +
+						"                                          \n" +
+						"(color. :blue)           ; builder        \n" +
+						"(color? (color. :blue))  ; type check     \n" +
+						"```")
 					.examples(
 						"(do                                                           \n" +
 						"  (ns foo)                                                    \n" +
@@ -642,7 +670,7 @@ public class SpecialFormsDoc {
 						"  (def x (.: :color :red))                                    \n" +
 						"  ; Venice implicitly creates a builder function              \n" +
 						"  ; suffixed with a '.'                                       \n" +
-						"  (def y (color. :red))                                       \n" +
+						"  (def y (color. :blue))                                       \n" +
 						"  ; ... and a type check function                             \n" +
 						"  (color? y)                                                  \n" +
 						"  y)                                                            ",
@@ -654,6 +682,8 @@ public class SpecialFormsDoc {
 						"  (ns foo)                                                    \n" +
 						"  (deftype-or :long-or-double :long :double)                  \n" +
 						"  (long-or-double. 1000))                                       ")
+				.seeAlso(
+						"deftype", "deftype?", "deftype-of", ".:", "deftype-describe")
 				.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -681,6 +711,8 @@ public class SpecialFormsDoc {
 						"  (ns foo)                                                    \n" +
 						"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
 						"  (deftype-describe :digit))                                    ")
+				.seeAlso(
+						"deftype", "deftype?", "deftype-or", "deftype-of", ".:")
 				.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -699,7 +731,9 @@ public class SpecialFormsDoc {
 						"  (deftype :complex [real :long, imaginary :long])       \n" +
 						"  (def x (.: :complex 100 200))                          \n" +
 						"  [(:real x) (:imaginary x)])                              ")
-					.seeAlso("deftype", "deftype?", "deftype-of", "deftype-or")
+					.seeAlso(
+						"deftype", "deftype?", "deftype-of", "deftype-or", 
+						"deftype-describe")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

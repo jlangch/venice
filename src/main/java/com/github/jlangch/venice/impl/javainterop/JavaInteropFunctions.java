@@ -802,7 +802,7 @@ public class JavaInteropFunctions {
 					.meta()
 					.arglists("(describe-class class)")
 					.doc("Describes a Java class.")
-					.examples("(describe :java.util.ArrayList)")
+					.examples("(describe-class :java.util.ArrayList)")
 					.build());
 		}
 	
