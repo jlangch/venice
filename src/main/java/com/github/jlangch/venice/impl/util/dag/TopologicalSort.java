@@ -46,7 +46,6 @@ public class TopologicalSort<T> {
 			final List<Node<T>> isolatedNodes
 	) {
 		this.edges.addAll(edges);
-		this.isolatedNodes.addAll(isolatedNodes);
 		
 		// all nodes in the graph (isolated and edge nodes)
 		final Set<Node<T>> nodes = new HashSet<>(isolatedNodes);
@@ -124,6 +123,5 @@ public class TopologicalSort<T> {
 
 	
 	private final List<Edge<Node<T>>> edges = new ArrayList<>();
-	private final List<Node<T>> isolatedNodes = new ArrayList<>();
 	private final List<Node<T>> nodes;
 }
