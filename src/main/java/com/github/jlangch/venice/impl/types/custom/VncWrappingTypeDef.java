@@ -27,7 +27,9 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
@@ -82,7 +84,16 @@ public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
 		}
 	}
 
+	@Override
+	public VncMap toMap() {
+		return VncHashMap.of(
+				new VncKeyword(":type"),			getType(),
+				new VncKeyword(":custom-type"), 	new VncKeyword(":wrapping"),
+				new VncKeyword(":base-type"),   	getBaseType(),
+				new VncKeyword(":validation-fn"),	getValidationFn());
+	}
 
+	
     private static final long serialVersionUID = -1848883965231344442L;
 
 	private final VncKeyword baseType;

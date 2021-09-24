@@ -4,6 +4,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
@@ -14,7 +15,9 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 		
 		this.type = type.withMeta(MetaUtil.typeMeta());
 	}
-	
+
+	public abstract VncMap toMap();
+
 	@Override
 	public VncVal withMeta(final VncVal meta) {
 		return this; // not supported

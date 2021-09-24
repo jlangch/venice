@@ -32,7 +32,9 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class VncCustomTypeDef extends VncCustomBaseTypeDef {
@@ -96,6 +98,20 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 						ex);
 			}
 		}
+	}
+	
+	@Override
+	public VncMap toMap() {
+		final List<VncMap> fieldDefs = getFieldDefs()
+										.stream()
+										.map(o -> o.toVncMap())
+										.collect(Collectors.toList());
+		
+		return VncHashMap.of(
+				new VncKeyword(":type"),			getType(),
+				new VncKeyword(":custom-type"), 	new VncKeyword(":record"),
+				new VncKeyword(":field-defs"),  	VncList.ofColl(fieldDefs),
+				new VncKeyword(":validation-fn"),	getValidationFn());
 	}
 	
 

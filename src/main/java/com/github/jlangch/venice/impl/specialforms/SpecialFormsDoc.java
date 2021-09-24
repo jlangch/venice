@@ -492,7 +492,8 @@ public class SpecialFormsDoc {
 						"(deftype name fields)",
 						"(deftype name fields validator)")
 					.doc(
-						"Defines a new custom type for the name with the fields. \n\n" +
+						"Defines a new custom *record* type for the name with " +
+						"the fields. \n\n" +
 						"Venice implicitly creates a builder and a type check " +
 						"function suffixed with a dot and a question mark:\n\n" +
 						"```venice                                        \n" +
@@ -594,7 +595,7 @@ public class SpecialFormsDoc {
 						"(deftype-of name base-type)",
 						"(deftype-of name base-type validator)")
 					.doc(
-						"Defines a new custom type wrapper based on a base type. \n\n" +
+						"Defines a new custom *wrapper* type based on a base type. \n\n" +
 						"Venice implicitly creates a builder and a type check " +
 						"function suffixed with a dot and a question mark:\n\n" +
 						"```venice                           \n" +
@@ -653,7 +654,7 @@ public class SpecialFormsDoc {
 					.arglists(
 						"(deftype-or name val*)")
 					.doc(
-						"Defines a new custom or type. \n\n" +
+						"Defines a new custom *choice* type. \n\n" +
 						"Venice implicitly creates a builder and a type check " +
 						"function suffixed with a dot and a question mark:\n\n" +
 						"```venice                                 \n" +
