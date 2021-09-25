@@ -586,6 +586,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "defmacro":
 					return defmacro_(args, env, a0meta);
 
+				case "defprotocol": // (defprotocol name (fn-name [args*])+)
+					return specialFormHandler.defprotocol_(this, args, env, a0meta);
+
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);
 

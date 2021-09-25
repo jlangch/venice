@@ -32,6 +32,7 @@ public enum TypeRank {
 	JUST (70), 
 
 	CUSTOM_TYPE_DEF (80), 
+	PROTOCOL_TYPE (81), 
 	
 	LIST (100),	
 	JAVALIST (101),

@@ -187,7 +187,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	public String toString() {
 		return qualifiedName;
 	}
-
+	
 	
     public static final String TYPE = ":core/symbol";
 

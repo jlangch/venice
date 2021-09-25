@@ -28,8 +28,10 @@ import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -59,9 +61,11 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
+import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
@@ -479,6 +483,42 @@ public class SpecialFormsHandler {
 									? (VncSymbol)args.first()
 									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
 			return VncBoolean.of(env.isGlobal(sym));
+		}
+	}
+	
+	public VncVal defprotocol_(
+			final IVeniceInterpreter interpreter, 
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		final CallFrame callframe = new CallFrame("defprotocol", args, meta);
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("defprotocol", FnType.SpecialForm, args, 2);
+			
+			// (defprotocol P
+			//	  (foo [x])
+			//	  (bar [x] [x y])
+			//	  (goo [x] "default val")
+			//	  (dar [x] [x y] "default val"))
+			
+			validateDefProtocol(args);
+						
+			final VncSymbol name = (VncSymbol)args.first();
+			
+			final VncVector fnSpecs = VncVector.ofList(
+										args.rest()
+											.stream()
+						 					.map(s -> parseProtocolFnSpec(s))
+						 					.collect(Collectors.toList()));
+
+			// check if symbol exists and is a protocol otherwise deny
+			
+			final VncProtocol protocol = new VncProtocol(name, fnSpecs, name.getMeta());
+			
+			env.setGlobal(new Var(name, protocol));
+
+			return protocol;
 		}
 	}
 	
@@ -1163,6 +1203,115 @@ public class SpecialFormsHandler {
 		else {
 			return VncList.of(new VncSymbol("quote"), ast);
 		}
+	}
+
+	private void validateDefProtocol(final VncList args) {
+		// (defprotocol P
+		//	  (foo [x])
+		//	  (bar [x] [x y])
+		//	  (goo [x] "default val")
+		//	  (dar [x] [x y] "default val"))
+
+		if (!Types.isVncSymbol(args.first())) {
+			throw new VncException(
+					"A protocol definition must have a symbol as its name!\n" +
+					"E.g.: as 'P' in (defprotocol P (foo [x]))");
+		}
+		
+		for(VncVal spec : args.rest()) {
+			if (!Types.isVncList(spec)) {
+				throw new VncException(
+						"A protocol definition must have a list with function " +
+						"specifications!\n" +
+						"E.g.: as '(foo [x])' (defprotocol P (foo [x]) (bar [x]))");
+			}
+
+			final VncList specList = (VncList)spec;
+
+			if (!Types.isVncSymbol(specList.first())) {
+				throw new VncException(
+						"A protocol function specification must have a symbol as " +
+						"its name!\n" +
+						"E.g.: as 'foo' in (defprotocol P (foo [x]))");
+			}
+
+			final VncSymbol fnName = (VncSymbol)specList.first();
+			final boolean hasRetVal = !Types.isVncVector(specList.last());
+			final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
+
+			final Set<Integer> aritySet = new HashSet<>();
+			
+			if (paramSpecs.isEmpty()) {
+				throw new VncException(String.format(
+						"The protocol function specification '%s' must have at least one " +
+						"parameter specification!\n" +
+						"E.g.: as '[x]' in (defprotocol P (foo [x]))",
+						fnName));
+			}
+			
+			for(VncVal ps : paramSpecs) {
+				if (!Types.isVncVector(ps)) {
+					throw new VncException(String.format(
+							"The protocol function specification '%s' must have one or multiple " +
+							"vectors of param symbols followed by an optional return value of any " +
+							"type but vector!\n" +
+							"E.g.: (defprotocol P (foo [x] [x y] nil))",
+							fnName));
+				}
+				
+				// validate for non duplicate arities
+				final int arity = ((VncVector)ps).size();
+				if (aritySet.contains(arity)) {
+					throw new VncException(String.format(
+							"The protocol function specification '%s' has multiple parameter " +
+							"definitions for the arity %d!\n" +
+							"E.g.: as '[x y]' in (defprotocol P (foo [x] [x y] [x y]))",
+							fnName,
+							arity));
+				}
+				aritySet.add(arity);
+
+				for(VncVal p : (VncVector)ps) {
+					if (!Types.isVncSymbol(p)) {
+						throw new VncException(String.format(
+								"The protocol function specification '%s' must have vector of param " +
+								"symbols!\n" +
+								"E.g.: as '[x y]' in (defprotocol P (foo [x y]))",
+								fnName));
+					}
+				}
+			}
+		}
+	}
+
+	private VncMap parseProtocolFnSpec(final VncVal spec) {
+		// spec:  (bar [x] [x y])
+		
+		final VncList specList = (VncList)spec;
+		
+		final boolean hasRetVal = !Types.isVncVector(specList.last());
+		
+		final VncSymbol fnName = (VncSymbol)specList.first();
+		final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
+		final VncVal fnDefaultRet = hasRetVal ? specList.last() : Nil;
+		
+		final VncVector arities = paramSpecs
+									.toVncVector()
+									.map(v -> ((VncVector)v)
+													.map(p -> {
+															final VncSymbol s = (VncSymbol)p;
+															return new VncString(s.getName(), s.getMeta());
+													 }));
+				
+		return VncOrderedMap.of(
+					new VncKeyword(":name"), 
+					new VncString(fnName.getSimpleName(), fnName.getMeta()),
+					
+					new VncKeyword(":params"), 
+					arities,
+				
+					new VncKeyword(":retVal"),
+					fnDefaultRet);
 	}
 	
 	private static boolean isNonEmptySequence(final VncVal x) {
