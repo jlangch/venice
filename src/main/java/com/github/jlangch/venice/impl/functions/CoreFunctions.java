@@ -6262,12 +6262,13 @@ public class CoreFunctions {
 
 				for(VncVal v : coll) {
 					final VncVal key = VncFunction.applyWithMeter(fn, VncList.of(v), meterRegistry);
-					final VncSequence val = Coerce.toVncSequence(map.getJavaMap().get(key));
+					final Object val = map.getJavaMap().get(key);
 					if (val == null) {
 						map = map.assoc(key, VncVector.of(v));
 					}
 					else {
-						map = map.assoc(key, val.addAtEnd(v));
+						final VncSequence seq = Coerce.toVncSequence((VncVal)val);
+						map = map.assoc(key, seq.addAtEnd(v));
 					}
 				}
 

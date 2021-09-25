@@ -513,13 +513,12 @@ public class SpecialFormsHandler {
 	
 			final VncProtocol protocol = new VncProtocol(name, protocolFns, name.getMeta());
 			
-			// TODO: check if symbol exists and is a protocol otherwise deny
 			env.setGlobal(new Var(name, protocol));
 
 			return protocol;
 		}
 	}
-	
+		
 	public VncVal deftype_(
 			final IVeniceInterpreter interpreter, 
 			final VncList args, 

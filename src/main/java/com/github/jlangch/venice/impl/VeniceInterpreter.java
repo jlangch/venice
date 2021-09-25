@@ -587,12 +587,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return defmacro_(args, env, a0meta);
 
 				case "defprotocol": // (defprotocol name (fn-name [args*])+)
-					final VncSymbol protocolName = validateSymbolWithCurrNS(
-														Namespaces.qualifySymbolWithCurrNS(
-																evaluateSymbolMetaData(args.first(), env)),
-														"defprotocol");
-
-					return specialFormHandler.defprotocol_(this, protocolName, args, env, a0meta);
+					return defprotocol_(args, env, a0meta);
 
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);
@@ -1275,6 +1270,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
+	public VncVal defprotocol_(final VncList args, final Env env, final VncVal meta) {
+		final VncSymbol protocolName = 
+				validateSymbolWithCurrNS(
+					Namespaces.qualifySymbolWithCurrNS(
+							evaluateSymbolMetaData(args.first(), env)),
+					"defprotocol");
+
+		return specialFormHandler.defprotocol_(this, protocolName, args, env, meta);
+	}
 
 	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {
 		final CallFrame callframe = new CallFrame("defmulti", args, meta);
@@ -1806,6 +1810,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final boolean checkSandbox;
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry;
+	//private final ProtocolRegistry protocolRegistry = new ProtocolRegistry();
 	
 	private final SpecialFormsHandler specialFormHandler;
 	

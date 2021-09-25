@@ -77,6 +77,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
+import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class Types {
@@ -281,6 +282,10 @@ public class Types {
 
 	public static boolean isVncJavaMap(final VncVal val) {
 		return val != null && (val instanceof VncJavaMap);
+	}
+
+	public static boolean isVncProtocol(final VncVal val) {
+		return val != null && (val instanceof VncProtocol);
 	}
 
 	public static VncKeyword getType(final VncVal val) {
