@@ -56,12 +56,13 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
@@ -488,6 +489,7 @@ public class SpecialFormsHandler {
 	
 	public VncVal defprotocol_(
 			final IVeniceInterpreter interpreter, 
+			final VncSymbol name,
 			final VncList args, 
 			final Env env,
 			final VncVal meta
@@ -504,18 +506,14 @@ public class SpecialFormsHandler {
 			
 			validateDefProtocol(args);
 						
-			final VncSymbol name = (VncSymbol)args.first();
+			VncMap protocolFns = VncHashMap.empty();
+			for(VncVal s : args.rest()) {
+				protocolFns = protocolFns.assoc(name, parseProtocolFnSpec(s));
+			}
+	
+			final VncProtocol protocol = new VncProtocol(name, protocolFns, name.getMeta());
 			
-			final VncVector fnSpecs = VncVector.ofList(
-										args.rest()
-											.stream()
-						 					.map(s -> parseProtocolFnSpec(s))
-						 					.collect(Collectors.toList()));
-
-			// check if symbol exists and is a protocol otherwise deny
-			
-			final VncProtocol protocol = new VncProtocol(name, fnSpecs, name.getMeta());
-			
+			// TODO: check if symbol exists and is a protocol otherwise deny
 			env.setGlobal(new Var(name, protocol));
 
 			return protocol;
@@ -1283,7 +1281,7 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	private VncMap parseProtocolFnSpec(final VncVal spec) {
+	private VncMultiArityFunction parseProtocolFnSpec(final VncVal spec) {
 		// spec:  (bar [x] [x y])
 		
 		final VncList specList = (VncList)spec;
@@ -1293,24 +1291,29 @@ public class SpecialFormsHandler {
 		final VncSymbol fnName = (VncSymbol)specList.first();
 		final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
 		final VncVal fnDefaultRet = hasRetVal ? specList.last() : Nil;
-		
-		final VncVector arities = paramSpecs
-									.toVncVector()
-									.map(v -> ((VncVector)v)
-													.map(p -> {
-															final VncSymbol s = (VncSymbol)p;
-															return new VncString(s.getName(), s.getMeta());
-													 }));
-				
-		return VncOrderedMap.of(
-					new VncKeyword(":name"), 
-					new VncString(fnName.getSimpleName(), fnName.getMeta()),
-					
-					new VncKeyword(":params"), 
-					arities,
-				
-					new VncKeyword(":retVal"),
-					fnDefaultRet);
+			
+		final List<VncFunction> functions =
+			paramSpecs
+				.getJavaList()
+				.stream()
+				.map(p -> new VncFunction(
+								fnName.getQualifiedName(), 
+								(VncVector)p, 
+								fnName.getMeta()
+						  ) {
+							public VncVal apply(final VncList args) {
+								return fnDefaultRet;
+							}
+							
+							private static final long serialVersionUID = -1L;
+						  })
+				.collect(Collectors.toList());
+
+		return new VncMultiArityFunction(
+						fnName.getQualifiedName(),
+						functions,
+						false,
+						fnName.getMeta());
 	}
 	
 	private static boolean isNonEmptySequence(final VncVal x) {

@@ -587,7 +587,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return defmacro_(args, env, a0meta);
 
 				case "defprotocol": // (defprotocol name (fn-name [args*])+)
-					return specialFormHandler.defprotocol_(this, args, env, a0meta);
+					final VncSymbol protocolName = validateSymbolWithCurrNS(
+														Namespaces.qualifySymbolWithCurrNS(
+																evaluateSymbolMetaData(args.first(), env)),
+														"defprotocol");
+
+					return specialFormHandler.defprotocol_(this, protocolName, args, env, a0meta);
 
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);

@@ -50,6 +50,10 @@ public abstract class VncFunction
 	public VncFunction(final String name, final VncVal meta) {
 		this(name, null, false, null, meta);
 	}
+	
+	public VncFunction(final String name, final VncVector params, final VncVal meta) {
+		this(name, params, false, null, meta);
+	}
 
 	public VncFunction(final String name, final VncVector params) {
 		this(name, params, false, null, Constants.Nil);

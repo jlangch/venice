@@ -24,9 +24,10 @@ package com.github.jlangch.venice.impl.types.custom;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
@@ -34,12 +35,12 @@ public class VncProtocol extends VncVal {
 
 	public VncProtocol(
 			final VncSymbol name, 
-			final VncVector fnSpecs,
+			final VncMap functions,
 			final VncVal meta
 	) {
 		super(meta);
 		this.name = name;
-		this.fnSpecs = fnSpecs;
+		this.functions = functions;
 	}
 
 	
@@ -47,13 +48,17 @@ public class VncProtocol extends VncVal {
 		return name;
 	}
 	
-	public VncVector getFnSpecs() {
-		return fnSpecs;
+	public VncMap getFunctions() {
+		return functions;
+	}
+	
+	public VncMultiArityFunction getFunctionForName(final VncSymbol name) {
+		return (VncMultiArityFunction)functions.get(name);
 	}
 	
 	@Override
 	public VncVal withMeta(final VncVal meta) {
-		return this; // :FIXME
+		return new VncProtocol(name, functions, meta);
 	}
 
 	@Override
@@ -88,11 +93,12 @@ public class VncProtocol extends VncVal {
 
 	@Override 
 	public String toString() {
-		return name.getValue();
+		return name.toString();
 	}
 	
+	@Override 
 	public String toString(final boolean print_readably) {
-		return toString();
+		return name.toString(print_readably);
 	}
 
 	
@@ -101,5 +107,5 @@ public class VncProtocol extends VncVal {
     private static final long serialVersionUID = -1848883965231344442L;	
 	
     private final VncSymbol name;
-    private final VncVector fnSpecs;
+    private final VncMap functions;
 }
