@@ -1239,8 +1239,6 @@ public class SpecialFormsHandler {
 			final boolean hasRetVal = !Types.isVncVector(specList.last());
 			final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
 
-			final Set<Integer> aritySet = new HashSet<>();
-			
 			if (paramSpecs.isEmpty()) {
 				throw new VncException(String.format(
 						"The protocol function specification '%s' must have at least one " +
@@ -1249,6 +1247,7 @@ public class SpecialFormsHandler {
 						fnName));
 			}
 			
+			final Set<Integer> aritySet = new HashSet<>();			
 			for(VncVal ps : paramSpecs) {
 				if (!Types.isVncVector(ps)) {
 					throw new VncException(String.format(
