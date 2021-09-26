@@ -727,11 +727,10 @@ public class SpecialFormsDoc {
 					.arglists("(.: type-name args*)")
 					.doc(
 						"Instantiates a custom type.                           \n\n" +
-						"*Note:* Venice implicitly creates a builder function  \n" +
+						"Note: Venice implicitly creates a builder function    \n" +
 						"suffixed with a dot:                                  \n\n" +
 						"```venice                                             \n" +
 						"(deftype :complex [real :long, imaginary :long])      \n" +
-						"                                                      \n" +
 						"(complex. 200 300)                                    \n" +
 						"```                                                   \n\n" +
 						"For readability prefer `(complex. 200 300)` over      \n" +
