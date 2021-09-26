@@ -48,9 +48,7 @@ import java.io.OutputStream;
  * </pre>
  */
 // @formatter:on
-public final class JsonAppendableWriter extends
-		JsonWriterBase<JsonAppendableWriter> implements
-		JsonSink<JsonAppendableWriter> {
+public final class JsonAppendableWriter extends JsonWriterBase<JsonAppendableWriter> {
 	JsonAppendableWriter(Appendable appendable, String indent) {
 		super(appendable, indent);
 	}
