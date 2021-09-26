@@ -55,5 +55,5 @@ _config.json_ (via the Atom -> Config... menu). Specify a pattern to match for t
 
 **Editing a Venice file and verifying parenthesis**
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/atom-editor.png" width="800">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/atom-editor.png" width="700">
 
