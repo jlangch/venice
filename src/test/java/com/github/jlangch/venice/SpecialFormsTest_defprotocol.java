@@ -200,4 +200,13 @@ public class SpecialFormsTest_defprotocol {
 				() -> venice.eval("(defprotocol P (foo [x] 1 1))"));					
 	}
 
+	@Test
+	public void test_protocol_error_7() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				VncException.class,
+				() -> venice.eval("(defprotocol P (foo [x]) 1)"));					
+	}
+
 }

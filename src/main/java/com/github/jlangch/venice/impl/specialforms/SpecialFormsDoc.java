@@ -483,13 +483,12 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-
 	public static VncFunction defprotocol = 
 		new SpecialFormsDocFunction(
 				"defprotocol",
 				VncFunction
 					.meta()
-					.arglists("(defprotocol P fn-spec)")		
+					.arglists("(defprotocol P fn-spec*)")		
 					.doc("Defines a new protocal with the name `P`. \n\n" +
 						 "Formats:                                  \n\n" +
 						 "- `(defprotocol P (foo [x]))`              \n" +

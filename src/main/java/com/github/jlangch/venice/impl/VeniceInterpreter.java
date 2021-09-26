@@ -1271,6 +1271,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 
 	public VncVal defprotocol_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame callframe = new CallFrame("defprotocol", args, meta);
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("defprotocol", FnType.SpecialForm, args, 2);
+		}
+
 		final VncSymbol protocolName = 
 				validateSymbolWithCurrNS(
 					Namespaces.qualifySymbolWithCurrNS(
