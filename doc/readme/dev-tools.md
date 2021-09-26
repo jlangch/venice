@@ -5,7 +5,7 @@
 
 ### Start a Venice Gitpod workspace in your browser
 
-Fire up a Venice a [Gitpod](https://gitpod.io/) workspace in your browser by clicking this button: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice). If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/). It opens the URL _https://gitpod.io/#https://github.com/jlangch/venice_. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it.
+Fire up a Venice a [Gitpod](https://gitpod.io/) workspace in your browser by clicking this button: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice). It opens the URL _https://gitpod.io/#https://github.com/jlangch/venice_. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
 
 [Gitpod](https://gitpod.io/) gives you a full development environment and a [REPL](doc/readme/repl.md) within your browser without needing to install anything on your local machine.
 
