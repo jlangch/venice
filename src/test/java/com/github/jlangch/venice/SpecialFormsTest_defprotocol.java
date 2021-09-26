@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -138,4 +139,65 @@ public class SpecialFormsTest_defprotocol {
 
 		assertEquals(":core/protocol", venice.eval(script));					
 	}
+	
+	
+	// ------------------------------------------------------------------------
+	// Errors
+	// ------------------------------------------------------------------------
+
+	
+	@Test
+	public void test_protocol_error_1() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				ArityException.class,
+				() -> venice.eval("(defprotocol)"));					
+	}
+	
+	@Test
+	public void test_protocol_error_2() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				ArityException.class,
+				() -> venice.eval("(defprotocol P)"));					
+	}
+
+	@Test
+	public void test_protocol_error_3() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				VncException.class,
+				() -> venice.eval("(defprotocol P 1)"));					
+	}
+
+	@Test
+	public void test_protocol_error_4() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				VncException.class,
+				() -> venice.eval("(defprotocol P (foo))"));					
+	}
+
+	@Test
+	public void test_protocol_error_5() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				VncException.class,
+				() -> venice.eval("(defprotocol P (foo [1]))"));					
+	}
+
+	@Test
+	public void test_protocol_error_6() {
+		final Venice venice = new Venice();
+
+		assertThrows(
+				VncException.class,
+				() -> venice.eval("(defprotocol P (foo [x] 1 1))"));					
+	}
+
 }

@@ -483,6 +483,26 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
+
+	public static VncFunction defprotocol = 
+		new SpecialFormsDocFunction(
+				"defprotocol",
+				VncFunction
+					.meta()
+					.arglists("(defprotocol P fn-spec)")		
+					.doc("Defines a new protocal with the name `P`. \n\n" +
+						 "Formats:                                  \n\n" +
+						 "- `(defprotocol P (foo [x]))`              \n" +
+						 "- `(defprotocol P (foo [x] [x y]))`        \n" +
+						 "- `(defprotocol P (foo [x] [x y] nil))`    \n" +
+						 "- `(defprotocol P (foo [x] [x y] 100))`    \n" +
+						 "- `(defprotocol P (foo [x]) (bar [x]))`    ")
+					.seeAlso("defmulti")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
 	public static VncFunction deftype = 
 		new SpecialFormsDocFunction(
 				"deftype",
@@ -1566,6 +1586,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("defonce"),			defonce)
 					.put(new VncSymbol("defmulti"),			defmulti)
 					.put(new VncSymbol("defmethod"),		defmethod)
+					.put(new VncSymbol("defprotocol"),		defprotocol)
 					.put(new VncSymbol("deftype"),			deftype)
 					.put(new VncSymbol("deftype?"),			deftypeQ)
 					.put(new VncSymbol("deftype-of"),		deftype_of)

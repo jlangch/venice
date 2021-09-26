@@ -496,8 +496,6 @@ public class SpecialFormsHandler {
 	) {
 		final CallFrame callframe = new CallFrame("defprotocol", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("defprotocol", FnType.SpecialForm, args, 2);
-			
 			// (defprotocol P
 			//	  (foo [x])
 			//	  (bar [x] [x y])
