@@ -45,9 +45,9 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(doc x)")
 					.doc(
-						"Prints documentation for a var or special form given x as its name. " +
+						"Prints documentation for a var or special form given `x` as its name. " +
 						"Prints the definition of custom types. \n\n" +
-						"Displays the source of a module if x is a module: `(doc :ansi)`")
+						"Displays the source of a module if `x` is a module: `(doc :ansi)`")
 					.examples(
 						"(doc +)",
 						"(doc def)",
@@ -563,7 +563,7 @@ public class SpecialFormsDoc {
 					.arglists(
 						"(deftype? type)")
 					.doc(
-						"Returns true if type is a custom type else false.")
+						"Returns true if `type` is a custom type else false.")
 					.examples(
 						"(do                                                 \n" +
 						"  (ns foo)                                          \n" +

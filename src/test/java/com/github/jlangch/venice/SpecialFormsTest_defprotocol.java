@@ -71,6 +71,62 @@ public class SpecialFormsTest_defprotocol {
 	}
 	
 	@Test
+	public void test_protocol_default_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                          \n" +
+				"  (ns test)                  \n" +
+				"  (defprotocol P             \n" +
+				"     (foo [x] [x y] nil))    \n" +
+				"  (pr-str P))                  ";
+
+		assertEquals("test/P", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                          \n" +
+				"  (ns test)                  \n" +
+				"  (defprotocol P             \n" +
+				"     (foo [x] [x y] 100))    \n" +
+				"  (pr-str P))                  ";
+
+		assertEquals("test/P", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"  (ns test)                   \n" +
+				"  (defprotocol P              \n" +
+				"     (foo [x] [x y] (+ 1 2))) \n" +
+				"  (pr-str P))                   ";
+
+		assertEquals("test/P", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_4() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                \n" +
+				"  (ns test)                        \n" +
+				"  (defprotocol P                   \n" +
+				"     (foo [x] [x y] (vector 1 2))) \n" +
+				"  (pr-str P))                        ";
+
+		assertEquals("test/P", venice.eval(script));					
+	}
+	
+	@Test
 	public void test_protocol_type() {
 		final Venice venice = new Venice();
 

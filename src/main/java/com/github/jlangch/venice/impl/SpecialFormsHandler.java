@@ -508,7 +508,7 @@ public class SpecialFormsHandler {
 						
 			VncMap protocolFns = VncHashMap.empty();
 			for(VncVal s : args.rest()) {
-				protocolFns = protocolFns.assoc(name, parseProtocolFnSpec(s));
+				protocolFns = protocolFns.assoc(name, parseProtocolFnSpec(s, env));
 			}
 	
 			final VncProtocol protocol = new VncProtocol(name, protocolFns, name.getMeta());
@@ -1280,8 +1280,11 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	private VncMultiArityFunction parseProtocolFnSpec(final VncVal spec) {
-		// spec:  (bar [x] [x y])
+	private VncMultiArityFunction parseProtocolFnSpec(
+			final VncVal spec,
+			final Env env
+	) {
+		// spec:  (bar [x] [x y] nil)
 		
 		final VncList specList = (VncList)spec;
 		
@@ -1289,7 +1292,9 @@ public class SpecialFormsHandler {
 		
 		final VncSymbol fnName = (VncSymbol)specList.first();
 		final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
-		final VncVal fnDefaultRet = hasRetVal ? specList.last() : Nil;
+		final VncVal fnDefaultRet = hasRetVal 
+										? evaluator.evaluate(specList.last(), env, false) 
+										: Nil;
 			
 		final List<VncFunction> functions =
 			paramSpecs
