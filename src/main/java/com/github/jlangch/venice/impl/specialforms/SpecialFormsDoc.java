@@ -301,6 +301,10 @@ public class SpecialFormsDoc {
 					.examples(
 						"(do (def sum (fn [x y] (+ x y))) (sum 2 3))",
 						
+						";; multi-arity anonymous function      \n" +
+						"(let [f (fn ([x] x) ([x y] (+ x y)))]  \n" +
+						"   [(f 1) (f 4 6)])",
+							
 						"(map (fn double [x] (* 2 x)) (range 1 5))",
 						
 						"(map #(* 2 %) (range 1 5))",
