@@ -31,7 +31,7 @@ Fire up a Venice a [Gitpod](https://gitpod.io/) workspace in your browser by cli
 ```
 
 
-## REPL and Atom Editor
+## REPL with an Editor
 
 The [REPL](doc/readme/repl.md) and an editor with syntax highlighting is all
 you need to start with Venice.
