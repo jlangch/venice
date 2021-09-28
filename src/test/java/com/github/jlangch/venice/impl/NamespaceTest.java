@@ -105,6 +105,19 @@ public class NamespaceTest {
 				"(do                                       \n" +
 				"  (ns foo)                                \n" +
 				"  (defn foo/*  [x y] (core/* x y 2))      \n" +
+				"  (* 3 4))  ;; calling foo/* !!             ";
+
+		assertEquals(24L, venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_6c() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       \n" +
+				"  (ns foo)                                \n" +
+				"  (defn foo/*  [x y] (core/* x y 2))      \n" +
 				"  (ns test)                               \n" +
 				"  (foo/* 3 4))                              ";
 
@@ -112,7 +125,7 @@ public class NamespaceTest {
 	}
 
 	@Test
-	public void test_ns_6c() {
+	public void test_ns_6d() {
 		final Venice venice = new Venice();
 
 		final String script =
