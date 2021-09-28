@@ -458,13 +458,13 @@ public class TimeFunctions {
 						"(time/zoned-date-time 1375315200000)",
 						"(time/zoned-date-time (. :java.util.Date :new))",
 
-						"(time/zoned-date-time :UTC)",
-						"(time/zoned-date-time :UTC 2018 8 1)",
-						"(time/zoned-date-time :UTC 2018 8 1 14 20 10)",
-						"(time/zoned-date-time :UTC 2018 8 1 14 20 10 200)",
-						"(time/zoned-date-time :UTC \"2018-08-01T14:20:10.200+01:00\")",
-						"(time/zoned-date-time :UTC 1375315200000)",
-						"(time/zoned-date-time :UTC (. :java.util.Date :new))")
+						"(time/zoned-date-time \"UTC\")",
+						"(time/zoned-date-time \"UTC\" 2018 8 1)",
+						"(time/zoned-date-time \"UTC\" 2018 8 1 14 20 10)",
+						"(time/zoned-date-time \"UTC\" 2018 8 1 14 20 10 200)",
+						"(time/zoned-date-time \"UTC\" \"2018-08-01T14:20:10.200+01:00\")",
+						"(time/zoned-date-time \"UTC\" 1375315200000)",
+						"(time/zoned-date-time \"UTC\" (. :java.util.Date :new))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -477,6 +477,13 @@ public class TimeFunctions {
 					if (Types.isVncKeyword(val)) {
 						zoneId = ZoneId.of(((VncKeyword)val).getValue());
 						argList = args.rest();
+					}
+					else if (Types.isVncString(val)) {
+						final String s = ((VncString)val).getValue();
+						if (!s.isEmpty() && !Character.isDigit(s.charAt(0))) {
+							zoneId = ZoneId.of(s);
+							argList = args.rest();
+						}
 					}
 				}
 				if (argList.size() == 0) {
@@ -1613,7 +1620,7 @@ public class TimeFunctions {
 				final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
 
 				if (date instanceof ZonedDateTime) {
-					return new VncKeyword(((ZonedDateTime)date).getZone().getId());
+					return new VncString(((ZonedDateTime)date).getZone().getId());
 				}
 				else if (date instanceof LocalDateTime) {
 					return Nil;
@@ -1790,7 +1797,7 @@ public class TimeFunctions {
 					.stream()
 					.sorted(Map.Entry.comparingByKey())
 					.forEachOrdered(e -> map.put(
-											new VncKeyword(e.getKey()),
+											new VncString(e.getKey()),
 											new VncString(e.getValue())));
 
 				return new VncOrderedMap(map);
