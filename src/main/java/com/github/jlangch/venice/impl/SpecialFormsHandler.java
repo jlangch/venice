@@ -582,40 +582,17 @@ public class SpecialFormsHandler {
 		final VncList fnSpecList = args.slice(2);
 
 
-		for(VncVal s : fnSpecList.getJavaList()) {
-			final VncList fnSpec = (VncList)s;
-			
-			// (foo [x] nil)                 -> (defn foo [x] nil)
-			// (foo ([x] nil) ([x y] nil))   -> (defn foo ([x] nil) ([x y] nil))
-			
-			final String name = ((VncSymbol)fnSpec.first()).getName();
-			final VncSymbol fnProtoSym = new VncSymbol(
-											protocol.getName().getNamespace(), 
-											name, 
-											fnSpec.first().getMeta());
-			final VncSymbol fnSym = new VncSymbol(
-											protocol.getName().getNamespace(), 
-											GenSym.generateAutoSym(name).getName(), 
-											fnSpec.first().getMeta());
-			
-			// Lookup protocol function from the ENV
-			final VncVal protocolFn = env.getGlobalOrNull(fnProtoSym);
-			if (!(protocolFn instanceof VncProtocolFunction)) {
+		for(VncVal fnSpec : fnSpecList.getJavaList()) {
+			if (!Types.isVncList(fnSpec)) {
 				throw new VncException(String.format(
-							"The protocol function '%s' does not exist!",
-							fnProtoSym.getQualifiedName()));
+						"Invalid extend for protocol '%s' with type '%s' . "
+						+ "Expected a function spec like '(foo [x] nil)'!",
+						protocolSym.getQualifiedName(),
+						typeRef.getType()));
 			}
 			
-			// Create the protocol function by evaluating (defn ...)
-			final VncList fnDef = VncList
-									.of(new VncSymbol("defn"), fnSym)
-									.addAllAtEnd(fnSpec.rest());
-			evaluator.evaluate(fnDef, env, false);
-			final VncFunction fn = (VncFunction)env.getGlobalOrNull(fnSym);
-			env.removeGlobalSymbol(fnSym);
-			
-			// Register the function for the type on the protocol
-			((VncProtocolFunction)protocolFn).register(type, fn);
+			// (foo [x] nil)
+			extendFnSpec(type, (VncList)fnSpec, protocol, env);
 		}
 		
 		return Nil;
@@ -1421,7 +1398,46 @@ public class SpecialFormsHandler {
 						false,
 						fnName.getMeta());
 	}
-	
+
+	private void extendFnSpec(
+			final VncKeyword type,
+			final VncList fnSpec,
+			final VncProtocol protocol,
+			final Env env
+	) {
+		// (foo [x] nil)                 -> (defn foo [x] nil)
+		// (foo ([x] nil) ([x y] nil))   -> (defn foo ([x] nil) ([x y] nil))
+		
+		final String name = ((VncSymbol)fnSpec.first()).getName();
+		final VncSymbol fnProtoSym = new VncSymbol(
+										protocol.getName().getNamespace(), 
+										name, 
+										fnSpec.first().getMeta());
+		final VncSymbol fnSym = new VncSymbol(
+										protocol.getName().getNamespace(), 
+										GenSym.generateAutoSym(name).getName(), 
+										fnSpec.first().getMeta());
+		
+		// Lookup protocol function from the ENV
+		final VncVal protocolFn = env.getGlobalOrNull(fnProtoSym);
+		if (!(protocolFn instanceof VncProtocolFunction)) {
+			throw new VncException(String.format(
+						"The protocol function '%s' does not exist!",
+						fnProtoSym.getQualifiedName()));
+		}
+		
+		// Create the protocol function by evaluating (defn ...)
+		final VncList fnDef = VncList
+								.of(new VncSymbol("defn"), fnSym)
+								.addAllAtEnd(fnSpec.rest());
+		evaluator.evaluate(fnDef, env, false);
+		final VncFunction fn = (VncFunction)env.getGlobalOrNull(fnSym);
+		env.removeGlobalSymbol(fnSym);
+		
+		// Register the function for the type on the protocol
+		((VncProtocolFunction)protocolFn).register(type, fn);
+	}
+
 	private static boolean isNonEmptySequence(final VncVal x) {
 		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
 	}
