@@ -589,6 +589,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "defprotocol": // (defprotocol name (fn-name [args*])+)
 					return defprotocol_(args, env, a0meta);
 
+				case "extend": // (extend type protocol (fn-name [args*] expr+)+)
+					return extend_(args, env, a0meta);
+
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);
 
@@ -1276,13 +1279,28 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertMinArity("defprotocol", FnType.SpecialForm, args, 2);
 		}
 
-		final VncSymbol protocolName = 
+		final VncSymbol protocol = 
 				validateSymbolWithCurrNS(
 					Namespaces.qualifySymbolWithCurrNS(
 							evaluateSymbolMetaData(args.first(), env)),
 					"defprotocol");
 
-		return specialFormHandler.defprotocol_(this, protocolName, args, env, meta);
+		return specialFormHandler.defprotocol_(this, protocol, args, env, meta);
+	}
+
+	public VncVal extend_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame callframe = new CallFrame("extend", args, meta);
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("extend", FnType.SpecialForm, args, 3);
+		}
+
+		final VncSymbol protocol = 
+				validateSymbolWithCurrNS(
+					Namespaces.qualifySymbolWithCurrNS(
+							evaluateSymbolMetaData(args.second(), env)),
+					"extend");
+
+		return specialFormHandler.extend_(this, args.first(), protocol, args, env, meta);
 	}
 
 	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {

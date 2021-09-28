@@ -21,7 +21,10 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
@@ -42,6 +45,14 @@ public class VncProtocolFunction extends VncFunction {
 		return protocol;
 	}
 	
+	public void register(final VncKeyword type, final VncFunction fn) {
+		typeFunctions.put(type, fn);
+	}
+	
+	public void unregister(final VncKeyword type) {
+		typeFunctions.remove(type);
+	}
+	
 	@Override
 	public VncProtocolFunction withMeta(final VncVal meta) {
 		super.withMeta(meta);
@@ -59,7 +70,16 @@ public class VncProtocolFunction extends VncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		return getFunctionForArgs(args).apply(args);
+		final int arity = args.size();
+		
+		// lookup protocol function based on the type of the first argument
+		final VncKeyword type = Types.getType(args.first());
+		VncFunction fn = typeFunctions.get(type);
+		if (fn == null) {
+			fn = defaultFn.getFunctionForArity(arity);
+		}
+		
+		return fn.apply(args);
 	}
 
 	@Override
@@ -69,22 +89,24 @@ public class VncProtocolFunction extends VncFunction {
 
 	@Override
 	public VncFunction getFunctionForArgs(final VncList args) {
-		return getFunctionForArity(args.size());
+		return null;
 	}
 
 	@Override
 	public VncFunction getFunctionForArity(final int arity) {
-		return defaultFn.getFunctionForArity(arity);
+		return null;
 	}
 	
 	@Override public TypeRank typeRank() {
 		return TypeRank.MULTI_PROTOCOL_FUNCTION;
 	}
 
+	
     public static final String TYPE = ":core/protocol-function";
 	
     private static final long serialVersionUID = -1848883965231344442L;
     
 	private final VncSymbol protocol;
 	private final VncMultiArityFunction defaultFn;
+	private final ConcurrentHashMap<VncKeyword,VncFunction> typeFunctions = new ConcurrentHashMap<>();
 }

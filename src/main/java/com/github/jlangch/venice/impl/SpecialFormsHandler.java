@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.specialforms.CatchBlock;
@@ -545,6 +546,79 @@ public class SpecialFormsHandler {
 
 			return protocol;
 		}
+	}
+	
+	public VncVal extend_(
+			final IVeniceInterpreter interpreter, 
+			final VncVal typeRef,
+			final VncSymbol protocolSym,
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		if (!(typeRef instanceof VncKeyword)) {
+			throw new VncException(String.format(
+					"The type '%s' must be a keyword like :core/long!",
+					typeRef.getType()));
+		}
+
+		// Lookup protocol from the ENV
+		final VncVal p = env.getGlobalOrNull(protocolSym);
+		if (!(p instanceof VncProtocol)) {
+			throw new VncException(String.format(
+					"The protocol '%s' is not defined!",
+					protocolSym.getQualifiedName()));
+		}
+		
+		final VncKeyword type = (VncKeyword)typeRef;
+		
+		if (!type.hasNamespace()) {
+			throw new VncException(String.format(
+					"The type '%s' must be qualified!",
+					type.getQualifiedName()));
+		}
+		
+		final VncProtocol protocol = (VncProtocol)p;		
+		final VncList fnSpecList = args.slice(2);
+
+
+		for(VncVal s : fnSpecList.getJavaList()) {
+			final VncList fnSpec = (VncList)s;
+			
+			// (foo [x] nil)                 -> (defn foo [x] nil)
+			// (foo ([x] nil) ([x y] nil))   -> (defn foo ([x] nil) ([x y] nil))
+			
+			final String name = ((VncSymbol)fnSpec.first()).getName();
+			final VncSymbol fnProtoSym = new VncSymbol(
+											protocol.getName().getNamespace(), 
+											name, 
+											fnSpec.first().getMeta());
+			final VncSymbol fnSym = new VncSymbol(
+											protocol.getName().getNamespace(), 
+											GenSym.generateAutoSym(name).getName(), 
+											fnSpec.first().getMeta());
+			
+			// Lookup protocol function from the ENV
+			final VncVal protocolFn = env.getGlobalOrNull(fnProtoSym);
+			if (!(protocolFn instanceof VncProtocolFunction)) {
+				throw new VncException(String.format(
+							"The protocol function '%s' does not exist!",
+							fnProtoSym.getQualifiedName()));
+			}
+			
+			// Create the protocol function by evaluating (defn ...)
+			final VncList fnDef = VncList
+									.of(new VncSymbol("defn"), fnSym)
+									.addAllAtEnd(fnSpec.rest());
+			evaluator.evaluate(fnDef, env, false);
+			final VncFunction fn = (VncFunction)env.getGlobalOrNull(fnSym);
+			env.removeGlobalSymbol(fnSym);
+			
+			// Register the function for the type on the protocol
+			((VncProtocolFunction)protocolFn).register(type, fn);
+		}
+		
+		return Nil;
 	}
 		
 	public VncVal deftype_(
