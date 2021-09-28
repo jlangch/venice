@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -121,7 +122,7 @@ public class VncMultiArityFunction extends VncFunction {
 		}	
 		
 		if (fn == null) {
-			throw new VncException(String.format(
+			throw new ArityException(String.format(
 					"No matching '%s' multi-arity function for arity %d", 
 					getQualifiedName(),
 					arity));

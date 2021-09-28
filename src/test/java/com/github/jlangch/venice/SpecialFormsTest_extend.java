@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,12 +34,98 @@ public class SpecialFormsTest_extend {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                \n" +
-				"  (ns test)                        \n" +
-				"  (defprotocol P (foo [x]))        \n" +
-				"  (extend :long P (foo [x] x)))      ";
+				"(do                                     \n" +
+				"  (ns test)                             \n" +
+				"  (defprotocol P (foo [x]))             \n" +
+				"  (extend :core/long P (foo [x] x)))      ";
 
-		assertEquals("test/P", venice.eval(script));					
+		assertEquals(null, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"  (ns test)                             \n" +
+				"  (defprotocol P (foo [x] [x y] nil))   \n" +
+				"  (extend :core/long P (foo [x] x))     \n" +
+				"  (foo 1))                                ";
+
+		assertEquals(1L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"  (ns test)                             \n" +
+				"  (defprotocol P (foo [x] [x y] nil))  \n" +
+				"  (extend :core/long P (foo [x] x))     \n" +
+				"  (foo 1 2))                              ";
+
+		assertEquals(null, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_4a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            \n" +
+				"  (ns test)                                    \n" +
+				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+				"  (extend :core/long P (foo [x y] x))          \n" +
+				"  (foo 1))                                       ";
+
+		assertEquals(null, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_4b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            \n" +
+				"  (ns test)                                    \n" +
+				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+				"  (extend :core/long P (foo [x y] x))          \n" +
+				"  (foo 2 100))                                   ";
+
+		assertEquals(2L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_4c() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            \n" +
+				"  (ns test)                                    \n" +
+				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+				"  (extend :core/long P (foo [x y] x))          \n" +
+				"  (foo 2 3 4))                                   ";
+
+		assertEquals(null, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_4d() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            \n" +
+				"  (ns test)                                    \n" +
+				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+				"  (extend :core/long P (foo [x y] x))          \n" +
+				"  (foo 2 3 4 5))                                   ";
+
+		assertThrows(
+				ArityException.class,
+				() -> venice.eval(script));					
 	}
 
 }

@@ -23,6 +23,8 @@ package com.github.jlangch.venice.impl.types;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.ArityException;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -70,16 +72,7 @@ public class VncProtocolFunction extends VncFunction {
 
 	@Override
 	public VncVal apply(final VncList args) {
-		final int arity = args.size();
-		
-		// lookup protocol function based on the type of the first argument
-		final VncKeyword type = Types.getType(args.first());
-		VncFunction fn = typeFunctions.get(type);
-		if (fn == null) {
-			fn = defaultFn.getFunctionForArity(arity);
-		}
-		
-		return fn.apply(args);
+		return getFunctionForArgs(args).apply(args);
 	}
 
 	@Override
@@ -89,12 +82,46 @@ public class VncProtocolFunction extends VncFunction {
 
 	@Override
 	public VncFunction getFunctionForArgs(final VncList args) {
-		return null;
+		// lookup protocol function based on the type of the first argument
+		final VncKeyword type = Types.getType(args.first());
+		final VncFunction fn = typeFunctions.get(type);
+		
+		if (fn == null) {
+			return defaultFn.getFunctionForArgs(args);  // fallback
+		}
+		else if (fn instanceof VncMultiArityFunction) {
+			try {
+				return ((VncMultiArityFunction)fn).getFunctionForArgs(args);
+			}
+			catch(ArityException ex) {
+				return defaultFn.getFunctionForArgs(args);  // fallback
+			}
+		}
+		else {
+			final int arity = args.size();
+
+			if (fn.hasVariadicArgs()) {
+				if (arity >= fn.getFixedArgsCount()) {
+					return fn;
+				}
+				else {
+					return defaultFn.getFunctionForArgs(args);  // fallback
+				}
+			}
+			else {
+				if (fn.getFixedArgsCount() == arity) {
+					return fn;
+				}
+				else {
+					return defaultFn.getFunctionForArgs(args);  // fallback
+				}
+			}
+		}
 	}
 
 	@Override
 	public VncFunction getFunctionForArity(final int arity) {
-		return null;
+		throw new VncException("Not supported VncProtocolFunction::getFunctionForArity(..)!");
 	}
 	
 	@Override public TypeRank typeRank() {
