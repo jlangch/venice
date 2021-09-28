@@ -184,7 +184,7 @@ public class SpecialFormsHandler {
 									? (VncSymbol)name
 									: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluator.evaluate(name, env, false)));
 			
-			if (ns.hasNamespace() && !ns.hasCoreNS()) {
+			if (ns.hasNamespace() && !"core".equals(ns.getNamespace())) {
 				throw new VncException(String.format(
 						"A namespace '%s' must not have itself a namespace! However you can use '%s'.",
 						ns.getQualifiedName(),

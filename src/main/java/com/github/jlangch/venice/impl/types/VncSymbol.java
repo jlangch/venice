@@ -111,10 +111,6 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		return qualifiedName; 
 	}
 
-	public boolean hasCoreNS() { 
-		return "core".equals(namespace); 
-	}
-
 	@Override
 	public String getQualifiedName() {
 		return qualifiedName;
