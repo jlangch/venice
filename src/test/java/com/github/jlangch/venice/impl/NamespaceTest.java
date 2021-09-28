@@ -85,6 +85,46 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_ns_6a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       \n" +
+				"  (ns foo)                                \n" +
+				"  (defn foo/*  [x y] (core/* x y 2))      \n" +
+				"  (foo/* 3 4))                              ";
+
+		assertEquals(24L, venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_6b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       \n" +
+				"  (ns foo)                                \n" +
+				"  (defn foo/*  [x y] (core/* x y 2))      \n" +
+				"  (ns test)                               \n" +
+				"  (foo/* 3 4))                              ";
+
+		assertEquals(24L, venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_6c() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       \n" +
+				"  (ns foo)                                \n" +
+				"  (defn foo/*  [x y] (ns xxx) (* x y 2))  \n" +
+				"  (foo/* 3 4))                              ";
+
+		assertEquals(24L, venice.eval(script));
+	}
+
+	@Test
 	public void test_namespace_symbol() {
 		final Venice venice = new Venice();
 
