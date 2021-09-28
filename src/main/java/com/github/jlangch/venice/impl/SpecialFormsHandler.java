@@ -184,19 +184,22 @@ public class SpecialFormsHandler {
 									? (VncSymbol)name
 									: (VncSymbol)CoreFunctions.symbol.apply(VncList.of(evaluator.evaluate(name, env, false)));
 			
-			if (ns.hasNamespace()) {
+			if (ns.hasNamespace() && !ns.hasCoreNS()) {
 				throw new VncException(String.format(
 						"A namespace '%s' must not have itself a namespace! However you can use '%s'.",
 						ns.getQualifiedName(),
 						ns.getNamespace() + "." + ns.getSimpleName()));
 			}
 			else {
-				if (Namespaces.isSystemNS(ns.getSimpleName()) && sealedSystemNS.get()) {
+				// clean
+				final VncSymbol ns_ = new VncSymbol(ns.getSimpleName());
+				
+				if (Namespaces.isSystemNS(ns_.getSimpleName()) && sealedSystemNS.get()) {
 					// prevent Venice's system namespaces from being altered
-					throw new VncException("Namespace '" + ns.getName() + "' cannot be reopened!");
+					throw new VncException("Namespace '" + ns_.getName() + "' cannot be reopened!");
 				}
-				Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns));
-				return ns;
+				Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns_));
+				return ns_;
 			}
 		}
 	}
