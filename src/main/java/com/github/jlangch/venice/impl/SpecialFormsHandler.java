@@ -595,6 +595,8 @@ public class SpecialFormsHandler {
 			extendFnSpec(type, (VncList)fnSpec, protocol, env);
 		}
 		
+		protocol.register(type);
+		
 		return Nil;
 	}
 	
@@ -628,10 +630,8 @@ public class SpecialFormsHandler {
 		}
 		
 		final VncProtocol protocol = (VncProtocol)p;
-		
-		// TODO: Need type data on the protocol
-		
-		return VncBoolean.False;
+				
+		return VncBoolean.of(protocol.isRegistered(type));
 	}
 
 	public VncVal deftype_(

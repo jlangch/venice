@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -52,9 +54,21 @@ public class VncProtocol extends VncVal {
 	public VncMap getFunctions() {
 		return functions;
 	}
-	
+
 	public VncMultiArityFunction getFunctionForName(final VncString name) {
 		return (VncMultiArityFunction)functions.get(name);
+	}
+	
+	public void register(final VncKeyword type) {
+		types.put(type, type);
+	}
+	
+	public boolean isRegistered(final VncKeyword type) {
+		return types.containsKey(type);
+	}
+	
+	public void unregister(final VncKeyword type) {
+		types.remove(type);
 	}
 	
 	@Override
@@ -109,4 +123,5 @@ public class VncProtocol extends VncVal {
 	
     private final VncSymbol name;
     private final VncMap functions;
+	private final ConcurrentHashMap<VncKeyword,VncKeyword> types = new ConcurrentHashMap<>();
 }

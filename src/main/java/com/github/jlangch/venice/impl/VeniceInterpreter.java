@@ -592,6 +592,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "extend": // (extend type protocol (fn-name [args*] expr+)+)
 					return extend_(args, env, a0meta);
 
+				case "extends?": // (extends? type protocol)
+					return extends_Q_(args, env, a0meta);
+
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);
 
