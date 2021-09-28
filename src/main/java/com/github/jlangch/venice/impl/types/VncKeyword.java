@@ -35,12 +35,12 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 public class VncKeyword extends VncString implements IVncFunction, INamespaceAware {
 	
 	public VncKeyword(final String v) { 
-		this(QualifiedName.parseWithoutCoreNamespaceMapping(stripColon(v)), 
+		this(QualifiedName.parse(stripColon(v)), 
 			 Constants.Nil); 
 	}
 
 	public VncKeyword(final String v, final VncVal meta) {
-		this(QualifiedName.parseWithoutCoreNamespaceMapping(stripColon(v)), 
+		this(QualifiedName.parse(stripColon(v)), 
 			 meta); 
 	}
 

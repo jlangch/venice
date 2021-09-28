@@ -42,23 +42,23 @@ public class QualifiedName {
 			final String namespace, 
 			final String simpleName
 	) {
-		String namespace_ = StringUtil.trimToNull(namespace);
+		final String namespace_ = StringUtil.trimToNull(namespace);
+		final String simpleName_ = StringUtil.trimToNull(simpleName);
+
 		if (namespace_ != null && namespace_.indexOf("/") >= 0) {
 			throw new VncException("A namespace must not contain a '/'");
 		}
-		namespace_ = namespace_ == null ? "core" : namespace_;
 		
-		final String simpleName_ = StringUtil.trimToNull(simpleName);
 		if (simpleName_ == null) {
-			throw new VncException("A A simple name of a qualified name must not be blank");
+			throw new VncException("A simple name of a qualified name must not be blank");
 		}
 		else if (!simpleName_.equals("/") && simpleName_.indexOf("/") >= 0) {
-			throw new VncException("A A simple name of a qualified name must not contain a '/'");
+			throw new VncException("A simple name of a qualified name must not contain a '/'");
 		}
 			
-		final String qualifiedName_ = "core".equals(namespace) 
-										? simpleName 
-										: namespace + "/" + simpleName;
+		final String qualifiedName_ = namespace_ == null
+										? simpleName_ 
+										: namespace_ + "/" + simpleName_;
 
 		return new QualifiedName(qualifiedName_, namespace_, simpleName_);
 	}
@@ -71,36 +71,6 @@ public class QualifiedName {
 
 		if (name_.equals("/")) {
 			// special case core function "/" (division)
-			return new QualifiedName("/", "core", "/");
-		}
-		else {
-			final int pos = name_.lastIndexOf("/");
-			
-			String namespace = pos < 0 ? null : StringUtil.trimToNull(name_.substring(0, pos));
-			namespace = namespace == null ? "core" : namespace;
-			
-			String simpleName = pos < 0 ? name_ : StringUtil.trimToNull(name_.substring(pos+1));
-			if (simpleName == null) {
-				throw new VncException("A simple name of a qualified name name must not be blank");
-			}
-			
-			final String qualifiedName = "core".equals(namespace) 
-											? simpleName 
-											: namespace + "/" + simpleName;
-
-			return new QualifiedName(qualifiedName, namespace, simpleName);
-		}
-	}
-
-	public static QualifiedName parseWithoutCoreNamespaceMapping(final String name) {
-		// Note: keywords have a slightly different core namespace handling!
-		
-		final String name_ = StringUtil.trimToNull(name);
-		if (name_ == null) {
-			throw new VncException("A name must not be blank");
-		}
-		else if (name_.equals("/")) {
-			// special case function
 			return new QualifiedName("/", null, "/");
 		}
 		else {
@@ -116,7 +86,7 @@ public class QualifiedName {
 				throw new VncException("A simple name of a qualified name name must not be blank");
 			}
 			
-			final String qualifiedName = namespace == null
+			final String qualifiedName = namespace == null 
 											? simpleName 
 											: namespace + "/" + simpleName;
 
