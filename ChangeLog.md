@@ -17,6 +17,10 @@ and this project adheres to
   [Kahn's algorithm](https://en.wikipedia.org/wiki/Topological_sorting)
 - function `deftype-describe` to get details on a custom type definition
 
+### Fixed
+
+- an edge case with `core` namespace. E.g: `(do (ns foo) (defn foo/*  [x y] (core/* x y 2)))`
+
 
 
 ## [1.9.31] - 2021-09-21
