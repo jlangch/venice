@@ -597,7 +597,43 @@ public class SpecialFormsHandler {
 		
 		return Nil;
 	}
+	
+	public VncVal extends_Q_(
+			final IVeniceInterpreter interpreter, 
+			final VncVal typeRef,
+			final VncSymbol protocolSym,
+			final Env env,
+			final VncVal meta
+	) {
+		if (!(typeRef instanceof VncKeyword)) {
+			throw new VncException(String.format(
+					"The type '%s' must be a keyword like :core/long!",
+					typeRef.getType()));
+		}
+
+		// Lookup protocol from the ENV
+		final VncVal p = env.getGlobalOrNull(protocolSym);
+		if (!(p instanceof VncProtocol)) {
+			throw new VncException(String.format(
+					"The protocol '%s' is not defined!",
+					protocolSym.getQualifiedName()));
+		}
 		
+		final VncKeyword type = (VncKeyword)typeRef;
+		
+		if (!type.hasNamespace()) {
+			throw new VncException(String.format(
+					"The type '%s' must be qualified!",
+					type.getQualifiedName()));
+		}
+		
+		final VncProtocol protocol = (VncProtocol)p;
+		
+		// TODO: Need type data on the protocol
+		
+		return VncBoolean.False;
+	}
+
 	public VncVal deftype_(
 			final IVeniceInterpreter interpreter, 
 			final VncList args, 

@@ -1303,6 +1303,21 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return specialFormHandler.extend_(this, args.first(), protocol, args, env, meta);
 	}
 
+	public VncVal extends_Q_(final VncList args, final Env env, final VncVal meta) {
+		final CallFrame callframe = new CallFrame("extends?", args, meta);
+		try (WithCallStack cs = new WithCallStack(callframe)) {
+			assertMinArity("extends?", FnType.SpecialForm, args, 2);
+		}
+
+		final VncSymbol protocol = 
+				validateSymbolWithCurrNS(
+					Namespaces.qualifySymbolWithCurrNS(
+							evaluateSymbolMetaData(args.second(), env)),
+					"extends?");
+
+		return specialFormHandler.extends_Q_(this, args.first(), protocol, env, meta);
+	}
+
 	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {
 		final CallFrame callframe = new CallFrame("defmulti", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {

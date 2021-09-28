@@ -492,7 +492,7 @@ public class SpecialFormsDoc {
 				"defprotocol",
 				VncFunction
 					.meta()
-					.arglists("(defprotocol P fn-spec*)")		
+					.arglists("(defprotocol protocol fn-spec*)")		
 					.doc("Defines a new protocal with the name `P`. \n\n" +
 						 "Formats:                                  \n\n" +
 						 "- `(defprotocol P (foo [x]))`              \n" +
@@ -500,7 +500,33 @@ public class SpecialFormsDoc {
 						 "- `(defprotocol P (foo [x] [x y] nil))`    \n" +
 						 "- `(defprotocol P (foo [x] [x y] 100))`    \n" +
 						 "- `(defprotocol P (foo [x]) (bar [x]))`    ")
-					.seeAlso("defmulti")
+					.seeAlso("extend", "extends?", "defmulti")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction extend = 
+		new SpecialFormsDocFunction(
+				"extend",
+				VncFunction
+					.meta()
+					.arglists("(extend type protocol fn-spec*)")		
+					.doc("Extends the protocol for type")
+					.seeAlso("defprotocol", "extends?")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+	public static VncFunction extendsQ = 
+		new SpecialFormsDocFunction(
+				"extends?",
+				VncFunction
+					.meta()
+					.arglists("(extends type protocol)")		
+					.doc("Returns true if the type extends the protocol.")
+					.seeAlso("defprotocol", "extend")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1590,6 +1616,8 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("defmulti"),			defmulti)
 					.put(new VncSymbol("defmethod"),		defmethod)
 					.put(new VncSymbol("defprotocol"),		defprotocol)
+					.put(new VncSymbol("extend"),			extend)
+					.put(new VncSymbol("extends?"),			extendsQ)
 					.put(new VncSymbol("deftype"),			deftype)
 					.put(new VncSymbol("deftype?"),			deftypeQ)
 					.put(new VncSymbol("deftype-of"),		deftype_of)
