@@ -191,7 +191,7 @@ public class SpecialFormsHandler {
 						ns.getNamespace() + "." + ns.getSimpleName()));
 			}
 			else {
-				if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
+				if (Namespaces.isSystemNS(ns.getSimpleName()) && sealedSystemNS.get()) {
 					// prevent Venice's system namespaces from being altered
 					throw new VncException("Namespace '" + ns.getName() + "' cannot be reopened!");
 				}

@@ -526,7 +526,7 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(extends type protocol)")		
 					.doc("Returns true if the type extends the protocol.")
-					.seeAlso("defprotocol", "extend")
+				.seeAlso("defprotocol", "extend")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

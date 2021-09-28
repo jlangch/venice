@@ -847,7 +847,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						}
 					}
 					else {
-						final CallFrame cf = new CallFrame(a0sym, args, a0meta);
+						final CallFrame cf = new CallFrame("unknown", args, a0meta);
 						try (WithCallStack cs = new WithCallStack(cf)) {
 							throw new VncException(String.format(
 									"Expected a function or keyword/set/map/vector as "

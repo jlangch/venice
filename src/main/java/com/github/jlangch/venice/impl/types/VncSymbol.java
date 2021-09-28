@@ -94,7 +94,6 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		
 		return new VncSymbol(namespace, simpleName, getMeta());
 	}
-
 	
 	@Override
 	public VncKeyword getType() {
@@ -110,6 +109,10 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 
 	public String getValue() { 
 		return qualifiedName; 
+	}
+
+	public boolean hasCoreNS() { 
+		return "core".equals(namespace); 
 	}
 
 	@Override
