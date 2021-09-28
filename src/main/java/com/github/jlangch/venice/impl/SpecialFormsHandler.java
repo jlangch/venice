@@ -600,7 +600,7 @@ public class SpecialFormsHandler {
 		return Nil;
 	}
 	
-	public VncVal extends_Q_(
+	public VncVal extendsQ_(
 			final IVeniceInterpreter interpreter, 
 			final VncVal typeRef,
 			final VncSymbol protocolSym,

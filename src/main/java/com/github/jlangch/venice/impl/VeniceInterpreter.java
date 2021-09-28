@@ -593,7 +593,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return extend_(args, env, a0meta);
 
 				case "extends?": // (extends? type protocol)
-					return extends_Q_(args, env, a0meta);
+					return extendsQ_(args, env, a0meta);
 
 				case "deftype": // (deftype type fields validationFn*)
 					return specialFormHandler.deftype_(this, args, env, a0meta);
@@ -1306,7 +1306,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return specialFormHandler.extend_(this, args.first(), protocol, args, env, meta);
 	}
 
-	public VncVal extends_Q_(final VncList args, final Env env, final VncVal meta) {
+	public VncVal extendsQ_(final VncList args, final Env env, final VncVal meta) {
 		final CallFrame callframe = new CallFrame("extends?", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("extends?", FnType.SpecialForm, args, 2);
@@ -1318,7 +1318,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							evaluateSymbolMetaData(args.second(), env)),
 					"extends?");
 
-		return specialFormHandler.extends_Q_(this, args.first(), protocol, env, meta);
+		return specialFormHandler.extendsQ_(this, args.first(), protocol, env, meta);
 	}
 
 	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {
