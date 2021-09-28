@@ -51,8 +51,9 @@ public class VncProtocolFunction extends VncFunction {
 	@Override
 	public VncKeyword getType() {
 		return new VncKeyword(
-					TYPE_FUNCTION, 
+					TYPE, 
 					MetaUtil.typeMeta(
+						new VncKeyword(VncFunction.TYPE_FUNCTION),
 						new VncKeyword(VncVal.TYPE)));
 	}
 
@@ -80,6 +81,7 @@ public class VncProtocolFunction extends VncFunction {
 		return TypeRank.MULTI_PROTOCOL_FUNCTION;
 	}
 
+    public static final String TYPE = ":core/protocol-function";
 	
     private static final long serialVersionUID = -1848883965231344442L;
     
