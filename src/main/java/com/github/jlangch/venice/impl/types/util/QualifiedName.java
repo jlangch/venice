@@ -48,12 +48,12 @@ public class QualifiedName {
 		}
 		namespace_ = namespace_ == null ? "core" : namespace_;
 		
-		final String simpleName_ = StringUtil.trimToNull(namespace);
+		final String simpleName_ = StringUtil.trimToNull(simpleName);
 		if (simpleName_ == null) {
-			throw new VncException("A simpleName must not be blank");
+			throw new VncException("A A simple name of a qualified name must not be blank");
 		}
-		if (simpleName_.indexOf("/") >= 0) {
-			throw new VncException("A simpleName must not contain a '/'");
+		else if (!simpleName_.equals("/") && simpleName_.indexOf("/") >= 0) {
+			throw new VncException("A A simple name of a qualified name must not contain a '/'");
 		}
 			
 		final String qualifiedName_ = "core".equals(namespace) 
@@ -70,11 +70,11 @@ public class QualifiedName {
 		}
 
 		if (name_.equals("/")) {
-			// special case function
+			// special case core function "/" (division)
 			return new QualifiedName("/", "core", "/");
 		}
 		else {
-			final int pos = name_.indexOf("/");
+			final int pos = name_.lastIndexOf("/");
 			
 			String namespace = pos < 0 ? null : StringUtil.trimToNull(name_.substring(0, pos));
 			namespace = namespace == null ? "core" : namespace;
@@ -99,15 +99,17 @@ public class QualifiedName {
 		if (name_ == null) {
 			throw new VncException("A name must not be blank");
 		}
-
-		if (name_.equals("/")) {
+		else if (name_.equals("/")) {
 			// special case function
 			return new QualifiedName("/", null, "/");
 		}
 		else {
-			final int pos = name_.indexOf("/");
+			final int pos = name_.lastIndexOf("/");
 			
 			String namespace = pos < 0 ? null : StringUtil.trimToNull(name_.substring(0, pos));
+			if (namespace != null && namespace.indexOf("/") >= 0) {
+				throw new VncException("A namespace must not contain a '/'");
+			}
 			
 			String simpleName = pos < 0 ? name_ : StringUtil.trimToNull(name_.substring(pos+1));
 			if (simpleName == null) {
@@ -127,10 +129,9 @@ public class QualifiedName {
 	}
 	
 	public QualifiedName mapCoreNamespaceToNull() {
-		return new QualifiedName(
-					qualifiedName, 
-					"core".equals(namespace) ? null : namespace, 
-					simpleName);
+		return "core".equals(namespace)
+				? new QualifiedName(simpleName, null, simpleName)
+				: this;
 	}
 	
 	public String getQualifiedName() {
