@@ -513,6 +513,11 @@ public class REPL {
 	) throws Exception {
 		final String file = unescapeDroppedFileName(droppedFileName.trim());
 		
+		if (!new File(file).exists()) {
+			printer.println("error", String.format("The file \"%s\" does not exist!", file));
+			return;
+		}
+		
 		final List<String> lines = Files.readAllLines(new File(file).toPath());
 		
 		if (lines.size() < 20) {

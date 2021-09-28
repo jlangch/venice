@@ -46,11 +46,18 @@ public class ReplParser extends DefaultParser {
 			final ParseContext context
 	) throws SyntaxError {
 		try {
-			if (context != ParseContext.COMPLETE) {
-				venice.READ(line, "repl");
+			if (line.startsWith("/") && line.trim().endsWith(".venice")) {
+				// dropped Venice script file
+				eof = false;
+				return super.parse(line, cursor, context);
 			}
-			eof = false;
-			return super.parse(line, cursor, context);
+			else {
+				if (context != ParseContext.COMPLETE) {
+					venice.READ(line, "repl");
+				}
+				eof = false;
+				return super.parse(line, cursor, context);
+			}
 		}
 		catch(EofException ex) {
 			eof = true;

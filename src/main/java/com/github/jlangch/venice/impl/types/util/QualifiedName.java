@@ -46,14 +46,18 @@ public class QualifiedName {
 		final String simpleName_ = StringUtil.trimToNull(simpleName);
 
 		if (namespace_ != null && namespace_.indexOf("/") >= 0) {
-			throw new VncException("A namespace must not contain a '/'");
+			throw new VncException(String.format(
+						"A namespace ('%s') must not contain a '/'",
+						namespace_));
 		}
 		
 		if (simpleName_ == null) {
 			throw new VncException("A simple name of a qualified name must not be blank");
 		}
 		else if (!simpleName_.equals("/") && simpleName_.indexOf("/") >= 0) {
-			throw new VncException("A simple name of a qualified name must not contain a '/'");
+			throw new VncException(String.format(
+					"A simple name ('%s') of a qualified name must not contain a '/'",
+					simpleName_));
 		}
 			
 		final String qualifiedName_ = namespace_ == null
@@ -78,12 +82,18 @@ public class QualifiedName {
 			
 			String namespace = pos < 0 ? null : StringUtil.trimToNull(name_.substring(0, pos));
 			if (namespace != null && namespace.indexOf("/") >= 0) {
-				throw new VncException("A namespace must not contain a '/'");
+				throw new VncException(String.format(
+								"A namespace ('%s') of a qualified name ('%s') must not contain a '/'",
+								namespace,
+								name));
 			}
 			
 			String simpleName = pos < 0 ? name_ : StringUtil.trimToNull(name_.substring(pos+1));
 			if (simpleName == null) {
-				throw new VncException("A simple name of a qualified name name must not be blank");
+				throw new VncException(String.format(
+							"A simple name ('%s') of a qualified name ('%s') name must not be blank",
+							simpleName,
+							name));
 			}
 			
 			final String qualifiedName = namespace == null 
@@ -97,13 +107,7 @@ public class QualifiedName {
 	public QualifiedName withOtherNamespace(final String namespace) {
 		return QualifiedName.of(namespace, simpleName);
 	}
-	
-	public QualifiedName mapCoreNamespaceToNull() {
-		return "core".equals(namespace)
-				? new QualifiedName(simpleName, null, simpleName)
-				: this;
-	}
-	
+		
 	public String getQualifiedName() {
 		return qualifiedName;
 	}

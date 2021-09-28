@@ -36,9 +36,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	public VncSymbol(final String v, final VncVal meta) { 
 		super(meta);
 		
-		final QualifiedName qn = QualifiedName
-									.parse(v)
-									.mapCoreNamespaceToNull();
+		final QualifiedName qn = QualifiedName.parse(v);
 		
 		namespace = qn.getNamespace();
 		simpleName = qn.getSimpleName(); 	
@@ -50,9 +48,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	public VncSymbol(final String ns, final String name, final VncVal meta) { 
 		super(meta);
 		
-		final QualifiedName qn = QualifiedName
-									.of(ns, name)
-									.mapCoreNamespaceToNull();
+		final QualifiedName qn = QualifiedName.of(ns, name);
 		
 		namespace = qn.getNamespace();
 		simpleName = qn.getSimpleName(); 	
