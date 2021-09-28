@@ -25,6 +25,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -34,7 +35,7 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 public class VncProtocol extends VncVal {
 
 	public VncProtocol(
-			final VncSymbol name, 
+			final VncSymbol name,
 			final VncMap functions,
 			final VncVal meta
 	) {
@@ -52,7 +53,7 @@ public class VncProtocol extends VncVal {
 		return functions;
 	}
 	
-	public VncMultiArityFunction getFunctionForName(final VncSymbol name) {
+	public VncMultiArityFunction getFunctionForName(final VncString name) {
 		return (VncMultiArityFunction)functions.get(name);
 	}
 	

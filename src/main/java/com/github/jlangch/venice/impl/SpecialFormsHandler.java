@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncProtocolFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -499,14 +500,43 @@ public class SpecialFormsHandler {
 			// (defprotocol P
 			//	  (foo [x])
 			//	  (bar [x] [x y])
-			//	  (goo [x] "default val")
-			//	  (dar [x] [x y] "default val"))
+			//	  (zoo [x] "default val")
+			//	  (yar [x] [x y] "default val"))
 			
 			validateDefProtocol(args);
 						
 			VncMap protocolFns = VncHashMap.empty();
 			for(VncVal s : args.rest()) {
-				protocolFns = protocolFns.assoc(name, parseProtocolFnSpec(s, env));
+				final VncMultiArityFunction fn = parseProtocolFnSpec(s, env);
+				
+				final VncSymbol fnName = new VncSymbol(
+												name.getNamespace(), 
+												fn.getSimpleName(),
+												meta);
+				
+				final VncProtocolFunction fnProtocol = new VncProtocolFunction(
+																fnName.getQualifiedName(), 
+																name,
+																fn, 
+																meta);
+
+				final VncVal p = env.getGlobalOrNull(fnName);
+				if (p instanceof VncProtocolFunction) {
+					if (!((VncProtocolFunction)p).getProtocolName().equals(name)) {
+						// collision of protocol function name with another protocol
+						throw new VncException(String.format(
+									"The protocol function '%s' of protocol '%s' collides "
+											+ "with the same function in protocol '%s' in "
+											+ "the same namespace!",
+									fn.getSimpleName(),
+									((VncProtocolFunction)p).getProtocolName(),
+									name));
+					}
+				}
+				
+				env.setGlobal(new Var(fnName, fnProtocol));
+
+				protocolFns = protocolFns.assoc(new VncString(fn.getSimpleName()), fn);
 			}
 	
 			final VncProtocol protocol = new VncProtocol(name, protocolFns, name.getMeta());
