@@ -1848,7 +1848,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final boolean checkSandbox;
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry;
-	//private final ProtocolRegistry protocolRegistry = new ProtocolRegistry();
 	
 	private final SpecialFormsHandler specialFormHandler;
 	

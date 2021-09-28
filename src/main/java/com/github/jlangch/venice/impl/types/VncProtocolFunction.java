@@ -86,37 +86,32 @@ public class VncProtocolFunction extends VncFunction {
 		final VncKeyword type = Types.getType(args.first());
 		final VncFunction fn = typeFunctions.get(type);
 		
-		if (fn == null) {
-			return defaultFn.getFunctionForArgs(args);  // fallback
-		}
-		else if (fn instanceof VncMultiArityFunction) {
-			try {
-				return ((VncMultiArityFunction)fn).getFunctionForArgs(args);
-			}
-			catch(ArityException ex) {
-				return defaultFn.getFunctionForArgs(args);  // fallback
-			}
-		}
-		else {
-			final int arity = args.size();
-
-			if (fn.hasVariadicArgs()) {
-				if (arity >= fn.getFixedArgsCount()) {
-					return fn;
+		if (fn != null) {
+			if (fn instanceof VncMultiArityFunction) {
+				try {
+					return ((VncMultiArityFunction)fn).getFunctionForArgs(args);
 				}
-				else {
+				catch(ArityException ex) {
 					return defaultFn.getFunctionForArgs(args);  // fallback
 				}
 			}
 			else {
-				if (fn.getFixedArgsCount() == arity) {
-					return fn;
+				final int arity = args.size();
+	
+				if (fn.hasVariadicArgs()) {
+					if (arity >= fn.getFixedArgsCount()) {
+						return fn;
+					}
 				}
 				else {
-					return defaultFn.getFunctionForArgs(args);  // fallback
+					if (fn.getFixedArgsCount() == arity) {
+						return fn;
+					}
 				}
 			}
 		}
+		
+		return defaultFn.getFunctionForArgs(args);  // fallback
 	}
 
 	@Override
