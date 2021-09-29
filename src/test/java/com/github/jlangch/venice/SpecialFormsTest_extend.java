@@ -23,7 +23,6 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -128,9 +127,24 @@ public class SpecialFormsTest_extend {
 				ArityException.class,
 				() -> venice.eval(script));					
 	}
+	
+	@Test
+	public void test_extend_basic_5() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                            \n" +
+				"  (ns test)                                    \n" +
+				"  (deftype :person [name :string])             \n" +
+				"  (defprotocol P (foo [x]))                    \n" +
+				"  (extend :test/person P (foo [x] (:name x)))  \n" +
+				"  (foo (person. \"joe\")))                       ";
+
+		assertEquals("joe", venice.eval(script));					
+	}
 
 	@Test
-	public void test_extend_deftype_1() {
+	public void test_extend_on_deftype_1() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -144,7 +158,7 @@ public class SpecialFormsTest_extend {
 	}
 
 	@Test
-	public void test_extend_deftype_2() {
+	public void test_extend_on_deftype_2() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -157,22 +171,6 @@ public class SpecialFormsTest_extend {
 				"  (pr-str [(foo p) (bar p)]))";
 
 		assertEquals("[\"joe\" \"smith\"]", venice.eval(script));					
-	}
-
-	@Test
-	public void test_extend_deftype_3() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                 \n" +
-				"  (defprotocol P (foo [x]) (bar [x]))               \n" +
-				"  (deftype :person [name :string last :string]      \n" +
-				"           P (foo [x] (:name x))                    \n" +
-				"             (bar [x] (:last x)))                   \n" +
-				"  (def p (person. \"joe\" \"smith\"))               \n" +
-				"  (extends? (type p) P))";
-
-		assertTrue((boolean)venice.eval(script));					
 	}
 
 }
