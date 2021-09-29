@@ -55,7 +55,7 @@ import com.github.jlangch.venice.impl.util.markdown.Markdown;
 
 public class DocForm {
 
-	public static VncString doc(final VncVal ref, final Env env) {			
+	public static VncString doc(final VncVal ref, final Env env) {
 		if (Types.isVncSymbol(ref)) {
 			return docForSymbol((VncSymbol)ref, env);
 		}
@@ -115,7 +115,9 @@ public class DocForm {
 				}
 				else {
 					return new VncString(
-							String.format("Symbol '%s' not found.\n\n", sym.getQualifiedName())
+							String.format(
+									"Symbol '%s' not found.\n\n", 
+									sym.getQualifiedName())
 							+ "Did you mean?\n"
 							+ String.join("\n", candidates)
 							+ "\n");
@@ -125,7 +127,7 @@ public class DocForm {
 	}
 
 	private static VncString docForSymbolVal(final VncVal symVal, final Env env) {
-		final boolean repl = isREPL(env);		
+		final boolean repl = isREPL(env);
 
 		// if we run in a REPL use the effective terminal width for rendering
 		final int width = repl ? replTerminalWidth(env) : 80;
@@ -242,7 +244,9 @@ public class DocForm {
 																? f.getType().getValue() + "?"
 																: f.getType().getValue())));
 		if (typeDef.getValidationFn() != null) {
-			sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
+			sb.append(String.format(
+					"Validation function: :%s\n", 
+					typeDef.getValidationFn().getQualifiedName()));
 		}
 		
 		return sb.toString();
@@ -257,7 +261,9 @@ public class DocForm {
 		sb.append(String.format("Custom wrapped type :%s\n", type.getValue()));
 		sb.append(String.format("Base type :%s\n", typeDef.getBaseType().getValue()));
 		if (typeDef.getValidationFn() != null) {
-			sb.append(String.format("Validation function: :%s\n", typeDef.getValidationFn().getQualifiedName()));
+			sb.append(String.format(
+					"Validation function: :%s\n", 
+					typeDef.getValidationFn().getQualifiedName()));
 		}
 		
 		return sb.toString();
@@ -380,7 +386,7 @@ public class DocForm {
 
 		sb.append("\n");
 
-		return new VncString(sb.toString());			
+		return new VncString(sb.toString());
 	}
 	
 	private static VncString formatDoc(final VncProtocol protocol, final int width) {
@@ -414,9 +420,8 @@ public class DocForm {
 			}
 		}
 
-
 		return empty ? new VncString(NO_DOC)
-					 : new VncString(sb.toString());			
+					 : new VncString(sb.toString());
 	}
 	
 	private static String indent(final String text, final String indent) {
