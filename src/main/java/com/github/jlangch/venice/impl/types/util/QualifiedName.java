@@ -21,8 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.util;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
+
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class QualifiedName {
@@ -42,8 +43,8 @@ public class QualifiedName {
 			final String namespace, 
 			final String simpleName
 	) {
-		final String namespace_ = StringUtil.trimToNull(namespace);
-		final String simpleName_ = StringUtil.trimToNull(simpleName);
+		final String namespace_ = trimToNull(namespace);
+		final String simpleName_ = trimToNull(simpleName);
 
 		if (namespace_ != null && namespace_.indexOf("/") >= 0) {
 			throw new VncException(String.format(
@@ -51,8 +52,10 @@ public class QualifiedName {
 						namespace_));
 		}
 		
+		// validate
 		if (simpleName_ == null) {
-			throw new VncException("A simple name of a qualified name must not be blank");
+			throw new VncException(
+					"A simple name of a qualified name must not be blank");
 		}
 		else if (!simpleName_.equals("/") && simpleName_.indexOf("/") >= 0) {
 			throw new VncException(String.format(
@@ -68,7 +71,7 @@ public class QualifiedName {
 	}
 
 	public static QualifiedName parse(final String name) {
-		final String name_ = StringUtil.trimToNull(name);
+		final String name_ = trimToNull(name);
 		if (name_ == null) {
 			throw new VncException("A name must not be blank");
 		}
@@ -80,18 +83,26 @@ public class QualifiedName {
 		else {
 			final int pos = name_.lastIndexOf("/");
 			
-			String namespace = pos < 0 ? null : StringUtil.trimToNull(name_.substring(0, pos));
+			final String namespace = pos < 0 
+										? null 
+										: trimToNull(name_.substring(0, pos));
+			
+			final String simpleName = pos < 0 
+										? name_ 
+										: trimToNull(name_.substring(pos+1));
+		
+			// validate
 			if (namespace != null && namespace.indexOf("/") >= 0) {
 				throw new VncException(String.format(
-								"A namespace ('%s') of a qualified name ('%s') must not contain a '/'",
+								"A namespace ('%s') of a qualified name ('%s') "
+								+ "must not contain a '/'",
 								namespace,
 								name));
-			}
-			
-			String simpleName = pos < 0 ? name_ : StringUtil.trimToNull(name_.substring(pos+1));
+			}		
 			if (simpleName == null) {
 				throw new VncException(String.format(
-							"A simple name ('%s') of a qualified name ('%s') name must not be blank",
+							"A simple name ('%s') of a qualified name ('%s') "
+							+ "name must not be blank",
 							simpleName,
 							name));
 			}
