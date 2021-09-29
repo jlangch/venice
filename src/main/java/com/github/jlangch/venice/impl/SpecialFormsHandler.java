@@ -658,9 +658,9 @@ public class SpecialFormsHandler {
 			final VncKeyword type = Coerce.toVncKeyword(
 										evaluator.evaluate(deftypeArgs.first(), env, false));
 
-			final VncVector fields = Coerce.toVncVector(args.second());
+			final VncVector fields = Coerce.toVncVector(deftypeArgs.second());
 
-			final VncFunction validationFn = Types.isVncFunction(args.third())
+			final VncFunction validationFn = deftypeArgs.size() == 3
 												? Coerce.toVncFunction(
 														evaluator.evaluate(
 																args.third(), env, false))
@@ -668,7 +668,7 @@ public class SpecialFormsHandler {
 			
 			// custom type is a namespace qualified keyword
 			final VncVal customType = DefTypeForm.defineCustomType(
-													type, fields, validationFn, interpreter, env);
+											type, fields, validationFn, interpreter, env);
 	
 			// [2] parse extend protocol definitions
 			while(!extendArgs.isEmpty()) {
