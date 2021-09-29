@@ -927,17 +927,24 @@ public class DocGenerator {
 		final DocSection dag_create = new DocSection("Create", "collections.dag.create");
 		dag.addSection(dag_create);
 		dag_create.addItem(getDocItem("dag/dag"));
+		dag_create.addItem(getDocItem("dag/add-edges"));
 		
 		final DocSection dag_access = new DocSection("Access", "collections.dag.access");
 		dag.addSection(dag_access);
-		dag_access.addItem(getDocItem("dag/add-edges"));
-		dag_access.addItem(getDocItem("dag/topological-sort"));
-		dag_access.addItem(getDocItem("dag/edges"));
 		dag_access.addItem(getDocItem("dag/nodes"));
-		dag_access.addItem(getDocItem("dag/children"));
-		dag_access.addItem(getDocItem("dag/parents"));
+		dag_create.addItem(getDocItem("dag/edges"));
 		dag_access.addItem(getDocItem("dag/roots"));
 		dag_access.addItem(getDocItem("count"));
+		
+		final DocSection dag_children = new DocSection("Access", "collections.dag.children");
+		dag.addSection(dag_children);
+		dag_children.addItem(getDocItem("dag/children"));
+		dag_children.addItem(getDocItem("dag/immediate-children"));
+		
+		final DocSection dag_parents = new DocSection("Access", "collections.dag.parents");
+		dag.addSection(dag_parents);
+		dag_parents.addItem(getDocItem("dag/parents"));
+		dag_parents.addItem(getDocItem("dag/immediate-parents"));
 
 		final DocSection dag_sort = new DocSection("Sort", "collections.dag.sort");
 		dag.addSection(dag_sort);

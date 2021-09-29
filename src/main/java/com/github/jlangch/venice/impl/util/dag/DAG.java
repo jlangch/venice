@@ -137,6 +137,15 @@ public class DAG<T> {
 		return Node.toValues(children);
 	}
 
+	public synchronized List<T> immediateChildren(final T value) {
+		final Node<T> node = nodes.get(value);
+		if (node == null) {
+			throw new NoSuchElementException("Node not found: " + value);
+		}
+		
+		return Node.toValues(node.getChildren());
+	}
+
 	public synchronized List<T> parents(final T value) {
 		final Node<T> node = nodes.get(value);
 		if (node == null) {
@@ -155,6 +164,14 @@ public class DAG<T> {
 		}
 		
 		return Node.toValues(parents);
+	}
+
+	public synchronized List<T> immediateParents(final T value) {
+		final Node<T> node = nodes.get(value);
+		if (node == null) {
+			throw new NoSuchElementException("Node not found: " + value);
+		}
+		return Node.toValues(node.getParents());
 	}
 
 	public synchronized List<T> roots() {

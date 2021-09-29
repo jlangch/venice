@@ -23,8 +23,6 @@ package com.github.jlangch.venice.impl.util.dag;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 
@@ -41,10 +39,18 @@ public class DAG_parents_Test {
 		dag.addEdge("D", "E");      //       D 
 		dag.addEdge("D", "F");      //      / \
 		dag.update();               //     E   F
-		
-		final List<String> sorted = dag.parents("A");
 
-		assertEquals("", String.join(" ", sorted));
+		assertEquals("", String.join(" ", dag.parents("A")));
+
+		assertEquals("A", String.join(" ", dag.parents("B")));
+
+		assertEquals("A", String.join(" ", dag.parents("C")));
+
+		assertEquals("B C A", String.join(" ", dag.parents("D")));
+
+		assertEquals("D B C A", String.join(" ", dag.parents("E")));
+
+		assertEquals("D B C A", String.join(" ", dag.parents("F")));
 	}
 
 	@Test
@@ -54,65 +60,49 @@ public class DAG_parents_Test {
 		dag.addEdge("A", "B");      //	     A
 		dag.addEdge("A", "C");      //	    / \ 
 		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ /
-		dag.addEdge("D", "E");      //       D 
-		dag.addEdge("D", "F");      //      / \
-		dag.update();               //     E   F
-		
-		final List<String> sorted = dag.parents("B");
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D   |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
 
-		assertEquals("A", String.join(" ", sorted));
+		assertEquals("", String.join(" ", dag.parents("A")));
+
+		assertEquals("A", String.join(" ", dag.parents("B")));
+
+		assertEquals("A", String.join(" ", dag.parents("C")));
+
+		assertEquals("B C A", String.join(" ", dag.parents("D")));
+
+		assertEquals("D B C A", String.join(" ", dag.parents("E")));
+
+		assertEquals("D C B A", String.join(" ", dag.parents("F")));
 	}
 
 	@Test
-	public void test_parents_3() {
+	public void test_immediate_parents() {
 		final DAG<String> dag = new DAG<>();
 		
 		dag.addEdge("A", "B");      //	     A
 		dag.addEdge("A", "C");      //	    / \ 
 		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ /
-		dag.addEdge("D", "E");      //       D 
-		dag.addEdge("D", "F");      //      / \
-		dag.update();               //     E   F
+		dag.addEdge("C", "D");      //      \ / \
+		dag.addEdge("D", "E");      //       D   |
+		dag.addEdge("D", "F");      //      / \ /
+		dag.addEdge("C", "F");      //     E   F
+		dag.update();
 		
-		final List<String> sorted = dag.parents("C");
-
-		assertEquals("A", String.join(" ", sorted));
-	}
-
-	@Test
-	public void test_parents_4() {
-		final DAG<String> dag = new DAG<>();
+		assertEquals("", String.join(" ", dag.immediateParents("A")));
 		
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
-		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ /
-		dag.addEdge("D", "E");      //       D 
-		dag.addEdge("D", "F");      //      / \
-		dag.update();               //     E   F
+		assertEquals("A", String.join(" ", dag.immediateParents("B")));
 		
-		final List<String> sorted = dag.parents("D");
-
-		assertEquals("B C A", String.join(" ", sorted));
-	}
-
-	@Test
-	public void test_parents_5() {
-		final DAG<String> dag = new DAG<>();
+		assertEquals("A", String.join(" ", dag.immediateParents("C")));
 		
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
-		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ /
-		dag.addEdge("D", "E");      //       D 
-		dag.addEdge("D", "F");      //      / \
-		dag.update();               //     E   F
+		assertEquals("B C", String.join(" ", dag.immediateParents("D")));
 		
-		final List<String> sorted = dag.parents("E");
-
-		assertEquals("D B C A", String.join(" ", sorted));
+		assertEquals("D", String.join(" ", dag.immediateParents("E")));
+		
+		assertEquals("D C", String.join(" ", dag.immediateParents("F")));
 	}
 
 }

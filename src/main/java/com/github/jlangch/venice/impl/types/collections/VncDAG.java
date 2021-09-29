@@ -154,9 +154,27 @@ public class VncDAG extends VncCollection {
 		}
 	}
 	
+	public VncList immediateChildren(final VncVal val) {
+		try {
+			return VncList.ofColl(dag.immediateChildren(val));
+		}
+		catch(NoSuchElementException ex) {
+			throw new VncException("Node not found: " + val.toString(true));
+		}
+	}
+	
 	public VncList parents(final VncVal val) {
 		try {
 			return VncList.ofColl(dag.parents(val));
+		}
+		catch(NoSuchElementException ex) {
+			throw new VncException("Node not found: " + val.toString(true));
+		}
+	}
+	
+	public VncList immediateParents(final VncVal val) {
+		try {
+			return VncList.ofColl(dag.immediateParents(val));
 		}
 		catch(NoSuchElementException ex) {
 			throw new VncException("Node not found: " + val.toString(true));

@@ -111,7 +111,7 @@ public class DagFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertMinArity(this, args, 1);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 
@@ -120,7 +120,31 @@ public class DagFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-				
+
+	public static VncFunction add_node =
+		new VncFunction(
+				"dag/add-node",
+				VncFunction
+					.meta()
+					.arglists("(add-node node)")
+					.doc("Add a node to a DAG")
+					.examples(
+						"(dag/add-node (dag/dag) \"A\")")
+					.seeAlso(
+						"dag/dag", "dag/topological-sort")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+
+				return dag.addNode(args.second());
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction topological_sort =
 		new VncFunction(
 				"dag/topological-sort",
@@ -139,7 +163,7 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/topological-sort))                ")
 					.seeAlso(
-						"dag/dag", "dag/add-edges")
+						"dag/dag", "dag/compare-fn", "dag/add-edges")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -253,7 +277,7 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/children \"F\"))                  ")
 					.seeAlso(
-						"dag/dag", "dag/parents", "dag/roots", "dag/topological-sort")
+						"dag/dag", "dag/immediate-children", "dag/parents", "dag/immediate-parents", "dag/roots")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -266,7 +290,42 @@ public class DagFunctions {
 		
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction immediate_children =
+		new VncFunction(
+				"dag/immediate-children",
+				VncFunction
+					.meta()
+					.arglists("(immediate-children dag node)")
+					.doc("Returns the immediate child nodes")
+					.examples(
+						"(dag/children (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"A\")",
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/children \"F\"))                  ")
+					.seeAlso(
+						"dag/dag", 
+						"dag/children", 
+						"dag/parents", "dag/immediate-parents", 
+						"dag/roots")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
 		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.immediateChildren(args.second());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction parents =
 		new VncFunction(
 				"dag/parents",
@@ -285,7 +344,10 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/parents \"C\"))                   ")
 					.seeAlso(
-						"dag/dag", "dag/children", "dag/roots", "dag/topological-sort")
+						"dag/dag", 
+						"dag/immediate-parents", 
+						"dag/children", "dag/immediate-children", 
+						"dag/roots")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -299,6 +361,41 @@ public class DagFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
+	public static VncFunction immediate_parents =
+		new VncFunction(
+				"dag/immediate-parents",
+				VncFunction
+					.meta()
+					.arglists("(immediate-parents dag node)")
+					.doc("Returns the immediate parent nodes")
+					.examples(
+						"(dag/parents (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"C\")",
+						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+						"             [\"B\", \"C\"]  ;    |  |   \n" +
+						"             [\"C\", \"D\"]  ;    B  F   \n" +
+						"             [\"E\", \"F\"]  ;    | / \\ \n" +
+						"             [\"F\", \"C\"]  ;    C    G \n" +
+						"             [\"F\", \"G\"]  ;     \\  / \n" +
+						"             [\"G\", \"D\"]) ;      D    \n" +
+						"    (dag/parents \"C\"))                   ")
+					.seeAlso(
+							"dag/dag", 
+							"dag/parents", 
+							"dag/children", "dag/immediate-children", 
+							"dag/roots")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.immediateParents(args.second());
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction roots =
 		new VncFunction(
 				"dag/roots",
@@ -440,7 +537,9 @@ public class DagFunctions {
 					.add(edges)
 					.add(nodes)
 					.add(children)
+					.add(immediate_children)
 					.add(parents)
+					.add(immediate_parents)
 					.add(roots)
 					.add(parent_of_Q)
 					.add(child_of_Q)
