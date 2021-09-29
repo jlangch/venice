@@ -515,7 +515,17 @@ public class SpecialFormsDoc {
 						"   (extend :core/long XMath                               \n" +
 						"           (+ [x y] (core/+ x y))                         \n" +
 						"           (- [x y] (core/- x y)))                        \n" +
-						"   (foo/+ (complex. 1 1)  (complex. 4 5)))                  ")
+						"   (foo/+ (complex. 1 1)  (complex. 4 5)))                  ",
+						
+						"(do                                                                  \n" +
+						"   (ns foo)                                                          \n" +
+						"   (defprotocol Lifecycle (start [c]) (stop [c]))                    \n" +
+						"   (deftype :component [name :string]                                \n" +
+						"            Lifecycle (start [c] (println \"'~(:name c)' started\")) \n" +
+						"                      (stop [c] (println \"'~(:name c)' stopped\"))) \n" +
+						"   (let [c (component. \"test\")]                                    \n" +
+						"     (start c)                                                       \n" +
+						"     (stop c)))                                                        ")
 					.seeAlso("extend", "extends?", "defmulti")
 					.build()
 		) {
