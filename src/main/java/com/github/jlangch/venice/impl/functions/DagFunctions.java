@@ -299,7 +299,6 @@ public class DagFunctions {
 					.arglists("(immediate-children dag node)")
 					.doc("Returns the immediate child nodes")
 					.examples(
-						"(dag/children (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"A\")",
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
 						"             [\"B\", \"C\"]  ;    |  |   \n" +
 						"             [\"C\", \"D\"]  ;    B  F   \n" +
@@ -307,7 +306,7 @@ public class DagFunctions {
 						"             [\"F\", \"C\"]  ;    C    G \n" +
 						"             [\"F\", \"G\"]  ;     \\  / \n" +
 						"             [\"G\", \"D\"]) ;      D    \n" +
-						"    (dag/children \"F\"))                  ")
+						"    (dag/immediate-children \"F\"))        ")
 					.seeAlso(
 						"dag/dag", 
 						"dag/children", 
@@ -377,7 +376,7 @@ public class DagFunctions {
 						"             [\"F\", \"C\"]  ;    C    G \n" +
 						"             [\"F\", \"G\"]  ;     \\  / \n" +
 						"             [\"G\", \"D\"]) ;      D    \n" +
-						"    (dag/parents \"C\"))                   ")
+						"    (dag/immediate-parents \"C\"))         ")
 					.seeAlso(
 							"dag/dag", 
 							"dag/parents", 
