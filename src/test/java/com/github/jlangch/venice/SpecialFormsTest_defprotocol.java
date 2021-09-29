@@ -140,7 +140,22 @@ public class SpecialFormsTest_defprotocol {
 		assertEquals(":core/protocol", venice.eval(script));					
 	}
 	
+	@Test
+	public void test_protocol_doc() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                               \n" +
+				"  (ns test)                       \n" +
+				"  (defprotocol                    \n" +
+				"     ^{ :doc \"test protocol\" }  \n" +
+				"     P (foo [x]))                 \n" +
+				"  (with-out-str (doc P)))           ";
+
+		assertEquals("test protocol\n", venice.eval(script));					
+	}
 	
+		
 	// ------------------------------------------------------------------------
 	// Errors
 	// ------------------------------------------------------------------------

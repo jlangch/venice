@@ -45,8 +45,10 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
+import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 
@@ -326,51 +328,95 @@ public class DocForm {
 	}
 	
 	private static VncString formatDoc(final VncVal val, final int width) {
-		if (val != null && Types.isVncFunction(val)) {
-			final VncFunction fn = (VncFunction)val;
-			final VncList argsList = fn.getArgLists();
-			final VncList examples = fn.getExamples();
-			final VncList seeAlso = fn.getSeeAlso();
-			
-			final StringBuilder sb =  new StringBuilder();
-						
-			sb.append(argsList
+		if (val != null) {
+			if (Types.isVncFunction(val)) {
+				return formatDoc((VncFunction)val, width);
+			}
+			else if (Types.isVncProtocol(val)) {
+				return formatDoc((VncProtocol)val, width);
+			}
+		}
+				
+		return new VncString(NO_DOC);			
+	}
+	
+	private static VncString formatDoc(final VncFunction fn, final int width) {
+		final VncList argsList = fn.getArgLists();
+		final VncList examples = fn.getExamples();
+		final VncList seeAlso = fn.getSeeAlso();
+		
+		final StringBuilder sb =  new StringBuilder();
+					
+		sb.append(argsList
+					.stream()
+					.map(s -> toString(s))
+					.collect(Collectors.joining(", ")));
+		
+		sb.append("\n\n");
+		
+		final String fnDescr = toString(fn.getDoc());
+		sb.append(MARKDOWN_FN_DESCR
+					? Markdown.parse(fnDescr).renderToText(width)
+					: fnDescr);
+					
+		if (!examples.isEmpty()) {
+			sb.append("\n\n");
+			sb.append("EXAMPLES:\n");
+			sb.append(examples
+						.stream()
+						.map(s -> toString(s))
+						.map(e -> indent(e, "   "))
+						.collect(Collectors.joining("\n\n")));
+		}
+
+		if (!seeAlso.isEmpty()) {
+			sb.append("\n\n");
+			sb.append("SEE ALSO:\n   ");
+			sb.append(seeAlso
 						.stream()
 						.map(s -> toString(s))
 						.collect(Collectors.joining(", ")));
-			
-			sb.append("\n\n");
-			
-			final String fnDescr = toString(fn.getDoc());
+		}
+
+		sb.append("\n");
+
+		return new VncString(sb.toString());			
+	}
+	
+	private static VncString formatDoc(final VncProtocol protocol, final int width) {
+		final VncVal doc = MetaUtil.getMetaVal(protocol.getMeta(), MetaUtil.DOC);
+		final VncVal examples = MetaUtil.getMetaVal(protocol.getMeta(), MetaUtil.EXAMPLES);
+		
+		boolean empty = true;
+		
+		final StringBuilder sb =  new StringBuilder();
+
+		if (Types.isVncString(doc)) {
+			empty = false;
+			final String descr = ((VncString)doc).getValue();
 			sb.append(MARKDOWN_FN_DESCR
-						? Markdown.parse(fnDescr).renderToText(width)
-						: fnDescr);
-						
-			if (!examples.isEmpty()) {
+						? Markdown.parse(descr).renderToText(width)
+						: descr);
+		}
+
+		if (Types.isVncList(examples)) {
+			final VncList examples_ = (VncList)examples;
+			if (!examples_.isEmpty()) {
+				empty = false;
 				sb.append("\n\n");
 				sb.append("EXAMPLES:\n");
-				sb.append(examples
+				sb.append(examples_
 							.stream()
 							.map(s -> toString(s))
 							.map(e -> indent(e, "   "))
 							.collect(Collectors.joining("\n\n")));
+				sb.append("\n");
 			}
-
-			if (!seeAlso.isEmpty()) {
-				sb.append("\n\n");
-				sb.append("SEE ALSO:\n   ");
-				sb.append(seeAlso
-							.stream()
-							.map(s -> toString(s))
-							.collect(Collectors.joining(", ")));
-			}
-
-			sb.append("\n");
-
-			return new VncString(sb.toString());			
 		}
-				
-		return new VncString("<no documentation available>");			
+
+
+		return empty ? new VncString(NO_DOC)
+					 : new VncString(sb.toString());			
 	}
 	
 	private static String indent(final String text, final String indent) {
@@ -415,4 +461,6 @@ public class DocForm {
 	
 	
 	private static final boolean MARKDOWN_FN_DESCR = true;
+	
+	private static final String NO_DOC = "<no documentation available>";
 }
