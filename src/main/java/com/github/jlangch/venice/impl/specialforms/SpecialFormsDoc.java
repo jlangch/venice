@@ -524,6 +524,7 @@ public class SpecialFormsDoc {
 						"            Lifecycle (start [c] (println \"'~(:name c)' started\")) \n" +
 						"                      (stop [c] (println \"'~(:name c)' stopped\"))) \n" +
 						"   (let [c (component. \"test\")]                                    \n" +
+						"     (println \"'~(:name c)' extends Lifecycle protocol: ~(extends? (type c) Lifecycle)\")                                                       \n" +
 						"     (start c)                                                       \n" +
 						"     (stop c)))                                                        ")
 					.seeAlso("extend", "extends?", "defmulti")

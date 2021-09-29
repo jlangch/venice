@@ -610,10 +610,12 @@ public class SpecialFormsHandler {
 			final Env env,
 			final VncVal meta
 	) {
-		if (!(typeRef instanceof VncKeyword)) {
+		final VncVal typeRefEval = evaluator.evaluate(typeRef, env, false);
+		
+		if (!(typeRefEval instanceof VncKeyword)) {
 			throw new VncException(String.format(
 					"The type '%s' must be a keyword like :core/long!",
-					typeRef.getType()));
+					typeRefEval.getType()));
 		}
 
 		// Lookup protocol from the ENV
@@ -624,7 +626,7 @@ public class SpecialFormsHandler {
 					protocolSym.getQualifiedName()));
 		}
 		
-		final VncKeyword type = (VncKeyword)typeRef;
+		final VncKeyword type = (VncKeyword)typeRefEval;
 		
 		if (!type.hasNamespace()) {
 			throw new VncException(String.format(
