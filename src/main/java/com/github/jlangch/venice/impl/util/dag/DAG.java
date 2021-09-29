@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.util.dag;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 
@@ -186,6 +189,18 @@ public class DAG<T> {
 		return String.format("DAG{nodes=%d}", nodes.size());
 	}
 
+	public Comparator<T> comparator() {
+		final AtomicInteger idx = new AtomicInteger();
+		final Map<T,Integer> map = new ConcurrentHashMap<>();
+		topologicalSort().forEach(e -> map.put(e, idx.getAndIncrement()));
+		
+		return new Comparator<T>() {
+			public int compare(final T o1, final T o2) {
+				return map.getOrDefault(o1, Integer.MAX_VALUE)
+						  .compareTo(map.getOrDefault(o2, Integer.MAX_VALUE));
+			}			
+		};
+	}
 
 	private void findRoots() {
 		for (Node<T> n : nodes.values()) {
