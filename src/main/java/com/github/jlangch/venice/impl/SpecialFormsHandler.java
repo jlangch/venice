@@ -649,14 +649,50 @@ public class SpecialFormsHandler {
 		//          P (foo [x])
 		final CallFrame callframe = new CallFrame("deftype", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("deftype", FnType.SpecialForm, args, 2, 3);
-			final VncKeyword type = Coerce.toVncKeyword(evaluator.evaluate(args.first(), env, false));
-			final VncVector fields = Coerce.toVncVector(args.second());
-			final VncFunction validationFn = args.size() == 3
-												? Coerce.toVncFunction(evaluator.evaluate(args.third(), env, false))
-												: null;
+			assertMinArity("deftype", FnType.SpecialForm, args, 2);
+			
+			final VncList deftypeArgs = args.takeWhile(e -> !Types.isVncSymbol(e));
+			VncList extendArgs = args.drop(deftypeArgs.size());
+			
+			// [1] parse deftype args
+			final VncKeyword type = Coerce.toVncKeyword(
+										evaluator.evaluate(deftypeArgs.first(), env, false));
 
-			return DefTypeForm.defineCustomType(type, fields, validationFn, interpreter, env);
+			final VncVector fields = Coerce.toVncVector(args.second());
+
+			final VncFunction validationFn = Types.isVncFunction(args.third())
+												? Coerce.toVncFunction(
+														evaluator.evaluate(
+																args.third(), env, false))
+												: null;
+			
+			// custom type is a namespace qualified keyword
+			final VncVal customType = DefTypeForm.defineCustomType(
+													type, fields, validationFn, interpreter, env);
+	
+			// [2] parse extend protocol definitions
+			while(!extendArgs.isEmpty()) {
+				final VncVal protocolSym = extendArgs.first();
+				final VncList extDefs = extendArgs.drop(1).takeWhile(e -> Types.isVncList(e));
+				if (Types.isVncSymbol(protocolSym)) {
+					extendArgs = extendArgs.drop(extDefs.size()+1);
+					
+					// process the extend definition
+					extend_(interpreter, 
+							customType,
+							(VncSymbol)protocolSym,
+							extDefs.addAtStart(protocolSym).addAtStart(type), 
+							env,
+							meta);						
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid extend protocol definitions for custom type '%s'",
+							type.toString()));
+				}
+			}	
+			
+			return customType;
 		}
 	}
 

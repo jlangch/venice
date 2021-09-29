@@ -128,4 +128,34 @@ public class SpecialFormsTest_extend {
 				() -> venice.eval(script));					
 	}
 
+	@Test
+	public void test_extend_deftype_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                    \n" +
+				"  (defprotocol P (foo [x]))            \n" +
+				"  (deftype :person [name :string]      \n" +
+				"           P (foo [x] (:name x)))      \n" +
+				"  (foo (person. \"joe\")))               ";
+
+		assertEquals("joe", venice.eval(script));					
+	}
+
+	@Test
+	public void test_extend_deftype_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (defprotocol P (foo [x]) (bar [x]))               \n" +
+				"  (deftype :person [name :string last :string]      \n" +
+				"           P (foo [x] (:name x))                    \n" +
+				"             (bar [x] (:last x)))                   \n" +
+				"  (def p (person. \"joe\" \"smith\"))               \n" +
+				"  (pr-str [(foo p) (bar p)]))";
+
+		assertEquals("[\"joe\" \"smith\"]", venice.eval(script));					
+	}
+
 }
