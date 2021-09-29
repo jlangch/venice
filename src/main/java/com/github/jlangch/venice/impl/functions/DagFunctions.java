@@ -173,7 +173,7 @@ public class DagFunctions {
 						"                 [\"G\", \"D\"])] ;      D    \n" +
 						"  (sort (dag/compare-fn g) [\"D\" \"F\" \"A\" \"Z\"])) ")
 					.seeAlso(
-						"dag/dag", "dag/sort")
+						"dag/dag", "dag/topological-sort")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
