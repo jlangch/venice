@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,9 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -173,6 +176,17 @@ public class VncDAG extends VncCollection {
 		}
 	}
 	
+	public VncFunction compareFn() {
+		final Comparator<VncVal> c = dag.comparator();
+		
+		return new VncFunction(VncFunction.createAnonymousFuncName("toposort-compare")) {
+			public VncVal apply(final VncList args) {
+				return new VncLong(c.compare(args.first(), args.second()));
+			}
+			private static final long serialVersionUID = 1L;
+		};
+	}
+
 	public VncBoolean isParentOf(final VncVal parent, final VncVal value) {
 		try {
 			return VncBoolean.of(dag.isParentOf(parent, value));

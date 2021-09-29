@@ -938,7 +938,12 @@ public class DocGenerator {
 		dag_access.addItem(getDocItem("dag/parents"));
 		dag_access.addItem(getDocItem("dag/roots"));
 		dag_access.addItem(getDocItem("count"));
-	
+
+		final DocSection dag_sort = new DocSection("Sort", "collections.dag.sort");
+		dag.addSection(dag_sort);
+		dag_sort.addItem(getDocItem("dag/topological-sort"));
+		dag_sort.addItem(getDocItem("dag/compare-fn"));
+
 		final DocSection dag_test = new DocSection("Test", "collections.dag.test");
 		dag.addSection(dag_test);
 		dag_test.addItem(getDocItem("dag/dag?"));

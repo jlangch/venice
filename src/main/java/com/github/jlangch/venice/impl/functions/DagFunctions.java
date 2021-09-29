@@ -152,7 +152,41 @@ public class DagFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction compare_fn =
+		new VncFunction(
+				"dag/compare-fn",
+				VncFunction
+					.meta()
+					.arglists("(compare-fn dag)")
+					.doc(
+						"Returns a comparator fn which produces a topological sort " +
+						"based on the dependencies in the graph. Nodes not present " +
+						"in the graph will sort after nodes in the graph.")
+					.examples(
+						"(let [g (dag/dag [\"A\", \"B\"]   ;    A  E   \n" +
+						"                 [\"B\", \"C\"]   ;    |  |   \n" +
+						"                 [\"C\", \"D\"]   ;    B  F   \n" +
+						"                 [\"E\", \"F\"]   ;    | / \\ \n" +
+						"                 [\"F\", \"C\"]   ;    C    G \n" +
+						"                 [\"F\", \"G\"]   ;     \\  / \n" +
+						"                 [\"G\", \"D\"])] ;      D    \n" +
+						"  (sort (dag/compare-fn g) [\"D\" \"F\" \"A\" \"Z\"])) ")
+					.seeAlso(
+						"dag/dag", "dag/sort")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
 		
+				final VncDAG dag = Coerce.toVncDAG(args.first());
+				
+				return dag.compareFn();
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction edges =
 		new VncFunction(
 				"dag/edges",
@@ -401,6 +435,7 @@ public class DagFunctions {
 					.add(dag)
 					.add(dag_Q)
 					.add(topological_sort)
+					.add(compare_fn)
 					.add(add_edges)
 					.add(edges)
 					.add(nodes)
