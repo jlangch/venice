@@ -496,11 +496,11 @@ public class SpecialFormsDoc {
 					.doc(
 						"Defines a new protocal with the name `P`.  \n\n" +
 						"Formats:                                   \n\n" +
-						"- `(defprotocol P (foo [x]))`              \n" +
-						"- `(defprotocol P (foo [x] [x y]))`        \n" +
-						"- `(defprotocol P (foo [x] [x y] nil))`    \n" +
-						"- `(defprotocol P (foo [x] [x y] 100))`    \n" +
-						"- `(defprotocol P (foo [x]) (bar [x]))`    ")
+						" * `(defprotocol P (foo [x]))`             \n" +
+						" * `(defprotocol P (foo [x] [x y]))`       \n" +
+						" * `(defprotocol P (foo [x] [x y] nil))`   \n" +
+						" * `(defprotocol P (foo [x] [x y] 100))`   \n" +
+						" * `(defprotocol P (foo [x]) (bar [x]))`    ")
 					.examples(
 						"(do                                                       \n" +
 						"   (ns foo)                                               \n" +
