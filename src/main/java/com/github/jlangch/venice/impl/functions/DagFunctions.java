@@ -534,6 +534,7 @@ public class DagFunctions {
 					.add(topological_sort)
 					.add(compare_fn)
 					.add(add_edges)
+					.add(add_node)
 					.add(edges)
 					.add(nodes)
 					.add(children)
