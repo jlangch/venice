@@ -16,7 +16,7 @@ and this project adheres to
 - a DAG (directed acyclic graph) with topological sorting using 
   [Kahn's algorithm](https://en.wikipedia.org/wiki/Topological_sorting)
 - function `deftype-describe` to get details on a custom type definition
-- `defprotocol`, `extend`, and `extends`
+- `defprotocol`, `extend`, and `extends?`
 
 ### Fixed
 
