@@ -433,7 +433,7 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(parent-of? dag p v)")
-					.doc("Returns `true` if p is a transtive parent of v")
+					.doc("Returns `true` if p is a transitive parent of v")
 					.examples(
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
 						"             [\"B\", \"C\"]  ;    |  |   \n" +
@@ -464,7 +464,7 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(child-of? dag c v)")
-					.doc("Returns `true` if c is a transtive child of v")
+					.doc("Returns `true` if c is a transitive child of v")
 					.examples(
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
 						"             [\"B\", \"C\"]  ;    |  |   \n" +
