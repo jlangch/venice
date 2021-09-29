@@ -1849,14 +1849,23 @@ public class DocGenerator {
 		generic.addItem(getDocItem("def"));
 		generic.addItem(getDocItem("defonce"));
 		generic.addItem(getDocItem("def-dynamic"));
-		generic.addItem(getDocItem("defmulti"));
-		generic.addItem(getDocItem("defmethod"));
 		generic.addItem(getDocItem("if"));
 		generic.addItem(getDocItem("do"));
 		generic.addItem(getDocItem("let"));
 		generic.addItem(getDocItem("binding"));
 		generic.addItem(getDocItem("fn"));
 		generic.addItem(getDocItem("set!"));
+
+		final DocSection multi = new DocSection("Multi Methods", "specialforms.multimethod");
+		all.addSection(multi);
+		multi.addItem(getDocItem("defmulti"));
+		multi.addItem(getDocItem("defmethod"));
+
+		final DocSection proto = new DocSection("Protocols", "specialforms.protocol");
+		all.addSection(proto);
+		proto.addItem(getDocItem("defprotocol"));
+		proto.addItem(getDocItem("extend"));
+		proto.addItem(getDocItem("extends?"));
 
 		final DocSection recur = new DocSection("Recursion", "specialforms.recursion");
 		all.addSection(recur);

@@ -45,14 +45,13 @@ public class QualifiedName {
 	) {
 		final String namespace_ = trimToNull(namespace);
 		final String simpleName_ = trimToNull(simpleName);
-
+	
+		// validate
 		if (namespace_ != null && namespace_.indexOf("/") >= 0) {
 			throw new VncException(String.format(
 						"A namespace ('%s') must not contain a '/'",
 						namespace_));
 		}
-		
-		// validate
 		if (simpleName_ == null) {
 			throw new VncException(
 					"A simple name of a qualified name must not be blank");

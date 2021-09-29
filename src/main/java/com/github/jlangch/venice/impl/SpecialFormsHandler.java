@@ -643,6 +643,10 @@ public class SpecialFormsHandler {
 			final Env env,
 			final VncVal meta
 	) {
+		// (deftype :complex [real :long, imaginary :long])
+		//
+		// (deftype :complex [real :long, imaginary :long]
+		//          P (foo [x])
 		final CallFrame callframe = new CallFrame("deftype", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("deftype", FnType.SpecialForm, args, 2, 3);

@@ -492,14 +492,27 @@ public class SpecialFormsDoc {
 				"defprotocol",
 				VncFunction
 					.meta()
-					.arglists("(defprotocol protocol fn-spec*)")		
-					.doc("Defines a new protocal with the name `P`. \n\n" +
-						 "Formats:                                  \n\n" +
-						 "- `(defprotocol P (foo [x]))`              \n" +
-						 "- `(defprotocol P (foo [x] [x y]))`        \n" +
-						 "- `(defprotocol P (foo [x] [x y] nil))`    \n" +
-						 "- `(defprotocol P (foo [x] [x y] 100))`    \n" +
-						 "- `(defprotocol P (foo [x]) (bar [x]))`    ")
+					.arglists("(defprotocol protocol fn-spec*)")
+					.doc(
+						"Defines a new protocal with the name `P`.  \n\n" +
+						"Formats:                                   \n\n" +
+						"- `(defprotocol P (foo [x]))`              \n" +
+						"- `(defprotocol P (foo [x] [x y]))`        \n" +
+						"- `(defprotocol P (foo [x] [x y] nil))`    \n" +
+						"- `(defprotocol P (foo [x] [x y] 100))`    \n" +
+						"- `(defprotocol P (foo [x]) (bar [x]))`    ")
+					.examples(
+						"(do                                                       \n" +
+						"   (ns foo)                                               \n" +
+						"   (deftype :complex [re :long, im :long])                \n" +
+						"   (defprotocol Cplex (+ [x y])                           \n" +
+						"                      (- [x y]))                          \n" +
+						"   (extend :foo/complex Cplex                             \n" +
+						"           (+ [x y] (complex. (core/+ (:re x) (:re y))    \n" +
+						"                              (core/+ (:im x) (:im y))))  \n" +
+						"           (- [x y] (complex. (core/- (:re x) (:re y))    \n" +
+						"                              (core/- (:im x) (:im y))))) \n" +
+						"   (foo/+ (complex. 1 1)  (complex. 4 5)))                  ")
 					.seeAlso("extend", "extends?", "defmulti")
 					.build()
 		) {
@@ -512,7 +525,19 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.arglists("(extend type protocol fn-spec*)")		
-					.doc("Extends the protocol for type")
+					.doc("Extends protocol for type")
+					.examples(
+							"(do                                                       \n" +
+							"   (ns foo)                                               \n" +
+							"   (deftype :complex [re :long, im :long])                \n" +
+							"   (defprotocol Cplex (+ [x y])                           \n" +
+							"                      (- [x y]))                          \n" +
+							"   (extend :foo/complex Cplex                             \n" +
+							"           (+ [x y] (complex. (core/+ (:re x) (:re y))    \n" +
+							"                              (core/+ (:im x) (:im y))))  \n" +
+							"           (- [x y] (complex. (core/- (:re x) (:re y))    \n" +
+							"                              (core/- (:im x) (:im y))))) \n" +
+							"   (foo/+ (complex. 1 1)  (complex. 4 5)))                  ")
 					.seeAlso("defprotocol", "extends?")
 					.build()
 		) {
@@ -524,9 +549,17 @@ public class SpecialFormsDoc {
 				"extends?",
 				VncFunction
 					.meta()
-					.arglists("(extends type protocol)")		
+					.arglists("(extends? type protocol)")		
 					.doc("Returns true if the type extends the protocol.")
-				.seeAlso("defprotocol", "extend")
+					.examples(
+							"(do                                                       \n" +
+							"   (ns foo)                                               \n" +
+							"   (deftype :complex [re :long, im :long])                \n" +
+							"   (defprotocol Cplex (+ [x y]))                          \n" +
+							"   (extend :foo/complex Cplex                             \n" +
+							"           (+ [x y] (complex. (core/+ (:re x) (:re y))))) \n" +
+							"   (extends? :foo/complex Cplex))                           ")
+					.seeAlso("defprotocol", "extend")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
