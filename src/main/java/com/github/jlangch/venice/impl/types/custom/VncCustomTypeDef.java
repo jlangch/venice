@@ -34,9 +34,9 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 
 
 public class VncCustomTypeDef extends VncCustomBaseTypeDef {
@@ -109,7 +109,7 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 									.map(o -> o.toMap())
 									.collect(Collectors.toList());
 		
-		return VncHashMap.of(
+		return VncOrderedMap.of(
 				new VncKeyword(":type"),			getType(),
 				new VncKeyword(":custom-type"), 	new VncKeyword(":record"),
 				new VncKeyword(":field-defs"),  	VncList.ofColl(defs),
