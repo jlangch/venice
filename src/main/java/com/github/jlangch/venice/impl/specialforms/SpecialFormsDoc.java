@@ -494,24 +494,27 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(defprotocol protocol fn-spec*)")
 					.doc(
-						"Defines a new protocal with the name `P`.  \n\n" +
-						"Formats:                                   \n\n" +
-						" * `(defprotocol P (foo [x]))`             \n" +
-						" * `(defprotocol P (foo [x] [x y]))`       \n" +
-						" * `(defprotocol P (foo [x] [x y] nil))`   \n" +
-						" * `(defprotocol P (foo [x] [x y] 100))`   \n" +
-						" * `(defprotocol P (foo [x]) (bar [x]))`    ")
+						"Defines a new protocal with the name `P`.       \n\n" +
+						"Formats:                                        \n\n" +
+						" * `(defprotocol P (foo [x]))`                  \n" +
+						" * `(defprotocol P (foo [x] [x y]))`            \n" +
+						" * `(defprotocol P (foo [x] [x y] nil))`        \n" +
+						" * `(defprotocol P (foo [x] [x y] 100))`        \n" +
+						" * `(defprotocol P (foo [x]) (bar [x] [x y]))`    ")
 					.examples(
 						"(do                                                       \n" +
 						"   (ns foo)                                               \n" +
 						"   (deftype :complex [re :long, im :long])                \n" +
-						"   (defprotocol Cplex (+ [x y])                           \n" +
+						"   (defprotocol XMath (+ [x y])                           \n" +
 						"                      (- [x y]))                          \n" +
-						"   (extend :foo/complex Cplex                             \n" +
+						"   (extend :foo/complex XMath                             \n" +
 						"           (+ [x y] (complex. (core/+ (:re x) (:re y))    \n" +
 						"                              (core/+ (:im x) (:im y))))  \n" +
 						"           (- [x y] (complex. (core/- (:re x) (:re y))    \n" +
 						"                              (core/- (:im x) (:im y))))) \n" +
+						"   (extend :core/long XMath                               \n" +
+						"           (+ [x y] (core/+ x y))                         \n" +
+						"           (- [x y] (core/- x y)))                        \n" +
 						"   (foo/+ (complex. 1 1)  (complex. 4 5)))                  ")
 					.seeAlso("extend", "extends?", "defmulti")
 					.build()
@@ -530,13 +533,16 @@ public class SpecialFormsDoc {
 							"(do                                                       \n" +
 							"   (ns foo)                                               \n" +
 							"   (deftype :complex [re :long, im :long])                \n" +
-							"   (defprotocol Cplex (+ [x y])                           \n" +
+							"   (defprotocol XMath (+ [x y])                           \n" +
 							"                      (- [x y]))                          \n" +
-							"   (extend :foo/complex Cplex                             \n" +
+							"   (extend :foo/complex XMath                             \n" +
 							"           (+ [x y] (complex. (core/+ (:re x) (:re y))    \n" +
 							"                              (core/+ (:im x) (:im y))))  \n" +
 							"           (- [x y] (complex. (core/- (:re x) (:re y))    \n" +
 							"                              (core/- (:im x) (:im y))))) \n" +
+							"   (extend :core/long XMath                               \n" +
+							"           (+ [x y] (core/+ x y))                         \n" +
+							"           (- [x y] (core/- x y)))                        \n" +
 							"   (foo/+ (complex. 1 1)  (complex. 4 5)))                  ")
 					.seeAlso("defprotocol", "extends?")
 					.build()
@@ -552,13 +558,20 @@ public class SpecialFormsDoc {
 					.arglists("(extends? type protocol)")		
 					.doc("Returns true if the type extends the protocol.")
 					.examples(
-							"(do                                                       \n" +
-							"   (ns foo)                                               \n" +
-							"   (deftype :complex [re :long, im :long])                \n" +
-							"   (defprotocol Cplex (+ [x y]))                          \n" +
-							"   (extend :foo/complex Cplex                             \n" +
-							"           (+ [x y] (complex. (core/+ (:re x) (:re y))))) \n" +
-							"   (extends? :foo/complex Cplex))                           ")
+						"(do                                                       \n" +
+						"   (ns foo)                                               \n" +
+						"   (deftype :complex [re :long, im :long])                \n" +
+						"   (defprotocol XMath (+ [x y])                           \n" +
+						"                      (- [x y]))                          \n" +
+						"   (extend :foo/complex XMath                             \n" +
+						"           (+ [x y] (complex. (core/+ (:re x) (:re y))    \n" +
+						"                              (core/+ (:im x) (:im y))))  \n" +
+						"           (- [x y] (complex. (core/- (:re x) (:re y))    \n" +
+						"                              (core/- (:im x) (:im y))))) \n" +
+						"   (extend :core/long XMath                               \n" +
+						"           (+ [x y] (core/+ x y))                         \n" +
+						"           (- [x y] (core/- x y)))                        \n" +
+						"   (extends? :foo/complex XMath))                           ")
 					.seeAlso("defprotocol", "extend")
 					.build()
 		) {

@@ -9,13 +9,14 @@ and this project adheres to
 
 
 
-## [1.9.32] - 2021-09-xx
+## [1.10.0] - 2021-10-xx
 
 ### Added
 
 - a DAG (directed acyclic graph) with topological sorting using 
   [Kahn's algorithm](https://en.wikipedia.org/wiki/Topological_sorting)
 - function `deftype-describe` to get details on a custom type definition
+- `defprotocol`, `extend`, and `extends`
 
 ### Fixed
 
