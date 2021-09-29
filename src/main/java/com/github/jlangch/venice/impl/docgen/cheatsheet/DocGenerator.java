@@ -928,11 +928,12 @@ public class DocGenerator {
 		dag.addSection(dag_create);
 		dag_create.addItem(getDocItem("dag/dag"));
 		dag_create.addItem(getDocItem("dag/add-edges"));
+		dag_create.addItem(getDocItem("dag/add-node"));
 		
 		final DocSection dag_access = new DocSection("Access", "collections.dag.access");
 		dag.addSection(dag_access);
 		dag_access.addItem(getDocItem("dag/nodes"));
-		dag_create.addItem(getDocItem("dag/edges"));
+		dag_access.addItem(getDocItem("dag/edges"));
 		dag_access.addItem(getDocItem("dag/roots"));
 		dag_access.addItem(getDocItem("count"));
 		
