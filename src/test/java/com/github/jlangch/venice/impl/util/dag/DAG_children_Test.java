@@ -82,7 +82,7 @@ public class DAG_children_Test {
 	}
 
 	@Test
-	public void test_immediate_children() {
+	public void test_direct_children() {
 		final DAG<String> dag = new DAG<>();
 		
 		dag.addEdge("A", "B");      //	     A
@@ -94,17 +94,17 @@ public class DAG_children_Test {
 		dag.addEdge("C", "F");      //     E   F
 		dag.update();
 		
-		assertEquals("B C", String.join(" ", dag.immediateChildren("A")));
+		assertEquals("B C", String.join(" ", dag.directChildren("A")));
 		
-		assertEquals("D", String.join(" ", dag.immediateChildren("B")));
+		assertEquals("D", String.join(" ", dag.directChildren("B")));
 		
-		assertEquals("D F", String.join(" ", dag.immediateChildren("C")));
+		assertEquals("D F", String.join(" ", dag.directChildren("C")));
 		
-		assertEquals("E F", String.join(" ", dag.immediateChildren("D")));
+		assertEquals("E F", String.join(" ", dag.directChildren("D")));
 		
-		assertEquals("", String.join(" ", dag.immediateChildren("E")));
+		assertEquals("", String.join(" ", dag.directChildren("E")));
 		
-		assertEquals("", String.join(" ", dag.immediateChildren("F")));
+		assertEquals("", String.join(" ", dag.directChildren("F")));
 	}
 
 }

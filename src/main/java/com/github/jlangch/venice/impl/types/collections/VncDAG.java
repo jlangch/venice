@@ -76,12 +76,14 @@ public class VncDAG extends VncCollection {
 
 	public VncDAG addNode(final VncVal node) {
 		dag.addNode(node);
+		dag.update();
 		return this;
 	}
 
 	public VncDAG addEdge(final VncVal parent, final VncVal child) {
 		try {
 			dag.addEdge(parent, child);
+			dag.update();
 			return this;
 		}
 		catch(DagCycleException ex) {
@@ -164,9 +166,9 @@ public class VncDAG extends VncCollection {
 		}
 	}
 	
-	public VncList immediateChildren(final VncVal val) {
+	public VncList directChildren(final VncVal val) {
 		try {
-			return VncList.ofColl(dag.immediateChildren(val));
+			return VncList.ofColl(dag.directChildren(val));
 		}
 		catch(NoSuchElementException ex) {
 			throw new VncException("Node not found: " + val.toString(true));
@@ -182,9 +184,9 @@ public class VncDAG extends VncCollection {
 		}
 	}
 	
-	public VncList immediateParents(final VncVal val) {
+	public VncList directParents(final VncVal val) {
 		try {
-			return VncList.ofColl(dag.immediateParents(val));
+			return VncList.ofColl(dag.directParents(val));
 		}
 		catch(NoSuchElementException ex) {
 			throw new VncException("Node not found: " + val.toString(true));
@@ -293,11 +295,21 @@ public class VncDAG extends VncCollection {
 
 	@Override 
 	public String toString() {
-		return "(" + Printer.join(edges(), " ", true) + ")";
+		return toString(true);
 	}
 	
 	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(edges(), " ", print_readably) + ")";
+		final VncList elements = getIsolatedNodes().addAllAtEnd(edges());
+		
+		return "(" + Printer.join(elements, " ", print_readably) + ")";
+	}
+	
+	private VncList getIsolatedNodes() {
+		return VncList.ofColl(
+				dag.getIsolatedNodes()
+				   .stream()
+				   .map(n -> n.getValue())
+				   .collect(Collectors.toList()));
 	}
 	
 	

@@ -190,7 +190,21 @@ public class DAG_topologicalSort_Test {
 
 		assertEquals("Z A C B D F E", String.join(" ", sorted));
 	}
-	
+
+
+	@Test
+	public void test_topologicalSort_9() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addNode("A"); 
+		dag.addNode("B"); 
+		dag.update();
+		
+		final List<String> sorted = dag.topologicalSort();
+
+		assertEquals("B A", String.join(" ", sorted));
+	}
+
 	@Test
 	public void test_comparator_1() {
 		final DAG<String> dag = new DAG<>();

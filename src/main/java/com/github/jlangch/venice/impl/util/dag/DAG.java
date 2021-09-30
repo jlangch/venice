@@ -60,13 +60,23 @@ public class DAG<T> {
 	 * Adds a node
 	 *
 	 * @param value the node's value
-	 * @return the created node
 	 */
-	public synchronized Node<T> addNode(final T value) {
-		return getNodeOrCreate(value);
+	public synchronized void addNode(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+		
+		getNodeOrCreate(value);
 	}
 
 	public synchronized void addEdge(final T parent, final T child) {
+		if (parent == null) {
+			throw new IllegalArgumentException("A parent must not be null");
+		}
+		if (child == null) {
+			throw new IllegalArgumentException("A child must not be null");
+		}
+		
 		final Node<T> parentNode = getNodeOrCreate(parent);
 		final Node<T> childNode = getNodeOrCreate(child);
 		parentNode.addChild(childNode);
@@ -86,6 +96,10 @@ public class DAG<T> {
 	}
 
 	public synchronized Node<T> getNode(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+
 		return nodes.get(value);
 	}
 
@@ -114,10 +128,18 @@ public class DAG<T> {
 	}
 
 	public synchronized Node<T> node(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+
 		return nodes.get(value);
 	}
 
 	public synchronized List<T> children(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+
 		final Node<T> node = nodes.get(value);
 		if (node == null) {
 			throw new NoSuchElementException("Node not found: " + value);
@@ -137,7 +159,11 @@ public class DAG<T> {
 		return Node.toValues(children);
 	}
 
-	public synchronized List<T> immediateChildren(final T value) {
+	public synchronized List<T> directChildren(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+
 		final Node<T> node = nodes.get(value);
 		if (node == null) {
 			throw new NoSuchElementException("Node not found: " + value);
@@ -147,6 +173,10 @@ public class DAG<T> {
 	}
 
 	public synchronized List<T> parents(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+
 		final Node<T> node = nodes.get(value);
 		if (node == null) {
 			throw new NoSuchElementException("Node not found: " + value);
@@ -166,7 +196,11 @@ public class DAG<T> {
 		return Node.toValues(parents);
 	}
 
-	public synchronized List<T> immediateParents(final T value) {
+	public synchronized List<T> directParents(final T value) {
+		if (value == null) {
+			throw new IllegalArgumentException("A node value must not be null");
+		}
+
 		final Node<T> node = nodes.get(value);
 		if (node == null) {
 			throw new NoSuchElementException("Node not found: " + value);
@@ -206,6 +240,14 @@ public class DAG<T> {
 		return String.format("DAG{nodes=%d}", nodes.size());
 	}
 
+	public List<Node<T>> getIsolatedNodes() {
+		// nodes without parent and children
+		return nodes.values()
+					.stream()
+					.filter(n -> n.isWithoutRelations())
+					.collect(Collectors.toList());
+	}
+
 	public Comparator<T> comparator() {
 		final AtomicInteger idx = new AtomicInteger();
 		final Map<T,Integer> map = new ConcurrentHashMap<>();
@@ -221,8 +263,9 @@ public class DAG<T> {
 
 	private void findRoots() {
 		for (Node<T> n : nodes.values()) {
-			if (n.getParents().isEmpty())
+			if (n.getParents().isEmpty()) {
 				roots.add(n);
+			}
 		}
 	}
 
@@ -264,14 +307,6 @@ public class DAG<T> {
 		return path.stream()
 				   .map(n -> String.valueOf(n.getValue()))
 				   .collect(Collectors.joining(" -> "));
-	}
-
-	private List<Node<T>> getIsolatedNodes() {
-		// nodes without parent and children
-		return nodes.values()
-					.stream()
-					.filter(n -> n.isWithoutRelations())
-					.collect(Collectors.toList());
 	}
 	
 	

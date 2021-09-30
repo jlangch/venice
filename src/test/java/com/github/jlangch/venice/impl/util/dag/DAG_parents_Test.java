@@ -80,7 +80,7 @@ public class DAG_parents_Test {
 	}
 
 	@Test
-	public void test_immediate_parents() {
+	public void test_direct_parents() {
 		final DAG<String> dag = new DAG<>();
 		
 		dag.addEdge("A", "B");      //	     A
@@ -92,17 +92,17 @@ public class DAG_parents_Test {
 		dag.addEdge("C", "F");      //     E   F
 		dag.update();
 		
-		assertEquals("", String.join(" ", dag.immediateParents("A")));
+		assertEquals("", String.join(" ", dag.directParents("A")));
 		
-		assertEquals("A", String.join(" ", dag.immediateParents("B")));
+		assertEquals("A", String.join(" ", dag.directParents("B")));
 		
-		assertEquals("A", String.join(" ", dag.immediateParents("C")));
+		assertEquals("A", String.join(" ", dag.directParents("C")));
 		
-		assertEquals("B C", String.join(" ", dag.immediateParents("D")));
+		assertEquals("B C", String.join(" ", dag.directParents("D")));
 		
-		assertEquals("D", String.join(" ", dag.immediateParents("E")));
+		assertEquals("D", String.join(" ", dag.directParents("E")));
 		
-		assertEquals("D C", String.join(" ", dag.immediateParents("F")));
+		assertEquals("D C", String.join(" ", dag.directParents("F")));
 	}
 
 }

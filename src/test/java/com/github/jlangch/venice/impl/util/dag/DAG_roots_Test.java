@@ -137,4 +137,30 @@ public class DAG_roots_Test {
 		assertEquals("A", String.join(" ", sorted));
 	}
 
+	@Test
+	public void test_roots_node_1() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addNode("A"); 
+		dag.update();
+		
+		final List<String> roots = dag.roots();
+
+		assertEquals("A", String.join(" ", roots));
+	}
+
+
+	@Test
+	public void test_roots_node_2() {
+		final DAG<String> dag = new DAG<>();
+		
+		dag.addNode("A"); 
+		dag.addNode("B"); 
+		dag.update();
+		
+		final List<String> roots = dag.roots();
+
+		assertEquals("A B", String.join(" ", roots));
+	}
+
 }

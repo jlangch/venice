@@ -108,9 +108,12 @@ public class DagFunctions {
 					.meta()
 					.arglists("(add-edges edges*)")
 					.doc(
-						"Add edges to a DAG. \n\n" +
+						"Add edges to a DAG. Returns the DAG.\n\n" +
 						"An edge is a vector of two nodes forming a parent/child " +
-						"relationship. Any *Venice* value can be used for a node.")
+						"relationship. Any *Venice* value can be used for a node.\n\n" +
+						"Note: The graph is reconstructed after adding edges. To " +
+						"improve performance pass the edges with a single `add-edges` " +
+						"call to the DAG.")
 					.examples(
 						"(dag/add-edges (dag/dag) [\"A\" \"B\"] [\"B\" \"C\"])")
 					.seeAlso(
@@ -135,13 +138,20 @@ public class DagFunctions {
 					.meta()
 					.arglists("(add-nodes nodes*)")
 					.doc(
-						"Add nodes to a DAG. \n\n" +
-						"Any *Venice* value can be used for a node.")
+						"Add nodes to a DAG. Returns the DAG.\n\n" +
+						"Any *Venice* value can be used for a node.\n\n" +
+						"Note: The graph is reconstructed after adding nodes. To " +
+						"improve performance pass the nodes with a single `add-nodes` " +
+						"call to the DAG.")
 					.examples(
 						"(dag/add-nodes (dag/dag) \"A\")",
 						"(-> (dag/dag)                      \n" +
 						"    (dag/add-nodes \"A\")          \n" +
-						"    (dag/add-edges [\"A\" \"B\"]))   ")
+						"    (dag/add-edges [\"A\" \"B\"]))   ",
+						"(-> (dag/dag)                      \n" +
+						"    (dag/add-nodes \"A\")          \n" +
+						"    (dag/add-edges [\"B\" \"C\"]))   ")
+
 					.seeAlso(
 						"dag/dag", "dag/topological-sort")
 					.build()
@@ -151,7 +161,7 @@ public class DagFunctions {
 
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 
-				return dag.addEdges(args.rest());
+				return dag.addNodes(args.rest());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -289,7 +299,7 @@ public class DagFunctions {
 						"             [\"G\", \"D\"]) ;      D    \n" +
 						"    (dag/children \"F\"))                  ")
 					.seeAlso(
-						"dag/dag", "dag/immediate-children", "dag/parents", "dag/immediate-parents", "dag/roots")
+						"dag/dag", "dag/direct-children", "dag/parents", "dag/direct-parents", "dag/roots")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -303,13 +313,13 @@ public class DagFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction immediate_children =
+	public static VncFunction direct_children =
 		new VncFunction(
-				"dag/immediate-children",
+				"dag/direct-children",
 				VncFunction
 					.meta()
-					.arglists("(immediate-children dag node)")
-					.doc("Returns the immediate child nodes")
+					.arglists("(direct-children dag node)")
+					.doc("Returns the direct child nodes")
 					.examples(
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
 						"             [\"B\", \"C\"]  ;    |  |   \n" +
@@ -318,11 +328,11 @@ public class DagFunctions {
 						"             [\"F\", \"C\"]  ;    C    G \n" +
 						"             [\"F\", \"G\"]  ;     \\  / \n" +
 						"             [\"G\", \"D\"]) ;      D    \n" +
-						"    (dag/immediate-children \"F\"))        ")
+						"    (dag/direct-children \"F\"))        ")
 					.seeAlso(
 						"dag/dag", 
 						"dag/children", 
-						"dag/parents", "dag/immediate-parents", 
+						"dag/parents", "dag/direct-parents", 
 						"dag/roots")
 					.build()
 		) {
@@ -331,7 +341,7 @@ public class DagFunctions {
 		
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 				
-				return dag.immediateChildren(args.second());
+				return dag.directChildren(args.second());
 			}
 		
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -356,8 +366,8 @@ public class DagFunctions {
 						"    (dag/parents \"C\"))                   ")
 					.seeAlso(
 						"dag/dag", 
-						"dag/immediate-parents", 
-						"dag/children", "dag/immediate-children", 
+						"dag/direct-parents", 
+						"dag/children", "dag/direct-children", 
 						"dag/roots")
 					.build()
 		) {
@@ -372,13 +382,13 @@ public class DagFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
-	public static VncFunction immediate_parents =
+	public static VncFunction direct_parents =
 		new VncFunction(
-				"dag/immediate-parents",
+				"dag/direct-parents",
 				VncFunction
 					.meta()
-					.arglists("(immediate-parents dag node)")
-					.doc("Returns the immediate parent nodes")
+					.arglists("(direct-parents dag node)")
+					.doc("Returns the direct parent nodes")
 					.examples(
 						"(dag/parents (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"C\")",
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
@@ -388,11 +398,11 @@ public class DagFunctions {
 						"             [\"F\", \"C\"]  ;    C    G \n" +
 						"             [\"F\", \"G\"]  ;     \\  / \n" +
 						"             [\"G\", \"D\"]) ;      D    \n" +
-						"    (dag/immediate-parents \"C\"))         ")
+						"    (dag/direct-parents \"C\"))         ")
 					.seeAlso(
 							"dag/dag", 
 							"dag/parents", 
-							"dag/children", "dag/immediate-children", 
+							"dag/children", "dag/direct-children", 
 							"dag/roots")
 					.build()
 		) {
@@ -401,7 +411,7 @@ public class DagFunctions {
 		
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 				
-				return dag.immediateParents(args.second());
+				return dag.directParents(args.second());
 			}
 		
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -549,9 +559,9 @@ public class DagFunctions {
 					.add(edges)
 					.add(nodes)
 					.add(children)
-					.add(immediate_children)
+					.add(direct_children)
 					.add(parents)
-					.add(immediate_parents)
+					.add(direct_parents)
 					.add(roots)
 					.add(parent_of_Q)
 					.add(child_of_Q)
