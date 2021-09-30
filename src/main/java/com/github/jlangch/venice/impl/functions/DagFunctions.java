@@ -265,7 +265,7 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(children dag node)")
-					.doc("Returns the child nodes")
+					.doc("Returns the transitive child nodes")
 					.examples(
 						"(dag/children (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"A\")",
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
@@ -331,7 +331,7 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(parents dag node)")
-					.doc("Returns the parent nodes")
+					.doc("Returns the transitive parent nodes")
 					.examples(
 						"(dag/parents (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]) \"C\")",
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
