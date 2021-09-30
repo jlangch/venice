@@ -124,7 +124,7 @@ Java varargs are passed as list or vector:
 
 ## Dynamic Proxies
 
-The Venice `proxify` function wraps one or multiple Venice function with 
+The Venice `proxify` function wraps one or multiple Venice functions with 
 a Java Dynamic Proxy:
 
 ```clojure

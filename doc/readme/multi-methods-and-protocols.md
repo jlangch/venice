@@ -87,5 +87,8 @@ TODO
 
 ## Proxies
 
-TODO
+The Venice `proxify` function creates implementations for *Java Interfaces*
+at runtime based on [Java Dynamic Proxies](https://www.baeldung.com/java-dynamic-proxies):
+
+See [Venice Dynamic Proxies](java-interop.md#dynamic-proxies)
 
