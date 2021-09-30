@@ -48,7 +48,10 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(dag)", "(dag edges*)")
-					.doc("Creates a new DAG (directed acyclic graph)")
+					.doc(
+						"Creates a new DAG (directed acyclic graph)\n\n" +
+						"An edge is a vector of two nodes forming a parent/child " +
+						"relationship.")
 					.examples(
 						"(dag/dag)",
 						"(dag/dag [\"A\" \"B\"] [\"B\" \"C\"])",
@@ -103,7 +106,10 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(add-edges edges*)")
-					.doc("Add edges to a DAG")
+					.doc(
+						"Add edges to a DAG. \n\n" +
+						"An edge is a vector of two nodes forming a parent/child " +
+						"relationship. Any *Venice* value can be used for a node.")
 					.examples(
 						"(dag/add-edges (dag/dag) [\"A\" \"B\"] [\"B\" \"C\"])")
 					.seeAlso(
@@ -127,9 +133,14 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(add-node node)")
-					.doc("Add a node to a DAG")
+					.doc(
+						"Add a node to a DAG. \n\n" +
+						"Any *Venice* value can be used for a node.")
 					.examples(
-						"(dag/add-node (dag/dag) \"A\")")
+							"(dag/add-node (dag/dag) \"A\")",
+							"(-> (dag/dag)                      \n" +
+							"    (dag/add-node \"A\")           \n" +
+							"    (dag/add-edges [\"A\" \"B\"]))   ")
 					.seeAlso(
 						"dag/dag", "dag/topological-sort")
 					.build()
