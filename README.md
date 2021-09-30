@@ -60,6 +60,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Custom Datatypes](doc/readme/datatypes-custom.md)
 * [Lazy Sequences](doc/readme/lazy-seq.md)
 * [Functions](doc/readme/functions.md)
+* [Multi-Methods and Protocols](doc/readme/multi-methods-and-protocols.md)
 * [Control Flow](doc/readme/control-flow.md)
 * [Filter-Map-Reduce](doc/readme/filter-map-reduce.md)
 * [Transducers](doc/readme/transducers.md)
