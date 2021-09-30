@@ -1,8 +1,17 @@
 # Functions
 
-* [Multimethods](#multimethods)
-* [Protocols](#protocols)
 
+### Expression Problem
+
+From Wikipedia:
+
+*The [Expression Problem](https://en.wikipedia.org/wiki/Expression_problem) is a challenge problem in programming languages that concerns the extensibility and modularity of statically typed data abstractions. The goal is to define a data abstraction that is extensible both in its representations and its behaviors, where one can add new representations and new behaviors to the data abstraction, without recompiling existing code, and while retaining static type safety (e.g., no casts). It exposed deficiencies in programming paradigms and programming languages, and it is still not definitively solved, although there are many proposed solutions.* 
+
+
+
+* [Multi-Methods](#multimethods)
+* [Protocols](#protocols)
+* [Proxies](#proxies)
 
 
 ## Multimethods
@@ -70,6 +79,11 @@ Simple recursion with multimethods:
 
 
 ## Protocols
+
+TODO
+
+
+## Proxies
 
 TODO
 
