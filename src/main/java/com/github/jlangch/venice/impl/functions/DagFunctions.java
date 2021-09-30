@@ -65,6 +65,7 @@ public class DagFunctions {
 					.seeAlso(
 						"dag/dag?", 
 						"dag/add-edges", 
+						"dag/add-nodes", 
 						"dag/topological-sort", 
 						"dag/edges", 
 						"dag/nodes",
@@ -127,30 +128,30 @@ public class DagFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction add_node =
+	public static VncFunction add_nodes =
 		new VncFunction(
-				"dag/add-node",
+				"dag/add-nodes",
 				VncFunction
 					.meta()
-					.arglists("(add-node node)")
+					.arglists("(add-nodes nodes*)")
 					.doc(
-						"Add a node to a DAG. \n\n" +
+						"Add nodes to a DAG. \n\n" +
 						"Any *Venice* value can be used for a node.")
 					.examples(
-							"(dag/add-node (dag/dag) \"A\")",
-							"(-> (dag/dag)                      \n" +
-							"    (dag/add-node \"A\")           \n" +
-							"    (dag/add-edges [\"A\" \"B\"]))   ")
+						"(dag/add-nodes (dag/dag) \"A\")",
+						"(-> (dag/dag)                      \n" +
+						"    (dag/add-nodes \"A\")          \n" +
+						"    (dag/add-edges [\"A\" \"B\"]))   ")
 					.seeAlso(
 						"dag/dag", "dag/topological-sort")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
 				final VncDAG dag = Coerce.toVncDAG(args.first());
 
-				return dag.addNode(args.second());
+				return dag.addEdges(args.rest());
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -544,7 +545,7 @@ public class DagFunctions {
 					.add(topological_sort)
 					.add(compare_fn)
 					.add(add_edges)
-					.add(add_node)
+					.add(add_nodes)
 					.add(edges)
 					.add(nodes)
 					.add(children)

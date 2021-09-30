@@ -89,6 +89,16 @@ public class VncDAG extends VncCollection {
 		}
 	}
 
+	public VncDAG addNodes(final VncSequence nodes) {
+		nodes.forEach(e -> dag.addNode(e));
+		
+		if (!nodes.isEmpty()) {
+			dag.update();
+		}
+
+		return this;
+	}
+
 	public VncDAG addEdges(final VncSequence edges) {
 		edges.forEach(e -> {
 			if (Types.isVncSequence(e)) {

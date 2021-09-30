@@ -122,7 +122,7 @@ Java varargs are passed as list or vector:
 ```
 
 
-## Java Callbacks (dynamic proxies)
+## Dynamic Proxies
 
 The Venice `proxify` function wraps one or multiple Venice function with 
 a Java Dynamic Proxy:
