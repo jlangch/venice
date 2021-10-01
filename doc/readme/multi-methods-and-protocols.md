@@ -67,8 +67,7 @@ on any argument or combination of arguments.
   (defmethod area :default [s] 0) 
  
   (area (rect. 4.0 13.0))  ; -> 52
-  
-  (area (circle. 12.0))  ; -> 452.3893421169302
+  (area (circle. 12.0))    ; -> 452.3893421169302
 )
 ```
 
@@ -90,7 +89,6 @@ on any argument or combination of arguments.
   (defmethod area :default [s] 0) 
  
   (area (rect 4 13))  ; -> 52
-  
   (area (circle 12))  ; -> 452.3893421169302
 )
 ```
@@ -109,7 +107,6 @@ Keyword as dispatch function:
   (defmethod area2 :circle [c] (* pi (square (:radius c))))
     
   (area2 (rect 4 13))  ; -> 52
-  
   (area2 (circle 12))  ; -> 452.3893421169302
 )
 ```
