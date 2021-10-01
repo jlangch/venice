@@ -178,7 +178,7 @@ a *custom type* definition:
               (start [c] (println "'~(:name c)' started"))
               (stop [c] (println "'~(:name c)' stopped")))
    
-   (let [c          (component. \"test\")
+   (let [c          (component. "test")
          lifecycle? (extends? (type c) Lifecycle)] 
      (println "'~(:name c)' extends Lifecycle protocol: ~{lifecycle?}")
      (start c) 
