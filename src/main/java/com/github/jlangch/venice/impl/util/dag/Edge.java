@@ -38,6 +38,39 @@ public class Edge<T> {
 	}
 
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((child == null) ? 0 : child.hashCode());
+		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Edge<T> other = (Edge<T>) obj;
+		if (child == null) {
+			if (other.child != null)
+				return false;
+		} else if (!child.equals(other.child))
+			return false;
+		if (parent == null) {
+			if (other.parent != null)
+				return false;
+		} else if (!parent.equals(other.parent))
+			return false;
+		return true;
+	}
+
+
 	private final T parent;
 	private final T child;
 }

@@ -85,7 +85,10 @@ public class DAG<T> {
 		final Node<T> childNode = getNodeOrCreate(child);
 		parentNode.addChild(childNode);
 		
-		edges.add(new Edge<>(parentNode, childNode));
+		final Edge<Node<T>> edge = new Edge<>(parentNode, childNode);
+		if (!edges.contains(edge)) {
+			edges.add(edge);
+		}
 	}
 
 	public synchronized void addEdges(final List<Edge<T>> edges) {
@@ -120,7 +123,8 @@ public class DAG<T> {
 	}
 	
 	public synchronized List<Edge<Node<T>>> getEdges() {
-		return Collections.unmodifiableList(edges);
+		return Collections.unmodifiableList(
+				new ArrayList<>(edges));
 	}
 
 	public synchronized Collection<T> getValues() {
@@ -316,5 +320,5 @@ public class DAG<T> {
 	
 	private final Map<T, Node<T>> nodes = new LinkedHashMap<>();
 	private final List<Node<T>> roots = new ArrayList<>();
-	private final List<Edge<Node<T>>> edges = new ArrayList<>();
+	private final Set<Edge<Node<T>>> edges = new LinkedHashSet<>();
 }

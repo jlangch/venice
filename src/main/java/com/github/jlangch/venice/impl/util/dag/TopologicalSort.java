@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.dag;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.Stack;
 public class TopologicalSort<T> {
 
 	public TopologicalSort(
-			final List<Edge<Node<T>>> edges,
+			final Collection<Edge<Node<T>>> edges,
 			final List<Node<T>> isolatedNodes
 	) {
 		this.edges.addAll(edges);
