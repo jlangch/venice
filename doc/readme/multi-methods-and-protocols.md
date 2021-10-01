@@ -28,7 +28,7 @@ Definition from Wikipedia:
 
 *Venice* provides two mechanisms to deal with the expression problem:
 
-* [Multi-Methods](#multimethods)
+* [Multimethods](#multimethods)
 * [Protocols](#protocols)
 
 
