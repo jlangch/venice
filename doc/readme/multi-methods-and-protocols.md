@@ -183,5 +183,10 @@ a *custom type* definition:
      (println "'~(:name c)' extends Lifecycle protocol: ~{lifecycle?}")
      (start c) 
      (stop c)))
+     
+;; 'test' extends Lifecycle protocol: true
+;; 'test' started
+;; 'test' stopped
+
 ```
 
