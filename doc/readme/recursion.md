@@ -67,6 +67,18 @@ The computation of factorial numbers is defined as
 )
 ```
 
+Simple recursion with [multimethods](multi-methods-and-protocols.md#multimethods):
+
+```clojure
+(do
+  (defmulti factorial identity)
+  (defmethod factorial 0 [_] 1)
+  (defmethod factorial :default [n] (* n (factorial (dec n))))
+
+  (factorial 5)  ; -> 120
+)
+```
+
 Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 
 *Note: The recursive call to 'factorial' in this example is not in tail position. Thus it can not be tail call optimized!*			
