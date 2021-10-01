@@ -106,8 +106,8 @@ public class DAG_roots_Test {
 	public void test_roots_6() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	   A  E
-		dag.addEdge("B", "C");      //	   |  |
+		dag.addEdge("A", "B");      //     A  E
+		dag.addEdge("B", "C");      //     |  |
 		dag.addEdge("C", "D");      //     B  F
 		dag.addEdge("E", "F");      //     | / \
 		dag.addEdge("F", "C");      //     C   G
@@ -124,8 +124,8 @@ public class DAG_roots_Test {
 	public void test_roots_7() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("A", "B");      //       A
+		dag.addEdge("A", "C");      //      / \ 
 		dag.addEdge("B", "D");      //     B   C
 		dag.addEdge("C", "D");      //      \ /
 		dag.addEdge("D", "E");      //       D 

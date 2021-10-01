@@ -39,7 +39,7 @@ public class DAG_cycles_Test {
 	public void test_cyles_2() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B"); 
+		dag.addEdge("A", "B");
 		dag.addEdge("B", "A");
 		
 		assertThrows(DagCycleException.class, () -> dag.update());
@@ -49,8 +49,8 @@ public class DAG_cycles_Test {
 	public void test_cycles_3() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	   A  E
-		dag.addEdge("B", "C");      //	   |  |
+		dag.addEdge("A", "B");      //     A  E
+		dag.addEdge("B", "C");      //     |  |
 		dag.addEdge("C", "D");      //     B  F <--+
 		dag.addEdge("E", "F");      //     | / \   |
 		dag.addEdge("F", "C");      //     C   G   |

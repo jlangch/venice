@@ -108,8 +108,8 @@ public class DAG_topologicalSort_Test {
 	public void test_topologicalSort_6a() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	   A  E
-		dag.addEdge("B", "C");      //	   |  |
+		dag.addEdge("A", "B");      //     A  E
+		dag.addEdge("B", "C");      //     |  |
 		dag.addEdge("C", "D");      //     B  F
 		dag.addEdge("E", "F");      //     | / \
 		dag.addEdge("F", "C");      //     C   G
@@ -131,8 +131,8 @@ public class DAG_topologicalSort_Test {
 		dag.addEdge("D", "C");      //     C   G
 		dag.addEdge("F", "E");      //     | \ /
 		dag.addEdge("C", "F");      //     B  F
-		dag.addEdge("G", "F");      //	   |  |
-		dag.addEdge("D", "G");      //	   A  E
+		dag.addEdge("G", "F");      //     |  |
+		dag.addEdge("D", "G");      //     A  E
 		dag.update();
 		
 		final List<String> sorted = dag.topologicalSort();
@@ -143,8 +143,8 @@ public class DAG_topologicalSort_Test {
 	@Test
 	public void test_topologicalSort_7a() {
 		final DAG<String> dag = new DAG<>();
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("A", "B");      //       A
+		dag.addEdge("A", "C");      //      / \ 
 		dag.addEdge("B", "D");      //     B   C
 		dag.addEdge("C", "D");      //      \ /
 		dag.addEdge("D", "E");      //       D 
@@ -177,8 +177,8 @@ public class DAG_topologicalSort_Test {
 	@Test
 	public void test_topologicalSort_8() {
 		final DAG<String> dag = new DAG<>();
-		dag.addEdge("A", "B");      //	     A       Z
-		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("A", "B");      //       A       Z
+		dag.addEdge("A", "C");      //      / \ 
 		dag.addEdge("B", "D");      //     B   C
 		dag.addEdge("C", "D");      //      \ /
 		dag.addEdge("D", "E");      //       D 
@@ -209,8 +209,8 @@ public class DAG_topologicalSort_Test {
 	public void test_comparator_1() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	   A  E
-		dag.addEdge("B", "C");      //	   |  |
+		dag.addEdge("A", "B");      //     A  E
+		dag.addEdge("B", "C");      //     |  |
 		dag.addEdge("C", "D");      //     B  F
 		dag.addEdge("E", "F");      //     | / \
 		dag.addEdge("F", "C");      //     C   G

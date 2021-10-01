@@ -38,8 +38,8 @@ public class DAG_parentOf_Test {
 		dag.addEdge("D", "C");      //     C   G
 		dag.addEdge("F", "E");      //     | \ /
 		dag.addEdge("C", "F");      //     B  F
-		dag.addEdge("G", "F");      //	   |  |
-		dag.addEdge("D", "G");      //	   A  E
+		dag.addEdge("G", "F");      //     |  |
+		dag.addEdge("D", "G");      //     A  E
 		dag.update();
 		
 		assertTrue(dag.isParentOf("D", "A"));

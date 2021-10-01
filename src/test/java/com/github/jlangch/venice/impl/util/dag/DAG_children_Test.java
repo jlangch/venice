@@ -33,8 +33,8 @@ public class DAG_children_Test {
 	public void test_children_1() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("A", "B");      //       A
+		dag.addEdge("A", "C");      //      / \ 
 		dag.addEdge("B", "D");      //     B   C
 		dag.addEdge("C", "D");      //      \ /
 		dag.addEdge("D", "E");      //       D 
@@ -59,8 +59,8 @@ public class DAG_children_Test {
 	public void test_children_2() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("A", "B");      //       A
+		dag.addEdge("A", "C");      //      / \ 
 		dag.addEdge("B", "D");      //     B   C
 		dag.addEdge("C", "D");      //      \ / \
 		dag.addEdge("D", "E");      //       D  |
@@ -85,8 +85,8 @@ public class DAG_children_Test {
 	public void test_direct_children() {
 		final DAG<String> dag = new DAG<>();
 		
-		dag.addEdge("A", "B");      //	     A
-		dag.addEdge("A", "C");      //	    / \ 
+		dag.addEdge("A", "B");      //       A
+		dag.addEdge("A", "C");      //      / \ 
 		dag.addEdge("B", "D");      //     B   C
 		dag.addEdge("C", "D");      //      \ / \
 		dag.addEdge("D", "E");      //       D   |

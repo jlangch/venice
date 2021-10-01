@@ -56,17 +56,21 @@ public class DAG<T> {
 	public DAG() {
 	}
 
-	/**
-	 * Adds a node
-	 *
-	 * @param value the node's value
-	 */
+	
 	public synchronized void addNode(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
 		
 		getNodeOrCreate(value);
+	}
+	
+	public synchronized void addNodes(final List<T> values) {
+		if (values != null) {
+			for(T v : values) {
+				getNodeOrCreate(v);
+			}
+		}
 	}
 
 	public synchronized void addEdge(final T parent, final T child) {
@@ -82,6 +86,14 @@ public class DAG<T> {
 		parentNode.addChild(childNode);
 		
 		edges.add(new Edge<>(parentNode, childNode));
+	}
+
+	public synchronized void addEdges(final List<Edge<T>> edges) {
+		if (edges != null) {
+			for(Edge<T> e : edges) {
+				addEdge(e.getParent(), e.getChild());
+			}
+		}
 	}
 
 	/**
