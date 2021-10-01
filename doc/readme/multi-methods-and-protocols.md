@@ -51,6 +51,8 @@ on any argument or combination of arguments.
 (do
   (ns foo)
   
+  (def pi (. :java.lang.Math :PI))
+  
   (deftype :rect [width :double, height :double])
   (deftype :circle [radius :double])
 
@@ -61,7 +63,7 @@ on any argument or combination of arguments.
   ; in the examples the dispatch value s are :rect, :circle, and :default for
   ; the default dispatch
   (defmethod area :foo/rect [r] (* (:width r) (:height r)))
-  (defmethod area :foo/circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
+  (defmethod area :foo/circle [c] (* pi (square (:radius c))))
   (defmethod area :default [s] 0) 
  
   (area (rect. 4.0 13.0))  ; -> 52
@@ -72,6 +74,8 @@ on any argument or combination of arguments.
 
 ```clojure
 (do
+  (def pi (. :java.lang.Math :PI))
+  
   (defn rect [w h] {:shape :rect, :width w, :height h})
   (defn circle [radius] {:shape :circle, :radius radius})
 
@@ -82,7 +86,7 @@ on any argument or combination of arguments.
   ; in the examples the dispatch value s are :rect, :circle, and :default for
   ; the default dispatch
   (defmethod area :rect [r] (* (:width r) (:height r)))
-  (defmethod area :circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
+  (defmethod area :circle [c] (* pi (square (:radius c))))
   (defmethod area :default [s] 0) 
  
   (area (rect 4 13))  ; -> 52
@@ -95,12 +99,14 @@ Keyword as dispatch function:
 
 ```clojure
 (do
+  (def pi (. :java.lang.Math :PI))
+
   (defn rect [w h] {:shape :rect, :width w, :height h})
   (defn circle [radius] {:shape :circle, :radius radius})
 
   (defmulti area2 :shape)
   (defmethod area2 :rect [r] (* (:width r) (:height r)))
-  (defmethod area2 :circle [c] (* (. :java.lang.Math :PI) (square (:radius c))))
+  (defmethod area2 :circle [c] (* pi (square (:radius c))))
     
   (area2 (rect 4 13))  ; -> 52
   
