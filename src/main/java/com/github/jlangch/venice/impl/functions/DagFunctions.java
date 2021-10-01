@@ -108,11 +108,11 @@ public class DagFunctions {
 					.meta()
 					.arglists("(add-edges edges*)")
 					.doc(
-						"Add edges to a DAG. Returns the DAG.\n\n" +
+						"Add edges to a DAG. Returns a new DAG with added edges.\n\n" +
 						"An edge is a vector of two nodes forming a parent/child " +
 						"relationship. Any *Venice* value can be used for a node.\n\n" +
 						"Note: The graph is reconstructed after adding edges. To " +
-						"improve performance pass the edges with a single `add-edges` " +
+						"have best performance pass the edges with a single `add-edges` " +
 						"call to the DAG.")
 					.examples(
 						"(dag/add-edges (dag/dag) [\"A\" \"B\"] [\"B\" \"C\"])")
@@ -138,10 +138,10 @@ public class DagFunctions {
 					.meta()
 					.arglists("(add-nodes nodes*)")
 					.doc(
-						"Add nodes to a DAG. Returns the DAG.\n\n" +
+						"Add nodes to a DAG. Returns a new DAG with added nodes.\n\n" +
 						"Any *Venice* value can be used for a node.\n\n" +
 						"Note: The graph is reconstructed after adding nodes. To " +
-						"improve performance pass the nodes with a single `add-nodes` " +
+						"have best performance pass the nodes with a single `add-nodes` " +
 						"call to the DAG.")
 					.examples(
 						"(dag/add-nodes (dag/dag) \"A\")",

@@ -43,11 +43,9 @@ public class DAG<T> {
 	 * Directed Acylic Graph
 	 * 
 	 * <pre>
-	 * DAG<String> dag = new DAG<>();
-	 * 
-	 * dag.addEdge("A", "B");
-	 * dag.addEdge("B", "C");
-	 * dag.update();
+	 * DAG<String> dag = new DAG<>()
+	 *                        .addEdge("A", "B")
+	 *                        .addEdge("B", "C");
 	 * 		
 	 * List<String> sorted = dag.topologicalSort();
 	 * String path = String.join(" -> ", sorted); // "A -> B -> C"
@@ -100,17 +98,6 @@ public class DAG<T> {
 		}
 
 		return new DAG<>(nodes, this.edges);
-	}
-
-	/**
-	 * Finds root nodes and checks for cycles
-	 * 
-	 * @throws DagCycleException if cycle is found
-	 */
-	private void update() throws DagCycleException {
-		roots.clear();
-		findRoots();
-		checkForCycles();
 	}
 
 	public Node<T> getNode(final T value) {
@@ -279,8 +266,19 @@ public class DAG<T> {
 			}			
 		};
 	}
+	
+	
+	private Node<T> getNodeOrCreate(final T value) {
+		return nodes.computeIfAbsent(value, v -> new Node<>(v));
+	}
 
-	public void addEdgeInternal(final T parent, final T child) {
+	private void update() throws DagCycleException {
+		roots.clear();
+		findRoots();
+		checkForCycles();
+	}
+
+	private void addEdgeInternal(final T parent, final T child) {
 		if (parent == null) {
 			throw new IllegalArgumentException("A parent must not be null");
 		}
@@ -326,10 +324,6 @@ public class DAG<T> {
 		path.add(n);
 		n.getParents().forEach(node -> checkForCycles(node, path));
 		path.remove(path.size() - 1);
-	}
-	
-	private Node<T> getNodeOrCreate(final T value) {
-		return nodes.computeIfAbsent(value, v -> new Node<>(v));
 	}
 
 	private String getPath(final List<Node<T>> path) {
