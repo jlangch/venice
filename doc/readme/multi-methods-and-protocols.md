@@ -9,9 +9,11 @@ new operations, and have them work on existing data types. Sometimes, we want
 to add new data types, which will work with existing operations.
 
 Object-oriented languages make it easy to add new data types (classes), by 
-extending existing ones. One can make a new type that extends **java.util.List**, 
-and have access to the operations it defines. But to add a new method to all 
-the different **List** types, a lot of existing code has to be touched.
+extending existing ones. One can make a new type that extends the Java 
+**java.util.List** interface and implement all the methods it defines. 
+But to add a new method to the **List** interface is impossible because we
+do not own the code and even if we do it requires changes to all subtypes by
+touching a lot of existing code.
 
 Functional languages tend towards the opposite: it’s easy to add new operations 
 (functions), but harder to adapt the operation to various types. To write a function 
@@ -23,7 +25,8 @@ add another condition to the calling function.
 
 Definition from Wikipedia:
 
-*The [Expression Problem](https://en.wikipedia.org/wiki/Expression_problem) is a challenge problem in programming languages that concerns the extensibility and modularity of statically typed data abstractions. The goal is to define a data abstraction that is extensible both in its representations and its behaviors, where one can add new representations and new behaviors to the data abstraction, without recompiling existing code, and while retaining static type safety (e.g., no casts). It exposed deficiencies in programming paradigms and programming languages, and it is still not definitively solved, although there are many proposed solutions.* 
+*The [Expression Problem](https://en.wikipedia.org/wiki/Expression_problem) is a 
+challenge problem in programming languages that concerns the extensibility and modularity of statically typed data abstractions. The goal is to define a data abstraction that is extensible both in its representations and its behaviors, where one can add new representations and new behaviors to the data abstraction, without recompiling existing code, and while retaining static type safety (e.g., no casts). It exposed deficiencies in programming paradigms and programming languages, and it is still not definitively solved, although there are many proposed solutions.* 
 
 
 *Venice* provides two mechanisms to deal with the expression problem:
