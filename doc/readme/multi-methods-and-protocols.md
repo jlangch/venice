@@ -69,9 +69,9 @@ on any argument or combination of arguments.
   ; defmulti with dispatch function 
   (defmulti area (fn [s] (type s)))
 
-  ; defmethod provides a function implementation for a particular dispatch value 
-  ; in the examples the dispatch value s are :rect, :circle, and :default for
-  ; the default dispatch
+  ; defmethod provides a function implementation for a particular dispatch
+  ; value. In the examples the dispatch value is the data type and :default
+  ; represents the default dispatch
   (defmethod area :foo/rect [r] (* (:width r) (:height r)))
   (defmethod area :foo/circle [c] (* pi (square (:radius c))))
   (defmethod area :default [s] 0) 
@@ -93,9 +93,9 @@ on any argument or combination of arguments.
   ; defmulti with dispatch function 
   (defmulti area (fn [s] (:shape s)))
 
-  ; defmethod provides a function implementation for a particular dispatch value 
-  ; in the examples the dispatch value s are :rect, :circle, and :default for
-  ; the default dispatch
+  ; defmethod provides a function implementation for a particular dispatch
+  ; value. In the examples the dispatch value is the shape like :rect, 
+  ; :circle, and :default for the default dispatch
   (defmethod area :rect [r] (* (:width r) (:height r)))
   (defmethod area :circle [c] (* pi (square (:radius c))))
   (defmethod area :default [s] 0) 
