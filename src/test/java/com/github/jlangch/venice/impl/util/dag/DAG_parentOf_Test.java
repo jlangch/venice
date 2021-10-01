@@ -31,16 +31,15 @@ public class DAG_parentOf_Test {
 
 	@Test
 	public void test_parentOf_1() {
-		final DAG<String> dag = new DAG<>();
-		
-		dag.addEdge("B", "A");      //       D
-		dag.addEdge("C", "B");      //      / \
-		dag.addEdge("D", "C");      //     C   G
-		dag.addEdge("F", "E");      //     | \ /
-		dag.addEdge("C", "F");      //     B  F
-		dag.addEdge("G", "F");      //     |  |
-		dag.addEdge("D", "G");      //     A  E
-		dag.update();
+		final DAG<String> dag = 
+				new DAG<String>()
+						.addEdge("B", "A")      //       D
+						.addEdge("C", "B")      //      / \
+						.addEdge("D", "C")      //     C   G
+						.addEdge("F", "E")      //     | \ /
+						.addEdge("C", "F")      //     B  F
+						.addEdge("G", "F")      //     |  |
+						.addEdge("D", "G");     //     A  E
 		
 		assertTrue(dag.isParentOf("D", "A"));
 		assertTrue(dag.isParentOf("D", "E"));

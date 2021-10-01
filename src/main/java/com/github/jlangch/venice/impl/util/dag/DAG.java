@@ -56,47 +56,50 @@ public class DAG<T> {
 	public DAG() {
 	}
 
+	private DAG(
+			final Map<T, Node<T>> nodes,
+			final Set<Edge<Node<T>>> edges
+	) {
+		this.nodes.putAll(nodes);
+		this.edges.addAll(edges);
+		
+		update();
+	}
 	
-	public synchronized void addNode(final T value) {
+	public DAG<T> addNode(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
 		
 		getNodeOrCreate(value);
+		
+		return new DAG<>(nodes, edges);
 	}
 	
-	public synchronized void addNodes(final List<T> values) {
+	public DAG<T> addNodes(final List<T> values) {
 		if (values != null) {
 			for(T v : values) {
 				getNodeOrCreate(v);
 			}
 		}
+
+		return new DAG<>(nodes, edges);
 	}
 
-	public synchronized void addEdge(final T parent, final T child) {
-		if (parent == null) {
-			throw new IllegalArgumentException("A parent must not be null");
-		}
-		if (child == null) {
-			throw new IllegalArgumentException("A child must not be null");
-		}
-		
-		final Node<T> parentNode = getNodeOrCreate(parent);
-		final Node<T> childNode = getNodeOrCreate(child);
-		parentNode.addChild(childNode);
-		
-		final Edge<Node<T>> edge = new Edge<>(parentNode, childNode);
-		if (!edges.contains(edge)) {
-			edges.add(edge);
-		}
+	public DAG<T> addEdge(final T parent, final T child) {
+		addEdgeInternal(parent, child);
+
+		return new DAG<>(nodes, edges);
 	}
 
-	public synchronized void addEdges(final List<Edge<T>> edges) {
+	public DAG<T> addEdges(final List<Edge<T>> edges) {
 		if (edges != null) {
 			for(Edge<T> e : edges) {
-				addEdge(e.getParent(), e.getChild());
+				addEdgeInternal(e.getParent(), e.getChild());
 			}
 		}
+
+		return new DAG<>(nodes, this.edges);
 	}
 
 	/**
@@ -104,13 +107,13 @@ public class DAG<T> {
 	 * 
 	 * @throws DagCycleException if cycle is found
 	 */
-	public synchronized void update() throws DagCycleException {
+	private void update() throws DagCycleException {
 		roots.clear();
 		findRoots();
 		checkForCycles();
 	}
 
-	public synchronized Node<T> getNode(final T value) {
+	public Node<T> getNode(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
@@ -118,16 +121,16 @@ public class DAG<T> {
 		return nodes.get(value);
 	}
 
-	public synchronized Collection<Node<T>> getNodes() {
+	public Collection<Node<T>> getNodes() {
 		return Collections.unmodifiableCollection(nodes.values());
 	}
 	
-	public synchronized List<Edge<Node<T>>> getEdges() {
+	public List<Edge<Node<T>>> getEdges() {
 		return Collections.unmodifiableList(
 				new ArrayList<>(edges));
 	}
 
-	public synchronized Collection<T> getValues() {
+	public Collection<T> getValues() {
 		return Collections.unmodifiableCollection(
 				nodes.values()
 					 .stream()
@@ -135,15 +138,15 @@ public class DAG<T> {
 					 .collect(Collectors.toList()));
 	}
 
-	public synchronized int size() {
+	public int size() {
 		return nodes.size();
 	}
 
-	public synchronized boolean isEmpty() {
+	public boolean isEmpty() {
 		return nodes.isEmpty();
 	}
 
-	public synchronized Node<T> node(final T value) {
+	public Node<T> node(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
@@ -151,7 +154,7 @@ public class DAG<T> {
 		return nodes.get(value);
 	}
 
-	public synchronized List<T> children(final T value) {
+	public List<T> children(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
@@ -175,7 +178,7 @@ public class DAG<T> {
 		return Node.toValues(children);
 	}
 
-	public synchronized List<T> directChildren(final T value) {
+	public List<T> directChildren(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
@@ -188,7 +191,7 @@ public class DAG<T> {
 		return Node.toValues(node.getChildren());
 	}
 
-	public synchronized List<T> parents(final T value) {
+	public List<T> parents(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
@@ -212,7 +215,7 @@ public class DAG<T> {
 		return Node.toValues(parents);
 	}
 
-	public synchronized List<T> directParents(final T value) {
+	public List<T> directParents(final T value) {
 		if (value == null) {
 			throw new IllegalArgumentException("A node value must not be null");
 		}
@@ -224,7 +227,7 @@ public class DAG<T> {
 		return Node.toValues(node.getParents());
 	}
 
-	public synchronized List<T> roots() {
+	public List<T> roots() {
 		return Node.toValues(roots);
 	}
 
@@ -235,24 +238,24 @@ public class DAG<T> {
 	 * 
 	 * @throws DagCycleException if cycle is found
 	 */
-	public synchronized List<T> topologicalSort() throws DagCycleException {
+	public List<T> topologicalSort() throws DagCycleException {
 		return new TopologicalSort<T>(edges, getIsolatedNodes()).sort();
 	}
 
-	public synchronized boolean isParentOf(final T parent, final T value)  {
+	public boolean isParentOf(final T parent, final T value)  {
 		return parents(value).contains(parent);
 	}
 
-	public synchronized boolean isChildOf(final T child, final T value)  {
+	public boolean isChildOf(final T child, final T value)  {
 		return children(value).contains(child);
 	}
 
-	public synchronized boolean isNode(final T value)  {
+	public boolean isNode(final T value)  {
 		return nodes.containsKey(value);
 	}
 
 	@Override
-	public synchronized String toString() {
+	public String toString() {
 		return String.format("DAG{nodes=%d}", nodes.size());
 	}
 
@@ -275,6 +278,24 @@ public class DAG<T> {
 						  .compareTo(map.getOrDefault(o2, Integer.MAX_VALUE));
 			}			
 		};
+	}
+
+	public void addEdgeInternal(final T parent, final T child) {
+		if (parent == null) {
+			throw new IllegalArgumentException("A parent must not be null");
+		}
+		if (child == null) {
+			throw new IllegalArgumentException("A child must not be null");
+		}
+		
+		final Node<T> parentNode = getNodeOrCreate(parent);
+		final Node<T> childNode = getNodeOrCreate(child);
+		
+		final Edge<Node<T>> edge = new Edge<>(parentNode, childNode);
+		if (!edges.contains(edge)) {
+			parentNode.addChild(childNode);
+			edges.add(edge);
+		}
 	}
 
 	private void findRoots() {

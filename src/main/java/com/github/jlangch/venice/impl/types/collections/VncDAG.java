@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.dag.DAG;
 import com.github.jlangch.venice.impl.util.dag.DagCycleException;
+import com.github.jlangch.venice.impl.util.dag.Edge;
 
 
 /**
@@ -75,16 +78,17 @@ public class VncDAG extends VncCollection {
 	}
 
 	public VncDAG addNode(final VncVal node) {
-		dag.addNode(node);
-		dag.update();
-		return this;
+		try {
+			return new VncDAG(dag.addNode(node), getMeta());
+		}
+		catch(DagCycleException ex) {
+			throw new VncException("The edge is a cycle", ex);
+		}
 	}
 
 	public VncDAG addEdge(final VncVal parent, final VncVal child) {
 		try {
-			dag.addEdge(parent, child);
-			dag.update();
-			return this;
+			return new VncDAG(dag.addEdge(parent, child), getMeta());
 		}
 		catch(DagCycleException ex) {
 			throw new VncException("The edge is a cycle", ex);
@@ -92,52 +96,46 @@ public class VncDAG extends VncCollection {
 	}
 
 	public VncDAG addNodes(final VncSequence nodes) {
-		nodes.forEach(e -> dag.addNode(e));
-		
-		if (!nodes.isEmpty()) {
-			dag.update();
+		try {
+			final List<VncVal> list = new ArrayList<>();
+			nodes.forEach(n -> list.add(n));
+			return new VncDAG(dag.addNodes(list), getMeta());
 		}
-
-		return this;
+		catch(DagCycleException ex) {
+			throw new VncException("The edge is a cycle", ex);
+		}
 	}
 
 	public VncDAG addEdges(final VncSequence edges) {
-		edges.forEach(e -> {
-			if (Types.isVncSequence(e)) {
-				final VncSequence nodes = (VncSequence)e;
-				if (nodes.size() == 2) {
-					dag.addEdge(nodes.first(), nodes.second());
+		try {
+			final List<Edge<VncVal>> list = new ArrayList<>();
+
+			edges.forEach(e -> {
+				if (Types.isVncSequence(e)) {
+					final VncSequence nodes = (VncSequence)e;
+					if (nodes.size() == 2) {
+						list.add(new Edge<>(nodes.first(), nodes.second()));
+					}
+					else {
+						throw new VncException(String.format(
+								"Invalid DAG (directed acyclic graph) edge sequence with "
+								+ "%d elements! Two sequence elements are required to "
+								+ "define an edge, e.g.: [\"A\" \"B\"].",
+								nodes.size()));
+					}
 				}
 				else {
 					throw new VncException(String.format(
-							"Invalid DAG (directed acyclic graph) edge sequence with "
-							+ "%d elements! Two sequence elements are required to "
-							+ "define an edge, e.g.: [\"A\" \"B\"].",
-							nodes.size()));
+							"%s is not allowed to pass a DAG (directed acyclic graph) edge! "
+							+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
+							Types.getType(e)));
 				}
-			}
-			else {
-				throw new VncException(String.format(
-						"%s is not allowed to pass a DAG (directed acyclic graph) edge! "
-						+ "A sequence with two values (e.g.: [\"A\" \"B\"]) is required.",
-						Types.getType(e)));
-			}
-		});
-		
-		if (!edges.isEmpty()) {
-			dag.update();
-		}
+			});
 
-		return this;
-	}
-	
-	public VncDAG update() {
-		try {
-			dag.update();
-			return this;
+			return new VncDAG(dag.addEdges(list), getMeta());
 		}
 		catch(DagCycleException ex) {
-			throw new VncException("The graph has cycles!", ex);
+			throw new VncException("The edge is a cycle", ex);
 		}
 	}
 	

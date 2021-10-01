@@ -30,15 +30,15 @@ public class DAG_parents_Test {
 
 	@Test
 	public void test_parents_1() {
-		final DAG<String> dag = new DAG<>();
-		
-		dag.addEdge("A", "B");      //       A
-		dag.addEdge("A", "C");      //      / \ 
-		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ /
-		dag.addEdge("D", "E");      //       D 
-		dag.addEdge("D", "F");      //      / \
-		dag.update();               //     E   F
+		final DAG<String> dag = 
+				new DAG<String>()
+						.addEdge("A", "B")      //       A
+						.addEdge("A", "C")      //      / \ 
+						.addEdge("B", "D")      //     B   C
+						.addEdge("C", "D")      //      \ /
+						.addEdge("D", "E")      //       D 
+						.addEdge("D", "F");     //      / \
+						                        //     E   F
 
 		assertEquals("", String.join(" ", dag.parents("A")));
 
@@ -55,16 +55,15 @@ public class DAG_parents_Test {
 
 	@Test
 	public void test_parents_2() {
-		final DAG<String> dag = new DAG<>();
-		
-		dag.addEdge("A", "B");      //       A
-		dag.addEdge("A", "C");      //      / \ 
-		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ / \
-		dag.addEdge("D", "E");      //       D   |
-		dag.addEdge("D", "F");      //      / \ /
-		dag.addEdge("C", "F");      //     E   F
-		dag.update();
+		final DAG<String> dag = 
+				new DAG<String>()
+						.addEdge("A", "B")      //       A
+						.addEdge("A", "C")      //      / \ 
+						.addEdge("B", "D")      //     B   C
+						.addEdge("C", "D")      //      \ / \
+						.addEdge("D", "E")      //       D   |
+						.addEdge("D", "F")      //      / \ /
+						.addEdge("C", "F");     //     E   F
 
 		assertEquals("", String.join(" ", dag.parents("A")));
 
@@ -81,16 +80,15 @@ public class DAG_parents_Test {
 
 	@Test
 	public void test_direct_parents() {
-		final DAG<String> dag = new DAG<>();
-		
-		dag.addEdge("A", "B");      //       A
-		dag.addEdge("A", "C");      //      / \ 
-		dag.addEdge("B", "D");      //     B   C
-		dag.addEdge("C", "D");      //      \ / \
-		dag.addEdge("D", "E");      //       D   |
-		dag.addEdge("D", "F");      //      / \ /
-		dag.addEdge("C", "F");      //     E   F
-		dag.update();
+		final DAG<String> dag = 
+				new DAG<String>()
+						.addEdge("A", "B")      //       A
+						.addEdge("A", "C")      //      / \ 
+						.addEdge("B", "D")      //     B   C
+						.addEdge("C", "D")      //      \ / \
+						.addEdge("D", "E")      //       D   |
+						.addEdge("D", "F")      //      / \ /
+						.addEdge("C", "F");     //     E   F
 		
 		assertEquals("", String.join(" ", dag.directParents("A")));
 		
