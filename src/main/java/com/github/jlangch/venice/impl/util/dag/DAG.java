@@ -292,15 +292,7 @@ public class DAG<T> {
 	}
 	
 	private Node<T> getNodeOrCreate(final T value) {
-		final Node<T> node = getNode(value);
-		if (node != null) {
-			return node;
-		}
-		else {
-			final Node<T> n = new Node<>(value);
-			nodes.put(value, n);
-			return n;
-		}
+		return nodes.computeIfAbsent(value, v -> new Node<>(v));
 	}
 
 	private String getPath(final List<Node<T>> path) {
