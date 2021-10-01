@@ -72,10 +72,12 @@ Simple recursion with [multimethods](multi-methods-and-protocols.md#multimethods
 ```clojure
 (do
   (defmulti factorial identity)
-  (defmethod factorial 0 [_] 1)
-  (defmethod factorial :default [n] (* n (factorial (dec n))))
+  (defmethod factorial 0N [_] 1N)
+  (defmethod factorial :default [n] (* (bigint n) (factorial (dec (bigint n)))))
 
-  (factorial 5)     ; -> 120
+  (factorial 2)     ; => 2N
+  (factorial 5)     ; => 120N
+  (factorial 200)   ; => 78865786736479050355236...00000000N (375 digits)
   (factorial 4000)  ; => boooom...
 )
 ```
