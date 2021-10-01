@@ -1,4 +1,4 @@
-# Multi-Methods and Protocols
+# Multimethods and Protocols
 
 
 ### Expression Problem
