@@ -75,7 +75,8 @@ Simple recursion with [multimethods](multi-methods-and-protocols.md#multimethods
   (defmethod factorial 0 [_] 1)
   (defmethod factorial :default [n] (* n (factorial (dec n))))
 
-  (factorial 5)  ; -> 120
+  (factorial 5)     ; -> 120
+  (factorial 4000)  ; => boooom...
 )
 ```
 

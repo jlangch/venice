@@ -141,7 +141,8 @@ Define a protocol with two polymorphic functions and extend it with `extend`:
            (+ [x y] (core/+ x y))
            (- [x y] (core/- x y))) 
            
-   (foo/+ (complex. 1 1)  (complex. 4 5)))
+   (foo/+ 2 3)
+   (foo/+ (complex. 1 1) (complex. 4 5)))
 ```
 
 
