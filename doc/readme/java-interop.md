@@ -124,8 +124,9 @@ Java varargs are passed as list or vector:
 
 ## Dynamic Proxies
 
-The Venice `proxify` function wraps one or multiple Venice functions with 
-a Java Dynamic Proxy:
+The Venice `proxify` function creates implementations for *Java Interfaces*
+at runtime time based on [Java Dynamic Proxies](https://www.baeldung.com/java-dynamic-proxies).
+It wraps multiple Venice functions to implement a Java Interface:
 
 ```clojure
 ;; File filter
