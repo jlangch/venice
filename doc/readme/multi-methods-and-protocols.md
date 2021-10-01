@@ -18,7 +18,9 @@ From Wikipedia:
 
 ## Multimethods
 
-Multimethods are a powerful mechanism for runtime polymorphism.
+A *multimethod* is a special kind of function. Instead of a function body, it has a dispatch function, which takes the arguments to the function and routes to the specific function responsible for 
+the arguments. Thus *multimethods* are a powerful mechanism for runtime polymorphism, they can dispatch 
+on any argument or combination of arguments.
 
 `defmulti` creates a new multimethod with the associated dispatch function.
 
@@ -80,9 +82,61 @@ Simple recursion with multimethods:
 [Recursion](recursion.md) how to apply it in Venice.  
 
 
+
 ## Protocols
 
-TODO
+*Protocols* are more similar to an object orientated way of solving polymorphism. 
+Where as a *multimethod* is just one polymorphic operation a *protocol* offers the 
+flexibility of implementing a collection of one or more polymorphic functions. 
+Protocols are setup in a similar way to interfaces in Java. 
+Where *multimethods* can dispatch on any argument type, value, or combination of it, 
+protocols dispatch on the type of the first argument to determine which behavior 
+of the function to use.
+
+
+Define a protocol and extend with `extend`:
+
+```clojure
+(do
+   (ns foo)
+   
+   (deftype :complex [re :long, im :long])
+   
+   (defprotocol XMath (+ [x y])
+                      (- [x y]))
+                      
+   (extend :foo/complex XMath
+           (+ [x y] (complex. (core/+ (:re x) (:re y))
+                              (core/+ (:im x) (:im y))))
+           (- [x y] (complex. (core/- (:re x) (:re y))
+                              (core/- (:im x) (:im y)))))
+                              
+   (extend :core/long XMath 
+           (+ [x y] (core/+ x y))
+           (- [x y] (core/- x y))) 
+           
+   (foo/+ (complex. 1 1)  (complex. 4 5)))
+```
+
+
+Define a protocol and extend it within a *custom type* definition:
+
+```clojure
+(do
+   (ns foo)
+   
+   (defprotocol Lifecycle (start [c]) (stop [c]))
+   
+   (deftype :component [name :string]
+            Lifecycle (start [c] (println "'~(:name c)' started"))
+                      (stop [c] (println "'~(:name c)' stopped")))
+   
+   (let [c          (component. \"test\")
+         lifecycle? (extends? (type c) Lifecycle)] 
+     (println "'~(:name c)' extends Lifecycle protocol: ~{lifecycle?}")
+     (start c) 
+     (stop c)))
+```
 
 
 ## Proxies
