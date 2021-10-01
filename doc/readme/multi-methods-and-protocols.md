@@ -94,7 +94,7 @@ protocols dispatch on the type of the first argument to determine which behavior
 of the function to use.
 
 
-Define a protocol and extend with `extend`:
+Define a protocol with two polymorphic functions and extend with `extend`:
 
 ```clojure
 (do
@@ -119,13 +119,15 @@ Define a protocol and extend with `extend`:
 ```
 
 
-Define a protocol and extend it within a *custom type* definition:
+Define a protocol with two polymorphic functions and extend it within 
+a *custom type* definition:
 
 ```clojure
 (do
    (ns foo)
    
-   (defprotocol Lifecycle (start [c]) (stop [c]))
+   (defprotocol Lifecycle (start [c]) 
+                          (stop [c]))
    
    (deftype :component [name :string]
             Lifecycle (start [c] (println "'~(:name c)' started"))
