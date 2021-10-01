@@ -63,7 +63,7 @@ The computation of factorial numbers is defined as
   (factorial 2)     ; => 2N
   (factorial 5)     ; => 120N
   (factorial 200)   ; => 78865786736479050355236...00000000N (375 digits)
-  (factorial 4000)  ; => boooom...
+  (factorial 4000)  ; => boooom...  (stack overflow)
 )
 ```
 
@@ -78,7 +78,7 @@ Simple recursion with [multimethods](multi-methods-and-protocols.md#multimethods
   (factorial 2)     ; => 2N
   (factorial 5)     ; => 120N
   (factorial 200)   ; => 78865786736479050355236...00000000N (375 digits)
-  (factorial 4000)  ; => boooom...
+  (factorial 4000)  ; => boooom...  (stack overflow)
 )
 ```
 
