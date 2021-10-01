@@ -94,7 +94,7 @@ protocols dispatch on the type of the first argument to determine which behavior
 of the function to use.
 
 
-Define a protocol with two polymorphic functions and extend with `extend`:
+Define a protocol with two polymorphic functions and extend it with `extend`:
 
 ```clojure
 (do
