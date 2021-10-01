@@ -18,9 +18,12 @@ From Wikipedia:
 
 ## Multimethods
 
-A *multimethod* is a special kind of function. Instead of a function body, it has a dispatch function, which takes the arguments to the function and routes to the specific function responsible for 
-the arguments. Thus *multimethods* are a powerful mechanism for runtime polymorphism, they can dispatch 
+A *multimethod* is a special kind of function. It is is a combination of a dispatching 
+function, and one or more methods. The dispatch function takes the arguments to the 
+function and routes to the specific method responsible for the arguments. Thus 
+*multimethods* are a powerful mechanism for runtime polymorphism, they can dispatch 
 on any argument or combination of arguments.
+
 
 `defmulti` creates a new multimethod with the associated dispatch function.
 
