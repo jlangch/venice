@@ -541,6 +541,10 @@ public class DocGenerator {
 		str_test_char.addItem(getDocItem("str/lower-case?"));
 		str_test_char.addItem(getDocItem("str/upper-case?"));
 
+		final DocSection str_leven_char = new DocSection("Other", "primitives.strings.other");
+		strings.addSection(str_leven_char);
+		str_leven_char.addItem(getDocItem("str/levenshtein"));
+
 		
 		final DocSection chars = new DocSection("Chars", "primitives.chars");
 		section.addSection(chars);

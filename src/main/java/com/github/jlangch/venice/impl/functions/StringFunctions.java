@@ -37,6 +37,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.jline.utils.Levenshtein;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -1769,6 +1771,51 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_levenshtein =
+		new VncFunction(
+				"str/levenshtein",
+				VncFunction
+					.meta()
+					.arglists("(str/levenshtein s1 s2)")
+					.doc(
+						"Returns the *Levenshtein* distance of two strings.\n\n" +
+						"The *Damerau-Levenshtein* algorithm is an extension to the *Levenshtein* " +
+						"algorithm which solves the edit distance problem between a source string and " +
+						"a target string with the following operations:\n\n" +
+						"  * Character Insertion\n" +
+						"  * Character Deletion\n" +
+						"  * Character Replacement\n" +
+						"  * Adjacent Character Swap\n\n" +
+						"Note that the adjacent character swap operation is an edit that may be " +
+						"applied when two adjacent characters in the source string match two adjacent " +
+						"characters in the target string, but in reverse order, rather than a general " +
+						"allowance for adjacent character swaps.\n\n" +
+						"This implementation allows the client to specify the costs of the various " +
+						"edit operations with the restriction that the cost of two swap operations " +
+						"must not be less than the cost of a delete operation followed by an insert " +
+						"operation. This restriction is required to preclude two swaps involving the " +
+						"same character being required for optimality which, in turn, enables a fast " +
+						"dynamic programming solution.\n\n" + 
+						"The cost of the *Damerau-Levenshtein* algorithm is `O(n*m)` where `n` is " +
+						"the length of the source string and `m is the length of the target string. " +
+						"This implementation consumes `O(n*m)` space.")
+					.examples(
+						"(str/levenshtein \"Tier\" \"Tor\")",
+						"(str/levenshtein \"Tier\" \"tor\")")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				return new VncLong(
+							Levenshtein.distance(
+								Coerce.toVncString(args.first()).getValue(),
+								Coerce.toVncString(args.second()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_encode_base64 =
 		new VncFunction(
 				"str/encode-base64",
@@ -2072,5 +2119,6 @@ public class StringFunctions {
 					.add(str_escape_html)
 					.add(str_escape_xml)
 					.add(str_valid_email_addr_Q)
+					.add(str_levenshtein)
 					.toMap();
 }

@@ -150,6 +150,14 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_levenshtein() {
+		final Venice venice = new Venice();
+		
+		assertEquals(2L, venice.eval("(str/levenshtein \"Tier\" \"Tor\")"));
+		assertEquals(3L, venice.eval("(str/levenshtein \"tier\" \"Tor\")"));
+	}
+
+	@Test
 	public void test_str_linefeed_Q() {
 		final Venice venice = new Venice();
 		
