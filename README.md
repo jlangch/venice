@@ -14,12 +14,11 @@ interoperability.
 ## Overview
 
 Venice is a Lisp dialect born from the need for a safe, sandboxed language that 
-is suitable to drive standalone applications as well as serving as a scripting 
-and expression language that can be used to implement scriptable extension 
-points and rules for applications. 
+is suitable to serve as a scripting and expression language, to implement scriptable 
+extension points and rules for applications, and to drive standalone applications. 
 
-Venice supports macros, tail-recursion, dynamic code loading, dynamic 
-(thread-local) binding. It comes with excellent Java interoperability, and a 
+Venice supports macros, tail-recursion, dynamic code loading, multimethods, 
+protocols and many more. It comes with excellent Java interoperability, and a 
 configurable sandbox that can prevent all sorts of dangerous JVM interactions 
 like reading/writing files, invoking  _System.exit(0)_  or any other malicious 
 action. Venice has been designed from the ground-up with a sandbox making it 
