@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -265,10 +266,18 @@ public class VncDAG extends VncCollection {
 
 	@Override
 	public Object convertToJavaObject() {
-		return toVncVector()
-				.stream()
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toList());
+		// return a list of the edges. an edge is list of the parent and client 
+		// value
+		return dag.getEdges()
+				  .stream()
+				  .map(e -> Arrays.asList(
+						  		e.getParent()
+						  		 .getValue()
+						  		 .convertToJavaObject(),
+						  		e.getChild()
+						  		 .getValue()
+						  		 .convertToJavaObject()))
+				  .collect(Collectors.toList());
 	}
 
 	@Override
