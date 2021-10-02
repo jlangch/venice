@@ -71,7 +71,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Java interoperability](doc/readme/java-interop.md)
 * [Namespaces](doc/readme/namespace.md)
 * [Exception handling](doc/readme/exceptions.md)
-* [Multi-Methods and Protocols](doc/readme/multi-methods-and-protocols.md)
+* [Multimethods and Protocols](doc/readme/multimethods-and-protocols.md)
 * [Macros](doc/readme/macros.md)
 * [Sandbox](doc/readme/sandbox.md)
 * [JSON](doc/readme/json.md)
