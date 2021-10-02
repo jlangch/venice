@@ -151,6 +151,8 @@ Define a protocol with two polymorphic functions and extend it with `extend`:
    (foo/+ (complex. 1 1) (complex. 4 5)))
 ```
 
+See: [Complex Number](https://en.wikipedia.org/wiki/Complex_number)
+
 
 Define a protocol with two polymorphic functions and extend it within 
 a *custom type* definition:
