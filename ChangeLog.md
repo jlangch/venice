@@ -15,6 +15,12 @@ and this project adheres to
 
 - function `str/levenshtein`
 
+### Changed
+
+- `doc` function to use *Levenshtein distance* if the exact symbol is not found 
+  to help with typos.  
+
+
 
 ## [1.10.0] - 2021-10-01
 

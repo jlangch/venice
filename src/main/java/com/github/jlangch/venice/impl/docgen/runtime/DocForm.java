@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.docgen.runtime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jline.utils.Levenshtein;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Modules;
@@ -50,6 +52,7 @@ import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 
 
@@ -100,28 +103,34 @@ public class DocForm {
 				return docForSymbolVal(docVal, env);
 			}
 			catch(VncException ex) {
+				if (sym.hasNamespace()) {
+					throw ex;
+				}
+				
+				final List<VncSymbol> globalFunctionSymbols = env.getAllGlobalFunctionSymbols();
 				final String simpleName = sym.getSimpleName();
 				
-				final List<String> candidates = 
-					env.getAllGlobalFunctionSymbols()
-					   .stream()
-					   .filter(s -> s.getSimpleName().equals(simpleName))
-					   .limit(5)
-					   .map(s -> "   " + s.getQualifiedName())
-					   .collect(Collectors.toList());
+				// exact match on simple name
+				List<VncSymbol> candidates = getGlobalFunctionCandidates(
+													simpleName, 
+													globalFunctionSymbols,
+													5,
+													0);
+				
+				if (candidates.isEmpty()) {
+					// levenshtein match on simple name with distance 2
+					candidates = getGlobalFunctionCandidates(
+									simpleName, 
+									globalFunctionSymbols,
+									5,
+									1);
+				}
 				
 				if (candidates.isEmpty()) {
 					throw ex;
 				}
-				else {
-					return new VncString(
-							String.format(
-									"Symbol '%s' not found.\n\n", 
-									sym.getQualifiedName())
-							+ "Did you mean?\n"
-							+ String.join("\n", candidates)
-							+ "\n");
-				}
+
+				return new VncString(getSymbolNotFoundMsg(sym, candidates));
 			}
 		}
 	}
@@ -463,6 +472,49 @@ public class DocForm {
 		}
 	}
 	
+	private static List<VncSymbol> getGlobalFunctionCandidates(
+			final String name, 
+			final List<VncSymbol> globalFunctionSymbols,
+			final int limit,
+			final int levenshteinDistance
+	) {
+		if (levenshteinDistance == 0) {
+			return globalFunctionSymbols
+					   .stream()
+					   .filter(s -> s.getSimpleName().equals(name))
+					   .limit(limit)
+					   .collect(Collectors.toList());
+		}
+		else {
+			return globalFunctionSymbols
+					   .stream()
+					   .map(s -> new Tuple2<Integer,VncSymbol>(
+							   		Levenshtein.distance(name, s.getSimpleName()),
+							   		s))
+					   .filter(t -> t.getFirst() <= levenshteinDistance)
+					   .sorted()
+					   .map(t -> t.getSecond())
+					   .limit(limit)
+					   .collect(Collectors.toList());
+		}
+	}
+	
+	private static String getSymbolNotFoundMsg(
+			final VncSymbol sym,
+			final List<VncSymbol> candidates
+	) {
+		final List<String> candidateList = candidates
+											   .stream()
+											   .map(s -> "   " + s.getQualifiedName())
+											   .collect(Collectors.toList());
+		
+		return String.format(
+						"Symbol '%s' not found.\n\n", 
+						sym.getQualifiedName())
+				+ "Did you mean?\n"
+				+ String.join("\n", candidateList)
+				+ "\n";
+	}
 	
 	
 	private static final boolean MARKDOWN_FN_DESCR = true;
