@@ -552,12 +552,10 @@ public class SpecialFormsHandler {
 	}
 	
 	public VncVal extend_(
-			final IVeniceInterpreter interpreter, 
 			final VncVal typeRef,
 			final VncSymbol protocolSym,
 			final VncList args, 
-			final Env env,
-			final VncVal meta
+			final Env env
 	) {
 		if (!(typeRef instanceof VncKeyword)) {
 			throw new VncException(String.format(
@@ -604,11 +602,9 @@ public class SpecialFormsHandler {
 	}
 	
 	public VncVal extendsQ_(
-			final IVeniceInterpreter interpreter, 
 			final VncVal typeRef,
 			final VncSymbol protocolSym,
-			final Env env,
-			final VncVal meta
+			final Env env
 	) {
 		final VncVal typeRefEval = evaluator.evaluate(typeRef, env, false);
 		
@@ -680,12 +676,10 @@ public class SpecialFormsHandler {
 					extendArgs = extendArgs.drop(extDefs.size()+1);
 					
 					// process the extend definition
-					extend_(interpreter, 
-							customType,
+					extend_(customType,
 							(VncSymbol)protocolSym,
 							extDefs.addAtStart(protocolSym).addAtStart(type), 
-							env,
-							meta);						
+							env);						
 				}
 				else {
 					throw new VncException(String.format(

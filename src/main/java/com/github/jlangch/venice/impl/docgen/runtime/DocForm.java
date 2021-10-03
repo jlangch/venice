@@ -107,21 +107,21 @@ public class DocForm {
 					throw ex;
 				}
 				
-				final List<VncSymbol> globalFunctionSymbols = env.getAllGlobalFunctionSymbols();
+				final List<VncSymbol> globalSymbols = env.getAllGlobalFunctionSymbols();
 				final String simpleName = sym.getSimpleName();
 				
 				// exact match on simple name
-				List<VncSymbol> candidates = getGlobalFunctionCandidates(
+				List<VncSymbol> candidates = getGlobalSymbolCandidates(
 													simpleName, 
-													globalFunctionSymbols,
+													globalSymbols,
 													5,
 													0);
 				
 				if (candidates.isEmpty()) {
-					// levenshtein match on simple name with distance 2
-					candidates = getGlobalFunctionCandidates(
+					// levenshtein match on simple name with distance 1
+					candidates = getGlobalSymbolCandidates(
 									simpleName, 
-									globalFunctionSymbols,
+									globalSymbols,
 									5,
 									1);
 				}
@@ -244,18 +244,28 @@ public class DocForm {
 	) {
 		final StringBuilder sb = new StringBuilder();
 		
-		sb.append(String.format("Custom type :%s\n", type.getValue()));
+		final int maxFieldLen = typeDef
+									.getFieldDefs()
+									.stream()
+									.mapToInt(f -> f.getName().getValue().length())
+									.max()
+									.orElse(0);
+		
+		sb.append(String.format("Custom type: %s\n\n", typeDef.getType()));
+		
 		sb.append("Fields: \n");
 		typeDef.getFieldDefs().forEach(f -> sb.append(String.format(
-															"   %s :%s\n", 
+														"   %s: %s\n", 
+														StringUtil.padRight(
 															f.getName().getValue(),
-															f.isNillable()
-																? f.getType().getValue() + "?"
-																: f.getType().getValue())));
+															maxFieldLen),
+														f.isNillable()
+															? f.getType().getValue() + "?"
+															: f.getType().getValue())));
 		if (typeDef.getValidationFn() != null) {
 			sb.append(String.format(
-					"Validation function: :%s\n", 
-					typeDef.getValidationFn().getQualifiedName()));
+						"\nValidation function: %s\n", 
+						typeDef.getValidationFn().getQualifiedName()));
 		}
 		
 		return sb.toString();
@@ -267,11 +277,11 @@ public class DocForm {
 	) {
 		final StringBuilder sb = new StringBuilder();
 		
-		sb.append(String.format("Custom wrapped type :%s\n", type.getValue()));
-		sb.append(String.format("Base type :%s\n", typeDef.getBaseType().getValue()));
+		sb.append(String.format("Custom wrapped type: %s\n", type.getValue()));
+		sb.append(String.format("Base type: %s\n", typeDef.getBaseType().getValue()));
 		if (typeDef.getValidationFn() != null) {
 			sb.append(String.format(
-					"Validation function: :%s\n", 
+					"Validation function: %s\n", 
 					typeDef.getValidationFn().getQualifiedName()));
 		}
 		
@@ -286,7 +296,7 @@ public class DocForm {
 		final VncSet values = typeDef.valuesOnly();
 		
 		final StringBuilder sb = new StringBuilder();
-		sb.append(String.format("Custom choice type :%s\n", type.getValue()));
+		sb.append(String.format("Custom choice type: %s\n", type.getValue()));
 		if (!types.isEmpty()) {
 			sb.append("Types: \n");
 			typeDef.typesOnly().forEach(v -> sb.append(String.format("   %s\n", v.toString())));
@@ -472,7 +482,7 @@ public class DocForm {
 		}
 	}
 	
-	private static List<VncSymbol> getGlobalFunctionCandidates(
+	private static List<VncSymbol> getGlobalSymbolCandidates(
 			final String name, 
 			final List<VncSymbol> globalFunctionSymbols,
 			final int limit,
@@ -482,6 +492,7 @@ public class DocForm {
 			return globalFunctionSymbols
 					   .stream()
 					   .filter(s -> s.getSimpleName().equals(name))
+					   .sorted()
 					   .limit(limit)
 					   .collect(Collectors.toList());
 		}
@@ -503,17 +514,15 @@ public class DocForm {
 			final VncSymbol sym,
 			final List<VncSymbol> candidates
 	) {
-		final List<String> candidateList = candidates
-											   .stream()
-											   .map(s -> "   " + s.getQualifiedName())
-											   .collect(Collectors.toList());
+		final List<String> indented = candidates
+									   .stream()
+									   .map(s -> "   " + s.getQualifiedName())
+									   .collect(Collectors.toList());
 		
 		return String.format(
-						"Symbol '%s' not found.\n\n", 
-						sym.getQualifiedName())
-				+ "Did you mean?\n"
-				+ String.join("\n", candidateList)
-				+ "\n";
+				"Symbol '%s' not found!\n\nDid you mean?\n%s\n", 
+				sym.getQualifiedName(),
+				String.join("\n", indented));
 	}
 	
 	

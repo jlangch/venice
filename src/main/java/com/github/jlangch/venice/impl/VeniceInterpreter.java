@@ -1303,7 +1303,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							evaluateSymbolMetaData(args.second(), env)),
 					"extend");
 
-		return specialFormHandler.extend_(this, args.first(), protocol, args, env, meta);
+		return specialFormHandler.extend_(args.first(), protocol, args, env);
 	}
 
 	public VncVal extendsQ_(final VncList args, final Env env, final VncVal meta) {
@@ -1318,7 +1318,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							evaluateSymbolMetaData(args.second(), env)),
 					"extends?");
 
-		return specialFormHandler.extendsQ_(this, args.first(), protocol, env, meta);
+		return specialFormHandler.extendsQ_(args.first(), protocol, env);
 	}
 
 	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {
