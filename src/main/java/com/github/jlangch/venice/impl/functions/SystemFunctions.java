@@ -62,8 +62,11 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.ReturnValue;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 
 
 public class SystemFunctions {
@@ -766,7 +769,9 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(sandboxed?)")
-					.doc("Returns true if there is a sandbox otherwise false")
+					.doc(
+						"Returns true if there is a sandbox other than `:AcceptAllInterceptor` " +
+						"otherwise false.")
 					.examples("(sandboxed?)")
 					.seeAlso("sandbox-type")
 					.build()
@@ -786,7 +791,18 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists("(sandbox-type)")
-					.doc("Returns the sandbox type")
+					.doc(
+						"Returns the sandbox type. \n\n" +
+						"Venice sandbox types:\n\n" +
+						" * `:" + AcceptAllInterceptor.class.getSimpleName() + "` "
+								+ "- accepts all (no restrictions)\n" +
+						" * `:" + RejectAllInterceptor.class.getSimpleName() + "` "
+								+ "- safe sandbox, rejects access to all I/O functions, "
+								+ "system properties, environment vars, extension modules, "
+								+ "dynamic code loading, multi-threaded functions (futures, agents, ...), "
+								+ "and Java calls\n" +
+						" * `:" + SandboxInterceptor.class.getSimpleName() + "` "
+								+ "- customized sandbox")
 					.examples("(sandbox-type)")
 					.seeAlso("sandboxed?")
 					.build()
