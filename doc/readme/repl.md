@@ -15,7 +15,7 @@ The REPL supports multi-line editing:
 
 ```text
 venice> (defn sum [x y]
-      |    (+ x y))
+           (+ x y))
 venice> (sum 1 4)
 => 5
 venice>
