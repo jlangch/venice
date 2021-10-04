@@ -46,8 +46,8 @@
     """))
 
 
-(deftype :system [name :string
-                  components :ordered-map
+(deftype :system [name         :string
+                  components   :ordered-map
                   dependencies :dag/dag]
   Component
     (start [system]
@@ -58,11 +58,11 @@
       system))
 
 
-(deftype :component-ex [message :string
-                        reason :keyword
-                        component-key :keword
-                        system :system
-                        cause? :com.github.jlangch.venice.VncException])
+(deftype :component-ex [message       :string
+                        reason        :keyword
+                        component-key :any
+                        system        :system
+                        cause         :com.github.jlangch.venice.VncException?])
 
 (defn system-map [name & keyvals]
   (when-not (even? (count keyvals))
@@ -87,15 +87,15 @@
           (do
             (load-module :component)
 
-            (deftype :server [port :long
+            (deftype :server [port       :long
                               components :hash-map]
                      component/Component
                        (start [this] (println ":server started") this)
                        (stop [this] (println ":server stopped") this)
                        (inject [this deps] (assoc this :components deps)))
 
-            (deftype :database [user :string
-                                password :string
+            (deftype :database [user       :string
+                                password   :string
                                 components :hash-map ]
                      component/Component
                        (start [this] (println ":database started") this)
@@ -107,11 +107,11 @@
                      "test"
                      :server (server. 4600 {})
                      :store  (database. "foo" "123" {}))
-                  (component/system-using {:server [:store]})))
+                  (component/system-using {:server [:store_]})))
 
             (-> (create-system)
                 (component/start)
-                ((fn [s] (sleep 2 :seconds) s))
+                ((fn [s] (println "  sleeping...") (sleep 2 :seconds) s))
                 (component/stop)))
           """ ) }
 
@@ -126,7 +126,7 @@
   (assoc system :dependencies d)))
 
 
-(defn
+(defn-
   ^{ :arglists '("(start-system system)")
      :doc """
           Recursively starts the components in the system in dependency order.
@@ -141,14 +141,16 @@
                           key
                           (let [dep-keys (dag/direct-children graph key)]
                             (-> (get-component components key system)
-                                (inject (into {} (zipmap dep-keys (map #(get components %) dep-keys))))
+                                (inject (get-component-dependency-map system
+                                                                      components
+                                                                      dep-keys))
                                 (start-component system key)))))
                  components
                  (reverse (dag/topological-sort graph)))
          (assoc system :components))))
 
 
-(defn
+(defn-
   ^{ :arglists '("(stop-system system)")
      :doc """
           Recursively stops the components in the system in dependency order.
@@ -185,6 +187,7 @@
                  system,
                  nil))
 
+
 (defn- missing-dependency [system key dependency-key]
   (component-ex. "Missing dependency ~{dependency-key} expected in system at ~{key}"
                  :missing-dependency
@@ -209,6 +212,21 @@
                  ex))
 
 
+(defn- get-component-dependency-map [system components dep-keys]
+  (into {} (zipmap dep-keys
+                   (map #(get-dependency components % system)
+                         dep-keys))))
+
+
+(defn- get-dependency [components key system]
+ (let [component (get components key :not-found)]
+   (when (nil? component)
+     (throw (nil-component system key)))
+   (when (= :not-found component)
+     (throw (missing-dependency system key)))
+   component))
+
+
 (defn- get-component [components key system]
   (let [component (get components key :not-found)]
     (when (nil? component)
@@ -228,25 +246,3 @@
   (try (stop component)
        (catch :VncException e
               (throw (stop-failure system key e)))))
-
-(comment
-(defn- assoc-dependency [system component dependency-key system-key]
-  (let [dependency (get-dependency system system-key component dependency-key)]
-    (assoc component dependency-key dependency)))
-
-
-(defn- assoc-dependencies [component system]
-  (reduce-kv #(assoc-dependency system %1 %2 %3)
-             component
-             (dependencies component)))
-
-
-(defn- get-dependency [system system-key component dependency-key]
-  (let [dependency (get system system-key :not-found)]
-    (when (nil? dependency)
-      (throw (nil-component system system-key)))
-    (when (= :not-found dependency)
-      (throw (missing-component system system-key dependency-key)))
-    dependency))
-)
-;; IN WORK
