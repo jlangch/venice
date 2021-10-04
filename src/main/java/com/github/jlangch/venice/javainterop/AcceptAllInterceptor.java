@@ -121,6 +121,13 @@ public class AcceptAllInterceptor extends Interceptor {
 	}
 
 	@Override
+	public String onReadSystemEnv(
+			final String name
+	) throws SecurityException {
+		return super.onReadSystemEnv(name);
+	}
+
+	@Override
 	public void validateVeniceFunction(
 			final String funcName
 	) throws SecurityException {

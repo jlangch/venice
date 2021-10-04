@@ -68,11 +68,11 @@ public class VncBoolean extends VncVal {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() ?  new VncKeyword(
+		return isWrapped() ? new VncKeyword(
 									getWrappingTypeDef().getType().getQualifiedName(),
 									MetaUtil.typeMeta(
-											new VncKeyword(VncBoolean.TYPE), 
-											new VncKeyword(VncVal.TYPE)))
+										new VncKeyword(VncBoolean.TYPE), 
+										new VncKeyword(VncVal.TYPE)))
 						   : new VncKeyword(
 									VncBoolean.TYPE, 
 									MetaUtil.typeMeta(

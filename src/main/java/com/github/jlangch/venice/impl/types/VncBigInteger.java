@@ -82,12 +82,12 @@ public class VncBigInteger extends VncNumber {
 	
 	@Override
 	public VncKeyword getType() {
-		return isWrapped() ?  new VncKeyword(
+		return isWrapped() ? new VncKeyword(
 									getWrappingTypeDef().getType().getQualifiedName(),
 									MetaUtil.typeMeta(
-											new VncKeyword(VncBigInteger.TYPE), 
-											new VncKeyword(VncNumber.TYPE), 
-											new VncKeyword(VncVal.TYPE)))
+										new VncKeyword(VncBigInteger.TYPE), 
+										new VncKeyword(VncNumber.TYPE), 
+										new VncKeyword(VncVal.TYPE)))
 						   : new VncKeyword(
 									VncBigInteger.TYPE, 
 									MetaUtil.typeMeta(

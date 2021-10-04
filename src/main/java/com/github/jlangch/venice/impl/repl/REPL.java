@@ -756,7 +756,10 @@ public class REPL {
 			else if (first(params).equals("config")) {
 				if (interceptor instanceof AcceptAllInterceptor) {
 					printer.println("stdout", "[accept-all] NO sandbox active");
-					printer.println("stdout", "All Java calls accepted, no Venice calls rejected");
+					printer.println("stdout", "Java calls:                     No restriction");
+					printer.println("stdout", "Venice functions:               No restriction");
+					printer.println("stdout", "System properties:              No restriction");
+					printer.println("stdout", "System environment variables:   No restriction");
 					return;
 				}
 				else if (interceptor instanceof RejectAllInterceptor) {
@@ -778,6 +781,8 @@ public class REPL {
 									.stream()
 									.map(s -> "   " + s)
 									.collect(Collectors.joining("\n")));
+					printer.println("stdout", "System properties:\n   All rejected!");
+					printer.println("stdout", "System environment variables:\n   All rejected!");
 					return;
 				}
 				else if (interceptor instanceof SandboxInterceptor) {
