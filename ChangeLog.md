@@ -18,7 +18,7 @@ and this project adheres to
 ### Changed
 
 - `doc` function to use *Levenshtein distance* if the exact symbol is not found 
-  to help with typos.  
+  to do a fuzzy search for candidates.  
 
 ### Fixed
 
