@@ -25,7 +25,7 @@
 (ns component)
 
 
-(defprotocol Lifecycle
+(defprotocol Component
   (start [component]
     """
     Begins operation of this component. Synchronous, does not return
@@ -37,28 +37,45 @@
     Ceases operation of this component. Synchronous, does not return
     until the component is stopped. Returns an updated version of this
     component.
+    """)
+  (inject [component component-map]
+    """
+    Injects a map of dependent components. Dependent components are injected
+    before this component is started. Returns an updated version of this
+    component.
     """))
 
 
 (deftype :system [name :string
                   components :ordered-map
                   dependencies :dag/dag]
-  Lifecycle
-  (start [system]
-    (start-system system))
-  (stop [system]
-    (stop-system system)))
+  Component
+    (start [system]
+      (start-system system))
+    (stop [system]
+      (stop-system system))
+    (inject [system component-map]
+      system))
 
+
+(deftype :component-ex [message :string
+                        reason :keyword
+                        component-key :keword
+                        system :system
+                        cause? :com.github.jlangch.venice.VncException])
 
 (defn system-map [name & keyvals]
   (when-not (even? (count keyvals))
     (throw (ex :VncException
-               "Function 'component/system' requires an even number of component keyvals")))
+               """
+               Function 'component/system' requires an even number of component
+               keyvals!
+               """)))
   (system. name (apply ordered-map keyvals) (dag/dag)))
 
 
 (defn
-  ^{ :arglists '("(system dependency-map)")
+  ^{ :arglists '("(system-using system dependency-map)")
      :doc """
           Associates dependency graph with the system.
           `dependency-map` is a map of keys in the system to maps or vectors
@@ -69,20 +86,33 @@
           """
           (do
             (load-module :component)
-            (deftype :server [port :long]
-                     component/Lifecycle
-                       (start [this] this)
-                       (stop [this] this))
-            (deftype :database [user :string, password :string ]
-                     component/Lifecycle
-                       (start [this] this)
-                       (stop [this] this))
 
-            (-> (component/system-map
-                   "test"
-                   :server (server. 4600)
-                   :store  (database. "foo" "123"))
-                (component/system-using {:server [:store]})))
+            (deftype :server [port :long
+                              components :hash-map]
+                     component/Component
+                       (start [this] (println ":server started") this)
+                       (stop [this] (println ":server stopped") this)
+                       (inject [this deps] (assoc this :components deps)))
+
+            (deftype :database [user :string
+                                password :string
+                                components :hash-map ]
+                     component/Component
+                       (start [this] (println ":database started") this)
+                       (stop [this] (println ":database stopped") this)
+                       (inject [this deps] (assoc this :components deps)))
+
+            (defn create-system []
+              (-> (component/system-map
+                     "test"
+                     :server (server. 4600 {})
+                     :store  (database. "foo" "123" {}))
+                  (component/system-using {:server [:store]})))
+
+            (let [test (create-system)]
+              (component/start test)
+              (sleep 2 :seconds)
+              (component/stop test)))
           """ ) }
 
   system-using [system dependency-map]
@@ -94,6 +124,101 @@
                      (dag/dag)
                      dependency-map)]
   (assoc system :dependencies d)))
+
+
+(defn
+  ^{ :arglists '("(start-system system)")
+     :doc """
+          Recursively starts the components in the system in dependency order.
+          """ }
+
+  start-system [system]
+
+  (let [graph      (:dependencies system)
+        components (:components system)]
+    (->> (reduce (fn [components key]
+                   (assoc components key
+                          (-> (get-component components key system)
+                              ; inject (assoc-dependencies system)
+                              (start-component system key))))
+                 components
+                 (reverse (dag/topological-sort graph)))
+         (assoc system :components))))
+
+
+(defn
+  ^{ :arglists '("(stop-system system)")
+     :doc """
+          Recursively stops the components in the system in dependency order.
+          """ }
+
+  stop-system [system]
+
+  (let [graph      (:dependencies system)
+        components (:components system)]
+    (->> (reduce (fn [components key]
+                   (assoc components key
+                          (-> (get-component components key system)
+                              (stop-component system key))))
+                 components
+                 (dag/topological-sort graph))
+         (assoc system :components))))
+
+
+(defn- nil-component [system key]
+  (component-ex. """
+                 Component ~{key} was nil in system; maybe it returned nil
+                 from start or stop
+                 """
+                 :nil-component
+                 key
+                 system,
+                 nil))
+
+
+(defn- missing-component [system key]
+  (component-ex. "Missing component ~{key} from system"
+                 :missing-component
+                 key
+                 system,
+                 nil))
+
+
+(defn- start-failure [system key ex]
+  (component-ex. "Failed to start component ~{key} from system"
+                 :start-failure
+                 key
+                 system,
+                 ex))
+
+
+(defn- stop-failure [system key ex]
+  (component-ex. "Failed to stop component ~{key} from system"
+                 :stop-failure
+                 key
+                 system,
+                 ex))
+
+
+(defn- get-component [components key system]
+  (let [component (get components key :not-found)]
+    (when (nil? component)
+      (throw (nil-component system key)))
+    (when (= :not-found component)
+      (throw (missing-component system key)))
+    component))
+
+
+(defn- start-component [component system key]
+  (try (start component)
+       (catch :VncException e
+              (throw (start-failure system key e)))))
+
+
+(defn- stop-component [component system key]
+  (try (stop component)
+       (catch :VncException e
+              (throw (stop-failure system key e)))))
 
 
 ;; IN WORK
