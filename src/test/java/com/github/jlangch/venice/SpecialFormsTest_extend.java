@@ -43,7 +43,35 @@ public class SpecialFormsTest_extend {
 	}
 	
 	@Test
-	public void test_extend_basic_2() {
+	public void test_extend_basic_2a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"  (ns test)                             \n" +
+				"  (defprotocol P (foo [x]))             \n" +
+				"  (extend :core/long P (foo [x] x))     \n" +
+				"  (foo 10))";
+
+		assertEquals(10L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_2b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                     \n" +
+				"  (ns test)                             \n" +
+				"  (defprotocol P (foo [x]))             \n" +
+				"  (extend :core/long P (foo [x] 1M x))  \n" +
+				"  (foo 10))";
+
+		assertEquals(10L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_extend_basic_2c() {
 		final Venice venice = new Venice();
 
 		final String script =
