@@ -109,10 +109,10 @@
                      :store  (database. "foo" "123" {}))
                   (component/system-using {:server [:store]})))
 
-            (let [test (create-system)]
-              (component/start test)
-              (sleep 2 :seconds)
-              (component/stop test)))
+            (-> (create-system)
+                (component/start)
+                ((fn [s] (sleep 2 :seconds) s))
+                (component/stop)))
           """ ) }
 
   system-using [system dependency-map]
@@ -137,10 +137,12 @@
   (let [graph      (:dependencies system)
         components (:components system)]
     (->> (reduce (fn [components key]
-                   (assoc components key
-                          (-> (get-component components key system)
-                              ; inject (assoc-dependencies system)
-                              (start-component system key))))
+                   (assoc components
+                          key
+                          (let [dep-keys (dag/direct-children graph key)]
+                            (-> (get-component components key system)
+                                (inject (into {} (zipmap dep-keys (map #(get components %) dep-keys))))
+                                (start-component system key)))))
                  components
                  (reverse (dag/topological-sort graph)))
          (assoc system :components))))
@@ -183,6 +185,13 @@
                  system,
                  nil))
 
+(defn- missing-dependency [system key dependency-key]
+  (component-ex. "Missing dependency ~{dependency-key} expected in system at ~{key}"
+                 :missing-dependency
+                 key
+                 system,
+                 nil))
+
 
 (defn- start-failure [system key ex]
   (component-ex. "Failed to start component ~{key} from system"
@@ -220,5 +229,24 @@
        (catch :VncException e
               (throw (stop-failure system key e)))))
 
+(comment
+(defn- assoc-dependency [system component dependency-key system-key]
+  (let [dependency (get-dependency system system-key component dependency-key)]
+    (assoc component dependency-key dependency)))
 
+
+(defn- assoc-dependencies [component system]
+  (reduce-kv #(assoc-dependency system %1 %2 %3)
+             component
+             (dependencies component)))
+
+
+(defn- get-dependency [system system-key component dependency-key]
+  (let [dependency (get system system-key :not-found)]
+    (when (nil? dependency)
+      (throw (nil-component system system-key)))
+    (when (= :not-found dependency)
+      (throw (missing-component system system-key dependency-key)))
+    dependency))
+)
 ;; IN WORK
