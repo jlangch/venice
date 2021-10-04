@@ -355,6 +355,8 @@ public class Types {
 
 			case ":core/custom-type":	return Types.isVncCustomType(val);
 
+			case ":dag/dag":			return Types.isVncDAG(val);
+
 			default:
 				try {
 					if (Types.isVncCustomType(val)) {

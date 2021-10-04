@@ -320,7 +320,7 @@ public class VncDAG extends VncCollection {
 	}
 	
 	
-	public static final String TYPE = ":core/dag";
+	public static final String TYPE = ":dag/dag";
 
     private static final long serialVersionUID = -1848883965231344442L;
 	

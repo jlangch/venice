@@ -186,6 +186,32 @@ public class SpecialFormsTest_deftype {
 	}
 
 	@Test
+	public void test_deftype_qualified_types_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                           \n" +
+				"  (deftype :complex [real :core/long, imaginary :core/long])  \n" +
+				"  (def x (complex. 100 200))                                  \n" +
+				"  (pr-str x))                                                   ";
+
+		assertEquals("{:custom-type* :user/complex :real 100 :imaginary 200}", venice.eval(script));					
+	}
+
+	@Test
+	public void test_deftype_qualified_types_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :test [graph :dag/dag])                  \n" +
+				"  (def x (test. (dag/dag)))                         \n" +
+				"  (pr-str x))                                         ";
+
+		assertEquals("{:custom-type* :user/test :graph ()}", venice.eval(script));					
+	}
+
+	@Test
 	public void test_deftype_access_fields() {
 		final Venice venice = new Venice();
 
@@ -226,7 +252,6 @@ public class SpecialFormsTest_deftype {
 		assertEquals("[[100 200] 400]", venice.eval(script));					
 	}
 
-	
 	@Test
 	public void test_deftype_nested_complex() {
 		final Venice venice = new Venice();
