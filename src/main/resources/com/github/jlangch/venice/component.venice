@@ -24,6 +24,7 @@
 
 (ns component)
 
+
 (defprotocol Lifecycle
   (start [component]
     """
@@ -37,5 +38,62 @@
     until the component is stopped. Returns an updated version of this
     component.
     """))
+
+
+(deftype :system [name :string
+                  components :ordered-map
+                  dependencies :dag/dag]
+  Lifecycle
+  (start [system]
+    (start-system system))
+  (stop [system]
+    (stop-system system)))
+
+
+(defn system-map [name & keyvals]
+  (when-not (even? (count keyvals))
+    (throw (ex :VncException
+               "Function 'component/system' requires an even number of component keyvals")))
+  (system. name (apply ordered-map keyvals) (dag/dag)))
+
+
+(defn
+  ^{ :arglists '("(system dependency-map)")
+     :doc """
+          Associates dependency graph with the system.
+          `dependency-map` is a map of keys in the system to maps or vectors
+          specifying the dependencies of the component at that key in the
+          the system.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :component)
+            (deftype :server [port :long]
+                     component/Lifecycle
+                       (start [this] this)
+                       (stop [this] this))
+            (deftype :database [user :string, password :string ]
+                     component/Lifecycle
+                       (start [this] this)
+                       (stop [this] this))
+
+            (-> (component/system-map
+                   "test"
+                   :server (server. 4600)
+                   :store  (database. "foo" "123"))
+                (component/system-using {:server [:store]})))
+          """ ) }
+
+  system-using [system dependency-map]
+
+  (let [d (reduce-kv (fn [dag_ k v]
+                       (->> (interleave (repeat k) v)
+                            (partition 2)
+                            (apply dag/add-edges dag_)))
+                     (dag/dag)
+                     dependency-map)]
+  (assoc system :dependencies d)))
+
 
 ;; IN WORK
