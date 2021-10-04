@@ -172,5 +172,138 @@ public class SpecialFormsTest_extend {
 
 		assertEquals("[\"joe\" \"smith\"]", venice.eval(script));					
 	}
+	
+	@Test
+	public void test_namespaces_1a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (ns test)                                           \n" +
+				"  (deftype :person [name :string])                    \n" +
+				"                                                      \n" +
+				"  (ns test1)                                          \n" +
+				"  (defprotocol P (foo [x]))                           \n" +
+				"  (extend :test/person P (foo [x] (:name x)))         \n" +
+				"                                                      \n" +
+				"  (ns test2)                                          \n" +
+				"  (test1/foo (test/person. \"joe\")))                   ";
+
+		assertEquals("joe", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_namespaces_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (ns testA)                                          \n" +
+				"  (deftype :person [name :string])                    \n" +
+				"                                                      \n" +
+				"  (ns testB)                                          \n" +
+				"  (deftype :company [name :string])                   \n" +
+				"                                                      \n" +
+				"  (ns test1)                                          \n" +
+				"  (defprotocol P (foo [x]))                           \n" +
+				"  (extend :testA/person P (foo [x] (:name x)))        \n" +
+				"  (extend :testB/company P (foo [x] (:name x)))       \n" +
+				"                                                      \n" +
+				"  (ns test2)                                          \n" +
+				"  (test1/foo (testA/person. \"joe\"))                 \n" +
+				"  (test1/foo (testB/company. \"ABC Inc.\")))            ";
+
+		assertEquals("ABC Inc.", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_namespaces_2a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (ns test)                                           \n" +
+				"  (deftype :person [name :string])                    \n" +
+				"                                                      \n" +
+				"  (ns test1)                                          \n" +
+				"  (defprotocol P (foo [x]))                           \n" +
+				"                                                      \n" +
+				"  (ns test2)                                          \n" +
+				"  (extend :test/person test1/P (foo [x] (:name x)))   \n" +
+				"                                                      \n" +
+				"  (ns test3)                                          \n" +
+				"  (test1/foo (test/person. \"joe\")))                   ";
+
+		assertEquals("joe", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_namespaces_2b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (ns testA)                                          \n" +
+				"  (deftype :person [name :string])                    \n" +
+				"                                                      \n" +
+				"  (ns testB)                                          \n" +
+				"  (deftype :company [name :string])                   \n" +
+				"                                                      \n" +
+				"  (ns test1)                                          \n" +
+				"  (defprotocol P (foo [x]))                           \n" +
+				"                                                      \n" +
+				"  (ns test2)                                          \n" +
+				"  (extend :testA/person test1/P (foo [x] (:name x)))  \n" +
+				"  (extend :testB/company test1/P (foo [x] (:name x))) \n" +
+				"                                                      \n" +
+				"  (ns test3)                                          \n" +
+				"  (test1/foo (testA/person. \"joe\"))                 \n" +
+				"  (test1/foo (testB/company. \"ABC Inc.\")))            ";
+
+		assertEquals("ABC Inc.", venice.eval(script));					
+	}
+
+	@Test
+	public void test_namespaces_3a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                       \n" +
+				"  (ns test)                               \n" +
+				"  (defprotocol P (foo [x]))               \n" +
+				"                                          \n" +
+				"  (ns test1)                              \n" +
+				"  (deftype :person [name :string]         \n" +
+				"           test/P (foo [x] (:name x)))    \n" +
+				"                                          \n" +
+				"  (ns test2)                              \n" +
+				"  (test/foo (test1/person. \"joe\")))       ";
+
+		assertEquals("joe", venice.eval(script));					
+	}
+
+	@Test
+	public void test_namespaces_3b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (ns test)                                           \n" +
+				"  (defprotocol P (foo [x]))                           \n" +
+				"                                                      \n" +
+				"  (ns testA)                                          \n" +
+				"  (deftype :person [name :string]                     \n" +
+				"           test/P (foo [x] (:name x)))                \n" +
+				"                                                      \n" +
+				"  (ns testB)                                          \n" +
+				"  (deftype :company [name :string]                    \n" +
+				"           test/P (foo [x] (:name x)))                \n" +
+				"                                                      \n" +
+				"  (ns test2)                                          \n" +
+				"  (test/foo (testA/person. \"joe\"))                  \n" +
+				"  (test/foo (testB/company. \"ABC Inc.\")))             ";
+
+		assertEquals("ABC Inc.", venice.eval(script));					
+	}
 
 }

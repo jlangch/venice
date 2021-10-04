@@ -1488,8 +1488,9 @@ public class SpecialFormsHandler {
 										protocol.getName().getNamespace(), 
 										name, 
 										fnSpec.first().getMeta());
+		
+		// the created extended function musst be in the current namespace
 		final VncSymbol fnSym = new VncSymbol(
-										protocol.getName().getNamespace(), 
 										GenSym.generateAutoSym(name).getName(), 
 										fnSpec.first().getMeta());
 		

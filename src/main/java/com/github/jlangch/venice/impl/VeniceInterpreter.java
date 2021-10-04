@@ -1282,11 +1282,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertMinArity("defprotocol", FnType.SpecialForm, args, 2);
 		}
 
-		final VncSymbol protocol = 
-				validateSymbolWithCurrNS(
-					Namespaces.qualifySymbolWithCurrNS(
-							evaluateSymbolMetaData(args.first(), env)),
-					"defprotocol");
+		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
+										evaluateSymbolMetaData(args.first(), env));
 
 		return specialFormHandler.defprotocol_(this, protocol, args, env, meta);
 	}
@@ -1297,11 +1294,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertMinArity("extend", FnType.SpecialForm, args, 3);
 		}
 
-		final VncSymbol protocol = 
-				validateSymbolWithCurrNS(
-					Namespaces.qualifySymbolWithCurrNS(
-							evaluateSymbolMetaData(args.second(), env)),
-					"extend");
+		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
+										evaluateSymbolMetaData(args.second(), env));
 
 		return specialFormHandler.extend_(args.first(), protocol, args, env);
 	}
@@ -1312,11 +1306,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			assertMinArity("extends?", FnType.SpecialForm, args, 2);
 		}
 
-		final VncSymbol protocol = 
-				validateSymbolWithCurrNS(
-					Namespaces.qualifySymbolWithCurrNS(
-							evaluateSymbolMetaData(args.second(), env)),
-					"extends?");
+		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
+										evaluateSymbolMetaData(args.second(), env));
 
 		return specialFormHandler.extendsQ_(args.first(), protocol, env);
 	}
