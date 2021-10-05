@@ -165,8 +165,9 @@ a *custom type* definition:
                           (stop [c]))
    
    (deftype :component [name :string]
-            Lifecycle (start [c] (println "'~(:name c)' started"))
-                      (stop [c] (println "'~(:name c)' stopped")))
+     Lifecycle 
+       (start [c] (println "'~(:name c)' started"))
+       (stop [c] (println "'~(:name c)' stopped")))
    
    (let [c          (component. \"test\")
          lifecycle? (extends? (type c) Lifecycle)] 
