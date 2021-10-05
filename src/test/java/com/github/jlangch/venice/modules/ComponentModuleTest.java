@@ -31,7 +31,7 @@ import com.github.jlangch.venice.Venice;
 public class ComponentModuleTest {
 
 	@Test
-	public void test_1() {
+	public void test_base() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -70,6 +70,52 @@ public class ComponentModuleTest {
 			":server started\n" +
 			":server stopped\n" +
 			":database stopped\n",
+			venice.eval(script));
+	}
+
+	@Test
+	public void test_component_info() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                  \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :server [port       :long                               \n"
+				+ "                    components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (println \"~(id this) started\") this)        \n"
+				+ "       (stop [this] (println \"~(id this) stopped\") this)         \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :database [user       :string                           \n"
+				+ "                      password   :string                           \n"
+				+ "                      components :map ]                            \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (println \"~(id this) started\") this)        \n"
+				+ "       (stop [this] (println \"~(id this) stopped\") this)         \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :server (server. 4600 {})                               \n"
+				+ "           :store (database. \"foo\" \"123\" {}))                  \n"
+				+ "        (component/system-using {:server [:store]})))              \n"
+				+ "                                                                   \n"
+				+ "  (defn- id [this]                                                 \n"
+				+ "    (-> this :components :component-info :id))                     \n"
+				+ "                                                                   \n"
+				+ "  (with-out-str                                                    \n"
+				+ "    (-> (create-system)                                            \n"
+				+ "        (component/start)                                          \n"
+				+ "        (component/stop))))                                          "; 
+
+		assertEquals(
+			":store started\n" +
+			":server started\n" +
+			":server stopped\n" +
+			":store stopped\n",
 			venice.eval(script));
 	}
 
