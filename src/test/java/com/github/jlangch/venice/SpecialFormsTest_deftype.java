@@ -44,6 +44,54 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
+	public void test_deftype_subtype_1a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                             \n" +
+				"  (deftype :num [v :number])    \n" +
+				"  (pr-str (num. 1)))              ";
+
+		assertEquals("{:custom-type* :user/num :v 1}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_subtype_1b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                             \n" +
+				"  (deftype :num [v :number])    \n" +
+				"  (pr-str (num. 1.0)))            ";
+
+		assertEquals("{:custom-type* :user/num :v 1.0}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_subtype_2a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                \n" +
+				"  (deftype :mp [v :map])           \n" +
+				"  (pr-str (mp. (hash-map :a 1))))   ";
+
+		assertEquals("{:custom-type* :user/mp :v {:a 1}}", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_deftype_subtype_2b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                   \n" +
+				"  (deftype :mp [v :map])              \n" +
+				"  (pr-str (mp. (ordered-map :a 1))))    ";
+
+		assertEquals("{:custom-type* :user/mp :v {:a 1}}", venice.eval(script));					
+	}
+	
+	@Test
 	public void test_deftype_nillable_1() {
 		final Venice venice = new Venice();
 

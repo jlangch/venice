@@ -43,7 +43,7 @@ is defined as a keyword and the fields are tuples of name and type.
  ```
  
 Venice implicitly creates a builder function suffixed with a dot
-character.
+character. Values of any subtype of the field's type may be passed.
   
 ```clojure
 (complex. 200 300)

@@ -623,7 +623,9 @@ public class SpecialFormsDoc {
 						"                                                 \n" +
 						"(complex. 200 300)             ; builder         \n" +
 						"(complex? (complex. 200 300))  ; type check      \n" +
-						"```")
+						"```                                              \n\n" +
+						"The builder accepts values of any subtype of the \n" +
+						"field's type.")
 					.examples(
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
