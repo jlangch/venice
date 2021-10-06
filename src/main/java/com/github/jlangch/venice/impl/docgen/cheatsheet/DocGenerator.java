@@ -265,7 +265,7 @@ public class DocGenerator {
 				getJavaInteropSection(),
 				getReplSection(),
 				getPdfSection(),
-				getAppSection());
+				getIOZipSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -278,8 +278,8 @@ public class DocGenerator {
 				getTimeSection(),
 				getIOSection(),
 				getIOFileSection(),
-				getIOZipSection(),
-				getMiscellaneousSection());
+				getMiscellaneousSection(),
+				getAppSection());
 	}
 
 	private List<DocSection> getModulesLeftSections() {
@@ -2074,7 +2074,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleKiraSection() {
-		final DocSection section = new DocSection("Kira", "modules.kira");
+		final DocSection section = new DocSection(
+										"Kira", 
+										"Templating system", 
+										"modules.kira");
 
 		final DocSection all = new DocSection("(load-module :kira)", id());
 		section.addSection(all);
@@ -2093,7 +2096,7 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleTracingSection() {
-		final DocSection section = new DocSection("Tracing", "modules.tracing");
+		final DocSection section = new DocSection("Tracing", "Tracing functions", "modules.tracing");
 
 		final DocSection all = new DocSection("(load-module :trace)", id());
 		section.addSection(all);
@@ -2123,7 +2126,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleShellSection() {
-		final DocSection section = new DocSection("Shell", "modules.shell");
+		final DocSection section = new DocSection(
+										"Shell", 
+										"Functions to deal with the operating system", 
+										"modules.shell");
 
 		final DocSection all = new DocSection("(load-module :shell)", id());
 		section.addSection(all);
@@ -2238,7 +2244,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleSemverSection() {
-		final DocSection section = new DocSection("Semver", "modules.semver");
+		final DocSection section = new DocSection(
+										"Semver", 
+										"Semantic versioning", 
+										"modules.semver");
 
 		final DocSection all = new DocSection("(load-module :semver)", id());
 		section.addSection(all);
@@ -2384,7 +2393,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleComponentSection() {
-		final DocSection section = new DocSection("Component", "modules.component");
+		final DocSection section = new DocSection(
+									"Component", 
+									"Managing lifecycle and dependencies of components", 
+									"modules.component");
 
 		final DocSection all = new DocSection("(load-module :component)", id());
 		section.addSection(all);
