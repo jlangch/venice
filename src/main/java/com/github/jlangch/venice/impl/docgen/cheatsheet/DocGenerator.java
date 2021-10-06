@@ -176,7 +176,7 @@ public class DocGenerator {
 		final DocSection functions = new DocSection("Core\u00A0Functions", "functions");
 		functions.addSection(new DocSection("Functions", "functions"));
 		functions.addSection(new DocSection("Macros", "macros"));
-		functions.addSection(new DocSection("Special Forms", "specialforms"));
+		functions.addSection(new DocSection("Special\u00A0Forms", "specialforms"));
 		functions.addSection(new DocSection("Transducers", "transducers"));
 		functions.addSection(new DocSection("Namespaces", "namespace"));
 		functions.addSection(new DocSection("Types", "types"));
@@ -199,15 +199,18 @@ public class DocGenerator {
 		threads.addSection(new DocSection("Threads", "concurrency.threads"));
 		content.add(threads);
 
-		final DocSection java = new DocSection("System\u00A0&\u00A0Java", "system");
-		java.addSection(new DocSection("System", "system"));
-		java.addSection(new DocSection("Java Interop", "javainterop"));
-		java.addSection(new DocSection("REPL", "repl"));
-		content.add(java);
+		final DocSection system = new DocSection("System\u00A0&\u00A0Java", "system");
+		system.addSection(new DocSection("System", "system"));
+		system.addSection(new DocSection("System\u00A0Vars", "miscellaneous.system_vars"));
+		system.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
+		system.addSection(new DocSection("REPL", "repl"));
+		content.add(system);
 
 		final DocSection util = new DocSection("Util", "util");
 		util.addSection(new DocSection("Time", "time"));
 		util.addSection(new DocSection("Regex", "regex"));
+		util.addSection(new DocSection("CIDR", "miscellaneous.cidr"));
+
 		content.add(util);
 
 		final DocSection io = new DocSection("I/O", "io");
@@ -230,7 +233,7 @@ public class DocGenerator {
 		content.add(embed);
 
 		final DocSection extmod = new DocSection("Modules", "modules");
-		extmod.addSection(new DocSection("Kira Templates", "modules.kira"));
+		extmod.addSection(new DocSection("Kira\u00A0Templates", "modules.kira"));
 		extmod.addSection(new DocSection("Tracing", "modules.tracing"));
 		extmod.addSection(new DocSection("XML", "modules.xml"));
 		extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
@@ -2060,7 +2063,7 @@ public class DocGenerator {
 		cidr_trie.addItem(getDocItem("cidr/lookup"));
 		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
 		
-		final DocSection other = new DocSection("Other", "miscellaneous.other");
+		final DocSection other = new DocSection("System Vars", "miscellaneous.system_vars");
 		all.addSection(other);
 		other.addItem(getDocItem("*version*"));
 		other.addItem(getDocItem("*newline*"));
