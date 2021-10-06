@@ -75,6 +75,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -522,7 +523,7 @@ public class SpecialFormsHandler {
 																fnName.getQualifiedName(), 
 																name,
 																fn, 
-																meta);
+																fn.getMeta());
 
 				final VncVal p = env.getGlobalOrNull(fnName);
 				if (p instanceof VncProtocolFunction) {
@@ -1449,14 +1450,21 @@ public class SpecialFormsHandler {
 		final VncVal fnDefaultRet = hasRetVal 
 										? evaluator.evaluate(specList.last(), env, false) 
 										: Nil;
-			
+
+		final List<VncString> argList =
+			paramSpecs
+				.stream()
+				.map(args -> "(" + fnName.getName() + " " + args.toString() +")")
+				.map(s -> new VncString(s))
+				.collect(Collectors.toList());
+		
 		final List<VncFunction> functions =
 			paramSpecs
 				.getJavaList()
 				.stream()
 				.map(p -> new VncFunction(
 								fnName.getQualifiedName(), 
-								(VncVector)p, 
+								(VncVector)p,
 								fnName.getMeta()
 						  ) {
 							public VncVal apply(final VncList args) {
@@ -1471,7 +1479,9 @@ public class SpecialFormsHandler {
 						fnName.getQualifiedName(),
 						functions,
 						false,
-						fnName.getMeta());
+						MetaUtil.mergeMeta(
+								VncHashMap.of(MetaUtil.ARGLIST, VncList.ofColl(argList)),
+								fnName.getMeta()));
 	}
 
 	private void extendFnSpec(
