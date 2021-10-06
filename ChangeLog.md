@@ -13,6 +13,7 @@ and this project adheres to
 
 ### Added
 
+- module :component
 - function `str/levenshtein`
 
 ### Changed

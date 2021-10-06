@@ -2099,7 +2099,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleTracingSection() {
-		final DocSection section = new DocSection("Tracing", "Tracing functions", "modules.tracing");
+		final DocSection section = new DocSection(
+										"Tracing", 
+										"Tracing functions", 
+										"modules.tracing");
 
 		final DocSection all = new DocSection("(load-module :trace)", id());
 		section.addSection(all);
@@ -2165,7 +2168,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleXmlSection() {
-		final DocSection section = new DocSection("XML", "modules.xml");
+		final DocSection section = new DocSection(
+										"XML", 
+										"modules.xml");
 
 		final DocSection all = new DocSection("(load-module :xml)", id());
 		section.addSection(all);
@@ -2182,7 +2187,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleCryptographySection() {
-		final DocSection section = new DocSection("Cryptography", "modules.cryptography");
+		final DocSection section = new DocSection(
+										"Cryptography", 
+										"modules.cryptography");
 
 		final DocSection all = new DocSection("(load-module :crypt)", id());
 		section.addSection(all);
@@ -2203,7 +2210,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleGradleSection() {
-		final DocSection section = new DocSection("Gradle", "modules.gradle");
+		final DocSection section = new DocSection(
+										"Gradle", 
+										"modules.gradle");
 
 		final DocSection all = new DocSection("(load-module :gradle)", id());
 		section.addSection(all);
@@ -2218,7 +2227,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleMavenSection() {
-		final DocSection section = new DocSection("Maven", "modules.maven");
+		final DocSection section = new DocSection(
+										"Maven", 
+										"modules.maven");
 
 		final DocSection all = new DocSection("(load-module :maven)", id());
 		section.addSection(all);
@@ -2234,7 +2245,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleJavaSection() {
-		final DocSection section = new DocSection("Java", "modules.java");
+		final DocSection section = new DocSection(
+										"Java",
+										"modules.java");
 
 		final DocSection all = new DocSection("(load-module :java)", id());
 		section.addSection(all);
@@ -2276,7 +2289,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleGeoipSection() {
-		final DocSection section = new DocSection("Geo IP", "modules.geoip");
+		final DocSection section = new DocSection(
+										"Geo IP",
+										"Geolocation mapping for IP adresses",
+										"modules.geoip");
 
 		final DocSection all = new DocSection("(load-module :geoip)", id());
 		section.addSection(all);
@@ -2312,7 +2328,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleHexdumpSection() {
-		final DocSection section = new DocSection("Hexdump", "modules.hexdump");
+		final DocSection section = new DocSection(
+										"Hexdump", 
+										"modules.hexdump");
 
 		final DocSection all = new DocSection("(load-module :hexdump)", id());
 		section.addSection(all);
@@ -2325,7 +2343,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleAnsiSection() {
-		final DocSection section = new DocSection("Ansi", "modules.ansi");
+		final DocSection section = new DocSection(
+										"Ansi", 
+										"ANSI codes, styles, and colorization helper functions",
+										"modules.ansi");
 
 		final DocSection all = new DocSection("(load-module :ansi)", id());
 		section.addSection(all);
@@ -2355,7 +2376,9 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleBenchmarkSection() {
-		final DocSection section = new DocSection("Benchmark", "modules.benchmark");
+		final DocSection section = new DocSection(
+										"Benchmark", 
+										"modules.benchmark");
 
 		final DocSection all = new DocSection("(load-module :benchmark)", id());
 		section.addSection(all);
@@ -2368,7 +2391,10 @@ public class DocGenerator {
 	}
 
 	private DocSection getModuleConfigSection() {
-		final DocSection section = new DocSection("Configuration", "modules.config");
+		final DocSection section = new DocSection(
+										"Configuration",
+										"Manages configurations with system property & env var support",
+										"modules.config");
 
 		final DocSection all = new DocSection("(load-module :config)", id());
 		section.addSection(all);
@@ -2423,7 +2449,7 @@ public class DocGenerator {
 							  "* org.apache.commons:commons-math3:3.6.1\n" +
 							  "* org.apache.xmlbeans:xmlbeans:3.1.0\n";
 
-		final DocSection section = new DocSection("Excel", null, "modules.excel", null, footer);
+		final DocSection section = new DocSection("Excel", "Read/Write Excel files", "modules.excel", null, footer);
 
 		final DocSection all = new DocSection("(load-module :excel)", id());
 		section.addSection(all);
