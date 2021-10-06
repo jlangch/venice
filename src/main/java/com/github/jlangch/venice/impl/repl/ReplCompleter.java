@@ -64,6 +64,7 @@ public class ReplCompleter implements Completer {
     		   .stream()
     		   .map(s -> s.getName())
     		   .filter(s -> namePrefix == null ? true : s.startsWith(namePrefix))
+    		   .filter(s -> !s.endsWith("__auto"))
      		   .forEach(s -> candidates.add(new Candidate(s)));
      	}
     	else if (line.word().startsWith("(")) {
@@ -72,6 +73,7 @@ public class ReplCompleter implements Completer {
     		   .stream()
     		   .map(s -> s.getName())
     		   .filter(s -> (sym == null) || sym.isEmpty() || s.startsWith(sym))
+    		   .filter(s -> !s.endsWith("__auto"))
     		   .sorted()
     		   .forEach(s -> candidates.add(new Candidate(
     				   			"(" + s, s, null, null, null, null, true)));
