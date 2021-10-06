@@ -70,7 +70,43 @@
                         cause         :com.github.jlangch.venice.VncException?])
 
 
-(defn system-map [name & keyvals]
+(defn
+  ^{ :arglists '("(system-map name keyval*)")
+     :doc """
+          Returns a system constructed of components given as key/value pairs.
+          The system has default implementations of the Lifecycle 'start' and
+          'stop' methods which recursively starts/stopss all components in the
+          system.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :component)
+
+            (deftype :server [port       :long
+                              components :map]
+               component/Component
+                 (start [this] (println ":server started") this)
+                 (stop [this] (println ":server stopped") this)
+                 (inject [this deps] (assoc this :components deps)))
+
+            (deftype :database [user       :string
+                                password   :string
+                                components :map]
+               component/Component
+                 (start [this] (println ":database started") this)
+                 (stop [this] (println ":database stopped") this)
+                 (inject [this deps] (assoc this :components deps)))
+
+            (component/system-map
+                 "test"
+                 :server (server. 4600 {})
+                 :store  (database. "foo" "123" {})))
+          """ )
+     :see-also '( "component/system-using" ) }
+
+  system-map [name & keyvals]
+
   (when-not (even? (count keyvals))
     (throw (ex :VncException
                """
@@ -83,7 +119,7 @@
 (defn
   ^{ :arglists '("(system-using system dependency-map)")
      :doc """
-          Associates dependency graph with the system.
+          Associates a component dependency graph with the system.
           `dependency-map` is a map of keys in the system to maps or vectors
           specifying the dependencies of the component at that key in the
           the system.
@@ -102,7 +138,7 @@
 
             (deftype :database [user       :string
                                 password   :string
-                                components :map ]
+                                components :map]
                component/Component
                  (start [this] (println ":database started") this)
                  (stop [this] (println ":database stopped") this)
@@ -119,7 +155,8 @@
                 (component/start)
                 ((fn [s] (println "  sleeping...") (sleep 2 :seconds) s))
                 (component/stop)))
-          """ ) }
+          """ )
+     :see-also '( "component/system-map" ) }
 
   system-using [system dependency-map]
 

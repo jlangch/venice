@@ -65,7 +65,8 @@ public class DocGenerator {
 						"app",    "xml",    "crypt",     "gradle", 
 						"trace",  "ansi",   "maven",     "kira",
 						"java",   "semver", "excel",     "hexdump",
-						"shell",  "geoip",  "benchmark", "config"));
+						"shell",  "geoip",  "benchmark", "component",
+						"config"));
 		
 		final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -243,6 +244,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
 		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
 		extmod.addSection(new DocSection("Configuration", "modules.config"));
+		extmod.addSection(new DocSection("Component", "modules.component"));
 		content.add(extmod);
 
 		return content;
@@ -291,7 +293,8 @@ public class DocGenerator {
 				getModuleTracingSection(),
 				getModuleShellSection(),
 				getModuleAnsiSection(),
-				getModuleBenchmarkSection());
+				getModuleBenchmarkSection(),
+				getModuleComponentSection());
 	}
 	
 	private List<DocSection> getModulesRightSections() {
@@ -2376,6 +2379,20 @@ public class DocGenerator {
 		all.addSection(prop);
 		prop.addItem(getDocItem("config/property-var", true));
 		prop.addItem(getDocItem("config/properties", false));
+
+		return section;
+	}
+
+	private DocSection getModuleComponentSection() {
+		final DocSection section = new DocSection("Component", "modules.component");
+
+		final DocSection all = new DocSection("(load-module :component)", id());
+		section.addSection(all);
+
+		final DocSection system = new DocSection("Build", id());
+		all.addSection(system);
+		system.addItem(getDocItem("component/system-map", false));
+		system.addItem(getDocItem("component/system-using", false));
 
 		return section;
 	}
