@@ -106,7 +106,7 @@
 (defmacro
   ^{ :arglists '("(and x)" "(and x & next)")
      :doc "Ands the predicate forms"
-     :examples '("(and true true)", "(and true false)")
+     :examples '("(and true true)", "(and true false)", "(and)")
      :see-also '("or" "not") }
 
   and
@@ -120,7 +120,7 @@
 (defmacro
   ^{ :arglists '("(or x)" "(or x & next)")
      :doc "Ors the predicate forms"
-     :examples '("(or true false)", "(or false false)")
+     :examples '("(or true false)", "(or false false)", "(or)")
      :see-also '("and" "not") }
 
   or

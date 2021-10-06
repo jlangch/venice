@@ -371,18 +371,22 @@ public class DocForm {
 		final VncList seeAlso = fn.getSeeAlso();
 		
 		final StringBuilder sb =  new StringBuilder();
-					
-		sb.append(argsList
-					.stream()
-					.map(s -> toString(s))
-					.collect(Collectors.joining(", ")));
 		
-		sb.append("\n\n");
+		if (!argsList.isEmpty()) {
+			sb.append(argsList
+						.stream()
+						.map(s -> toString(s))
+						.collect(Collectors.joining(", ")));
+			
+			sb.append("\n\n");
+		}
 		
 		final String fnDescr = toString(fn.getDoc());
-		sb.append(MARKDOWN_FN_DESCR
-					? Markdown.parse(fnDescr).renderToText(width)
-					: fnDescr);
+		if (!fnDescr.isEmpty()) {
+			sb.append(MARKDOWN_FN_DESCR
+						? Markdown.parse(fnDescr).renderToText(width)
+						: fnDescr);
+		}
 					
 		if (!examples.isEmpty()) {
 			sb.append("\n\n");
@@ -403,8 +407,10 @@ public class DocForm {
 						.collect(Collectors.joining(", ")));
 		}
 
-		sb.append("\n");
-
+		if (sb.length() > 0) {
+			sb.append("\n");
+		}
+		
 		return new VncString(sb.toString());
 	}
 	
