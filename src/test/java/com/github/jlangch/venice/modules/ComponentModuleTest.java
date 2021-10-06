@@ -35,7 +35,7 @@ public class ComponentModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                  \n"
+				  "(do                                                                \n"
 				+ "  (load-module :component)                                         \n"
 				+ "                                                                   \n"
 				+ "  (deftype :server [port       :long                               \n"
@@ -78,7 +78,7 @@ public class ComponentModuleTest {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                                                                  \n"
+				  "(do                                                                \n"
 				+ "  (load-module :component)                                         \n"
 				+ "                                                                   \n"
 				+ "  (deftype :server [port       :long                               \n"
@@ -116,6 +116,77 @@ public class ComponentModuleTest {
 			":server started\n" +
 			":server stopped\n" +
 			":store stopped\n",
+			venice.eval(script));
+	}
+
+	@Test
+	public void test_component_with_config() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :config [cfg :map                                       \n"
+				+ "                    components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "          (println \"~(id this) started\") this)                   \n"
+				+ "       (stop [this]                                                \n"
+				+ "         (println \"~(id this) stopped\") this)                    \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "         (assoc this :components deps)))                           \n"
+				+ "                                                                   \n"
+				+ "  (deftype :server [components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "          (let [port (get-cfg this :server :port)]                 \n"
+				+ "            (println \"~(id this) started at port ~{port}\") this))\n"
+				+ "       (stop [this]                                                \n"
+				+ "          (println \"~(id this) stopped\") this)                   \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "          (assoc this :components deps)))                          \n"
+				+ "                                                                   \n"
+				+ "  (deftype :database [components :map]                             \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "          (let [user (get-cfg this :db :user)]                     \n"
+				+ "            (println \"~(id this) started (user: ~{user})\") this))\n"
+				+ "       (stop [this]                                                \n"
+				+ "          (println \"~(id this) stopped\") this)                   \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "          (assoc this :components deps)))                          \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :config (config. {:server {:port 4600}                  \n"
+				+ "                             :db {:user \"foo\" :pwd \"123\"}}     \n"
+				+ "                            {})                                    \n"
+				+ "           :server (server. {})                                    \n"
+				+ "           :store (database. {}))                                  \n"
+				+ "        (component/system-using                                    \n"
+				+ "           {:server [:store :config]                               \n"
+				+ "            :store  [:config]})))                                  \n"
+				+ "                                                                   \n"
+				+ "  (defn- id [this]                                                 \n"
+				+ "    (-> this :components :component-info :id))                     \n"
+				+ "                                                                   \n"
+				+ "  (defn- get-cfg [this & ks]                                       \n"
+				+ "    (-> this :components :config :cfg (get-in ks)))                \n"
+				+ "                                                                   \n"
+				+ "  (with-out-str                                                    \n"
+				+ "    (-> (create-system)                                            \n"
+				+ "        (component/start)                                          \n"
+				+ "        (component/stop))))                                          "; 
+
+		assertEquals(
+			":config started\n" +
+			":store started (user: foo)\n"  +
+			":server started at port 4600\n" +
+			":server stopped\n" +
+			":store stopped\n"  +
+			":config stopped\n",
 			venice.eval(script));
 	}
 
