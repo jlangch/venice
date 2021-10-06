@@ -196,9 +196,7 @@
 
 (defn-
   ^{ :arglists '("(stop-system system)")
-     :doc """
-          Recursively stops the components in the system in dependency order.
-          """ }
+     :doc "Recursively stops the components in the system in dependency order." }
 
   stop-system [system]
 
@@ -223,71 +221,42 @@
 (defn- get-dependency [components key system]
  (let [component (get components key :not-found)]
    (when (nil? component)
-     (throw (nil-component system key)))
+     (throw (ex :VncException
+                """
+                Component ~{key} was nil in system '~(:name system)'; maybe
+                it returned nil from start or stop!
+                """)))
    (when (= :not-found component)
-     (throw (missing-dependency system key)))
+     (throw (ex :VncException
+                "Missing dependency ~{key} in system '~(:name system)'!")))
    component))
 
 
 (defn- get-component [components key system]
   (let [component (get components key :not-found)]
     (when (nil? component)
-      (throw (nil-component system key)))
+      (throw (ex :VncException
+                 """
+                 Component ~{key} was nil in system '~(:name system)'; maybe
+                 it returned nil from start or stop!
+                 """)))
     (when (= :not-found component)
-      (throw (missing-component system key)))
+      (throw (ex :VncException
+                 "Missing component ~{key} in system '~(:name system)'!")))
     component))
 
 
 (defn- start-component [component system key]
   (try (start component)
        (catch :VncException e
-              (throw (start-failure system key e)))))
+              (throw (ex :VncException
+                         "Failed to start component ~{key} in system '~(:name system)'!"
+                         e)))))
 
 
 (defn- stop-component [component system key]
   (try (stop component)
        (catch :VncException e
-              (throw (stop-failure system key e)))))
-
-
-(defn- nil-component [system key]
-  (component-ex. """
-                 Component ~{key} was nil in system; maybe it returned nil
-                 from start or stop
-                 """
-                 :nil-component
-                 key
-                 system,
-                 nil))
-
-
-(defn- missing-component [system key]
-  (component-ex. "Missing component ~{key} from system"
-                 :missing-component
-                 key
-                 system,
-                 nil))
-
-
-(defn- missing-dependency [system key dependency-key]
-  (component-ex. "Missing dependency ~{dependency-key} expected in system at ~{key}"
-                 :missing-dependency
-                 key
-                 system,
-                 nil))
-
-
-(defn- start-failure [system key ex]
-  (component-ex. "Failed to start component ~{key} from system"
-                 :start-failure
-                 key
-                 system,
-                 ex))
-
-
-(defn- stop-failure [system key ex]
-  (component-ex. "Failed to stop component ~{key} from system"
-                 :stop-failure
-                 key
-                 system,
-                 ex))
+              (throw (ex :VncException
+                         "Failed to stop component ~{key} in system '~(:name system)'!"
+                         e)))))
