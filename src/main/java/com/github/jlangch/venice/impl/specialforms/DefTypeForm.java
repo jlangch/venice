@@ -269,7 +269,7 @@ public class DefTypeForm {
 		}
 		else if (typeDef instanceof VncCustomTypeDef) {
 			final List<VncVal> typeArgs = args.subList(1, args.size());
-			return createCustomType((VncCustomTypeDef)typeDef, typeArgs);
+			return createCustomType((VncCustomTypeDef)typeDef, typeArgs, Constants.Nil);
 		}
 		else if (typeDef instanceof VncWrappingTypeDef) {
 			return createWrappedType((VncWrappingTypeDef)typeDef, args.get(1));
@@ -308,7 +308,8 @@ public class DefTypeForm {
 
 	public static VncCustomType createCustomType(
 			final VncCustomTypeDef typeDef, 
-			final List<VncVal> typeArgs
+			final List<VncVal> typeArgs,
+			final VncVal meta
 	) {
 		if (typeDef.count() != typeArgs.size()) {
 			throw new VncException(String.format(
@@ -336,12 +337,13 @@ public class DefTypeForm {
 		return new VncCustomType(
 						typeDef, 
 						data, 
-						Constants.Nil);
+						meta);
 	}
 
 	public static VncCustomType createCustomType(
 			final VncCustomTypeDef typeDef, 
-			final VncMap fields
+			final VncMap fields,
+			final VncVal meta
 	) {
 		final Set<VncKeyword> fieldNames = typeDef.getFieldNames();
 		
@@ -390,7 +392,7 @@ public class DefTypeForm {
 		return new VncCustomType(
 						typeDef, 
 						data, 
-						Constants.Nil);
+						meta);
 	}
 
 	public static VncVal createWrappedType(

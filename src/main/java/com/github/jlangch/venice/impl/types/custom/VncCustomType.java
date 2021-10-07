@@ -154,7 +154,7 @@ public class VncCustomType extends VncMap {
 			tmp = tmp.assoc(mvs[i], mvs[i+1]);
 		}
 		
-		return DefTypeForm.createCustomType(typeDef, tmp);
+		return DefTypeForm.createCustomType(typeDef, tmp, getMeta());
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class VncCustomType extends VncMap {
 			kv = kv.drop(2);
 		}
 		
-		return DefTypeForm.createCustomType(typeDef, map);
+		return DefTypeForm.createCustomType(typeDef, map, getMeta());
 	}
 
 	@Override
