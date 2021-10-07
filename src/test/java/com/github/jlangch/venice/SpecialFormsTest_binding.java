@@ -22,14 +22,62 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_binding {
+
+	@Test
+	public void test_basics() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                      \n" +
+				"  (with-out-str          \n" +
+				"    (binding [x 100]     \n" +
+				"      (println x)        \n" +
+				"      (binding [x 200]   \n" +
+				"        (println x))     \n" +
+				"      (println x))))       ";
+
+		assertEquals(
+				"100\n200\n100\n",
+				venice.eval(script));
+	}
+
+	@Test
+	public void test_function_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                            \n" +
+				"   (defn add [a b] (+ a b z))  \n" +
+				"   (binding [z 5]              \n" +
+				"     (add 1 2)))               ";
+
+		assertEquals(8L, venice.eval(script));
+	}
 	
 	@Test
-	public void test_let() {
+	public void test_function_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                            \n" +
+				"   (defn add [a b] (+ a b z))  \n" +
+				"   (binding [z 5]              \n" +
+				"     (add 1 2))                \n" +
+				"   (add 10 20))                    ";
+
+		assertThrows(
+				VncException.class,
+				() -> venice.eval(script));
+	}
+
+	@Test
+	public void test_destructuring() {
 		final Venice venice = new Venice();
 
 		assertEquals(10L, venice.eval("(binding [x 10] x)"));

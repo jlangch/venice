@@ -1451,10 +1451,11 @@ public class SpecialFormsHandler {
 										? evaluator.evaluate(specList.last(), env, false) 
 										: Nil;
 
+		// the arg list for the function's meta data
 		final List<VncString> argList =
 			paramSpecs
 				.stream()
-				.map(args -> "(" + fnName.getName() + " " + args.toString() +")")
+				.map(spc -> String.format("(%s %s)", fnName.getName(), spc.toString()))
 				.map(s -> new VncString(s))
 				.collect(Collectors.toList());
 		
