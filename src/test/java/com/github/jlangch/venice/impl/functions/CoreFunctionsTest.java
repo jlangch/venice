@@ -4258,10 +4258,61 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_vary_meta() {
+	public void test_vary_meta_1() {
 		final Venice venice = new Venice();
 								
 		assertEquals("1", venice.eval("(str (get (meta (vary-meta [] assoc :a 1)) :a))"));
+	}
+
+	@Test
+	public void test_vary_meta_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                          \n" +
+				"  (defn add [x] (meta x))                    \n" +
+				"  (get (add (vary-meta 1 assoc :a 100)) :a))   ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_vary_meta_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                          \n" +
+				"  (defn add [x] (vary-meta x assoc :a 100))  \n" +
+				"  (get (meta (add 1)) :a))                     ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_vary_meta_4() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                          \n" +
+				"  (defn add [x] (vary-meta x assoc :a 100))  \n" +
+				"  (let [z (add 1)]                           \n" +
+				"    (get (meta z) :a)))                        ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_vary_meta_5() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (let [x (complex. 1 2)                            \n" +
+				"        y (vary-meta x assoc :a 100)]               \n" +
+				"    (get (meta y) :a)))                               ";
+
+		assertEquals(100L, venice.eval(script));
 	}
 	
 	@Test
