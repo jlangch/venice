@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
@@ -49,5 +50,43 @@ public class SpecialFormsTest_doc {
 		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 
 		new Venice().eval("(doc slurp)", params);
+	}
+	
+	@Test
+	public void test_doc_customtype_protocol_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (defprotocol Lifecycle (start [c]) (stop [c]))    \n" +
+				"  (deftype :xxx [name :string]                      \n" +
+				"               Lifecycle (start [c] c)              \n" +
+				"                         (stop [c] c))              \n" +
+				"  (with-out-str (doc :xxx)))                          ";
+
+		final String doc = (String)venice.eval(script);
+		assertTrue(doc.contains("Protocol: user/Lifecycle"));					
+		assertTrue(doc.contains("start: (start [c])"));					
+		assertTrue(doc.contains("stop: (stop [c])"));					
+	}
+	
+	@Test
+	public void test_doc_customtype_protocol_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (defprotocol Lifecycle (start [c]) (stop [c]))    \n" +
+				"  (deftype :xxx [name :string])                     \n" +
+				"  (extend :user/xxx                                 \n" +
+				"      Lifecycle                                     \n" +
+				"         (start [c] c)                              \n" +
+				"         (stop [c] c))                              \n" +
+				"  (with-out-str (doc :xxx)))                          ";
+
+		final String doc = (String)venice.eval(script);
+		assertTrue(doc.contains("Protocol: user/Lifecycle"));					
+		assertTrue(doc.contains("start: (start [c])"));					
+		assertTrue(doc.contains("stop: (stop [c])"));					
 	}
 }

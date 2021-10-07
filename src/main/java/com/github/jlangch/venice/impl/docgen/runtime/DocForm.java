@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.docgen.runtime;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.custom.VncChoiceTypeDef;
+import com.github.jlangch.venice.impl.types.custom.VncCustomBaseTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncCustomTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
@@ -222,14 +224,22 @@ public class DocForm {
 						type.getValue()));
 			}
 		}
-		else if (tdef instanceof VncCustomTypeDef) {
-			return new VncString(getDoc(type, (VncCustomTypeDef)tdef));
+		
+		
+		if (tdef instanceof VncCustomTypeDef) {
+			final VncCustomTypeDef typeDef = (VncCustomTypeDef)tdef;
+			final List<VncProtocol> protocols = getAllEnvProtocols(typeDef, env);
+			return new VncString(getDoc(type, typeDef, protocols));
 		}
 		else if (tdef instanceof VncWrappingTypeDef) {
-			return new VncString(getDoc(type, (VncWrappingTypeDef)tdef));
+			final VncWrappingTypeDef typeDef = (VncWrappingTypeDef)tdef;
+			final List<VncProtocol> protocols = getAllEnvProtocols(typeDef, env);
+			return new VncString(getDoc(type, typeDef, protocols));
 		}
 		else if (tdef instanceof VncChoiceTypeDef) {
-			return new VncString(getDoc(type, (VncChoiceTypeDef)tdef));
+			final VncChoiceTypeDef typeDef = (VncChoiceTypeDef)tdef;
+			final List<VncProtocol> protocols = getAllEnvProtocols(typeDef, env);
+			return new VncString(getDoc(type, typeDef, protocols));
 		}
 		else {
 			throw new VncException(String.format(
@@ -240,7 +250,8 @@ public class DocForm {
 
 	private static String getDoc(
 			final VncKeyword type,
-			final VncCustomTypeDef typeDef
+			final VncCustomTypeDef typeDef,
+			final List<VncProtocol> protocols
 	) {
 		final StringBuilder sb = new StringBuilder();
 		
@@ -251,8 +262,9 @@ public class DocForm {
 									.max()
 									.orElse(0);
 		
-		sb.append(String.format("Custom type: %s\n\n", typeDef.getType()));
+		sb.append(String.format("Custom type: %s", typeDef.getType()));
 		
+		sb.append("\n\n");
 		sb.append("Fields: \n");
 		typeDef.getFieldDefs().forEach(f -> sb.append(String.format(
 														"   %s: %s\n", 
@@ -263,17 +275,46 @@ public class DocForm {
 															? f.getType().getValue() + "?"
 															: f.getType().getValue())));
 		if (typeDef.getValidationFn() != null) {
+			sb.append("\n\n");
 			sb.append(String.format(
-						"\nValidation function: %s\n", 
+						"Validation function: %s", 
 						typeDef.getValidationFn().getQualifiedName()));
 		}
 		
-		return sb.toString();
+		if (!protocols.isEmpty()) {
+			sb.append("\n");
+			protocols.forEach(p -> {
+				sb.append("\n")
+				  .append("Protocol: ")
+				  .append(p.getName().getName())
+				  .append("\n");
+
+				p.getFunctions()
+				 .entries()
+				 .stream()
+				 .map(e -> (VncFunction)e.getValue())
+				 .sorted(Comparator.comparing(VncFunction::getSimpleName))
+				 .forEach(f -> {
+					final VncList argsList = f.getArgLists();
+					sb.append("   ")
+					  .append(f.getSimpleName())
+					  .append(": ")
+					  .append(argsList
+								.stream()
+								.map(s -> toString(s))
+								.collect(Collectors.joining(", ")))
+					  .append("\n");
+				 });
+			});
+		}
+			
+		return sb.append("\n").toString();
 	}
 
 	private static String getDoc(
 			final VncKeyword type,
-			final VncWrappingTypeDef typeDef
+			final VncWrappingTypeDef typeDef,
+			final List<VncProtocol> protocols
 	) {
 		final StringBuilder sb = new StringBuilder();
 		
@@ -290,7 +331,8 @@ public class DocForm {
 
 	private static String getDoc(
 			final VncKeyword type,
-			final VncChoiceTypeDef typeDef
+			final VncChoiceTypeDef typeDef,
+			final List<VncProtocol> protocols
 	) {
 		final VncSet types = typeDef.typesOnly();
 		final VncSet values = typeDef.valuesOnly();
@@ -409,9 +451,11 @@ public class DocForm {
 
 		if (sb.length() > 0) {
 			sb.append("\n");
+			return new VncString(sb.toString());
 		}
-		
-		return new VncString(sb.toString());
+		else {
+			return new VncString(NO_DOC);
+		}
 	}
 	
 	private static VncString formatDoc(final VncProtocol protocol, final int width) {
@@ -445,8 +489,33 @@ public class DocForm {
 			}
 		}
 
-		return empty ? new VncString(NO_DOC)
-					 : new VncString(sb.toString());
+		if (empty) {
+			// no user supplied doc
+			sb.append("Protocol: " + protocol.getName().getValue() + "\n\n");
+			sb.append("Functions:\n");
+			protocol
+				.getFunctions()
+				.entries()
+				.stream()
+				.map(e -> (VncFunction)e.getValue())
+				.sorted(Comparator.comparing(VncFunction::getSimpleName))
+				.forEach(f -> {
+					final VncList argsList = f.getArgLists();
+					sb.append("   ")
+					  .append(f.getSimpleName())
+					  .append(": ")
+					  .append(argsList
+								.stream()
+								.map(s -> toString(s))
+								.collect(Collectors.joining(", ")))
+					  .append("\n");
+				 });
+				
+			return new VncString(sb.toString());
+		}
+		else {
+			return new VncString(sb.toString());
+		}
 	}
 	
 	private static String indent(final String text, final String indent) {
@@ -529,6 +598,20 @@ public class DocForm {
 				"Symbol '%s' not found!\n\nDid you mean?\n%s\n", 
 				sym.getQualifiedName(),
 				String.join("\n", indented));
+	}
+	
+	private static List<VncProtocol> getAllEnvProtocols(
+			final VncCustomBaseTypeDef typeDef,
+			final Env env
+	) {
+		return env.getAllGlobalSymbols()
+				  .entrySet()
+				  .stream()
+				  .filter(s -> s.getValue().getVal() instanceof VncProtocol)
+				  .map(s -> (VncProtocol)s.getValue().getVal())
+				  .filter(p -> p.isRegistered(typeDef.getType()))
+				  .sorted()
+				  .collect(Collectors.toList());
 	}
 	
 	
