@@ -282,7 +282,6 @@ public class DocForm {
 		}
 		
 		if (!protocols.isEmpty()) {
-			sb.append("\n");
 			protocols.forEach(p -> {
 				sb.append("\n")
 				  .append("Protocol: ")
