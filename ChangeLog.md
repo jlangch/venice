@@ -13,7 +13,8 @@ and this project adheres to
 
 ### Added
 
-- ...
+- enhancements to `doc` function to print the functions of protocols and 
+  to print the associated protocols for custom types.
 
 
 
