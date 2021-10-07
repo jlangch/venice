@@ -123,6 +123,21 @@
           `dependency-map` is a map of keys in the system to maps or vectors
           specifying the dependencies of the component at that key in the
           the system.
+
+          The system is started and stopped calling the lifecycle `start` or
+          `stop` method on the system component.
+
+          Upon succesfully starting a component the flag {:started true} is
+          added to the component's meta data. It's up to the components
+          lifecycle `start` method to decide what to do with multiple start
+          requests. The lifecycle `start` method can simply return the unaltered
+          component if it has already been started.
+
+          Upon succesfully stopping a component the flag {:started false} is
+          added to the component's meta data. It's up to the components
+          lifecycle `stop` method to decide what to do with multiple stop
+          requests. The lifecycle `stop` method can simply return the unaltered
+          component if it has not been started or has already been stopped.
           """
      :examples '(
           """
@@ -151,10 +166,11 @@
                      :store  (database. "foo" "123" {}))
                   (component/system-using {:server [:store]})))
 
-            (-> (create-system)
-                (component/start)
-                ((fn [s] (println "  sleeping...") (sleep 2 :seconds) s))
-                (component/stop)))
+            (def system (create-system))
+            (set! system (component/start system))
+            (println "  sleeping...")
+            (sleep 2 :seconds)
+            (set! system (component/stop system)))
           """ )
      :see-also '( "component/system-map" ) }
 
@@ -196,7 +212,9 @@
 
 (defn-
   ^{ :arglists '("(stop-system system)")
-     :doc "Recursively stops the components in the system in dependency order." }
+     :doc """
+          Recursively stops the components in the system in dependency order.
+          """ }
 
   stop-system [system]
 
@@ -247,7 +265,8 @@
 
 
 (defn- start-component [component system key]
-  (try (start component)
+  (try (-> (start component)
+           (vary-meta assoc :started true))
        (catch :VncException e
               (throw (ex :VncException
                          "Failed to start component ~{key} in system '~(:name system)'!"
@@ -255,7 +274,8 @@
 
 
 (defn- stop-component [component system key]
-  (try (stop component)
+  (try (-> (stop component)
+           (vary-meta assoc :started false))
        (catch :VncException e
               (throw (ex :VncException
                          "Failed to stop component ~{key} in system '~(:name system)'!"
