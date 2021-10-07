@@ -9,12 +9,16 @@ and this project adheres to
 
 
 
-## [1.10.2] - 2021-10-xxx
+## [1.10.2] - 2021-10-xx
 
 ### Added
 
 - enhancements to `doc` function to print the functions of protocols and 
   to print the associated protocols for custom types.
+
+### Fixed
+
+- `assoc` on custom type to keep the meta data
 
 
 

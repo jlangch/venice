@@ -190,4 +190,67 @@ public class ComponentModuleTest {
 			venice.eval(script));
 	}
 
+	@Test
+	public void test_double_start() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :server [port       :long                               \n"
+				+ "                    components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "         (if (started this)                                        \n"
+				+ "           (do (println \":server already started\") this)         \n"
+				+ "           (do (println \":server started\") this)))               \n"
+				+ "       (stop [this]                                                \n"
+				+ "         (if (stopped this)                                        \n"
+				+ "           (do (println \":server already stopped\") this)         \n"
+				+ "           (do (println \":server stopped\") this)))               \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "          (assoc this :components deps)))                          \n"
+				+ "                                                                   \n"
+				+ "  (deftype :database [user       :string                           \n"
+				+ "                      password   :string                           \n"
+				+ "                      components :map ]                            \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "         (if (started this)                                        \n"
+				+ "           (do (println \":database already started\") this)       \n"
+				+ "           (do (println \":database started\") this)))             \n"
+				+ "       (stop [this]                                                \n"
+				+ "         (if (stopped this)                                        \n"
+				+ "           (do (println \":database already stopped\") this)       \n"
+				+ "           (do (println \":database stopped\") this)))             \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "          (assoc this :components deps)))                          \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :server (server. 4600 {})                               \n"
+				+ "           :store  (database. \"foo\" \"123\" {}))                 \n"
+				+ "        (component/system-using {:server [:store]})))              \n"
+				+ "                                                                   \n"
+				+ "  (defn started [c] (:started (meta c) false))                     \n"
+				+ "  (defn stopped [c] (not (started c)))                             \n"
+				+ "                                                                   \n"
+				+ "  (def system (create-system))                                     \n"
+				+ "  (with-out-str                                                    \n"
+				+ "    (set! system (component/start system))                         \n"
+				+ "    (set! system (component/start system))                         \n"
+				+ "    (set! system (component/stop system))))                          "; 
+
+		assertEquals(
+			":database started\n" +
+			":server started\n" +
+			":database already started\n" +
+			":server already started\n" +
+			":server stopped\n" +
+			":database stopped\n",
+			venice.eval(script));
+	}
+
 }
