@@ -207,7 +207,16 @@
 
 (defn
   ^{ :arglists '("(build & parts)")
-     :doc "Merges given configuration parts."
+     :doc """
+          Merges given configuration parts.
+
+          Configuration parts:
+          
+            * JSON classpath resource file
+            * JSON file
+            * Environment variables
+            * System properties
+          """
      :examples '(
           """
           (config/build
