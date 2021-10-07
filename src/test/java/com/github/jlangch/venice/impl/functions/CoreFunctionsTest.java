@@ -4314,6 +4314,35 @@ public class CoreFunctionsTest {
 
 		assertEquals(100L, venice.eval(script));
 	}
+
+	@Test
+	public void test_vary_meta_6() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (defn add [x] (vary-meta x assoc :a 100))         \n" +
+				"  (let [x (add (complex. 1 2))]                     \n" +
+				"    (get (meta x) :a)))                               ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_vary_meta_7() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                 \n" +
+				"  (deftype :complex [real :long, imaginary :long])  \n" +
+				"  (-> (complex. 1 2)                                \n" +
+				"      (vary-meta assoc :a 100)                      \n" +
+				"      (meta)                                        \n" +
+				"      (:a)))                                          ";
+
+		assertEquals(100L, venice.eval(script));
+	}
 	
 	@Test
 	public void test_vector() {
