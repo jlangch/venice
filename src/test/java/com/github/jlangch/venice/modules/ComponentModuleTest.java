@@ -320,6 +320,7 @@ public class ComponentModuleTest {
 				+ "        (component/system-using {:server [:store]})))              \n"
 				+ "                                                                   \n"
 				+ "  (def system (create-system))                                     \n"
+				+ "                                                                   \n"
 				+ "  (with-out-str                                                    \n"
 				+ "    (set! system (component/start system))                         \n"
 				+ "    (set! system (component/start system))                         \n"
