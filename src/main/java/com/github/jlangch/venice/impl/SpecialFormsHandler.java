@@ -1447,9 +1447,12 @@ public class SpecialFormsHandler {
 		
 		final VncSymbol fnName = (VncSymbol)specList.first();
 		final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
-		final VncVal fnDefaultRet = hasRetVal 
-										? evaluator.evaluate(specList.last(), env, false) 
-										: Nil;
+		final VncVal fnRetVal = hasRetVal ? specList.last() : Nil;
+		
+		final VncList body = VncList.of(fnRetVal);
+
+		// the namespace the function is defined for
+		final Namespace ns = Namespaces.getCurrentNamespace();
 
 		// the arg list for the function's meta data
 		final List<VncString> argList =
@@ -1469,7 +1472,23 @@ public class SpecialFormsHandler {
 								fnName.getMeta()
 						  ) {
 							public VncVal apply(final VncList args) {
-								return fnDefaultRet;
+								final ThreadContext threadCtx = ThreadContext.get();
+
+								final Env localEnv = new Env(env);
+								localEnv.addLocalVars(Destructuring.destructure(p, args));
+
+								final Namespace curr_ns = threadCtx.getCurrNS_();
+
+								try {
+									threadCtx.setCurrNS_(ns);
+									valuesEvaluator.evaluate_values(body.butlast(), localEnv);
+									return evaluator.evaluate(body.last(), localEnv, false);
+								}
+								finally {
+									// switch always back to current namespace, just in case
+									// the namespace was changed within the function body!
+									threadCtx.setCurrNS_(curr_ns);
+								}
 							}
 							
 							private static final long serialVersionUID = -1L;
@@ -1500,7 +1519,7 @@ public class SpecialFormsHandler {
 										name, 
 										fnSpec.first().getMeta());
 		
-		// the created extended function musst be in the current namespace
+		// the created extended function must be in the current namespace
 		final VncSymbol fnSym = new VncSymbol(
 										GenSym.generateAutoSym(name).getName(), 
 										fnSpec.first().getMeta());

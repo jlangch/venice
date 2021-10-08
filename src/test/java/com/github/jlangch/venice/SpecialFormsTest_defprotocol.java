@@ -76,13 +76,14 @@ public class SpecialFormsTest_defprotocol {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                          \n" +
-				"  (ns test)                  \n" +
-				"  (defprotocol P             \n" +
-				"     (foo [x] [x y] nil))    \n" +
-				"  (pr-str P))                  ";
+				"(do                              \n" +
+				"  (ns test)                      \n" +
+				"  (defprotocol P                 \n" +
+				"     (foo [x] [x y]))            \n" +
+				"  (extend :core/long P)          \n" +
+				"  (foo 10))                        ";
 
-		assertEquals("test/P", venice.eval(script));					
+		assertEquals(null, venice.eval(script));					
 	}
 	
 	@Test
@@ -90,13 +91,14 @@ public class SpecialFormsTest_defprotocol {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                          \n" +
-				"  (ns test)                  \n" +
-				"  (defprotocol P             \n" +
-				"     (foo [x] [x y] 100))    \n" +
-				"  (pr-str P))                  ";
+				"(do                              \n" +
+				"  (ns test)                      \n" +
+				"  (defprotocol P                 \n" +
+				"     (foo [x] [x y] nil))        \n" +
+				"  (extend :core/long P)          \n" +
+				"  (foo 10))                        ";
 
-		assertEquals("test/P", venice.eval(script));					
+		assertEquals(null, venice.eval(script));					
 	}
 	
 	@Test
@@ -104,13 +106,13 @@ public class SpecialFormsTest_defprotocol {
 		final Venice venice = new Venice();
 
 		final String script =
-				"(do                           \n" +
-				"  (ns test)                   \n" +
-				"  (defprotocol P              \n" +
-				"     (foo [x] [x y] (+ 1 2))) \n" +
-				"  (pr-str P))                   ";
+				"(do                          \n" +
+				"  (ns test)                  \n" +
+				"  (defprotocol P             \n" +
+				"     (foo [x] [x y] 100))    \n" +
+				"  (foo 10))                    ";
 
-		assertEquals("test/P", venice.eval(script));					
+		assertEquals(100L, venice.eval(script));					
 	}
 	
 	@Test
@@ -118,13 +120,73 @@ public class SpecialFormsTest_defprotocol {
 		final Venice venice = new Venice();
 
 		final String script =
+				"(do                              \n" +
+				"  (ns test)                      \n" +
+				"  (defprotocol P                 \n" +
+				"     (foo [x] [x y] x))          \n" +
+				"  (extend :core/long P)          \n" +
+				"  (foo 10))                        ";
+
+		assertEquals(10L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_5() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"  (ns test)                   \n" +
+				"  (defprotocol P              \n" +
+				"     (foo [x] [x y] (+ 1 2))) \n" +
+				"  (extend :core/long P)       \n" +
+				"  (foo 10))                     ";
+
+		assertEquals(3L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_6() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"  (ns test)                   \n" +
+				"  (defprotocol P              \n" +
+				"     (foo [x] [x y] (+ 1 x))) \n" +
+				"  (extend :core/long P)       \n" +
+				"  (foo 10))                     ";
+
+		assertEquals(11L, venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_7() {
+		final Venice venice = new Venice();
+
+		final String script =
 				"(do                                \n" +
 				"  (ns test)                        \n" +
 				"  (defprotocol P                   \n" +
 				"     (foo [x] [x y] (vector 1 2))) \n" +
-				"  (pr-str P))                        ";
+				"  (pr-str (foo 10)))                 ";
 
-		assertEquals("test/P", venice.eval(script));					
+		assertEquals("[1 2]", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_protocol_default_8() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"  (ns test)                   \n" +
+				"  (defprotocol P              \n" +
+				"     (foo [x] [x y] x))   \n" +
+				"  (extend :core/long P)       \n" +
+				"  (foo 10))                     ";
+
+		assertEquals(10L, venice.eval(script));					
 	}
 	
 	@Test
