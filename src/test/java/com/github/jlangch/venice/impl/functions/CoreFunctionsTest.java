@@ -506,6 +506,10 @@ public class CoreFunctionsTest {
 		// Map
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (cons {:c 3} (ordered-map :a 1 :b 2)))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (cons (ordered-map :c 3) (ordered-map :a 1 :b 2)))"));
+
+		assertEquals("{:a 3}", venice.eval("(str (cons {:a 3} (hash-map :a 1)))"));
+		assertEquals("{:a 3}", venice.eval("(str (cons {:a 3} (ordered-map :a 1)))"));
+		assertEquals("{:a 3}", venice.eval("(str (cons {:a 3} (sorted-map :a 1)))"));
 	}
 	
 	@Test
@@ -517,6 +521,11 @@ public class CoreFunctionsTest {
 
 		// List
 		assertEquals("(1 2 3)", venice.eval("(str (cons! 1 (mutable-list 2 3)))"));
+		
+		// Map
+		assertEquals("{:a 3}", venice.eval("(str (cons! {:a 3} (mutable-map)))"));
+		assertEquals("{:a 3}", venice.eval("(str (cons! {:a 3} (mutable-map :a 1)))"));
+		assertEquals("{:a 1 :b 2}", venice.eval("(str (cons! {:b 2} (mutable-map :a 1)))"));
 	}
 	
 	@Test
@@ -530,6 +539,11 @@ public class CoreFunctionsTest {
 		// List
 		assertEquals("(1 2 3)", venice.eval("(str (conj! (mutable-list 1 2) 3))"));
 		assertEquals("(1 2 3 4)", venice.eval("(str (conj! (mutable-list 1 2) 3 4))"));
+		
+		// Map
+		assertEquals("{:a 3}", venice.eval("(str (conj! (mutable-map) {:a 3}))"));
+		assertEquals("{:a 3}", venice.eval("(str (conj! (mutable-map :a 1) {:a 3}))"));
+		assertEquals("{:a 1 :b 2}", venice.eval("(str (conj! (mutable-map :a 1) {:b 2}))"));
 	}
 	
 	@Test
