@@ -15,7 +15,8 @@ and this project adheres to
 
 - enhancements to `:component` module to support isolated root components 
   that have no dependencies
-
+- enhancements to the `defprotocol` functions default implementations to allow a
+  function body. 
 
 
 ## [1.10.2] - 2021-10-08
