@@ -336,4 +336,37 @@ public class ComponentModuleTest {
 			venice.eval(script));
 	}
 
+	@Test
+	public void test_mutual_state_component() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :shopping-cart [cart       :atom?                       \n"
+				+ "                           components :map]                        \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (assoc this :cart (atom [])))                 \n"
+				+ "       (stop [this] (assoc this :cart nil))                        \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :shopping-cart (shopping-cart. nil {}))                 \n"
+				+ "        (component/system-using {:shopping-cart []})))             \n"
+				+ "                                                                   \n"
+				+ "  (def system (create-system))                                     \n"
+				+ "                                                                   \n"
+				+ "  (set! system (component/start system))                           \n"
+				+ "                                                                   \n"
+				+ "  (let [cart (-> system :components :shopping-cart :cart)]         \n"
+				+ "    (swap! cart conj {:item 5677 :quantity 6 :price 45.80M}))      \n"
+				+ "                                                                   \n"
+				+ "  (set! system (component/stop system))))                          "; 
+
+		venice.eval(script);
+	}
+
 }
