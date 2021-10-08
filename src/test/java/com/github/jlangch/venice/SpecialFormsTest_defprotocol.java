@@ -182,7 +182,7 @@ public class SpecialFormsTest_defprotocol {
 				"(do                           \n" +
 				"  (ns test)                   \n" +
 				"  (defprotocol P              \n" +
-				"     (foo [x] [x y] x))   \n" +
+				"     (foo [x] [x y] nil x))   \n" +
 				"  (extend :core/long P)       \n" +
 				"  (foo 10))                     ";
 
@@ -270,15 +270,6 @@ public class SpecialFormsTest_defprotocol {
 
 	@Test
 	public void test_protocol_error_6() {
-		final Venice venice = new Venice();
-
-		assertThrows(
-				VncException.class,
-				() -> venice.eval("(defprotocol P (foo [x] 1 1))"));					
-	}
-
-	@Test
-	public void test_protocol_error_7() {
 		final Venice venice = new Venice();
 
 		assertThrows(

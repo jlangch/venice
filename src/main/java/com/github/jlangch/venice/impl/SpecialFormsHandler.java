@@ -1380,16 +1380,16 @@ public class SpecialFormsHandler {
 
 			final VncList specList = (VncList)spec;
 
-			if (!Types.isVncSymbol(specList.first())) {
+			final VncSymbol fnName = (VncSymbol)specList.first();
+			final VncList specs = specList.rest();
+			final VncList paramSpecs = specs.takeWhile(s -> Types.isVncVector(s));
+
+			if (!Types.isVncSymbol(fnName)) {
 				throw new VncException(
 						"A protocol function specification must have a symbol as " +
 						"its name!\n" +
 						"E.g.: as 'foo' in (defprotocol P (foo [x]))");
 			}
-
-			final VncSymbol fnName = (VncSymbol)specList.first();
-			final boolean hasRetVal = !Types.isVncVector(specList.last());
-			final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
 
 			if (paramSpecs.isEmpty()) {
 				throw new VncException(String.format(
@@ -1443,13 +1443,11 @@ public class SpecialFormsHandler {
 		
 		final VncList specList = (VncList)spec;
 		
-		final boolean hasRetVal = !Types.isVncVector(specList.last());
-		
 		final VncSymbol fnName = (VncSymbol)specList.first();
-		final VncList paramSpecs = hasRetVal ? specList.rest().butlast() : specList.rest();
-		final VncVal fnRetVal = hasRetVal ? specList.last() : Nil;
+		final VncList specs = specList.rest();
+		final VncList paramSpecs = specs.takeWhile(s -> Types.isVncVector(s));
 		
-		final VncList body = VncList.of(fnRetVal);
+		final VncList body = specs.slice(paramSpecs.size());
 
 		// the namespace the function is defined for
 		final Namespace ns = Namespaces.getCurrentNamespace();
