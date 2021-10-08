@@ -177,12 +177,28 @@
   system-using [system dependency-map]
 
   (let [deps (reduce-kv (fn [dag_ k v]
-                          (->> (interleave (repeat k) v)
-                               (partition 2)
-                               (apply dag/add-edges dag_)))
+                          (if (empty? v)
+                            (dag/add-nodes dag_ k)
+                            (->> (interleave (repeat k) v)
+                                 (partition 2)
+                                 (apply dag/add-edges dag_))))
                         (dag/dag)
                         dependency-map)]
     (assoc system :dependencies deps)))
+
+
+(defn
+  ^{ :arglists '("(started? component)")
+     :doc "Returns `true` if the component is marked as being started else `false`" }
+  started? [component]
+  (:started (meta component) false))
+
+
+(defn
+  ^{ :arglists '("(stopped? component)")
+     :doc "Returns `true` if the component is marked as being stopped else `false`" }
+  stopped? [component]
+  (not (started? component)))
 
 
 (defn-
@@ -200,6 +216,9 @@
                           key
                           (let [dep-keys (dag/direct-children graph key)]
                             (-> (get-component components key system)
+                                ((fn [c] (if (nil? (:started (meta c)))
+                                           (mark-as-stopped c)
+                                           c)))
                                 (inject (get-component-dependency-map key
                                                                       system
                                                                       components
@@ -265,8 +284,7 @@
 
 
 (defn- start-component [component system key]
-  (try (-> (start component)
-           (vary-meta assoc :started true))
+  (try (-> (start component) (mark-as-started))
        (catch :VncException e
               (throw (ex :VncException
                          "Failed to start component ~{key} in system '~(:name system)'!"
@@ -274,9 +292,16 @@
 
 
 (defn- stop-component [component system key]
-  (try (-> (stop component)
-           (vary-meta assoc :started false))
+  (try (-> (stop component) (mark-as-stopped))
        (catch :VncException e
               (throw (ex :VncException
                          "Failed to stop component ~{key} in system '~(:name system)'!"
                          e)))))
+
+
+(defn- mark-as-started [component]
+  (vary-meta component assoc :started true))
+
+
+(defn- mark-as-stopped [component]
+  (vary-meta component assoc :started false))

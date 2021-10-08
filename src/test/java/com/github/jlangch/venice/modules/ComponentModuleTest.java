@@ -31,6 +31,38 @@ import com.github.jlangch.venice.Venice;
 public class ComponentModuleTest {
 
 	@Test
+	public void test_base_single_component() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :server [port       :long                               \n"
+				+ "                    components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (println \":server started\") this)           \n"
+				+ "       (stop [this] (println \":server stopped\") this)            \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :server (server. 4600 {}))                              \n"
+				+ "        (component/system-using {:server []})))                    \n"
+				+ "                                                                   \n"
+				+ "  (with-out-str                                                    \n"
+				+ "    (-> (create-system)                                            \n"
+				+ "        (component/start)                                          \n"
+				+ "        (component/stop))))                                          "; 
+
+		assertEquals(
+			":server started\n" +
+			":server stopped\n",
+			venice.eval(script));
+	}
+
+	@Test
 	public void test_base() {
 		final Venice venice = new Venice();
 
@@ -68,6 +100,59 @@ public class ComponentModuleTest {
 		assertEquals(
 			":database started\n" +
 			":server started\n" +
+			":server stopped\n" +
+			":database stopped\n",
+			venice.eval(script));
+	}
+
+	@Test
+	public void test_base_mixed_component_without_dependency() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :server [port       :long                               \n"
+				+ "                    components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (println \":server started\") this)           \n"
+				+ "       (stop [this] (println \":server stopped\") this)            \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :database [user       :string                           \n"
+				+ "                      password   :string                           \n"
+				+ "                      components :map ]                            \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (println \":database started\") this)         \n"
+				+ "       (stop [this] (println \":database stopped\") this)          \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :logger [components :map ]                              \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this] (println \":logger started\") this)           \n"
+				+ "       (stop [this] (println \":logger stopped\") this)            \n"
+				+ "       (inject [this deps] (assoc this :components deps)))         \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :server (server. 4600 {})                               \n"
+				+ "           :store  (database. \"foo\" \"123\" {})                  \n"
+				+ "           :logger (logger. {}))                                   \n"
+				+ "        (component/system-using {:server [:store]                  \n"
+				+ "                                 :logger []})))                    \n"
+				+ "                                                                   \n"
+				+ "  (with-out-str                                                    \n"
+				+ "    (-> (create-system)                                            \n"
+				+ "        (component/start)                                          \n"
+				+ "        (component/stop))))                                          "; 
+
+		assertEquals(
+			":database started\n" +
+			":server started\n" +
+			":logger started\n" +
+			":logger stopped\n" +
 			":server stopped\n" +
 			":database stopped\n",
 			venice.eval(script));
@@ -202,11 +287,11 @@ public class ComponentModuleTest {
 				+ "                    components :map]                               \n"
 				+ "     component/Component                                           \n"
 				+ "       (start [this]                                               \n"
-				+ "         (if (started this)                                        \n"
+				+ "         (if (component/started? this)                             \n"
 				+ "           (do (println \":server already started\") this)         \n"
 				+ "           (do (println \":server started\") this)))               \n"
 				+ "       (stop [this]                                                \n"
-				+ "         (if (stopped this)                                        \n"
+				+ "         (if (component/stopped? this)                             \n"
 				+ "           (do (println \":server already stopped\") this)         \n"
 				+ "           (do (println \":server stopped\") this)))               \n"
 				+ "       (inject [this deps]                                         \n"
@@ -217,11 +302,11 @@ public class ComponentModuleTest {
 				+ "                      components :map ]                            \n"
 				+ "     component/Component                                           \n"
 				+ "       (start [this]                                               \n"
-				+ "         (if (started this)                                        \n"
+				+ "         (if (component/started? this)                             \n"
 				+ "           (do (println \":database already started\") this)       \n"
 				+ "           (do (println \":database started\") this)))             \n"
 				+ "       (stop [this]                                                \n"
-				+ "         (if (stopped this)                                        \n"
+				+ "         (if (component/stopped? this)                             \n"
 				+ "           (do (println \":database already stopped\") this)       \n"
 				+ "           (do (println \":database stopped\") this)))             \n"
 				+ "       (inject [this deps]                                         \n"
@@ -233,9 +318,6 @@ public class ComponentModuleTest {
 				+ "           :server (server. 4600 {})                               \n"
 				+ "           :store  (database. \"foo\" \"123\" {}))                 \n"
 				+ "        (component/system-using {:server [:store]})))              \n"
-				+ "                                                                   \n"
-				+ "  (defn started [c] (:started (meta c) false))                     \n"
-				+ "  (defn stopped [c] (not (started c)))                             \n"
 				+ "                                                                   \n"
 				+ "  (def system (create-system))                                     \n"
 				+ "  (with-out-str                                                    \n"
