@@ -172,6 +172,20 @@ public class SpecialFormsTest_deftype {
 
 		assertEquals("{:custom-type* :user/complex :real 100 :imaginary nil}", venice.eval(script));					
 	}
+	
+	@Test
+	public void test_deftype_assoc_meta() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (deftype :complex [real :long, imaginary :long?])   \n" +
+				"  (let [x (vary-meta (complex. 100 200) assoc :a 999) \n" +
+				"        y (assoc x :real 101)]                        \n" +
+				"    (get (meta y) :a)))                                 ";
+
+		assertEquals(999L, venice.eval(script));					
+	}
 
 	@Test
 	public void test_deftype_invalid_name() {

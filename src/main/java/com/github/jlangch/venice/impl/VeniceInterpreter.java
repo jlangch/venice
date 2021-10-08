@@ -1236,7 +1236,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			
 			final VncVal val = args.second();
 			
-			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
+			VncVal res = evaluate(val, env, false);
+			
+			// we want source location from name and this to work:
+			//      (def y (vary-meta 1 assoc :a 100))
+			//      (get (meta y) :a)  ; -> 100
+
+			res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
+			
 			env.setGlobal(new Var(name, res, true));
 			return name;
 		}				
