@@ -177,7 +177,7 @@
   system-using [system dependency-map]
 
   (let [deps (reduce-kv (fn [dag_ k v]
-                          (if (empty? v)
+                          (if (or (empty? v) (nil? v))
                             (dag/add-nodes dag_ k)
                             (->> (interleave (repeat k) v)
                                  (partition 2)
