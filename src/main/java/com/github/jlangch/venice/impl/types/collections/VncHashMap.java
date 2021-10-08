@@ -177,12 +177,14 @@ public class VncHashMap extends VncMap {
 	public VncHashMap putAll(final VncMap map) {
 		if (map instanceof VncHashMap) {
 			return new VncHashMap(
-					value.merge(((VncHashMap)map).value),
+					value.merge(((VncHashMap)map).value, (u,v) -> v),
 					getMeta());
 		}
 		else {
 			return new VncHashMap(
-							value.merge(io.vavr.collection.HashMap.ofAll(map.getJavaMap())),
+							value.merge(
+									io.vavr.collection.HashMap.ofAll(map.getJavaMap()),
+									(u,v) -> v),
 							getMeta());
 		}
 	}

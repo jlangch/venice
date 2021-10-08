@@ -170,12 +170,14 @@ public class VncOrderedMap extends VncMap {
 	public VncOrderedMap putAll(final VncMap map) {
 		if (map instanceof VncOrderedMap) {
 			return new VncOrderedMap(
-					value.merge(((VncOrderedMap)map).value),
+					value.merge(((VncOrderedMap)map).value, (u,v) -> v),
 					getMeta());
 		}
 		else {
 			return new VncOrderedMap(
-				value.merge(io.vavr.collection.LinkedHashMap.ofAll(map.getJavaMap())),
+				value.merge(
+						io.vavr.collection.LinkedHashMap.ofAll(map.getJavaMap()), 
+						(u,v) -> v),
 				getMeta());
 		}
 	}

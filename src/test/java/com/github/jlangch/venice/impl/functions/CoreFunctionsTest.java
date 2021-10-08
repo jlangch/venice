@@ -419,6 +419,10 @@ public class CoreFunctionsTest {
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (conj (ordered-map :a 1 :b 2) (map-entry :c 3)))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (conj (ordered-map :a 1) (map-entry :b 2) (map-entry :c 3)))"));
 		assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (conj (ordered-map :a 1) (ordered-map :b 2 :c 3)))"));
+
+		assertEquals("{:a 3}", venice.eval("(str (conj (hash-map :a 1) {:a 3}))"));
+		assertEquals("{:a 3}", venice.eval("(str (conj (ordered-map :a 1) {:a 3}))"));
+		assertEquals("{:a 3}", venice.eval("(str (conj (sorted-map :a 1) {:a 3}))"));
 	}
 
 	@Test
@@ -4340,6 +4344,18 @@ public class CoreFunctionsTest {
 				"      (vary-meta assoc :a 100)                      \n" +
 				"      (meta)                                        \n" +
 				"      (:a)))                                          ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_vary_meta_8() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                   \n" +
+				"  (def y (vary-meta 1 assoc :a 100))  \n" +
+				"  (get (meta y) :a))                    ";
 
 		assertEquals(100L, venice.eval(script));
 	}

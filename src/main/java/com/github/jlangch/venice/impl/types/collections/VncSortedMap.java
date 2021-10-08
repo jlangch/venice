@@ -168,12 +168,14 @@ public class VncSortedMap extends VncMap {
 	public VncSortedMap putAll(final VncMap map) {
 		if (map instanceof VncSortedMap) {
 			return new VncSortedMap(
-					value.merge(((VncSortedMap)map).value),
+					value.merge(((VncSortedMap)map).value, (u,v) -> v),
 					getMeta());
 		}
 		else {
 			return new VncSortedMap(
-						value.merge(io.vavr.collection.TreeMap.ofAll(map.getJavaMap())),
+						value.merge(
+								io.vavr.collection.TreeMap.ofAll(map.getJavaMap()), 
+								(u,v) -> v),
 						getMeta());
 		}
 	}
