@@ -124,20 +124,23 @@
           specifying the dependencies of the component at that key in the
           the system.
 
+          Throws an exception if a component dependency circle is detected.
+
           The system is started and stopped calling the lifecycle `start` or
           `stop` method on the system component.
 
           Upon succesfully starting a component the flag {:started true} is
           added to the component's meta data. It's up to the components
           lifecycle `start` method to decide what to do with multiple start
-          requests. The lifecycle `start` method can simply return the unaltered
-          component if it has already been started.
+          requests. The lifecycle `start` method can for instance simply return
+          the unaltered component if it has already been started.
 
           Upon succesfully stopping a component the flag {:started false} is
           added to the component's meta data. It's up to the components
           lifecycle `stop` method to decide what to do with multiple stop
-          requests. The lifecycle `stop` method can simply return the unaltered
-          component if it has not been started or has already been stopped.
+          requests. The lifecycle `stop` method can for instance simply return
+          the unaltered component if it has not been started or has already been
+          stopped.
           """
      :examples '(
           """
