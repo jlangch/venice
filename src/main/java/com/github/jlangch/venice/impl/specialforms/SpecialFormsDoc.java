@@ -1633,7 +1633,7 @@ public class SpecialFormsDoc {
 				"*run-mode*",
 				VncFunction
 					.meta()
-					.doc("The current run-mode one of (:repl, :script, :app)")
+					.doc("The current run-mode one of `:repl`, `:script`, `:app`")
 					.examples(
 						"*run-mode*")
 					.build()
@@ -1647,7 +1647,7 @@ public class SpecialFormsDoc {
 				"*ansi-term*",
 				VncFunction
 					.meta()
-					.doc("True if Venice runs in an ANSI terminal, otherwise false")
+					.doc("`true` if Venice runs in an ANSI terminal, otherwise `false`")
 					.examples(
 						"*ansi-term*")
 					.build()
