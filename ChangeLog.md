@@ -16,7 +16,7 @@ and this project adheres to
 - support for isolated root components that have no dependencies to 
   `:component` module
  
-- support protocol default function implementation
+- support for protocol default function implementation
 
 
 ## [1.10.2] - 2021-10-08
