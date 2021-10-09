@@ -88,6 +88,10 @@ public class FunctionBuilder {
 		// PreCondition optimization
 		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
+		// Body evaluation optimizations
+		final VncList body_butLast = body.butlast();
+		final VncVal body_last = body.last();
+		
 		return new VncFunction(name, params, macro, preConditions, meta) {
 			@Override
 			public VncVal apply(final VncList args) {
@@ -131,7 +135,7 @@ public class FunctionBuilder {
 								if (hasPreConditions) {
 									validateFnPreconditions(localEnv);
 								}
-								final VncVal retVal = evaluateBody(body, localEnv, true);
+								final VncVal retVal = evaluateBody(body_butLast, body_last, localEnv, true);
 								debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
 								return retVal;
 							}
@@ -144,7 +148,7 @@ public class FunctionBuilder {
 							if (hasPreConditions) {
 								validateFnPreconditions(localEnv);
 							}
-							return evaluateBody(body, localEnv, true);
+							return evaluateBody(body_butLast, body_last, localEnv, true);
 						}
 					}
 					finally {
@@ -161,7 +165,7 @@ public class FunctionBuilder {
 					if (hasPreConditions) {
 						validateFnPreconditions(localEnv);
 					}
-					return evaluateBody(body, localEnv, false);
+					return evaluateBody(body_butLast, body_last, localEnv, false);
 				}
 			}
 			
@@ -251,9 +255,16 @@ public class FunctionBuilder {
 				: VncBoolean.isTrue(result);
 	}
 		
-	private VncVal evaluateBody(final VncList body, final Env env, final boolean withTailPosition) {
-		valuesEvaluator.evaluate_values(body.butlast(), env);
-		return evaluator.evaluate(body.last(), env, withTailPosition);
+	private VncVal evaluateBody(
+			final VncList body_butLast, 
+			final VncVal body_last, 
+			final Env env, 
+			final boolean withTailPosition
+	) {
+		if (!body_butLast.isEmpty()) {
+			valuesEvaluator.evaluate_values(body_butLast, env);
+		}
+		return evaluator.evaluate(body_last, env, withTailPosition);
 	}
 
 	
