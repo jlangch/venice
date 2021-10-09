@@ -209,7 +209,7 @@ public class DocGenerator {
 		final DocSection util = new DocSection("Util", "util");
 		util.addSection(new DocSection("Time", "time"));
 		util.addSection(new DocSection("Regex", "regex"));
-		util.addSection(new DocSection("CIDR", "miscellaneous.cidr"));
+		util.addSection(new DocSection("CIDR", "cidr"));
 
 		content.add(util);
 
@@ -282,6 +282,7 @@ public class DocGenerator {
 				getIOSection(),
 				getIOFileSection(),
 				getMiscellaneousSection(),
+				getCidrSection(),
 				getAppSection());
 	}
 
@@ -2044,25 +2045,7 @@ public class DocGenerator {
 		csv.addItem(getDocItem("csv/read"));
 		csv.addItem(getDocItem("csv/write", false));
 		csv.addItem(getDocItem("csv/write-str"));
-		
-		final DocSection cidr = new DocSection("CIDR", "miscellaneous.cidr");
-		all.addSection(cidr);
-		cidr.addItem(getDocItem("cidr/parse"));
-		cidr.addItem(getDocItem("cidr/in-range?"));
-		cidr.addItem(getDocItem("cidr/start-inet-addr"));
-		cidr.addItem(getDocItem("cidr/end-inet-addr"));
-		cidr.addItem(getDocItem("cidr/inet-addr"));
-		cidr.addItem(getDocItem("cidr/inet-addr-to-bytes"));
-		cidr.addItem(getDocItem("cidr/inet-addr-from-bytes"));
-		
-		final DocSection cidr_trie = new DocSection("CIDR Trie", "miscellaneous.cidrtrie");
-		all.addSection(cidr_trie);
-		cidr_trie.addItem(getDocItem("cidr/trie"));
-		cidr_trie.addItem(getDocItem("cidr/size"));
-		cidr_trie.addItem(getDocItem("cidr/insert"));
-		cidr_trie.addItem(getDocItem("cidr/lookup"));
-		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
-		
+
 		final DocSection other = new DocSection("System Vars", "miscellaneous.system_vars");
 		all.addSection(other);
 		other.addItem(getDocItem("*version*"));
@@ -2072,6 +2055,37 @@ public class DocGenerator {
 		other.addItem(getDocItem("*ns*"));
 		other.addItem(getDocItem("*run-mode*"));
 		other.addItem(getDocItem("*ansi-term*"));
+
+		return section;
+	}
+
+	private DocSection getCidrSection() {
+		final DocSection section = new DocSection(
+										"CIDR", 
+										"classles inter-domain routing", 
+										"cidr");
+
+		
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection cidr = new DocSection("CIDR", "cidr.cidr");
+		all.addSection(cidr);
+		cidr.addItem(getDocItem("cidr/parse"));
+		cidr.addItem(getDocItem("cidr/in-range?"));
+		cidr.addItem(getDocItem("cidr/start-inet-addr"));
+		cidr.addItem(getDocItem("cidr/end-inet-addr"));
+		cidr.addItem(getDocItem("cidr/inet-addr"));
+		cidr.addItem(getDocItem("cidr/inet-addr-to-bytes"));
+		cidr.addItem(getDocItem("cidr/inet-addr-from-bytes"));
+		
+		final DocSection cidr_trie = new DocSection("CIDR Trie", "cidr.cidrtrie");
+		all.addSection(cidr_trie);
+		cidr_trie.addItem(getDocItem("cidr/trie"));
+		cidr_trie.addItem(getDocItem("cidr/size"));
+		cidr_trie.addItem(getDocItem("cidr/insert"));
+		cidr_trie.addItem(getDocItem("cidr/lookup"));
+		cidr_trie.addItem(getDocItem("cidr/lookup-reverse"));
 
 		return section;
 	}

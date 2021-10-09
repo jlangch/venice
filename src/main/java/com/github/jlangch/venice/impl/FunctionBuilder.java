@@ -85,7 +85,9 @@ public class FunctionBuilder {
 		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
 		// Body evaluation optimizations
-		final VncVal[] body_exprs = body.getJavaList().toArray(new  VncVal[] {});
+		final VncVal[] body_exprs = body.isEmpty() 
+										? new VncVal[] {Nil}
+										: body.getJavaList().toArray(new  VncVal[] {});
 		
 		return new VncFunction(name, params, macro, preConditions, meta) {
 			@Override
@@ -255,18 +257,14 @@ public class FunctionBuilder {
 			final Env env, 
 			final boolean withTailPosition
 	) {
-		switch(body.length) {
-			case 0:
-				return Nil;
-			
-			case 1:
+		if (body.length == 1) {
 				return evaluator.evaluate(body[body.length-1], env, withTailPosition);
-			
-			default:
-				for(int ii=0; ii<body.length-1; ii++) {
-					evaluator.evaluate(body[ii], env, false);
-				}
-				return evaluator.evaluate(body[body.length-1], env, withTailPosition);
+		}
+		else {	
+			for(int ii=0; ii<body.length-1; ii++) {
+				evaluator.evaluate(body[ii], env, false);
+			}
+			return evaluator.evaluate(body[body.length-1], env, withTailPosition);
 		}
 	}
 
