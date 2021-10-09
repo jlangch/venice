@@ -255,10 +255,19 @@ public class FunctionBuilder {
 			final Env env, 
 			final boolean withTailPosition
 	) {
-		for(int ii=0; ii<body.length-1; ii++) {
-			evaluator.evaluate(body[ii], env, false);
+		switch(body.length) {
+			case 0:
+				return Nil;
+			
+			case 1:
+				return evaluator.evaluate(body[body.length-1], env, withTailPosition);
+			
+			default:
+				for(int ii=0; ii<body.length-1; ii++) {
+					evaluator.evaluate(body[ii], env, false);
+				}
+				return evaluator.evaluate(body[body.length-1], env, withTailPosition);
 		}
-		return evaluator.evaluate(body[body.length-1], env, withTailPosition);
 	}
 
 	
