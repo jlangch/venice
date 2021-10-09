@@ -13,8 +13,9 @@ and this project adheres to
 
 ### Added
 
-- enhancements to `:component` module to support isolated root components 
-  that have no dependencies
+- support for to isolated root components that have no dependencies to 
+  `:component` module to support 
+ 
 - support protocol default function implementation
 
 
