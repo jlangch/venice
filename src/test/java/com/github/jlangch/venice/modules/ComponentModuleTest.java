@@ -337,7 +337,7 @@ public class ComponentModuleTest {
 	}
 
 	@Test
-	public void test_mutual_state_component() {
+	public void test_mutual_state_component_1() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -354,6 +354,35 @@ public class ComponentModuleTest {
 				+ "    (-> (component/system-map                                      \n"
 				+ "           \"test\"                                                \n"
 				+ "           :shopping-cart (shopping-cart. nil))                    \n"
+				+ "        (component/system-using {:shopping-cart []})))             \n"
+				+ "                                                                   \n"
+				+ "  (def system (create-system))                                     \n"
+				+ "                                                                   \n"
+				+ "  (set! system (component/start system))                           \n"
+				+ "                                                                   \n"
+				+ "  (let [cart (-> system :components :shopping-cart :cart)]         \n"
+				+ "    (swap! cart conj {:item 5677 :quantity 6 :price 45.80M}))      \n"
+				+ "                                                                   \n"
+				+ "  (set! system (component/stop system))))                          "; 
+
+		venice.eval(script);
+	}
+
+	@Test
+	public void test_mutual_state_component_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :shopping-cart [cart :atom]                             \n"
+				+ "     component/Component)                                          \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :shopping-cart (shopping-cart. (atom []))               \n"
 				+ "        (component/system-using {:shopping-cart []})))             \n"
 				+ "                                                                   \n"
 				+ "  (def system (create-system))                                     \n"

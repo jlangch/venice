@@ -29,17 +29,17 @@
   ;; Begins operation of this component. Synchronous, does not return
   ;; until the component is started. Returns an updated version of this
   ;; component.
-  (start [component] )
+  (start [component] component)
 
   ;; Ceases operation of this component. Synchronous, does not return
   ;; until the component is stopped. Returns an updated version of this
   ;; component.
-  (stop [component] )
+  (stop [component] component)
 
   ;; Injects a map of dependent components. Dependent components are injected
   ;; before this component is started. Returns an updated version of this
   ;; component.
-  (inject [component component-map] ))
+  (inject [component component-map] component))
 
 
 (deftype :system [name         :string
