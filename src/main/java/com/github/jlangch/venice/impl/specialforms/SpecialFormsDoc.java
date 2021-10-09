@@ -374,7 +374,7 @@ public class SpecialFormsDoc {
 						 "(def x 5)",
 						 "(def sum (fn [x y] (+ x y)))",
 						 "(def ^{:private true} x 100)")
-					.seeAlso("def", "defonce")
+					.seeAlso("def", "defonce", "def-dynamic", "set!")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -423,6 +423,7 @@ public class SpecialFormsDoc {
 						"        (set! x (inc x))        \n" +
 						"        (print (str \"-\" x)))  \n" +
 						"      (print (str \"-\" x))))     ")
+					.seeAlso("def", "def-dynamic")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -890,7 +891,7 @@ public class SpecialFormsDoc {
 						"      (println x))       \n" +
 						"   (println x)))           ",
 						"(def-dynamic ^{:private true} x 100)")
-					.seeAlso("binding", "def", "defonce")
+					.seeAlso("binding", "def", "defonce", "set!")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -932,7 +933,12 @@ public class SpecialFormsDoc {
 					.doc("Returns true if the symbol is bound to a value else false")
 					.examples(
 						"(bound? 'test)",
-						"(let [test 100] (bound? 'test))")
+						"(let [test 100]   \n" +
+						"  (bound? 'test))   ",
+						"(do               \n" +
+						"  (def a 100)     \n" +
+						"  (bound? 'a))      ")
+					.seeAlso("let", "def", "defonce")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -956,6 +962,7 @@ public class SpecialFormsDoc {
 						"'(1 2 3)",
 						"'(+ 1 2)",
 						"'(a (b (c d (+ 1 2))))")
+					.seeAlso("quasiquote")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -989,6 +996,7 @@ public class SpecialFormsDoc {
 						"`(16 17 ~@(map inc [16 17]))",
 						"`(1 2 ~@#{1 2 3})",
 						"`(1 2 ~@{:a 1 :b 2 :c 3})")
+					.seeAlso("quote")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
