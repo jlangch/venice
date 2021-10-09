@@ -27,8 +27,6 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
-import static com.github.jlangch.venice.impl.util.ArityExceptions.formatArityExMsg;
-import static com.github.jlangch.venice.impl.util.ArityExceptions.formatVariadicArityExMsg;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,8 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.github.jlangch.venice.ArityException;
-import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Version;
@@ -143,6 +139,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									this.nsRegistry,
 									this.meterRegistry,
 									this.sealedSystemNS);
+		
+		this.functionBuilder = new FunctionBuilder(
+									this::evaluate,
+									this::evaluate_values);
 
 		ThreadContext.setInterceptor(interceptor);	
 		ThreadContext.setMeterRegistry(mr);
@@ -1177,7 +1177,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			argPos++;
 			final VncVector params = (VncVector)paramsOrSig;
 			final VncList body = args.slice(argPos);	
-			final VncFunction macroFn = buildFunction(
+			final VncFunction macroFn = functionBuilder.buildFunction(
 											macroName_.getName(), 
 											params, 
 											body, 
@@ -1203,7 +1203,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));				
 				final VncList fnBody = fnSig.slice(pos);
 				
-				fns.add(buildFunction(
+				fns.add(functionBuilder.buildFunction(
 							macroName_.getName() + "-arity-" + fnParams.size(),
 							fnParams, 
 							fnBody, 
@@ -1372,7 +1372,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 			final VncVector preConditions = getFnPreconditions(args.fourth());
 			final VncList body = args.slice(preConditions == null ? 3 : 4);
-			final VncFunction fn = buildFunction(
+			final VncFunction fn = functionBuilder.buildFunction(
 										multiFnName.getName(),
 										params,
 										body,
@@ -1459,7 +1459,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	//						env);
 	//			}
 	//			else {
-					return buildFunction(
+					return functionBuilder.buildFunction(
 								fnName.getName(), params, body, preCon, 
 								false, meta, env);
 	//			}		
@@ -1490,7 +1490,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	//				}
 	//				else {
 						fns.add(
-							buildFunction(
+							functionBuilder.buildFunction(
 								fnName.getName(), params, body, preCon, false, meta, env));
 	//				}
 				});
@@ -1540,155 +1540,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			bindingVars.forEach(v -> env.popGlobalDynamic(v.getName()));
 		}
 	}
-	
-	private VncFunction buildFunction(
-			final String name, 
-			final VncVector params, 
-			final VncList body, 
-			final VncVector preConditions, 
-			final boolean macro,
-			final VncVal meta,
-			final Env env
-	) {
-		// the namespace the function/macro is defined for
-		final Namespace ns = Namespaces.getCurrentNamespace();
 		
-		// Note: Do not switch to the functions own namespace for the function 
-		//       "core/macroexpand-all". Handle "macroexpand-all" like a special 
-		//       form. This allows expanding locally defined macros from the REPL 
-		//       without the need of qualifying them:
-		//          > (defmacro bench [expr] ...)
-		//          > (macroexpand-all '(bench (+ 1 2))
-		//       instead of:
-		//          > (macroexpand-all '(user/bench (+ 1 2))
-		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
-
-		// Destructuring optimization for function parameters
-		final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(params);
-
-		// PreCondition optimization
-		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
-
-		return new VncFunction(name, params, macro, preConditions, meta) {
-			@Override
-			public VncVal apply(final VncList args) {
-				final ThreadContext threadCtx = ThreadContext.get();
-				
-				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
-				threadCtx.setCallFrameFnData_(null); // we've got it, reset it
-								
-				if (hasVariadicArgs()) {
-					if (args.size() < getFixedArgsCount()) {
-						throwVariadicArityException(this, args, callFrameFnData);
-					}
-				}
-				else if (args.size() != getFixedArgsCount()) {
-					throwFixedArityException(this, args, callFrameFnData);
-				}
-
-				final Env localEnv = new Env(env);
-
-				addFnArgsToEnv(args, localEnv);
-
-				if (switchToFunctionNamespaceAtRuntime) {	
-					final CallStack callStack = threadCtx.getCallStack_();						
-					final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-					final Namespace curr_ns = threadCtx.getCurrNS_();
-					final String fnName = getQualifiedName();
-					
-					final boolean pushCallstack = callFrameFnData != null 
-													&& callFrameFnData.matchesFnName(fnName);
-					if (pushCallstack) {
-						callStack.push(new CallFrame(fnName, args, callFrameFnData.getFnMeta(), localEnv));
-					}
-					
-					try {
-						threadCtx.setCurrNS_(ns);
-
-						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-							final CallStack cs = threadCtx.getCallStack_();
-							try {
-								debugAgent.onBreakFnEnter(fnName, this, args, localEnv, cs);
-								if (hasPreConditions) {
-									validateFnPreconditions(localEnv);
-								}
-								final VncVal retVal = evaluateBody(body, localEnv, true);
-								debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
-								return retVal;
-							}
-							catch(Exception ex) {
-								debugAgent.onBreakFnException(fnName, this, args, ex, localEnv, cs);
-								throw ex;
-							}
-						}
-						else {
-							if (hasPreConditions) {
-								validateFnPreconditions(localEnv);
-							}
-							return evaluateBody(body, localEnv, true);
-						}
-					}
-					finally {
-						if (pushCallstack) {
-							callStack.pop();
-						}
-
-						// switch always back to current namespace, just in case
-						// the namespace was changed within the function body!
-						threadCtx.setCurrNS_(curr_ns);
-					}
-				}
-				else {
-					if (hasPreConditions) {
-						validateFnPreconditions(localEnv);
-					}
-					return evaluateBody(body, localEnv, false);
-				}
-			}
-			
-			@Override
-			public boolean isNative() { 
-				return false;
-			}
-			
-			@Override
-			public VncVal getBody() {
-				return body;
-			}
-
-			private void addFnArgsToEnv(final VncList args, final Env env) {
-				// destructuring fn params -> args
-				if (plainSymbolParams) {
-					for(int ii=0; ii<params.size(); ii++) {
-						env.setLocal(
-							new Var((VncSymbol)params.nth(ii), args.nthOrDefault(ii, Nil)));
-					}
-				}
-				else {
-					env.addLocalVars(Destructuring.destructure(params, args));	
-				}
-			}
-
-			private void validateFnPreconditions(final Env env) {
-				if (preConditions != null && !preConditions.isEmpty()) {
-			 		final Env local = new Env(env);	
-			 		for(VncVal v : preConditions) {
-						if (!isFnConditionTrue(evaluate(v, local, false))) {
-							final CallFrame cf = new CallFrame(name, v.getMeta());
-							try (WithCallStack cs = new WithCallStack(cf)) {
-								throw new AssertionException(String.format(
-										"pre-condition assert failed: %s",
-										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
-							}
-						}
-		 			}
-				}
-			}
-
-			private static final long serialVersionUID = -1L;
-		};
-	}
-	
 	private Env buildRecursionEnv(
 			final VncList args, 
 			final Env env, 
@@ -1747,19 +1599,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 		
 		return null;
-	}
-	
-	private boolean isFnConditionTrue(final VncVal result) {
-		return Types.isVncSequence(result) 
-				? VncBoolean.isTrue(((VncSequence)result).first()) 
-				: VncBoolean.isTrue(result);
-	}
-	
-	private VncVal evaluateBody(final VncList body, final Env env, final boolean withTailPosition) {
-		evaluate_values(body.butlast(), env);
-		return evaluate(body.last(), env, withTailPosition);
-	}
-	
+	}	
 	
 	private VncSymbol evaluateSymbolMetaData(final VncVal symVal, final Env env) {
 		final VncSymbol sym = Coerce.toVncSymbol(symVal);
@@ -1795,42 +1635,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return sym;
 	}
 	
-	private void throwVariadicArityException(
-			final VncFunction fn,
-			final VncList args,
-			final CallFrameFnData callFrameFnData
-	) {
-		final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
-		final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			throw new ArityException(
-					formatVariadicArityExMsg(
-						fn.getQualifiedName(), 
-						fn.isMacro() ? FnType.Macro : FnType.Function,
-						args.size(), 
-						fn.getFixedArgsCount(),
-						fn.getArgLists()));
-		}
-	}
-	
-	private void throwFixedArityException(
-			final VncFunction fn,
-			final VncList args,
-			final CallFrameFnData callFrameFnData
-	) {
-		final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
-		final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			throw new ArityException(
-					formatArityExMsg(
-						fn.getQualifiedName(), 
-						fn.isMacro() ? FnType.Macro : FnType.Function,
-						args.size(), 
-						fn.getFixedArgsCount(),
-						fn.getArgLists()));
-		}
-	}
-	
 	private void specialFormCallValidation(final String name) {
 		ThreadContext.getInterceptor().validateVeniceFunction(name);
 	}
@@ -1851,6 +1655,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final NamespaceRegistry nsRegistry;
 	
 	private final SpecialFormsHandler specialFormHandler;
+	private final FunctionBuilder functionBuilder;
 	
 	private final AtomicBoolean sealedSystemNS;
 	
