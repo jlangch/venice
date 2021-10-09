@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- support for to isolated root components that have no dependencies to 
+- support for isolated root components that have no dependencies to 
   `:component` module to support 
  
 - support protocol default function implementation
