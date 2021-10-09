@@ -201,7 +201,7 @@ public class DocGenerator {
 
 		final DocSection system = new DocSection("System\u00A0&\u00A0Java", "system");
 		system.addSection(new DocSection("System", "system"));
-		system.addSection(new DocSection("System\u00A0Vars", "miscellaneous.system_vars"));
+		system.addSection(new DocSection("System\u00A0Vars", "sysvars"));
 		system.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
 		system.addSection(new DocSection("REPL", "repl"));
 		content.add(system);
@@ -220,10 +220,10 @@ public class DocGenerator {
 		content.add(io);
 
 		final DocSection documents = new DocSection("Documents", "miscellaneous");
-		documents.addSection(new DocSection("JSON", "miscellaneous.json"));
-		documents.addSection(new DocSection("PDF", "pdf.pdf"));
+		documents.addSection(new DocSection("JSON", "json"));
+		documents.addSection(new DocSection("PDF", "pdf"));
 		documents.addSection(new DocSection("PDF Tools", "pdf.pdftools"));
-		documents.addSection(new DocSection("CSV", "miscellaneous.csv"));
+		documents.addSection(new DocSection("CSV", "csv"));
 		documents.addSection(new DocSection("XML", "modules.xml"));
 		documents.addSection(new DocSection("Excel", "modules.excel"));
 		content.add(documents);
@@ -268,7 +268,8 @@ public class DocGenerator {
 				getJavaInteropSection(),
 				getReplSection(),
 				getPdfSection(),
-				getIOZipSection());
+				getIOZipSection(),
+				getAppSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -278,12 +279,13 @@ public class DocGenerator {
 				getArraysSection(),
 				getConcurrencySection(),
 				getSystemSection(),
+				getSystemVarSection(),
 				getTimeSection(),
 				getIOSection(),
 				getIOFileSection(),
-				getMiscellaneousSection(),
-				getCidrSection(),
-				getAppSection());
+				getJsonSection(),
+				getCsvSection(),
+				getCidrSection());
 	}
 
 	private List<DocSection> getModulesLeftSections() {
@@ -2025,28 +2027,13 @@ public class DocGenerator {
 		return section;
 	}
 	
-	private DocSection getMiscellaneousSection() {
-		final DocSection section = new DocSection("Miscellaneous", "miscellaneous");
-
-		
+	private DocSection getSystemVarSection() {
+		final DocSection section = new DocSection("System Vars", "sysvars");
+	
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
-		
-		final DocSection json = new DocSection("JSON", "miscellaneous.json");
-		all.addSection(json);
-		json.addItem(getDocItem("json/write-str"));
-		json.addItem(getDocItem("json/read-str"));
-		json.addItem(getDocItem("json/spit"));
-		json.addItem(getDocItem("json/slurp"));
-		json.addItem(getDocItem("json/pretty-print"));
 
-		final DocSection csv = new DocSection("CSV", "miscellaneous.csv");
-		all.addSection(csv);
-		csv.addItem(getDocItem("csv/read"));
-		csv.addItem(getDocItem("csv/write", false));
-		csv.addItem(getDocItem("csv/write-str"));
-
-		final DocSection other = new DocSection("System Vars", "miscellaneous.system_vars");
+		final DocSection other = new DocSection("System Vars", "sysvars.var");
 		all.addSection(other);
 		other.addItem(getDocItem("*version*"));
 		other.addItem(getDocItem("*newline*"));
@@ -2055,6 +2042,45 @@ public class DocGenerator {
 		other.addItem(getDocItem("*ns*"));
 		other.addItem(getDocItem("*run-mode*"));
 		other.addItem(getDocItem("*ansi-term*"));
+
+		return section;
+	}
+	
+	private DocSection getJsonSection() {
+		final DocSection section = new DocSection("JSON", "json");
+
+		
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+		
+		final DocSection read = new DocSection("JSON", "json.read");
+		all.addSection(read);
+		read.addItem(getDocItem("json/read-str"));
+		read.addItem(getDocItem("json/slurp"));
+		
+		final DocSection write = new DocSection("JSON", "json.write");
+		all.addSection(write);
+		write.addItem(getDocItem("json/write-str"));
+		write.addItem(getDocItem("json/spit"));
+		write.addItem(getDocItem("json/pretty-print"));
+
+		return section;
+	}
+	
+	private DocSection getCsvSection() {
+		final DocSection section = new DocSection("CSV", "csv");
+	
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection read = new DocSection("CSV", "csv.read");
+		all.addSection(read);
+		read.addItem(getDocItem("csv/read"));
+
+		final DocSection write = new DocSection("CSV", "csv.write");
+		all.addSection(write);
+		write.addItem(getDocItem("csv/write", false));
+		write.addItem(getDocItem("csv/write-str"));
 
 		return section;
 	}
