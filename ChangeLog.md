@@ -13,10 +13,10 @@ and this project adheres to
 
 ### Added
 
-- enhancements to `:component` module to support isolated root components 
-  that have no dependencies
-- enhancements to the `defprotocol` functions default implementations to allow a
-  function body. 
+- support for isolated root components that have no dependencies to 
+  `:component` module
+ 
+- support for protocol default function implementations
 
 
 ## [1.10.2] - 2021-10-08
