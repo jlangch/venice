@@ -140,9 +140,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									this.meterRegistry,
 									this.sealedSystemNS);
 		
-		this.functionBuilder = new FunctionBuilder(
-									this::evaluate,
-									this::evaluate_values);
+		this.functionBuilder = new FunctionBuilder(this::evaluate);
 
 		ThreadContext.setInterceptor(interceptor);	
 		ThreadContext.setMeterRegistry(mr);

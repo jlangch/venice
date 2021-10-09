@@ -51,12 +51,8 @@ import com.github.jlangch.venice.impl.util.WithCallStack;
 
 public class FunctionBuilder {
 
-	public FunctionBuilder(
-			final IFormEvaluator evaluator,
-			final IValuesEvaluator valuesEvaluator
-	) {
+	public FunctionBuilder(final IFormEvaluator evaluator) {
 		this.evaluator = evaluator;
-		this.valuesEvaluator = valuesEvaluator;
 	}
 
 	
@@ -89,8 +85,7 @@ public class FunctionBuilder {
 		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
 		// Body evaluation optimizations
-		final VncList body_butLast = body.butlast();
-		final VncVal body_last = body.last();
+		final VncVal[] body_exprs = body.getJavaList().toArray(new  VncVal[] {});
 		
 		return new VncFunction(name, params, macro, preConditions, meta) {
 			@Override
@@ -135,7 +130,7 @@ public class FunctionBuilder {
 								if (hasPreConditions) {
 									validateFnPreconditions(localEnv);
 								}
-								final VncVal retVal = evaluateBody(body_butLast, body_last, localEnv, true);
+								final VncVal retVal = evaluateBody(body_exprs, localEnv, true);
 								debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
 								return retVal;
 							}
@@ -148,7 +143,7 @@ public class FunctionBuilder {
 							if (hasPreConditions) {
 								validateFnPreconditions(localEnv);
 							}
-							return evaluateBody(body_butLast, body_last, localEnv, true);
+							return evaluateBody(body_exprs, localEnv, true);
 						}
 					}
 					finally {
@@ -165,7 +160,7 @@ public class FunctionBuilder {
 					if (hasPreConditions) {
 						validateFnPreconditions(localEnv);
 					}
-					return evaluateBody(body_butLast, body_last, localEnv, false);
+					return evaluateBody(body_exprs, localEnv, false);
 				}
 			}
 			
@@ -256,19 +251,17 @@ public class FunctionBuilder {
 	}
 		
 	private VncVal evaluateBody(
-			final VncList body_butLast, 
-			final VncVal body_last, 
+			final VncVal[] body, 
 			final Env env, 
 			final boolean withTailPosition
 	) {
-		if (!body_butLast.isEmpty()) {
-			valuesEvaluator.evaluate_values(body_butLast, env);
+		for(int ii=0; ii<body.length-1; ii++) {
+			evaluator.evaluate(body[ii], env, false);
 		}
-		return evaluator.evaluate(body_last, env, withTailPosition);
+		return evaluator.evaluate(body[body.length-1], env, withTailPosition);
 	}
 
 	
 	private final IFormEvaluator evaluator;
-	private final IValuesEvaluator valuesEvaluator;
 }
 
