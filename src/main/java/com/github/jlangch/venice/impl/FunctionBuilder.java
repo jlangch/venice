@@ -66,7 +66,7 @@ public class FunctionBuilder {
 			final Env env
 	) {
 		// the namespace the function/macro is defined for
-		final Namespace ns = Namespaces.getCurrentNamespace();
+		final Namespace functionNS = Namespaces.getCurrentNamespace();
 		
 		// Note: Do not switch to the functions own namespace for the function 
 		//       "core/macroexpand-all". Handle "macroexpand-all" like a special 
@@ -85,10 +85,13 @@ public class FunctionBuilder {
 		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
 		// Body evaluation optimizations
-		final VncVal[] body_exprs = body.isEmpty() 
+		final VncVal[] bodyExprs = body.isEmpty() 
 										? new VncVal[] {Nil}
 										: body.getJavaList().toArray(new  VncVal[] {});
-		
+
+		// Param access optimizations
+		final VncVal[] paramArr = params.getJavaList().toArray(new  VncVal[] {});
+
 		return new VncFunction(name, params, macro, preConditions, meta) {
 			@Override
 			public VncVal apply(final VncList args) {
@@ -123,7 +126,7 @@ public class FunctionBuilder {
 					}
 					
 					try {
-						threadCtx.setCurrNS_(ns);
+						threadCtx.setCurrNS_(functionNS);
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
 							final CallStack cs = threadCtx.getCallStack_();
@@ -132,7 +135,7 @@ public class FunctionBuilder {
 								if (hasPreConditions) {
 									validateFnPreconditions(localEnv);
 								}
-								final VncVal retVal = evaluateBody(body_exprs, localEnv, true);
+								final VncVal retVal = evaluateBody(bodyExprs, localEnv, true);
 								debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
 								return retVal;
 							}
@@ -145,7 +148,7 @@ public class FunctionBuilder {
 							if (hasPreConditions) {
 								validateFnPreconditions(localEnv);
 							}
-							return evaluateBody(body_exprs, localEnv, true);
+							return evaluateBody(bodyExprs, localEnv, true);
 						}
 					}
 					finally {
@@ -162,7 +165,7 @@ public class FunctionBuilder {
 					if (hasPreConditions) {
 						validateFnPreconditions(localEnv);
 					}
-					return evaluateBody(body_exprs, localEnv, false);
+					return evaluateBody(bodyExprs, localEnv, false);
 				}
 			}
 			
@@ -179,9 +182,11 @@ public class FunctionBuilder {
 			private void addFnArgsToEnv(final VncList args, final Env env) {
 				// destructuring fn params -> args
 				if (plainSymbolParams) {
-					for(int ii=0; ii<params.size(); ii++) {
+					for(int ii=0; ii<paramArr.length; ii++) {
 						env.setLocal(
-							new Var((VncSymbol)params.nth(ii), args.nthOrDefault(ii, Nil)));
+							new Var(
+								(VncSymbol)paramArr[ii], 
+								args.nthOrDefault(ii, Nil)));
 					}
 				}
 				else {
@@ -190,19 +195,17 @@ public class FunctionBuilder {
 			}
 
 			private void validateFnPreconditions(final Env env) {
-				if (preConditions != null && !preConditions.isEmpty()) {
-			 		final Env local = new Env(env);	
-			 		for(VncVal v : preConditions) {
-						if (!isFnConditionTrue(evaluator.evaluate(v, local, false))) {
-							final CallFrame cf = new CallFrame(name, v.getMeta());
-							try (WithCallStack cs = new WithCallStack(cf)) {
-								throw new AssertionException(String.format(
-										"pre-condition assert failed: %s",
-										((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
-							}
+		 		final Env local = new Env(env);	
+		 		for(VncVal v : preConditions) {
+					if (!isFnConditionTrue(evaluator.evaluate(v, local, false))) {
+						final CallFrame cf = new CallFrame(name, v.getMeta());
+						try (WithCallStack cs = new WithCallStack(cf)) {
+							throw new AssertionException(String.format(
+									"pre-condition assert failed: %s",
+									((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
 						}
-		 			}
-				}
+					}
+	 			}
 			}
 
 			private static final long serialVersionUID = -1L;
@@ -258,7 +261,7 @@ public class FunctionBuilder {
 			final boolean withTailPosition
 	) {
 		if (body.length == 1) {
-				return evaluator.evaluate(body[body.length-1], env, withTailPosition);
+			return evaluator.evaluate(body[0], env, withTailPosition);
 		}
 		else {	
 			for(int ii=0; ii<body.length-1; ii++) {
