@@ -36,7 +36,7 @@ and this project adheres to
 
 ### Fixed
 
-- `assoc` on custom type to keep the meta data
+- `assoc` on custom types to keep the meta data
 
 
 
