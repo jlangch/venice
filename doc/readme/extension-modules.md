@@ -11,6 +11,8 @@ and loads a module only once and skips subsequent load attempts.
 * [Kira Template](ext-kira.md)
 * [Shell](ext-shell.md)
 * [Charts](ext-charts.md)
+* [Configuration](ext-configuration.md)
+* [Components](ext-components.md)
 * [Hexdump](ext-hexdump.md)
 * [GEO IP](ext-geoip.md)
 * [Mercator Maps](ext-mercator.md)
@@ -23,6 +25,7 @@ and loads a module only once and skips subsequent load attempts.
 * [WebDAV](ext-webdav.md)
 * [Maven](ext-maven.md)
 * [Jackson JSON](ext-jackson.md)
+
 
 ### Explicitly forcing a module reload
 
