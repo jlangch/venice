@@ -1033,7 +1033,7 @@ public class MathFunctions {
 						"(standard-deviation type coll)")
 					.doc(
 						"Returns the standard deviation of the values for data sample " +
-						"type :population or :sample.")
+						"type `:population` or `:sample`.")
 					.examples(
 						"(standard-deviation :sample '(10 8 30 22 15))",
 						"(standard-deviation :population '(10 8 30 22 15))",
@@ -1532,8 +1532,9 @@ public class MathFunctions {
 					.arglists(
 						"(dec/add x y scale rounding-mode)")
 					.doc(
-						"Adds two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
-						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
+						"Adds two decimals and scales the result. rounding-mode is " +
+						"one of `:CEILING`, `:DOWN,` `:FLOOR`, `:HALF_DOWN`, " +
+						"`:HALF_EVEN`, `:HALF_UP`, `:UNNECESSARY`, or `:UP`")
 					.examples(
 						"(dec/add 2.44697M 1.79882M 3 :HALF_UP)")
 					.seeAlso("dec/sub", "dec/mul", "dec/div", "dec/scale")
@@ -1563,8 +1564,9 @@ public class MathFunctions {
 					.arglists(
 						"(dec/sub x y scale rounding-mode)")
 					.doc(
-						"Subtract y from x and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
-						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
+						"Subtract y from x and scales the result. rounding-mode is " +
+						"one of `:CEILING`, `:DOWN,` `:FLOOR`, `:HALF_DOWN`, " +
+						"`:HALF_EVEN`, `:HALF_UP`, `:UNNECESSARY`, or `:UP`")
 					.examples(
 						"(dec/sub 2.44697M 1.79882M 3 :HALF_UP)")
 					.seeAlso("dec/add", "dec/mul", "dec/div", "dec/scale")
@@ -1592,8 +1594,9 @@ public class MathFunctions {
 					.arglists(
 						"(dec/mul x y scale rounding-mode)")
 					.doc(
-						"Multiplies two decimals and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
-						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
+						"Multiplies two decimals and scales the result. rounding-mode is " +
+						"one of `:CEILING`, `:DOWN,` `:FLOOR`, `:HALF_DOWN`, " +
+						"`:HALF_EVEN`, `:HALF_UP`, `:UNNECESSARY`, or `:UP`")
 					.examples(
 						"(dec/mul 2.44697M 1.79882M 5 :HALF_UP)")
 					.seeAlso("dec/add", "dec/sub", "dec/div", "dec/scale")
@@ -1621,8 +1624,9 @@ public class MathFunctions {
 					.arglists(
 						"(dec/div x y scale rounding-mode)")
 					.doc(
-						"Divides x by y and scales the result. rounding-mode is one of (:CEILING, :DOWN, " +
-						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
+						"Divides x by y and scales the result. rounding-mode is " +
+						"one of `:CEILING`, `:DOWN,` `:FLOOR`, `:HALF_DOWN`, " +
+						"`:HALF_EVEN`, `:HALF_UP`, `:UNNECESSARY`, or `:UP`")
 					.examples(
 						"(dec/div 2.44697M 1.79882M 5 :HALF_UP)")
 					.seeAlso("dec/add", "dec/sub", "dec/mul", "dec/scale")
@@ -1650,8 +1654,9 @@ public class MathFunctions {
 					.arglists(
 						"(dec/scale x scale rounding-mode)")
 					.doc(
-						"Scales a decimal. rounding-mode is one of (:CEILING, :DOWN, " +
-						":FLOOR, :HALF_DOWN, :HALF_EVEN, :HALF_UP, :UNNECESSARY, :UP)")
+						"Scales a decimal. rounding-mode is " +
+						"one of `:CEILING`, `:DOWN,` `:FLOOR`, `:HALF_DOWN`, " +
+						"`:HALF_EVEN`, `:HALF_UP`, `:UNNECESSARY`, or `:UP`")
 					.examples(
 						"(dec/scale 2.44697M 0 :HALF_UP)",
 						"(dec/scale 2.44697M 1 :HALF_UP)",

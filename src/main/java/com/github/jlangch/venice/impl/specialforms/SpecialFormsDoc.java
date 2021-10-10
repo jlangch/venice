@@ -48,8 +48,9 @@ public class SpecialFormsDoc {
 						"Prints documentation for a var or special form given `x` as its name. " +
 						"Prints the definition of custom types. \n\n" +
 						"Displays the source of a module if `x` is a module: `(doc :ansi)`\n\n" +
-						"If the var could not be found, it searches for a similiar var with " +
-						"the **Levenshtein distance** 1. E.g: \n\n" +
+						"If the var could not be found, searches for a similiar var with " +
+						"the **Levenshtein distance** 1.¶" +
+						"E.g: \n\n" +
 						"```                     \n" +
 						"> (doc dac)             \n" +
 						"Symbol 'dac' not found! \n" +
