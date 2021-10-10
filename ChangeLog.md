@@ -62,7 +62,7 @@ and this project adheres to
 
 ### Added
 
-- a DAG (directed acyclic graph) with topological sorting using 
+- a DAG (directed acyclic graph) data type with topological sorting using 
   [Kahn's algorithm](https://en.wikipedia.org/wiki/Topological_sorting)
 - function `deftype-describe` to get details on a custom type definition
 - [Protocols](doc/readme/multimethods-and-protocols.md#Protocols) (`defprotocol`, `extend`)
