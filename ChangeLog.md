@@ -21,7 +21,7 @@ and this project adheres to
 
 ### Added
 
-- support for isolated root components that have no dependencies to 
+- support for isolated root components that have no dependencies for the 
   `:component` module
  
 - support for protocol default function implementations
