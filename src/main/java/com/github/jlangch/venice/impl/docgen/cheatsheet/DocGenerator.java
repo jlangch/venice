@@ -2053,16 +2053,19 @@ public class DocGenerator {
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 		
-		final DocSection read = new DocSection("JSON", "json.read");
+		final DocSection read = new DocSection("read", "json.read");
 		all.addSection(read);
 		read.addItem(getDocItem("json/read-str"));
 		read.addItem(getDocItem("json/slurp"));
 		
-		final DocSection write = new DocSection("JSON", "json.write");
+		final DocSection write = new DocSection("write", "json.write");
 		all.addSection(write);
 		write.addItem(getDocItem("json/write-str"));
 		write.addItem(getDocItem("json/spit"));
-		write.addItem(getDocItem("json/pretty-print"));
+		
+		final DocSection prettify = new DocSection("prettify", "json.prettify");
+		all.addSection(prettify);
+		prettify.addItem(getDocItem("json/pretty-print"));
 
 		return section;
 	}
@@ -2073,11 +2076,11 @@ public class DocGenerator {
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
-		final DocSection read = new DocSection("CSV", "csv.read");
+		final DocSection read = new DocSection("read", "csv.read");
 		all.addSection(read);
 		read.addItem(getDocItem("csv/read"));
 
-		final DocSection write = new DocSection("CSV", "csv.write");
+		final DocSection write = new DocSection("write", "csv.write");
 		all.addSection(write);
 		write.addItem(getDocItem("csv/write", false));
 		write.addItem(getDocItem("csv/write-str"));
