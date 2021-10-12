@@ -90,6 +90,10 @@ public class ReplHelp {
 			"   !env global io/*\n" +
 			"   !env global *file*\n";
 
+	public final static String APP =
+			"Please pass an app name:\n" +
+			"   !app {app-name}\n";
+
 	public final static String SANDBOX =
 			"Please choose from:\n" +
 			"   !sandbox status\n" +

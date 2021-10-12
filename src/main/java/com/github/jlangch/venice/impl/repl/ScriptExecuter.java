@@ -61,7 +61,7 @@ public class ScriptExecuter {
 				printer.println("result", resultPrefix + venice.PRINT(result));
 				
 				// do not add the result for "*1", "*2", "*3", "**" to the result history 
-				if (!resultHistory.isResultHistorySymbol(script)) {
+				if (resultHistory != null && !resultHistory.isResultHistorySymbol(script)) {
 					resultHistory.add(result);
 				}
 			}
@@ -105,7 +105,7 @@ public class ScriptExecuter {
 				
 				// do not add the result for "*1", "*2", "*3", "**" to the 
 				// result history 
-				if (!resultHistory.isResultHistorySymbol(script)) {
+				if (resultHistory != null && !resultHistory.isResultHistorySymbol(script)) {
 					resultHistory.add(result);
 				}
 	
