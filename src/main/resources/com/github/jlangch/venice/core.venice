@@ -1468,17 +1468,20 @@
 
 
 (defn
-  ^{ :arglists '("(load-resource res)")
+  ^{ :arglists '("(load-resource res  & options)")
      :doc """
-          Loads a resource from the defined load paths.
-          
-          Returns a bytebuffer or nil if the resource is not found in any
-          of the two locations.
+          Loads a resource from the defined load paths. Returns a string,
+          a bytebuffer or nil if the file does not exist.
+
+          Options:
+
+          | :binary b   | e.g :binary true, defaults to true |
+          | :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |
           """ }
 
-  load-resource [res]
+  load-resource [res & options]
 
-  (load-resource* res :binary true))
+  (apply load-resource* res options))
 
 
 (defn-
