@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -575,6 +576,7 @@ public class REPL {
 					case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
 					case "launcher":    handleLauncherCommand(); break;
 					case "app":    		handleAppCommand(args, terminal, env); break;
+					case "app-manifest": handleAppManifestCommand(args, terminal, env); break;
 					case "env":         handleEnvCommand(args, env); break;
 					case "hist":        handleHistoryCommand(args, terminal, history); break;
 					case "sandbox":     handleSandboxCommand(args, terminal, env); break;
@@ -682,24 +684,30 @@ public class REPL {
 		// run the Venice application archive
 		final File appArchive = new File(addZipFileExt(params.get(0)));
 
-		final VncMap manifest = getAppManifest(appArchive);
+		if (!appArchive.exists()) {
+			printer.println("error", (String.format("App archive '%s' not found!", appArchive)));
+			return;
+		}
 		
-		final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
-		final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
-		final String mainFileBasename = StringUtil.removeEnd(mainFile, ".venice");
-		
-		// Merge the load paths from the command line with the application archive
-		final List<File> mergedLoadPaths = Arrays.asList(appArchive.getAbsoluteFile());
-		mergedLoadPaths.addAll(interceptor.getLoadPaths().getPaths());
-		final ILoadPaths appLoadPaths = LoadPathsFactory.of(
-											mergedLoadPaths, 
-											interceptor.getLoadPaths().isUnlimitedAccess());
-				
-		printer.println("stdout", (String.format("Launching Venice application '%s' ...", appName)));
-
 		final IInterceptor oldInterceptor = interceptor;
 
 		try {
+			final VncMap manifest = getAppManifest(appArchive);
+			
+			final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
+			final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
+			final String mainFileBasename = StringUtil.removeEnd(mainFile, ".venice");
+			
+			// Merge the load paths from the command line with the application archive
+			final List<File> mergedLoadPaths = new ArrayList<>();
+			mergedLoadPaths.add(appArchive.getAbsoluteFile());
+			mergedLoadPaths.addAll(interceptor.getLoadPaths().getPaths());
+			final ILoadPaths appLoadPaths = LoadPathsFactory.of(
+												mergedLoadPaths, 
+												interceptor.getLoadPaths().isUnlimitedAccess());
+					
+			printer.println("stdout", (String.format("Launching Venice application '%s' ...", appName)));
+	
 			reconfigureVenice(
 				new AcceptAllInterceptor(appLoadPaths),
 				venice.isMacroExpandOnLoad());
@@ -721,6 +729,35 @@ public class REPL {
 			
 			env.removeGlobalSymbol(new VncSymbol("*app-name*"));
 			env.removeGlobalSymbol(new VncSymbol("*app-archive*"));
+		}
+	}
+
+	private void handleAppManifestCommand(
+			final List<String> params,
+			final Terminal terminal,
+			final Env env
+	) {
+		if (params.size() != 1) {
+			printer.println("stdout", ReplHelp.APP);
+			return;
+		}
+
+		// run the Venice application archive
+		final File appArchive = new File(addZipFileExt(params.get(0)));
+
+		if (!appArchive.exists()) {
+			printer.println("error", (String.format("App archive '%s' not found!", appArchive)));
+			return;
+		}
+		
+
+		try {
+			final VncMap manifest = getAppManifest(appArchive);
+			
+			printer.println("stdout", manifest.toString(true));
+		}
+		catch (Exception ex) {
+			handleException(ex);
 		}
 	}
 
