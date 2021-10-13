@@ -24,6 +24,7 @@ package com.github.jlangch.venice;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -152,7 +153,8 @@ public class Launcher {
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
 				// Merge the load paths from the command line with the application archive
-				final List<File> mergedLoadPaths = Arrays.asList(appFile.getAbsoluteFile());
+				final List<File> mergedLoadPaths = new ArrayList<>();
+				mergedLoadPaths.add(appFile.getAbsoluteFile());
 				mergedLoadPaths.addAll(loadPaths.getPaths());
 				final ILoadPaths appLoadPaths = LoadPathsFactory.of(
 													mergedLoadPaths, 

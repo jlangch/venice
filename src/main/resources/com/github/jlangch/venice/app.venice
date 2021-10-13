@@ -89,7 +89,8 @@
          (apply io/zip <>)
          (io/spit app-file <>))
 
-    { name app-file } ))
+    { :name name
+      :file app-file } ))
 
 
 (defn
