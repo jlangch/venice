@@ -187,7 +187,9 @@ public class ModuleFunctions {
 				final String file = name(args.first());					
 				try {				
 					final VncHashMap options = VncHashMap.ofAll(args.rest());
-					final boolean binary = VncBoolean.isTrue(options.get(new VncKeyword("binary")));
+					final boolean binary = VncBoolean.isTrue(options.get(
+																new VncKeyword("binary"), 
+																VncBoolean.True));
 					final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
 					final IInterceptor interceptor = ThreadContext.getInterceptor();
