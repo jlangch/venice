@@ -32,21 +32,39 @@
 
           E.g.:
 
+          ```text
+          staging
+          ├── billing.venice
+          ├── utils
+          │   ├── util.venice
+          │   └── render.venice
+          └── data
+              ├── bill.template
+              └── logo.jpg
+          ```
+
+          With these staged files the archive is built as:
+
           ```venice
-          (app/build "test"
-                     "chart.venice"
-                     { "chart.venice" "./foo/chart.venice"
-                       "utils.venice" "./foo/utils.venice" }
-                     ".")
+          (app/build
+            "billing"
+            "billing.venice"
+            { "billing.venice"      "staging/billing.venice"
+              "utils/util.venice"   "staging/utils/util.venice"
+              "utils/render.venice" "staging/utils/render.venice"
+              "data/bill.template"  "staging/data/bill.template"
+              "data/logo.jpg"       "staging/data/logo.jpg" }
+            ".")
           ```
 
           Loading Venice files works relative to the application. You can
           only load files that are in the app archive.
-          If for instances "chart.venice" in the above example requires
-          "utils.venice" just add `(load-file "utils")` to "chart.venice".
+          If for instances "billing.venice" in the above example requires
+          "utils/render.venice" just add `(load-file "utils/render.venice")`
+          to "billing.venice".
 
           The app can be run from the command line as:¶
-          `> java -jar venice-1.9.19.jar -app test.zip`
+          `> java -jar venice-1.10.2.jar -app test.zip`
 
           Or with additional Java libraries (all JARs in 'libs' dir):¶
           `> java -cp "libs/*" com.github.jlangch.venice.Launcher -app test.zip`

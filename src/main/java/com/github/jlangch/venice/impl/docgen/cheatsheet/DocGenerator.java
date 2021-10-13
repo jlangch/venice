@@ -248,6 +248,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
 		extmod.addSection(new DocSection("Configuration", "modules.config"));
 		extmod.addSection(new DocSection("Component", "modules.component"));
+		extmod.addSection(new DocSection("App", "modules.app"));
 		content.add(extmod);
 
 		return content;
@@ -309,7 +310,8 @@ public class DocGenerator {
 				getModuleSemverSection(),
 				getModuleGeoipSection(),
 				getModuleExcelSection(),
-				getModuleConfigSection());
+				getModuleConfigSection(),
+				getModuleAppSection());
 	}
 
 	private List<DocItem> getDocItems(final List<DocSection> sections) {
@@ -2477,6 +2479,26 @@ public class DocGenerator {
 		all.addSection(system);
 		system.addItem(getDocItem("component/system-map", false));
 		system.addItem(getDocItem("component/system-using", false));
+
+		return section;
+	}
+
+	private DocSection getModuleAppSection() {
+		final DocSection section = new DocSection(
+										"App",
+										"Venice application archive",
+										"modules.app");
+
+		final DocSection all = new DocSection("(load-module :app)", id());
+		section.addSection(all);
+
+		final DocSection build = new DocSection("Build", id());
+		all.addSection(build);
+		build.addItem(getDocItem("app/build", false));
+
+		final DocSection manifest = new DocSection("Manifest", id());
+		all.addSection(manifest);
+		manifest.addItem(getDocItem("app/manifest", false));
 
 		return section;
 	}

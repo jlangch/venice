@@ -62,8 +62,8 @@
 //       - Change version in 'gradle.properties' to '1.x.y' (remove the
 //         SNAPSHOT suffix)
 //       - Update the ChangeLog for the release version
-//       - Generate cheatsheets: ./gradlew cheatsheet
 //       - Update files with release version: ./gradlew updateReleaseVersion
+//       - Generate cheatsheets: ./gradlew cheatsheet
 //       - Commit the changes with message "bumped to new version"
 //       - Update the Git commit Id in the cheatsheet URLs in 'README.md':
 //           ./gradlew updateReadMeCheatsheetRef
@@ -463,6 +463,15 @@ task updateReleaseVersion {
         ) {
             fileset(dir: 'src/main/resources/META-INF', includes: 'notice.txt')
             fileset(dir: 'src/main/resources/META-INF', includes: 'license.txt')
+        }
+          
+        println "Updating version ${project.version} -> 'app.venice'"
+        ant.replaceregexp(
+                match:   "venice-${version_regex}[.]jar", 
+                replace: "venice-${project.version}.jar", 
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/resources', includes: '**/app.venice')
         }
         
         println "Updating version ${project.version} -> 'readme/*.md'"
