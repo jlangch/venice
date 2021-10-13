@@ -701,8 +701,8 @@ public class REPL {
 
 		try {
 			reconfigureVenice(
-					new AcceptAllInterceptor(appLoadPaths),
-					venice.isMacroExpandOnLoad());
+				new AcceptAllInterceptor(appLoadPaths),
+				venice.isMacroExpandOnLoad());
 
 			env.setGlobal(new Var(new VncSymbol("*app-name*"), new VncString(appName), false));
 			env.setGlobal(new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false));
