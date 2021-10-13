@@ -64,10 +64,11 @@
           to "billing.venice".
 
           The app can be run from the command line as:¶
-          `> java -jar venice-1.10.2.jar -app test.zip`
+          `> java -jar venice-1.10.2.jar -app billing.zip`¶
+          Venice reads the archive and loads the archive's main file.
 
           Or with additional Java libraries (all JARs in 'libs' dir):¶
-          `> java -cp "libs/*" com.github.jlangch.venice.Launcher -app test.zip`
+          `> java -cp "libs/*" com.github.jlangch.venice.Launcher -app billing.zip`
           """ }
 
   app/build [name main-file file-map dest-dir]
@@ -76,21 +77,24 @@
     (throw (ex :VncException
                (str "The dest-dir '" dest-dir "' does not exist."))))
 
-  (-<> (json/write-str { :manifest-version "1.0"
-                         :app-name name
-                         :main-file main-file
-                         :created-by (str "Venice " (version))})
-       (bytebuf-from-string <> :utf-8)
-       (list "MANIFEST.MF" <>)
-       (into <> file-map)
-       (flatten <>)
-       (apply io/zip <>)
-       (io/spit (io/file dest-dir (str name ".zip")) <>)))
+  (let [app-file (io/file dest-dir (str name ".zip"))]
+    (-<> (json/write-str { :manifest-version "1.0"
+                           :app-name name
+                           :main-file main-file
+                           :created-by (str "Venice " (version))})
+         (bytebuf-from-string <> :utf-8)
+         (list "MANIFEST.MF" <>)
+         (into <> file-map)
+         (flatten <>)
+         (apply io/zip <>)
+         (io/spit app-file <>))
+
+    { name app-file } ))
 
 
 (defn
   ^{ :arglists '("(app/manifest app)")
-     :doc "Returns the manifest of a Venice application archive." }
+     :doc "Returns the manifest of a Venice application archive as a map." }
 
   app/manifest [app]
 

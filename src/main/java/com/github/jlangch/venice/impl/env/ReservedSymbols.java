@@ -136,7 +136,6 @@ public class ReservedSymbols {
 					"*ns*",
 					"*loaded-modules*",
 					"*loaded-files*",
-					"*load-path*",
 					"*run-mode*",
 					"*macroexpand-on-load*",
 					"*ansi-term*",

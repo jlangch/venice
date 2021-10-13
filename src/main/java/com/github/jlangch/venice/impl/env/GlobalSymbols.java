@@ -33,7 +33,6 @@ public class GlobalSymbols {
 
 	public static final VncSymbol LOADED_MODULES = new VncSymbol("*loaded-modules*");
 	public static final VncSymbol LOADED_FILES = new VncSymbol("*loaded-files*");
-	public static final VncSymbol LOAD_PATH = new VncSymbol("*load-path*");
 	
 	public static final VncSymbol RUN_MODE = new VncSymbol("*run-mode*");
 	public static final VncSymbol ANSI_TERM = new VncSymbol("*ansi-term*");
