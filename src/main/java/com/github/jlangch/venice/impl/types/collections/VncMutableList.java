@@ -250,6 +250,13 @@ public class VncMutableList extends VncSequence {
 		Collections.shuffle(seq);
 		return new VncMutableList(seq, getMeta());
 	}
+	
+	@Override 
+	public VncMutableList distinct() {
+		return new VncMutableList(
+				stream().distinct().collect(Collectors.toList()),
+				getMeta());
+	}
 
 	@Override
 	public VncMutableList slice(final int start, final int end) {

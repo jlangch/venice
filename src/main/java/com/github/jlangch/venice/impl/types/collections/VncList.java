@@ -267,6 +267,11 @@ public class VncList extends VncSequence {
 	public VncList shuffle() {
 		return new VncList(value.shuffle(), getMeta());
 	}
+	
+	@Override 
+	public VncList distinct() {
+		return new VncList(value.distinct(), getMeta());
+	}
 
 	@Override
 	public VncList slice(final int start, final int end) {

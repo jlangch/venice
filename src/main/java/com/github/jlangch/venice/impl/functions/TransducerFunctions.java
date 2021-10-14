@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -1022,14 +1021,9 @@ public class TransducerFunctions {
 					};
 				}
 				else {
-					if (args.first() == Nil) {
-						return VncList.empty();
-					}
-
-					final VncSequence seq = Coerce.toVncSequence(args.first());
-					return seq.withValues(seq.stream()
-											 .distinct()
-											 .collect(Collectors.toList()));
+					return args.first() == Nil
+							? VncList.empty()
+							: Coerce.toVncSequence(args.first()).distinct();
 				}
 			}
 

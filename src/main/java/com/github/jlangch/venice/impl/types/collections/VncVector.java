@@ -289,6 +289,11 @@ public class VncVector extends VncSequence implements IVncFunction {
 	public VncVector shuffle() {
 		return new VncVector(value.shuffle(), getMeta());
 	}
+	
+	@Override 
+	public VncVector distinct() {
+		return new VncVector(value.distinct(), getMeta());
+	}
 
 	@Override
 	public VncVector slice(final int start, final int end) {

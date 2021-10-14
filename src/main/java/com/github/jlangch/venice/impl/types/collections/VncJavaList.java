@@ -254,6 +254,13 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 		Collections.shuffle(seq);
 		return new VncJavaList(seq, getMeta());
 	}
+	
+	@Override 
+	public VncJavaList distinct() {
+		return new VncJavaList(
+						stream().distinct().collect(Collectors.toList()),
+						getMeta());
+	}
 
 	@Override
 	public VncList slice(final int start, final int end) {

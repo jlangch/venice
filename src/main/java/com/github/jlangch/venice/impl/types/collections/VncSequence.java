@@ -117,6 +117,8 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 	public abstract VncSequence reverse();
 	
 	public abstract VncSequence shuffle();
+	
+	public abstract VncSequence distinct();
 
     public abstract Iterator<VncVal> iterator();
 

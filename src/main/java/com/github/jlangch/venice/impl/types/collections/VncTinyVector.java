@@ -25,8 +25,10 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -420,6 +422,50 @@ public class VncTinyVector extends VncVector {
 			final List<VncVal> list = getJavaList();
 			Collections.shuffle(list);
 			return VncVector.ofList(list, getMeta());
+		}
+	}
+	
+	@Override 
+	public VncVector distinct() {
+		final Set<VncVal> seen = new HashSet<>();
+		
+		final VncVal[] values = new VncVal[len];
+		int idx = 0;
+		
+		if (len > 0) {
+			if (!seen.contains(first)) { 
+				values[idx++] = first; 
+				seen.add(first); 
+			}
+			
+			if (len > 1) {
+				if (!seen.contains(second)) { 
+					values[idx++] = second; 
+					seen.add(second); 
+				}
+				
+				if (len > 2) {
+					if (!seen.contains(third)) { 
+						values[idx++] = third; 
+						seen.add(third); 
+					}
+					
+					if (len > 3) {
+						if (!seen.contains(fourth)) { 
+							values[idx++] = fourth; 
+							seen.add(fourth); }
+					}
+				}
+			}
+		}
+
+		switch (idx) {
+			case 0:	return EMPTY;
+			case 1:	return new VncTinyVector(1, values[0], Nil,       Nil,       Nil,       getMeta());
+			case 2:	return new VncTinyVector(2, values[0], values[1], Nil,       Nil,       getMeta());
+			case 3:	return new VncTinyVector(3, values[0], values[1], values[2], Nil,       getMeta());
+			case 4:	return new VncTinyVector(4, values[0], values[1], values[2], values[3], getMeta());
+			default: throw new IllegalStateException("Length out of range");
 		}
 	}
 
