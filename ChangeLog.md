@@ -9,11 +9,15 @@ and this project adheres to
 
 
 
-## [1.10.4] - 2021-10-xxx
+## [1.10.4] - 2021-10-xx
 
 ### Added
 
-- ...
+- support for running app archives from the REPL
+
+### Fixed
+
+- application archive runner
 
 
 
@@ -25,6 +29,7 @@ and this project adheres to
   `:component` module
  
 - support for protocol default function implementations
+
 
 
 ## [1.10.2] - 2021-10-08
