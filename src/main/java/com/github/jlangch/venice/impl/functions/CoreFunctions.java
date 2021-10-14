@@ -5164,6 +5164,53 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction cartesian =
+		new VncFunction(
+				"cartesian",
+				VncFunction
+					.meta()
+					.arglists("(cartesian coll1 coll2 coll*)")
+					.doc(
+						"Returns the cartesian product of two or more collections.\n\n" +
+						"Removes all duplicates items in the collections before computing " +
+						"the cartesian product.")
+					.examples(
+						"(cartesian [1 2 3] [1 2 3])",
+						"(cartesian [0 1] [0 1] [0 1])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 2);
+
+				VncList result = VncList.empty();
+
+				VncSequence coll = Coerce.toVncSequence(args.first()).distinct();			
+				for(VncVal c : coll) {
+					result = result.addAtEnd(VncList.of(c));
+				}
+								
+				VncList restColls = args.rest();
+				while (!restColls.isEmpty()) {
+					coll = Coerce.toVncSequence(restColls.first()).distinct();					
+					restColls = restColls.rest();					
+
+					VncList resultTmp = VncList.empty();
+					
+					for(VncVal tuple : result) {
+						for(VncVal c : coll) {
+							resultTmp = resultTmp.addAtEnd(((VncList)tuple).addAtEnd(c));
+						}
+					}
+					
+					result = resultTmp;
+				}
+				
+				return result;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction first =
 		new VncFunction(
 				"first",
@@ -7752,6 +7799,7 @@ public class CoreFunctions {
 			return false;
 		}
 	}
+	
 
 	
 
@@ -7889,6 +7937,7 @@ public class CoreFunctions {
 				.add(concat)
 				.add(interpose)
 				.add(interleave)
+				.add(cartesian)
 				.add(mapcat)
 				.add(map_invert)
 				.add(docoll)

@@ -265,6 +265,44 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_cartesian() {
+		final Venice venice = new Venice();
+		
+		// 2 lists
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0 1)))"));
+		
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '(0) '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '(0 1) '()))"));
+		
+		assertEquals("((0 0))", venice.eval("(pr-str (cartesian '(0) '(0)))"));
+		
+		assertEquals("((0 0) (0 1))", venice.eval("(pr-str (cartesian '(0) '(0 1)))"));
+		assertEquals("((0 0) (0 1) (0 2))", venice.eval("(pr-str (cartesian '(0) '(0 1 2)))"));
+		
+		assertEquals("((0 0) (1 0))", venice.eval("(pr-str (cartesian '(0 1) '(0)))"));
+		assertEquals("((0 0) (1 0) (2 0))", venice.eval("(pr-str (cartesian '(0 1 2) '(0)))"));
+		
+		// 3 lists
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '() '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '() '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '() '(0 1)))"));
+
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0) '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0) '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0) '(0 1)))"));
+
+		assertEquals("()", venice.eval("(pr-str (cartesian '(0) '(0) '()))"));
+		assertEquals("((0 0 0))", venice.eval("(pr-str (cartesian '(0) '(0) '(0)))"));
+		assertEquals("((0 0 0) (0 0 1))", venice.eval("(pr-str (cartesian '(0) '(0) '(0 1)))"));
+		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2) (2 3) (3 1) (3 2) (3 3))", venice.eval("(pr-str (cartesian '(1 2 3) '(1 2 3)))"));
+		assertEquals("((0 0 0) (0 0 1) (0 1 0) (0 1 1) (1 0 0) (1 0 1) (1 1 0) (1 1 1))", venice.eval("(pr-str (cartesian '(0 1) '(0 1) '(0 1)))"));
+	}
+	
+
+	@Test
 	public void test_char_Q() {
 		final Venice venice = new Venice();
 		

@@ -700,6 +700,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("partition-by"));
 		list_modify.addItem(getDocItem("interpose"));
 		list_modify.addItem(getDocItem("interleave"));
+		list_modify.addItem(getDocItem("cartesian"));
 		list_modify.addItem(getDocItem("mapcat"));
 		list_modify.addItem(getDocItem("flatten"));
 		list_modify.addItem(getDocItem("sort"));
@@ -760,6 +761,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("partition-by"));
 		vec_modify.addItem(getDocItem("interpose"));
 		vec_modify.addItem(getDocItem("interleave"));
+		vec_modify.addItem(getDocItem("cartesian"));
 		vec_modify.addItem(getDocItem("mapcat"));
 		vec_modify.addItem(getDocItem("flatten"));
 		vec_modify.addItem(getDocItem("sort"));
