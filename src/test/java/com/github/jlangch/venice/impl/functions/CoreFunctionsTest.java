@@ -3918,6 +3918,28 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_subset_Q() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(subset? #{} #{})"));
+		assertTrue((Boolean)venice.eval("(subset? #{} #{2 3})"));
+		assertTrue((Boolean)venice.eval("(subset? #{2 3} #{2 3})"));
+		assertTrue((Boolean)venice.eval("(subset? #{2 3} #{1 2 3 4})"));
+		assertFalse((Boolean)venice.eval("(subset? #{2 5} #{1 2 3 4})"));
+	}
+
+	@Test
+	public void test_superset_Q() {
+		final Venice venice = new Venice();
+
+		assertTrue((Boolean)venice.eval("(superset? #{} #{})"));
+		assertTrue((Boolean)venice.eval("(superset? #{2 3} #{})"));
+		assertTrue((Boolean)venice.eval("(superset? #{2 3} #{2 3})"));
+		assertTrue((Boolean)venice.eval("(superset? #{1 2 3 4} #{2 3})"));
+		assertFalse((Boolean)venice.eval("(superset? #{1 2 3 4} #{2 5})"));
+	}
+
+	@Test
 	public void test_subtract() {
 		final Venice venice = new Venice();
 

@@ -809,9 +809,14 @@ public class DocGenerator {
 		set_modify.addItem(getDocItem("conj"));
 		set_modify.addItem(getDocItem("conj!"));
 		set_modify.addItem(getDocItem("disj"));
-		set_modify.addItem(getDocItem("difference"));
-		set_modify.addItem(getDocItem("union"));
-		set_modify.addItem(getDocItem("intersection"));
+
+		final DocSection algebra = new DocSection("Algebra", "collections.sets.algebra");
+		sets.addSection(algebra);
+		algebra.addItem(getDocItem("difference"));
+		algebra.addItem(getDocItem("union"));
+		algebra.addItem(getDocItem("intersection"));
+		algebra.addItem(getDocItem("subset?"));
+		algebra.addItem(getDocItem("superset?"));
 
 		final DocSection set_test = new DocSection("Test", "collections.sets.test");
 		sets.addSection(set_test);

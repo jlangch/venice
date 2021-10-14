@@ -2483,6 +2483,56 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction subset_Q =
+		new VncFunction(
+				"subset?",
+				VncFunction
+					.meta()
+					.arglists("(subset? set1 set2)")
+					.doc("Return true if set1 is a subset of set2")
+					.examples(
+						"(subset? #{2 3} #{1 2 3 4})",
+						"(subset? #{2 5} #{1 2 3 4})")
+					.seeAlso("set", "superset?", "union", "difference", "intersection")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final VncSet set1 = Coerce.toVncSet(args.first());
+				final VncSet set2 = Coerce.toVncSet(args.second());
+
+				return VncBoolean.of(set1.stream().allMatch(v -> set2.contains(v)));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction superset_Q =
+		new VncFunction(
+				"superset?",
+				VncFunction
+					.meta()
+					.arglists("(superset? set1 set2)")
+					.doc("Return true if set1 is a superset of set2")
+					.examples(
+						"(superset? #{1 2 3 4} #{2 3} )",
+						"(superset? #{1 2 3 4} #{2 5})")
+					.seeAlso("set", "subset?", "union", "difference", "intersection")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final VncSet set1 = Coerce.toVncSet(args.first());
+				final VncSet set2 = Coerce.toVncSet(args.second());
+
+				return VncBoolean.of(set2.stream().allMatch(v -> set1.contains(v)));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction juxt =
 		new VncFunction(
 				"juxt",
@@ -7929,6 +7979,8 @@ public class CoreFunctions {
 				.add(difference)
 				.add(union)
 				.add(intersection)
+				.add(subset_Q)
+				.add(superset_Q)
 				.add(juxt)
 				.add(fnil)
 				.add(shuffle)
