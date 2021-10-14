@@ -24,31 +24,22 @@ package com.github.jlangch.venice;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.AppRunner;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
-import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.repl.CustomREPL;
 import com.github.jlangch.venice.impl.repl.REPL;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.collections.VncMap;
-import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
-import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
-import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
@@ -149,29 +140,18 @@ public class Launcher {
 						runScript(cli, macroexpand, interceptor, script, "script"));
 			}
 			else if (cli.switchPresent("-app")) {
+				System.out.println("Launching Venice application ...");
+
 				// run the Venice application archive
 				final File appFile = new File(suffixWithZipFileExt(cli.switchValue("-app")));
 				
-				// Merge the load paths from the command line with the application archive
-				final List<File> mergedLoadPaths = new ArrayList<>();
-				mergedLoadPaths.add(appFile.getAbsoluteFile());
-				mergedLoadPaths.addAll(loadPaths.getPaths());
-				final ILoadPaths appLoadPaths = LoadPathsFactory.of(
-													mergedLoadPaths, 
-													loadPaths.isUnlimitedAccess());
-
-				final IInterceptor interceptor = new AcceptAllInterceptor(appLoadPaths);
-
-				final VncMap manifest = getManifest(appFile);
-				
-				final String appName = Coerce.toVncString(manifest.get(new VncString("app-name"))).getValue();
-				final String mainFile = Coerce.toVncString(manifest.get(new VncString("main-file"))).getValue();
-						
-				System.out.println(String.format("Launching Venice application '%s' ...", appName));
-
-				final String appBootstrap = String.format("(do (load-file \"%s\") nil)", stripVeniceFileExt(mainFile));
-
-				runApp(cli, macroexpand, interceptor, appBootstrap, appName, appFile);
+				AppRunner.run(
+					appFile, 
+					cli.argsAsList(), 
+					loadPaths,
+					new PrintStream(System.out, true),
+					new PrintStream(System.err, true),
+					new InputStreamReader(System.in));
 			}
 			else if (cli.switchPresent("-app-repl")) {
 				final IInterceptor interceptor = new AcceptAllInterceptor(loadPaths);
@@ -248,28 +228,6 @@ public class Launcher {
 			 "  The options '-file', '-cp-file', '-script', '-app', and '-repl' exclude \n" +
 			 "  each other \n");
 	}
-
-	private static String runApp(
-			final CommandLineArgs cli,
-			final boolean macroexpand,
-			final IInterceptor interceptor,
-			final String script,
-			final String name,
-			final File appArchive
-	) {
-		final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
-			
-		final Env env = createEnv(
-							venice,
-							macroexpand,
-							RunMode.APP,
-							Arrays.asList(
-								convertCliArgsToVar(cli),
-								convertAppNameToVar(name),
-								convertAppArchiveToVar(appArchive)));
-
-		return venice.PRINT(venice.RE(script, name, env));
-	}
 	
 	private static String runScript(
 			final CommandLineArgs cli,
@@ -303,20 +261,8 @@ public class Launcher {
 					 .setStdinReader(new InputStreamReader(System.in));
 	}
 
-	private static Var convertAppNameToVar(final String appName) {
-		return new Var(new VncSymbol("*app-name*"), new VncString(appName), false);
-	}
-
-	private static Var convertAppArchiveToVar(final File appArchive) {
-		return new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false);
-	}
-
 	private static Var convertCliArgsToVar(final CommandLineArgs cli) {
 		return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
-	}
-
-	private static String stripVeniceFileExt(final String s) {
-		return StringUtil.removeEnd(s, ".venice");
 	}
 
 	private static String suffixWithVeniceFileExt(final String s) {
@@ -325,24 +271,5 @@ public class Launcher {
 
 	private static String suffixWithZipFileExt(final String s) {
 		return s == null ? null : (s.endsWith(".zip") ? s : s + ".zip");
-	}
-
-	private static VncMap getManifest(final File app) {
-		if (app.exists()) {
-			try {
-				final VncVal manifest = ZipFileSystemUtil.loadTextFileFromZip(app, new File("MANIFEST.MF"), "utf-8");			
-				return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(manifest)));
-			}
-			catch (Exception ex) {
-				throw new VncException(String.format(
-						"Failed to load manifest from Venice application archive '%s'.",
-						app.getPath()));
-			}
-		}
-		else {
-			throw new VncException(String.format(
-					"The Venice application archive '%s' does not exist",
-					app.getPath()));
-		}
 	}
 }
