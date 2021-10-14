@@ -690,6 +690,7 @@ public class REPL {
 		}
 		
 		final IInterceptor oldInterceptor = interceptor;
+		final VncKeyword oldRunMode = (VncKeyword)env.getGlobalOrNull(new VncSymbol("*run-mode*"));
 
 		try {
 			final VncMap manifest = getAppManifest(appArchive);
@@ -712,6 +713,9 @@ public class REPL {
 				new AcceptAllInterceptor(appLoadPaths),
 				venice.isMacroExpandOnLoad());
 
+			env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
+			env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.APP.mode));
+
 			env.setGlobal(new Var(new VncSymbol("*app-name*"), new VncString(appName), false));
 			env.setGlobal(new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false));
 
@@ -726,7 +730,10 @@ public class REPL {
 			reconfigureVenice(
 					oldInterceptor,
 					venice.isMacroExpandOnLoad());
-			
+
+			env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
+			env.setGlobal(new Var(new VncSymbol("*run-mode*"), oldRunMode));
+
 			env.removeGlobalSymbol(new VncSymbol("*app-name*"));
 			env.removeGlobalSymbol(new VncSymbol("*app-archive*"));
 		}
