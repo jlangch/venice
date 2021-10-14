@@ -576,7 +576,7 @@ public class REPL {
 					case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
 					case "launcher":    handleLauncherCommand(); break;
 					case "app":    		handleAppCommand(args, terminal, env); break;
-					case "app-manifest": handleAppManifestCommand(args, terminal, env); break;
+					case "manifest":    handleAppManifestCommand(args, terminal, env); break;
 					case "env":         handleEnvCommand(args, env); break;
 					case "hist":        handleHistoryCommand(args, terminal, history); break;
 					case "sandbox":     handleSandboxCommand(args, terminal, env); break;
