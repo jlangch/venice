@@ -5176,7 +5176,15 @@ public class CoreFunctions {
 						"the cartesian product.")
 					.examples(
 						"(cartesian [1 2 3] [1 2 3])",
-						"(cartesian [0 1] [0 1] [0 1])")
+						"(cartesian [0 1] [0 1] [0 1])",
+						"(do                                                  \n" +
+						"  (defn pairs [items]                                \n" +
+						"    (loop [c items acc []]                           \n" +
+						"      (if (empty? c)                                 \n" +
+						"        acc                                          \n" +
+						"        (let [p (cartesian [(first c)] (rest c))]    \n" +
+						"          (recur (rest c) (apply conj acc p))))))    \n" +
+						"  (pairs [0 1 2 3 4]))                                 ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
