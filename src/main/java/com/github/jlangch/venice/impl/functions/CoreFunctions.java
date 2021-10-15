@@ -6612,7 +6612,8 @@ public class CoreFunctions {
 						"is exhausted. Any remaining items in other colls are ignored. ")
 					.examples(
 						"(mapv inc [1 2 3 4])",
-						"(mapv + [1 2 3 4] [10 20 30 40])")
+						"(mapv + [1 2 3 4] [10 20 30 40])",
+						"(mapv vector [1 2 3 4] [10 20 30 40])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

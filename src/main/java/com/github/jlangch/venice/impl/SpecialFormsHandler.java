@@ -870,7 +870,9 @@ public class SpecialFormsHandler {
 			specialFormCallValidation("dorun");
 			assertArity("dorun", FnType.SpecialForm, args, 2);
 			
-			final long count = Coerce.toVncLong(args.first()).getValue();
+			
+			final VncVal vCount = evaluator.evaluate(args.first(), env, false);				
+			final long count = Coerce.toVncLong(vCount).getValue();
 			if (count <= 0) return Nil;
 			
 			final VncVal expr = args.second();
