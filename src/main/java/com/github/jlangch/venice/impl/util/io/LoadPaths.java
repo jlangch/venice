@@ -110,6 +110,32 @@ public class LoadPaths implements ILoadPaths {
 	}
 
 	@Override
+	public boolean isOnLoadPath(final File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("A file must not be null");
+		}
+		else if (unlimitedAccess) {
+			return true;
+		}
+		else {
+			final File f = canonical(file);
+			final File dir = f.getParentFile();
+			
+			// check load paths
+			for(File p : paths) {
+				if (p.isDirectory()) {
+					if (dir.equals(p)) return true;
+				}
+				else if (p.isFile()) {
+					if (f.equals(p)) return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
+	@Override
 	public boolean isUnlimitedAccess() {
 		return unlimitedAccess;
 	}

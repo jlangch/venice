@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import java.io.File;
+
 import com.github.jlangch.venice.SecurityException;
 
 
@@ -194,7 +196,21 @@ public interface IInterceptor {
 	 * @throws SecurityException if the execution time exceeds the configured limit.
 	 */
 	void validateMaxExecutionTime() throws SecurityException;
-	
+
+	/**
+	 * Validates that the file can be read
+	 * 
+	 * @throws SecurityException if the file can not be read.
+	 */
+	void validateFileRead(File file) throws SecurityException;
+
+	/**
+	 * Validates that the file can be written
+	 * 
+	 * @throws SecurityException if the file can not be written.
+	 */
+	void validateFileWrite(File file) throws SecurityException;
+
 	/**
 	 * @return the load paths for loading Venice files and resources
 	 */
