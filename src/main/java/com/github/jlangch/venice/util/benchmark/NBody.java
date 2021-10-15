@@ -26,7 +26,7 @@
  * https://benchmarksgame-team.pages.debian.net/benchmarksgame/program/nbody-java-4.html
  */
 
-package com.github.jlangch.venice.util;
+package com.github.jlangch.venice.util.benchmark;
 
 import com.github.jlangch.venice.impl.util.StopWatch;
 
