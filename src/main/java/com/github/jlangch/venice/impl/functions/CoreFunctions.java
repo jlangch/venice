@@ -3674,7 +3674,10 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(get map key)", "(get map key not-found)")
-					.doc("Returns the value mapped to key, not-found or nil if key not present.")
+					.doc(
+						"Returns the value mapped to key, not-found or nil if key not " +
+						"present.\n\n" +
+						"Note: `(get :x foo)` is almost twice as fast as `(:x foo)`")
 					.examples(
 						"(get {:a 1 :b 2} :b)",
 						";; keywords act like functions on maps \n" +
@@ -5214,27 +5217,19 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction cartesian =
+	public static VncFunction cartesian_product =
 		new VncFunction(
-				"cartesian",
+				"cartesian-product",
 				VncFunction
 					.meta()
-					.arglists("(cartesian coll1 coll2 coll*)")
+					.arglists("(cartesian-product coll1 coll2 coll*)")
 					.doc(
 						"Returns the cartesian product of two or more collections.\n\n" +
 						"Removes all duplicates items in the collections before computing " +
 						"the cartesian product.")
 					.examples(
-						"(cartesian [1 2 3] [1 2 3])",
-						"(cartesian [0 1] [0 1] [0 1])",
-						"(do                                                  \n" +
-						"  (defn pairs [items]                                \n" +
-						"    (loop [c items acc []]                           \n" +
-						"      (if (empty? c)                                 \n" +
-						"        acc                                          \n" +
-						"        (let [p (cartesian [(first c)] (rest c))]    \n" +
-						"          (recur (rest c) (apply conj acc p))))))    \n" +
-						"  (pairs [0 1 2 3 4]))                                 ")
+						"(cartesian-product [1 2 3] [1 2 3])",
+						"(cartesian-product [0 1] [0 1] [0 1])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5261,6 +5256,52 @@ public class CoreFunctions {
 					}
 					
 					result = resultTmp;
+				}
+				
+				return result;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction combinations =
+		new VncFunction(
+				"combinations",
+				VncFunction
+					.meta()
+					.arglists("(combinations coll n)")
+					.doc(
+						"All the unique ways of taking n different elements from the items " +
+						"in the collection")
+					.examples(
+						"(combinations [0 1 2 3] 2)",
+						"(combinations [0 1 2 3] 3)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final VncSequence coll = Coerce.toVncSequence(args.first()).distinct();			
+				final long n = Coerce.toVncLong(args.second()).getValue();			
+
+				if (n < 2) {
+					throw new VncException(String.format(
+							"The argument n must be greater or equal to 2 while calling function 'combinations'. Got n=%d.",
+							n));
+				}
+				
+				VncVal first = coll.first();
+				VncSequence items = coll.rest();
+
+				VncList result = VncList.empty();
+
+				while (!items.isEmpty()) {
+					for(VncVal v : items) {
+						result = result.addAtEnd(VncList.of(first, v));
+					}
+	
+					first = items.first();
+					items = items.rest();
 				}
 				
 				return result;
@@ -7998,7 +8039,8 @@ public class CoreFunctions {
 				.add(concat)
 				.add(interpose)
 				.add(interleave)
-				.add(cartesian)
+				.add(cartesian_product)
+				.add(combinations)
 				.add(mapcat)
 				.add(map_invert)
 				.add(docoll)

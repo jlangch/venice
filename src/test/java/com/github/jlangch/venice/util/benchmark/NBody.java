@@ -36,7 +36,7 @@ public class NBody {
 	public static void main(String[] args) {
 		run(Integer.parseInt(args[0]));
 	}
-	
+
 	public static void run(final int iterations) {
 		
 		final NBodySystem bodies = new NBodySystem();
@@ -144,7 +144,7 @@ public class NBody {
 		
 		private static final int LENGTH = 5;
 
-		private final Body[] bodies;
+		public final Body[] bodies;
 	}
 
 	private static class Body {

@@ -265,42 +265,53 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
-	public void test_cartesian() {
+	public void test_cartesian_product() {
 		final Venice venice = new Venice();
 		
 		// 2 lists
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '()))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0)))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0 1)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '(0 1)))"));
 		
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '()))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '(0) '()))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '(0 1) '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '(0) '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '(0 1) '()))"));
 		
-		assertEquals("((0 0))", venice.eval("(pr-str (cartesian '(0) '(0)))"));
+		assertEquals("((0 0))", venice.eval("(pr-str (cartesian-product '(0) '(0)))"));
 		
-		assertEquals("((0 0) (0 1))", venice.eval("(pr-str (cartesian '(0) '(0 1)))"));
-		assertEquals("((0 0) (0 1) (0 2))", venice.eval("(pr-str (cartesian '(0) '(0 1 2)))"));
+		assertEquals("((0 0) (0 1))", venice.eval("(pr-str (cartesian-product '(0) '(0 1)))"));
+		assertEquals("((0 0) (0 1) (0 2))", venice.eval("(pr-str (cartesian-product '(0) '(0 1 2)))"));
 		
-		assertEquals("((0 0) (1 0))", venice.eval("(pr-str (cartesian '(0 1) '(0)))"));
-		assertEquals("((0 0) (1 0) (2 0))", venice.eval("(pr-str (cartesian '(0 1 2) '(0)))"));
+		assertEquals("((0 0) (1 0))", venice.eval("(pr-str (cartesian-product '(0 1) '(0)))"));
+		assertEquals("((0 0) (1 0) (2 0))", venice.eval("(pr-str (cartesian-product '(0 1 2) '(0)))"));
 		
 		// 3 lists
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '() '()))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '() '(0)))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '() '(0 1)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '() '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '() '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '() '(0 1)))"));
 
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0) '()))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0) '(0)))"));
-		assertEquals("()", venice.eval("(pr-str (cartesian '() '(0) '(0 1)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '(0) '()))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '(0) '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '() '(0) '(0 1)))"));
 
-		assertEquals("()", venice.eval("(pr-str (cartesian '(0) '(0) '()))"));
-		assertEquals("((0 0 0))", venice.eval("(pr-str (cartesian '(0) '(0) '(0)))"));
-		assertEquals("((0 0 0) (0 0 1))", venice.eval("(pr-str (cartesian '(0) '(0) '(0 1)))"));
-		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2) (2 3) (3 1) (3 2) (3 3))", venice.eval("(pr-str (cartesian '(1 2 3) '(1 2 3)))"));
-		assertEquals("((0 0 0) (0 0 1) (0 1 0) (0 1 1) (1 0 0) (1 0 1) (1 1 0) (1 1 1))", venice.eval("(pr-str (cartesian '(0 1) '(0 1) '(0 1)))"));
+		assertEquals("()", venice.eval("(pr-str (cartesian-product '(0) '(0) '()))"));
+		assertEquals("((0 0 0))", venice.eval("(pr-str (cartesian-product '(0) '(0) '(0)))"));
+		assertEquals("((0 0 0) (0 0 1))", venice.eval("(pr-str (cartesian-product '(0) '(0) '(0 1)))"));
+		assertEquals("((1 1) (1 2) (1 3) (2 1) (2 2) (2 3) (3 1) (3 2) (3 3))", venice.eval("(pr-str (cartesian-product '(1 2 3) '(1 2 3)))"));
+		assertEquals("((0 0 0) (0 0 1) (0 1 0) (0 1 1) (1 0 0) (1 0 1) (1 1 0) (1 1 1))", venice.eval("(pr-str (cartesian-product '(0 1) '(0 1) '(0 1)))"));
 	}
 	
+	@Test
+	public void test_combinations() {
+		final Venice venice = new Venice();
+		
+		assertEquals("()", venice.eval("(pr-str (combinations '() 2))"));
+		assertEquals("()", venice.eval("(pr-str (combinations '(0) 2))"));
+		assertEquals("((0 1))", venice.eval("(pr-str (combinations '(0 1) 2))"));
+		assertEquals("((0 1) (0 2) (1 2))", venice.eval("(pr-str (combinations '(0 1 2) 2))"));
+		assertEquals("((0 1) (0 2) (0 3) (1 2) (1 3) (2 3))", venice.eval("(pr-str (combinations '(0 1 2 3) 2))"));
+		assertEquals("((0 1) (0 2) (0 3) (0 4) (1 2) (1 3) (1 4) (2 3) (2 4) (3 4))", venice.eval("(pr-str (combinations '(0 1 2 3 4) 2))"));
+	}
 
 	@Test
 	public void test_char_Q() {

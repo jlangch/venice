@@ -141,3 +141,9 @@
 [Scott Wlaschin](https://www.youtube.com/watch?v=IYzDFHx6QPY)
 
 [John Hughes](https://vimeo.com/68383317)
+
+
+
+## Other
+
+[Bayes Theorem](https://www.youtube.com/watch?v=HZGCoVF3YvM)

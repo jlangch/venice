@@ -877,6 +877,31 @@ public class SpecialFormsHandler {
 			
 			final VncVal expr = args.second();
 	
+			if (Types.isVncSymbol(expr)) {
+				final VncVal v = env.getOrNil((VncSymbol)expr);
+				
+				if (Types.isVncFunction(v)) {
+					// run the function
+					final VncFunction fn = (VncFunction)v;
+					
+					if (fn.getFixedArgsCount() == 1) {
+						// one arg function: pass the counter value
+						for(int ii=0; ii<count-1; ii++) {
+							fn.apply(VncList.of(new VncLong(ii)));
+						}
+						return fn.apply(VncList.of(new VncLong(count-1)));
+					}
+					else {
+						// call as zero arg function
+						final VncList fnArgs = VncList.empty();
+						for(int ii=0; ii<count-1; ii++) {
+							fn.apply(fnArgs);
+						}
+						return fn.apply(fnArgs);
+					}
+				}
+			}
+
 			try {
 				final VncVal first = evaluator.evaluate(expr, env, false);
 				

@@ -1,0 +1,185 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2021 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice application archive functions
+
+
+(ns nbody)
+
+
+(def PI 3.141592653589793)
+(def SOLAR_MASS (* 4.0 PI PI))
+(def DAYS_PER_YEAR 365.24)
+
+(defn body [name pos x y z vx vy vz mass]
+  (mutable-map :name name
+               :pos pos
+               :x x
+               :y y
+               :z z
+               :vx vx
+               :vy vy
+               :vz vz
+               :mass mass))
+
+
+(def sun (body "sun"
+                0
+                0.0
+                0.0
+                0.0
+                0.0
+                0.0
+                0.0
+                SOLAR_MASS))
+
+(def jupiter (body "jupiter"
+                    1
+                    4.84143144246472090e+00
+                    -1.16032004402742839e+00
+                    -1.03622044471123109e-01
+                    (* 1.66007664274403694e-03  DAYS_PER_YEAR)
+                    (* 7.69901118419740425e-03  DAYS_PER_YEAR)
+                    (* -6.90460016972063023e-05 DAYS_PER_YEAR)
+                    (* 9.54791938424326609e-04  SOLAR_MASS)))
+
+(def saturn (body "saturn"
+                   2
+                   8.34336671824457987e+00
+                   4.12479856412430479e+00
+                   -4.03523417114321381e-01
+                   (* -2.76742510726862411e-03 DAYS_PER_YEAR)
+                   (* 4.99852801234917238e-03  DAYS_PER_YEAR)
+                   (* 2.30417297573763929e-05  DAYS_PER_YEAR)
+                   (* 2.85885980666130812e-04  SOLAR_MASS)))
+
+(def uranus (body "uranus"
+                   3
+                    1.28943695621391310e+01
+                   -1.51111514016986312e+01
+                   -2.23307578892655734e-01
+                   (* 2.96460137564761618e-03  DAYS_PER_YEAR)
+                   (* 2.37847173959480950e-03  DAYS_PER_YEAR)
+                   (* -2.96589568540237556e-05 DAYS_PER_YEAR)
+                   (* 4.36624404335156298e-05  SOLAR_MASS)))
+
+(def neptune (body "neptune"
+                    4
+                    1.53796971148509165e+01
+                    -2.59193146099879641e+01
+                    1.79258772950371181e-01
+                    (* 2.68067772490389322e-03  DAYS_PER_YEAR)
+                    (* 1.62824170038242295e-03  DAYS_PER_YEAR)
+                    (* -9.51592254519715870e-05 DAYS_PER_YEAR)
+                    (* 5.15138902046611451e-05  SOLAR_MASS)))
+
+(def system (mutable-vector sun jupiter saturn uranus neptune))
+
+(def distinct-body-pairs (combinations system 2))
+
+
+(defn run [iterations]
+  ;; 100'000 runs     complex types for bodies:   43s
+  ;;                  hash maps for bodies:       23s
+  ;;                  mutable types:              16s
+  ;; Energy (start):  -0.1690751638285245
+  ;; Energy (end):    -0.1690798593916589
+  (init system)
+  (println "Energy: "(energy system))
+  (dorun iterations (advance system 0.01))
+  (println "Energy: "(energy system)))
+
+
+(defn offset-momentum [body px py pz]
+  (let [mass (:mass body)]
+    (assoc! body :vx (/ (negate px) mass)
+                 :vy (/ (negate py) mass)
+                 :vz (/ (negate pz) mass))))
+
+
+(defn distance [b1 b2]
+  (let [dx (- (:x b1) (:x b2))
+        dy (- (:y b1) (:y b2))
+        dz (- (:z b1) (:z b2))]
+    (sqrt (+ (square dx) (square dy) (square dz)))))
+
+
+(defn init [bodies]
+  (let [px   (reduce #(+ %1 (* (:vx %2) (:mass %2))) 0.0 bodies)
+        py   (reduce #(+ %1 (* (:vy %2) (:mass %2))) 0.0 bodies)
+        pz   (reduce #(+ %1 (* (:vz %2) (:mass %2))) 0.0 bodies)
+        sun  (first bodies)]
+    (offset-momentum sun px py pz)))
+
+
+(defn advance-velocity [b1 b2 dt]
+  (let [dx       (- (:x b1) (:x b2))
+        dy       (- (:y b1) (:y b2))
+        dz       (- (:z b1) (:z b2))
+        dsquared (+ (square dx) (square dy) (square dz))
+        distance (sqrt dsquared)
+        mag      (/ dt dsquared distance)
+        b1-mass  (:mass b1)
+        b2-mass  (:mass b2)]
+     (assoc! b1 :vx (- (:vx b1) (* dx b2-mass mag))
+                :vy (- (:vy b1) (* dy b2-mass mag))
+                :vz (- (:vz b1) (* dz b2-mass mag)))
+     (assoc! b2 :vx (+ (:vx b2) (* dx b1-mass mag))
+                :vy (+ (:vy b2) (* dy b1-mass mag))
+                :vz (+ (:vz b2) (* dz b1-mass mag)))))
+
+
+(defn advance-movement [body dt]
+  (assoc! body :x (+ (:x body) (* dt (:vx body)))
+               :y (+ (:y body) (* dt (:vy body)))
+               :z (+ (:z body) (* dt (:vz body)))))
+
+
+(defn advance [bodies dt]
+  (map #(advance-velocity (first %) (second %) dt) distinct-body-pairs)
+  (map #(advance-movement % dt) bodies))
+
+
+(defn energy [bodies]
+  (let [e+  (reduce #(+ %1 (kinetic-energy %2))
+                    0.0
+                    bodies)
+        e-  (reduce #(+ %1 (gravitational-energy (first %2) (second %2)))
+                    0.0
+                    distinct-body-pairs)]
+  (- e+ e-)))
+
+
+(defn kinetic-energy [body]
+  (* 0.5
+     (:mass body)
+     (+ (square (:vx body))
+        (square (:vy body))
+        (square (:vz body)))))
+
+
+(defn gravitational-energy [body1 body2]
+  (let [dx       (- (:x body1) (:x body2))
+        dy       (- (:y body1) (:y body2))
+        dz       (- (:z body1) (:z body2))
+        distance (sqrt (+ (square dx) (square dy) (square dz)))]
+    (/ (* (:mass body1) (:mass body2))
+       distance)))

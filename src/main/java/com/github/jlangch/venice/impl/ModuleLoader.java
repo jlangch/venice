@@ -87,15 +87,17 @@ public class ModuleLoader {
 						file));
 		}
 
+		final File f = new File(file);
+				
 		final IInterceptor interceptor = ThreadContext.getInterceptor();
 		
-		final String data = interceptor.getLoadPaths().loadVeniceFile(new File(file));
+		final String data = interceptor.getLoadPaths().loadVeniceFile(f);
 			
 		if (data == null) {
-			throw new VncException("Failed to load the file '" + file + "'!");
+			throw new VncException("Failed to load the file '" + f + "'!");
 		}
 		else {
-			externalFiles.put(new File(file).getName(), data);		
+			externalFiles.put(f.getName(), data);		
 			return data;
 		}
 	} 

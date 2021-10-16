@@ -1024,8 +1024,22 @@ public class SpecialFormsDoc {
 					.arglists("(dorun count expr)")
 					.doc(
 						"Runs the expr count times in the most effective way. It's main purpose is " +
-						"supporting benchmark test. Returns the expression result of the first " +
-						"invocation.")
+						"supporting benchmark tests. Returns the expression result of the last " +
+						"invocation.\n\n" +
+						"*Note:*¶" +
+						"The expression is evaluated for every run. " +
+						"Alternatively a zero or one arg function referenced by a symbol can be " +
+						"passed:\n\n" +
+						"```                      \n" +
+						"(let [f (fn [] (+ 1 1))] \n" +
+						"  (dorun 10 f))          \n" +
+						"```                      \n\n" +
+						"When passing a one arg function `dorun` passes the incrementing counter " +
+						"value (0..N) to the function:\n\n" +
+						"```                       \n" +
+						"(let [f (fn [x] (+ x 1))] \n" +
+						"  (dorun 10 f))           \n" +
+						"```                         ")
 					.examples("(dorun 10 (+ 1 1))")
 					.build()
 		) {

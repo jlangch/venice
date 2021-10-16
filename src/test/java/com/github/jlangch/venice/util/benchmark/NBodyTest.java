@@ -23,14 +23,17 @@ package com.github.jlangch.venice.util.benchmark;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.util.benchmark.NBody;
-
 
 public class NBodyTest {
 
 	@Test
 	public void testJava() {
 		NBody.run(50_000_000);
+	}
+
+	@Test
+	public void testJava2() {
+		NBody.run(100_000);
 	}
 
 	@Test
