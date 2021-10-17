@@ -30,6 +30,15 @@ import org.junit.jupiter.api.Test;
 public class SpecialFormsTest_dorun {
 	
 	@Test
+	public void test() {
+		final Venice venice = new Venice();
+
+		final String script ="(+ (+ 1 1) 2)";
+
+		assertEquals(4L, venice.eval(script));
+	}
+	
+	@Test
 	public void test_dorun_expr() {
 		final Venice venice = new Venice();
 

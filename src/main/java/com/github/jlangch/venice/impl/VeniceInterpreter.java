@@ -899,30 +899,25 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		if (seq instanceof VncLazySeq) {
 			return seq;
 		}
-		
-		switch(seq.size()) {
-			case 0: 
-				return seq;
-			case 1:
-				return seq.withVariadicValues(
-							evaluate(seq.first(), env, false));
-			case 2: 
-				return seq.withVariadicValues(
-							evaluate(seq.first(), env, false), 
-							evaluate(seq.second(), env, false));
-			case 3: 
-				return seq.withVariadicValues(
-							evaluate(seq.first(), env, false), 
-							evaluate(seq.second(), env, false),
-							evaluate(seq.third(), env, false));
-			case 4: 
-				return seq.withVariadicValues(
-							evaluate(seq.first(), env, false), 
-							evaluate(seq.second(), env, false),
-							evaluate(seq.third(), env, false),
-							evaluate(seq.fourth(), env, false));
-			default:
-				return seq.map(v -> evaluate(v, env, false));
+		else {
+			switch(seq.size()) {
+				case 0: return seq;
+				case 1: return seq.withVariadicValues(
+								evaluate(seq.first(), env, false));
+				case 2: return seq.withVariadicValues(
+								evaluate(seq.first(), env, false), 
+								evaluate(seq.second(), env, false));
+				case 3: return seq.withVariadicValues(
+								evaluate(seq.first(), env, false), 
+								evaluate(seq.second(), env, false),
+								evaluate(seq.third(), env, false));
+				case 4: return seq.withVariadicValues(
+								evaluate(seq.first(), env, false), 
+								evaluate(seq.second(), env, false),
+								evaluate(seq.third(), env, false),
+								evaluate(seq.fourth(), env, false));
+				default: return seq.map(v -> evaluate(v, env, false));
+			}
 		}
 	}
 

@@ -206,10 +206,13 @@ public class VncTinyVector extends VncVector {
 
 	@Override
 	public VncVector map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		final VncVal[] values = new VncVal[len];
-		int idx = 0;
-		
-		if (len > 0) {
+		if (len == 0) {
+			return EMPTY;
+		}
+		else {
+			final VncVal[] values = new VncVal[len];
+			int idx = 0;
+			
 			values[idx++] = mapper.apply(first);
 			if (len > 1) {
 				values[idx++] = mapper.apply(second);
@@ -220,9 +223,9 @@ public class VncTinyVector extends VncVector {
 					}
 				}
 			}
+			
+			return VncTinyVector.ofArr(values, getMeta()); 
 		}
-		
-		return VncTinyVector.ofArr(values, getMeta()); 
 	}
 
 	@Override

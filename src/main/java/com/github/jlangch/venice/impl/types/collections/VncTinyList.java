@@ -173,10 +173,13 @@ public class VncTinyList extends VncList {
 
 	@Override
 	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		final VncVal[] values = new VncVal[len];
-		int idx = 0;
-		
-		if (len > 0) {
+		if (len == 0) {
+			return EMPTY;
+		}
+		else {
+			final VncVal[] values = new VncVal[len];
+			int idx = 0;
+			
 			values[idx++] = mapper.apply(first);
 			if (len > 1) {
 				values[idx++] = mapper.apply(second);
@@ -187,9 +190,9 @@ public class VncTinyList extends VncList {
 					}
 				}
 			}
+			
+			return VncTinyList.ofArr(values, getMeta()); 
 		}
-		
-		return VncTinyList.ofArr(values, getMeta()); 
 	}
 
 	@Override

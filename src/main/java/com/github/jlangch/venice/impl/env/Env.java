@@ -125,12 +125,15 @@ public class Env implements Serializable {
 	 */
 	public VncVal get(final VncSymbol sym) {
 		final VncVal val = getOrElse(sym, null);
-		if (val != null) return val;
-
-		try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
-			throw new SymbolNotFoundException(
-					String.format("Symbol '%s' not found.", sym.getQualifiedName()),
-					sym.getQualifiedName()); 
+		if (val != null) {
+			return val;
+		}
+		else {
+			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
+				throw new SymbolNotFoundException(
+						String.format("Symbol '%s' not found.", sym.getQualifiedName()),
+						sym.getQualifiedName()); 
+			}
 		}
 	}
 
