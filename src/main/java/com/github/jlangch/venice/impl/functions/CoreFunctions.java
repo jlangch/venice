@@ -5230,6 +5230,7 @@ public class CoreFunctions {
 					.examples(
 						"(cartesian-product [1 2 3] [1 2 3])",
 						"(cartesian-product [0 1] [0 1] [0 1])")
+					.seeAlso("combinations")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5237,14 +5238,18 @@ public class CoreFunctions {
 
 				VncList result = VncList.empty();
 
-				VncSequence coll = Coerce.toVncSequence(args.first()).distinct();			
+				VncSequence coll = (VncSequence)sort(
+										"combinations", 
+										Coerce.toVncSequence(args.first()).distinct());			
 				for(VncVal c : coll) {
 					result = result.addAtEnd(VncList.of(c));
 				}
 								
 				VncList restColls = args.rest();
 				while (!restColls.isEmpty()) {
-					coll = Coerce.toVncSequence(restColls.first()).distinct();					
+					coll = (VncSequence)sort(
+								"combinations", 
+								Coerce.toVncSequence(restColls.first()).distinct());					
 					restColls = restColls.rest();					
 
 					VncList resultTmp = VncList.empty();
@@ -5276,37 +5281,39 @@ public class CoreFunctions {
 					.examples(
 						"(combinations [0 1 2 3] 2)",
 						"(combinations [0 1 2 3] 3)")
+					.seeAlso("cartesian-product")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2);
-
-				final VncSequence coll = Coerce.toVncSequence(args.first()).distinct();			
-				final long n = Coerce.toVncLong(args.second()).getValue();			
-
+	
+				VncSequence coll = (VncSequence)sort(
+												"combinations", 
+												Coerce.toVncSequence(args.first()).distinct());			
+				final int n = Coerce.toVncLong(args.second()).getIntValue();			
+			
 				if (n < 2) {
 					throw new VncException(String.format(
 							"The argument n must be greater or equal to 2 while calling function 'combinations'. Got n=%d.",
 							n));
 				}
-				
-				VncVal first = coll.first();
-				VncSequence items = coll.rest();
 
 				VncList result = VncList.empty();
 
-				while (!items.isEmpty()) {
-					for(VncVal v : items) {
-						result = result.addAtEnd(VncList.of(first, v));
-					}
-	
-					first = items.first();
-					items = items.rest();
-				}
-				
-				return result;
-			}
+				while(!coll.isEmpty()) {
+					VncSequence head = coll.take(n-1);
+					VncSequence rest = coll.drop(n-1);
 
+					for(VncVal v : rest) {
+						result = result.addAtEnd(head.addAtEnd(v));
+					}
+
+					coll = coll.drop(1);
+				}
+
+				return result;
+		}
+	
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -7849,7 +7856,19 @@ public class CoreFunctions {
 	///////////////////////////////////////////////////////////////////////////
 	// Helpers
 	///////////////////////////////////////////////////////////////////////////
-	
+
+	private static VncVal sort(
+		    final String fnName,
+		    final VncVal coll
+		) {
+		  return sort(
+		      fnName,
+		      coll,
+		      (x,y) -> Coerce
+		            .toVncLong(compare.apply(VncList.of(x,y)))
+		            .getIntValue());
+		}
+
 	private static VncVal sort(
 			final String fnName,
 			final VncVal coll,

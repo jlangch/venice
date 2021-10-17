@@ -305,12 +305,29 @@ public class CoreFunctionsTest {
 	public void test_combinations() {
 		final Venice venice = new Venice();
 		
+		// n = 2
 		assertEquals("()", venice.eval("(pr-str (combinations '() 2))"));
 		assertEquals("()", venice.eval("(pr-str (combinations '(0) 2))"));
 		assertEquals("((0 1))", venice.eval("(pr-str (combinations '(0 1) 2))"));
 		assertEquals("((0 1) (0 2) (1 2))", venice.eval("(pr-str (combinations '(0 1 2) 2))"));
 		assertEquals("((0 1) (0 2) (0 3) (1 2) (1 3) (2 3))", venice.eval("(pr-str (combinations '(0 1 2 3) 2))"));
 		assertEquals("((0 1) (0 2) (0 3) (0 4) (1 2) (1 3) (1 4) (2 3) (2 4) (3 4))", venice.eval("(pr-str (combinations '(0 1 2 3 4) 2))"));
+		
+		// n = 3
+		assertEquals("()", venice.eval("(pr-str (combinations '() 3))"));
+		assertEquals("()", venice.eval("(pr-str (combinations '(0) 3))"));
+		assertEquals("()", venice.eval("(pr-str (combinations '(0 1) 3))"));
+		assertEquals("((0 1 2))", venice.eval("(pr-str (combinations '(0 1 2) 3))"));
+		assertEquals("((0 1 2) (0 1 3) (1 2 3))", venice.eval("(pr-str (combinations '(0 1 2 3) 3))"));
+		assertEquals("((0 1 2) (0 1 3) (0 1 4) (1 2 3) (1 2 4) (2 3 4))", venice.eval("(pr-str (combinations '(0 1 2 3 4) 3))"));
+		
+		// n = 4
+		assertEquals("()", venice.eval("(pr-str (combinations '() 4))"));
+		assertEquals("()", venice.eval("(pr-str (combinations '(0) 4))"));
+		assertEquals("()", venice.eval("(pr-str (combinations '(0 1) 4))"));
+		assertEquals("()", venice.eval("(pr-str (combinations '(0 1 2) 4))"));
+		assertEquals("((0 1 2 3))", venice.eval("(pr-str (combinations '(0 1 2 3) 4))"));
+		assertEquals("((0 1 2 3) (0 1 2 4) (1 2 3 4))", venice.eval("(pr-str (combinations '(0 1 2 3 4) 4))"));
 	}
 
 	@Test
