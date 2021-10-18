@@ -14,6 +14,8 @@ and this project adheres to
 ### Added
 
 - support for running app archives from the REPL
+- functions `cartesian-product` and `compositions`
+- functions `subset?` and `superset`
 
 ### Fixed
 
