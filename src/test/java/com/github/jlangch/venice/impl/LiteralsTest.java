@@ -100,16 +100,67 @@ public class LiteralsTest {
 		assertEquals(0D, (Double)venice.eval("0.0"));
 		assertEquals(-10D, (Double)venice.eval("-10.0"));
 		assertEquals(10D, (Double)venice.eval("10.0"));
-		
+
+
+		assertEquals(10D, (Double)venice.eval("10.0e0"));
+		assertEquals(10D, (Double)venice.eval("10.0E0"));
+		assertEquals(-10D, (Double)venice.eval("-10.0e0"));
+		assertEquals(-10D, (Double)venice.eval("-10.0E0"));
+
+		assertEquals(10D, (Double)venice.eval("10.0e00"));
+		assertEquals(10D, (Double)venice.eval("10.0E00"));
+		assertEquals(-10D, (Double)venice.eval("-10.0e00"));
+		assertEquals(-10D, (Double)venice.eval("-10.0E00"));
+
+		assertEquals(10D, (Double)venice.eval("10.0e+0"));
+		assertEquals(10D, (Double)venice.eval("10.0E+0"));
+		assertEquals(-10D, (Double)venice.eval("-10.0e+0"));
+		assertEquals(-10D, (Double)venice.eval("-10.0E+0"));
+
+		assertEquals(10D, (Double)venice.eval("10.0e+00"));
+		assertEquals(10D, (Double)venice.eval("10.0E+00"));
+		assertEquals(-10D, (Double)venice.eval("-10.0e+00"));
+		assertEquals(-10D, (Double)venice.eval("-10.0E+00"));
+
+		assertEquals(10D, (Double)venice.eval("10.0e-0"));
+		assertEquals(10D, (Double)venice.eval("10.0E-0"));
+		assertEquals(-10D, (Double)venice.eval("-10.0e-0"));
+		assertEquals(-10D, (Double)venice.eval("-10.0E-0"));
+
+		assertEquals(10D, (Double)venice.eval("10.0e-00"));
+		assertEquals(10D, (Double)venice.eval("10.0E-00"));
+		assertEquals(-10D, (Double)venice.eval("-10.0e-00"));
+		assertEquals(-10D, (Double)venice.eval("-10.0E-00"));
+
 		assertEquals(1000000D, (Double)venice.eval("10.0e5"));
 		assertEquals(1000000D, (Double)venice.eval("10.0E5"));
 		assertEquals(-1000000D, (Double)venice.eval("-10.0e5"));
 		assertEquals(-1000000D, (Double)venice.eval("-10.0E5"));
 		
+		assertEquals(1000000D, (Double)venice.eval("10.0e05"));
+		assertEquals(1000000D, (Double)venice.eval("10.0E05"));
+		assertEquals(-1000000D, (Double)venice.eval("-10.0e05"));
+		assertEquals(-1000000D, (Double)venice.eval("-10.0E05"));
+
+		assertEquals(1000000D, (Double)venice.eval("10.0e+5"));
+		assertEquals(1000000D, (Double)venice.eval("10.0E+5"));
+		assertEquals(-1000000D, (Double)venice.eval("-10.0e+5"));
+		assertEquals(-1000000D, (Double)venice.eval("-10.0E+5"));
+		
+		assertEquals(1000000D, (Double)venice.eval("10.0e+05"));
+		assertEquals(1000000D, (Double)venice.eval("10.0E+05"));
+		assertEquals(-1000000D, (Double)venice.eval("-10.0e+05"));
+		assertEquals(-1000000D, (Double)venice.eval("-10.0E+05"));
+		
 		assertEquals(1.0E-4D, (Double)venice.eval("10.0e-5"));
 		assertEquals(1.0E-4D, (Double)venice.eval("10.0E-5"));
 		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0e-5"));
 		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0E-5"));
+		
+		assertEquals(1.0E-4D, (Double)venice.eval("10.0e-05"));
+		assertEquals(1.0E-4D, (Double)venice.eval("10.0E-05"));
+		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0e-05"));
+		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0E-05"));
 	}
 	
 	@Test

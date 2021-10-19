@@ -49,15 +49,15 @@
                 SOLAR_MASS))
 
 (def jupiter (body "jupiter"
-                    4.84143144246472090e+00
-                    -1.16032004402742839e+00
-                    -1.03622044471123109e-01
-                    (* 1.66007664274403694e-03  DAYS_PER_YEAR)
-                    (* 7.69901118419740425e-03  DAYS_PER_YEAR)
-                    (* -6.90460016972063023e-05 DAYS_PER_YEAR)
-                    (* 9.54791938424326609e-04  SOLAR_MASS)))
+                   4.84143144246472090e+00
+                   -1.16032004402742839e+00
+                   -1.03622044471123109e-01
+                   (* 1.66007664274403694e-03  DAYS_PER_YEAR)
+                   (* 7.69901118419740425e-03  DAYS_PER_YEAR)
+                   (* -6.90460016972063023e-05 DAYS_PER_YEAR)
+                   (* 9.54791938424326609e-04  SOLAR_MASS)))
 
-(def saturn (body "saturn"
+(def saturn (body  "saturn"
                    8.34336671824457987e+00
                    4.12479856412430479e+00
                    -4.03523417114321381e-01
@@ -66,8 +66,8 @@
                    (* 2.30417297573763929e-05  DAYS_PER_YEAR)
                    (* 2.85885980666130812e-04  SOLAR_MASS)))
 
-(def uranus (body "uranus"
-                    1.28943695621391310e+01
+(def uranus (body  "uranus"
+                   1.28943695621391310e+01
                    -1.51111514016986312e+01
                    -2.23307578892655734e-01
                    (* 2.96460137564761618e-03  DAYS_PER_YEAR)
@@ -76,13 +76,13 @@
                    (* 4.36624404335156298e-05  SOLAR_MASS)))
 
 (def neptune (body "neptune"
-                    1.53796971148509165e+01
-                    -2.59193146099879641e+01
-                    1.79258772950371181e-01
-                    (* 2.68067772490389322e-03  DAYS_PER_YEAR)
-                    (* 1.62824170038242295e-03  DAYS_PER_YEAR)
-                    (* -9.51592254519715870e-05 DAYS_PER_YEAR)
-                    (* 5.15138902046611451e-05  SOLAR_MASS)))
+                   1.53796971148509165e+01
+                   -2.59193146099879641e+01
+                   1.79258772950371181e-01
+                   (* 2.68067772490389322e-03  DAYS_PER_YEAR)
+                   (* 1.62824170038242295e-03  DAYS_PER_YEAR)
+                   (* -9.51592254519715870e-05 DAYS_PER_YEAR)
+                   (* 5.15138902046611451e-05  SOLAR_MASS)))
 
 (def system (mutable-vector sun jupiter saturn uranus neptune))
 
@@ -102,27 +102,36 @@
   (println "Energy: "(energy system)))
 
 
-(defn offset-momentum! [body px py pz]
-  (let [mass (:mass body)]
-    (assoc! body :vx (/ (negate px) mass)
-                 :vy (/ (negate py) mass)
-                 :vz (/ (negate pz) mass))
-    nil))
-
-
-(defn distance [b1 b2]
-  (let [dx  (- (get b1 :x) (get b2 :x))
-        dy  (- (get b1 :y) (get b2 :y))
-        dz  (- (get b1 :z) (get b2 :z))]
-    (sqrt (+ (square dx) (square dy) (square dz)))))
-
-
 (defn init! [bodies]
   (let [px   (reduce #(+ %1 (* (get %2 :vx) (get %2 :mass))) 0.0 bodies)
         py   (reduce #(+ %1 (* (get %2 :vy) (get %2 :mass))) 0.0 bodies)
         pz   (reduce #(+ %1 (* (get %2 :vz) (get %2 :mass))) 0.0 bodies)
         sun  (first bodies)]
     (offset-momentum! sun px py pz)
+    nil))
+
+
+(defn advance! [bodies dt]
+  (map #(advance-velocity! (first %) (second %) dt) body-pairs)
+  (map #(advance-movement! % dt) bodies)
+  nil)
+
+
+(defn energy [bodies]
+  (let [e+  (reduce #(+ %1 (kinetic-energy %2))
+                    0.0
+                    bodies)
+        e-  (reduce #(+ %1 (gravitational-energy (first %2) (second %2)))
+                    0.0
+                    body-pairs)]
+  (- e+ e-)))
+
+
+(defn offset-momentum! [body px py pz]
+  (let [mass (:mass body)]
+    (assoc! body :vx (/ (negate px) mass)
+                 :vy (/ (negate py) mass)
+                 :vz (/ (negate pz) mass))
     nil))
 
 
@@ -151,20 +160,11 @@
   nil)
 
 
-(defn advance! [bodies dt]
-  (map #(advance-velocity! (first %) (second %) dt) body-pairs)
-  (map #(advance-movement! % dt) bodies)
-  nil)
-
-
-(defn energy [bodies]
-  (let [e+  (reduce #(+ %1 (kinetic-energy %2))
-                    0.0
-                    bodies)
-        e-  (reduce #(+ %1 (gravitational-energy (first %2) (second %2)))
-                    0.0
-                    body-pairs)]
-  (- e+ e-)))
+(defn distance [b1 b2]
+  (let [dx  (- (get b1 :x) (get b2 :x))
+        dy  (- (get b1 :y) (get b2 :y))
+        dz  (- (get b1 :z) (get b2 :z))]
+      (sqrt (+ (square dx) (square dy) (square dz)))))
 
 
 (defn kinetic-energy [body]
