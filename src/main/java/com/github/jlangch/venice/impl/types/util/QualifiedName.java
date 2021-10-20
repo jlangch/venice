@@ -79,6 +79,10 @@ public class QualifiedName {
 			// special case core function "/" (division)
 			return new QualifiedName("/", null, "/");
 		}
+		else if (name_.equals("core//")) {
+			// special case core function "/" (division)
+			return new QualifiedName("/", null, "/");
+		}
 		else {
 			final int pos = name_.lastIndexOf("/");
 			

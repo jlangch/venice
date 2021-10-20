@@ -154,6 +154,17 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_namespace_div() {
+		final Venice venice = new Venice();
+
+		assertEquals(2L, venice.eval("(/ 4 2)"));
+		assertEquals(2L, venice.eval("(core// 4 2)"));
+
+		assertEquals("", venice.eval("(namespace /)"));
+		assertEquals("", venice.eval("(namespace core//)"));
+	}
+
+	@Test
 	public void test_namespace_function() {
 		final Venice venice = new Venice();
 

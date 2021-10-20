@@ -340,6 +340,11 @@ public class Env implements Serializable {
 		return this;
 	}
 
+	public Env addLocalVar(final Var v) {
+		setLocal(v);
+		return this;
+	}
+
 	/**
 	 * Get the local vars from an arbitrary level.
 	 * 

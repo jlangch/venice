@@ -413,13 +413,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final List<Var> vars = new ArrayList<>();
 						while(bindingsIter.hasNext()) {
 							final VncVal sym = bindingsIter.next();
+							
+							final boolean symIsSymbol = sym instanceof VncSymbol;
+							
 							if (!bindingsIter.hasNext()) {
 								final CallFrame cf = new CallFrame("let", args, a0meta);
 								try (WithCallStack cs = new WithCallStack(cf)) {
 									throw new VncException("let requires an even number of forms in the binding vector!");					
 								}
 							}
-							if (sym instanceof VncSymbol && ((VncSymbol)sym).hasNamespace()) {
+							if (symIsSymbol && ((VncSymbol)sym).hasNamespace()) {
 								final VncSymbol s = (VncSymbol)sym;
 								final CallFrame cf = new CallFrame(s.getQualifiedName(), args, s.getMeta());
 								try (WithCallStack cs = new WithCallStack(cf)) {
@@ -428,11 +431,20 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							}
 							
 							final VncVal val = evaluate(bindingsIter.next(), env, false);
-							final List<Var> varTmp = Destructuring.destructure(sym, val);
-							env.addLocalVars(varTmp);
-							
-							if (debugAgent != null) {
-								vars.addAll(varTmp);
+							if (symIsSymbol) {
+								// optimized with plain symbol when destructuring is not used
+								env.addLocalVar(new Var((VncSymbol)sym, val));
+								if (debugAgent != null) {
+									vars.add(new Var((VncSymbol)sym, val));
+								}
+							}
+							else {
+								final List<Var> varTmp = Destructuring.destructure(sym, val);
+								env.addLocalVars(varTmp);
+								
+								if (debugAgent != null) {
+									vars.addAll(varTmp);
+								}
 							}
 						}
 						
@@ -1511,10 +1523,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				final VncVal sym = bindings.nth(i);
 				final VncVal val = evaluate(bindings.nth(i+1), env, false);
 		
-				final List<Var> vars = Destructuring.destructure(sym, val);
-				vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
-				
-				bindingVars.addAll(vars);
+				if (sym instanceof VncSymbol) {
+					// optimization if not destructuring 
+					env.pushGlobalDynamic((VncSymbol)sym, val);
+					bindingVars.add(new Var((VncSymbol)sym, val));
+				}
+				else {
+					final List<Var> vars = Destructuring.destructure(sym, val);
+					vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
+					bindingVars.addAll(vars);
+				}
 			}
 
 			final ThreadContext threadCtx = ThreadContext.get();
