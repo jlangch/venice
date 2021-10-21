@@ -4207,15 +4207,18 @@ public class CoreFunctions {
 					return ((VncVector)to).addAllAtEnd(from.toVncList());
 				}
 				else if (Types.isVncList(to)) {
-					// add reversed
+					// add reversed as defined by Clojure
 					return ((VncList)to).addAllAtStart(from.toVncList(), true);
 				}
 				else if (Types.isVncMutableList(to)) {
-					// add reversed
+					// add reversed as defined by Clojure
 					return ((VncMutableList)to).addAllAtStart(from.toVncList(), true);
 				}
-				else if (Types.isVncHashSet(to) || Types.isVncSortedSet(to)) {
-					return ((VncHashSet)to).addAll(from.toVncList());
+				else if (Types.isVncMutableVector(to)) {
+					return ((VncMutableVector)to).addAllAtEnd(from.toVncList());
+				}
+				else if (Types.isVncSet(to)) {
+					return ((VncSet)to).addAll(from.toVncList());
 				}
 				else if (Types.isVncMap(to)) {
 					if (Types.isVncSequence(from)) {
