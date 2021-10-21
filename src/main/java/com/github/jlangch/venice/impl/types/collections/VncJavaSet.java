@@ -60,7 +60,7 @@ public class VncJavaSet extends VncSet implements IVncJavaObject {
 
 	private VncJavaSet(final Set<Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		value = val;
+		value = val == null ? new HashSet<>() : val;
 	}
 	
 	

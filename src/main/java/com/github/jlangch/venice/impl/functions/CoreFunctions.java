@@ -1727,7 +1727,9 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(mutable-list & items)")
-					.doc("Creates a new mutable threadsafe list containing the items.")
+					.doc(
+						"Creates a new mutable list containing the items.\n\n" +
+						"The list backed by `java.util.ArrayList` and is not thread-safe.")
 					.examples(
 						"(mutable-list)", 
 						"(mutable-list 1 2 3)", 
@@ -1771,7 +1773,9 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(vector & items)")
-					.doc("Creates a new vector containing the items.")
+					.doc(
+						"Creates a new mutable vector containing the items.\n\n" +
+						"The list backed by `java.util.ArrayList` and is not thread-safe.")
 					.examples(
 						"(vector)",
 						"(vector 1 2 3)",
@@ -2816,7 +2820,7 @@ public class CoreFunctions {
 					.doc("Creates a new mutable threadsafe map containing the items.")
 					.examples(
 						"(mutable-map :a 1 :b 2)",
-						"(mutable-map (hash-map :a 1 :b 2))")
+						"(mutable-map {:a 1 :b 2})")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

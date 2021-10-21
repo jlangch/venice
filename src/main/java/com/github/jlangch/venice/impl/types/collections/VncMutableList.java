@@ -59,13 +59,13 @@ public class VncMutableList extends VncSequence {
 	public VncMutableList(final Collection<? extends VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (vals == null) {
-			value = new CopyOnWriteArrayList<>();
+			value = new ArrayList<>();
 		}
-		else if (vals instanceof CopyOnWriteArrayList){
-			value = (CopyOnWriteArrayList<VncVal>)vals;
+		else if (vals instanceof ArrayList){
+			value = (ArrayList<VncVal>)vals;
 		}
 		else {
-			value = new CopyOnWriteArrayList<>(vals);
+			value = new ArrayList<>(vals);
 		}
 	}
 
@@ -392,5 +392,5 @@ public class VncMutableList extends VncSequence {
 
 	private static final long serialVersionUID = -1848883965231344442L;
  
-	private final CopyOnWriteArrayList<VncVal> value;
+	private final ArrayList<VncVal> value;
 }

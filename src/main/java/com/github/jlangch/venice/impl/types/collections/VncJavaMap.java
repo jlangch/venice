@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 
 	public VncJavaMap(final Map<Object,Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		value = val;
+		value = val == null ? new HashMap<>() : val;
 	}
 
 	

@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -63,25 +62,25 @@ public class VncMutableVector extends VncSequence {
 	public VncMutableVector(final Collection<? extends VncVal> vals, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
 		if (vals == null) {
-			value = new CopyOnWriteArrayList<>();
+			value = new ArrayList<>();
 		}
-		else if (vals instanceof CopyOnWriteArrayList){
-			value = (CopyOnWriteArrayList<VncVal>)vals;
+		else if (vals instanceof ArrayList){
+			value = (ArrayList<VncVal>)vals;
 		}
 		else {
-			value = new CopyOnWriteArrayList<>(vals);
+			value = new ArrayList<>(vals);
 		}
 	}
 	
 	
 	public static VncMutableVector ofAll(final Iterable<? extends VncVal> iter) {
-		final List<VncVal> list = new CopyOnWriteArrayList<>();
+		final List<VncVal> list = new ArrayList<>();
 		for(VncVal o : iter) list.add(o);
 		return new VncMutableVector(list, null);
 	}	
 	
 	public static VncMutableVector ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
-		final List<VncVal> list = new CopyOnWriteArrayList<>();
+		final List<VncVal> list = new ArrayList<>();
 		for(VncVal o : iter) list.add(o);
 		return new VncMutableVector(list, meta);
 	}	
@@ -396,5 +395,5 @@ public class VncMutableVector extends VncSequence {
 
 	private static final long serialVersionUID = -1848883965231344442L;
  
-	private final CopyOnWriteArrayList<VncVal> value;
+	private final ArrayList<VncVal> value;
 }

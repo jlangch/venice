@@ -61,7 +61,7 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 
 	private VncJavaList(final List<Object> val, final VncVal meta) {
 		super(meta == null ? Constants.Nil : meta);
-		this.value = val;
+		this.value = val == null ?  new ArrayList<>() : val;
 	}
 	
 	

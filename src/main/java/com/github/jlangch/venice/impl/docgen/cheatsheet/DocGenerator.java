@@ -731,6 +731,7 @@ public class DocGenerator {
 		vec_create.addItem(getDocItem("[]"));
 		vec_create.addItem(getDocItem("vector"));
 		vec_create.addItem(getDocItem("vector*"));
+		vec_create.addItem(getDocItem("mutable-vector"));
 		vec_create.addItem(getDocItem("mapv"));
 
 		final DocSection vec_access = new DocSection("Access", "collections.vectors.access");
@@ -786,6 +787,7 @@ public class DocGenerator {
 		final DocSection vec_test = new DocSection("Test", "collections.vectors.test");
 		vectors.addSection(vec_test);
 		vec_test.addItem(getDocItem("vector?"));
+		vec_test.addItem(getDocItem("mutable-vector?"));
 		vec_test.addItem(getDocItem("contains?"));
 		vec_test.addItem(getDocItem("not-contains?"));
 		vec_test.addItem(getDocItem("every?"));
