@@ -94,6 +94,7 @@
   ;;                  hash maps for bodies:       23s
   ;;                  mutable types:              16s
   ;;                 (get :x y) for (:x y):       12s
+  ;;                 qualified core symbols:      10s
   ;; Energy (start):  -0.1690751638285245
   ;; Energy (end):    -0.1690798593916589
   (init! system)
@@ -136,27 +137,27 @@
 
 
 (defn advance-velocity! [b1 b2 dt]
-  (let [dx       (- (get b1 :x) (get b2 :x))
-        dy       (- (get b1 :y) (get b2 :y))
-        dz       (- (get b1 :z) (get b2 :z))
-        dsquared (+ (square dx) (square dy) (square dz))
-        distance (sqrt dsquared)
-        mag      (/ dt dsquared distance)
-        b1-mass  (get b1 :mass)
-        b2-mass  (get b2 :mass)]
-    (assoc! b1 :vx (- (get b1 :vx) (* dx b2-mass mag))
-               :vy (- (get b1 :vy) (* dy b2-mass mag))
-               :vz (- (get b1 :vz) (* dz b2-mass mag)))
-    (assoc! b2 :vx (+ (get b2 :vx) (* dx b1-mass mag))
-               :vy (+ (get b2 :vy) (* dy b1-mass mag))
-               :vz (+ (get b2 :vz) (* dz b1-mass mag)))
+  (let [dx       (core/- (core/get b1 :x) (core/get b2 :x))
+        dy       (core/- (core/get b1 :y) (core/get b2 :y))
+        dz       (core/- (core/get b1 :z) (core/get b2 :z))
+        dsquared (core/+ (core/square dx) (core/square dy) (core/square dz))
+        distance (core/sqrt dsquared)
+        mag      (core// dt dsquared distance)
+        b1-mass  (core/get b1 :mass)
+        b2-mass  (core/get b2 :mass)]
+    (core/assoc! b1 :vx (core/- (core/get b1 :vx) (core/* dx b2-mass mag))
+                    :vy (core/- (core/get b1 :vy) (core/* dy b2-mass mag))
+                    :vz (core/- (core/get b1 :vz) (core/* dz b2-mass mag)))
+    (core/assoc! b2 :vx (core/+ (core/get b2 :vx) (core/* dx b1-mass mag))
+                    :vy (core/+ (core/get b2 :vy) (core/* dy b1-mass mag))
+                    :vz (core/+ (core/get b2 :vz) (core/* dz b1-mass mag)))
     nil))
 
 
 (defn advance-movement! [body dt]
-  (assoc! body :x (+ (get body :x) (* dt (get body :vx)))
-               :y (+ (get body :y) (* dt (get body :vy)))
-               :z (+ (get body :z) (* dt (get body :vz))))
+  (core/assoc! body :x (core/+ (core/get body :x) (core/* dt (core/get body :vx)))
+                    :y (core/+ (core/get body :y) (core/* dt (core/get body :vy)))
+                    :z (core/+ (core/get body :z) (core/* dt (core/get body :vz))))
   nil)
 
 

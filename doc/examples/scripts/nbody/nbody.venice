@@ -24,30 +24,11 @@
 
 (ns nbody)
 
-(defn distinct-pairs [items]
-  (loop [c items acc []]
-    (if (empty? c)
-      acc
-      (let [pairs_ (cartesian [(first c)] (rest c))]
-        (recur (rest c) (apply conj acc pairs_))))))
 
+(defn body [name pos x y z vx vy vz mass]
+  {:name name :pos pos :x x :y y :z z :vx vx :vy vy :vz vz :mass mass})
 
-(deftype :body [name :string,
-                pos  :long,
-                x    :double,
-                y    :double,
-                z    :double,
-                vx   :double,
-                vy   :double,
-                vz   :double,
-                mass :double])
-
-
-(def PI 3.141592653589793)
-(def SOLAR_MASS (* 4.0 PI PI))
-(def DAYS_PER_YEAR 365.24)
-
-(def sun (body. "sun"
+(def sun (body "sun"
                 0
                 0.0
                 0.0
@@ -57,7 +38,7 @@
                 0.0
                 SOLAR_MASS))
 
-(def jupiter (body. "jupiter"
+(def jupiter (body "jupiter"
                     1
                     4.84143144246472090e+00
                     -1.16032004402742839e+00
@@ -67,7 +48,7 @@
                     (* -6.90460016972063023e-05 DAYS_PER_YEAR)
                     (* 9.54791938424326609e-04  SOLAR_MASS)))
 
-(def saturn (body. "saturn"
+(def saturn (body "saturn"
                    2
                    8.34336671824457987e+00
                    4.12479856412430479e+00
@@ -77,9 +58,9 @@
                    (* 2.30417297573763929e-05  DAYS_PER_YEAR)
                    (* 2.85885980666130812e-04  SOLAR_MASS)))
 
-(def uranus (body. "uranus"
+(def uranus (body "uranus"
                    3
-                    1.28943695621391310e+01
+                   1.28943695621391310e+01
                    -1.51111514016986312e+01
                    -2.23307578892655734e-01
                    (* 2.96460137564761618e-03  DAYS_PER_YEAR)
@@ -87,7 +68,7 @@
                    (* -2.96589568540237556e-05 DAYS_PER_YEAR)
                    (* 4.36624404335156298e-05  SOLAR_MASS)))
 
-(def neptune (body. "neptune"
+(def neptune (body "neptune"
                     4
                     1.53796971148509165e+01
                     -2.59193146099879641e+01
@@ -99,7 +80,7 @@
 
 (def system [sun jupiter saturn uranus neptune])
 
-(def distinct-body-pairs (distinct-pairs (map :pos system)))
+(def distinct-body-pairs (combinations system 2))
 
 
 (defn run [iterations]

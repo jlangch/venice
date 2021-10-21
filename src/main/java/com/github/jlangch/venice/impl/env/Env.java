@@ -300,7 +300,7 @@ public class Env implements Serializable {
 			}
 		}
 		
-		setLocalVar(sym, localVar);
+		localSymbols.put(sym, localVar);
 		
 		return this;
 	}
@@ -337,11 +337,6 @@ public class Env implements Serializable {
 
 	public Env addLocalVars(final List<Var> vars) {
 		for(Var b : vars) setLocal(b);
-		return this;
-	}
-
-	public Env addLocalVar(final Var v) {
-		setLocal(v);
 		return this;
 	}
 
@@ -608,10 +603,6 @@ public class Env implements Serializable {
 
 	private void setGlobalVar(final VncSymbol sym, final Var value) {
 		globalSymbols.put(sym, value);
-	}
-
-	private void setLocalVar(final VncSymbol sym, final Var value) {
-		localSymbols.put(sym, value);
 	}
 	
 	public Map<VncSymbol,Var> getAllGlobalSymbols() {

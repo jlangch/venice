@@ -413,7 +413,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						final List<Var> vars = new ArrayList<>();
 						while(bindingsIter.hasNext()) {
 							final VncVal sym = bindingsIter.next();
-							
 							final boolean symIsSymbol = sym instanceof VncSymbol;
 							
 							if (!bindingsIter.hasNext()) {
@@ -433,7 +432,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final VncVal val = evaluate(bindingsIter.next(), env, false);
 							if (symIsSymbol) {
 								// optimized with plain symbol when destructuring is not used
-								env.addLocalVar(new Var((VncSymbol)sym, val));
+								env.setLocal(new Var((VncSymbol)sym, val));
 								if (debugAgent != null) {
 									vars.add(new Var((VncSymbol)sym, val));
 								}

@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +38,15 @@ public class SpecialFormsTest_let {
 		assertEquals(60L, venice.eval("(let [x 10 y (* x 5)] (+ x y))"));
 	}
 	
+	@Test
+	public void test_let_impaired() {
+		final Venice venice = new Venice();
+
+		assertThrows(VncException.class, () -> venice.eval("(let [x] x)"));
+		assertThrows(VncException.class, () -> venice.eval("(let [x 10, y] x)"));
+		assertThrows(VncException.class, () -> venice.eval("(let [[x y]] x)"));
+	}
+
 	@Test
 	public void test_let_destructure() {
 		final Venice venice = new Venice();

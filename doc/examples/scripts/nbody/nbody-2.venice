@@ -71,7 +71,7 @@
 
 (def uranus (body "uranus"
                    3
-                    1.28943695621391310e+01
+                   1.28943695621391310e+01
                    -1.51111514016986312e+01
                    -2.23307578892655734e-01
                    (* 2.96460137564761618e-03  DAYS_PER_YEAR)
@@ -91,7 +91,7 @@
 
 (def system [sun jupiter saturn uranus neptune])
 
-(def distinct-body-pairs (distinct-pairs (map :pos system)))
+(def distinct-body-pairs (combinations system 2))
 
 
 (defn run [iterations]
