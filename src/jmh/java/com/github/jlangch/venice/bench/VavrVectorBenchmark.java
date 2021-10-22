@@ -66,6 +66,11 @@ public class VavrVectorBenchmark {
 	public Object first() {
 		return vector.get(0);
  	}
+
+	@Benchmark
+	public Object nth6() {
+		return vector.get(5);
+ 	}
 	
 	@Benchmark
 	public Object last() {
@@ -111,5 +116,5 @@ public class VavrVectorBenchmark {
 	}
 	
 	
-	private final Vector<Integer> vector = Vector.range(1, 4);
+	private final Vector<Integer> vector = Vector.range(0, 1000);
 }

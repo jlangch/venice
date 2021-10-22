@@ -80,6 +80,11 @@ public class ThreadContext {
 		return callStack;
 	}
 
+	public CallFrameFnData getAndClearCallFrameFnData_() {
+		final CallFrameFnData data = callFrameFnData;
+		callFrameFnData = null;
+		return data;
+	}
 	public CallFrameFnData getCallFrameFnData_() {
 		return callFrameFnData;
 	}
@@ -87,7 +92,6 @@ public class ThreadContext {
 	public void setCallFrameFnData_(final CallFrameFnData data) {
 		callFrameFnData = data;
 	}
-	
 	
 	public static VncVal getValue(final VncKeyword key) {
 		return getValue(key, Nil);

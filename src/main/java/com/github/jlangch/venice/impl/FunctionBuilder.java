@@ -97,8 +97,7 @@ public class FunctionBuilder {
 			public VncVal apply(final VncList args) {
 				final ThreadContext threadCtx = ThreadContext.get();
 				
-				final CallFrameFnData callFrameFnData = threadCtx.getCallFrameFnData_();
-				threadCtx.setCallFrameFnData_(null); // we've got it, reset it
+				final CallFrameFnData callFrameFnData = threadCtx.getAndClearCallFrameFnData_();
 								
 				if (hasVariadicArgs()) {
 					if (args.size() < getFixedArgsCount()) {

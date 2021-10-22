@@ -44,9 +44,9 @@ import io.vavr.collection.List;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class VavrListBenchmark {
+public class VavrSmallListBenchmark {
 	
-	public VavrListBenchmark() {
+	public VavrSmallListBenchmark() {
 	}
 	
 	
@@ -66,8 +66,8 @@ public class VavrListBenchmark {
  	}
 
 	@Benchmark
-	public Object nth6() {
-		return list.get(5);
+	public Object nth3() {
+		return list.get(2);
  	}
 	
 	@Benchmark
@@ -91,5 +91,5 @@ public class VavrListBenchmark {
 	}
 	
 	
-	private final List<Integer> list = List.range(0, 4);
+	private final List<Integer> list = List.range(0, 1000);
 }
