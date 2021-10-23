@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiFunction;
+import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
@@ -284,6 +285,22 @@ public class Coerce {
 			try (WithCallStack cs = new WithCallStack(callframe(val))) {
 				throw new VncException(String.format(
 						"Cannot coerce value of type %s to boolean.", 
+						Types.getType(val)));
+			}
+		}
+	}
+	
+	public static VncNumber toVncNumber(final VncVal val) {
+		if (val == null) {
+			throw new VncException("Cannot coerce a null value to a number.");
+		}
+		else if (Types.isVncNumber(val)) {
+			return (VncNumber)val;
+		}
+		else {
+			try (WithCallStack cs = new WithCallStack(callframe(val))) {
+				throw new VncException(String.format(
+						"Cannot coerce value of type %s to number.", 
 						Types.getType(val)));
 			}
 		}

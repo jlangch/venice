@@ -50,6 +50,15 @@ public abstract class VncNumber extends VncVal {
 							new VncKeyword(VncVal.TYPE)));
 	}
 	
+	public abstract VncNumber inc();
+	public abstract VncNumber dec();
+	public abstract VncNumber negate();
+	public abstract VncNumber add(final VncVal op);
+	public abstract VncNumber sub(final VncVal op);
+	public abstract VncNumber mul(final VncVal op);
+	public abstract VncNumber div(final VncVal op);
+	public abstract VncNumber square();
+	public abstract VncNumber sqrt();
 
 	public abstract int toJavaInteger();
 	public abstract long toJavaLong();

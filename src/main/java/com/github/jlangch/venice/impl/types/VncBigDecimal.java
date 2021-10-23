@@ -94,8 +94,134 @@ public class VncBigDecimal extends VncNumber {
 										new VncKeyword(VncVal.TYPE)));
 	}
 	
+	@Override 
+	public VncBigDecimal inc() {
+		return new VncBigDecimal(value.add(BigDecimal.ONE));
+	}
+
+	@Override 
+	public VncBigDecimal dec() {
+		return new VncBigDecimal(value.subtract(BigDecimal.ONE));
+	}
+
+	@Override 
 	public VncBigDecimal negate() { 
 		return new VncBigDecimal(value.negate()); 
+	}
+
+	@Override 
+	public VncNumber add(final VncVal op) {
+		if (op instanceof VncBigDecimal) {
+			return new VncBigDecimal(value.add(((VncBigDecimal)op).value));
+		}
+		else if (op instanceof VncLong) {
+			return new VncBigDecimal(value.add(((VncLong)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncInteger) {
+			return new VncBigDecimal(value.add(((VncInteger)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncDouble) {
+			return new VncBigDecimal(value.add(((VncDouble)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncBigInteger) {
+			return new VncBigDecimal(value.add(((VncBigInteger)op).toJavaBigDecimal()));
+		}
+		else {
+			throw new VncException(String.format(
+					"Function + operand 2 (%s) is not a numeric type", 
+					op,
+					Types.getType(op)));
+		}
+	}
+
+	@Override 
+	public VncNumber sub(final VncVal op) {
+		if (op instanceof VncBigDecimal) {
+			return new VncBigDecimal(value.subtract(((VncBigDecimal)op).value));
+		}
+		else if (op instanceof VncLong) {
+			return new VncBigDecimal(value.subtract(((VncLong)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncInteger) {
+			return new VncBigDecimal(value.subtract(((VncInteger)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncDouble) {
+			return new VncBigDecimal(value.subtract(((VncDouble)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncBigInteger) {
+			return new VncBigDecimal(value.subtract(((VncBigInteger)op).toJavaBigDecimal()));
+		}
+		else {
+			throw new VncException(String.format(
+					"Function - operand 2 (%s) is not a numeric type", 
+					op,
+					Types.getType(op)));
+		}
+	}
+
+	@Override 
+	public VncNumber mul(final VncVal op) {
+		if (op instanceof VncBigDecimal) {
+			return new VncBigDecimal(value.multiply(((VncBigDecimal)op).value));
+		}
+		else if (op instanceof VncLong) {
+			return new VncBigDecimal(value.multiply(((VncLong)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncInteger) {
+			return new VncBigDecimal(value.multiply(((VncInteger)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncDouble) {
+			return new VncBigDecimal(value.multiply(((VncDouble)op).toJavaBigDecimal()));
+		}
+		else if (op instanceof VncBigInteger) {
+			return new VncBigDecimal(value.multiply(((VncBigInteger)op).toJavaBigDecimal()));
+		}
+		else {
+			throw new VncException(String.format(
+					"Function * operand 2 (%s) is not a numeric type", 
+					op,
+					Types.getType(op)));
+		}
+	}
+
+	@Override 
+	public VncNumber div(final VncVal op) {
+		try {
+			if (op instanceof VncBigDecimal) {
+				return new VncBigDecimal(value.divide(((VncBigDecimal)op).value, 16, RoundingMode.HALF_UP));
+			}
+			else if (op instanceof VncLong) {
+				return new VncBigDecimal(value.divide(((VncLong)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+			}
+			else if (op instanceof VncInteger) {
+				return new VncBigDecimal(value.divide(((VncInteger)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+			}
+			else if (op instanceof VncDouble) {
+				return new VncBigDecimal(value.divide(((VncDouble)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+			}
+			else if (op instanceof VncBigInteger) {
+				return new VncBigDecimal(value.divide(((VncBigInteger)op).toJavaBigDecimal(), 16, RoundingMode.HALF_UP));
+			}
+			else {
+				throw new VncException(String.format(
+						"Function / operand 2 (%s) is not a numeric type", 
+						op,
+						Types.getType(op)));
+			}
+		}
+		catch (ArithmeticException ex) {
+			throw new VncException(ex.getMessage());
+		}
+	}
+	
+	@Override 
+	public VncNumber square() {
+		return new VncBigDecimal(value.multiply(value));
+	}
+	
+	@Override 
+	public VncNumber sqrt() {
+		return new VncBigDecimal(new BigDecimal(Math.sqrt(toJavaDouble())));
 	}
 
 	public BigDecimal getValue() { 
