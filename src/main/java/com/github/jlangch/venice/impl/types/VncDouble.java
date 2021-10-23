@@ -113,7 +113,7 @@ public class VncDouble extends VncNumber {
 	}
 	
 	public Float getFloatValue() { 
-		return value.floatValue(); 
+		return Float.valueOf((float)value); 
 	}
 
 	@Override 
@@ -127,23 +127,23 @@ public class VncDouble extends VncNumber {
 	}
 
 	@Override
-	public Integer toJavaInteger() {
-		return value.intValue(); 
+	public int toJavaInteger() {
+		return (int)value; 
 	}
 	
 	@Override
-	public Long toJavaLong() {
-		return value.longValue(); 
+	public long toJavaLong() {
+		return (long)value; 
 	}
 	
 	@Override
-	public Double toJavaDouble() {
+	public double toJavaDouble() {
 		return value;
 	}
 	
 	@Override
 	public BigInteger toJavaBigInteger() {
-		return BigInteger.valueOf(value.longValue());
+		return BigInteger.valueOf((long)value);
 	}
 	
 	@Override
@@ -159,19 +159,24 @@ public class VncDouble extends VncNumber {
 	@Override 
 	public int compareTo(final VncVal o) {
 		if (Types.isVncDouble(o)) {
-			return value.compareTo(((VncDouble)o).toJavaDouble());
+			final double other = ((VncDouble)o).value;			
+			return value < other ? -1 : (value == other ? 0 : 1);
 		}
 		else if (Types.isVncInteger(o)) {
-			return value.compareTo(((VncInteger)o).toJavaDouble());
+			final double other = ((VncInteger)o).toJavaDouble();			
+			return value < other ? -1 : (value == other ? 0 : 1);
 		}
 		else if (Types.isVncLong(o)) {
-			return value.compareTo(((VncLong)o).toJavaDouble());
+			final double other = ((VncLong)o).toJavaDouble();			
+			return value < other ? -1 : (value == other ? 0 : 1);
 		}
 		else if (Types.isVncBigDecimal(o)) {
-			return value.compareTo(((VncBigDecimal)o).toJavaDouble());
+			final double other = ((VncBigDecimal)o).toJavaDouble();			
+			return value < other ? -1 : (value == other ? 0 : 1);
 		}
 		else if (Types.isVncBigInteger(o)) {
-			return value.compareTo(((VncBigInteger)o).toJavaDouble());
+			final double other = ((VncBigInteger)o).toJavaDouble();			
+			return value < other ? -1 : (value == other ? 0 : 1);
 		}
 		else if (o == Constants.Nil) {
 			return 1;
@@ -182,7 +187,7 @@ public class VncDouble extends VncNumber {
 
 	@Override
 	public int hashCode() {
-		return value.hashCode();
+		return Double.hashCode(value);
 	}
 
 	@Override
@@ -194,13 +199,13 @@ public class VncDouble extends VncNumber {
 			return false;
 		}
 		else {
-			return value.equals(((VncDouble)obj).value);
+			return value == ((VncDouble)obj).value;
 		}
 	}
 
 	@Override 
 	public String toString() {
-		return value.toString();
+		return String.valueOf(value);
 	}
 
 
@@ -208,5 +213,5 @@ public class VncDouble extends VncNumber {
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Double value;
+	private final double value;
 }

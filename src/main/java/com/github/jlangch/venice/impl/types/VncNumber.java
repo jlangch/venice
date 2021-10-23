@@ -51,9 +51,9 @@ public abstract class VncNumber extends VncVal {
 	}
 	
 
-	public abstract Integer toJavaInteger();
-	public abstract Long toJavaLong();
-	public abstract Double toJavaDouble();
+	public abstract int toJavaInteger();
+	public abstract long toJavaLong();
+	public abstract double toJavaDouble();
 	public abstract BigInteger toJavaBigInteger();
 	public abstract BigDecimal toJavaBigDecimal();
 	public abstract BigDecimal toJavaBigDecimal(final int scale);

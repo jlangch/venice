@@ -114,17 +114,17 @@ public class VncBigInteger extends VncNumber {
 	}
 
 	@Override
-	public Integer toJavaInteger() {
+	public int toJavaInteger() {
 		return value.intValue(); 
 	}
 	
 	@Override
-	public Long toJavaLong() {
+	public long toJavaLong() {
 		return value.longValue(); 
 	}
 	
 	@Override
-	public Double toJavaDouble() {
+	public double toJavaDouble() {
 		return value.doubleValue();
 	}
 	
