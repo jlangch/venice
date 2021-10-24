@@ -125,7 +125,6 @@ public class VncLong extends VncNumber {
 		else {
 			throw new VncException(String.format(
 					"Function + operand 2 (%s) is not a numeric type", 
-					op,
 					Types.getType(op)));
 		}
 	}
@@ -150,7 +149,6 @@ public class VncLong extends VncNumber {
 		else {
 			throw new VncException(String.format(
 					"Function - operand 2 (%s) is not a numeric type", 
-					op,
 					Types.getType(op)));
 		}
 	}
@@ -175,7 +173,6 @@ public class VncLong extends VncNumber {
 		else {
 			throw new VncException(String.format(
 					"Function * operand 2 (%s) is not a numeric type", 
-					op,
 					Types.getType(op)));
 		}
 	}
@@ -201,12 +198,35 @@ public class VncLong extends VncNumber {
 			else {
 				throw new VncException(String.format(
 						"Function / operand 2 (%s) is not a numeric type", 
-						op,
 						Types.getType(op)));
 			}
 		}
 		catch (ArithmeticException ex) {
 			throw new VncException(ex.getMessage());
+		}
+	}
+	
+	@Override 
+	public VncBoolean equ(final VncVal other) {
+		if (other instanceof VncLong) {
+			return VncBoolean.of(value == ((VncLong)other).value);
+		}
+		else if (other instanceof VncInteger) {
+			return VncBoolean.of(value == ((VncInteger)other).toJavaLong());
+		}
+		else if (other instanceof VncDouble) {
+			return VncBoolean.of((double)value == ((VncDouble)other).toJavaDouble());
+		}
+		else if (other instanceof VncBigDecimal) {
+			return VncBoolean.of(toJavaBigDecimal().compareTo(((VncBigDecimal)other).toJavaBigDecimal()) == 0);
+		}
+		else if (other instanceof VncBigInteger) {
+			return VncBoolean.of(toJavaBigInteger().compareTo(((VncBigInteger)other).toJavaBigInteger()) == 0);
+		}
+		else {
+			throw new VncException(String.format(
+					"Function == operand 2 (%s) is not a numeric type", 
+					Types.getType(other)));
 		}
 	}
 	

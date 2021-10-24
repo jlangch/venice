@@ -57,6 +57,7 @@ public abstract class VncNumber extends VncVal {
 	public abstract VncNumber sub(final VncVal op);
 	public abstract VncNumber mul(final VncVal op);
 	public abstract VncNumber div(final VncVal op);
+	public abstract VncBoolean equ(final VncVal other);
 	public abstract VncNumber square();
 	public abstract VncNumber sqrt();
 

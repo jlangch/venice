@@ -26,7 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.Namespaces;
-import com.github.jlangch.venice.impl.functions.Numeric;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -434,7 +433,7 @@ public class Types {
 
 	public static boolean _equal_Q(VncVal a, VncVal b) {
 		if (Types.isVncNumber(a) && Types.isVncNumber(b)) {
-			return VncBoolean.isTrue(Numeric.equ(a, b));
+			return VncBoolean.isTrue(((VncNumber)a).equ(b));
 		}
 		else if (Types.isVncString(a) && Types.isVncChar(b)) {
 			return ((VncString)a).getValue().equals(((VncChar)b).getValue().toString());
@@ -463,16 +462,19 @@ public class Types {
 				return ((VncBoolean)a).getValue() == ((VncBoolean)b).getValue();
 			} 
 			else if (a instanceof VncLong) {
-				return ((VncLong)a).getValue().equals(((VncLong)b).getValue());
+				return ((VncLong)a).toJavaLong() == (((VncLong)b).toJavaLong());
 			} 
 			else if (a instanceof VncInteger) {
-				return ((VncInteger)a).getValue().equals(((VncInteger)b).getValue());
+				return ((VncInteger)a).toJavaInteger() == (((VncInteger)b).toJavaInteger());
 			} 
 			else if (a instanceof VncDouble) {
-				return ((VncDouble)a).getValue().equals(((VncDouble)b).getValue());
+				return ((VncDouble)a).toJavaDouble() == (((VncDouble)b).toJavaDouble());
 			} 
 			else if (a instanceof VncBigDecimal) {
 				return ((VncBigDecimal)a).getValue().equals(((VncBigDecimal)b).getValue());
+			} 
+			else if (a instanceof VncBigInteger) {
+				return ((VncBigInteger)a).getValue().equals(((VncBigInteger)b).getValue());
 			} 
 			else if (a instanceof VncSymbol) {
 				return ((VncSymbol)a).getName().equals(((VncSymbol)b).getName());
