@@ -231,6 +231,21 @@ public class VncLong extends VncNumber {
 	}
 	
 	@Override 
+	public VncBoolean zeroQ() {
+		return VncBoolean.of(value == 0L);		
+	}
+	
+	@Override 
+	public VncBoolean posQ() {
+		return VncBoolean.of(value > 0L);		
+	}
+	
+	@Override 
+	public VncBoolean negQ() {
+		return VncBoolean.of(value < 0L);		
+	}
+	
+	@Override 
 	public VncNumber square() {
 		return new VncLong(value * value);
 	}

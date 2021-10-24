@@ -246,6 +246,21 @@ public class VncDouble extends VncNumber {
 	}
 	
 	@Override 
+	public VncBoolean zeroQ() {
+		return VncBoolean.of(value == 0D);		
+	}
+	
+	@Override 
+	public VncBoolean posQ() {
+		return VncBoolean.of(value > 0D);		
+	}
+	
+	@Override 
+	public VncBoolean negQ() {
+		return VncBoolean.of(value < 0D);		
+	}
+	
+	@Override 
 	public VncNumber square() {
 		return new VncDouble(value * value);
 	}

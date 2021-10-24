@@ -235,6 +235,21 @@ public class VncBigDecimal extends VncNumber {
 	}
 	
 	@Override 
+	public VncBoolean zeroQ() {
+		return VncBoolean.of(value.compareTo(BigDecimal.ZERO) == 0);
+	}
+	
+	@Override 
+	public VncBoolean posQ() {
+		return VncBoolean.of(value.compareTo(BigDecimal.ZERO) > 0);
+	}
+	
+	@Override 
+	public VncBoolean negQ() {
+		return VncBoolean.of(value.compareTo(BigDecimal.ZERO) < 0);
+	}
+	
+	@Override 
 	public VncNumber square() {
 		return new VncBigDecimal(value.multiply(value));
 	}

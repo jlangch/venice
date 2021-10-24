@@ -1311,26 +1311,14 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				final VncVal op1 = args.first();
-				if (Types.isVncLong(op1)) {
-					return VncBoolean.of(((VncLong)op1).getValue() == 0L);
-				}
-				else if (Types.isVncInteger(op1)) {
-					return VncBoolean.of(((VncInteger)op1).getValue() == 0);
-				}
-				else if (Types.isVncDouble(op1)) {
-					return VncBoolean.of(((VncDouble)op1).getValue() == 0D);
-				}
-				else if (Types.isVncBigDecimal(op1)) {
-					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) == 0);
-				}
-				else if (Types.isVncBigInteger(op1)) {
-					return VncBoolean.of(((VncBigInteger)op1).getValue().compareTo(BigInteger.ZERO) == 0);
+				final VncVal op = args.first();
+				if (Types.isVncNumber(op)) {
+					return ((VncNumber)op).zeroQ();
 				}
 				else {
 					throw new VncException(String.format(
 											"Function 'zero?' does not allow %s as operand 1",
-											Types.getType(op1)));
+											Types.getType(op)));
 				}
 			}
 
@@ -1356,26 +1344,14 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				final VncVal op1 = args.first();
-				if (Types.isVncLong(op1)) {
-					return VncBoolean.of(((VncLong)op1).getValue() > 0L);
-				}
-				else if (Types.isVncInteger(op1)) {
-					return VncBoolean.of(((VncInteger)op1).getValue() > 0);
-				}
-				else if (Types.isVncDouble(op1)) {
-					return VncBoolean.of(((VncDouble)op1).getValue() > 0D);
-				}
-				else if (Types.isVncBigDecimal(op1)) {
-					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) > 0);
-				}
-				else if (Types.isVncBigInteger(op1)) {
-					return VncBoolean.of(((VncBigInteger)op1).getValue().compareTo(BigInteger.ZERO) > 0);
+				final VncVal op = args.first();
+				if (Types.isVncNumber(op)) {
+					return ((VncNumber)op).posQ();
 				}
 				else {
 					throw new VncException(String.format(
 											"Function 'pos?' does not allow %s as operand 1",
-											Types.getType(op1)));
+											Types.getType(op)));
 				}
 			}
 
@@ -1401,26 +1377,14 @@ public class MathFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 
-				final VncVal op1 = args.first();
-				if (Types.isVncLong(op1)) {
-					return VncBoolean.of(((VncLong)op1).getValue() < 0L);
-				}
-				else if (Types.isVncInteger(op1)) {
-					return VncBoolean.of(((VncInteger)op1).getValue() < 0);
-				}
-				else if (Types.isVncDouble(op1)) {
-					return VncBoolean.of(((VncDouble)op1).getValue() < 0D);
-				}
-				else if (Types.isVncBigDecimal(op1)) {
-					return VncBoolean.of(((VncBigDecimal)op1).getValue().compareTo(BigDecimal.ZERO) < 0);
-				}
-				else if (Types.isVncBigInteger(op1)) {
-					return VncBoolean.of(((VncBigInteger)op1).getValue().compareTo(BigInteger.ZERO) < 0);
+				final VncVal op = args.first();
+				if (Types.isVncNumber(op)) {
+					return ((VncNumber)op).negQ();
 				}
 				else {
 					throw new VncException(String.format(
 											"Function 'neg?' does not allow %s as operand 1s",
-											Types.getType(op1)));
+											Types.getType(op)));
 				}
 			}
 

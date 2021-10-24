@@ -231,6 +231,22 @@ public class VncInteger extends VncNumber {
 	}
 	
 	@Override 
+	public VncBoolean zeroQ() {
+		return VncBoolean.of(value == 0);		
+	}
+	
+	@Override 
+	public VncBoolean posQ() {
+		return VncBoolean.of(value > 0);		
+	}
+	
+	@Override 
+	public VncBoolean negQ() {
+		return VncBoolean.of(value < 0);		
+	}
+
+	
+	@Override 
 	public VncNumber square() {
 		return new VncInteger(value * value);
 	}
