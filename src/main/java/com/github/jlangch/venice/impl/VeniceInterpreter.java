@@ -147,7 +147,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		ThreadContext.setMeterRegistry(mr);
 		
 		if (optimized && checkSandbox) {
-			// invalid combination: prevent security problems with sandboxes
+			// invalid combination: prevent security problems with partially deactivated sandboxes
 			throw new VncException("Venice interpreter supports optimized mode only with AcceptAllInterceptor!");					
 		}
 	}
