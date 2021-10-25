@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Venice application archive functions
+;;;; N-body: https://benchmarksgame-team.pages.debian.net/benchmarksgame/
 
 
 (ns nbody)
@@ -93,8 +93,8 @@
   ;; 100'000 runs     complex types:              43s
   ;;                  hash maps for bodies:       23s
   ;;                  mutable types:              16s
-  ;;                 (get :x y) for (:x y):       12s
-  ;;                 qualified core symbols:      10s
+  ;;                  (get :x y) for (:x y):      12s
+  ;;                  qualified core symbols:     10s
   ;; Energy (start):  -0.1690751638285245
   ;; Energy (end):    -0.1690798593916589
   (init! system)
@@ -112,12 +112,6 @@
     nil))
 
 
-(defn advance! [bodies dt]
-  (map #(advance-velocity! (first %) (second %) dt) body-pairs)
-  (map #(advance-movement! % dt) bodies)
-  nil)
-
-
 (defn energy [bodies]
   (let [e+  (reduce #(+ %1 (kinetic-energy %2))
                     0.0
@@ -128,12 +122,10 @@
   (- e+ e-)))
 
 
-(defn offset-momentum! [body px py pz]
-  (let [mass (:mass body)]
-    (assoc! body :vx (/ (negate px) mass)
-                 :vy (/ (negate py) mass)
-                 :vz (/ (negate pz) mass))
-    nil))
+(defn advance! [bodies dt]
+  (map #(advance-velocity! (first %) (second %) dt) body-pairs)
+  (map #(advance-movement! % dt) bodies)
+  nil)
 
 
 (defn advance-velocity! [b1 b2 dt]
@@ -159,6 +151,14 @@
                     :y (core/+ (core/get body :y) (core/* dt (core/get body :vy)))
                     :z (core/+ (core/get body :z) (core/* dt (core/get body :vz))))
   nil)
+
+
+(defn offset-momentum! [body px py pz]
+  (let [mass (:mass body)]
+    (assoc! body :vx (/ (negate px) mass)
+                 :vy (/ (negate py) mass)
+                 :vz (/ (negate pz) mass))
+    nil))
 
 
 (defn distance [b1 b2]

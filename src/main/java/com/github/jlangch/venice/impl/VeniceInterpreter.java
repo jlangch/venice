@@ -132,6 +132,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
+		this.optimized = false;  // no callstack, no auto TCO, meter, checks, ...
 		
 		this.specialFormHandler = new SpecialFormsHandler(
 									this::evaluate,
@@ -140,10 +141,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 									this.meterRegistry,
 									this.sealedSystemNS);
 		
-		this.functionBuilder = new FunctionBuilder(this::evaluate);
+		this.functionBuilder = new FunctionBuilder(this::evaluate, this.optimized);
 
 		ThreadContext.setInterceptor(interceptor);	
 		ThreadContext.setMeterRegistry(mr);
+		
+		if (optimized && checkSandbox) {
+			// invalid combination: prevent security problems with sandboxes
+			throw new VncException("Venice interpreter supports optimized mode only with AcceptAllInterceptor!");					
+		}
 	}
 
 	
@@ -364,18 +370,20 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						if (numArgs == 2 || numArgs == 3) {
 							final VncVal cond = evaluate(args.first(), env, false);
 
-							final ThreadContext threadCtx = ThreadContext.get();
-							final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-
-							if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
-								debugAgent.onBreakSpecialForm(
-										"if", 
-										FunctionEntry, 
-										VncVector.of(new VncString("cond")), 
-										VncList.of(cond), 
-										a0meta, 
-										env, 
-										threadCtx.getCallStack_());
+							if (!optimized) {
+								final ThreadContext threadCtx = ThreadContext.get();
+								final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+	
+								if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
+									debugAgent.onBreakSpecialForm(
+											"if", 
+											FunctionEntry, 
+											VncVector.of(new VncString("cond")), 
+											VncList.of(cond), 
+											a0meta, 
+											env, 
+											threadCtx.getCallStack_());
+								}
 							}
 
 							orig_ast = VncBoolean.isFalseOrNil(cond) 
@@ -745,104 +753,111 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						else { 
 							final String fnName = fn.getQualifiedName();
 
-							final ThreadContext threadCtx = ThreadContext.get();
-							final CallStack callStack = threadCtx.getCallStack_();						
-							final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-							
-							if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-								debugAgent.onBreakFnCall(fnName, fn, args, env, callStack);
-							}
-		
-							// evaluate function args
-							final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
-							
-							final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
-	
-							// validate function call allowed by sandbox
-							if (checkSandbox) {
-								final CallFrame cf = new CallFrame(fnName, fnArgs, a0meta, env);
-								try (WithCallStack cs = new WithCallStack(cf)) {
-									interceptor.validateVeniceFunction(fnName);	
-								}
-								interceptor.validateMaxExecutionTime();
-							}
-							
-							final Thread currThread = Thread.currentThread();
-	
-							InterruptChecker.checkInterrupted(currThread, fn);
-							
-
-							// Automatic TCO (tail call optimization)
-							if (tailPosition
-									&& !fn.isNative()  // native functions do not have an AST body
-									&& !callStack.isEmpty() 
-									&& fnName.equals(callStack.peek().getFnName())
-							) {
-								// fn may be a normal function, a multi-arity, or a multi-method function							
-								final VncFunction effFn = fn.getFunctionForArgs(fnArgs);
-								env.addLocalVars(Destructuring.destructure(effFn.getParams(), fnArgs));
-								
-								if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-									debugAgent.onBreakFnEnter(fnName, effFn, fnArgs, env, callStack);
-								}
-								
-								final VncList body = (VncList)effFn.getBody();
-								evaluate_sequence_values(body.butlast(), env);
-								orig_ast = body.last();
+							if (optimized) {
+								// evaluate function args
+								final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
+								return fn.apply(fnArgs);
 							}
 							else {
-								// invoke function with a new call frame
-								try {
-									if (fn.isNative()) {
-										callStack.push(new CallFrame(fnName, fnArgs, a0meta, env));
-
-										if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-											// Debugging handled for native functions only.
-											env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
-											try {
-												debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env, callStack);
-												final VncVal retVal = fn.apply(fnArgs);
-												debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env, callStack);
-												return retVal;
+								final ThreadContext threadCtx = ThreadContext.get();
+								final CallStack callStack = threadCtx.getCallStack_();						
+								final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+								
+								if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+									debugAgent.onBreakFnCall(fnName, fn, args, env, callStack);
+								}
+			
+								// evaluate function args
+								final VncList fnArgs = (VncList)evaluate_sequence_values(args, env);
+								
+								final long nanos = meterRegistry.enabled ? System.nanoTime() : 0L;
+		
+								// validate function call allowed by sandbox
+								if (checkSandbox) {
+									final CallFrame cf = new CallFrame(fnName, fnArgs, a0meta, env);
+									try (WithCallStack cs = new WithCallStack(cf)) {
+										interceptor.validateVeniceFunction(fnName);	
+									}
+									interceptor.validateMaxExecutionTime();
+								}
+								
+								final Thread currThread = Thread.currentThread();
+		
+								InterruptChecker.checkInterrupted(currThread, fn);
+								
+	
+								// Automatic TCO (tail call optimization)
+								if (tailPosition
+										&& !fn.isNative()  // native functions do not have an AST body
+										&& !callStack.isEmpty() 
+										&& fnName.equals(callStack.peek().getFnName())
+								) {
+									// fn may be a normal function, a multi-arity, or a multi-method function							
+									final VncFunction effFn = fn.getFunctionForArgs(fnArgs);
+									env.addLocalVars(Destructuring.destructure(effFn.getParams(), fnArgs));
+									
+									if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+										debugAgent.onBreakFnEnter(fnName, effFn, fnArgs, env, callStack);
+									}
+									
+									final VncList body = (VncList)effFn.getBody();
+									evaluate_sequence_values(body.butlast(), env);
+									orig_ast = body.last();
+								}
+								else {
+									// invoke function with a new call frame
+									try {
+										if (fn.isNative()) {
+											callStack.push(new CallFrame(fnName, fnArgs, a0meta, env));
+	
+											if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+												// Debugging handled for native functions only.
+												env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
+												try {
+													debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env, callStack);
+													final VncVal retVal = fn.apply(fnArgs);
+													debugAgent.onBreakFnExit(fnName, fn, fnArgs, retVal, env, callStack);
+													return retVal;
+												}
+												catch(Exception ex) {
+													debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env, callStack);
+													throw ex;
+												}
 											}
-											catch(Exception ex) {
-												debugAgent.onBreakFnException(fnName, fn, fnArgs, ex, env, callStack);
-												throw ex;
+											else {
+												return fn.apply(fnArgs);
 											}
 										}
 										else {
+											// Debugging for non native functions is handled in 
+											// VncFunction::apply. See the builder
+											// VeniceInterpreter::buildFunction(..)
+											threadCtx.setCallFrameFnData_(new CallFrameFnData(fnName, a0meta));
 											return fn.apply(fnArgs);
 										}
 									}
-									else {
-										// Debugging for non native functions is handled in 
-										// VncFunction::apply. See the builder
-										// VeniceInterpreter::buildFunction(..)
-										threadCtx.setCallFrameFnData_(new CallFrameFnData(fnName, a0meta));
-										return fn.apply(fnArgs);
-									}
+									finally {
+										threadCtx.setCallFrameFnData_(null);
+										if (fn.isNative()) {
+											callStack.pop();
+										}
+										
+										InterruptChecker.checkInterrupted(currThread, fn);
+										if (checkSandbox) {
+											interceptor.validateMaxExecutionTime();
+										}
+										if (meterRegistry.enabled) {
+											final long elapsed = System.nanoTime() - nanos;
+											if (fn instanceof VncMultiArityFunction) {
+												final VncFunction f = fn.getFunctionForArgs(fnArgs);
+												meterRegistry.record(fnName + "[" + f.getParams().size() + "]", elapsed);
+											}
+											else {
+												meterRegistry.record(fnName, elapsed);
+											}
+										}
+									}	
 								}
-								finally {
-									threadCtx.setCallFrameFnData_(null);
-									if (fn.isNative()) {
-										callStack.pop();
-									}
-									
-									InterruptChecker.checkInterrupted(currThread, fn);
-									if (checkSandbox) {
-										interceptor.validateMaxExecutionTime();
-									}
-									if (meterRegistry.enabled) {
-										final long elapsed = System.nanoTime() - nanos;
-										if (fn instanceof VncMultiArityFunction) {
-											final VncFunction f = fn.getFunctionForArgs(fnArgs);
-											meterRegistry.record(fnName + "[" + f.getParams().size() + "]", elapsed);
-										}
-										else {
-											meterRegistry.record(fnName, elapsed);
-										}
-									}
-								}	
 							}
 						}
 					}
@@ -1668,6 +1683,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final FunctionBuilder functionBuilder;
 	
 	private final AtomicBoolean sealedSystemNS;
+	
+	private final boolean optimized;
 	
 	private volatile boolean macroexpand = false;
 }

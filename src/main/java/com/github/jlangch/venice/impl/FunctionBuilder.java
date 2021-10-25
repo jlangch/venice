@@ -51,8 +51,12 @@ import com.github.jlangch.venice.impl.util.WithCallStack;
 
 public class FunctionBuilder {
 
-	public FunctionBuilder(final IFormEvaluator evaluator) {
+	public FunctionBuilder(
+			final IFormEvaluator evaluator,
+			final boolean optimized
+	) {
 		this.evaluator = evaluator;
+		this.optimized = optimized;
 	}
 
 	
@@ -118,7 +122,8 @@ public class FunctionBuilder {
 					final Namespace curr_ns = threadCtx.getCurrNS_();
 					final String fnName = getQualifiedName();
 					
-					final boolean pushCallstack = callFrameFnData != null 
+					final boolean pushCallstack = !optimized 
+													&& callFrameFnData != null 
 													&& callFrameFnData.matchesFnName(fnName);
 					if (pushCallstack) {
 						callStack.push(new CallFrame(fnName, args, callFrameFnData.getFnMeta(), localEnv));
@@ -272,5 +277,6 @@ public class FunctionBuilder {
 
 	
 	private final IFormEvaluator evaluator;
+	private final boolean optimized;
 }
 
