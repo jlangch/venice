@@ -84,12 +84,14 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 public class SpecialFormsHandler {
 
 	public SpecialFormsHandler(
+			final IVeniceInterpreter interpreter,
 			final IFormEvaluator evaluator,
 			final IValuesEvaluator valuesEvaluator,
 			final NamespaceRegistry nsRegistry,
 			final MeterRegistry meterRegistry,
 			final AtomicBoolean sealedSystemNS
 	) {
+		this.interpreter = interpreter;
 		this.evaluator = evaluator;
 		this.valuesEvaluator = valuesEvaluator;
 		this.nsRegistry = nsRegistry;
@@ -637,7 +639,6 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal deftype_(
-			final IVeniceInterpreter interpreter, 
 			final VncList args, 
 			final Env env,
 			final VncVal meta
@@ -707,7 +708,6 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal deftype_of_(
-			final IVeniceInterpreter interpreter, 
 			final VncList args, 
 			final Env env,
 			final VncVal meta
@@ -731,7 +731,6 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal deftype_or_(
-			final IVeniceInterpreter interpreter, 
 			final VncList args, 
 			final Env env,
 			final VncVal meta
@@ -747,7 +746,6 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal deftype_describe_(
-			final IVeniceInterpreter interpreter, 
 			final VncList args, 
 			final Env env,
 			final VncVal meta
@@ -761,7 +759,6 @@ public class SpecialFormsHandler {
 	}
 
 	public VncVal deftype_create_(
-			final IVeniceInterpreter interpreter, 
 			final VncList args, 
 			final Env env,
 			final VncVal meta
@@ -861,11 +858,12 @@ public class SpecialFormsHandler {
 	}
 	
 	public VncVal dorun_(
-			final CallFrame callframe, 
 			final VncList args, 
 			final Env env,
 			final VncVal meta
 	) {
+		final CallFrame callframe = new CallFrame("dorun", args, meta);
+		
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			specialFormCallValidation("dorun");
 			assertArity("dorun", FnType.SpecialForm, args, 2);
@@ -1582,6 +1580,7 @@ public class SpecialFormsHandler {
 	private final MeterRegistry meterRegistry;
 	private final AtomicBoolean sealedSystemNS;
 
+	private final IVeniceInterpreter interpreter;
 	private final IFormEvaluator evaluator;
 	private final IValuesEvaluator valuesEvaluator;
 }

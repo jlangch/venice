@@ -44,6 +44,48 @@ public class VeniceTest {
 	}
 
 	@Test
+	public void evalTest() {
+		final Venice venice = new Venice();
+		
+		/**
+		 * EVAL: (+ 1 (third (conj [1 2] 3)))
+		 * EVAL: function -> +
+		 * EVAL: 1
+		 * EVAL: (third (conj [1 2] 3))
+		 * EVAL: function -> third
+		 * EVAL: (conj [1 2] 3)
+		 * EVAL: function -> conj
+		 * EVAL: [1 2]
+		 * EVAL: 1
+		 * EVAL: 2
+		 * EVAL: 3
+		 */
+		assertEquals(4L, venice.eval("(+ 1 (third (conj [1 2] 3)))"));
+	}
+
+	@Test
+	public void evalTest2() {
+		final Venice venice = new Venice();
+		
+		/**
+		 * EVAL: (let [a 1] (+ a (third (conj [1 2] 3))))
+		 * EVAL: 1
+		 * EVAL: (+ a (third (conj [1 2] 3)))
+		 * EVAL: function -> +
+		 * EVAL: a
+		 * EVAL: (third (conj [1 2] 3))
+		 * EVAL: function -> third
+		 * EVAL: (conj [1 2] 3)
+		 * EVAL: function -> conj
+		 * EVAL: [1 2]
+		 * EVAL: 1
+		 * EVAL: 2
+		 * EVAL: 3
+		 */
+		assertEquals(4L, venice.eval("(let [a 1] (+ a (third (conj [1 2] 3))))"));
+	}
+
+	@Test
 	public void evalWithIntegerAndLong() {
 		final Venice venice = new Venice();
 		

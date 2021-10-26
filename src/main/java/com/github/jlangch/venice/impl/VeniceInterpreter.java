@@ -135,11 +135,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		this.optimized = false;  // no callstack, no auto TCO, meter, checks, ...
 		
 		this.specialFormHandler = new SpecialFormsHandler(
-									this::evaluate,
-									this::evaluate_values,
-									this.nsRegistry,
-									this.meterRegistry,
-									this.sealedSystemNS);
+										this,
+										this::evaluate,
+										this::evaluate_values,
+										this.nsRegistry,
+										this.meterRegistry,
+										this.sealedSystemNS);
 		
 		this.functionBuilder = new FunctionBuilder(this::evaluate, this.optimized);
 
@@ -339,7 +340,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		boolean tailPosition = inTailPosition;
 
 		while (true) {
-			//System.out.println("EVAL: " + printer._pr_str(orig_ast, true));
+			// System.out.println("EVAL: " + Types.getType(orig_ast));
+			// System.out.println("EVAL: " + orig_ast.toString(true));
+			
 			if (!(orig_ast instanceof VncList)) {
 				// not an s-expr
 				return evaluate_values(orig_ast, env);
@@ -613,22 +616,22 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return extendsQ_(args, env, a0meta);
 
 				case "deftype": // (deftype type fields validationFn*)
-					return specialFormHandler.deftype_(this, args, env, a0meta);
+					return specialFormHandler.deftype_(args, env, a0meta);
 
 				case "deftype?": // (deftype? type)
 					return specialFormHandler.deftypeQ_(args, env, a0meta);
 
 				case "deftype-of": // (deftype-of type base-type validationFn*)
-					return specialFormHandler.deftype_of_(this, args, env, a0meta);
+					return specialFormHandler.deftype_of_(args, env, a0meta);
 
 				case "deftype-or":  // (deftype-or type vals*)
-					return specialFormHandler.deftype_or_(this, args, env, a0meta);
+					return specialFormHandler.deftype_or_(args, env, a0meta);
 
 				case "deftype-describe":  // (deftype-describe type)
-					return specialFormHandler.deftype_describe_(this, args, env, a0meta);
+					return specialFormHandler.deftype_describe_(args, env, a0meta);
 
 				case ".:": // (.: type args*)
-					return specialFormHandler.deftype_create_(this, args, env, a0meta);
+					return specialFormHandler.deftype_create_(args, env, a0meta);
 
 				case "defmulti":  // (defmulti name dispatch-fn)
 					return defmulti_(args, env, a0meta);
@@ -705,7 +708,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return specialFormHandler.modules_(args, env, a0meta);
 
 				case "binding":  // (binding [bindings*] exprs*)
-					return binding_(args, new Env(env), a0meta);
+					return binding_(args, env, a0meta);
 
 				case "bound?": // (bound? sym)
 					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env, false))));
@@ -720,7 +723,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return specialFormHandler.locking_(args, env, a0meta);
 
 				case "dorun":
-					return specialFormHandler.dorun_(new CallFrame("dorun", args, a0meta), args, env, a0meta);
+					return specialFormHandler.dorun_(args, env, a0meta);
 
 				case "dobench":
 					return specialFormHandler.dobench_(args, env, a0meta);
@@ -1520,6 +1523,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 
 	private VncVal binding_(final VncList args, final Env env, final VncVal meta) {
+		final Env bind_env = new Env(env);
+		
 		final VncSequence bindings = Coerce.toVncSequence(args.first());
 		final VncList expressions = args.rest();
 
@@ -1535,16 +1540,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		try {
 			for(int i=0; i<bindings.size(); i+=2) {
 				final VncVal sym = bindings.nth(i);
-				final VncVal val = evaluate(bindings.nth(i+1), env, false);
+				final VncVal val = evaluate(bindings.nth(i+1), bind_env, false);
 		
 				if (sym instanceof VncSymbol) {
 					// optimization if not destructuring 
-					env.pushGlobalDynamic((VncSymbol)sym, val);
+					bind_env.pushGlobalDynamic((VncSymbol)sym, val);
 					bindingVars.add(new Var((VncSymbol)sym, val));
 				}
 				else {
 					final List<Var> vars = Destructuring.destructure(sym, val);
-					vars.forEach(v -> env.pushGlobalDynamic(v.getName(), v.getVal()));
+					vars.forEach(v -> bind_env.pushGlobalDynamic(v.getName(), v.getVal()));
 					bindingVars.addAll(vars);
 				}
 			}
@@ -1555,14 +1560,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_BINDINGS)) {
 				final CallStack callStack = threadCtx.getCallStack_();
 				debugAgent.onBreakSpecialForm(
-						"bindings", FunctionEntry, bindingVars, meta, env, callStack);
+						"bindings", FunctionEntry, bindingVars, meta, bind_env, callStack);
 			}
 
-			evaluate_sequence_values(expressions.butlast(), env);
-			return evaluate(expressions.last(), env, false);
+			evaluate_sequence_values(expressions.butlast(), bind_env);
+			return evaluate(expressions.last(), bind_env, false);
 		}
 		finally {
-			bindingVars.forEach(v -> env.popGlobalDynamic(v.getName()));
+			bindingVars.forEach(v -> bind_env.popGlobalDynamic(v.getName()));
 		}
 	}
 		
