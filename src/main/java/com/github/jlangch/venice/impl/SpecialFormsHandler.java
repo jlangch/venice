@@ -87,6 +87,7 @@ public class SpecialFormsHandler {
 			final IVeniceInterpreter interpreter,
 			final IFormEvaluator evaluator,
 			final IValuesEvaluator valuesEvaluator,
+			final ISequenceValuesEvaluator sequenceValuesEvaluator,
 			final NamespaceRegistry nsRegistry,
 			final MeterRegistry meterRegistry,
 			final AtomicBoolean sealedSystemNS
@@ -94,6 +95,7 @@ public class SpecialFormsHandler {
 		this.interpreter = interpreter;
 		this.evaluator = evaluator;
 		this.valuesEvaluator = valuesEvaluator;
+		this.sequenceValuesEvaluator = sequenceValuesEvaluator;
 		this.nsRegistry = nsRegistry;
 		this.meterRegistry = meterRegistry;
 		this.sealedSystemNS = sealedSystemNS;
@@ -335,6 +337,15 @@ public class SpecialFormsHandler {
 		}
 	}
 
+	public VncVal boundQ_(
+			final VncList args, 
+			final Env env,
+			final VncVal meta
+	) {
+		return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false))));
+	}
+
+
 	public VncVal modules_(
 			final VncList args, 
 			final Env env,
@@ -352,7 +363,7 @@ public class SpecialFormsHandler {
 							.collect(Collectors.toList()));
 		}
 	}
-	
+
 	public VncVal namespace_(
 			final VncList args, 
 			final Env env,
@@ -1583,4 +1594,5 @@ public class SpecialFormsHandler {
 	private final IVeniceInterpreter interpreter;
 	private final IFormEvaluator evaluator;
 	private final IValuesEvaluator valuesEvaluator;
+	private final ISequenceValuesEvaluator sequenceValuesEvaluator;
 }

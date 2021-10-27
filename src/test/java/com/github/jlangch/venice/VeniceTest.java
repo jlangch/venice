@@ -44,23 +44,27 @@ public class VeniceTest {
 	}
 
 	@Test
-	public void evalTest() {
+	public void evalTest1() {
 		final Venice venice = new Venice();
 		
 		/**
-		 * EVAL: (+ 1 (third (conj [1 2] 3)))
-		 * EVAL: function -> +
-		 * EVAL: 1
-		 * EVAL: (third (conj [1 2] 3))
-		 * EVAL: function -> third
-		 * EVAL: (conj [1 2] 3)
-		 * EVAL: function -> conj
-		 * EVAL: [1 2]
-		 * EVAL: 1
-		 * EVAL: 2
-		 * EVAL: 3
+		 * EVAL:            :core/list > (first (rest (rest [1 2 3])))
+		 * EVAL SEQ VALUES: :core/list > ((rest (rest [1 2 3])))
+		 * EVAL:            :core/list > (rest (rest [1 2 3]))
+		 * EVAL SEQ VALUES: :core/list > ((rest [1 2 3]))
+		 * EVAL:            :core/list > (rest [1 2 3])
+		 * EVAL SEQ VALUES: :core/list > ([1 2 3])
+		 * EVAL:            :core/vector > [1 2 3]
+		 * EVAL VALUES:     :core/vector > [1 2 3]
+		 * EVAL SEQ VALUES: :core/vector > [1 2 3]
+		 * EVAL:            :core/long > 1
+		 * EVAL VALUES:     :core/long > 1
+		 * EVAL:            :core/long > 2
+		 * EVAL VALUES:     :core/long > 2
+		 * EVAL:            :core/long > 3
+		 * EVAL VALUES:     :core/long > 3
 		 */
-		assertEquals(4L, venice.eval("(+ 1 (third (conj [1 2] 3)))"));
+		assertEquals(3L, venice.eval("(first (rest (rest [1 2 3])))"));
 	}
 
 	@Test
@@ -68,19 +72,78 @@ public class VeniceTest {
 		final Venice venice = new Venice();
 		
 		/**
-		 * EVAL: (let [a 1] (+ a (third (conj [1 2] 3))))
-		 * EVAL: 1
-		 * EVAL: (+ a (third (conj [1 2] 3)))
-		 * EVAL: function -> +
-		 * EVAL: a
-		 * EVAL: (third (conj [1 2] 3))
-		 * EVAL: function -> third
-		 * EVAL: (conj [1 2] 3)
-		 * EVAL: function -> conj
-		 * EVAL: [1 2]
-		 * EVAL: 1
-		 * EVAL: 2
-		 * EVAL: 3
+		 * EVAL:            :core/list > (third (conj [1 2 (inc 2)] 4))
+		 * EVAL SEQ VALUES: :core/list > ((conj [1 2 (inc 2)] 4))
+		 * EVAL:            :core/list > (conj [1 2 (inc 2)] 4)
+		 * EVAL SEQ VALUES: :core/list > ([1 2 (inc 2)] 4)
+		 * EVAL:            :core/vector > [1 2 (inc 2)]
+		 * EVAL VALUES:     :core/vector > [1 2 (inc 2)]
+		 * EVAL SEQ VALUES: :core/vector > [1 2 (inc 2)]
+		 * EVAL:            :core/long > 1
+		 * EVAL VALUES:     :core/long > 1
+		 * EVAL:            :core/long > 2
+		 * EVAL VALUES:     :core/long > 2
+		 * EVAL:            :core/list > (inc 2)
+		 * EVAL SEQ VALUES: :core/list > (2)
+		 * EVAL:            :core/long > 2
+		 * EVAL VALUES:     :core/long > 2
+		 * EVAL:            :core/long > 4
+		 * EVAL VALUES:     :core/long > 4
+		 */
+		assertEquals(3L, venice.eval("(third (conj [1 2 (inc 2)] 4))"));
+	}
+
+	@Test
+	public void evalTest3() {
+		final Venice venice = new Venice();
+		
+		/**
+		 * EVAL:            :core/list > (+ 1 (third (conj [1 2] 3)))
+		 * EVAL SEQ VALUES: :core/list > (1 (third (conj [1 2] 3)))
+		 * EVAL:            :core/long > 1
+		 * EVAL VALUES:     :core/long > 1
+		 * EVAL:            :core/list > (third (conj [1 2] 3))
+		 * EVAL SEQ VALUES: :core/list > ((conj [1 2] 3))
+		 * EVAL:            :core/list > (conj [1 2] 3)
+		 * EVAL SEQ VALUES: :core/list > ([1 2] 3)
+		 * EVAL:            :core/vector > [1 2]
+		 * EVAL VALUES:     :core/vector > [1 2]
+		 * EVAL SEQ VALUES: :core/vector > [1 2]
+		 * EVAL:            :core/long > 1
+		 * EVAL VALUES:     :core/long > 1
+		 * EVAL:            :core/long > 2
+		 * EVAL VALUES:     :core/long > 2
+		 * EVAL:            :core/long > 3
+		 * EVAL VALUES:     :core/long > 3
+		 */
+		assertEquals(4L, venice.eval("(+ 1 (third (conj [1 2] 3)))"));
+	}
+
+	@Test
+	public void evalTest4() {
+		final Venice venice = new Venice();
+		
+		/**
+		 * EVAL:            :core/list > (let [a 1] (+ a (third (conj [1 2] 3))))
+		 * EVAL:            :core/long > 1
+		 * EVAL VALUES:     :core/long > 1
+		 * EVAL:            :core/list > (+ a (third (conj [1 2] 3)))
+		 * EVAL SEQ VALUES: :core/list > (a (third (conj [1 2] 3)))
+		 * EVAL:            :core/symbol > a
+		 * EVAL VALUES:     :core/symbol > a
+		 * EVAL:            :core/list > (third (conj [1 2] 3))
+		 * EVAL SEQ VALUES: :core/list > ((conj [1 2] 3))
+		 * EVAL:            :core/list > (conj [1 2] 3)
+		 * EVAL SEQ VALUES: :core/list > ([1 2] 3)
+		 * EVAL:            :core/vector > [1 2]
+		 * EVAL VALUES:     :core/vector > [1 2]
+		 * EVAL SEQ VALUES: :core/vector > [1 2]
+		 * EVAL:            :core/long > 1
+		 * EVAL VALUES:     :core/long > 1
+		 * EVAL:            :core/long > 2
+		 * EVAL VALUES:     :core/long > 2
+		 * EVAL:            :core/long > 3
+		 * EVAL VALUES:     :core/long > 3
 		 */
 		assertEquals(4L, venice.eval("(let [a 1] (+ a (third (conj [1 2] 3))))"));
 	}

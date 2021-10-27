@@ -138,6 +138,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										this,
 										this::evaluate,
 										this::evaluate_values,
+										this::evaluate_sequence_values,
 										this.nsRegistry,
 										this.meterRegistry,
 										this.sealedSystemNS);
@@ -151,6 +152,40 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			// invalid combination: prevent security problems with partially deactivated sandboxes
 			throw new VncException("Venice interpreter supports optimized mode only with AcceptAllInterceptor!");					
 		}
+
+//		specialFunctions.put("quote",             specialFormHandler::quote_); // (quote form)
+//		specialFunctions.put("deftype",           specialFormHandler::deftype_); // (deftype type fields validationFn*)
+//		specialFunctions.put("deftype?",          specialFormHandler::deftypeQ_); // (deftype? type)
+//		specialFunctions.put("deftype-of",        specialFormHandler::deftype_of_); // (deftype-of type base-type validationFn*)
+//		specialFunctions.put("deftype-or",        specialFormHandler::deftype_or_);  // (deftype-or type vals*)
+//		specialFunctions.put("deftype-describe",  specialFormHandler::deftype_describe_);  // (deftype-describe type)
+//		specialFunctions.put(".:",                specialFormHandler::deftype_create_); // (.: type args*)
+//		specialFunctions.put("ns",                specialFormHandler::ns_); // (ns alpha)
+//		specialFunctions.put("ns-remove",         specialFormHandler::ns_remove_); // (ns-remove ns)
+//		specialFunctions.put("ns-unmap",          specialFormHandler::ns_unmap_); // (ns-unmap ns sym)
+//		specialFunctions.put("ns-list",           specialFormHandler::ns_list_); // (ns-list ns)
+//		specialFunctions.put("import",            specialFormHandler::import_);
+//		specialFunctions.put("imports",           specialFormHandler::imports_);
+//		specialFunctions.put("namespace",         specialFormHandler::namespace_); // (namespace x)
+//		specialFunctions.put("resolve",           specialFormHandler::resolve_); // (resolve sym)
+//		specialFunctions.put("var-get",           specialFormHandler::var_get_); // (var-get v)
+//		specialFunctions.put("var-ns",            specialFormHandler::var_ns_); // (var-ns v)
+//		specialFunctions.put("var-name",          specialFormHandler::var_name_); // (var-name v)
+//		specialFunctions.put("var-local?",        specialFormHandler::var_localQ_); // (var-local? v)
+//		specialFunctions.put("var-thread-local?", specialFormHandler::var_thread_localQ_); // (var-thread-local? v)
+//		specialFunctions.put("var-global?",       specialFormHandler::var_globalQ_); // (var-global? v)
+//		specialFunctions.put("set!",              specialFormHandler::setBANG_); // (set! name expr)
+//		specialFunctions.put("inspect",           specialFormHandler::inspect_); // (inspect sym)
+//		specialFunctions.put("doc",               specialFormHandler::doc_); // (doc sym)
+//		specialFunctions.put("print-highlight",   specialFormHandler::print_highlight_); // (print-highlight form)
+//		specialFunctions.put("modules",           specialFormHandler::modules_); // (modules )
+//		specialFunctions.put("bound?",            specialFormHandler::boundQ_); // (bound? sym)
+//		specialFunctions.put("try",               specialFormHandler::try_); // (try exprs* (catch :Exception e exprs*) (finally exprs*))
+//		specialFunctions.put("try-with",          specialFormHandler::try_with_); // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
+//		specialFunctions.put("locking",           specialFormHandler::locking_);
+//		specialFunctions.put("dorun",             specialFormHandler::dorun_);
+//		specialFunctions.put("dobench",           specialFormHandler::dobench_);
+//		specialFunctions.put("prof",              specialFormHandler::prof_);
 	}
 
 	
@@ -340,8 +375,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		boolean tailPosition = inTailPosition;
 
 		while (true) {
-			// System.out.println("EVAL: " + Types.getType(orig_ast));
-			// System.out.println("EVAL: " + orig_ast.toString(true));
+			// System.out.println("EVAL:            " + Types.getType(orig_ast) + " > " + orig_ast.toString(true));
 			
 			if (!(orig_ast instanceof VncList)) {
 				// not an s-expr
@@ -711,8 +745,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return binding_(args, env, a0meta);
 
 				case "bound?": // (bound? sym)
-					return VncBoolean.of(env.isBound(Coerce.toVncSymbol(evaluate(args.first(), env, false))));
-
+					return specialFormHandler.boundQ_(args, env, a0meta);
+	
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
 					return specialFormHandler.try_(args, env, a0meta);
 
@@ -736,7 +770,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 				default: { // functions, macros, collections/keywords as functions
 					final VncVal fn0 = a0 instanceof VncSymbol
-											? env.get((VncSymbol)a0)  	// (+ 1 2)
+											? env.get((VncSymbol)a0)  	
 											: evaluate(a0, env, false); // ((resolve '+) 1 2)
 										
 					if (fn0 instanceof VncFunction) { 
@@ -890,6 +924,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 	
 	private VncVal evaluate_values(final VncVal ast, final Env env) {
+		// System.out.println("EVAL VALUES:     " + Types.getType(ast) + " > " + ast.toString(true));
+
 		if (ast == Nil) {
 			return Nil;
 		}
@@ -929,6 +965,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			return seq;
 		}
 		else {
+			// System.out.println("EVAL SEQ VALUES: " + Types.getType(seq) + " > " + seq.toString(true));
+
 			switch(seq.size()) {
 				case 0: return seq;
 				case 1: return seq.withVariadicValues(
@@ -1471,20 +1509,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				
 				final VncList body = args.slice(argPos);
 				
-	//			if (macroexpand) {
-	//				return buildFunction(
-	//						fnName.getName(), 
-	//						params, 
-	//						(VncList)macroexpand_all(body, env), 
-	//						preCon == null ? null : (VncVector)macroexpand_all(preCon, env), 
-	//						false, 
-	//						env);
-	//			}
-	//			else {
-					return functionBuilder.buildFunction(
-								fnName.getName(), params, body, preCon, 
-								false, meta, env);
-	//			}		
+				return functionBuilder.buildFunction(
+							fnName.getName(), params, body, preCon, 
+							false, meta, env);
 			}
 			else {
 				// multi arity:
@@ -1501,20 +1528,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					
 					final VncList body = sig.slice(pos);
 					
-	//				if (macroexpand) {
-	//					fns.add(buildFunction(
-	//							fnName.getName(), 
-	//							params, 
-	//							(VncList)macroexpand_all(body, env), 
-	//							preCon == null ? null : (VncVector)macroexpand_all(preCon, env), 
-	//							false, 
-	//							env));
-	//				}
-	//				else {
-						fns.add(
-							functionBuilder.buildFunction(
-								fnName.getName(), params, body, preCon, false, meta, env));
-	//				}
+					fns.add(
+						functionBuilder.buildFunction(
+							fnName.getName(), params, body, preCon, false, meta, env));
 				});
 				
 				return new VncMultiArityFunction(fnName.getName(), fns, false, meta);
@@ -1669,6 +1685,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		ThreadContext.getInterceptor().validateVeniceFunction(name);
 	}
 
+//	@FunctionalInterface
+//	public interface SpecialFunction {
+//		 VncVal apply(VncList args, Env env, VncVal meta);
+//	}
+
+	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 
