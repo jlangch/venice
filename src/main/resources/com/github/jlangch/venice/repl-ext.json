@@ -31,7 +31,7 @@
 
   "libs": {
     "dir": "libs",
-    "mandatory": [ "org.fusesource.jansi:jansi:2.3.4",
+    "mandatory": [ "org.fusesource.jansi:jansi:2.4.0",
                    "org.knowm.xchart:xchart:3.8.0",
                    "org.apache.tomcat.embed:tomcat-embed-core:9.0.50",
                    "org.apache.tomcat.embed:tomcat-embed-websocket:9.0.50",
