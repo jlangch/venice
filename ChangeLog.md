@@ -13,13 +13,17 @@ and this project adheres to
 
 ### Added
 
-- support for running app archives from the REPL
 - functions `cartesian-product` and `compositions`
-- functions `subset?` and `superset?`
+- functions `subset?` and `superset?` for sets
+- support for running app archives from the REPL
 
 ### Fixed
 
 - application archive runner
+
+### Changed
+
+- JLine dependency to version 3.21.0
 
 
 
