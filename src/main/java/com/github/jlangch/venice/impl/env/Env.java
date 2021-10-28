@@ -65,7 +65,7 @@ public class Env implements Serializable {
 			this.outer = null;
 			this.level = 0;
 			this.precompiledGlobalSymbols = null; 
-			this.globalSymbols = new ConcurrentHashMap<>(1024);
+			this.globalSymbols = new ConcurrentHashMap<>(2048);
 			this.localSymbols = new ConcurrentHashMap<>(64);
 		}
 		else {
@@ -544,7 +544,7 @@ public class Env implements Serializable {
 		if (v != null) return v;
 
 		// descend through the env levels
-		Env env = outer;		
+		Env env = outer;
 		while(env != null) {
 			v = env.localSymbols.get(sym);
 			if (v != null) return v;

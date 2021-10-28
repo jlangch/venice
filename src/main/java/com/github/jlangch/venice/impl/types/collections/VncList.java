@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types.collections;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +34,6 @@ import java.util.stream.Stream;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -52,7 +53,7 @@ public class VncList extends VncSequence {
 	}
 
 	public VncList(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
+		super(meta == null ? Nil : meta);
 		if (vals == null) {
 			value = io.vavr.collection.Vector.empty();
 		}
@@ -84,7 +85,7 @@ public class VncList extends VncSequence {
 	}
 
 	public static VncList ofColl(final Collection<? extends VncVal> vals) {
-		return new VncList(vals, Constants.Nil);
+		return new VncList(vals, Nil);
 	}
 
 	public static VncList ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
@@ -196,12 +197,12 @@ public class VncList extends VncSequence {
 
 	@Override
 	public VncVal first() {
-		return isEmpty() ? Constants.Nil : value.head();
+		return isEmpty() ? Nil : value.head();
 	}
 
 	@Override
 	public VncVal last() {
-		return isEmpty() ? Constants.Nil : value.last();
+		return isEmpty() ? Nil : value.last();
 	}
 	
 	@Override
@@ -344,7 +345,7 @@ public class VncList extends VncSequence {
 	
 	@Override
 	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
+		if (o == Nil) {
 			return 1;
 		}
 		else if (Types.isVncList(o)) {
