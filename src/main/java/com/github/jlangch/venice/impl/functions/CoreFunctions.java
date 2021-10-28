@@ -5329,13 +5329,8 @@ public class CoreFunctions {
 					return VncList.of(coll);
 				}
 				else {
-					throw new VncException(String.format(
-							"The argument n must be in the range 1 to %d while calling "
-							+ "function 'combinations' on a collection with %d items. "
-							+ "Got n=%d.",
-							coll.size(),
-							coll.size(),
-							n));
+					// no combinations possible
+					return VncList.empty();
 				}
 			}
 	
