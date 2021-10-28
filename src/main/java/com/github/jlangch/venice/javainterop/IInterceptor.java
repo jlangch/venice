@@ -200,6 +200,8 @@ public interface IInterceptor {
 	/**
 	 * Validates that the file can be read
 	 * 
+	 * @param file A file
+	 * 
 	 * @throws SecurityException if the file can not be read.
 	 */
 	void validateFileRead(File file) throws SecurityException;
@@ -207,6 +209,8 @@ public interface IInterceptor {
 	/**
 	 * Validates that the file can be written
 	 * 
+	 * @param file A file
+
 	 * @throws SecurityException if the file can not be written.
 	 */
 	void validateFileWrite(File file) throws SecurityException;
