@@ -5286,8 +5286,10 @@ public class CoreFunctions {
 						"All the unique ways of taking n different elements from the items " +
 						"in the collection")
 					.examples(
+						"(combinations [0 1 2 3] 1)",
 						"(combinations [0 1 2 3] 2)",
-						"(combinations [0 1 2 3] 3)")
+						"(combinations [0 1 2 3] 3)",
+						"(combinations [0 1 2 3] 4)")
 					.seeAlso("cartesian-product")
 					.build()
 		) {
@@ -5298,28 +5300,44 @@ public class CoreFunctions {
 												"combinations", 
 												Coerce.toVncSequence(args.first()).distinct());			
 				final int n = Coerce.toVncLong(args.second()).getIntValue();			
-			
-				if (n < 2) {
+				
+				if (n == 1) {
+					VncList result = VncList.empty();
+					while(!coll.isEmpty()) {
+						result = result.addAtEnd(coll.slice(0, 1));
+						coll = coll.drop(1);
+					}
+					return result;
+				}
+				else if (n > 1 && n < coll.size()) {
+					VncList result = VncList.empty();
+	
+					while(!coll.isEmpty()) {
+						VncSequence head = coll.take(n-1);
+						VncSequence rest = coll.drop(n-1);
+	
+						for(VncVal v : rest) {
+							result = result.addAtEnd(head.addAtEnd(v));
+						}
+	
+						coll = coll.drop(1);
+					}
+	
+					return result;
+				}
+				else if (n == coll.size()) {
+					return VncList.of(coll);
+				}
+				else {
 					throw new VncException(String.format(
-							"The argument n must be greater or equal to 2 while calling function 'combinations'. Got n=%d.",
+							"The argument n must be in the range 1 to %d while calling "
+							+ "function 'combinations' on a collection with %d items. "
+							+ "Got n=%d.",
+							coll.size(),
+							coll.size(),
 							n));
 				}
-
-				VncList result = VncList.empty();
-
-				while(!coll.isEmpty()) {
-					VncSequence head = coll.take(n-1);
-					VncSequence rest = coll.drop(n-1);
-
-					for(VncVal v : rest) {
-						result = result.addAtEnd(head.addAtEnd(v));
-					}
-
-					coll = coll.drop(1);
-				}
-
-				return result;
-		}
+			}
 	
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
