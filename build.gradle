@@ -568,14 +568,14 @@ task ('jmhHelp', description:'Print help for the jmh task') {
 
 task jmhProfilers(type: JavaExec, description:'Lists the available profilers for the jmh task', group: 'Development') {
     classpath = sourceSets.jmh.runtimeClasspath
-    main = 'org.openjdk.jmh.Main'
+    mainClass = 'org.openjdk.jmh.Main'
     args '-lprof'
 }
 
 
 task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
     classpath = sourceSets.jmh.runtimeClasspath
-    main = 'org.openjdk.jmh.Main'
+    mainClass = 'org.openjdk.jmh.Main'
 
     def include = project.properties.get('include', '');
     def exclude = project.properties.get('exclude');
