@@ -102,7 +102,7 @@
 //    Upgrade Gradle wrapper:
 //      See https://docs.gradle.org/current/userguide/gradle_wrapper.html
 //      Upgrade:
-//         $> ./gradlew wrapper --gradle-version=7.0 --distribution-type=bin
+//         $> ./gradlew wrapper --gradle-version=7.2 --distribution-type=bin
 //
 //    Get initial Gradle wrapper
 //      See https://guides.gradle.org/creating-new-gradle-builds/
