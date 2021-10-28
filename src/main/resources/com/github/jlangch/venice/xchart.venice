@@ -42,12 +42,9 @@
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; Requires XChart 3.8.0
+;; XChart 3.8.0
 ;;
 ;; XChart 3.8.0 introduced incompatible changes
-;;
-;; Previous versions don't work because of an incompatible XChart API change
-;; introduced with version 3.8.0
 ;;
 ;;  - Class org.knowm.xchart.style.Styler$LegendPosition
 ;;    (previous org.knowm.xchart.style.Styler$CardinalPosition)
@@ -55,13 +52,26 @@
 ;;    (previously in org.knowm.xchart.style.Styler$TextAlignment)
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;; Requires XChart 3.8.1
+;;
+;; XChart 3.8.1 introduced incompatible changes
+;;
+;; Previous versions don't work because of an incompatible XChart API change
+;; introduced with version 3.8.1
+;;
+;;  - Enum org.knowm.xchart.style.PieStyler$LabelType
+;;    (previous org.knowm.xchart.style.PieStyler$AnnotationType)
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 (ns xchart)
 
 (load-module :semver)
 
 
 ;; ---------------------------------------------------------------------------
-;; verify XChart 3.8.0+ libs are available
+;; verify XChart 3.8.1+ libs are available
 ;; ---------------------------------------------------------------------------
 
 (defn throw-3rdparty-lib-ex [msg]
@@ -72,18 +82,18 @@
              ---------------------------------------------------
              (do
               (load-module :maven)
-              (maven/download "org.knowm.xchart:xchart:3.8.0"))
+              (maven/download "org.knowm.xchart:xchart:3.8.1"))
              ---------------------------------------------------
              """)))
 
 (when-not (exists-class? :org.knowm.xchart.PieChart)
   (throw-3rdparty-lib-ex
-    "The XChart library is missing. Venice requires XChart 3.8.0+"))
+    "The XChart library is missing. Venice requires XChart 3.8.1+"))
 
 (let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
-  (when (semver/older? version "3.8.0")
+  (when (semver/older? version "3.8.1")
     (throw-3rdparty-lib-ex
-      "The XChart ~{version} library is too old. Venice requires XChart 3.8.0+")))
+      "The XChart ~{version} library is too old. Venice requires XChart 3.8.1+")))
 
 
 
@@ -119,7 +129,7 @@
 (import :org.knowm.xchart.style.Styler$LegendLayout)
 (import :org.knowm.xchart.style.Styler$YAxisPosition)
 (import :org.knowm.xchart.style.AxesChartStyler$TextAlignment)
-(import :org.knowm.xchart.style.PieStyler$AnnotationType)
+(import :org.knowm.xchart.style.PieStyler$LabelType)
 (import :org.knowm.xchart.style.theme.GGPlot2Theme)
 (import :org.knowm.xchart.style.theme.MatlabTheme)
 (import :org.knowm.xchart.style.theme.XChartTheme)
@@ -314,10 +324,11 @@
 
 
 (def xchart/pie-annotation-types
-   { :label                (. :PieStyler$AnnotationType :Label)
-     :label-and-percentage (. :PieStyler$AnnotationType :LabelAndPercentage)
-     :percentage           (. :PieStyler$AnnotationType :Percentage)
-     :value                (. :PieStyler$AnnotationType :Value)})
+   { :name                 (. :PieStyler$LabelType :Name)
+     :name-and-percentage  (. :PieStyler$LabelType :NameAndPercentage)
+     :name-and-value       (. :PieStyler$LabelType :NameAndValue)
+     :percentage           (. :PieStyler$LabelType :Percentage)
+     :value                (. :PieStyler$LabelType :Value)})
 
 
 (def xchart/category-render-styles
