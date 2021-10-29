@@ -24,6 +24,8 @@
 // Gradle build
 // -----------------------------------------------------------------------------
 // 
+// Venice uses Gradle 7.2
+// 
 // JPMS (Java Platform Module System)
 //
 //   The Venice Gradle build is prepared to support building a Java 8 library 
@@ -79,14 +81,14 @@
 //                   -PsonatypePassword=[pw]
 //                   clean shadowJar publish
 //       - Log in to Sonatype OSSRH (https://oss.sonatype.org/)
-//       - Click Staging Repositories
+//       - Choose Staging Repositories
 //       - Find the release 'comgithubjlangch-*'
 //       - Verify the contents are ok
 //       - Click Close (wait for validation steps under the Activity tab 
 //         to complete)
 //       - Click Release
 //
-//   [3] Draft GitHub Venice release
+//   [3] Draft a GitHub Venice release
 //       - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //         This will create the release tag
 //       - Pull the changes (commit tag)
