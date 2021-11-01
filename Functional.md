@@ -146,4 +146,6 @@
 
 ## Other
 
+[Teaching computers how to differentiate or: Why Lisp?](https://www.youtube.com/watch?v=EyhL1DNrSME)
+
 [Bayes Theorem](https://www.youtube.com/watch?v=HZGCoVF3YvM)
