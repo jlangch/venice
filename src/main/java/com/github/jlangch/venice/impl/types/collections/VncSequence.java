@@ -94,6 +94,8 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 	
 	public abstract VncSequence dropWhile(Predicate<? super VncVal> predicate);
 	
+	public abstract VncSequence dropRight(int n);
+	
 	public abstract VncSequence take(int n);
 	
 	public abstract VncSequence takeWhile(Predicate<? super VncVal> predicate);

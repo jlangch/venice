@@ -710,6 +710,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("take-while"));
 		list_modify.addItem(getDocItem("drop"));
 		list_modify.addItem(getDocItem("drop-while"));
+		list_modify.addItem(getDocItem("drop-last"));
 		list_modify.addItem(getDocItem("split-at"));
 		list_modify.addItem(getDocItem("split-with"));
 	
@@ -773,6 +774,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("take-while"));
 		vec_modify.addItem(getDocItem("drop"));
 		vec_modify.addItem(getDocItem("drop-while"));
+		vec_modify.addItem(getDocItem("drop-last"));
 		vec_modify.addItem(getDocItem("update"));
 		vec_modify.addItem(getDocItem("update!"));
 		vec_modify.addItem(getDocItem("split-with"));
@@ -1392,6 +1394,7 @@ public class DocGenerator {
 		func.addItem(getDocItem("filter"));
 		func.addItem(getDocItem("drop"));
 		func.addItem(getDocItem("drop-while"));
+		func.addItem(getDocItem("drop-last"));
 		func.addItem(getDocItem("take"));
 		func.addItem(getDocItem("take-while"));
 		func.addItem(getDocItem("keep"));

@@ -238,6 +238,11 @@ public class VncLazySeq extends VncSequence {
 	public VncLazySeq dropWhile(final Predicate<? super VncVal> predicate) {
 		return new VncLazySeq(value.dropWhile(predicate), getMeta());
 	}
+
+	@Override
+	public VncLazySeq dropRight(final int n) {
+		return new VncLazySeq(value.dropRight(n), getMeta());
+	}
 	
 	@Override
 	public VncLazySeq take(final int n) {

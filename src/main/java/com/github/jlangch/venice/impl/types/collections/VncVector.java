@@ -245,10 +245,9 @@ public class VncVector extends VncSequence implements IVncFunction {
 			return this;
 		}
 		else {
-			final io.vavr.collection.Vector<VncVal> butlast = value.dropRight(1);
-			return butlast.size() < VncTinyVector.MAX_ELEMENTS
-					? VncTinyVector.ofList(butlast.asJava(), getMeta())
-					: new VncVector(butlast, getMeta());
+			return value.size() <= 1
+						? emptyWithMeta() 
+						: new VncVector(value.dropRight(1), getMeta());
 		}
 	}
 
@@ -268,6 +267,18 @@ public class VncVector extends VncSequence implements IVncFunction {
 	@Override
 	public VncVector dropWhile(final Predicate<? super VncVal> predicate) {
 		return new VncVector(value.dropWhile(predicate), getMeta());
+	}
+
+	@Override
+	public VncVector dropRight(final int n) {
+		if (value.isEmpty()) {
+			return this;
+		}
+		else {
+			return n >= value.size() 
+						? emptyWithMeta() 
+						: new VncVector(value.dropRight(n), getMeta());
+		}
 	}
 	
 	@Override

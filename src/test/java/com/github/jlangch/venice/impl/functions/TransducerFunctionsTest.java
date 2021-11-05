@@ -251,7 +251,7 @@ public class TransducerFunctionsTest {
 				"(do                                    \n" +
 				"  (def xf (drop 2))                    \n" +
 				"  (def coll [1 2 3 4 5])               \n" +
-				"  (pr-str (transduce xf + coll)))        ";
+				"  (transduce xf + coll))                 ";
 		
 		final String script2 =
 				"(do                                    \n" +
@@ -259,7 +259,7 @@ public class TransducerFunctionsTest {
 				"  (def coll [1 2 3 4 5])               \n" +
 				"  (pr-str (transduce xf conj coll)))     ";
 
-		assertEquals("12", venice.eval(script1));	
+		assertEquals(12L, venice.eval(script1));	
 		assertEquals("[3 4 5]", venice.eval(script2));	
 	}
 	
@@ -271,7 +271,7 @@ public class TransducerFunctionsTest {
 				"(do                                    \n" +
 				"  (def xf (drop-while neg?))           \n" +
 				"  (def coll [-2 -1 0 1 2 3])           \n" +
-				"  (pr-str (transduce xf + coll)))        ";
+				"  (transduce xf + coll))                 ";
 		
 		final String script2 =
 				"(do                                    \n" +
@@ -279,8 +279,28 @@ public class TransducerFunctionsTest {
 				"  (def coll [-2 -1 0 1 2 3])           \n" +
 				"  (pr-str (transduce xf conj coll)))     ";
 
-		assertEquals("6", venice.eval(script1));	
+		assertEquals(6L, venice.eval(script1));	
 		assertEquals("[0 1 2 3]", venice.eval(script2));	
+	}
+	
+	@Test
+	public void test_transduce_drop_last() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (drop-last 2))               \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (transduce xf + coll))                 ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (drop-last 2))               \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (pr-str (transduce xf conj coll)))     ";
+
+		assertEquals(6L, venice.eval(script1));	
+		assertEquals("[1 2 3]", venice.eval(script2));	
 	}
 	
 	@Test
@@ -844,6 +864,37 @@ public class TransducerFunctionsTest {
 		assertEquals("[3 2 1 0]", venice.eval("(pr-str (drop-while (fn [x] (< x 3)) [1 2 3 2 1 0]))"));
 	}
 
+	@Test
+	public void test_drop_last() {
+		final Venice venice = new Venice();
+
+		// list (tiny)
+		
+		assertEquals("()", venice.eval("(pr-str (drop-last 0 '()))"));
+		assertEquals("()", venice.eval("(pr-str (drop-last 1 '()))"));
+
+		assertEquals("(0)", venice.eval("(pr-str (drop-last 0 '(0)))"));
+		assertEquals("()", venice.eval("(pr-str (drop-last 1 '(0)))"));
+
+		assertEquals("(0 1)", venice.eval("(pr-str (drop-last 0 '(0 1)))"));
+		assertEquals("(0)", venice.eval("(pr-str (drop-last 1 '(0 1)))"));
+		assertEquals("()", venice.eval("(pr-str (drop-last 2 '(0 1)))"));
+
+		assertEquals("(0 1 2)", venice.eval("(pr-str (drop-last 0 '(0 1 2)))"));
+		assertEquals("(0 1)", venice.eval("(pr-str (drop-last 1 '(0 1 2)))"));
+		assertEquals("(0)", venice.eval("(pr-str (drop-last 2 '(0 1 2)))"));
+		assertEquals("()", venice.eval("(pr-str (drop-last 3 '(0 1 2)))"));
+
+		// list (large)
+		assertEquals("(0 1 2 3 4 5 6 7 8 9)", venice.eval("(pr-str (drop-last 0 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(0 1 2 3 4 5 6 7 8)", venice.eval("(pr-str (drop-last 1 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(0 1 2 3 4)", venice.eval("(pr-str (drop-last 5 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(0 1)", venice.eval("(pr-str (drop-last 8 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(0)", venice.eval("(pr-str (drop-last 9 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("()", venice.eval("(pr-str (drop-last 10 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("()", venice.eval("(pr-str (drop-last 11 '(0 1 2 3 4 5 6 7 8 9)))"));
+	}
+	
 	@Test
 	public void test_take() {
 		final Venice venice = new Venice();

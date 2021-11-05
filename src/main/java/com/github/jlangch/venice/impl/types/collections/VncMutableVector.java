@@ -224,6 +224,16 @@ public class VncMutableVector extends VncSequence {
 	}
 
 	@Override
+	public VncMutableVector dropRight(final int n) {
+		if (value.isEmpty()) {
+			return this;
+		}
+		else {
+			return n >= value.size() ? emptyWithMeta() : slice(0, value.size() - n);
+		}
+	}
+
+	@Override
 	public VncMutableVector take(final int n) {
 		return slice(0, n);
 	}

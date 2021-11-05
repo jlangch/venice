@@ -224,10 +224,9 @@ public class VncList extends VncSequence {
 			return this;
 		}
 		else {
-			final io.vavr.collection.Vector<VncVal> butlast = value.dropRight(1);
-			return butlast.size() < VncTinyList.MAX_ELEMENTS
-					? VncTinyList.ofList(butlast.asJava(), getMeta())
-					: new VncList(butlast, getMeta());
+			return value.size() <= 1
+						? emptyWithMeta() 
+						: new VncList(value.dropRight(1), getMeta());
 		}
 	}
 
@@ -247,6 +246,18 @@ public class VncList extends VncSequence {
 	@Override
 	public VncList dropWhile(final Predicate<? super VncVal> predicate) {
 		return new VncList(value.dropWhile(predicate), getMeta());
+	}
+
+	@Override
+	public VncList dropRight(final int n) {
+		if (value.isEmpty()) {
+			return this;
+		}
+		else {
+			return n >= value.size() 
+						? emptyWithMeta() 
+						: new VncList(value.dropRight(n), getMeta());
+		}
 	}
 
 	@Override

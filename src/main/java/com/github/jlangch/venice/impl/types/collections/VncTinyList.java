@@ -340,6 +340,16 @@ public class VncTinyList extends VncList {
 		
 		return new VncTinyList(getMeta());
 	}
+
+	@Override
+	public VncList dropRight(final int n) {
+		if (len == 0) {
+			return this;
+		}
+		else {
+			return n >= len ? emptyWithMeta() : slice(0, len - n);
+		}
+	}
 	
 	@Override
 	public VncList take(final int n) {

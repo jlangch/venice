@@ -489,7 +489,9 @@ public class TransducerFunctions {
 					.doc(
 						"Returns a collection of all but the first n items in coll.¶" +
 						"Returns a stateful transducer when no collection is provided.")
-					.examples("(drop 3 [1 2 3 4 5])", "(drop 10 [1 2 3 4 5])")
+					.examples(
+						"(drop 3 [1 2 3 4 5])", 
+						"(drop 10 [1 2 3 4 5])")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -618,6 +620,78 @@ public class TransducerFunctions {
 															predicate,
 															VncList.of(v),
 															meterRegistry)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction drop_last =
+		new VncFunction(
+				"drop-last",
+				VncFunction
+					.meta()
+					.arglists("(drop-last n coll)")
+					.doc(
+						"Return a sequence of all but the last n items in coll.¶" +
+						"Returns a stateful transducer when no collection is provided.")
+					.examples(
+						"(drop-last 3 [1 2 3 4 5])", 
+						"(drop-last 10 [1 2 3 4 5])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1, 2);
+
+				if (args.size() == 1) {
+					final int n = Coerce.toVncLong(args.first()).getValue().intValue();
+
+					// return a transducer
+					return new VncFunction(createAnonymousFuncName("drop-last:transducer:wrapped")) {
+						public VncVal apply(final VncList args) {
+							ArityExceptions.assertArity(this, args, 1);
+
+							final VncFunction rf = Coerce.toVncFunction(args.first());
+						    final List<VncVal> list = new ArrayList<>();
+
+							return new VncFunction(createAnonymousFuncName("drop-last:transducer")) {
+								public VncVal apply(final VncList args) {
+									switch (args.size()) {
+										case 0:
+											return rf.apply(VncList.empty());
+										case 1: {
+											VncVal result = args.first();
+											final VncVal dropList = list.size() > n 
+																		? VncList.ofList(list.subList(0, list.size()-n)) 
+																		: VncList.empty();
+	
+											result = CoreFunctions.reduce.apply(VncList.of(rf, result, dropList));
+											return rf.apply(VncList.of(result));
+										}
+										case 2: {
+											final VncVal result = args.first();
+											final VncVal input = args.second();
+	
+											list.add(input);
+											return result;
+										}
+										default:
+											ArityExceptions.assertArity(this, args, 0, 1, 2);
+											return Nil;
+									}
+								}
+								private static final long serialVersionUID = -1L;
+							};
+						}
+
+						private static final long serialVersionUID = -1L;
+					};
+				}
+				else {
+					final VncLong n = Coerce.toVncLong(args.first());
+					final VncSequence coll = coerceToSequence(args.second());
+
+					return coll.dropRight(n.getIntValue());
 				}
 			}
 
@@ -1411,6 +1485,7 @@ public class TransducerFunctions {
 					.add(filter)
 					.add(drop)
 					.add(drop_while)
+					.add(drop_last)
 					.add(take)
 					.add(take_while)
 					.add(keep)

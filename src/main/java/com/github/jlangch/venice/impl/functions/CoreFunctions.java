@@ -5654,7 +5654,7 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (Types.isVncSequence(coll)) {
-					return ((VncSequence)coll).butlast();
+					return ((VncSequence)coll).dropRight(1);
 				}
 				else if (Types.isVncString(coll)) {
 					final String s = ((VncString)coll).getValue();
