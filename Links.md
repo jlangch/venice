@@ -59,6 +59,7 @@ test {
 }
 ```
 
+
 ## Performance
 
 [Clojure / Java Performance](http://www.diva-portal.org/smash/get/diva2:1424342/FULLTEXT01.pdf)
@@ -86,6 +87,8 @@ test {
 
 
 ## Clojure
+
+[Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide)
 
 
 ### Socket REPL
