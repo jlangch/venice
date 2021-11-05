@@ -633,10 +633,13 @@ public class TransducerFunctions {
 					.doc(
 						"Returns a collection of the first n items in coll, or all items if " +
 						"there are fewer than n.¶" +
-						"Returns a stateful transducer when no collection is provided.")
+						"Returns a stateful transducer when no collection is provided. \n" +
+						"Returns a lazy sequence if coll is a lazy sequence.")
 					.examples(
 						"(take 3 [1 2 3 4 5])",
-						"(take 10 [1 2 3 4 5])")
+						"(take 10 [1 2 3 4 5])",
+						"(doall (take 4 (repeat 3)))",
+						"(doall (take 10 (cycle (range 0 3))))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

@@ -890,6 +890,9 @@ public class TransducerFunctionsTest {
 		
 		assertEquals("[1 2 3 4]", venice.eval("(pr-str (take 4 [1 2 3 4 5 6]))"));
 		assertEquals("[1 2 3 4 5 6]", venice.eval("(pr-str (take 10 [1 2 3 4 5 6]))"));
+		
+		assertEquals("(3 3 3 3)", venice.eval("(pr-str (doall (take 4 (repeat 3))))"));
+		assertEquals("(0 1 2 0 1 2 0 1 2 0)", venice.eval("(pr-str (doall (take 10 (cycle (range 0 3)))))"));
 	}
 
 	@Test
