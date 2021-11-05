@@ -99,6 +99,8 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 	public abstract VncSequence take(int n);
 	
 	public abstract VncSequence takeWhile(Predicate<? super VncVal> predicate);
+	
+	public abstract VncSequence takeRight(int n);
 
 	public abstract VncSequence slice(int start, int end);
 	

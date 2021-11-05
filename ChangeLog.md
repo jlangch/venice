@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- function `drop-last`
+- functions `drop-last`, `take-last`
 
 
 

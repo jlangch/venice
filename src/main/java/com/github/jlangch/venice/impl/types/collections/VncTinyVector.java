@@ -413,6 +413,16 @@ public class VncTinyVector extends VncVector {
 		
 		return this;
 	}
+
+	@Override
+	public VncVector takeRight(final int n) {
+		if (n >= len) {
+			return this;
+		}
+		else {
+			return n <= 0 ? emptyWithMeta() : slice(len - n);
+		}
+	}
 	
 	@Override 
 	public VncVector reverse() {

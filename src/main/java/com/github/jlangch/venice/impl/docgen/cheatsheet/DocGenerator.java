@@ -708,6 +708,7 @@ public class DocGenerator {
 		list_modify.addItem(getDocItem("sort-by"));
 		list_modify.addItem(getDocItem("take"));
 		list_modify.addItem(getDocItem("take-while"));
+		list_modify.addItem(getDocItem("take-last"));
 		list_modify.addItem(getDocItem("drop"));
 		list_modify.addItem(getDocItem("drop-while"));
 		list_modify.addItem(getDocItem("drop-last"));
@@ -772,6 +773,7 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("sort-by"));
 		vec_modify.addItem(getDocItem("take"));
 		vec_modify.addItem(getDocItem("take-while"));
+		vec_modify.addItem(getDocItem("take-last"));
 		vec_modify.addItem(getDocItem("drop"));
 		vec_modify.addItem(getDocItem("drop-while"));
 		vec_modify.addItem(getDocItem("drop-last"));
@@ -1397,6 +1399,7 @@ public class DocGenerator {
 		func.addItem(getDocItem("drop-last"));
 		func.addItem(getDocItem("take"));
 		func.addItem(getDocItem("take-while"));
+		func.addItem(getDocItem("take-last"));
 		func.addItem(getDocItem("keep"));
 		func.addItem(getDocItem("remove"));
 		func.addItem(getDocItem("dedupe"));

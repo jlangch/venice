@@ -292,6 +292,16 @@ public class VncVector extends VncSequence implements IVncFunction {
 	}
 
 	@Override
+	public VncVector takeRight(final int n) {
+		if (n >= value.size()) {
+			return this;
+		}
+		else {
+			return n <= 0 ? emptyWithMeta() : new VncVector(value.takeRight(n), getMeta());
+		}
+	}
+
+	@Override
 	public VncVector reverse() {
 		return new VncVector(value.reverse(), getMeta());
 	}

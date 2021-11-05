@@ -248,6 +248,16 @@ public class VncMutableList extends VncSequence {
 	}
 
 	@Override
+	public VncMutableList takeRight(final int n) {
+		if (n >= value.size()) {
+			return this;
+		}
+		else {
+			return n <= 0 ? emptyWithMeta() : slice(value.size() - n);
+		}
+	}
+
+	@Override
 	public VncMutableList reverse() {
 		final ArrayList<VncVal> seq = new ArrayList<>(value);
 		Collections.reverse(seq);

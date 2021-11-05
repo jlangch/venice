@@ -252,6 +252,16 @@ public class VncJavaList extends VncSequence implements IVncJavaObject {
 	}
 
 	@Override
+	public VncSequence takeRight(final int n) {
+		if (n >= value.size()) {
+			return this;
+		}
+		else {
+			return n <= 0 ? emptyWithMeta() : slice(value.size() - n);
+		}
+	}
+
+	@Override
 	public VncJavaList reverse() {
 		final ArrayList<Object> seq = new ArrayList<>(value);
 		Collections.reverse(seq);

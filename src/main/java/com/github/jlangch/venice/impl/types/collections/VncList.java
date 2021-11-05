@@ -271,6 +271,16 @@ public class VncList extends VncSequence {
 	}
 
 	@Override
+	public VncList takeRight(final int n) {
+		if (n >= value.size()) {
+			return this;
+		}
+		else {
+			return n <= 0 ? emptyWithMeta() : new VncList(value.takeRight(n), getMeta());
+		}
+	}
+
+	@Override
 	public VncList reverse() {
 		return new VncList(value.reverse(), getMeta());
 	}

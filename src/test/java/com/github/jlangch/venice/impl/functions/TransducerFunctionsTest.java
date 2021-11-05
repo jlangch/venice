@@ -344,6 +344,26 @@ public class TransducerFunctionsTest {
 	}
 	
 	@Test
+	public void test_transduce_take_last() {
+		final Venice venice = new Venice();
+		
+		final String script1 =
+				"(do                                    \n" +
+				"  (def xf (take-last 2))               \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (transduce xf + coll))                 ";
+		
+		final String script2 =
+				"(do                                    \n" +
+				"  (def xf (take-last 2))               \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (pr-str (transduce xf conj coll)))     ";
+
+		assertEquals(9L, venice.eval(script1));	
+		assertEquals("[4 5]", venice.eval(script2));	
+	}
+	
+	@Test
 	public void test_transduce_remove() {
 		final Venice venice = new Venice();
 		
@@ -976,6 +996,37 @@ public class TransducerFunctionsTest {
 		assertEquals("[1 2]", venice.eval("(pr-str (take-while (fn [x] (< x 3)) [1 2 3 4]))"));
 
 		assertEquals("[1 2]", venice.eval("(pr-str (take-while (fn [x] (< x 3)) [1 2 3 2 1 0]))"));
+	}
+
+	@Test
+	public void test_take_last() {
+		final Venice venice = new Venice();
+
+		// list (tiny)
+		
+		assertEquals("()", venice.eval("(pr-str (take-last 0 '()))"));
+		assertEquals("()", venice.eval("(pr-str (take-last 1 '()))"));
+
+		assertEquals("()", venice.eval("(pr-str (take-last 0 '(0)))"));
+		assertEquals("(0)", venice.eval("(pr-str (take-last 1 '(0)))"));
+
+		assertEquals("()", venice.eval("(pr-str (take-last 0 '(0 1)))"));
+		assertEquals("(1)", venice.eval("(pr-str (take-last 1 '(0 1)))"));
+		assertEquals("(0 1)", venice.eval("(pr-str (take-last 2 '(0 1)))"));
+
+		assertEquals("()", venice.eval("(pr-str (take-last 0 '(0 1 2)))"));
+		assertEquals("(2)", venice.eval("(pr-str (take-last 1 '(0 1 2)))"));
+		assertEquals("(1 2)", venice.eval("(pr-str (take-last 2 '(0 1 2)))"));
+		assertEquals("(0 1 2)", venice.eval("(pr-str (take-last 3 '(0 1 2)))"));
+
+		// list (large)
+		assertEquals("()", venice.eval("(pr-str (take-last 0 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(9)", venice.eval("(pr-str (take-last 1 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(5 6 7 8 9)", venice.eval("(pr-str (take-last 5 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(2 3 4 5 6 7 8 9)", venice.eval("(pr-str (take-last 8 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(1 2 3 4 5 6 7 8 9)", venice.eval("(pr-str (take-last 9 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(0 1 2 3 4 5 6 7 8 9)", venice.eval("(pr-str (take-last 10 '(0 1 2 3 4 5 6 7 8 9)))"));
+		assertEquals("(0 1 2 3 4 5 6 7 8 9)", venice.eval("(pr-str (take-last 11 '(0 1 2 3 4 5 6 7 8 9)))"));
 	}
 	
 	@Test

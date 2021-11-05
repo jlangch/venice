@@ -380,6 +380,16 @@ public class VncTinyList extends VncList {
 		
 		return this;
 	}
+
+	@Override
+	public VncList takeRight(final int n) {
+		if (n >= len) {
+			return this;
+		}
+		else {
+			return n <= 0 ? emptyWithMeta() : slice(len - n);
+		}
+	}
 	
 	@Override 
 	public VncList reverse() {
