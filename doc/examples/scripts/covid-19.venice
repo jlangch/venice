@@ -54,6 +54,10 @@
     "Singapore"       "New-Zealand"     "Brazil"          "Argentina"
     "Colombia"        "Canada" ])
 
+  (def country-set-4 [
+    "Ukraine"         "Slovakia"        "Tunisia" ])
+
+
   ;; 14 styles for the chart series, each visualizing a country
   (def chart-series-styles [
     { :color :x-green      }
@@ -110,12 +114,16 @@
     { :name "Russia"         :iso "RUS" }
     { :name "Singapore"      :iso "SGP" }
     { :name "Slovenia"       :iso "SVN" }
+    { :name "Slovakia"       :iso "SVK" }
     { :name "Spain"          :iso "ESP" }
+    { :name "South Africa"   :iso "ZAF" }
     { :name "Sweden"         :iso "SWE" }
     { :name "Switzerland"    :iso "CHE" }
     { :name "Thailand"       :iso "THA" }
+    { :name "Tunisia"        :iso "TUN" }
     { :name "Turkey"         :iso "TUR" }
     { :name "UK"             :iso "GBR" }
+    { :name "Ukraine"        :iso "UKR" }
     { :name "US"             :iso "USA" } ])
 
 
@@ -389,4 +397,5 @@
   (process! "covid-19_1.png" country-set-1)
   (process! "covid-19_2.png" country-set-2)
   (process! "covid-19_3.png" country-set-3)
+  ;(process! "covid-19_4.png" country-set-4)
 )
