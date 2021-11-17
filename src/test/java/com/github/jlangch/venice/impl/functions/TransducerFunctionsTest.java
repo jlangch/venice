@@ -355,12 +355,20 @@ public class TransducerFunctionsTest {
 		
 		final String script2 =
 				"(do                                    \n" +
+				"  (def xf (comp (take-last 2)          \n" +
+				"                (map #(* % 2))))       \n" +
+				"  (def coll [1 2 3 4 5])               \n" +
+				"  (transduce xf + coll))                  ";
+		
+		final String script3 =
+				"(do                                    \n" +
 				"  (def xf (take-last 2))               \n" +
 				"  (def coll [1 2 3 4 5])               \n" +
 				"  (pr-str (transduce xf conj coll)))     ";
 
 		assertEquals(9L, venice.eval(script1));	
-		assertEquals("[4 5]", venice.eval(script2));	
+		assertEquals(18L, venice.eval(script2));	
+		assertEquals("[4 5]", venice.eval(script3));	
 	}
 	
 	@Test

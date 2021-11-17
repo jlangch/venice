@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,8 +83,9 @@ public class TransducerFunctions {
 						"map        map-indexed     rf-first              halt-when \n" +
 						"filter     flatten         rf-last                         \n" +
 						"drop       drop-while      rf-any?                         \n" +
-						"take       take-while      rf-every?                       \n" +
-						"keep       remove          conj                            \n" +
+						"drop-last  remove          rf-every?                       \n" +
+						"take       take-while                                      \n" +
+						"take-last  keep            conj                            \n" +
 						"dedupe     distinct        +, *                            \n" +
 						"sorted     reverse         max, min                        \n" +
 						"```")
@@ -869,7 +871,7 @@ public class TransducerFunctions {
 							ArityExceptions.assertArity(this, args, 1);
 
 							final VncFunction rf = Coerce.toVncFunction(args.first());
-						    final List<VncVal> list = new ArrayList<>();
+						    final LinkedList<VncVal> list = new LinkedList<>();
 
 							return new VncFunction(createAnonymousFuncName("take-last:transducer")) {
 								public VncVal apply(final VncList args) {
@@ -878,12 +880,8 @@ public class TransducerFunctions {
 											return rf.apply(VncList.empty());
 										case 1: {
 											VncVal result = args.first();
-											
-											final VncVal takeList = n >= list.size()
-																		? VncList.ofList(list)
-																		: VncList.ofList(list.subList(list.size()-n, list.size()));
 	
-											result = CoreFunctions.reduce.apply(VncList.of(rf, result, takeList));
+											result = CoreFunctions.reduce.apply(VncList.of(rf, result, VncList.ofList(list)));
 											return rf.apply(VncList.of(result));
 										}
 										case 2: {
@@ -891,6 +889,9 @@ public class TransducerFunctions {
 											final VncVal input = args.second();
 	
 											list.add(input);
+											if (list.size() > n) {
+												list.removeFirst();
+											}
 											return result;
 										}
 										default:
