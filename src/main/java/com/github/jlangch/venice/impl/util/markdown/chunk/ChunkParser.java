@@ -206,7 +206,7 @@ public class ChunkParser {
 		int ch = reader.peek();
 		while(true) {
 			if (ch == EOF) {
-				if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
+				if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*') {
 					final String chunk = collapseWhitespaces(
 											StringUtil.removeEnd(
 													sb.toString(), "***"));
