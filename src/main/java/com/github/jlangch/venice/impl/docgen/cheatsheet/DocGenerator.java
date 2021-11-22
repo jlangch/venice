@@ -2110,10 +2110,9 @@ public class DocGenerator {
 	private DocSection getCidrSection() {
 		final DocSection section = new DocSection(
 										"CIDR", 
-										"classles inter-domain routing", 
+										"classless inter-domain routing", 
 										"cidr");
-
-		
+	
 		final DocSection all = new DocSection("", id());
 		section.addSection(all);
 
