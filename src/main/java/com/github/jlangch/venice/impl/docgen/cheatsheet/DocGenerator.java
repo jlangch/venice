@@ -1448,6 +1448,7 @@ public class DocGenerator {
 		final DocSection futures = new DocSection("Futures", "concurrency.futures");
 		all.addSection(futures);
 		futures.addItem(getDocItem("future"));
+		futures.addItem(getDocItem("future-task"));
 		futures.addItem(getDocItem("future?"));
 		futures.addItem(getDocItem("future-done?"));
 		futures.addItem(getDocItem("future-cancel"));

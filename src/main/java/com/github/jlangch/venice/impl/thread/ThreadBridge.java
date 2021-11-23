@@ -26,6 +26,7 @@ import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIV
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -127,6 +128,33 @@ public class ThreadBridge {
 				}
 				
 				runnable.run();
+			}
+			finally {
+				// clean up
+				ThreadContext.remove();
+			}};
+		
+		return wrapper;
+	}
+	
+	public <T> Consumer<T> bridgeConsumer(final Consumer<T> consumer) {
+		final Consumer<T> wrapper = (T t) -> {
+			try {
+				// inherit thread local values to the child thread
+				ThreadContext.inheritFrom(parentThreadSnapshot);
+
+				if (callFrames != null) {
+					final CallStack cs = ThreadContext.getCallStack();
+					for(CallFrame cf : callFrames) {
+						cs.push(cf);
+					}
+				}
+				
+				if (deactivateDebugAgent) {
+					DebugAgent.unregister();
+				}
+
+				consumer.accept(t);
 			}
 			finally {
 				// clean up

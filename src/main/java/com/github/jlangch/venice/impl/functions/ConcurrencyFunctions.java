@@ -33,8 +33,10 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
@@ -75,7 +77,7 @@ public class ConcurrencyFunctions {
 				"deref", 
 				VncFunction
 					.meta()
-					.arglists("(deref x)", "(deref x timeout-ms timeout-val)")		
+					.arglists("(deref x)", "(deref x timeout-ms timeout-val)")
 					.doc(
 						"Dereferences an atom, a future or a promise object. When applied to an " + 
 						"atom, returns its current state. When applied to a future, " +
@@ -198,7 +200,7 @@ public class ConcurrencyFunctions {
 				"deref?", 
 				VncFunction
 					.meta()
-					.arglists("(deref? x)")		
+					.arglists("(deref? x)")
 					.doc("Returns true if x is dereferencable.")
 					.examples(
 						"(deref? (atom 10))",
@@ -236,7 +238,7 @@ public class ConcurrencyFunctions {
 				"realized?", 
 				VncFunction
 					.meta()
-					.arglists("(realized? x)")		
+					.arglists("(realized? x)")
 					.doc("Returns true if a value has been produced for a promise, delay, or future.")
 					.examples(
 						"(do                                \n" +
@@ -294,7 +296,7 @@ public class ConcurrencyFunctions {
 				"add-watch", 
 				VncFunction
 					.meta()
-					.arglists("(add-watch ref key fn)")		
+					.arglists("(add-watch ref key fn)")
 					.doc(
 						"Adds a watch function to an agent/atom reference. The watch fn must " + 
 						"be a fn of 4 args: a key, the reference, its old-state, its " + 
@@ -340,7 +342,7 @@ public class ConcurrencyFunctions {
 				"remove-watch", 
 				VncFunction
 					.meta()
-					.arglists("(remove-watch ref key)")		
+					.arglists("(remove-watch ref key)")
 					.doc( "Removes a watch function from an agent/atom reference.")
 					.examples(
 						"(do                                      \n" +
@@ -390,7 +392,7 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists(
 						"(atom x)",
-						"(atom x & options)")		
+						"(atom x & options)")
 					.doc(
 						"Creates an atom with the initial value x. \n\n" +
 						"Options: ¶\n" +
@@ -434,7 +436,7 @@ public class ConcurrencyFunctions {
 				"atom?", 
 				VncFunction
 					.meta()
-					.arglists("(atom? x)")		
+					.arglists("(atom? x)")
 					.doc("Returns true if x is an atom, otherwise false")
 					.examples(
 						"(do                        \n" +
@@ -456,7 +458,7 @@ public class ConcurrencyFunctions {
 				"reset!", 
 				VncFunction
 					.meta()
-					.arglists("(reset! box newval)")		
+					.arglists("(reset! box newval)")
 					.doc(
 						"Sets the value of an atom or a volatile to newval without " + 
 						"regard for the current value. Returns newval.")
@@ -501,7 +503,7 @@ public class ConcurrencyFunctions {
 				"swap!", 
 				VncFunction
 					.meta()
-					.arglists("(swap! box f & args)")		
+					.arglists("(swap! box f & args)")
 					.doc(
 						"Atomically swaps the value of an atom or a volatile to be: " + 
 						"`(apply f current-value-of-box args)`. Note that f may be called " + 
@@ -561,7 +563,7 @@ public class ConcurrencyFunctions {
 				"swap-vals!", 
 				VncFunction
 					.meta()
-					.arglists("(swap-vals! atom f & args)")		
+					.arglists("(swap-vals! atom f & args)")
 					.doc(
 						"Atomically swaps the value of an atom to be: " + 
 						"`(apply f current-value-of-atom args)`. Note that f may be called " + 
@@ -600,7 +602,7 @@ public class ConcurrencyFunctions {
 				"compare-and-set!", 
 				VncFunction
 					.meta()
-					.arglists("(compare-and-set! atom oldval newval)")		
+					.arglists("(compare-and-set! atom oldval newval)")
 					.doc(
 						"Atomically sets the value of atom to newval if and only if the " + 
 						"current value of the atom is identical to oldval. Returns true if " + 
@@ -635,7 +637,7 @@ public class ConcurrencyFunctions {
 				"volatile", 
 				VncFunction
 					.meta()
-					.arglists("(volatile x)")		
+					.arglists("(volatile x)")
 					.doc("Creates a volatile with the initial value x")
 					.examples(
 						"(do                           \n" +
@@ -663,7 +665,7 @@ public class ConcurrencyFunctions {
 				"volatile?", 
 				VncFunction
 					.meta()
-					.arglists("(volatile? x)")		
+					.arglists("(volatile? x)")
 					.doc("Returns true if x is a volatile, otherwise false")
 					.examples(
 						"(do                            \n" +
@@ -691,7 +693,7 @@ public class ConcurrencyFunctions {
 				"agent", 
 				VncFunction
 					.meta()
-					.arglists("(agent state & options)")		
+					.arglists("(agent state & options)")
 					.doc(
 						"Creates and returns an agent with an initial value of state and " +
 						"zero or more options. \n\n" +
@@ -733,7 +735,7 @@ public class ConcurrencyFunctions {
 				"send", 
 				VncFunction
 					.meta()
-					.arglists("(send agent action-fn args)")		
+					.arglists("(send agent action-fn args)")
 					.doc(
 						"Dispatch an action to an agent. Returns the agent immediately.\n\n" +
 						"The state of the agent will be set to the value of:¶\n" + 
@@ -776,7 +778,7 @@ public class ConcurrencyFunctions {
 				"send-off", 
 				VncFunction
 					.meta()
-					.arglists("(send-off agent fn args)")		
+					.arglists("(send-off agent fn args)")
 					.doc(
 						"Dispatch a potentially blocking action to an agent. Returns " +
 						"the agent immediately.\n\n" +
@@ -820,7 +822,7 @@ public class ConcurrencyFunctions {
 				"restart-agent", 
 				VncFunction
 					.meta()
-					.arglists("(restart-agent agent state)")		
+					.arglists("(restart-agent agent state)")
 					.doc(
 						"When an agent is failed, changes the agent state to new-state and " + 
 						"then un-fails the agent so that sends are allowed again.")
@@ -859,7 +861,7 @@ public class ConcurrencyFunctions {
 				"set-error-handler!", 
 				VncFunction
 					.meta()
-					.arglists("(set-error-handler! agent handler-fn)")		
+					.arglists("(set-error-handler! agent handler-fn)")
 					.doc(
 						"Sets the error-handler of an agent to `handler-fn`. If an action " + 
 						"being run by the agent throws an exception `handler-fn` will be " +
@@ -902,7 +904,7 @@ public class ConcurrencyFunctions {
 				"agent-error", 
 				VncFunction
 					.meta()
-					.arglists("(agent-error agent)")		
+					.arglists("(agent-error agent)")
 					.doc(
 						"Returns the exception thrown during an asynchronous action of the " + 
 						"agent if the agent is failed. Returns `nil` if the agent is not " + 
@@ -942,7 +944,7 @@ public class ConcurrencyFunctions {
 				"agent-error-mode", 
 				VncFunction
 					.meta()
-					.arglists("(agent-error-mode agent)")		
+					.arglists("(agent-error-mode agent)")
 					.doc( "Returns the agent's error mode")
 					.examples(
 						"(do                                              \n" +
@@ -973,7 +975,7 @@ public class ConcurrencyFunctions {
 				"await", 
 				VncFunction
 					.meta()
-					.arglists("(await agents)")		
+					.arglists("(await agents)")
 					.doc(
 						"Blocks the current thread (indefinitely) until all actions dispatched " + 
 						"thus far (from this thread or agent) to the agents have occurred. ")
@@ -1016,7 +1018,7 @@ public class ConcurrencyFunctions {
 				"await-for", 
 				VncFunction
 					.meta()
-					.arglists("(await-for timeout-ms agents)")		
+					.arglists("(await-for timeout-ms agents)")
 					.doc(
 						"Blocks the current thread until all actions dispatched thus " + 
 						"far (from this thread or agent) to the agents have occurred, or the " + 
@@ -1063,7 +1065,7 @@ public class ConcurrencyFunctions {
 				"shutdown-agents", 
 				VncFunction
 					.meta()
-					.arglists("(shutdown-agents)")		
+					.arglists("(shutdown-agents)")
 					.doc(
 						"Initiates a shutdown of the thread pools that back the agent " + 
 						"system. Running actions will complete, but no new actions will been " + 
@@ -1094,7 +1096,7 @@ public class ConcurrencyFunctions {
 				"shutdown-agents?", 
 				VncFunction
 					.meta()
-					.arglists("(shutdown-agents?)")		
+					.arglists("(shutdown-agents?)")
 					.doc("Returns true if the thread-pool that backs the agents is shut down")
 					.examples(
 						"(do                           \n" +
@@ -1120,7 +1122,7 @@ public class ConcurrencyFunctions {
 				"await-termination-agents", 
 				VncFunction
 					.meta()
-					.arglists("(shutdown-agents)")		
+					.arglists("(shutdown-agents)")
 					.doc(
 						"Blocks until all actions have completed execution after a shutdown " +
 						"request, or the timeout occurs, or the current thread is " +
@@ -1154,7 +1156,7 @@ public class ConcurrencyFunctions {
 				"await-termination-agents?", 
 				VncFunction
 					.meta()
-					.arglists("(await-termination-agents?)")		
+					.arglists("(await-termination-agents?)")
 					.doc( "Returns true if all tasks have been completed following agent shut down")
 					.examples(
 						"(do                                  \n" +
@@ -1181,7 +1183,7 @@ public class ConcurrencyFunctions {
 				"agent-send-thread-pool-info", 
 				VncFunction
 					.meta()
-					.arglists("(agent-send-thread-pool-info)")		
+					.arglists("(agent-send-thread-pool-info)")
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"agent send.\n\n" +
@@ -1216,7 +1218,7 @@ public class ConcurrencyFunctions {
 				"agent-send-off-thread-pool-info", 
 				VncFunction
 					.meta()
-					.arglists("(agent-send-off-thread-pool-info)")		
+					.arglists("(agent-send-off-thread-pool-info)")
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"agent send-off.\n\n" +
@@ -1256,7 +1258,7 @@ public class ConcurrencyFunctions {
 				"deliver", 
 				VncFunction
 					.meta()
-					.arglists("(deliver ref value)")		
+					.arglists("(deliver ref value)")
 					.doc(
 						"Delivers the supplied value to the promise, releasing any pending " + 
 						"derefs. A subsequent call to deliver on a promise will have no effect.")
@@ -1297,7 +1299,7 @@ public class ConcurrencyFunctions {
 				"promise", 
 				VncFunction
 					.meta()
-					.arglists("(promise)")		
+					.arglists("(promise)")
 					.doc(
 						"Returns a promise object that can be read with deref, and set, " + 
 						"once only, with deliver. Calls to deref prior to delivery will " + 
@@ -1337,7 +1339,7 @@ public class ConcurrencyFunctions {
 				"promise?", 
 				VncFunction
 					.meta()
-					.arglists("(promise? p)")		
+					.arglists("(promise? p)")
 					.doc("Returns true if f is a Promise otherwise false")
 					.examples("(promise? (promise)))")
 					.build()
@@ -1362,7 +1364,7 @@ public class ConcurrencyFunctions {
 				"future", 
 				VncFunction
 					.meta()
-					.arglists("(future fn)")		
+					.arglists("(future fn)")
 					.doc(
 						"Takes a function without arguments and yields a future object that will " + 
 						"invoke the function in another thread, and will cache the result and " + 
@@ -1375,17 +1377,17 @@ public class ConcurrencyFunctions {
 						"(do                                       \n" + 
 						"   (defn wait [] (sleep 300) 100)         \n" + 
 						"   (let [f (future wait)]                 \n" + 
-						"        (deref f)))                         ",
+						"      (deref f)))                           ",
 
 						"(do                                       \n" + 
 						"   (defn wait [x] (sleep 300) (+ x 100))  \n" + 
 						"   (let [f (future (partial wait 10))]    \n" + 
-						"        (deref f)))                         ",
+						"      (deref f)))                           ",
 
 						"(do                                       \n" + 
 						"   (defn sum [x y] (+ x y))               \n" + 
 						"   (let [f (future (partial sum 3 4))]    \n" + 
-						"        (deref f)))                         ",
+						"      (deref f)))                           ",
 					
 						";; demonstrates the use of thread locals with futures         \n" +
 						"(do                                                           \n" +
@@ -1410,7 +1412,7 @@ public class ConcurrencyFunctions {
 														"future",
 														new CallFrame[] {
 															new CallFrame(this, args),
-															new CallFrame(fn)});				
+															new CallFrame(fn)});
 				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
 				// Note: Do NOT use a CompletableFuture
@@ -1426,12 +1428,85 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction future_task = 
+		new VncFunction(
+				"future-task", 
+				VncFunction
+					.meta()
+					.arglists("(future-task fn done-fn)")
+					.doc(
+						"Takes a function without arguments and yields a future object that will " + 
+						"invoke the function in another thread. The done function will be called " +
+						"with the future as argument as soon as the future function has completed.\n\n" +
+						"In combination with a queue a completion service can be built. The tasks " +
+						"appear in the queue in the order they have completed.\n\n" +
+						"Thread local vars will be inherited by the future child thread. Changes " +
+						"of the child's thread local vars will not be seen on the parent.")
+					.examples(
+						";; building a completion service                                                  \n" + 
+						";; CompletionService = incoming worker queue + worker threads + output data queue \n" + 
+						"(do                                                   \n" + 
+						"   (def q (queue))                                    \n" + 
+						"   (defn wait [s v] (sleep s) v)                      \n" + 
+						"   (future-task (partial wait 200 2) #(offer! q @%))  \n" + 
+						"   (future-task (partial wait 300 3) #(offer! q @%))  \n" + 
+						"   (future-task (partial wait 100 1) #(offer! q @%))  \n" + 
+						"   (println (poll! q :indefinite))                    \n" +
+						"   (println (poll! q :indefinite))                    \n" +
+						"   (println (poll! q :indefinite)))                     ")
+					.seeAlso("future")
+					.build()
+		) {		
+			public VncVal apply(final VncList args) {	
+				ArityExceptions.assertArity(this, args, 2);
+
+				sandboxFunctionCallValidation();
+
+				final VncFunction taskFn = Coerce.toVncFunction(args.first());
+				final VncFunction doneFn = Coerce.toVncFunction(args.second());
+				
+				// Create a wrapper that inherits the Venice thread context
+				// from the parent thread to the executer thread!
+				final ThreadBridge threadBridgeTask = ThreadBridge.create(
+														"future-task",
+														new CallFrame[] {
+															new CallFrame(this, args),
+															new CallFrame(taskFn)});
+
+				final ThreadBridge threadBridgeDone = ThreadBridge.create(
+														"future-task",
+														new CallFrame[] {
+															new CallFrame(this, args),
+															new CallFrame(doneFn)});
+
+				final Callable<VncVal> task = () -> taskFn.applyOf();
+				final Consumer<Future<VncVal>> done = (Future<VncVal> f) -> doneFn.applyOf(new VncJavaObject(f));
+
+				final Callable<VncVal> taskWrapper = threadBridgeTask.bridgeCallable(task);
+				final Consumer<Future<VncVal>> doneWrapper = threadBridgeDone.bridgeConsumer(done);
+				
+				final VncFutureTask futureTask = new VncFutureTask(taskWrapper, doneWrapper);
+				
+				// Note: Do NOT use a CompletableFuture
+				//       Canceling a CompletableFuture does not interrupt the 
+				//       task wrapper!!!
+				@SuppressWarnings("unchecked")
+				final Future<VncVal> future = (Future<VncVal>)mngdExecutor
+																.getExecutor()
+																.submit(futureTask);
+				
+				return new VncJavaObject(future);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction future_Q = 
 		new VncFunction(
 				"future?", 
 				VncFunction
 					.meta()
-					.arglists("(future? f)")		
+					.arglists("(future? f)")
 					.doc( "Returns true if f is a Future otherwise false")
 					.examples("(future? (future (fn [] 100)))")
 					.build()
@@ -1450,7 +1525,7 @@ public class ConcurrencyFunctions {
 				"future-done?", 
 				VncFunction
 					.meta()
-					.arglists("(future-done? f)")		
+					.arglists("(future-done? f)")
 					.doc( "Returns true if f is a Future is done otherwise false")
 					.examples(
 						"(do                                                            \n" +
@@ -1490,7 +1565,7 @@ public class ConcurrencyFunctions {
 				"future-cancel", 
 				VncFunction
 					.meta()
-					.arglists("(future-cancel f)")		
+					.arglists("(future-cancel f)")
 					.doc("Cancels the future")
 					.examples(
 						"(do                                                                     \n" +
@@ -1534,7 +1609,7 @@ public class ConcurrencyFunctions {
 				"future-cancelled?", 
 				VncFunction
 					.meta()
-					.arglists("(future-cancelled? f)")		
+					.arglists("(future-cancelled? f)")
 					.doc("Returns true if f is a Future is cancelled otherwise false")
 					.examples("(future-cancelled? (future (fn [] 100)))")
 					.seeAlso("future", "future-done?", "future-cancel")
@@ -1568,7 +1643,7 @@ public class ConcurrencyFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(futures-fork count worker-factory-fn)")		
+						"(futures-fork count worker-factory-fn)")
 					.doc(
 						"Creates a list of count futures. The worker factory is single argument " +
 						"function that gets the worker index (0..count-1) as argument and returns " +
@@ -1610,7 +1685,7 @@ public class ConcurrencyFunctions {
 				"futures-thread-pool-info", 
 				VncFunction
 					.meta()
-					.arglists("(futures-thread-pool-info)")		
+					.arglists("(futures-thread-pool-info)")
 					.doc(
 						"Returns the thread pool info of the ThreadPoolExecutor serving " +
 						"the futures.\n\n" +
@@ -1646,7 +1721,7 @@ public class ConcurrencyFunctions {
 				VncFunction
 					.meta()
 					.arglists(
-						"(futures-wait & futures)")		
+						"(futures-wait & futures)")
 					.doc(
 						"Waits for all futures to get terminated. If the waiting " +
 						"thread is interrupted the futures are cancelled. ")
@@ -1704,7 +1779,7 @@ public class ConcurrencyFunctions {
 				"delay?", 
 				VncFunction
 					.meta()
-					.arglists("(delay? x)")		
+					.arglists("(delay? x)")
 					.doc("Returns true if x is a Delay created with delay")
 					.examples(
 						"(do                                              \n" +
@@ -1726,7 +1801,7 @@ public class ConcurrencyFunctions {
 				"force", 
 				VncFunction
 					.meta()
-					.arglists("(force x)")		
+					.arglists("(force x)")
 					.doc("If x is a delay, returns its value, else returns x")
 					.examples(
 						"(do                                              \n" +
@@ -1764,7 +1839,7 @@ public class ConcurrencyFunctions {
 				"thread-local", 
 				VncFunction
 					.meta()
-					.arglists("(thread-local)")		
+					.arglists("(thread-local)")
 					.doc("Creates a new thread-local accessor")
 					.examples(
 						"(do \n" +
@@ -1809,7 +1884,7 @@ public class ConcurrencyFunctions {
 				"thread-local?", 
 				VncFunction
 					.meta()
-					.arglists("(thread-local? x)")		
+					.arglists("(thread-local? x)")
 					.doc("Returns true if x is a thread-local, otherwise false")
 					.examples(
 						"(do\n" +
@@ -1832,7 +1907,7 @@ public class ConcurrencyFunctions {
 				"thread-local-clear", 
 				VncFunction
 					.meta()
-					.arglists("(thread-local-clear)")		
+					.arglists("(thread-local-clear)")
 					.doc("Removes all thread local vars")
 					.examples("(thread-local-clear)")
 					.seeAlso("thread-local", "dissoc!")
@@ -1853,7 +1928,7 @@ public class ConcurrencyFunctions {
 				"thread-local-map", 
 				VncFunction
 					.meta()
-					.arglists("(thread-local-map)")		
+					.arglists("(thread-local-map)")
 					.doc(
 						"Returns a snaphost of the thread local vars as a map.\n\n" +
 						"Note:¶" +
@@ -1888,7 +1963,7 @@ public class ConcurrencyFunctions {
 				"thread-id", 
 				VncFunction
 					.meta()
-					.arglists("(thread-id)")		
+					.arglists("(thread-id)")
 					.doc(
 						"Returns the identifier of this Thread. The thread ID is a " +
 						"positive number generated when this thread was created. " +
@@ -1913,7 +1988,7 @@ public class ConcurrencyFunctions {
 				"thread-daemon?", 
 				VncFunction
 					.meta()
-					.arglists("(thread-daemon?)")		
+					.arglists("(thread-daemon?)")
 					.doc(
 						"Returns true if this Thread is a daemon thread else false.")
 					.examples("(thread-daemon?)")
@@ -1934,7 +2009,7 @@ public class ConcurrencyFunctions {
 				"thread-name", 
 				VncFunction
 					.meta()
-					.arglists("(thread-name)")		
+					.arglists("(thread-name)")
 					.doc("Returns this thread's name.")
 					.examples("(thread-name)")
 					.seeAlso("thread-id")
@@ -1954,7 +2029,7 @@ public class ConcurrencyFunctions {
 				"thread-interrupted?", 
 				VncFunction
 					.meta()
-					.arglists("(thread-interrupted?)")		
+					.arglists("(thread-interrupted?)")
 					.doc(
 						"Tests whether this thread has been interrupted. The " +
 						"interrupted status of the thread is unaffected by this " +
@@ -1979,7 +2054,7 @@ public class ConcurrencyFunctions {
 				"thread-interrupted", 
 				VncFunction
 					.meta()
-					.arglists("(thread-interrupted)")		
+					.arglists("(thread-interrupted)")
 					.doc(
 						"Tests whether the current thread has been interrupted. " +
 						"The interrupted status of the thread is cleared by this " +
@@ -2026,6 +2101,25 @@ public class ConcurrencyFunctions {
 		}
 	}
 	
+	public static class VncFutureTask extends FutureTask<VncVal> {
+		public VncFutureTask(
+				final Callable<VncVal> taskFn,
+				final Consumer<Future<VncVal>> doneFn
+		) {
+			super(taskFn);
+			this.doneFn = doneFn;
+		}
+		
+		protected void done() {
+			if (doneFn != null) {
+				doneFn.accept(this);
+			}
+		}
+		
+		
+		private final Consumer<Future<VncVal>> doneFn;
+	};
+
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -2033,7 +2127,7 @@ public class ConcurrencyFunctions {
 
 	public static Map<VncVal, VncVal> ns = 
 			new VncHashMap
-					.Builder()		
+					.Builder()
 					.add(deref)
 					.add(deref_Q)
 					.add(realized_Q)
@@ -2072,6 +2166,7 @@ public class ConcurrencyFunctions {
 					.add(deliver)
 					
 					.add(future)
+					.add(future_task)
 					.add(future_Q)
 					.add(future_done_Q)
 					.add(future_cancel)

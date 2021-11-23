@@ -13,6 +13,7 @@ and this project adheres to
 
 ### Added
 
+- function `future-task` that enhances the processing for asynchronous tasks
 - functions `drop-last`, `take-last`
 
 

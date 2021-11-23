@@ -746,6 +746,33 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_future_deref_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                   " +
+				"   (let [a 100                        " +
+				"         f (future (fn [] (+ a 20)))] " +
+				"    @f)                               " +
+				") ";
+
+		assertEquals(120L, venice.eval(script));
+	}
+
+	@Test
+	public void test_future_deref_4() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                   " +
+				"  (defn sum [x y] (+ x y))            " +
+				"  (let [f (future (partial sum 3 4))] " +
+				"    @f)) ";
+
+		assertEquals(7L, venice.eval(script));
+	}
+
+	@Test
 	public void test_future_1() {
 		final Venice venice = new Venice();
 
