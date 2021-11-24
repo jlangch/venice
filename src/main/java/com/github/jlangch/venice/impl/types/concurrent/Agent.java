@@ -442,25 +442,19 @@ public class Agent implements IDeref {
 	
 	
 	private final static AtomicLong agentCounter = new AtomicLong(0);
-	
-	private final static AtomicLong sendThreadPoolCounter = new AtomicLong(0);
-
-	private final static AtomicLong sendOffThreadPoolCounter = new AtomicLong(0);
 
 	private final static StripedExecutorService sendExecutor = 
 			new StripedExecutorService(
 				Executors.newFixedThreadPool(
 						2 + Runtime.getRuntime().availableProcessors(),
-						ThreadPoolUtil.createThreadFactory(
-								"venice-agent-send-pool-%d", 
-								sendThreadPoolCounter,
+						ThreadPoolUtil.createCountedThreadFactory(
+								"venice-agent-send-pool", 
 								true /* daemon threads */)));
 
 	private final static StripedExecutorService sendOffExecutor = 
 			new StripedExecutorService(
 				Executors.newCachedThreadPool(
-						ThreadPoolUtil.createThreadFactory(
-								"venice-agent-send-off-pool-%d", 
-								sendOffThreadPoolCounter,
+						ThreadPoolUtil.createCountedThreadFactory(
+								"venice-agent-send-off-pool", 
 								true /* daemon threads */)));
 }

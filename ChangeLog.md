@@ -9,11 +9,12 @@ and this project adheres to
 
 
 
-## [1.10.5] - 2021-11-x
+## [1.10.5] - 2021-11-xx
 
 ### Added
 
-- function `future-task` that enhances the processing for asynchronous tasks
+- function `future-task` that offers an alternative processing model for 
+  asynchronous tasks
 - functions `drop-last`, `take-last`
 
 

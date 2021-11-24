@@ -34,28 +34,39 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ThreadPoolUtil {
 
 	/**
-	 * Creates a new <code>ThreadFactory</code>
+	 * Creates a new counted <code>ThreadFactory</code>
 	 * 
-	 * @param poolNameFormat a pool name format like: "venice-future-pool-%d"
-	 * @param threadPoolCounter the thread pool counter
+	 * @param poolName a pool name like: "venice-future-pool"
 	 * @param deamon if <code>true</code> create daemon threads
 	 * @return the <code>ThreadFactory</code>
 	 */
-	public static ThreadFactory createThreadFactory(
-			final String poolNameFormat, 
-			final AtomicLong threadPoolCounter,
+	public static ThreadFactory createCountedThreadFactory(
+			final String poolName, 
 			final boolean deamon
 	) {
-		return new ThreadFactory() {
-			public Thread newThread(final Runnable runnable) {
-				final Thread thread = new Thread(runnable);
-				thread.setDaemon(deamon);
-				thread.setName(String.format(
-								poolNameFormat, 
-								threadPoolCounter.getAndIncrement()));
-				return thread;
-			}
-		};
+		return new CountedThreadFactory(poolName, deamon);
 	}
+	
 
+	public static class CountedThreadFactory implements ThreadFactory {
+		public CountedThreadFactory(
+				final String poolName,
+				final boolean deamon
+		) {
+			this.poolName = poolName;
+			this.deamon = deamon;
+		}
+		
+		@Override
+		public Thread newThread(final Runnable runnable) {
+			final Thread thread = new Thread(runnable);
+			thread.setDaemon(deamon);
+			thread.setName(poolName + "-" + counter.getAndIncrement());
+			return thread;
+		}
+		
+		private final String poolName;
+		private final boolean deamon;
+		private final AtomicLong counter = new AtomicLong(1L);
+	}
 }

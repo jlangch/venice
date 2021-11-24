@@ -20,7 +20,6 @@ package com.github.jlangch.venice.impl.util.concurrent;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
@@ -110,14 +109,12 @@ public abstract class ManagedExecutor {
 	abstract protected ExecutorService createExecutorService();
 
 	protected ThreadFactory createThreadFactory() {
-		return ThreadPoolUtil.createThreadFactory(
-					threadPoolName + "-%d", 
-					threadPoolCounter,
+		return ThreadPoolUtil.createCountedThreadFactory(
+					threadPoolName, 
 					true /* daemon threads */);
 	}
 	
 
 	private final String threadPoolName;
-	private final AtomicLong threadPoolCounter = new AtomicLong(0);
 	private ExecutorService executor;
 }

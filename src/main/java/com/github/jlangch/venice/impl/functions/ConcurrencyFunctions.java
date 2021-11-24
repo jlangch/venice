@@ -1294,6 +1294,7 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	// see also: https://github.com/funcool/promesa   (promise chaining)
 	public static VncFunction promise = 
 		new VncFunction(
 				"promise", 

@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ShellException;
@@ -170,9 +169,8 @@ public class ShellFunctions {
 				
 				final ExecutorService executor = Executors.newFixedThreadPool(
 													3,
-													ThreadPoolUtil.createThreadFactory(
-															"venice-shell-pool-%d", 
-															threadPoolCounter,
+													ThreadPoolUtil.createCountedThreadFactory(
+															"venice-shell-pool", 
 															true /* daemon threads */));
 				try {
 					return exec(cmd, opts, executor);
@@ -544,8 +542,6 @@ public class ShellFunctions {
 	}
 
 	
-	private final static AtomicLong threadPoolCounter = new AtomicLong(0);
-
 	private static final VncHashSet optionKeywords = VncHashSet.of(
 														new VncKeyword(":in"),
 														new VncKeyword(":in-enc"),

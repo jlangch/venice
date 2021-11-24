@@ -200,12 +200,10 @@ public class ScriptExecuter {
 	private List<Future<Boolean>> futures = new ArrayList<>();
 	
 	private final AtomicLong asyncCounter = new AtomicLong(1L);
-	private final AtomicLong threadPoolCounter = new AtomicLong(0L);
 
 	private final ExecutorService executor = 
 			Executors.newCachedThreadPool(
-					ThreadPoolUtil.createThreadFactory(
-							"repl-async-pool-%d", 
-							threadPoolCounter,
+					ThreadPoolUtil.createCountedThreadFactory(
+							"repl-async-pool", 
 							true /* daemon threads */));
 }
