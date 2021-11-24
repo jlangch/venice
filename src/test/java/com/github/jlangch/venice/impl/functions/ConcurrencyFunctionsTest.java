@@ -801,6 +801,42 @@ public class ConcurrencyFunctionsTest {
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
 	}
+
+	@Test
+	public void test_future_task_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                   \n" + 
+				"   (def q (queue))                                    \n" + 
+				"   (defn wait [s v] (sleep s) v)                      \n" + 
+				"   (future-task (partial wait 200 2) #(offer! q @%))  \n" + 
+				"   (future-task (partial wait 300 3) #(offer! q @%))  \n" + 
+				"   (future-task (partial wait 100 1) #(offer! q @%))  \n" + 
+				"   (pr-str [ (poll! q :indefinite)                    \n" +
+				"             (poll! q :indefinite)                    \n" +
+				"             (poll! q :indefinite) ] ))                ";
+
+		assertEquals("[1 2 3]", venice.eval(script));
+	}
+
+	@Test
+	public void test_future_task_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                         \n" + 
+				"   (def q (queue))                                          \n" + 
+				"   (future-task #(/ 1 0)                                    \n" + 
+				"                #(try                                       \n" +
+				"                   @%                                       \n" +
+				"                   (catch :VncException e (offer! q e))))   \n" + 
+				"   (poll! q :indefinite))                                     ";
+
+		final Object ret = venice.eval(script);
+		assertTrue(ret instanceof VncException);
+		assertTrue(((VncException)ret).getMessage().contains("/ by zero"));
+	}
 	
 	@Test
 	public void test_future_dereferenceable() {

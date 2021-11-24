@@ -1437,7 +1437,7 @@ public class ConcurrencyFunctions {
 					.doc(
 						"Takes a function without arguments and yields a future object that will " + 
 						"invoke the function in another thread. The done function will be called " +
-						"with the future as argument as soon as the future function has completed.\n\n" +
+						"with the future as argument as soon as the function has completed.\n\n" +
 						"In combination with a queue a completion service can be built. The tasks " +
 						"appear in the queue in the order they have completed.\n\n" +
 						"Thread local vars will be inherited by the future child thread. Changes " +
