@@ -37,6 +37,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
@@ -1300,7 +1302,9 @@ public class ConcurrencyFunctions {
 				"promise", 
 				VncFunction
 					.meta()
-					.arglists("(promise)")
+					.arglists(
+						"(promise)",
+						"(promise val-or-func)")
 					.doc(
 						"Returns a promise object that can be read with deref, and set, " + 
 						"once only, with deliver. Calls to deref prior to delivery will " + 
@@ -1308,28 +1312,63 @@ public class ConcurrencyFunctions {
 						"subsequent derefs will return the same delivered value without " + 
 						"blocking.")
 					.examples(
-						"(do                   \n" +
-						"   (def p (promise))  \n" +
-						"   (deliver p 10)     \n" +
-						"   (deliver p 20)     \n" +
-						"   @p)                  ",
+						"(do                              \n" +
+						"   (def p (promise))             \n" +
+						"   (deliver p 10)                \n" +
+						"   (deliver p 20) ; no effect    \n" +
+						"   @p)                             ",
 					
+						";; deliver the promise from a future           \n" +
 						"(do                                            \n" +
 						"   (def p (promise))                           \n" +
 						"   (defn task1 [] (sleep 500) (deliver p 10))  \n" +
 						"   (defn task2 [] (sleep 800) (deliver p 20))  \n" +
 						"   (future task1)                              \n" +
 						"   (future task2)                              \n" +
-						"   @p)                                           ")
+						"   @p)                                           ",
+
+						";; create an already completed promise \n" +
+						"(do                                    \n" +
+						"   (def p (promise 10))                \n" +
+						"   (deliver p 20)                      \n" +
+						"   @p)                                   ",
+
+						";; deliver the promise from a task's return value    \n" +
+						"(do                                                  \n" +
+						"   (defn task [] (sleep 500) 10)                     \n" +
+						"   (def p (promise task))                            \n" +
+						"   @p)                                                 ")
 					.seeAlso("deliver", "promise?", "realized?", "deref")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 0);
+				ArityExceptions.assertArity(this, args, 0, 1);
 
 				sandboxFunctionCallValidation();
 
-				return new VncJavaObject(new CompletableFuture<VncVal>());
+				if (args.isEmpty()) {
+					return new VncJavaObject(new CompletableFuture<VncVal>());
+				}
+				else {
+					final VncVal arg = args.first();
+					if (arg instanceof VncFunction) {
+						final VncFunction fn = Coerce.toVncFunction(arg);
+						
+						// Create a wrapper that inherits the Venice thread context
+						// from the parent thread to the executer thread!
+						final ThreadBridge threadBridge = ThreadBridge.create(
+																"promise",
+																new CallFrame[] {
+																	new CallFrame(this, args),
+																	new CallFrame(fn)});
+						final Supplier<VncVal> taskWrapper = threadBridge.bridgeSupplier(() -> fn.applyOf());
+						
+						return new VncJavaObject(CompletableFuture.supplyAsync(taskWrapper, mngdExecutor.getExecutor()));
+					}
+					else {
+						return new VncJavaObject(CompletableFuture.completedFuture(args.first()));
+					}
+				}
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1349,6 +1388,82 @@ public class ConcurrencyFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 	
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), CompletableFuture.class));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction then_apply = 
+		new VncFunction(
+				"then-apply", 
+				VncFunction
+					.meta()
+					.arglists("(then-apply p f)")
+					.doc(
+						"Applies a function f on the result of the previous stage of " +
+						"the promise p.")
+					.examples(
+						"(-> (promise \"the quick brown fox\")                   \n" +
+						"    (then-apply str/upper-case)                         \n" +
+						"    (then-apply #(str % \" jumped over the lazy dog\")) \n" +
+						"    (deref))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				@SuppressWarnings("unchecked")
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(args.first(), CompletableFuture.class);
+				final VncFunction fn = Coerce.toVncFunction(args.second());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+						"then-apply",
+						new CallFrame[] {
+							new CallFrame(this, args),
+							new CallFrame(fn)});
+				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((VncVal v) -> fn.applyOf(v));
+
+				final CompletableFuture<VncVal> cf2 = cf.thenApply(taskWrapper);
+				
+				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction then_apply_async = 
+		new VncFunction(
+				"then-apply-async", 
+				VncFunction
+					.meta()
+					.arglists("(then-apply-async p f)")
+					.doc(
+						"Applies a function f asynchronously on the result of the previous " +
+						"stage of the promise p.")
+					.examples(
+						"(-> (promise \"the quick brown fox\")                         \n" +
+						"    (then-apply-async str/upper-case)                         \n" +
+						"    (then-apply-async #(str % \" jumped over the lazy dog\")) \n" +
+						"    (deref))")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				@SuppressWarnings("unchecked")
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(args.first(), CompletableFuture.class);
+				final VncFunction fn = Coerce.toVncFunction(args.second());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+						"then-apply",
+						new CallFrame[] {
+							new CallFrame(this, args),
+							new CallFrame(fn)});
+				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((VncVal v) -> fn.applyOf(v));
+
+				final CompletableFuture<VncVal> cf2 = cf.thenApplyAsync(taskWrapper, mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf2);
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1397,7 +1512,11 @@ public class ConcurrencyFunctions {
 						"      ;; future with child thread locals                      \n" +
 						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]  \n" +
 						"         {:child @f :parent {:a a :b b}})))                     ")
-					.seeAlso("deref", "realized?", "future-done?", "future-cancel", "future-cancelled?", "futures-fork", "futures-wait")
+					.seeAlso(
+						"deref", "realized?", 
+						"future-done?", "future-cancel", "future-cancelled?", 
+						"future-task", "promise",
+						"futures-fork", "futures-wait")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
@@ -1434,60 +1553,92 @@ public class ConcurrencyFunctions {
 				"future-task", 
 				VncFunction
 					.meta()
-					.arglists("(future-task fn done-fn)")
+					.arglists(
+						"(future-task f completed-fn)",
+						"(future-task f sucess-fn failure-fn)")
 					.doc(
-						"Takes a function without arguments and yields a future object that will " + 
-						"invoke the function in another thread. The done function will be called " +
-						"with the future as argument as soon as the function has completed.\n\n" +
+						"Takes a function f without arguments and yields a future object that will " + 
+						"invoke the function in another thread. " +
+						"\n\n" +
+						"If a single completed function is passed it will be called with the future " +
+						"as its argument as soon as the future has completed. If a success and a failure " +
+						"function are passed either the success or failure function will be called as " + 
+						"soon as the future has completed. Upon success the success function will be " +
+						"called with the future's result as its argument, upon failure the failure " + 
+						"function will be called with the exception as its argument." +
+						"\n\n" +
 						"In combination with a queue a completion service can be built. The tasks " +
-						"appear in the queue in the order they have completed.\n\n" +
+						"appear in the queue in the order they have completed." +
+						"\n\n" +
 						"Thread local vars will be inherited by the future child thread. Changes " +
 						"of the child's thread local vars will not be seen on the parent.")
 					.examples(
 						";; building a completion service                                                  \n" + 
 						";; CompletionService = incoming worker queue + worker threads + output data queue \n" + 
-						"(do                                                   \n" + 
-						"   (def q (queue))                                    \n" + 
-						"   (defn wait [s v] (sleep s) v)                      \n" + 
-						"   (future-task (partial wait 200 2) #(offer! q @%))  \n" + 
-						"   (future-task (partial wait 300 3) #(offer! q @%))  \n" + 
-						"   (future-task (partial wait 100 1) #(offer! q @%))  \n" + 
-						"   (println (poll! q :indefinite))                    \n" +
-						"   (println (poll! q :indefinite))                    \n" +
-						"   (println (poll! q :indefinite)))                     ")
+						"(do                                                                   \n" + 
+						"   (def q (queue 10))                                                 \n" + 
+						"   (defn process [s v] (sleep s) v)                                   \n" + 
+						"   (future-task (partial process 200 2) #(offer! q %) #(offer! q %))  \n" + 
+						"   (future-task (partial process 300 3) #(offer! q %) #(offer! q %))  \n" + 
+						"   (future-task (partial process 100 1) #(offer! q %) #(offer! q %))  \n" + 
+						"   (println (poll! q 1000))                                           \n" +
+						"   (println (poll! q 1000))                                           \n" +
+						"   (println (poll! q 1000)))                                            ")
 					.seeAlso("future")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {	
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertArity(this, args, 2, 3);
 
 				sandboxFunctionCallValidation();
-
+				
 				final VncFunction taskFn = Coerce.toVncFunction(args.first());
-				final VncFunction doneFn = Coerce.toVncFunction(args.second());
-				
-				// Create a wrapper that inherits the Venice thread context
-				// from the parent thread to the executer thread!
-				final ThreadBridge threadBridgeTask = ThreadBridge.create(
-														"future-task",
-														new CallFrame[] {
-															new CallFrame(this, args),
-															new CallFrame(taskFn)});
+	
+				// Create a wrapper that inherits the Venice thread context from the parent thread to the executer thread!
+				final ThreadBridge bridgedTask = bridge(taskFn, args);
 
-				final ThreadBridge threadBridgeDone = ThreadBridge.create(
-														"future-task",
-														new CallFrame[] {
-															new CallFrame(this, args),
-															new CallFrame(doneFn)});
+				final Callable<VncVal> taskWrapper = bridgedTask.bridgeCallable(() -> taskFn.applyOf());
 
-				final Callable<VncVal> task = () -> taskFn.applyOf();
-				final Consumer<Future<VncVal>> done = (Future<VncVal> f) -> doneFn.applyOf(new VncJavaObject(f));
+				
+				if (args.size() == 2) {
+					final VncFunction onCompleteFn = Coerce.toVncFunction(args.second());
+	
+					// Create a wrapper that inherits the Venice thread context from the parent thread to the executer thread!
+					final ThreadBridge bridgedOnComplete = bridge(onCompleteFn, args);
+	
+					final Consumer<Future<VncVal>> onComplete = (Future<VncVal> f) -> onCompleteFn.applyOf(new VncJavaObject(f));
+	
+					final Consumer<Future<VncVal>> onCompleteWrapper = bridgedOnComplete.bridgeConsumer(onComplete);
+					
+					return exec(new VncFutureTask(taskWrapper, onCompleteWrapper));
+				}
+				else {
+					final VncFunction onSuccessFn = Coerce.toVncFunction(args.second());
+					final VncFunction onFailureFn = Coerce.toVncFunction(args.third());
+	
+					// Create a wrapper that inherits the Venice thread context from the parent thread to the executer thread!
+					final ThreadBridge bridgedOnSuccess = bridge(onSuccessFn, args);
+					final ThreadBridge bridgedOnFailure = bridge(onFailureFn, args);
 
-				final Callable<VncVal> taskWrapper = threadBridgeTask.bridgeCallable(task);
-				final Consumer<Future<VncVal>> doneWrapper = threadBridgeDone.bridgeConsumer(done);
-				
-				final VncFutureTask futureTask = new VncFutureTask(taskWrapper, doneWrapper);
-				
+					final Consumer<VncVal> onSuccess = (VncVal f) -> onSuccessFn.applyOf(new VncJavaObject(f));
+					final Consumer<VncException> onFailure = (VncException f) -> onFailureFn.applyOf(new VncJavaObject(f));
+	
+					final Consumer<VncVal> onSuccessWrapper = bridgedOnSuccess.bridgeConsumer(onSuccess);
+					final Consumer<VncException> onFailureWrapper = bridgedOnFailure.bridgeConsumer(onFailure);
+					
+					return exec(new VncFutureTask(taskWrapper, onSuccessWrapper, onFailureWrapper));
+				}
+			}
+			
+			private ThreadBridge bridge(final VncFunction fn, final VncList args) {
+				return ThreadBridge.create(
+							"future-task",
+							new CallFrame[] {
+								new CallFrame(this, args),
+								new CallFrame(fn)});
+			}
+			
+			private VncJavaObject exec(final VncFutureTask futureTask) {			
 				// Note: Do NOT use a CompletableFuture
 				//       Canceling a CompletableFuture does not interrupt the 
 				//       task wrapper!!!
@@ -1498,7 +1649,7 @@ public class ConcurrencyFunctions {
 				
 				return new VncJavaObject(future);
 			}
-			
+
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
@@ -2109,16 +2260,42 @@ public class ConcurrencyFunctions {
 		) {
 			super(taskFn);
 			this.doneFn = doneFn;
+			this.successFn = null;
+			this.failureFn = null;
+		}
+		
+		public VncFutureTask(
+				final Callable<VncVal> taskFn,
+				final Consumer<VncVal> successFn,
+				final Consumer<VncException> failureFn
+		) {
+			super(taskFn);
+			this.doneFn = null;
+			this.successFn = successFn;
+			this.failureFn = failureFn;
 		}
 		
 		protected void done() {
 			if (doneFn != null) {
 				doneFn.accept(this);
 			}
+			else {
+				try {
+					successFn.accept(get());
+				}
+				catch(VncException ex) {
+					failureFn.accept(ex);
+				}
+				catch(Exception ex) {
+					failureFn.accept(new VncException(ex.getMessage(), ex));
+				}
+			}
 		}
 		
 		
 		private final Consumer<Future<VncVal>> doneFn;
+		private final Consumer<VncVal> successFn;
+		private final Consumer<VncException> failureFn;
 	};
 
 	
@@ -2165,6 +2342,8 @@ public class ConcurrencyFunctions {
 					.add(promise)
 					.add(promise_Q)
 					.add(deliver)
+					.add(then_apply)
+					.add(then_apply_async)
 					
 					.add(future)
 					.add(future_task)

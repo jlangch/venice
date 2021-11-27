@@ -16,6 +16,7 @@ and this project adheres to
 - function `future-task` that offers an alternative processing model for 
   asynchronous tasks
 - functions `drop-last`, `take-last`
+- chaining for promises
 
 
 

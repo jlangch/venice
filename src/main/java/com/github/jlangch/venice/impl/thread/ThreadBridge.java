@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -155,6 +157,60 @@ public class ThreadBridge {
 				}
 
 				consumer.accept(t);
+			}
+			finally {
+				// clean up
+				ThreadContext.remove();
+			}};
+		
+		return wrapper;
+	}
+	
+	public <T> Supplier<T> bridgeSupplier(final Supplier<T> supplier) {
+		final Supplier<T> wrapper = () -> {
+			try {
+				// inherit thread local values to the child thread
+				ThreadContext.inheritFrom(parentThreadSnapshot);
+
+				if (callFrames != null) {
+					final CallStack cs = ThreadContext.getCallStack();
+					for(CallFrame cf : callFrames) {
+						cs.push(cf);
+					}
+				}
+				
+				if (deactivateDebugAgent) {
+					DebugAgent.unregister();
+				}
+
+				return supplier.get();
+			}
+			finally {
+				// clean up
+				ThreadContext.remove();
+			}};
+		
+		return wrapper;
+	}
+	
+	public <T,R> Function<T,R> bridgeFunction(final Function<T,R> func) {
+		final Function<T,R> wrapper = (T t) -> {
+			try {
+				// inherit thread local values to the child thread
+				ThreadContext.inheritFrom(parentThreadSnapshot);
+
+				if (callFrames != null) {
+					final CallStack cs = ThreadContext.getCallStack();
+					for(CallFrame cf : callFrames) {
+						cs.push(cf);
+					}
+				}
+				
+				if (deactivateDebugAgent) {
+					DebugAgent.unregister();
+				}
+
+				return func.apply(t);
 			}
 			finally {
 				// clean up

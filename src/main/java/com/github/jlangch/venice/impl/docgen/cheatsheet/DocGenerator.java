@@ -1466,6 +1466,8 @@ public class DocGenerator {
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
 		promises.addItem(getDocItem("realized?"));
+		promises.addItem(getDocItem("then-apply"));
+		promises.addItem(getDocItem("then-apply-async"));
 
 		final DocSection delay = new DocSection("Delay", "concurrency.delay");
 		all.addSection(delay);

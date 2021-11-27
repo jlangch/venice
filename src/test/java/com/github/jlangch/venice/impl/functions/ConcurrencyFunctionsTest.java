@@ -691,7 +691,7 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
-	public void test_promise() {
+	public void test_promise_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
@@ -705,7 +705,38 @@ public class ConcurrencyFunctionsTest {
 				"   (deref p))                " +
 				") ";
 
-		assertEquals(Long.valueOf(123), venice.eval(script));
+		assertEquals(123L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          " +
+				"   (def p (promise 10))      " +
+				"   (deliver p 20)            " +
+				"   (deref p))                " +
+				") ";
+
+		assertEquals(10L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                          " +
+				"   (defn task []             " +
+				"      (sleep 500)            " +
+				"      (deliver p 123))       " +
+				"                             " +
+				"   (def p (promise task))    " +
+				"   (deref p))                " +
+				") ";
+
+		assertEquals(123L, venice.eval(script));
 	}
 
 	@Test
@@ -800,42 +831,6 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
-	}
-
-	@Test
-	public void test_future_task_1() {
-		final Venice venice = new Venice();
-
-		final String script = 
-				"(do                                                   \n" + 
-				"   (def q (queue))                                    \n" + 
-				"   (defn wait [s v] (sleep s) v)                      \n" + 
-				"   (future-task (partial wait 200 2) #(offer! q @%))  \n" + 
-				"   (future-task (partial wait 300 3) #(offer! q @%))  \n" + 
-				"   (future-task (partial wait 100 1) #(offer! q @%))  \n" + 
-				"   (pr-str [ (poll! q :indefinite)                    \n" +
-				"             (poll! q :indefinite)                    \n" +
-				"             (poll! q :indefinite) ] ))                ";
-
-		assertEquals("[1 2 3]", venice.eval(script));
-	}
-
-	@Test
-	public void test_future_task_2() {
-		final Venice venice = new Venice();
-
-		final String script = 
-				"(do                                                         \n" + 
-				"   (def q (queue))                                          \n" + 
-				"   (future-task #(/ 1 0)                                    \n" + 
-				"                #(try                                       \n" +
-				"                   @%                                       \n" +
-				"                   (catch :VncException e (offer! q e))))   \n" + 
-				"   (poll! q :indefinite))                                     ";
-
-		final Object ret = venice.eval(script);
-		assertTrue(ret instanceof VncException);
-		assertTrue(((VncException)ret).getMessage().contains("/ by zero"));
 	}
 	
 	@Test
@@ -983,6 +978,77 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertEquals("[90 11]", venice.eval("(str " + script + ")"));
+	}
+
+	@Test
+	public void test_future_task_1a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                   \n" + 
+				"   (def q (queue))                                    \n" + 
+				"   (defn wait [s v] (sleep s) v)                      \n" + 
+				"   (future-task (partial wait 200 2) #(offer! q @%))  \n" + 
+				"   (future-task (partial wait 300 3) #(offer! q @%))  \n" + 
+				"   (future-task (partial wait 100 1) #(offer! q @%))  \n" + 
+				"   (pr-str [ (poll! q :indefinite)                    \n" +
+				"             (poll! q :indefinite)                    \n" +
+				"             (poll! q :indefinite) ] ))                ";
+
+		assertEquals("[1 2 3]", venice.eval(script));
+	}
+
+	@Test
+	public void test_future_task_1b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                                \n" + 
+				"   (def q (queue))                                                 \n" + 
+				"   (defn wait [s v] (sleep s) v)                                   \n" + 
+				"   (future-task (partial wait 200 2) #(offer! q %) #(offer! q %))  \n" + 
+				"   (future-task (partial wait 300 3) #(offer! q %) #(offer! q %))  \n" + 
+				"   (future-task (partial wait 100 1) #(offer! q %) #(offer! q %))  \n" + 
+				"   (pr-str [ (poll! q :indefinite)                                 \n" +
+				"             (poll! q :indefinite)                                 \n" +
+				"             (poll! q :indefinite) ] ))                              ";
+
+		assertEquals("[1 2 3]", venice.eval(script));
+	}
+
+	@Test
+	public void test_future_task_2a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                         \n" + 
+				"   (def q (queue))                                          \n" + 
+				"   (future-task #(/ 1 0)                                    \n" + 
+				"                #(try                                       \n" +
+				"                   @%                                       \n" +
+				"                   (catch :VncException e (offer! q e))))   \n" + 
+				"   (poll! q :indefinite))                                     ";
+
+		final Object ret = venice.eval(script);
+		assertTrue(ret instanceof VncException);
+		assertTrue(((VncException)ret).getMessage().contains("/ by zero"));
+	}
+
+	@Test
+	public void test_future_task_2b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                               \n" + 
+				"   (def q (queue))                \n" + 
+				"   (future-task #(/ 1 0)          \n" + 
+				"                #(offer! q %)     \n" +
+				"                #(offer! q %))    \n" + 
+				"   (poll! q :indefinite))           ";
+
+		final Object ret = venice.eval(script);
+		assertTrue(ret instanceof VncException);
+		assertTrue(((VncException)ret).getMessage().contains("/ by zero"));
 	}
 
 	@Test
