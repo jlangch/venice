@@ -1450,12 +1450,12 @@ public class DocGenerator {
 		futures.addItem(getDocItem("future"));
 		futures.addItem(getDocItem("future-task"));
 		futures.addItem(getDocItem("future?"));
-		futures.addItem(getDocItem("future-done?"));
-		futures.addItem(getDocItem("future-cancel"));
-		futures.addItem(getDocItem("future-cancelled?"));
 		futures.addItem(getDocItem("futures-fork"));
 		futures.addItem(getDocItem("futures-wait"));
 		futures.addItem(getDocItem("futures-thread-pool-info"));
+		futures.addItem(getDocItem("done?"));
+		futures.addItem(getDocItem("cancel"));
+		futures.addItem(getDocItem("cancelled?"));
 		futures.addItem(getDocItem("deref"));
 		futures.addItem(getDocItem("deref?"));
 		futures.addItem(getDocItem("realized?"));
@@ -1468,6 +1468,9 @@ public class DocGenerator {
 		promises.addItem(getDocItem("realized?"));
 		promises.addItem(getDocItem("then-apply"));
 		promises.addItem(getDocItem("then-apply-async"));
+		promises.addItem(getDocItem("done?"));
+		promises.addItem(getDocItem("cancel"));
+		promises.addItem(getDocItem("cancelled?"));
 
 		final DocSection delay = new DocSection("Delay", "concurrency.delay");
 		all.addSection(delay);

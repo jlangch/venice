@@ -713,10 +713,9 @@ public class ConcurrencyFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
-				"(do                          " +
-				"   (def p (promise 10))      " +
-				"   (deliver p 20)            " +
-				"   (deref p))                " +
+				"(do                             " +
+				"   (def p (promise (fn [] 10))) " +
+				"   (deref p))                   " +
 				") ";
 
 		assertEquals(10L, venice.eval(script));
@@ -884,7 +883,7 @@ public class ConcurrencyFunctionsTest {
 				"                                    \n" +
 				"   (def f (future wait))            \n" +
 				"   (deref f)                        \n" +
-				"   (future-done? f))                  ";
+				"   (done? f))                         ";
 
 		assertEquals(true, venice.eval(script));
 	}
@@ -901,8 +900,8 @@ public class ConcurrencyFunctionsTest {
 				"                                           \n" +
 				"   (def f (future worker))                 \n" +
 				"   (sleep 100)                             \n" +
-				"   (future-cancel f)                       \n" +
-				"   (future-cancelled? f))                   ";
+				"   (cancel f)                              \n" +
+				"   (cancelled? f))                           ";
 
 		assertEquals(true, venice.eval(script));
 	}
@@ -919,8 +918,8 @@ public class ConcurrencyFunctionsTest {
 				"                                           \n" +
 				"   (def f (future worker))                 \n" +
 				"   (sleep 100)                             \n" +
-				"   (future-cancel f)                       \n" +
-				"   (future-done? f))                         ";
+				"   (cancel f)                              \n" +
+				"   (done? f))                                ";
 
 		assertEquals(true, venice.eval(script));
 	}
@@ -940,7 +939,7 @@ public class ConcurrencyFunctionsTest {
 				"                                           \n" +
 				"   (def f (future worker))                 \n" +
 				"   (sleep 100)                             \n" +
-				"   (future-cancel f)                       \n" +
+				"   (cancel f)                              \n" +
 				"   (sleep 500)                             \n" +
 				"   @progress)                                ";
 

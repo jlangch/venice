@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -154,10 +155,24 @@ public class ConcurrencyFunctions {
 								return future.get(timeout, TimeUnit.MILLISECONDS);
 							}
 						}
+						
 						catch(TimeoutException ex) {
 							return args.size() == 3 ? args.third() : Nil;
 						}
 						catch(ExecutionException ex) {
+							if (ex.getCause() != null) {
+								// just unwrap SecurityException and VncException
+								if (ex.getCause() instanceof SecurityException) {
+									throw (SecurityException)ex.getCause();
+								}
+								else if (ex.getCause() instanceof VncException) {
+									throw (VncException)ex.getCause();
+								}
+							}
+							
+							throw new VncException("Failed to deref future", ex);
+						}
+						catch(CompletionException ex) {
 							if (ex.getCause() != null) {
 								// just unwrap SecurityException and VncException
 								if (ex.getCause() instanceof SecurityException) {
@@ -1297,6 +1312,7 @@ public class ConcurrencyFunctions {
 		};
 
 	// see also: https://github.com/funcool/promesa   (promise chaining)
+	//           https://dzone.com/articles/20-examples-of-using-javas-completablefuture
 	public static VncFunction promise = 
 		new VncFunction(
 				"promise", 
@@ -1304,13 +1320,14 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists(
 						"(promise)",
-						"(promise val-or-func)")
+						"(promise fn)")
 					.doc(
 						"Returns a promise object that can be read with deref, and set, " + 
 						"once only, with deliver. Calls to deref prior to delivery will " + 
 						"block, unless the variant of deref with timeout is used. All " + 
 						"subsequent derefs will return the same delivered value without " + 
-						"blocking.")
+						"blocking.\n\n" +
+						"Promises are implemented on top of Java's `CompletableFuture`.")
 					.examples(
 						"(do                              \n" +
 						"   (def p (promise))             \n" +
@@ -1327,18 +1344,14 @@ public class ConcurrencyFunctions {
 						"   (future task2)                              \n" +
 						"   @p)                                           ",
 
-						";; create an already completed promise \n" +
-						"(do                                    \n" +
-						"   (def p (promise 10))                \n" +
-						"   (deliver p 20)                      \n" +
-						"   @p)                                   ",
-
 						";; deliver the promise from a task's return value    \n" +
 						"(do                                                  \n" +
 						"   (defn task [] (sleep 500) 10)                     \n" +
 						"   (def p (promise task))                            \n" +
 						"   @p)                                                 ")
-					.seeAlso("deliver", "promise?", "realized?", "deref")
+					.seeAlso(
+						"deliver", "promise?", "realized?", "deref", 
+						"done?", "cancel", "cancelled?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1366,7 +1379,9 @@ public class ConcurrencyFunctions {
 						return new VncJavaObject(CompletableFuture.supplyAsync(taskWrapper, mngdExecutor.getExecutor()));
 					}
 					else {
-						return new VncJavaObject(CompletableFuture.completedFuture(args.first()));
+						throw new VncException(String.format(
+								"Function 'promise' does not allow type %s argument",
+								Types.getType(args.first())));
 					}
 				}
 			}
@@ -1403,7 +1418,7 @@ public class ConcurrencyFunctions {
 						"Applies a function f on the result of the previous stage of " +
 						"the promise p.")
 					.examples(
-						"(-> (promise \"the quick brown fox\")                   \n" +
+						"(-> (promise (fn [] \"the quick brown fox\"))           \n" +
 						"    (then-apply str/upper-case)                         \n" +
 						"    (then-apply #(str % \" jumped over the lazy dog\")) \n" +
 						"    (deref))")
@@ -1413,14 +1428,16 @@ public class ConcurrencyFunctions {
 				ArityExceptions.assertArity(this, args, 2);
 
 				@SuppressWarnings("unchecked")
-				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(args.first(), CompletableFuture.class);
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(),
+																					CompletableFuture.class);
 				final VncFunction fn = Coerce.toVncFunction(args.second());
 
 				final ThreadBridge threadBridge = ThreadBridge.create(
-						"then-apply",
-						new CallFrame[] {
-							new CallFrame(this, args),
-							new CallFrame(fn)});
+													"then-apply",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
 				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((VncVal v) -> fn.applyOf(v));
 
 				final CompletableFuture<VncVal> cf2 = cf.thenApply(taskWrapper);
@@ -1441,7 +1458,7 @@ public class ConcurrencyFunctions {
 						"Applies a function f asynchronously on the result of the previous " +
 						"stage of the promise p.")
 					.examples(
-						"(-> (promise \"the quick brown fox\")                         \n" +
+						"(-> (promise (fn [] \"the quick brown fox\"))                 \n" +
 						"    (then-apply-async str/upper-case)                         \n" +
 						"    (then-apply-async #(str % \" jumped over the lazy dog\")) \n" +
 						"    (deref))")
@@ -1451,14 +1468,16 @@ public class ConcurrencyFunctions {
 				ArityExceptions.assertArity(this, args, 2);
 
 				@SuppressWarnings("unchecked")
-				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(args.first(), CompletableFuture.class);
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
 				final VncFunction fn = Coerce.toVncFunction(args.second());
 
 				final ThreadBridge threadBridge = ThreadBridge.create(
-						"then-apply",
-						new CallFrame[] {
-							new CallFrame(this, args),
-							new CallFrame(fn)});
+													"then-apply",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
 				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((VncVal v) -> fn.applyOf(v));
 
 				final CompletableFuture<VncVal> cf2 = cf.thenApplyAsync(taskWrapper, mngdExecutor.getExecutor());
@@ -1513,8 +1532,7 @@ public class ConcurrencyFunctions {
 						"      (let [f (future (fn [] (binding [b 90] {:a a :b b})))]  \n" +
 						"         {:child @f :parent {:a a :b b}})))                     ")
 					.seeAlso(
-						"deref", "realized?", 
-						"future-done?", "future-cancel", "future-cancelled?", 
+						"deref", "realized?", "done?", "cancel", "cancelled?", 
 						"future-task", "promise",
 						"futures-fork", "futures-wait")
 					.build()
@@ -1672,22 +1690,99 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction future_done_Q = 
+	public static VncFunction cancel = 
 		new VncFunction(
-				"future-done?", 
+				"cancel", 
 				VncFunction
 					.meta()
-					.arglists("(future-done? f)")
-					.doc( "Returns true if f is a Future is done otherwise false")
+					.arglists("(cancel f)")
+					.doc("Cancels a future or a promise")
+					.examples(
+						"(do                                                                     \n" +
+						"   (def wait (fn [] (sleep 400) 100))                                   \n" +
+						"   (let [f (future wait)]                                               \n" +
+						"      (sleep 50)                                                        \n" +
+						"      (printf \"After 50ms: cancelled=%b\\n\" (cancelled? f))           \n" +
+						"      (cancel f)                                                        \n" +
+						"      (sleep 100)                                                       \n" +
+						"      (printf \"After 150ms: cancelled=%b\\n\" (cancelled? f))))          ")
+					.seeAlso("future", "promise", "done?", "cancelled?")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+	
+				sandboxFunctionCallValidation();
+	
+				if (Types.isVncJavaObject(args.first(), Future.class)) {
+					try {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
+						future.cancel(true);
+						return args.first();
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to cancel future/promise", ex);
+					}
+				}
+	
+				throw new VncException(String.format(
+						"Function 'cancel' does not allow type %s as parameter.",
+						Types.getType(args.first())));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncFunction cancelled_Q = 
+		new VncFunction(
+				"cancelled?", 
+				VncFunction
+					.meta()
+					.arglists("(cancelled? f)")
+					.doc("Returns true if the future or promise is cancelled otherwise false")
+					.examples("(cancelled? (future (fn [] 100)))")
+					.seeAlso("future", "promise", "done?", "cancel")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+	
+				if (Types.isVncJavaObject(args.first(), Future.class)) {
+					try {
+						@SuppressWarnings("unchecked")
+						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
+						return VncBoolean.of(future.isCancelled());
+					}
+					catch(Exception ex) {
+						throw new VncException("Failed to check if future/promise is cancelled", ex);
+					}
+				}
+	
+				throw new VncException(String.format(
+						"Function 'cancelled?' does not allow type %s as parameter",
+						Types.getType(args.first())));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction done_Q = 
+		new VncFunction(
+				"done?", 
+				VncFunction
+					.meta()
+					.arglists("(done? f)")
+					.doc( "Returns true if the future or promise is done otherwise false")
 					.examples(
 						"(do                                                            \n" +
 						"   (def wait (fn [] (sleep 200) 100))                          \n" +
 						"   (let [f (future wait)]                                      \n" +
 						"      (sleep 50)                                               \n" +
-						"      (printf \"After 50ms: done=%b\\n\" (future-done? f))     \n" +
+						"      (printf \"After 50ms: done=%b\\n\" (done? f))            \n" +
 						"      (sleep 300)                                              \n" +
-						"      (printf \"After 300ms: done=%b\\n\" (future-done? f))))    ")
-					.seeAlso("future", "realized?", "future-cancel", "future-cancelled?")
+						"      (printf \"After 300ms: done=%b\\n\" (done? f))))           ")
+					.seeAlso("future", "promise", "realized?", "cancel", "cancelled?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1712,82 +1807,6 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction future_cancel = 
-		new VncFunction(
-				"future-cancel", 
-				VncFunction
-					.meta()
-					.arglists("(future-cancel f)")
-					.doc("Cancels the future")
-					.examples(
-						"(do                                                                     \n" +
-						"   (def wait (fn [] (sleep 400) 100))                                   \n" +
-						"   (let [f (future wait)]                                               \n" +
-						"      (sleep 50)                                                        \n" +
-						"      (printf \"After 50ms: cancelled=%b\\n\" (future-cancelled? f))    \n" +
-						"      (future-cancel f)                                                 \n" +
-						"      (sleep 100)                                                       \n" +
-						"      (printf \"After 150ms: cancelled=%b\\n\" (future-cancelled? f))))   ")
-					.seeAlso("future", "future-done?", "future-cancelled?")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
-
-				sandboxFunctionCallValidation();
-	
-				if (Types.isVncJavaObject(args.first(), Future.class)) {
-					try {
-						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
-						future.cancel(true);
-						return args.first();
-					}
-					catch(Exception ex) {
-						throw new VncException("Failed to cancel future", ex);
-					}
-				}
-	
-				throw new VncException(String.format(
-						"Function 'future-cancel' does not allow type %s as parameter.",
-						Types.getType(args.first())));
-			}
-			
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction future_cancelled_Q = 
-		new VncFunction(
-				"future-cancelled?", 
-				VncFunction
-					.meta()
-					.arglists("(future-cancelled? f)")
-					.doc("Returns true if f is a Future is cancelled otherwise false")
-					.examples("(future-cancelled? (future (fn [] 100)))")
-					.seeAlso("future", "future-done?", "future-cancel")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1);
-	
-				if (Types.isVncJavaObject(args.first(), Future.class)) {
-					try {
-						@SuppressWarnings("unchecked")
-						final Future<VncVal> future = Coerce.toVncJavaObject(args.first(), Future.class);
-						return VncBoolean.of(future.isCancelled());
-					}
-					catch(Exception ex) {
-						throw new VncException("Failed to check if future is cancelled", ex);
-					}
-				}
-	
-				throw new VncException(String.format(
-						"Function 'future-cancelled?' does not allow type %s as parameter",
-						Types.getType(args.first())));
-			}
-			
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
 
 	public static VncFunction futures_fork = 
 		new VncFunction(
@@ -2348,15 +2367,16 @@ public class ConcurrencyFunctions {
 					.add(future)
 					.add(future_task)
 					.add(future_Q)
-					.add(future_done_Q)
-					.add(future_cancel)
-					.add(future_cancelled_Q)
 					.add(futures_fork)
 					.add(futures_wait)
 					.add(futures_thread_pool_info)
 
 					.add(delay_Q)
 					.add(force)
+
+					.add(done_Q)
+					.add(cancel)
+					.add(cancelled_Q)
 					
 					.add(thread_id)
 					.add(thread_daemon_Q)
