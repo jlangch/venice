@@ -65,7 +65,7 @@ A promise is a thread-safe object that encapsulates an immutable value. This val
 might not be available yet and can be delivered exactly once, from any thread, 
 later. If another thread tries to dereference a promise before it's delivered, 
 it will block the calling thread. If the promise is already resolved (delivered), 
-no blocking occurs at all. Promise can only be delivered once and can never change 
+no blocking occurs at all. A promise can only be delivered once and can never change 
 its value once set.
 
 ```clojure
@@ -77,7 +77,36 @@ its value once set.
    (future task)
    
    ; deref the promise
-   (deref p))
+   (deref p))  ; => 123
+```
+
+```clojure
+(do
+   (defn task [] (sleep 500) 123)
+   (def p (promise task))
+   
+   ; deref the promise
+   (deref p))  ; => 123
+```
+
+Chaining asynchronous tasks:
+
+```clojure
+(-> (promise (fn [] (sleep 20) 5))
+    (then-apply (fn [x] (sleep 20) (+ x 2)))
+    (then-apply (fn [x] (sleep 20) (* x 3)))
+    (deref))  ; => 21
+```
+
+Combining the result of two asynchronous tasks:
+
+```clojure
+(-> (promise (fn [] (sleep 20) 5))
+    (then-apply (fn [x] (sleep 20) (+ x 2)))
+    (then-combine (-> (promise (fn [] (sleep 20) 1000))
+                      (then-apply (fn [x] (sleep 20) (* x 2))))
+                  #(str %1 " :: " %2))
+    (deref))  ; => "7 :: 2000"
 ```
 
 
