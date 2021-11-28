@@ -1451,7 +1451,6 @@ public class ConcurrencyFunctions {
 														CompletableFuture.class));
 				}
 
-
 				final CompletableFuture<Void> cf2 = CompletableFuture.allOf(cfs.toArray(new CompletableFuture[0]));
 				
 				return new VncJavaObject(cf2);
@@ -1491,7 +1490,6 @@ public class ConcurrencyFunctions {
 														v, 
 														CompletableFuture.class));
 				}
-
 
 				final CompletableFuture<Object> cf2 = CompletableFuture.anyOf(cfs.toArray(new CompletableFuture[0]));
 				
