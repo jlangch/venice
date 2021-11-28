@@ -1377,7 +1377,10 @@ public class ConcurrencyFunctions {
 																	new CallFrame(fn)});
 						final Supplier<VncVal> taskWrapper = threadBridge.bridgeSupplier(() -> fn.applyOf());
 						
-						return new VncJavaObject(CompletableFuture.supplyAsync(taskWrapper, mngdExecutor.getExecutor()));
+						return new VncJavaObject(
+										CompletableFuture.supplyAsync(
+												taskWrapper, 
+												mngdExecutor.getExecutor()));
 					}
 					else {
 						throw new VncException(String.format(
@@ -1440,7 +1443,9 @@ public class ConcurrencyFunctions {
 														new CallFrame(fn)});
 				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((VncVal v) -> fn.applyOf(v));
 
-				final CompletableFuture<VncVal> cf2 = cf.thenApplyAsync(taskWrapper, mngdExecutor.getExecutor());
+				final CompletableFuture<VncVal> cf2 = cf.thenApplyAsync(
+															taskWrapper, 
+															mngdExecutor.getExecutor());
 				
 				return new VncJavaObject(cf2);
 			}
@@ -1486,9 +1491,13 @@ public class ConcurrencyFunctions {
 														new CallFrame(this, args),
 														new CallFrame(fn)});
 				
-				final BiFunction<VncVal,VncVal,VncVal> taskWrapper = threadBridge.bridgeBiFunction((VncVal v1, VncVal v2) -> fn.applyOf(v1, v2));
+				final BiFunction<VncVal,VncVal,VncVal> taskWrapper = threadBridge.bridgeBiFunction(
+																		(VncVal v1, VncVal v2) -> fn.applyOf(v1, v2));
 
-				final CompletableFuture<VncVal> cf3 = cf.thenCombineAsync(cf2, taskWrapper);
+				final CompletableFuture<VncVal> cf3 = cf.thenCombineAsync(
+															cf2, 
+															taskWrapper, 
+															mngdExecutor.getExecutor());
 				
 				return new VncJavaObject(cf3);
 			}
