@@ -1317,6 +1317,8 @@ public class ConcurrencyFunctions {
 
 	// see also: https://github.com/funcool/promesa   (promise chaining)
 	//           https://dzone.com/articles/20-examples-of-using-javas-completablefuture
+	//
+	// Note: Java 9 has added orTimeout and completeOnTimeout methods on CompletableFuture
 	public static VncFunction promise = 
 		new VncFunction(
 				"promise", 
@@ -1357,7 +1359,8 @@ public class ConcurrencyFunctions {
 						"deliver", "promise?", "realized?", "deref", 
 						"done?", "cancel", "cancelled?",
 						"all-of", "any-of",
-						"then-apply", "then-combine", "then-compose", "when-complete")
+						"then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "accept-either", "apply-to-either")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1499,6 +1502,50 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction then_accept = 
+		new VncFunction(
+				"then-accept", 
+				VncFunction
+					.meta()
+					.arglists("(then-accept p f)")
+					.doc(
+						"Returns a new promise that, when this promise completes normally, " +
+						"is executing the function f with this stage's result as the argument.")
+					.examples(
+						"(-> (promise (fn [] \"the quick brown fox\"))    \n" +
+						"    (then-accept (fn [v] (println (pr-str v))))  \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "accept-either", "apply-to-either")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				@SuppressWarnings("unchecked")
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+				final VncFunction fn = Coerce.toVncFunction(args.second());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"then-accept",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				final Consumer<VncVal> taskWrapper = threadBridge.bridgeConsumer((VncVal v) -> fn.applyOf(v));
+
+				final CompletableFuture<Void> cf2 = cf.thenAcceptAsync(
+															taskWrapper, 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction then_apply = 
 		new VncFunction(
 				"then-apply", 
@@ -1513,7 +1560,8 @@ public class ConcurrencyFunctions {
 						"    (then-apply #(str % \" jumps over the lazy dog\"))  \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-combine", "then-compose", "when-complete")
+						"promise", "then-accept", "then-accept-both", "then-combine", 
+						"then-compose", "when-complete", "accept-either", "apply-to-either")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1547,10 +1595,10 @@ public class ConcurrencyFunctions {
 				"then-combine", 
 				VncFunction
 					.meta()
-					.arglists("(then-combine p p2 f)")
+					.arglists("(then-combine p p-other f)")
 					.doc(
 						"Applies a function f to the result of the previous stage of promise p " +
-						"and the result of promise p2")
+						"and the result of another promise p-other")
 					.examples(
 						"(-> (promise (fn [] \"The Quick Brown Fox\"))                           \n" +
 						"    (then-apply str/upper-case)                                         \n" +
@@ -1559,7 +1607,8 @@ public class ConcurrencyFunctions {
 						"                  #(str %1 \" \" %2))                                   \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-apply", "then-compose", "when-complete")
+						"promise", "then-accept", "then-accept-both", "then-apply",
+						"then-compose", "when-complete", "accept-either", "apply-to-either")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1613,7 +1662,8 @@ public class ConcurrencyFunctions {
 						"                              (then-apply #(str x \" \" %1)))))              \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-apply", "then-combine", "when-complete")
+						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"when-complete", "accept-either", "apply-to-either")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1663,7 +1713,8 @@ public class ConcurrencyFunctions {
 						"    (then-apply str/lower-case)                                     \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-apply", "then-combine", "then-compose")
+						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "accept-either", "apply-to-either")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1692,6 +1743,164 @@ public class ConcurrencyFunctions {
 															mngdExecutor.getExecutor());
 				
 				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction accept_either = 
+		new VncFunction(
+				"accept-either", 
+				VncFunction
+					.meta()
+					.arglists("(accept-either p p-other f)")
+					.doc(
+						"Returns a new promise that, when either this or the other " +
+						"given promise completess normally, is executed with the " +
+						"corresponding result as argument to the supplied function f.")
+					.examples(
+						"(-> (promise (fn [] (sleep 200) \"The quick brown fox\"))                      \n" +
+						"    (accept-either (promise (fn [] (sleep 100) \"jumps over the lazy dog\"))   \n" +
+						"                   (fn [v] (println (pr-str v))))                              \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "apply-to-either")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+
+				final CompletableFuture<VncVal> cf2 = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.second(), 
+																					CompletableFuture.class);
+
+				final VncFunction fn = Coerce.toVncFunction(args.third());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"accept-either",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				
+				final Consumer<VncVal> taskWrapper = threadBridge.bridgeConsumer((v) -> fn.applyOf(v));
+
+				final CompletableFuture<Void> cf3 = cf.acceptEitherAsync(
+															cf2,
+															taskWrapper, 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf3);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction apply_to_either = 
+		new VncFunction(
+				"apply-to-either", 
+				VncFunction
+					.meta()
+					.arglists("(apply-to-either p p-other f)")
+					.doc(
+						"Returns a new promise that, when either this or the other " +
+						"given promise completes normally, is executed with the " +
+						"corresponding result as argument to the supplied function f.")
+					.examples(
+						"(-> (promise (fn [] (sleep 200) \"The quick brown fox\"))                      \n" +
+						"    (apply-to-either (promise (fn [] (sleep 100) \"jumps over the lazy dog\")) \n" +
+						"                     (fn [v] (str/upper-case v)))                              \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "accept-either")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+
+				final CompletableFuture<VncVal> cf2 = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.second(), 
+																					CompletableFuture.class);
+
+				final VncFunction fn = Coerce.toVncFunction(args.third());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"apply-to-either",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				
+				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((v) -> fn.applyOf(v));
+
+				final CompletableFuture<VncVal> cf3 = cf.applyToEitherAsync(
+															cf2,
+															taskWrapper, 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf3);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction then_accept_both = 
+		new VncFunction(
+				"then-accept-both", 
+				VncFunction
+					.meta()
+					.arglists("(then-accept-both p p-other f)")
+					.doc(
+						"Returns a new promise that, when either this or the other " +
+						"given promise completes normally, is executing the function f " +
+						"with the two results as arguments.")
+					.examples(
+						"(-> (promise (fn [] (sleep 200) \"The quick brown fox\"))                       \n" +
+						"    (then-accept-both (promise (fn [] (sleep 100) \"jumps over the lazy dog\")) \n" +
+						"                      (fn [u v] (println (pr-str (str u \" \" v)))))            \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+
+				final CompletableFuture<VncVal> cf2 = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.second(), 
+																					CompletableFuture.class);
+
+				final VncFunction fn = Coerce.toVncFunction(args.third());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"then-accept-both",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				
+				final BiConsumer<VncVal,VncVal> taskWrapper = threadBridge.bridgeBiConsumer((u,v) -> fn.applyOf(u, v));
+
+				final CompletableFuture<Void> cf3 = cf.thenAcceptBothAsync(
+															cf2,
+															taskWrapper, 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf3);
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2570,10 +2779,14 @@ public class ConcurrencyFunctions {
 					.add(promise)
 					.add(promise_Q)
 					.add(deliver)
+					.add(then_accept)
 					.add(then_apply)
 					.add(then_combine)
 					.add(then_compose)
 					.add(when_complete)
+					.add(accept_either)
+					.add(apply_to_either)
+					.add(then_accept_both)
 					.add(all_of)
 					.add(any_of)
 					

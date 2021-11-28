@@ -1466,10 +1466,14 @@ public class DocGenerator {
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
 		promises.addItem(getDocItem("realized?"));
+		promises.addItem(getDocItem("then-accept"));
+		promises.addItem(getDocItem("then-accept-both"));
 		promises.addItem(getDocItem("then-apply"));
 		promises.addItem(getDocItem("then-combine"));
 		promises.addItem(getDocItem("then-compose"));
 		promises.addItem(getDocItem("when-complete"));
+		promises.addItem(getDocItem("accept-either"));
+		promises.addItem(getDocItem("apply-to-either"));
 		promises.addItem(getDocItem("all-of"));
 		promises.addItem(getDocItem("any-of"));
 		promises.addItem(getDocItem("done?"));
