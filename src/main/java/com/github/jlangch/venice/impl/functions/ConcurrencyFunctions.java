@@ -1357,7 +1357,7 @@ public class ConcurrencyFunctions {
 						"deliver", "promise?", "realized?", "deref", 
 						"done?", "cancel", "cancelled?",
 						"all-of", "any-of",
-						"then-apply", "then-combine", "then-compose")
+						"then-apply", "then-combine", "then-compose", "when-complete")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
