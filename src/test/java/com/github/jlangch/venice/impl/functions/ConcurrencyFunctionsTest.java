@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
@@ -750,13 +751,181 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_promise_then_apply_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] 5))      \n" +
+				"    (then-apply #(+ % 3))    \n" +
+				"    (then-apply #(* % 2))    \n" +
+				"    (deref))";
+
+		assertEquals(16L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_then_apply_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] 5))                       \n" +
+				"    (then-apply #(do (sleep 100) (+ % 3)))    \n" +
+				"    (then-apply #(do (sleep 2) (* % 2)))      \n" +
+				"    (deref))";
+
+		assertEquals(16L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_then_apply_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                 \n" +
+				"  (def x (atom 0))                                  \n" +
+				"  (def p (-> (promise (fn [] (swap! x inc)))        \n" +
+				"             (then-apply (fn [_] (swap! x inc)))    \n" +
+				"             (then-apply (fn [_] (swap! x inc)))))  \n" +
+				"  @p                                                \n" +
+				"  @x)";
+
+		assertEquals(3L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_then_apply_exception_1a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (/ 1 0)))               \n" +
+				"    (then-apply #(do (sleep 100) (+ % 3)))  \n" +
+				"    (then-apply #(do (sleep 2) (* % 2)))    \n" +
+				"    (deref))";
+
+		try {
+			venice.eval(script);
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("/ by zero", ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_promise_then_apply_exception_1b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                  \n" +
+				"  (def x (atom 0))                                   \n" +
+				"  (def p (-> (promise #(/ 1 0))                      \n" +
+				"             (then-apply (fn [_] (swap! x inc)))     \n" +
+				"             (then-apply (fn [_] (swap! x inc)))))   \n" +
+				"  (try                                               \n" +
+				"    (deref p)                                        \n" +
+				"    -1                                               \n" +
+				"    (catch :VncException e @x)))                       ";
+
+		assertEquals(0L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_then_apply_exception_2a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] 5))                       \n" +
+				"    (then-apply #(do (sleep 100) (/ % 0)))    \n" +
+				"    (then-apply #(do (sleep 2) (* % 2)))      \n" +
+				"    (deref))";
+
+		try {
+			venice.eval(script);
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("/ by zero", ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_promise_then_apply_exception_2b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                 \n" +
+				"  (def x (atom 0))                                  \n" +
+				"  (def p (-> (promise (fn [] (swap! x inc)))        \n" +
+				"             (then-apply #(/ % 0))                  \n" +
+				"             (then-apply (fn [_] (swap! x inc)))))  \n" +
+				"  (try                                              \n" +
+				"    (deref p)                                       \n" +
+				"    -1                                              \n" +
+				"    (catch :VncException e @x)))                      ";
+
+		assertEquals(1L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_then_apply_exception_3a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] 5))                       \n" +
+				"    (then-apply #(do (sleep 100) (+ % 3)))    \n" +
+				"    (then-apply #(do (sleep 2) (/ % 0)))      \n" +
+				"    (deref))";
+
+		try {
+			venice.eval(script);
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("/ by zero", ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_promise_then_apply_exception_3b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                                \n" +
+				"  (def x (atom 0))                                 \n" +
+				"  (def p (-> (promise (fn [] (swap! x inc)))       \n" +
+				"             (then-apply (fn [_] (swap! x inc)))   \n" +
+				"             (then-apply #(/ % 0))))               \n" +
+				"  (try                                             \n" +
+				"    (deref p)                                      \n" +
+				"    -1                                             \n" +
+				"    (catch :VncException e @x)))                     ";
+
+		assertEquals(2L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_then_combine_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 20) 5))                              \n" +
+				"    (then-apply (fn [x] (sleep 20) (+ x 3)))                    \n" +
+				"    (then-combine (-> (promise (fn [] (sleep 20) 5))            \n" +
+				"                      (then-apply (fn [x] (sleep 20) (* x 2)))) \n" +
+				"                  #(+ %1 %2))                                   \n" +
+				"    (deref))";
+
+		assertEquals(18L, venice.eval(script));
+	}
+
+	@Test
 	public void test_future_deref_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
 				"(do                                             " +
 				"   (let [f (future (fn [] {:a 100}))]           " +
-				"        @f)                                     " +
+				"      @f)                                       " +
 				") ";
 
 		assertEquals("{:a 100}", venice.eval("(str " + script + ")"));
@@ -769,7 +938,7 @@ public class ConcurrencyFunctionsTest {
 		final String script = 
 				"(do                                             " +
 				"   (let [f (future (fn [] {:a 100}))]           " +
-				"        (conj @f {:c 3}))                       " +
+				"      (conj @f {:c 3}))                         " +
 				") ";
 
 		assertEquals("{:a 100 :c 3}", venice.eval("(str " + script + ")"));
@@ -782,7 +951,7 @@ public class ConcurrencyFunctionsTest {
 		final String script = 
 				"(do                                   " +
 				"   (let [a 100                        " +
-				"         f (future (fn [] (+ a 20)))] " +
+				"      f (future (fn [] (+ a 20)))]    " +
 				"    @f)                               " +
 				") ";
 
@@ -811,7 +980,7 @@ public class ConcurrencyFunctionsTest {
 				"   (defn wait [] (sleep 500) {:a 100})          " +
 				"                                                " +
 				"   (let [f (future wait)]                       " +
-				"        (deref f))                              " +
+				"      (deref f))                                " +
 				") ";
 
 		assertEquals("{:a 100}", venice.eval("(str " + script + ")"));
@@ -826,7 +995,7 @@ public class ConcurrencyFunctionsTest {
 				"   (defn wait [] (sleep 500) 100)          " +
 				"                                           " +
 				"   (let [f (future wait)]                  " +
-				"        (deref f 700 :timeout))            " +
+				"      (deref f 700 :timeout))              " +
 				") ";
 
 		assertEquals(Long.valueOf(100), venice.eval(script));
@@ -852,7 +1021,7 @@ public class ConcurrencyFunctionsTest {
 				"   (def wait (fn [] (do (sleep 500) (throw 1)))) \n" +
 				"                                                 \n" +
 				"   (let [f (future wait)]                        \n" +
-				"        (deref f))                               \n" +
+				"      (deref f))                                 \n" +
 				") ";
 
 		assertThrows(ValueException.class, () -> venice.eval(script));
@@ -867,7 +1036,7 @@ public class ConcurrencyFunctionsTest {
 				"   (defn wait [] (sleep 500) 100)          " +
 				"                                           " +
 				"   (let [f (future wait)]                  " +
-				"        (deref f 300 :timeout))            " +
+				"      (deref f 300 :timeout))              " +
 				") ";
 
 		assertEquals("timeout", venice.eval(script));
@@ -972,7 +1141,7 @@ public class ConcurrencyFunctionsTest {
 				"   [ (let [f (future (fn []                                \n" +
 				"                         (assoc! (thread-local) :a 90)     \n" +
 				"                         (get (thread-local) :a)))]        \n" +
-				"          @f)                                              \n" +
+				"        @f)                                                \n" +
 				"     (get (thread-local) :a) ]                             \n" +
 				") ";
 

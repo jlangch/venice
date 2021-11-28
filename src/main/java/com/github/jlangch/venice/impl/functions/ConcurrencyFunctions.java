@@ -1461,7 +1461,7 @@ public class ConcurrencyFunctions {
 						"(-> (promise (fn [] \"The Quick Brown Fox\"))                           \n" +
 						"    (then-apply str/upper-case)                                         \n" +
 						"    (then-combine (-> (promise (fn [] \"Jumps Over The Lazy Dog\"))     \n" +
-						"                               (then-apply str/lower-case))             \n" +
+						"                      (then-apply str/lower-case))                      \n" +
 						"                  #(str %1 \" \" %2))                                   \n" +
 						"    (deref))")
 					.build()
