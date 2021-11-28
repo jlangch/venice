@@ -1505,6 +1505,53 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction then_compose = 
+		new VncFunction(
+				"then-compose", 
+				VncFunction
+					.meta()
+					.arglists("(then-compose p f)")
+					.doc(
+						"Composes the result of two promises. f receives the result of the first promise p " +
+						"and returns a new promise that composes that value with this promise. ")
+					.examples(
+						"(-> (promise (fn [] \"The Quick Brown Fox\"))                                \n" +
+						"    (then-apply str/upper-case)                                              \n" +
+						"    (then-compose (fn [x] (-> (promise (fn [] \"Jumps Over The Lazy Dog\"))  \n" +
+						"                              (then-apply str/lower-case)                    \n" +
+						"                              (then-apply #(str x \" \" %1)))))              \n" +
+						"    (deref))")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+
+				final VncFunction fn = Coerce.toVncFunction(args.second());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"then-compose",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				
+				final Function<VncVal,CompletableFuture<VncVal>> taskWrapper = threadBridge.bridgeFunction(
+																		(VncVal v1) -> (CompletableFuture<VncVal>)((VncJavaObject)fn.applyOf(v1)).getDelegate());
+
+				final CompletableFuture<VncVal> cf2 = cf.thenComposeAsync(
+															taskWrapper, 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	
 
 	///////////////////////////////////////////////////////////////////////////
@@ -2380,6 +2427,7 @@ public class ConcurrencyFunctions {
 					.add(deliver)
 					.add(then_apply)
 					.add(then_combine)
+					.add(then_compose)
 					
 					.add(future)
 					.add(future_task)
