@@ -1470,6 +1470,8 @@ public class DocGenerator {
 		promises.addItem(getDocItem("then-combine"));
 		promises.addItem(getDocItem("then-compose"));
 		promises.addItem(getDocItem("when-complete"));
+		promises.addItem(getDocItem("all-of"));
+		promises.addItem(getDocItem("any-of"));
 		promises.addItem(getDocItem("done?"));
 		promises.addItem(getDocItem("cancel"));
 		promises.addItem(getDocItem("cancelled?"));

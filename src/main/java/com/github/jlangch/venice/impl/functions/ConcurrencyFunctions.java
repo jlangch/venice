@@ -150,11 +150,13 @@ public class ConcurrencyFunctions {
 						final Future<VncVal> future = (Future<VncVal>)delegate;
 						try {
 							if (args.size() == 1) {
-								return future.get();
+								final VncVal v = future.get();
+								return v == null ? Nil : v;
 							}
 							else {
 								final long timeout = Coerce.toVncLong(args.second()).getValue();
-								return future.get(timeout, TimeUnit.MILLISECONDS);
+								final VncVal v = future.get(timeout, TimeUnit.MILLISECONDS);
+								return v == null ? Nil : v;
 							}
 						}
 						
@@ -1354,6 +1356,7 @@ public class ConcurrencyFunctions {
 					.seeAlso(
 						"deliver", "promise?", "realized?", "deref", 
 						"done?", "cancel", "cancelled?",
+						"all-of", "any-of",
 						"then-apply", "then-combine", "then-compose")
 					.build()
 		) {		
@@ -1409,6 +1412,90 @@ public class ConcurrencyFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 	
 				return VncBoolean.of(Types.isVncJavaObject(args.first(), CompletableFuture.class));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction all_of = 
+		new VncFunction(
+				"all-of", 
+				VncFunction
+					.meta()
+					.arglists("(all-of p & ps)")
+					.doc(
+						"Returns a new promise that is completed when all of the " +
+						"given promises complete. If any of the given promises " +
+						"complete exceptionally, then the returned promise also does " +
+						"so. Otherwise, the results, if any, of the given promises are " +
+						"not reflected in the returned promise, but may be obtained " +
+						"by inspecting them individually.")
+					.examples(
+						"(-> (all-of (promise (fn [] (sleep 100) 1))  \n" +
+						"            (promise (fn [] (sleep 100) 2))  \n" +
+						"            (promise (fn [] (sleep 500) 3))) \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "any-of")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final List<CompletableFuture<VncVal>> cfs = new ArrayList<>();
+				
+				for(VncVal v : args) {
+					cfs.add((CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+														v, 
+														CompletableFuture.class));
+				}
+
+
+				final CompletableFuture<Void> cf2 = CompletableFuture.allOf(cfs.toArray(new CompletableFuture[0]));
+				
+				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction any_of = 
+		new VncFunction(
+				"any-of", 
+				VncFunction
+					.meta()
+					.arglists("(any-of p & ps)")
+					.doc(
+						"Returns a new promise that is completed when any of the " +
+						"given promises complete, with the same result. Otherwise, " +
+						"if it completed exceptionally, the returned promise also " +
+						"does so.")
+					.examples(
+						"(-> (any-of (promise (fn [] (sleep 300) 1))  \n" +
+						"            (promise (fn [] (sleep 100) 2))  \n" +
+						"            (promise (fn [] (sleep 500) 3))) \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "all-of")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+
+				final List<CompletableFuture<VncVal>> cfs = new ArrayList<>();
+				
+				for(VncVal v : args) {
+					cfs.add((CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+														v, 
+														CompletableFuture.class));
+				}
+
+
+				final CompletableFuture<Object> cf2 = CompletableFuture.anyOf(cfs.toArray(new CompletableFuture[0]));
+				
+				return new VncJavaObject(cf2);
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2489,6 +2576,8 @@ public class ConcurrencyFunctions {
 					.add(then_combine)
 					.add(then_compose)
 					.add(when_complete)
+					.add(all_of)
+					.add(any_of)
 					
 					.add(future)
 					.add(future_task)

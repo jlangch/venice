@@ -751,6 +751,32 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_promise_all_of() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (all-of (promise (fn [] (sleep 100) 1))  \n" +
+				"            (promise (fn [] (sleep 100) 2))  \n" +
+				"            (promise (fn [] (sleep 500) 3))) \n" +
+				"    (deref))";
+
+		assertEquals(null, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_any_of() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (any-of (promise (fn [] (sleep 300) 1))  \n" +
+				"            (promise (fn [] (sleep 100) 2))  \n" +
+				"            (promise (fn [] (sleep 500) 3))) \n" +
+				"    (deref))";
+
+		assertEquals(2L, venice.eval(script));
+	}
+
+	@Test
 	public void test_promise_then_apply_1() {
 		final Venice venice = new Venice();
 
