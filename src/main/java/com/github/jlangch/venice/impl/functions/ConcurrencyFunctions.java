@@ -37,6 +37,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1415,52 +1416,11 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(then-apply p f)")
 					.doc(
-						"Applies a function f on the result of the previous stage of " +
-						"the promise p.")
+						"Applies a function f on the result of the previous stage of the promise p.")
 					.examples(
 						"(-> (promise (fn [] \"the quick brown fox\"))           \n" +
 						"    (then-apply str/upper-case)                         \n" +
-						"    (then-apply #(str % \" jumped over the lazy dog\")) \n" +
-						"    (deref))")
-					.build()
-		) {	
-			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
-
-				@SuppressWarnings("unchecked")
-				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
-																					args.first(),
-																					CompletableFuture.class);
-				final VncFunction fn = Coerce.toVncFunction(args.second());
-
-				final ThreadBridge threadBridge = ThreadBridge.create(
-													"then-apply",
-													new CallFrame[] {
-														new CallFrame(this, args),
-														new CallFrame(fn)});
-				final Function<VncVal,VncVal> taskWrapper = threadBridge.bridgeFunction((VncVal v) -> fn.applyOf(v));
-
-				final CompletableFuture<VncVal> cf2 = cf.thenApply(taskWrapper);
-				
-				return new VncJavaObject(cf2);
-			}
-			
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-
-	public static VncFunction then_apply_async = 
-		new VncFunction(
-				"then-apply-async", 
-				VncFunction
-					.meta()
-					.arglists("(then-apply-async p f)")
-					.doc(
-						"Applies a function f asynchronously on the result of the previous " +
-						"stage of the promise p.")
-					.examples(
-						"(-> (promise (fn [] \"the quick brown fox\"))                 \n" +
-						"    (then-apply-async str/upper-case)                         \n" +
-						"    (then-apply-async #(str % \" jumped over the lazy dog\")) \n" +
+						"    (then-apply #(str % \" jumps over the lazy dog\"))  \n" +
 						"    (deref))")
 					.build()
 		) {	
@@ -1483,6 +1443,54 @@ public class ConcurrencyFunctions {
 				final CompletableFuture<VncVal> cf2 = cf.thenApplyAsync(taskWrapper, mngdExecutor.getExecutor());
 				
 				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction then_combine = 
+		new VncFunction(
+				"then-combine", 
+				VncFunction
+					.meta()
+					.arglists("(then-combine p p2 f)")
+					.doc(
+						"Applies a function f to the result of the previous stage of promise p " +
+						"and the result of promise p2")
+					.examples(
+						"(-> (promise (fn [] \"The Quick Brown Fox\"))                           \n" +
+						"    (then-apply str/upper-case)                                         \n" +
+						"    (then-combine (-> (promise (fn [] \"Jumps Over The Lazy Dog\"))     \n" +
+						"                               (then-apply str/lower-case))             \n" +
+						"                  #(str %1 \" \" %2))                                   \n" +
+						"    (deref))")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+
+				final CompletableFuture<VncVal> cf2 = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.second(), 
+																					CompletableFuture.class);
+
+				final VncFunction fn = Coerce.toVncFunction(args.third());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"then-combine",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				
+				final BiFunction<VncVal,VncVal,VncVal> taskWrapper = threadBridge.bridgeBiFunction((VncVal v1, VncVal v2) -> fn.applyOf(v1, v2));
+
+				final CompletableFuture<VncVal> cf3 = cf.thenCombineAsync(cf2, taskWrapper);
+				
+				return new VncJavaObject(cf3);
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2362,7 +2370,7 @@ public class ConcurrencyFunctions {
 					.add(promise_Q)
 					.add(deliver)
 					.add(then_apply)
-					.add(then_apply_async)
+					.add(then_combine)
 					
 					.add(future)
 					.add(future_task)

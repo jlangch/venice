@@ -26,6 +26,8 @@ import static com.github.jlangch.venice.impl.thread.ThreadBridge.Options.DEACTIV
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -166,6 +168,33 @@ public class ThreadBridge {
 		return wrapper;
 	}
 	
+	public <T,U> BiConsumer<T,U> bridgeBiConsumer(final BiConsumer<T,U> consumer) {
+		final BiConsumer<T,U> wrapper = (T t, U u) -> {
+			try {
+				// inherit thread local values to the child thread
+				ThreadContext.inheritFrom(parentThreadSnapshot);
+
+				if (callFrames != null) {
+					final CallStack cs = ThreadContext.getCallStack();
+					for(CallFrame cf : callFrames) {
+						cs.push(cf);
+					}
+				}
+				
+				if (deactivateDebugAgent) {
+					DebugAgent.unregister();
+				}
+
+				consumer.accept(t,u);
+			}
+			finally {
+				// clean up
+				ThreadContext.remove();
+			}};
+		
+		return wrapper;
+	}
+	
 	public <T> Supplier<T> bridgeSupplier(final Supplier<T> supplier) {
 		final Supplier<T> wrapper = () -> {
 			try {
@@ -211,6 +240,33 @@ public class ThreadBridge {
 				}
 
 				return func.apply(t);
+			}
+			finally {
+				// clean up
+				ThreadContext.remove();
+			}};
+		
+		return wrapper;
+	}
+	
+	public <T,U,R> BiFunction<T,U,R> bridgeBiFunction(final BiFunction<T,U,R> func) {
+		final BiFunction<T,U,R> wrapper = (T t, U u) -> {
+			try {
+				// inherit thread local values to the child thread
+				ThreadContext.inheritFrom(parentThreadSnapshot);
+
+				if (callFrames != null) {
+					final CallStack cs = ThreadContext.getCallStack();
+					for(CallFrame cf : callFrames) {
+						cs.push(cf);
+					}
+				}
+				
+				if (deactivateDebugAgent) {
+					DebugAgent.unregister();
+				}
+
+				return func.apply(t, u);
 			}
 			finally {
 				// clean up
