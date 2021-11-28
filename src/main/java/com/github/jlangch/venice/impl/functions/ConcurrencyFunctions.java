@@ -37,6 +37,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -1352,7 +1353,8 @@ public class ConcurrencyFunctions {
 						"   @p)                                                 ")
 					.seeAlso(
 						"deliver", "promise?", "realized?", "deref", 
-						"done?", "cancel", "cancelled?")
+						"done?", "cancel", "cancelled?",
+						"then-apply", "then-combine", "then-compose")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1425,6 +1427,8 @@ public class ConcurrencyFunctions {
 						"    (then-apply str/upper-case)                         \n" +
 						"    (then-apply #(str % \" jumps over the lazy dog\"))  \n" +
 						"    (deref))")
+					.seeAlso(
+						"promise", "then-combine", "then-compose", "when-complete")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1469,6 +1473,8 @@ public class ConcurrencyFunctions {
 						"                      (then-apply str/lower-case))                      \n" +
 						"                  #(str %1 \" \" %2))                                   \n" +
 						"    (deref))")
+					.seeAlso(
+						"promise", "then-apply", "then-compose", "when-complete")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1521,6 +1527,8 @@ public class ConcurrencyFunctions {
 						"                              (then-apply str/lower-case)                    \n" +
 						"                              (then-apply #(str x \" \" %1)))))              \n" +
 						"    (deref))")
+					.seeAlso(
+						"promise", "then-apply", "then-combine", "when-complete")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1543,6 +1551,58 @@ public class ConcurrencyFunctions {
 																		(VncVal v1) -> (CompletableFuture<VncVal>)((VncJavaObject)fn.applyOf(v1)).getDelegate());
 
 				final CompletableFuture<VncVal> cf2 = cf.thenComposeAsync(
+															taskWrapper, 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf2);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction when_complete = 
+		new VncFunction(
+				"when-complete", 
+				VncFunction
+					.meta()
+					.arglists("(when-complete p f)")
+					.doc(
+						"Returns the promise p with the same result or exception at this stage, " +
+						"that executes the action f. Passes the the current stage's result value as " +
+						"first and a possible exception as second argument to the function. The " +
+						"asynchronous function f is called presumably for handling side effects.")
+					.examples(
+						"(-> (promise (fn [] \"The Quick Brown Fox\"))                       \n" +
+						"    (then-apply str/upper-case)                                     \n" +
+						"    (when-complete (fn [v,e] (println (pr-str {:value v :ex e}))))  \n" +
+						"    (then-apply str/lower-case)                                     \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-apply", "then-combine", "then-compose")
+					.build()
+		) {	
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+																					args.first(), 
+																					CompletableFuture.class);
+
+				final VncFunction fn = Coerce.toVncFunction(args.second());
+
+				final ThreadBridge threadBridge = ThreadBridge.create(
+													"when-complete",
+													new CallFrame[] {
+														new CallFrame(this, args),
+														new CallFrame(fn)});
+				
+				final BiConsumer<VncVal,Throwable> taskWrapper = threadBridge.bridgeBiConsumer(
+																		(VncVal v, Throwable th) -> fn.applyOf(
+																										v, 
+																										th == null ? Nil : new VncJavaObject(th)));
+
+				final CompletableFuture<VncVal> cf2 = cf.whenCompleteAsync(
 															taskWrapper, 
 															mngdExecutor.getExecutor());
 				
@@ -2428,6 +2488,7 @@ public class ConcurrencyFunctions {
 					.add(then_apply)
 					.add(then_combine)
 					.add(then_compose)
+					.add(when_complete)
 					
 					.add(future)
 					.add(future_task)
