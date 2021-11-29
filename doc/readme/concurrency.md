@@ -127,7 +127,7 @@ Suppose we want to make coffee. This involves 4 steps:
 * 2  mix the hot water with the ground beans
 * 3  filter the coffee
 
-All these steps take time, so they run asynchronously. 
+All these steps take time, so they run asynchronously and have to be orchestrated. 
 
 ```clojure
 (do
