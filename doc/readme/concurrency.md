@@ -66,7 +66,7 @@ might not be available yet and can be delivered exactly once, from any thread,
 later. If another thread tries to dereference a promise before it's delivered, 
 it will block the calling thread. If the promise is already resolved (delivered), 
 no blocking occurs at all. A promise can only be delivered once and can never change 
-its value once set.
+its value once set. A promise is a more versatile future.
 
 ```clojure
 (do
@@ -131,6 +131,9 @@ All these steps take time, so they run asynchronously.
 
 ```clojure
 (do
+  (def trace (let [mutex 0] 
+               (fn [& xs] (locking mutex (println (apply str xs))))))
+
   ;; the domain data
   (deftype :coffee-beans [])
   (deftype :ground-coffee [])
@@ -141,26 +144,26 @@ All these steps take time, so they run asynchronously.
 
   ;; the domain functions
   (defn grind-beans [coffee-beans] 
-    (println "1a) grinding beans...") 
+    (trace "1a) grinding beans...") 
     (ground-coffee.))
     
   (defn heat-water [cold-water] 
-    (println "1b) heating water...") 
+    (trace "1b) heating water...") 
     (warm-water.))
     
   (defn mix [warm-water ground-coffee] 
-    (println "2)  mixing water and coffee...") 
+    (trace "2)  mixing water and coffee...") 
     (unfiltered-coffee.))
     
   (defn filter-coffee [unfiltered-coffee] 
-    (println "3)  filtering coffee...") 
+    (trace "3)  filtering coffee...") 
     (filtered-coffee.))
 
   ;; the processing, wiring the steps
-  (-> (promise #(grind-beans (coffee-beans.)))                             ;; 1a
-      (then-compose (fn [beans] (-> (promise #(heat-water (cold-water.)))  ;; 1b
-                                    (then-apply #(mix %1 beans)))))        ;; 2
-      (then-apply #(filter-coffee %1))                                     ;; 3
+  (-> (promise #(grind-beans (coffee-beans.)))             ;; 1a
+      (then-combine (promise #(heat-water (cold-water.)))  ;; 1b
+                    #(mix %1 %2))                          ;; 2
+      (then-apply #(filter-coffee %1))                     ;; 3
       (deref)))
 ```
 
