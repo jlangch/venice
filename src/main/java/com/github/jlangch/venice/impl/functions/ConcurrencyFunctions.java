@@ -163,7 +163,7 @@ public class ConcurrencyFunctions {
 						catch(TimeoutException ex) {
 							return args.size() == 3 ? args.third() : Nil;
 						}
-						catch(ExecutionException ex) {
+						catch(ExecutionException | CompletionException ex) {
 							if (ex.getCause() != null) {
 								// just unwrap SecurityException and VncException
 								if (ex.getCause() instanceof SecurityException) {
@@ -174,23 +174,10 @@ public class ConcurrencyFunctions {
 								}
 							}
 							
-							throw new VncException("Failed to deref future", ex);
-						}
-						catch(CompletionException ex) {
-							if (ex.getCause() != null) {
-								// just unwrap SecurityException and VncException
-								if (ex.getCause() instanceof SecurityException) {
-									throw (SecurityException)ex.getCause();
-								}
-								else if (ex.getCause() instanceof VncException) {
-									throw (VncException)ex.getCause();
-								}
-							}
-							
-							throw new VncException("Failed to deref future", ex);
+							throw new VncException("Future execution failure", ex);
 						}
 						catch(CancellationException ex) {
-							throw new VncException("Failed to deref future. Future has been cancelled", ex);
+							throw new VncException("Future has been cancelled", ex);
 						}
 						catch(InterruptedException ex) {
 							// cancel future
@@ -2011,15 +1998,18 @@ public class ConcurrencyFunctions {
 					.examples(
 						";; building a completion service                                                  \n" + 
 						";; CompletionService = incoming worker queue + worker threads + output data queue \n" + 
-						"(do                                                                   \n" + 
-						"   (def q (queue 10))                                                 \n" + 
-						"   (defn process [s v] (sleep s) v)                                   \n" + 
-						"   (future-task (partial process 200 2) #(offer! q %) #(offer! q %))  \n" + 
-						"   (future-task (partial process 300 3) #(offer! q %) #(offer! q %))  \n" + 
-						"   (future-task (partial process 100 1) #(offer! q %) #(offer! q %))  \n" + 
-						"   (println (poll! q 1000))                                           \n" +
-						"   (println (poll! q 1000))                                           \n" +
-						"   (println (poll! q 1000)))                                            ")
+						"(do                                                                               \n" + 
+						"   (def q (queue 10))                                                             \n" + 
+						"   (defn process [s v] (sleep s) v)                                               \n" + 
+						"   (defn failure [s m] (sleep s) (throw (ex :VncException m)))                    \n" +
+						"   (future-task (partial process 200 2) #(offer! q %) #(offer! q %))              \n" + 
+						"   (future-task (partial process 400 4) #(offer! q %) #(offer! q %))              \n" + 
+						"   (future-task (partial process 100 1) #(offer! q %) #(offer! q %))              \n" + 
+						"   (future-task (partial failure 300 \"Failed 3\") #(offer! q %) #(offer! q %))   \n" + 
+						"   (println (poll! q 1000))                                                       \n" +
+						"   (println (poll! q 1000))                                                       \n" +
+						"   (println (poll! q 1000))                                                       \n" +
+						"   (println (poll! q 1000)))                                                        ")
 					.seeAlso("future")
 					.build()
 		) {		
@@ -2722,6 +2712,19 @@ public class ConcurrencyFunctions {
 				}
 				catch(VncException ex) {
 					failureFn.accept(ex);
+				}
+				catch(ExecutionException | CompletionException ex) {
+					if (ex.getCause() == null) {
+						failureFn.accept(new VncException(ex.getMessage(), ex));
+					}
+					else {
+						if (ex.getCause() instanceof VncException) {
+							failureFn.accept((VncException)ex.getCause());
+						}
+						else {
+							failureFn.accept(new VncException(ex.getCause().getMessage(), ex.getCause()));
+						}
+					}
 				}
 				catch(Exception ex) {
 					failureFn.accept(new VncException(ex.getMessage(), ex));
