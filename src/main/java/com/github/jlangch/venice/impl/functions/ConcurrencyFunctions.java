@@ -2009,7 +2009,21 @@ public class ConcurrencyFunctions {
 						"   (println (poll! q 1000))                                                       \n" +
 						"   (println (poll! q 1000))                                                       \n" +
 						"   (println (poll! q 1000))                                                       \n" +
-						"   (println (poll! q 1000)))                                                        ")
+						"   (println (poll! q 1000)))                                                        ",
+						";; building a completion service (future-task API variant)                        \n" + 
+						"(do                                                                               \n" + 
+						"   (def q (queue 10))                                                             \n" + 
+						"   (defn process [s v] (sleep s) v)                                               \n" + 
+						"   (defn failure [s m] (sleep s) (throw (ex :VncException m)))                    \n" +
+						"   (defn print_result [f] (try (println @f) (catch :Exception e (println e))))    \n" +
+						"   (future-task (partial process 200 2) #(offer! q %))                            \n" + 
+						"   (future-task (partial process 400 4) #(offer! q %))                            \n" + 
+						"   (future-task (partial process 100 1) #(offer! q %))                            \n" + 
+						"   (future-task (partial failure 300 \"Failed 3\") #(offer! q %))                 \n" + 
+						"   (print_result (poll! q 1000))                                                  \n" +
+						"   (print_result (poll! q 1000))                                                  \n" +
+						"   (print_result (poll! q 1000))                                                  \n" +
+						"   (print_result (poll! q 1000)))                                                   ")
 					.seeAlso("future")
 					.build()
 		) {		
