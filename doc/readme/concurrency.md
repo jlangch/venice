@@ -101,12 +101,67 @@ Chaining asynchronous tasks:
 Combining the result of two asynchronous tasks:
 
 ```clojure
-(-> (promise (fn [] (sleep 20) 5))
-    (then-apply (fn [x] (sleep 20) (+ x 2)))
-    (then-combine (-> (promise (fn [] (sleep 20) 1000))
-                      (then-apply (fn [x] (sleep 20) (* x 2))))
-                  #(str %1 " :: " %2))
-    (deref))  ; => "7 :: 2000"
+(-> (promise (fn [] (sleep 20) 1000))
+    (then-apply (fn [x] (sleep 20) (+ x 50)))
+    (then-combine (-> (promise (fn [] (sleep 20) "eur"))
+                      (then-apply str/upper-case))
+                  #(str %1 " " %2))
+    (deref))  ; => "1050 EUR"
+```
+
+Composing the result of two asynchronous tasks:
+
+```clojure
+(-> (promise (fn [] (sleep 20) 1000))
+    (then-apply (fn [x] (sleep 20) (+ x 50)))
+    (then-compose (fn [o] (-> (promise (fn [] (sleep 20) "eur"))
+                              (then-apply str/upper-case)
+                              (then-apply #(str o " " %1)))))
+    (deref)) ; => "1050 EUR"
+```
+
+Suppose we want to make coffee. This involves 4 steps:
+
+* 1a grind coffee beans
+* 1b heat water
+* 2  mix the hot water with the ground beans
+* 3  filter the coffee
+
+All these steps take time, so they run asynchronously. 
+
+```clojure
+(do
+  ;; the domain data
+  (deftype :coffee-beans [])
+  (deftype :ground-coffee [])
+  (deftype :cold-water [])
+  (deftype :warm-water [])
+  (deftype :unfiltered-coffee [])
+  (deftype :filtered-coffee [])
+
+  ;; the domain functions
+  (defn grind-beans [coffee-beans] 
+    (println "1a) grinding beans...") 
+    (ground-coffee.))
+    
+  (defn heat-water [cold-water] 
+    (println "1b) heating water...") 
+    (warm-water.))
+    
+  (defn mix [warm-water ground-coffee] 
+    (println "2)  mixing water and coffee...") 
+    (unfiltered-coffee.))
+    
+  (defn filter-coffee [unfiltered-coffee] 
+    (println "3)  filtering coffee...") 
+    (filtered-coffee.))
+
+  ;; the processing, wiring the steps
+  (-> (promise #(grind-beans (coffee-beans.)))
+      (then-compose (fn [beans] (-> (promise #(heat-water (cold-water.)))
+                                    (then-apply #(mix %1 beans)))))
+      (then-apply #(filter-coffee %1))
+      (deref)))
 ```
 
 
