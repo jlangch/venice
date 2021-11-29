@@ -157,10 +157,10 @@ All these steps take time, so they run asynchronously.
     (filtered-coffee.))
 
   ;; the processing, wiring the steps
-  (-> (promise #(grind-beans (coffee-beans.)))
-      (then-compose (fn [beans] (-> (promise #(heat-water (cold-water.)))
-                                    (then-apply #(mix %1 beans)))))
-      (then-apply #(filter-coffee %1))
+  (-> (promise #(grind-beans (coffee-beans.)))                             ;; 1a
+      (then-compose (fn [beans] (-> (promise #(heat-water (cold-water.)))  ;; 1b
+                                    (then-apply #(mix %1 beans)))))        ;; 2
+      (then-apply #(filter-coffee %1))                                     ;; 3
       (deref)))
 ```
 
