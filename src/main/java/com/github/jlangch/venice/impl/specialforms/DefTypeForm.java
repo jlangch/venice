@@ -65,8 +65,8 @@ public class DefTypeForm {
 			final IVeniceInterpreter interpreter,
 			final Env env
 	) {											
-		if (fields.isEmpty() || ((fields.size() % 2) != 0)) {
-			throw new VncException("deftype invalid field definition."); 
+		if ((fields.size() % 2) != 0) {
+			throw new VncException("deftype invalid field definition (requires an even number of fields)"); 
 		}
 		
 		final List<VncCustomTypeFieldDef> fieldDefs = new ArrayList<>();
@@ -549,18 +549,26 @@ public class DefTypeForm {
 	}
 
 	private static String createBuildTypeFn(final String qualifiedTypeName, final int builderNumArgs) {
-		// Function args: [x0, x1, x2, ...]
-		final StringBuilder args = new StringBuilder();
-		args.append("x0");
-		for(int ii=1; ii<builderNumArgs; ii++) {
-			args.append(" ").append("x").append(ii);
+		if (builderNumArgs == 0) {
+			return String.format(
+					"(defn %s. [] (.: :%s))", 
+					qualifiedTypeName, 
+					qualifiedTypeName);
 		}
-		return String.format(
-				"(defn %s. [%s] (.: :%s %s))", 
-				qualifiedTypeName, 
-				args,
-				qualifiedTypeName,
-				args);
+		else {
+			// Function args: [x0, x1, x2, ...]
+			final StringBuilder args = new StringBuilder();
+			args.append("x0");
+			for(int ii=1; ii<builderNumArgs; ii++) {
+				args.append(" ").append("x").append(ii);
+			}
+			return String.format(
+					"(defn %s. [%s] (.: :%s %s))", 
+					qualifiedTypeName, 
+					args,
+					qualifiedTypeName,
+					args);
+		}
 	}
 
 	private static String createCheckTypeFn(final String qualifiedTypeName) {

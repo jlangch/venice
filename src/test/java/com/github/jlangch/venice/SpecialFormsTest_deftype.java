@@ -44,6 +44,19 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
+	public void test_deftype_no_fields() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                     \n" +
+				"  (deftype :marker [])  \n" +
+				"  (def x (marker. ))    \n" +
+				"  (pr-str x))             ";
+
+		assertEquals("{:custom-type* :user/marker}", venice.eval(script));					
+	}
+	
+	@Test
 	public void test_deftype_subtype_1a() {
 		final Venice venice = new Venice();
 
