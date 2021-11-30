@@ -66,7 +66,10 @@ might not be available yet and can be delivered exactly once, from any thread,
 later. If another thread tries to dereference a promise before it's delivered, 
 it will block the calling thread. If the promise is already resolved (delivered), 
 no blocking occurs at all. A promise can only be delivered once and can never change 
-its value once set. A promise is a more versatile future.
+its value once set. 
+
+Promises also serve as a more versatile future for chaining and combining asynchronous
+tasks.
 
 ```clojure
 (do
