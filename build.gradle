@@ -72,14 +72,7 @@
 //       - Commit the 'README.md' change
 //
 //   [2] Publish to Maven
-//       - ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
-//                   -Dorg.gradle.internal.http.socketTimeout=60000
-//                   -Dorg.gradle.internal.http.connectionTimeout=60000
-//                   --warning-mode all
-//                   -Psigning.gnupg.keyName=[gpg-user-key-id]
-//                   -PsonatypeUsername=[name] 
-//                   -PsonatypePassword=[pw]
-//                   clean shadowJar publish
+//       - ./gradlew publish pgp-key sonatype-password
 //       - Log in to Sonatype OSSRH (https://oss.sonatype.org/)
 //       - Choose Staging Repositories
 //       - Find the release 'comgithubjlangch-*'
