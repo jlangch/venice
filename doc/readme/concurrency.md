@@ -68,8 +68,8 @@ it will block the calling thread. If the promise is already resolved (delivered)
 no blocking occurs at all. A promise can only be delivered once and can never change 
 its value once set. 
 
-Promises also serve as a more versatile future for chaining and combining asynchronous
-tasks.
+Promises are futures too. They come with additional features for chaining and 
+combining asynchronous tasks.
 
 ```clojure
 (do
@@ -83,6 +83,8 @@ tasks.
    (deref p))  ; => 123
 ```
 
+Using a promise like a future:
+
 ```clojure
 (do
    (defn task [] (sleep 500) 123)
@@ -95,8 +97,8 @@ tasks.
 Chaining asynchronous tasks:
 
 ```clojure
-(-> (promise (fn [] (sleep 20) 5))
-    (then-apply (fn [x] (sleep 20) (+ x 2)))
+(-> (promise (fn [] (sleep 50) 5))
+    (then-apply (fn [x] (sleep 30) (+ x 2)))
     (then-apply (fn [x] (sleep 20) (* x 3)))
     (deref))  ; => 21
 ```
@@ -104,9 +106,9 @@ Chaining asynchronous tasks:
 Combining the result of two asynchronous tasks:
 
 ```clojure
-(-> (promise (fn [] (sleep 20) 1000))
-    (then-apply (fn [x] (sleep 20) (+ x 50)))
-    (then-combine (-> (promise (fn [] (sleep 20) "eur"))
+(-> (promise #(do (sleep 50) 1000))
+    (then-apply #(do (sleep 20) (+ %1 50)))
+    (then-combine (-> (promise #(do (sleep 30) "eur"))
                       (then-apply str/upper-case))
                   #(str %1 " " %2))
     (deref))  ; => "1050 EUR"
@@ -115,9 +117,9 @@ Combining the result of two asynchronous tasks:
 Composing the result of two asynchronous tasks:
 
 ```clojure
-(-> (promise (fn [] (sleep 20) 1000))
-    (then-apply (fn [x] (sleep 20) (+ x 50)))
-    (then-compose (fn [o] (-> (promise (fn [] (sleep 20) "eur"))
+(-> (promise #(do (sleep 20) 1000))
+    (then-apply #(do (sleep 20) (+ %1 50)))
+    (then-compose (fn [o] (-> (promise #(do (sleep 20) "eur"))
                               (then-apply str/upper-case)
                               (then-apply #(str o " " %1)))))
     (deref)) ; => "1050 EUR"
@@ -130,7 +132,8 @@ Suppose we want to make coffee. This involves 4 steps:
 * 2  mix the hot water with the ground beans
 * 3  filter the coffee
 
-All these steps take time, so they run asynchronously and have to be orchestrated. 
+All these steps take varying time, so they run asynchronously and have to be 
+orchestrated. 
 
 ```clojure
 (do
