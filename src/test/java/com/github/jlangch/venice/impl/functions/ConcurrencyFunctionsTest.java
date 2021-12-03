@@ -1074,6 +1074,34 @@ public class ConcurrencyFunctionsTest {
 
 		assertEquals(999L, venice.eval(script));
 	}
+
+	@Test
+	public void test_promise_complete_on_timeout_6() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))             \n" +
+				"    (complete-on-timeout 888 30 :milliseconds)  \n" +
+				"    (then-apply #(do (sleep 200) (* % 3)))       \n" +
+				"    (complete-on-timeout 999 400 :milliseconds)  \n" +
+				"    (deref))";
+
+		assertEquals(2664L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_complete_on_timeout_7() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))             \n" +
+				"    (complete-on-timeout 888 100 :milliseconds)  \n" +
+				"    (then-apply #(do (sleep 200) (* % 3)))       \n" +
+				"    (complete-on-timeout 999 400 :milliseconds)  \n" +
+				"    (deref))";
+
+		assertEquals(300L, venice.eval(script));
+	}
 	
 	@Test
 	public void test_future_deref_1() {
