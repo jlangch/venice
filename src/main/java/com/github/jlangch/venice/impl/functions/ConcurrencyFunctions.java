@@ -2036,6 +2036,11 @@ public class ConcurrencyFunctions {
 						"(-> (promise (fn [] (sleep 500) \"The quick brown fox\"))             \n" +
 						"    (complete-on-timeout \"The fox did not jump\" 100 :milliseconds)  \n" +
 						"    (then-apply str/upper-case)                                       \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 50) 100))             \n" +
+						"    (complete-on-timeout 888 100 :milliseconds)  \n" +
+						"    (then-apply #(do (sleep 200) (* % 3)))       \n" +
+						"    (complete-on-timeout 999 220 :milliseconds)  \n" +
 						"    (deref))")
 					.seeAlso(
 						"promise", 
