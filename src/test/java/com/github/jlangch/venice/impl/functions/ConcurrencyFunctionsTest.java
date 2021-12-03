@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -945,14 +946,143 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_promise_or_timeout_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))  \n" +
+				"    (or-timeout 100 :milliseconds)    \n" +
+				"    (deref))";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_or_timeout_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 150) 100))  \n" +
+				"    (or-timeout 100 :milliseconds)     \n" +
+				"    (deref))";
+
+		assertThrows(TimeoutException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_or_timeout_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))         \n" +
+				"    (then-apply #(do (sleep 50) (* % 3)))    \n" +
+				"    (or-timeout 200 :milliseconds)           \n" +
+				"    (deref))";
+
+		assertEquals(300L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_or_timeout_4() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))          \n" +
+				"    (or-timeout 100 :milliseconds)            \n" +
+				"    (then-apply #(do (sleep 200) (* % 3)))    \n" +
+				"    (or-timeout 300 :milliseconds)            \n" +
+				"    (deref))";
+
+		assertEquals(300L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_or_timeout_5() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))          \n" +
+				"    (or-timeout 100 :milliseconds)            \n" +
+				"    (then-apply #(do (sleep 200) (* % 3)))    \n" +
+				"    (or-timeout 220 :milliseconds)   ; fires! \n" +
+				"    (deref))";
+
+		assertThrows(TimeoutException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_complete_on_timeout_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))               \n" +
+				"    (complete-on-timeout 999 100 :milliseconds)    \n" +
+				"    (deref))";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_complete_on_timeout_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 150) 100))               \n" +
+				"    (complete-on-timeout 999 100 :milliseconds)     \n" +
+				"    (deref))";
+
+		assertEquals(999L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_complete_on_timeout_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))              \n" +
+				"    (then-apply #(do (sleep 50) (* % 3)))         \n" +
+				"    (complete-on-timeout 999 200 :milliseconds)   \n" +
+				"    (deref))";
+
+		assertEquals(300L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_complete_on_timeout_4() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))               \n" +
+				"    (complete-on-timeout 888 100 :milliseconds)    \n" +
+				"    (then-apply #(do (sleep 200) (* % 3)))         \n" +
+				"    (complete-on-timeout 999 300 :milliseconds)    \n" +
+				"    (deref))";
+
+		assertEquals(300L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_complete_on_timeout_5() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(-> (promise (fn [] (sleep 50) 100))             \n" +
+				"    (complete-on-timeout 888 100 :milliseconds)  \n" +
+				"    (then-apply #(do (sleep 200) (* % 3)))       \n" +
+				"    (complete-on-timeout 999 220 :milliseconds)  \n" +
+				"    (deref))";
+
+		assertEquals(999L, venice.eval(script));
+	}
+	
+	@Test
 	public void test_future_deref_1() {
 		final Venice venice = new Venice();
 
 		final String script = 
 				"(do                                             " +
 				"   (let [f (future (fn [] {:a 100}))]           " +
-				"      @f)                                       " +
-				") ";
+				"      @f)) ";
 
 		assertEquals("{:a 100}", venice.eval("(str " + script + ")"));
 	}
