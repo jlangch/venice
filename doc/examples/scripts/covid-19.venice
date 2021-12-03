@@ -208,6 +208,28 @@
   (defn load-country-vaccinations! []
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18, "AUT" 58.97, ... }
+    ;;
+    ;; JSON
+    ;;     {
+    ;;       "country": "Switzerland",
+    ;;       "iso_code": "CHE",
+    ;;       "data": [
+    ;;         {
+    ;;           "date": "2021-12-01",
+    ;;           "total_vaccinations": 11983616,
+    ;;           "people_vaccinated": 5851536,
+    ;;           "people_fully_vaccinated": 5708838,
+    ;;           "total_boosters": 590055,
+    ;;           "daily_vaccinations_raw": 66275,
+    ;;           "daily_vaccinations": 43832,
+    ;;           "total_vaccinations_per_hundred": 137.5,
+    ;;           "people_vaccinated_per_hundred": 67.14,
+    ;;           "people_fully_vaccinated_per_hundred": 65.5,
+    ;;           "total_boosters_per_hundred": 6.77,
+    ;;           "daily_vaccinations_per_million": 5029,
+    ;;           "daily_people_vaccinated": 3223,
+    ;;           "daily_people_vaccinated_per_hundred": 0.037
+    ;;         }
     (let [caption  (str/expand "Loading country vaccination data:" 38 " ")
           format   #(str/format "%.1f%%" %)]
       (ansi/without-cursor
