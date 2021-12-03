@@ -1355,7 +1355,8 @@ public class ConcurrencyFunctions {
 						"done?", "cancel", "cancelled?",
 						"all-of", "any-of",
 						"then-accept", "then-accept-both", "then-apply", "then-combine", 
-						"then-compose", "when-complete", "accept-either", "apply-to-either")
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout", "timeout-after")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {
@@ -1512,7 +1513,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept-both", "then-apply", "then-combine", 
-						"then-compose", "when-complete", "accept-either", "apply-to-either")
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1556,7 +1558,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept", "then-accept-both", "then-combine", 
-						"then-compose", "when-complete", "accept-either", "apply-to-either")
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1603,7 +1606,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept", "then-accept-both", "then-apply",
-						"then-compose", "when-complete", "accept-either", "apply-to-either")
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1658,7 +1662,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
-						"when-complete", "accept-either", "apply-to-either")
+						"when-complete", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1709,7 +1714,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
-						"then-compose", "accept-either", "apply-to-either")
+						"then-compose", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1760,7 +1766,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
-						"then-compose", "when-complete", "apply-to-either")
+						"then-compose", "when-complete", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1813,7 +1820,8 @@ public class ConcurrencyFunctions {
 						"    (deref))")
 					.seeAlso(
 						"promise", "then-accept", "then-accept-both", "then-apply", "then-combine", 
-						"then-compose", "when-complete", "accept-either")
+						"then-compose", "when-complete", "accept-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1865,7 +1873,9 @@ public class ConcurrencyFunctions {
 						"                      (fn [u v] (println (pr-str (str u \" \" v)))))            \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+							"promise", "then-accept", "then-apply", "apply-to-either", "then-combine", 
+							"then-compose", "when-complete", "accept-either",
+							"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			@SuppressWarnings("unchecked")
@@ -1928,7 +1938,10 @@ public class ConcurrencyFunctions {
 						"                     identity)                              \n" +
 						"    (deref))")				
 					.seeAlso(
-						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+						"promise", 
+						"then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"or-timeout", "complete-on-timeout")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -1969,7 +1982,10 @@ public class ConcurrencyFunctions {
 						"    (or-timeout 200 :milliseconds)                          \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+						"promise", 
+						"then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"complete-on-timeout")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {
@@ -2022,7 +2038,10 @@ public class ConcurrencyFunctions {
 						"    (then-apply str/upper-case)                                       \n" +
 						"    (deref))")
 					.seeAlso(
-						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+						"promise", 
+						"then-accept", "then-accept-both", "then-apply", "then-combine", 
+						"then-compose", "when-complete", "accept-either", "apply-to-either",
+						"or-timeout")
 					.build()
 		) {	
 			public VncVal apply(final VncList args) {

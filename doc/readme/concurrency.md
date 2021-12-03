@@ -37,6 +37,8 @@ The value held by an atom is changed with the `swap!` method.
 
 ## Futures and Promises
 
+### Futures
+
 A future takes a function and yields a future object that will invoke the function 
 in another thread, and will cache the result and return it on all subsequent calls 
 to deref. If the computation has not yet finished, calls to deref will block, 
@@ -60,6 +62,8 @@ if the computation is not finished within the timeout time.
    (deref (future task) 100 :timeout))
 ```
 
+
+### Promises
 
 A promise is a thread-safe object that encapsulates an immutable value. This value 
 might not be available yet and can be delivered exactly once, from any thread, 
@@ -172,6 +176,23 @@ orchestrated.
       (then-apply #(filter-coffee %1))                     ;; 3
       (deref)))
 ```
+
+
+Timeouts:
+
+```clojure
+(-> (promise (fn [] (sleep 100) "The quick brown fox..."))
+    (or-timeout 300 :milliseconds)  ; throws a TimeoutException
+    (then-apply str/upper-case)
+    (deref))
+```
+
+```clojure
+(-> (promise (fn [] (sleep 500) "The quick brown fox..."))
+    (complete-on-timeout "The fox did not jump" 300 :milliseconds)
+    (deref))
+```
+
 
 
 ## Delays
