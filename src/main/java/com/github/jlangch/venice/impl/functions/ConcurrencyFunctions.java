@@ -35,6 +35,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
@@ -158,8 +159,7 @@ public class ConcurrencyFunctions {
 								final VncVal v = future.get(timeout, TimeUnit.MILLISECONDS);
 								return v == null ? Nil : v;
 							}
-						}
-						
+						}					
 						catch(TimeoutException ex) {
 							return args.size() == 3 ? args.third() : Nil;
 						}
@@ -168,6 +168,14 @@ public class ConcurrencyFunctions {
 								// just unwrap SecurityException and VncException
 								if (ex.getCause() instanceof SecurityException) {
 									throw (SecurityException)ex.getCause();
+								}
+								else if (ex.getCause() instanceof TimeoutException) {
+									if (args.size() == 3) {
+										return args.third();
+									}
+									else {
+										throw new com.github.jlangch.venice.TimeoutException(ex.getCause());
+									}
 								}
 								else if (ex.getCause() instanceof VncException) {
 									throw (VncException)ex.getCause();
@@ -1893,7 +1901,160 @@ public class ConcurrencyFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
+	public static VncFunction timeout_after = 
+		new VncFunction(
+				"timeout-after", 
+				VncFunction
+					.meta()
+					.arglists("(timeout-after p time time-unit)")
+					.doc(
+						"Returns a promise that timouts afer the specified time. The promise " +
+						"throws a TimeoutException.")
+					.examples(
+						"(-> (promise (fn [] (sleep 100) \"The quick brown fox\"))   \n" +
+						"    (accept-either (timeout-after 500 :milliseconds)        \n" +
+						"                   (fn [v] (println (pr-str v))))           \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 1000) \"The quick brown fox\"))  \n" +
+						"    (accept-either (timeout-after 500 :milliseconds)        \n" +
+						"                   (fn [v] (println (pr-str v))))           \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 1000) \"The quick brown fox\"))  \n" +
+						"    (accept-either (timeout-after 500 :milliseconds)        \n" +
+						"                   (fn [v] (println (pr-str v))))           \n" +
+						"    (deref 2000 :timeout))",
+						"(-> (promise (fn [] (sleep 200) \"The quick brown fox\"))   \n" +
+						"    (apply-to-either (timeout-after 100 :milliseconds)      \n" +
+						"                     identity)                              \n" +
+						"    (deref))")				
+					.seeAlso(
+						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final VncLong time = Coerce.toVncLong(args.first());
+				final VncKeyword unit = Coerce.toVncKeyword(args.second());
+
+				return  new VncJavaObject(
+								timeoutAfter(
+									time.getValue(), 
+									ScheduleFunctions.toTimeUnit(unit)));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction or_timeout = 
+		new VncFunction(
+				"or-timeout", 
+				VncFunction
+					.meta()
+					.arglists("(or-timeout p time time-unit)")
+					.doc(
+						"Returns a promise that timouts afer the specified time. The promise " +
+						"throws a TimeoutException.")
+					.examples(
+						"(-> (promise (fn [] (sleep 100) \"The quick brown fox\"))   \n" +
+						"    (or-timeout 500 :milliseconds)                          \n" +
+						"    (then-apply str/upper-case)                             \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 300) \"The quick brown fox\"))   \n" +
+						"    (or-timeout 200 :milliseconds)                          \n" +
+						"    (then-apply str/upper-case)                             \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 300) \"The quick brown fox\"))   \n" +
+						"    (then-apply str/upper-case)                             \n" +
+						"    (or-timeout 200 :milliseconds)                          \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 3);
+
+				@SuppressWarnings("unchecked")
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+														args.first(), 
+														CompletableFuture.class);
+
+				final VncLong time = Coerce.toVncLong(args.second());
+				final VncKeyword unit = Coerce.toVncKeyword(args.third());
+
+				final CompletableFuture<VncVal> cf2 = timeoutAfter(
+															time.getValue(), 
+															ScheduleFunctions.toTimeUnit(unit));
+
+				final VncFunction fn = CoreFunctions.identity;
+
+				final CompletableFuture<VncVal> cf3 = cf.applyToEitherAsync(
+															cf2,
+															(x) -> fn.applyOf(x), 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf3);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction complete_on_timeout = 
+		new VncFunction(
+				"complete-on-timeout", 
+				VncFunction
+					.meta()
+					.arglists("(complete-on-timeout p timeout-val time time-unit)")
+					.doc(
+						"Returns a promise that returns the timeout-val afer the specified time. If " +
+						"the passed promise p completes before the timeout, its completion value " +
+						"will be returned with the promise.")
+					.examples(
+						"(-> (promise (fn [] (sleep 100) \"The quick brown fox\"))             \n" +
+						"    (complete-on-timeout \"The fox did not jump\" 500 :milliseconds)  \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 500) \"The quick brown fox\"))             \n" +
+						"    (complete-on-timeout \"The fox did not jump\" 100 :milliseconds)  \n" +
+						"    (deref))",
+						"(-> (promise (fn [] (sleep 500) \"The quick brown fox\"))             \n" +
+						"    (complete-on-timeout \"The fox did not jump\" 100 :milliseconds)  \n" +
+						"    (then-apply str/upper-case)                                       \n" +
+						"    (deref))")
+					.seeAlso(
+						"promise", "then-apply", "then-combine", "then-compose", "accept-either")
+					.build()
+		) {	
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 4);
+
+				@SuppressWarnings("unchecked")
+				final CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)Coerce.toVncJavaObject(
+														args.first(), 
+														CompletableFuture.class);
+
+				final VncVal timeoutVal = args.second();
+				final VncLong time = Coerce.toVncLong(args.third());
+				final VncKeyword unit = Coerce.toVncKeyword(args.fourth());
+
+				final CompletableFuture<VncVal> cf2 = timeoutAfter(
+															timeoutVal,
+															time.getValue(), 
+															ScheduleFunctions.toTimeUnit(unit));
+
+				final VncFunction fn = CoreFunctions.identity;
+
+				final CompletableFuture<VncVal> cf3 = cf.applyToEitherAsync(
+															cf2,
+															(x) -> fn.applyOf(x), 
+															mngdExecutor.getExecutor());
+				
+				return new VncJavaObject(cf3);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 
 	///////////////////////////////////////////////////////////////////////////
 	// Futures
@@ -2752,6 +2913,26 @@ public class ConcurrencyFunctions {
 		private final Consumer<VncException> failureFn;
 	};
 
+	public static <T> CompletableFuture<T> timeoutAfter(final long timeout, final TimeUnit unit) {
+		final ScheduledExecutorService delayer = ScheduleFunctions.getScheduledExecutorService();
+				
+	    final CompletableFuture<T> result = new CompletableFuture<T>();
+	    
+	    delayer.schedule(() -> result.completeExceptionally(new TimeoutException()), timeout, unit);
+	   
+	    return result;
+	}
+
+	public static <T> CompletableFuture<T> timeoutAfter(final T timeoutVal, final long timeout, final TimeUnit unit) {
+		final ScheduledExecutorService delayer = ScheduleFunctions.getScheduledExecutorService();
+				
+	    final CompletableFuture<T> result = new CompletableFuture<T>();
+	    
+	    delayer.schedule(() -> result.complete(timeoutVal), timeout, unit);
+	   
+	    return result;
+	}
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -2804,6 +2985,9 @@ public class ConcurrencyFunctions {
 					.add(accept_either)
 					.add(apply_to_either)
 					.add(then_accept_both)
+					.add(timeout_after)
+					.add(or_timeout)
+					.add(complete_on_timeout)
 					.add(all_of)
 					.add(any_of)
 					

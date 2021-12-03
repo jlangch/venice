@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -79,8 +80,7 @@ public class ScheduleFunctions {
 														new CallFrame(fn)});				
 				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 				
-				final ScheduledFuture<VncVal> future = mngdExecutor
-														.getExecutor()
+				final ScheduledFuture<VncVal> future = getScheduledExecutorService()
 														.schedule(
 															taskWrapper, 
 															delay.getValue(),
@@ -133,8 +133,7 @@ public class ScheduleFunctions {
 														new CallFrame(fn)});				
 				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 				
-				final ScheduledFuture<?> future = mngdExecutor
-													.getExecutor()
+				final ScheduledFuture<?> future = getScheduledExecutorService()
 													.scheduleAtFixedRate(
 														taskWrapper, 
 														delay.getValue(),
@@ -147,10 +146,14 @@ public class ScheduleFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	
-	
-	private static TimeUnit toTimeUnit(final VncKeyword unit) {
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Utils
+	///////////////////////////////////////////////////////////////////////////
+
+	public static TimeUnit toTimeUnit(final VncKeyword unit) {
 		switch(unit.getValue()) {
+			case "millis": return TimeUnit.MILLISECONDS;
 			case "milliseconds": return TimeUnit.MILLISECONDS;
 			case "seconds": return TimeUnit.SECONDS;
 			case "minutes":  return TimeUnit.MINUTES;
@@ -160,14 +163,14 @@ public class ScheduleFunctions {
 		}
 	}
 
-	///////////////////////////////////////////////////////////////////////////
-	// Utils
-	///////////////////////////////////////////////////////////////////////////
-
 	public static void shutdown() {
 		mngdExecutor.shutdown();
 	}
 
+	public static ScheduledExecutorService getScheduledExecutorService() {
+		return mngdExecutor.getExecutor();
+	}
+	
 
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions

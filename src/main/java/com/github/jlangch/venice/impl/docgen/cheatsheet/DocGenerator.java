@@ -1476,6 +1476,9 @@ public class DocGenerator {
 		promises.addItem(getDocItem("apply-to-either"));
 		promises.addItem(getDocItem("all-of"));
 		promises.addItem(getDocItem("any-of"));
+		promises.addItem(getDocItem("or-timeout", true, true));
+		promises.addItem(getDocItem("complete-on-timeout", true, true));
+		promises.addItem(getDocItem("timeout-after", true, true));
 		promises.addItem(getDocItem("done?"));
 		promises.addItem(getDocItem("cancel"));
 		promises.addItem(getDocItem("cancelled?"));
