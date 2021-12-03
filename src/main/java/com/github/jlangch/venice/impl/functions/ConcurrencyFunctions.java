@@ -1966,8 +1966,8 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(or-timeout p time time-unit)")
 					.doc(
-						"Returns a promise that timouts afer the specified time. The promise " +
-						"throws a TimeoutException.")
+						"Exceptionally completes the promise with a TimeoutException " +
+						"if not otherwise completed before the given timeout.")
 					.examples(
 						"(-> (promise (fn [] (sleep 100) \"The quick brown fox\"))   \n" +
 						"    (or-timeout 500 :milliseconds)                          \n" +
@@ -2021,11 +2021,10 @@ public class ConcurrencyFunctions {
 				"complete-on-timeout", 
 				VncFunction
 					.meta()
-					.arglists("(complete-on-timeout p timeout-val time time-unit)")
+					.arglists("(complete-on-timeout p value time time-unit)")
 					.doc(
-						"Returns a promise that returns the timeout-val afer the specified time. If " +
-						"the passed promise p completes before the timeout, its completion value " +
-						"will be returned with the promise.")
+						"Completes the promise with the given value if not otherwise " +
+						"completed before the given timeout.")
 					.examples(
 						"(-> (promise (fn [] (sleep 100) \"The quick brown fox\"))             \n" +
 						"    (complete-on-timeout \"The fox did not jump\" 500 :milliseconds)  \n" +
