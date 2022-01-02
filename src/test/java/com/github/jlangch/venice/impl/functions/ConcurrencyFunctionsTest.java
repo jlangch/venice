@@ -5,7 +5,7 @@
  *      \/ \___|_| |_|_|\___\___|
  *
  *
- * Copyright 2017-2021 Venice
+ * Copyright 2017-2022 Venice
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -987,6 +987,20 @@ public class ConcurrencyFunctionsTest {
 		final Venice venice = new Venice();
 
 		final String script = 
+				"(-> (promise (fn [] (sleep 100) 100))         \n" +
+				"    (or-timeout 150 :milliseconds)            \n" +
+				"    (then-apply #(do (sleep 100) (* % 3)))    \n" +
+				"    (or-timeout 150 :milliseconds)            \n" +
+				"    (deref))";
+
+		assertThrows(TimeoutException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_or_timeout_5() {
+		final Venice venice = new Venice();
+
+		final String script = 
 				"(-> (promise (fn [] (sleep 50) 100))          \n" +
 				"    (or-timeout 100 :milliseconds)            \n" +
 				"    (then-apply #(do (sleep 200) (* % 3)))    \n" +
@@ -997,7 +1011,7 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
-	public void test_promise_or_timeout_5() {
+	public void test_promise_or_timeout_6() {
 		final Venice venice = new Venice();
 
 		final String script = 
