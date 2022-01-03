@@ -72,7 +72,14 @@
 //       - Commit the 'README.md' change
 //
 //   [2] Publish to Maven
-//       - ./gradlew publish pgp-key sonatype-password
+//       - ./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true
+//                   -Dorg.gradle.internal.http.socketTimeout=60000
+//                   -Dorg.gradle.internal.http.connectionTimeout=60000
+//                   --warning-mode all
+//                   -Psigning.gnupg.keyName=[gpg-user-key-id]
+//                   -PsonatypeUsername=[name] 
+//                   -PsonatypePassword=[pw]
+//                   clean shadowJar publish
 //       - Log in to Sonatype OSSRH (https://oss.sonatype.org/)
 //       - Choose Staging Repositories
 //       - Find the release 'comgithubjlangch-*'
@@ -136,10 +143,10 @@ plugins {
 
 /*
     // https://github.com/kordamp/jdeps-gradle-plugin
-    id 'org.kordamp.gradle.jdeps' version '0.12.0'
+    id 'org.kordamp.gradle.jdeps' version '0.16.0'
 
     // https://github.com/kordamp/jdeprscan-gradle-plugin
-    id 'org.kordamp.gradle.jdeprscan' version '0.9.0'
+    id 'org.kordamp.gradle.jdeprscan' version '0.10.0'
 */
 }
 

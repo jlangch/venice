@@ -1729,7 +1729,7 @@ public class CoreFunctions {
 					.arglists("(mutable-list & items)")
 					.doc(
 						"Creates a new mutable list containing the items.\n\n" +
-						"The list backed by `java.util.ArrayList` and is not thread-safe.")
+						"The list is backed by `java.util.ArrayList` and is not thread-safe.")
 					.examples(
 						"(mutable-list)", 
 						"(mutable-list 1 2 3)", 
@@ -1775,7 +1775,7 @@ public class CoreFunctions {
 					.arglists("(vector & items)")
 					.doc(
 						"Creates a new mutable vector containing the items.\n\n" +
-						"The list backed by `java.util.ArrayList` and is not thread-safe.")
+						"The list is backed by `java.util.ArrayList` and is not thread-safe.")
 					.examples(
 						"(vector)",
 						"(vector 1 2 3)",
