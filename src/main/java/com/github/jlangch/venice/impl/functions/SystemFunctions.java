@@ -479,6 +479,34 @@ public class SystemFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction user_name =
+		new VncFunction(
+				"user-name",
+				VncFunction
+					.meta()
+					.arglists("(user-name)")
+					.doc("Returns the logged-in's user name.")
+					.examples("(user-name)")
+					.seeAlso(
+						"io/user-dir", 
+						"io/user-home-dir")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+
+				try {
+					return new VncString(
+							System.getProperty("user.name"));
+				}
+				catch(Exception ex) {
+					throw new VncException("(host-name) failed", ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction ip_private_Q =
 		new VncFunction(
 				"ip-private?",
@@ -1175,6 +1203,7 @@ public class SystemFunctions {
 					.add(pid)
 					.add(host_name)
 					.add(host_address)
+					.add(user_name)
 					.add(ip_private_Q)
 					.add(gc)
 					.add(cpus)

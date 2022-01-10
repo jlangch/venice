@@ -1244,6 +1244,7 @@ public class DocGenerator {
 
 		final DocSection util = new DocSection("Util", "system.util");
 		all.addSection(util);
+		host.addItem(getDocItem("user-name"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("shutdown-hook"));
