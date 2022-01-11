@@ -487,9 +487,7 @@ public class SystemFunctions {
 					.arglists("(user-name)")
 					.doc("Returns the logged-in's user name.")
 					.examples("(user-name)")
-					.seeAlso(
-						"io/user-dir", 
-						"io/user-home-dir")
+					.seeAlso("io/user-home-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -500,7 +498,7 @@ public class SystemFunctions {
 							System.getProperty("user.name"));
 				}
 				catch(Exception ex) {
-					throw new VncException("(host-name) failed", ex);
+					throw new VncException("(user-name) failed", ex);
 				}
 			}
 

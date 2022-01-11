@@ -1550,7 +1550,7 @@ public class IOFunctions {
 					.meta()
 					.arglists("(io/user-home-dir)")
 					.doc("Returns the user's home dir as a `java.io.File`.")
-					.seeAlso("io/user-dir", "io/tmp-dir")
+					.seeAlso("user-name", "io/user-dir", "io/tmp-dir")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
