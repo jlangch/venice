@@ -270,7 +270,8 @@ public class DocGenerator {
 				getReplSection(),
 				getPdfSection(),
 				getIOZipSection(),
-				getAppSection());
+				getAppSection(),
+				getCsvSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -285,7 +286,6 @@ public class DocGenerator {
 				getIOSection(),
 				getIOFileSection(),
 				getJsonSection(),
-				getCsvSection(),
 				getCidrSection());
 	}
 
@@ -1242,9 +1242,13 @@ public class DocGenerator {
 		host.addItem(getDocItem("ip-private?"));
 		host.addItem(getDocItem("cpus"));
 
+		final DocSection user = new DocSection("User", "system.user");
+		all.addSection(user);
+		user.addItem(getDocItem("user-name"));
+		user.addItem(getDocItem("io/user-home-dir"));
+
 		final DocSection util = new DocSection("Util", "system.util");
 		all.addSection(util);
-		host.addItem(getDocItem("user-name"));
 		util.addItem(getDocItem("uuid"));
 		util.addItem(getDocItem("sleep"));
 		util.addItem(getDocItem("shutdown-hook"));
