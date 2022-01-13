@@ -131,7 +131,7 @@
   (def sample-days 7)
 
   ;; the start/end date for the cases
-  (def start-date (time/local-date 2021 6 1))
+  (def start-date (time/local-date 2021 10 1))
   (def end-date nil)
 
   ;; chart rendering
