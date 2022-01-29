@@ -9,7 +9,7 @@ and this project adheres to
 
 
 
-## [1.10.7] - 2022-01-xx
+## [1.10.7] - 2022-02-xx
 
 ### Added
 
