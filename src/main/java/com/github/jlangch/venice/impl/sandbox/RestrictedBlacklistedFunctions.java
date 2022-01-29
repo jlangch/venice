@@ -122,6 +122,7 @@ public class RestrictedBlacklistedFunctions {
 					"io/exists-dir?",
 					"io/exists-file?",
 					"io/file-size",
+					"io/file-in-stream",
 					"io/list-file-tree",
 					"io/list-files",
 					"io/list-files-glob",

@@ -40,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -2007,7 +2008,7 @@ public class IOFunctions {
 				"io/copy-stream",
 				VncFunction
 					.meta()
-					.arglists("(io/copy-strean in-stream out-stream)")
+					.arglists("(io/copy-stream in-stream out-stream)")
 					.doc(
 						"Copies the input stream to the output stream. Returns nil or throws a VncException. " +
 						"Input and output must be a `java.io.InputStream` and `java.io.OutputStream`.")
@@ -2181,6 +2182,94 @@ public class IOFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction io_file_in_stream =
+		new VncFunction(
+				"io/file-in-stream",
+				VncFunction
+					.meta()
+					.arglists("(io/file-in-stream f)")
+					.doc(
+						"Returns a `java.io.InputStream` for the file f.                       \n\n" +
+						"f may be a:                                                           \n\n" +
+						" * string file path, e.g: \"/temp/foo.json\"                          \n" +
+						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`                \n")
+					.seeAlso("io/slurp", "io/slurp-stream")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+				
+				sandboxFunctionCallValidation();
+
+				final VncVal arg = args.first();
+
+				if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
+					final File file = Types.isVncString(arg)
+										? new File(((VncString)arg).getValue())
+										:  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+					try {
+						validateReadableFile(file);						
+						
+						return new VncJavaObject(new FileInputStream(file));
+					}
+					catch (Exception ex) {
+						throw new VncException("Failed to create a a `java.io.InputStream` from the file " + file.getPath(), ex);
+					}
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'io/file-in-stream' does not allow %s as f",
+							Types.getType(args.first())));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_string_in_stream =
+		new VncFunction(
+				"io/string-in-stream",
+				VncFunction
+					.meta()
+					.arglists("(io/string-in-stream s & options)")
+					.doc(
+						"Returns a `java.io.InputStream` for the string s.                     \n\n" +
+						"Options:                                                              \n\n" +
+						"| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n")
+					.examples("(io/string-in-stream \"The quick brown fox jumped over the lazy dog\")")
+					.seeAlso("io/slurp-stream")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+				
+				sandboxFunctionCallValidation();
+
+				final VncString s = Coerce.toVncString(args.first());
+
+				final VncHashMap options = VncHashMap.ofAll(args.rest());
+				
+				final VncVal encVal = options.get(new VncKeyword("encoding"));
+				final String encoding = encoding(encVal);
+
+				try {
+					return new VncJavaObject(new ByteArrayInputStream(s.getValue().getBytes(encoding)));
+				}
+				catch (UnsupportedEncodingException ex) {
+					throw new VncException(
+							"Function 'io/string-in-stream' unsupported encoding '" + encoding + "'", 
+							ex);
+				}
+				catch (Exception ex) {
+					throw new VncException(
+							"Failed to create a :java.io.InputStream from a string", 
+							ex);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction io_uri_stream =
 			new VncFunction(
 					"io/uri-stream",
@@ -2191,6 +2280,7 @@ public class IOFunctions {
 						.examples(
 							"(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" + 
 							"    (io/slurp-stream :binary false :encoding :utf-8))             ")
+						.seeAlso("io/slurp-stream")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -2222,6 +2312,7 @@ public class IOFunctions {
 					.doc("Returns a `java.io.InputStream` from a bytebuf.")
 					.examples(
 						"(io/bytebuf-in-stream (bytebuf [97 98 99]))")
+					.seeAlso("io/slurp-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2888,6 +2979,8 @@ public class IOFunctions {
 					.add(io_slurp_stream)
 					.add(io_spit_stream)
 					.add(io_uri_stream)
+					.add(io_file_in_stream)
+					.add(io_string_in_stream)
 					.add(io_bytebuf_in_stream)
 					.add(io_wrap_os_with_buffered_writer)
 					.add(io_wrap_os_with_print_writer)

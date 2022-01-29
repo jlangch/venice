@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- function `user-name`
+- functions `user-name`, `io/file-in-stream`, `io/string-in-stream`
 
 
 

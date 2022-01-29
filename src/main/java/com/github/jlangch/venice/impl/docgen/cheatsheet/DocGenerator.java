@@ -1591,6 +1591,8 @@ public class DocGenerator {
 		stream.addItem(getDocItem("io/slurp-stream"));
 		stream.addItem(getDocItem("io/spit-stream"));
 		stream.addItem(getDocItem("io/uri-stream", false));
+		stream.addItem(getDocItem("io/file-in-stream", false));
+		stream.addItem(getDocItem("io/string-in-stream", false));
 		stream.addItem(getDocItem("io/bytebuf-in-stream", false));
 		stream.addItem(getDocItem("io/wrap-os-with-buffered-writer"));
 		stream.addItem(getDocItem("io/wrap-os-with-print-writer"));
