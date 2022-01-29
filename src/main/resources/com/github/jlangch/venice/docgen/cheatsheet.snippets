@@ -39,9 +39,9 @@ public class Example {
 
       // returns a string: "Point=(x: 100.0, y: 200.0)"
       String ret = (String)venice.eval(
-                            "(let [x (:x point) \n" +
-                            "      y (:y point)] \n" +
-                            "(str \"Point=(x: \" x \", y: \" y \")\")", 
+                            "(let [x (:x point)                         \n" +
+                            "      y (:y point)]                        \n" +
+                            "  (str \"Point=(x: \" x \", y: \" y \")\")   ", 
                             Parameters.of("point", new Point(100, 200))));
 
       // returns a java.awt.Point: [x=110,y=220]
