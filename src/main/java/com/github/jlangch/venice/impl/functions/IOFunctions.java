@@ -2070,7 +2070,10 @@ public class IOFunctions {
 						"        (try-with [is (. :FileInputStream :new file)] \n" +
 						"           (io/slurp-stream is :binary false))) \n" +
 						")")
-					.seeAlso("io/slurp", "io/slurp-lines", "io/spit")
+					.seeAlso(
+						"io/slurp", "io/slurp-lines", "io/spit", 
+						"io/uri-stream", 
+						"io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2193,7 +2196,7 @@ public class IOFunctions {
 						"f may be a:                                                           \n\n" +
 						" * string file path, e.g: \"/temp/foo.json\"                          \n" +
 						" * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`                \n")
-					.seeAlso("io/slurp", "io/slurp-stream")
+					.seeAlso("io/slurp", "io/slurp-stream", "io/string-in-stream", "io/bytebuf-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2237,7 +2240,7 @@ public class IOFunctions {
 						"Options:                                                              \n\n" +
 						"| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n")
 					.examples("(io/string-in-stream \"The quick brown fox jumped over the lazy dog\")")
-					.seeAlso("io/slurp-stream")
+					.seeAlso("io/slurp-stream", "io/file-in-stream", "io/bytebuf-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2270,49 +2273,16 @@ public class IOFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction io_uri_stream =
-			new VncFunction(
-					"io/uri-stream",
-					VncFunction
-						.meta()
-						.arglists("(io/uri-stream uri)")
-						.doc("Returns a `java.io.InputStream` from the uri.")
-						.examples(
-							"(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" + 
-							"    (io/slurp-stream :binary false :encoding :utf-8))             ")
-						.seeAlso("io/slurp-stream")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					ArityExceptions.assertMinArity(this, args, 1);
-					
-					sandboxFunctionCallValidation();
-
-					final String uri = Coerce.toVncString(args.first()).getValue();
-
-					try {
-						return new VncJavaObject(new URL(uri).openStream());
-					}
-					catch (Exception ex) {
-						throw new VncException(
-								"Failed to create a :java.io.InputStream from an URI", 
-								ex);
-					}
-				}
-
-				private static final long serialVersionUID = -1848883965231344442L;
-			};
-
 	public static VncFunction io_bytebuf_in_stream =
 		new VncFunction(
 				"io/bytebuf-in-stream",
 				VncFunction
 					.meta()
-					.arglists("(io/bytebuf-in-stream)")
+					.arglists("(io/bytebuf-in-stream buf)")
 					.doc("Returns a `java.io.InputStream` from a bytebuf.")
 					.examples(
 						"(io/bytebuf-in-stream (bytebuf [97 98 99]))")
-					.seeAlso("io/slurp-stream")
+					.seeAlso("io/slurp-stream", "io/file-in-stream", "io/string-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2326,6 +2296,39 @@ public class IOFunctions {
 				catch(Exception ex) {
 					throw new VncException(String.format(
 							"Failed to create a :java.io.InputStream from a bytebuf"));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction io_uri_stream =
+		new VncFunction(
+				"io/uri-stream",
+				VncFunction
+					.meta()
+					.arglists("(io/uri-stream uri)")
+					.doc("Returns a `java.io.InputStream` from the uri.")
+					.examples(
+						"(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" + 
+						"    (io/slurp-stream :binary false :encoding :utf-8))             ")
+					.seeAlso("io/slurp-stream")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+				
+				sandboxFunctionCallValidation();
+
+				final String uri = Coerce.toVncString(args.first()).getValue();
+
+				try {
+					return new VncJavaObject(new URL(uri).openStream());
+				}
+				catch (Exception ex) {
+					throw new VncException(
+							"Failed to create a :java.io.InputStream from an URI", 
+							ex);
 				}
 			}
 
@@ -2690,7 +2693,8 @@ public class IOFunctions {
 					.doc(
 						"Loads a classpath resource. Returns a bytebuf")
 					.examples(
-						"(io/load-classpath-resource \"org/foo/images/foo.png\")")
+						"(io/load-classpath-resource \"com/github/jlangch/venice/images/venice.png\")")
+					.seeAlso("io/classpath-resource?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2743,7 +2747,8 @@ public class IOFunctions {
 					.doc(
 						"Returns true if the classpath resource exists otherwise false.")
 					.examples(
-						"(io/classpath-resource? \"org/foo/images/foo.png\")")
+						"(io/classpath-resource? \"com/github/jlangch/venice/images/venice.png\")")
+					.seeAlso("io/load-classpath-resource")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

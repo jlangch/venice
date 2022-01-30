@@ -73,12 +73,6 @@
           properties))
 
 
-(defn- read-json-file [file reader-opts]
-  (-> file
-      (io/slurp :binary false)
-      (read-json reader-opts)))
-
-
 (defn
   ^{ :arglists '(
           "(resource path)",
@@ -90,13 +84,19 @@
           E.g.: `:key-fn keyword` will convert all config keys to keywords
           """
      :examples '(
-          """(config/resource "org/foo/app/config-defaults.json" :key-fn keyword)""")
+          """
+          (config/resource "com/github/jlangch/venice/examples/database-config.json"
+                           :key-fn keyword)
+          """)
      :see-also '(
           "config/file" "config/build" "json/read-str") }
 
   resource [path & reader-opts]
 
-  (read-json-file (io/load-classpath-resource path) reader-opts))
+  (-> (io/load-classpath-resource path)
+      (io/bytebuf-in-stream)
+      (io/slurp :binary false)
+      (read-json reader-opts)))
 
 
 (defn
@@ -119,13 +119,30 @@
           E.g.: `:key-fn keyword` will convert all config keys to keywords
           """
      :examples '(
-          """(config/file "/foo/app/config-production.json" :key-fn keyword)""")
+          """(config/file "/foo/app/config-production.json" :key-fn keyword)"""
+          """
+          (do
+            (def cfg-json \"\"\"
+                          { "db" : {
+                              "classname" : "com.mysql.jdbc.Driver",
+                              "subprotocol" : "mysql",
+                              "subname" : "//127.0.0.1:3306/test",
+                              "user" : "test",
+                              "password" : "123"
+                            }
+                          }
+                          \"\"\")
+            (-> (io/buffered-reader cfg-json)
+                (config/file :key-fn keyword)))
+          """)
      :see-also '(
           "config/resource" "config/build" "json/read-str") }
 
   file [f & reader-opts]
 
-  (read-json-file f reader-opts))
+  (-> f
+      (io/slurp :binary false)
+      (read-json reader-opts)))
 
 
 (defn
@@ -134,6 +151,8 @@
           Reads configuration part from environment variables, filtered by a
           prefix.
           """
+     :examples '(
+          """(config/env "DATABASE_")""")
      :see-also '(
           "config/env-var" "config/build") }
 
@@ -147,6 +166,8 @@
      :doc """
           Reads configuration part from system properties, filtered by a prefix.
           """
+     :examples '(
+          """(config/properties "DATABASE_")""")
      :see-also '(
           "config/property-var" "config/build") }
 
@@ -211,7 +232,7 @@
           Merges given configuration parts.
 
           Configuration parts:
-          
+
             * JSON classpath resource file
             * JSON file
             * Environment variables
@@ -223,7 +244,8 @@
             (config/resource "config-defaults.json" :key-fn keyword)
             (config/file "./config-local.json" :key-fn keyword)
             (config/env-var "SERVER_PORT" [:http :port])
-            (config/env-var "MASTER_PWD" [:app :master-pwd]))
+            (config/env-var "SERVER_THREADS" [:http :threads])
+            (config/property-var "MASTER_PWD" [:app :master-pwd]))
           """)
      :see-also '(
           "config/file"     "config/resource"

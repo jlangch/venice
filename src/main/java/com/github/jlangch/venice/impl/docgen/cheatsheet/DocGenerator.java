@@ -1582,8 +1582,8 @@ public class DocGenerator {
 
 		final DocSection classpath = new DocSection("classpath", "io.classpath");
 		all.addSection(classpath);
-		classpath.addItem(getDocItem("io/load-classpath-resource", false));
-		classpath.addItem(getDocItem("io/classpath-resource?", false));
+		classpath.addItem(getDocItem("io/load-classpath-resource"));
+		classpath.addItem(getDocItem("io/classpath-resource?"));
 		
 		final DocSection stream = new DocSection("stream", "io.stream");
 		all.addSection(stream);
@@ -2491,7 +2491,7 @@ public class DocGenerator {
 		final DocSection file = new DocSection("File", id());
 		all.addSection(file);
 		file.addItem(getDocItem("config/file", false));
-		file.addItem(getDocItem("config/resource", false));
+		file.addItem(getDocItem("config/resource", true));
 		
 		final DocSection env = new DocSection("Env", id());
 		all.addSection(env);
