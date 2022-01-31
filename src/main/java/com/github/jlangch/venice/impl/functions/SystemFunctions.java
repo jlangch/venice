@@ -859,7 +859,7 @@ public class SystemFunctions {
 						"(system-prop name default-val)")
 					.doc(
 						"Returns the system property with the given name. Returns " +
-						"the default-val if the property does not exist or it's value is nil.\n" +
+						"the default-val if the property does not exist or it's value is nil.\n\n" +
 						"Without arguments returns all system properties authorized by the " +
 						"configured sandbox.")
 					.examples(
@@ -913,7 +913,7 @@ public class SystemFunctions {
 						"(system-env name default-val)")
 					.doc(
 						"Returns the system env variable with the given name. Returns " +
-						"the default-val if the variable does not exist or it's value is nil.\n" +
+						"the default-val if the variable does not exist or it's value is nil.\n\n" +
 						"Without arguments returns all system env variables authorized by the " +
 						"configured sandbox.")
 					.examples(
