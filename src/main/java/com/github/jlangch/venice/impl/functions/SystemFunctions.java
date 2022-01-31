@@ -854,11 +854,14 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists(
+						"(system-prop)",
 						"(system-prop name)",
 						"(system-prop name default-val)")
 					.doc(
 						"Returns the system property with the given name. Returns " +
-						"the default-val if the property does not exist or it's value is nil")
+						"the default-val if the property does not exist or it's value is nil.\n" +
+						"Without arguments returns all system properties authorized by the " +
+						"configured sandbox.")
 					.examples(
 						"(system-prop :os.name)",
 						"(system-prop :foo.org \"abc\")",
@@ -905,11 +908,14 @@ public class SystemFunctions {
 				VncFunction
 					.meta()
 					.arglists(
+						"(system-env)",
 						"(system-env name)",
 						"(system-env name default-val)")
 					.doc(
 						"Returns the system env variable with the given name. Returns " +
-						"the default-val if the variable does not exist or it's value is nil")
+						"the default-val if the variable does not exist or it's value is nil.\n" +
+						"Without arguments returns all system env variables authorized by the " +
+						"configured sandbox.")
 					.examples(
 						"(system-env :SHELL)",
 						"(system-env :FOO \"test\")",
