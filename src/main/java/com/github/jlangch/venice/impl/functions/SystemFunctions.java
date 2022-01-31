@@ -34,7 +34,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -851,7 +853,9 @@ public class SystemFunctions {
 				"system-prop",
 				VncFunction
 					.meta()
-					.arglists("(system-prop name default-val)")
+					.arglists(
+						"(system-prop name)",
+						"(system-prop name default-val)")
 					.doc(
 						"Returns the system property with the given name. Returns " +
 						"the default-val if the property does not exist or it's value is nil")
@@ -863,16 +867,33 @@ public class SystemFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1, 2);
+				ArityExceptions.assertArity(this, args, 0, 1, 2);
 
-				final VncString key = Coerce.toVncString(
-										CoreFunctions.name.apply(
-											VncList.of(args.first())));
-				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
-
-				final String val = ThreadContext.getInterceptor().onReadSystemProperty(key.getValue());
-
-				return val == null ? defaultVal : new VncString(val);
+				if (args.isEmpty()) {
+					final Set<String> names = System.getProperties().stringPropertyNames();
+					final Map<VncString,VncString> env = new HashMap<>();
+					for(String name : names) {
+						try {
+							// check sandbox, only use properties allowed by the sandbox!
+							final String val = ThreadContext.getInterceptor().onReadSystemProperty(name);
+							env.put(new VncString(name), new VncString(val));
+						}
+						catch(Exception ex) {
+							continue;
+						}
+					}
+					return new VncHashMap(env);
+				}
+				else {
+					final VncString key = Coerce.toVncString(
+											CoreFunctions.name.apply(
+												VncList.of(args.first())));
+					final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
+	
+					final String val = ThreadContext.getInterceptor().onReadSystemProperty(key.getValue());
+	
+					return val == null ? defaultVal : new VncString(val);
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -883,27 +904,47 @@ public class SystemFunctions {
 				"system-env",
 				VncFunction
 					.meta()
-					.arglists("(system-env name default-val)")
+					.arglists(
+						"(system-env name)",
+						"(system-env name default-val)")
 					.doc(
 						"Returns the system env variable with the given name. Returns " +
 						"the default-val if the variable does not exist or it's value is nil")
 					.examples(
 						"(system-env :SHELL)",
-						"(system-env :FOO \"test\")")
+						"(system-env :FOO \"test\")",
+						"(system-env \"SHELL\")")
 					.seeAlso("system-prop")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 1, 2);
+				ArityExceptions.assertArity(this, args, 0, 1, 2);
 
-				final VncString key = Coerce.toVncString(
-										CoreFunctions.name.apply(
-											VncList.of(args.first())));
-				final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
-
-				final String val = ThreadContext.getInterceptor().onReadSystemEnv(key.getValue());
-
-				return val == null ? defaultVal : new VncString(val);
+				if (args.isEmpty()) {
+					final Set<String> names = System.getenv().keySet();
+					final Map<VncString,VncString> env = new HashMap<>();
+					for(String name : names) {
+						try {
+							// check sandbox, only use env vars allowed by the sandbox!
+							final String val = ThreadContext.getInterceptor().onReadSystemEnv(name);
+							env.put(new VncString(name), new VncString(val));
+						}
+						catch(Exception ex) {
+							continue;
+						}
+					}
+					return new VncHashMap(env);
+				}
+				else {
+					final VncString key = Coerce.toVncString(
+											CoreFunctions.name.apply(
+												VncList.of(args.first())));
+					final VncVal defaultVal = args.size() == 2 ? args.second() : Nil;
+	
+					final String val = ThreadContext.getInterceptor().onReadSystemEnv(key.getValue());
+	
+					return val == null ? defaultVal : new VncString(val);
+				}
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
