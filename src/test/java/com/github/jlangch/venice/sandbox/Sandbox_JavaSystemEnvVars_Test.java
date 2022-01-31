@@ -21,7 +21,11 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +48,12 @@ public class Sandbox_JavaSystemEnvVars_Test {
 		assertThrows(SecurityException.class, () -> {
 			new Venice(new RejectAllInterceptor()).eval("(system-env \"test\")");
 		});
+	}
+
+	@Test
+	public void test_all_RejectAllInterceptor() {
+		final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-env)");
+		assertTrue(env.isEmpty());
 	}
 	
 	@Test
@@ -87,11 +97,26 @@ public class Sandbox_JavaSystemEnvVars_Test {
 	}
 
 	@Test
+	public void test_all_NoSandbox() {
+		final HashMap<?,?> env = (HashMap<?,?>)new Venice().eval("(system-env)");
+		assertFalse(env.isEmpty());
+	}
+
+	@Test
 	public void test_AccessToAllSystemEnvs() {
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withAllSystemEnvs());				
 
 		new Venice(interceptor).eval("(system-env \"test\")");
+	}
+
+	@Test
+	public void test_all_AccessToAllSystemEnvs() {
+		final Interceptor interceptor = 
+				new SandboxInterceptor(new SandboxRules().withAllSystemEnvs());				
+
+		final HashMap<?,?> env = (HashMap<?,?>)new Venice(interceptor).eval("(system-env)");
+		assertFalse(env.isEmpty());
 	}
 	
 	@Test

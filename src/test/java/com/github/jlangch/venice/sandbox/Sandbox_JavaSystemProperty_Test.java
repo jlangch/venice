@@ -21,7 +21,11 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +49,13 @@ public class Sandbox_JavaSystemProperty_Test {
 			new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
 		});
 	}
-	
+
+	@Test
+	public void test_all_RejectAllInterceptor() {
+		final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-prop)");
+		assertTrue(env.isEmpty());
+	}
+
 	@Test
 	public void test_RejectAccessToAllSystemProperties_EmptySandbox() {
 		final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());				
@@ -88,12 +98,27 @@ public class Sandbox_JavaSystemProperty_Test {
 	}
 
 	@Test
+	public void test_all_NoSandbox() {
+		final HashMap<?,?> env = (HashMap<?,?>)new Venice().eval("(system-prop)");
+		assertFalse(env.isEmpty());
+	}
+
+	@Test
 	public void test_AccessToAllSystemProperties() {
 		final Interceptor interceptor = 
 				new SandboxInterceptor(new SandboxRules().withAllSystemProperties());				
 
 		new Venice(interceptor).eval("(system-prop \"db.password\")");
 		new Venice(interceptor).eval("(system-prop \"user.home\")");
+	}
+
+	@Test
+	public void test_all_AccessToAllSystemProperties() {
+		final Interceptor interceptor = 
+				new SandboxInterceptor(new SandboxRules().withAllSystemProperties());				
+
+		final HashMap<?,?> env = (HashMap<?,?>)new Venice(interceptor).eval("(system-prop)");
+		assertFalse(env.isEmpty());
 	}
 
 	@Test
