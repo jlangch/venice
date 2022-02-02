@@ -149,7 +149,38 @@
   ^{ :arglists '("(env prefix)")
      :doc """
           Reads configuration part from environment variables, filtered by a
-          prefix.
+          prefix. `nil` may passed as prefix to get env vars.
+
+          The reader splits the environment variable names on the underscores
+          to build a dictionary.
+
+          ```
+          (base) $ env | grep JAVA_
+          JAVA_11_OPENJDK_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
+          JAVA_11_ZULU_HOME=/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
+          JAVA_11_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home
+          JAVA_8_ZULU_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home
+          JAVA_8_OPENJDK_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+          JAVA_8_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+          JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+
+          venice> (config/env "java")
+          => {
+               :11 {
+                 :zulu { :home "/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home" }
+                 :openjdk { :home "/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home" }
+                 :home "/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home"
+               }
+
+               :8 {
+                 :zulu { :home "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home" }
+                 :openjdk { :home "/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home" }
+                 :home "/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home"
+               }
+
+               :home "/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home"
+             }
+          ```
           """
      :examples '(
           """(config/env "DATABASE_")""")
@@ -165,6 +196,10 @@
   ^{ :arglists '("(properties prefix)")
      :doc """
           Reads configuration part from system properties, filtered by a prefix.
+          `nil` may passed as prefix to get property vars.
+
+          The reader splits the property names on the underscores to build a
+          dictionary.
           """
      :examples '(
           """(config/properties "DATABASE_")""")
