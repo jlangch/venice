@@ -185,7 +185,7 @@
      :examples '(
           """(config/env "DATABASE_")""")
      :see-also '(
-          "config/env-var" "config/build") }
+          "config/env-var" "config/properties" "config/build") }
 
   env [prefix]
 
@@ -220,6 +220,7 @@
           associates it to the given path in a map.
           """
      :examples '(
+          """(config/env-var "JAVA_HOME" [:java-home])"""
           """(config/env-var "SERVER_PORT" [:http :port])"""
           """(config/env-var "SERVER_PORT" [:http :port] "8080")""")
      :see-also '(
@@ -244,6 +245,8 @@
           to the given path in a map.
           """
      :examples '(
+          """(config/property-var "java.vendor" [:java :vendor])"""
+          """(config/property-var "java.version" [:java :version])"""
           """(config/property-var "SERVER_PORT" [:http :port])"""
           """(config/property-var "SERVER_PORT" [:http :port] "8080")""")
      :see-also '(
