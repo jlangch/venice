@@ -2518,7 +2518,7 @@ public class DocGenerator {
 		final DocSection system = new DocSection("Build", id());
 		all.addSection(system);
 		system.addItem(getDocItem("component/system-map", false));
-		system.addItem(getDocItem("component/system-using", false));
+		system.addItem(getDocItem("component/system-using"));
 
 		return section;
 	}

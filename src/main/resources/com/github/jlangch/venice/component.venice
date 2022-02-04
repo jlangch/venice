@@ -75,8 +75,13 @@
      :doc """
           Returns a system constructed of components given as key/value pairs.
           The system has default implementations of the Lifecycle 'start' and
-          'stop' methods which recursively starts/stopss all components in the
+          'stop' methods which recursively starts/stops all components in the
           system.
+
+          Note:¶
+          `system-map` just creates a raw system without any dependencies
+          between the components. Use `system-using` after creating the system
+          map to establish the dependencies.
           """
      :examples '(
           """
@@ -99,9 +104,12 @@
                  (inject [this deps] (assoc this :components deps)))
 
             (component/system-map
-                 "test"
-                 :server (server. 4600 {})
-                 :store  (database. "foo" "123" {})))
+              "test"
+              :server (server. 4600 {})
+              :store1 (database. "store1" "foo" "123" {})
+              :store2 (database. "store2" "foo" "123" {})))
+
+            nil)
           """ )
      :see-also '( "component/system-using" ) }
 
@@ -150,30 +158,44 @@
             (deftype :server [port       :long
                               components :map]
                component/Component
-                 (start [this] (println ":server started") this)
-                 (stop [this] (println ":server stopped") this)
-                 (inject [this deps] (assoc this :components deps)))
+                 (start [this]
+                   (let [store1 (-> this :components :store1 :name)
+                         store2 (-> this :components :store2 :name)]
+                     (println ":server started. using the stores" store1 "," store2))
+                   this)
+                 (stop [this]
+                   (println ":server stopped")
+                   this)
+                 (inject [this deps]
+                   (assoc this :components deps)))
 
-            (deftype :database [user       :string
+            (deftype :database [name       :string
+                                user       :string
                                 password   :string
                                 components :map]
                component/Component
-                 (start [this] (println ":database started") this)
-                 (stop [this] (println ":database stopped") this)
-                 (inject [this deps] (assoc this :components deps)))
+                 (start [this]
+                   (println ":database" (:name this) "started")
+                   this)
+                 (stop [this]
+                   (println ":database" (:name this) "stopped")
+                   this)
+                 (inject [this deps]
+                   (assoc this :components deps)))
 
             (defn create-system []
               (-> (component/system-map
-                     "test"
-                     :server (server. 4600 {})
-                     :store  (database. "foo" "123" {}))
-                  (component/system-using {:server [:store]})))
+                    "test"
+                    :server (server. 4600 {})
+                    :store1 (database. "store1" "foo" "123" {})
+                    :store2 (database. "store2" "foo" "123" {}))
+                  (component/system-using {:server [:store1 :store2]})))
 
-            (def system (create-system))
-            (set! system (component/start system))
-            (println "  sleeping...")
-            (sleep 2 :seconds)
-            (set! system (component/stop system)))
+            (-> (create-system)
+                (component/start)
+                (component/stop))
+
+            nil)
           """ )
      :see-also '( "component/system-map" ) }
 
