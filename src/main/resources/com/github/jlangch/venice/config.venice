@@ -152,7 +152,7 @@
           prefix. `nil` may passed as prefix to get env vars.
 
           The reader splits the environment variable names on the underscores
-          to build a dictionary.
+          to build a map.
 
           ```
           (base) $ env | grep JAVA_
@@ -199,7 +199,7 @@
           `nil` may passed as prefix to get property vars.
 
           The reader splits the property names on the underscores to build a
-          dictionary.
+          map.
           """
      :examples '(
           """(config/properties "DATABASE_")""")
@@ -265,7 +265,7 @@
 (defn
   ^{ :arglists '("(build & parts)")
      :doc """
-          Merges given configuration parts.
+          Merges given configuration parts and returns it as a map.
 
           Configuration parts:
 
@@ -273,6 +273,22 @@
             * JSON file
             * Environment variables
             * System properties
+
+          *Example:*
+
+          ```
+          (do
+            (load-module :config)
+            (def cfg (config/build
+                       (config/env "java")
+                       (config/env-var "SERVER_PORT" [:http :port] "8080")))
+
+            (println "home:" (-> cfg :11 :zulu :home))
+            ; => home: /Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
+
+            (println "port:" (-> cfg :http :port)))
+            ; => port: 8080
+          ```
           """
      :examples '(
           """
