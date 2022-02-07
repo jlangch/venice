@@ -198,7 +198,7 @@
             (let [system (start)
                   server (-> system :components :server)]
               ; access server component
-
+              (println "Accessing the system...")
               (component/stop system))
 
             nil)
