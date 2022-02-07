@@ -597,4 +597,34 @@ public class SpecialFormsTest_deftype {
 
 		assertThrows(VncException.class, () -> new Venice().eval(script));
 	}
+	
+	@Test
+	public void test_deftype_equality() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (deftype :complex [real :long, imaginary :long])    \n" +
+				"  (assert (= (complex. 1 1) (complex. 1 1)))          \n" +
+				"  (assert (not (= (complex. 1 1) (complex. 1 2))))    \n" +
+				"  (assert (not (= (complex. 1 1) 100)))               \n" +
+				"  nil)";
+
+		venice.eval(script);					
+	}
+	
+	@Test
+	public void test_deftype_equality_strict() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                    \n" +
+				"  (deftype :complex [real :long, imaginary :long])     \n" +
+				"  (assert (== (complex. 1 1) (complex. 1 1)))          \n" +
+				"  (assert (not (== (complex. 1 1) (complex. 1 2))))    \n" +
+				"  (assert (not (== (complex. 1 1) 100)))               \n" +
+				"  nil)";
+
+		venice.eval(script);					
+	}
 }

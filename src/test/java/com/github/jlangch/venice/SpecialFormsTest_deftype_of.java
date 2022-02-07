@@ -228,4 +228,34 @@ public class SpecialFormsTest_deftype_of {
 
 		assertThrows(VncException.class, () -> new Venice().eval(script));
 	}
+	
+	@Test
+	public void test_deftype_of_equality() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                                      \n" +
+				"  (deftype-of :email-address :string str/valid-email-addr?)                              \n" +
+				"  (assert (email-address. \"foo@foo.org\") (email-address. \"foo@foo.org\")))            \n" +
+				"  (assert (not (= (email-address. \"foo@foo.org\") (email-address. \"boo@foo.org\"))))   \n" +
+				"  (assert (not (= (email-address. \"foo@foo.org\") 100)))                                \n" +
+				"  nil)";
+
+		venice.eval(script);					
+	}
+	
+	@Test
+	public void test_deftype_of_equality_strict() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                                        \n" +
+				"  (deftype-of :email-address :string str/valid-email-addr?)                                \n" +
+				"  (assert (== (email-address. \"foo@foo.org\") (email-address. \"foo@foo.org\")))          \n" +
+				"  (assert (not (== (email-address. \"foo@foo.org\") (email-address. \"boo@foo.org\"))))    \n" +
+				"  (assert (not (== (email-address. \"foo@foo.org\") 100)))                                 \n" +
+				"  nil)";
+
+		venice.eval(script);					
+	}
 }

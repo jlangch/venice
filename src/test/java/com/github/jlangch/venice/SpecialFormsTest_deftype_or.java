@@ -203,4 +203,34 @@ public class SpecialFormsTest_deftype_or {
 	
 		assertEquals("23", venice.eval(script));					
 	}
+	
+	@Test
+	public void test_deftype_or_equality() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                   \n" +
+				"  (deftype-or :color :red :green :blue)               \n" +
+				"  (assert (color. :blue) (color. :blue)))             \n" +
+				"  (assert (not (= (color. :blue) (color. :red))))     \n" +
+				"  (assert (not (= (color. :blue) 100)))               \n" +
+				"  nil)";
+
+		venice.eval(script);					
+	}
+	
+	@Test
+	public void test_deftype_or_equality_strict() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                    \n" +
+				"  (deftype-or :color :red :green :blue)                \n" +
+				"  (assert (== (color. :blue) (color. :blue)))          \n" +
+				"  (assert (not (== (color. :blue) (color. :red))))     \n" +
+				"  (assert (not (== (color. :blue) 100)))               \n" +
+				"  nil)";
+
+		venice.eval(script);					
+	}
 }
