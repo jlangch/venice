@@ -107,8 +107,7 @@
             (component/system-map
               "test"
               :server (server. 4600 {})
-              :store1 (database. "store1" "foo" "123" {})
-              :store2 (database. "store2" "foo" "123" {})))
+              :store (database. "foo" "123" {})))
 
             nil)
           """ )
