@@ -147,7 +147,9 @@ Define a protocol with two polymorphic functions and extend it with `extend`:
            (+ [x y] (core/+ x y))
            (- [x y] (core/- x y))) 
            
-   (println (foo/+ 2 3))
+   ; note: dispatches on the first argument!
+   (println (foo/+ 2 3))    ; => 5
+   (println (foo/+ 2 3.0))  ; => 5.0
    (println (foo/+ (complex. 1 1) (complex. 4 5))))
 ```
 
@@ -185,9 +187,11 @@ Using multiple protocols:
    (ns foo)
    
    
-   (defprotocol Add (+ [x y]))
+   (defprotocol Add (+ [x y] 
+                      nil))
    
-   (defprotocol Sub (- [x y]))
+   (defprotocol Sub (- [x y]  
+                      (throw (ex :VncException "protocol Sub is undefined for type ~(type x)"))))
 
                               
    (extend :core/long Add 
@@ -206,7 +210,11 @@ Using multiple protocols:
    (println (foo/+ 2 3))
    (println (foo/- 2 3))
    (println (foo/+ (complex. 1 1) (complex. 4 5)))
-   (println (foo/- (complex. 1 1) (complex. 4 5))))
+   (println (foo/- (complex. 1 1) (complex. 4 5)))
+   
+   ; protocol Add and Sub are undefined for type double
+   (println (foo/+ 2.0 3.0))   ; => dispatches to the default impl -> nil
+   (println (foo/- 2.0 3.0)))  ; => dispatches to default impl -> throws exception
 ```
 
 
