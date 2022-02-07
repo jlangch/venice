@@ -126,6 +126,24 @@ _Note:_ `dissoc` on custom types will turn the custom type back into a standard 
 resulting value will not comply with the custom type's rules anymore.
 
 
+Equality:
+
+`deftype` already implements type-and-value-based equality.
+
+```clojure
+(do
+  (deftype :complex [real :long, imaginary :long])
+  
+  (= (complex. 1 1) (complex. 1 1))  ; => true
+  (= (complex. 1 1) (complex. 1 2))  ; => false
+  (= (complex. 1 1) 100)             ; => false
+  
+  (== (complex. 1 1) (complex. 1 1))  ; => true
+  (== (complex. 1 1) (complex. 1 2))  ; => false
+  (== (complex. 1 1) 100))            ; => false
+```
+
+
 ## Composing types with "OR"
 
 A custom "OR" type defines a set of values for the type. The set of values 
@@ -185,6 +203,22 @@ Get the type
 (type (color. :blue))  ; => :user/color
 ```
 
+Equality:
+
+`deftype-or` already implements type-and-value-based equality.
+
+```clojure
+(do
+  (deftype-or :color :red :green :blue)
+  
+  (= (color. :blue) (color. :blue))  ; => true
+  (= (color. :blue) (color. :red))   ; => false
+  (= (color. :blue) 100)             ; => false
+
+  (== (color. :blue) (color. :blue))  ; => true
+  (== (color. :blue) (color. :red))   ; => false
+  (== (color. :blue) 100))            ; => false
+```
 
 
 
@@ -237,6 +271,23 @@ Get the type
 
 ```clojure
 (type (email-address. "foo@foo.org"))  ; => :user/email-address
+```
+
+Equality:
+
+`deftype-of` already implements type-and-value-based equality.
+
+```clojure
+(do
+  (deftype-of :email-address :string str/valid-email-addr?)
+  
+  (= (email-address. "foo@foo.org") (email-address. "foo@foo.org"))  ; => true
+  (= (email-address. "foo@foo.org") (email-address. "boo@foo.org"))  ; => false
+  (= (email-address. "foo@foo.org") 100)                             ; => false
+
+  (== (email-address. "foo@foo.org") (email-address. "foo@foo.org"))  ; => true
+  (== (email-address. "foo@foo.org") (email-address. "boo@foo.org"))  ; => false
+  (== (email-address. "foo@foo.org") 100))                            ; => false
 ```
 
 
