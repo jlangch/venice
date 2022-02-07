@@ -214,7 +214,7 @@ Using multiple protocols:
    
    ; protocol Add and Sub are undefined for type double
    (println (foo/+ 2.0 3.0))   ; => dispatches to the default impl -> nil
-   (println (foo/- 2.0 3.0)))  ; => dispatches to default impl -> throws exception
+   (println (foo/- 2.0 3.0)))  ; => dispatches to the default impl -> throws exception
 ```
 
 
