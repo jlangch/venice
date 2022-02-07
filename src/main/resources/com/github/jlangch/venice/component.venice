@@ -74,6 +74,7 @@
   ^{ :arglists '("(system-map name keyval*)")
      :doc """
           Returns a system constructed of components given as key/value pairs.
+          The 'key' is a `keyword` referencing the component 'value'.¶
           The system has default implementations of the Lifecycle 'start' and
           'stop' methods which recursively starts/stops all components in the
           system.
@@ -127,10 +128,10 @@
 (defn
   ^{ :arglists '("(system-using system dependency-map)")
      :doc """
-          Associates a component dependency graph with the system.
-          `dependency-map` is a map of keys in the system to maps or vectors
-          specifying the dependencies of the component at that key in the
-          the system.
+          Associates a component dependency graph with the 'system' that has
+          been created through a call to `system-map`.
+          'dependency-map' is a map of keys to maps or vectors specifying the
+          the dependencies of the component at that key in the system.
 
           Throws an exception if a component dependency circle is detected.
 
@@ -191,9 +192,15 @@
                     :store2 (database. "store2" "foo" "123" {}))
                   (component/system-using {:server [:store1 :store2]})))
 
-            (-> (create-system)
-                (component/start)
-                (component/stop))
+            (defn start []
+              (-> (create-system)
+                  (component/start)))
+
+            (let [system (start)
+                  server (-> system :components :server)]
+              ; access server component
+
+              (component/stop system))
 
             nil)
           """ )
