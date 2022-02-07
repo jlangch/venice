@@ -147,8 +147,8 @@ Define a protocol with two polymorphic functions and extend it with `extend`:
            (+ [x y] (core/+ x y))
            (- [x y] (core/- x y))) 
            
-   (foo/+ 2 3)
-   (foo/+ (complex. 1 1) (complex. 4 5)))
+   (println (foo/+ 2 3))
+   (println (foo/+ (complex. 1 1) (complex. 4 5))))
 ```
 
 See: [Complex Number](https://en.wikipedia.org/wiki/Complex_number)
@@ -175,4 +175,38 @@ a *custom type* definition:
      (start c) 
      (stop c)))
 ```
+
+
+Using multiple protocols:
+
+
+```clojure
+(do
+   (ns foo)
+   
+   
+   (defprotocol Add (+ [x y]))
+   
+   (defprotocol Sub (- [x y]))
+
+                              
+   (extend :core/long Add 
+           (+ [x y] (core/+ x y))) 
+                              
+   (extend :core/long Sub 
+           (- [x y] (core/- x y))) 
+
+
+   (deftype :complex [re :long, im :long]
+      Add (+ [x y] (complex. (core/+ (:re x) (:re y))
+                              (core/+ (:im x) (:im y))))
+      Sub (- [x y] (complex. (core/- (:re x) (:re y))
+                              (core/- (:im x) (:im y)))))
+           
+   (println (foo/+ 2 3))
+   (println (foo/- 2 3))
+   (println (foo/+ (complex. 1 1) (complex. 4 5)))
+   (println (foo/- (complex. 1 1) (complex. 4 5))))
+```
+
 
