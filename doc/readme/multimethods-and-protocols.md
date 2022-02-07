@@ -199,9 +199,9 @@ Using multiple protocols:
 
    (deftype :complex [re :long, im :long]
       Add (+ [x y] (complex. (core/+ (:re x) (:re y))
-                              (core/+ (:im x) (:im y))))
+                             (core/+ (:im x) (:im y))))
       Sub (- [x y] (complex. (core/- (:re x) (:re y))
-                              (core/- (:im x) (:im y)))))
+                             (core/- (:im x) (:im y)))))
            
    (println (foo/+ 2 3))
    (println (foo/- 2 3))
