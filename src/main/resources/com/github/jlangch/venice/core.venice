@@ -1086,6 +1086,10 @@
       (fn [] (do ~@body))))
 
 
+(defprotocol Object
+    (toString [self] (str self)))
+
+
 (defn
   ^{ :arglists '("(print & xs)", "(print os & xs)")
      :doc """
