@@ -31,11 +31,9 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
-import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -206,7 +204,7 @@ public class FunctionBuilder {
 						try (WithCallStack cs = new WithCallStack(cf)) {
 							throw new AssertionException(String.format(
 									"pre-condition assert failed: %s",
-									((VncString)CoreFunctions.str.apply(VncList.of(v))).getValue()));
+									v.toString(true)));
 						}
 					}
 	 			}

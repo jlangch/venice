@@ -357,7 +357,9 @@ public class ShellFunctions {
 						throw new ShellException(
 								String.format(
 									"Shell execution failed: (sh %s). Exit code: %d", 
-									((VncString)CoreFunctions.pr_str.apply(cmd)).getValue(),
+									cmd.stream()
+									   .map(v -> v.toString())
+									   .collect(Collectors.joining(" ")),
 									exitCode),
 								exitCode); 
 					}
@@ -378,7 +380,9 @@ public class ShellFunctions {
 				throw new VncException(
 						String.format(
 								"Shell execution processing failed: (sh %s)", 
-								((VncString)CoreFunctions.pr_str.apply(cmd)).getValue()),
+								cmd.stream()
+								   .map(v -> v.toString())
+								   .collect(Collectors.joining(" "))),
 						ex);
 			}
 		}

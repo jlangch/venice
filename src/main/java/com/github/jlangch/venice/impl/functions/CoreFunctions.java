@@ -816,6 +816,39 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction to_str =
+		new VncFunction(
+				"to-str",
+				VncFunction
+					.meta()
+					.arglists(
+						"(to-str x)", 
+						"(to-str print-readably x)")
+					.doc(
+						"Returns the string representation of x.")
+					.examples(
+						"(to-str [1 2 3])",
+						"(to-str false [1 2 3])",
+						"(to-str true [1 2 3])")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1, 2);
+
+				if (args.size() == 1) {
+					return new VncString(args.first().toString());
+				}
+				else {
+					final boolean print_readably = Coerce.toVncBoolean(args.first()).getValue(); 
+					final VncVal v = args.second();
+					
+					return new VncString(v.toString(print_readably));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction read_string =
 		new VncFunction(
 				"read-string",
@@ -7977,6 +8010,7 @@ public class CoreFunctions {
 
 				.add(pr_str)
 				.add(str)
+				.add(to_str)
 				.add(read_string)
 
 				.add(equal_Q)
