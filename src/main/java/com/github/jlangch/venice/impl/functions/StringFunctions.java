@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.jline.utils.Levenshtein;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
@@ -661,8 +662,11 @@ public class StringFunctions {
 				"str/join",
 				VncFunction
 					.meta()
-					.arglists("(str/join coll)", "(str/join separator coll)")
-					.doc("Joins all elements in coll separated by an optional separator.")
+					.arglists(
+						"(str/join coll)", 
+						"(str/join separator coll)")
+					.doc(
+						"Joins all elements in coll separated by an optional separator.")
 					.examples(
 						"(str/join [1 2 3])",
 						"(str/join \"-\" [1 2 3])",
@@ -672,16 +676,23 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
-				final VncSequence coll = Coerce.toVncSequence(args.last());
-				final VncString delim = args.size() == 2 ? Coerce.toVncString(args.first()) : VncString.empty();
+				final VncVal last = args.last();
+				if (last == Constants.Nil) {
+					return VncString.EMPTY;
+				}
+
+				final VncSequence coll = Coerce.toVncSequence(last);
+				if (coll.isEmpty()) {
+					return VncString.EMPTY;
+				}
+
+
+				final String delim = args.size() == 1 ? "" : Coerce.toVncString(args.first()).getValue();
 
 				return new VncString(
-							coll.size() > 0
-								? coll
-									.stream()
-									.map(v -> Types.isVncString(v) ? ((VncString)v).getValue() : v.toString())
-									.collect(Collectors.joining(delim.getValue()))
-								: "");
+							coll.stream()
+								.map(v -> Types.isVncString(v) ? ((VncString)v).getValue() : v.toString())
+								.collect(Collectors.joining(delim)));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;

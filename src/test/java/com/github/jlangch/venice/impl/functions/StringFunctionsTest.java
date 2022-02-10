@@ -110,6 +110,10 @@ public class StringFunctionsTest {
 	public void test_str_join() {
 		final Venice venice = new Venice();
 
+		assertEquals("", venice.eval("(str/join nil)"));
+		assertEquals("", venice.eval("(str/join \"\" nil)"));
+		assertEquals("", venice.eval("(str/join \"-\" nil)"));
+
 		assertEquals("", venice.eval("(str/join '())"));
 		assertEquals("", venice.eval("(str/join \"\" '())"));
 		assertEquals("", venice.eval("(str/join \"-\" '())"));
