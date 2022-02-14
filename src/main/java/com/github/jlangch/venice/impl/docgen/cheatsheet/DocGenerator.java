@@ -369,6 +369,7 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("sqrt"));
 		arithmetic.addItem(getDocItem("square"));
 		arithmetic.addItem(getDocItem("pow"));
+		arithmetic.addItem(getDocItem("exp"));
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
 		arithmetic.addItem(getDocItem("digits"));
@@ -404,6 +405,14 @@ public class DocGenerator {
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
 
+		final DocSection bigdecimal = new DocSection("BigDecimal", "primitives.bigdecimal");
+		numbers.addSection(bigdecimal);
+		bigdecimal.addItem(getDocItem("dec/add"));
+		bigdecimal.addItem(getDocItem("dec/sub"));
+		bigdecimal.addItem(getDocItem("dec/mul"));
+		bigdecimal.addItem(getDocItem("dec/div"));
+		bigdecimal.addItem(getDocItem("dec/scale"));
+
 		final DocSection random = new DocSection("Random", "primitives.random");
 		numbers.addSection(random);
 		random.addItem(getDocItem("rand-long"));
@@ -426,13 +435,9 @@ public class DocGenerator {
 		statistics.addItem(getDocItem("quantile"));
 		statistics.addItem(getDocItem("standard-deviation"));
 
-		final DocSection bigdecimal = new DocSection("BigDecimal", "primitives.bigdecimal");
-		numbers.addSection(bigdecimal);
-		bigdecimal.addItem(getDocItem("dec/add"));
-		bigdecimal.addItem(getDocItem("dec/sub"));
-		bigdecimal.addItem(getDocItem("dec/mul"));
-		bigdecimal.addItem(getDocItem("dec/div"));
-		bigdecimal.addItem(getDocItem("dec/scale"));
+		final DocSection algo = new DocSection("Algorithms", "primitives.algo");
+		numbers.addSection(algo);
+		algo.addItem(getDocItem("softmax"));
 
 		
 		final DocSection strings = new DocSection("Strings", "primitives.strings");

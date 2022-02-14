@@ -45,6 +45,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -894,6 +896,29 @@ public class MathFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction exp =
+		new VncFunction(
+				"exp",
+				VncFunction
+					.meta()
+					.arglists("(exp x)")
+					.doc("exp x")
+					.examples(
+						"(exp 10)",
+						"(exp 10.23)",
+						"(exp 10.23M)")
+					.seeAlso("exp")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				return new VncDouble(Math.exp(VncDouble.of(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction pow =
 		new VncFunction(
 				"pow",
@@ -1623,7 +1648,6 @@ public class MathFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-
 	public static VncFunction range =
 		new VncFunction(
 				"range",
@@ -1722,6 +1746,45 @@ public class MathFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction softmax =
+		new VncFunction(
+				"softmax",
+				VncFunction
+					.meta()
+					.arglists("(softmax coll)")
+					.doc("Softmax algorithm")
+					.examples("(softmax [3.2 1.3 0.2 0.8])")
+					.seeAlso()
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncSequence coll = Coerce.toVncSequence(args.first());
+				if (coll.isEmpty()) {
+					return new VncDouble(Double.valueOf(0.0));
+				}
+
+				final double[] exponents = new double[coll.size()];
+				double sum = 0.0D;
+				int ii = 0;
+				for(VncVal c : coll) {
+					double e = Math.exp(Coerce.toVncDouble(c).toJavaDouble());
+					exponents[ii++] = e;
+					sum += e;
+				}
+				
+				final List<VncDouble> values = new ArrayList<>();
+				for(int jj=0; jj<exponents.length; jj++) {
+					values.add(new VncDouble(exponents[jj] / sum));
+				}
+				
+				return VncVector.ofColl(values);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
 
 	private static VncNumber validateNumber(final String fnName, final VncVal val) {
 		if (!Types.isVncNumber(val)) {
@@ -1815,6 +1878,7 @@ public class MathFunctions {
 					.add(sin)
 					.add(cos)
 					.add(tan)
+					.add(exp)
 					.add(log)
 					.add(log10)
 
@@ -1843,6 +1907,8 @@ public class MathFunctions {
 					.add(range)
 
 					.add(digits)
+
+					.add(softmax)
 
 					.toMap();
 

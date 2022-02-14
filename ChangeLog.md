@@ -9,11 +9,11 @@ and this project adheres to
 
 
 
-## [1.10.8] - 2022-02-xxxx
+## [1.10.8] - 2022-02-xx
 
 ### Added
 
-- ...
+- function `exp`
 
 
 
