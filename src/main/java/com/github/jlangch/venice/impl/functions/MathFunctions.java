@@ -867,7 +867,10 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(to-radians x)")
-					.doc("to-radians x")
+					.doc(
+						"Converts an angle measured in degrees to an approximately equivalent " +
+						"angle measured in radians. The conversion from degrees to radians " +
+						"is generally inexact.")
 					.examples(
 						"(to-radians 90)",
 						"(to-radians 90.0)",
@@ -890,7 +893,11 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(to-degrees x)")
-					.doc("to-degrees x")
+					.doc(
+						"Converts an angle measured in radians to an approximately equivalent " +
+						"angle measured in degrees. The conversion from radians to degrees is " +
+						"generally inexact; users should not expect (cos (to-radians 90.0)) " +
+						"to exactly equal 0.0")
 					.examples(
 						"(to-degrees 3)",
 						"(to-degrees 3.1415926)",
@@ -913,7 +920,7 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(log x)")
-					.doc("log x")
+					.doc("Returns the natural logarithm (base e) of a value")
 					.examples(
 						"(log 10)",
 						"(log 10.23)",
@@ -936,7 +943,7 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(log10 x)")
-					.doc("log10 x")
+					.doc("Returns the base 10 logarithm of a value")
 					.examples(
 						"(log10 10)",
 						"(log10 10.23)",
@@ -961,7 +968,7 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(exp x)")
-					.doc("exp x")
+					.doc("Returns Euler's number e raised to the power of a value.")
 					.examples(
 						"(exp 10)",
 						"(exp 10.23)",
