@@ -105,7 +105,7 @@ public class PrecompiledTest {
 		
 		final PreCompiled precomp = venice.precompile("test", "(count (sort *loaded-modules*))");
 		
-		assertEquals(9L, venice.eval(precomp));
+		assertEquals(10L, venice.eval(precomp));
 	}
 	
 	@Test
