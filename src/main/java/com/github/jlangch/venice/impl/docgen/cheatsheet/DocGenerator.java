@@ -207,6 +207,7 @@ public class DocGenerator {
 		content.add(system);
 
 		final DocSection util = new DocSection("Util", "util");
+		util.addSection(new DocSection("Math", "math"));
 		util.addSection(new DocSection("Time", "time"));
 		util.addSection(new DocSection("Regex", "regex"));
 		util.addSection(new DocSection("CIDR", "cidr"));
@@ -259,6 +260,7 @@ public class DocGenerator {
 				getPrimitivesSection(),
 				getByteBufSection(),
 				getRegexSection(),
+				getMathSection(),
 				getTransducersSection(),
 				getFunctionsSection(),
 				getMacrosSection(),
@@ -334,17 +336,17 @@ public class DocGenerator {
 		
 		final DocSection lit = new DocSection("Literals", "primitives.literals");
 		section.addSection(lit);		
-		lit.addLiteralIem("Nil",                  "nil",                                     id());
-		lit.addLiteralIem("Boolean",              "true, false",                             id());
-		lit.addLiteralIem("Integer",              "150I, 1_000_000I, 0x1FFI",                id());
-		lit.addLiteralIem("Long",                 "1500, 1_000_000, 0x00A055FF",             id());
-		lit.addLiteralIem("Double",               "3.569, 2.0E+10",                          id());
-		lit.addLiteralIem("BigDecimal",           "6.897M, 2.345E+10M",                      id());
-		lit.addLiteralIem("BigInteger",           "1000N, 1_000_000N",                       id());
-		lit.addLiteralIem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", id());
-		lit.addLiteralIem("",                     "\"\"\"{ \"age\": 42 }\"\"\"",             id());
-		lit.addLiteralIem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"",              id());
-		lit.addLiteralIem("",                     "\"~(inc x)\", \"\"\"~(inc x)\"\"\"",      id());
+		lit.addLiteralItem("Nil",                  "nil",                                     id());
+		lit.addLiteralItem("Boolean",              "true, false",                             id());
+		lit.addLiteralItem("Integer",              "150I, 1_000_000I, 0x1FFI",                id());
+		lit.addLiteralItem("Long",                 "1500, 1_000_000, 0x00A055FF",             id());
+		lit.addLiteralItem("Double",               "3.569, 2.0E+10",                          id());
+		lit.addLiteralItem("BigDecimal",           "6.897M, 2.345E+10M",                      id());
+		lit.addLiteralItem("BigInteger",           "1000N, 1_000_000N",                       id());
+		lit.addLiteralItem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", id());
+		lit.addLiteralItem("",                     "\"\"\"{ \"age\": 42 }\"\"\"",             id());
+		lit.addLiteralItem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"",              id());
+		lit.addLiteralItem("",                     "\"~(inc x)\", \"\"\"~(inc x)\"\"\"",      id());
 
 		
 		final DocSection numbers = new DocSection("Numbers", "primitives.numbers");
@@ -356,23 +358,6 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("-"));
 		arithmetic.addItem(getDocItem("*"));
 		arithmetic.addItem(getDocItem("/"));
-		arithmetic.addItem(getDocItem("mod"));
-		arithmetic.addItem(getDocItem("inc"));
-		arithmetic.addItem(getDocItem("dec"));
-		arithmetic.addItem(getDocItem("min"));
-		arithmetic.addItem(getDocItem("max"));
-		arithmetic.addItem(getDocItem("abs"));
-		arithmetic.addItem(getDocItem("sgn"));
-		arithmetic.addItem(getDocItem("negate"));
-		arithmetic.addItem(getDocItem("floor"));
-		arithmetic.addItem(getDocItem("ceil"));
-		arithmetic.addItem(getDocItem("sqrt"));
-		arithmetic.addItem(getDocItem("square"));
-		arithmetic.addItem(getDocItem("pow"));
-		arithmetic.addItem(getDocItem("exp"));
-		arithmetic.addItem(getDocItem("log"));
-		arithmetic.addItem(getDocItem("log10"));
-		arithmetic.addItem(getDocItem("digits"));
 
 		final DocSection convert = new DocSection("Convert", "primitives.convert");
 		numbers.addSection(convert);
@@ -413,31 +398,6 @@ public class DocGenerator {
 		bigdecimal.addItem(getDocItem("dec/div"));
 		bigdecimal.addItem(getDocItem("dec/scale"));
 
-		final DocSection random = new DocSection("Random", "primitives.random");
-		numbers.addSection(random);
-		random.addItem(getDocItem("rand-long"));
-		random.addItem(getDocItem("rand-double"));
-		random.addItem(getDocItem("rand-gaussian"));
-		
-		final DocSection trigonometry = new DocSection("Trigonometry", "primitives.trigonometry");
-		numbers.addSection(trigonometry);
-		trigonometry.addItem(getDocItem("to-radians"));
-		trigonometry.addItem(getDocItem("to-degrees"));
-		trigonometry.addItem(getDocItem("sin"));
-		trigonometry.addItem(getDocItem("cos"));
-		trigonometry.addItem(getDocItem("tan"));
-		
-		final DocSection statistics = new DocSection("Statistics", "primitives.statistics");
-		numbers.addSection(statistics);
-		statistics.addItem(getDocItem("mean"));
-		statistics.addItem(getDocItem("median"));
-		statistics.addItem(getDocItem("quartiles"));
-		statistics.addItem(getDocItem("quantile"));
-		statistics.addItem(getDocItem("standard-deviation"));
-
-		final DocSection algo = new DocSection("Algorithms", "primitives.algo");
-		numbers.addSection(algo);
-		algo.addItem(getDocItem("softmax"));
 
 		
 		final DocSection strings = new DocSection("Strings", "primitives.strings");
@@ -1067,6 +1027,69 @@ public class DocGenerator {
 		general.addItem(getDocItem("regex/find-all"));
 		general.addItem(getDocItem("regex/find+"));
 		general.addItem(getDocItem("regex/find-all+"));
+
+		return section;
+	}
+
+	private DocSection getMathSection() {
+		final DocSection section = new DocSection("Math", "math");
+
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection constants = new DocSection("Constants", "math.constants");
+		section.addSection(constants);
+		constants.addLiteralItem("E",  "math/E",  id());
+		constants.addLiteralItem("PI", "math/PI", id());
+
+		final DocSection arithmetic = new DocSection("Arithmetic", "math.arithmetic");
+		all.addSection(arithmetic);
+		arithmetic.addItem(getDocItem("mod"));
+		arithmetic.addItem(getDocItem("inc"));
+		arithmetic.addItem(getDocItem("dec"));
+		arithmetic.addItem(getDocItem("min"));
+		arithmetic.addItem(getDocItem("max"));
+		arithmetic.addItem(getDocItem("abs"));
+		arithmetic.addItem(getDocItem("sgn"));
+		arithmetic.addItem(getDocItem("negate"));
+		arithmetic.addItem(getDocItem("floor"));
+		arithmetic.addItem(getDocItem("ceil"));
+		arithmetic.addItem(getDocItem("sqrt"));
+		arithmetic.addItem(getDocItem("square"));
+		arithmetic.addItem(getDocItem("pow"));
+		arithmetic.addItem(getDocItem("exp"));
+		arithmetic.addItem(getDocItem("log"));
+		arithmetic.addItem(getDocItem("log10"));
+		arithmetic.addItem(getDocItem("digits"));
+
+		final DocSection random = new DocSection("Random", "math.random");
+		all.addSection(random);
+		random.addItem(getDocItem("rand-long"));
+		random.addItem(getDocItem("rand-double"));
+		random.addItem(getDocItem("rand-gaussian"));
+		
+		final DocSection trigonometry = new DocSection("Trigonometry", "math.trigonometry");
+		all.addSection(trigonometry);
+		trigonometry.addItem(getDocItem("to-radians"));
+		trigonometry.addItem(getDocItem("to-degrees"));
+		trigonometry.addItem(getDocItem("sin"));
+		trigonometry.addItem(getDocItem("cos"));
+		trigonometry.addItem(getDocItem("tan"));
+		trigonometry.addItem(getDocItem("asin"));
+		trigonometry.addItem(getDocItem("acos"));
+		trigonometry.addItem(getDocItem("atan"));
+		
+		final DocSection statistics = new DocSection("Statistics", "math.statistics");
+		all.addSection(statistics);
+		statistics.addItem(getDocItem("mean"));
+		statistics.addItem(getDocItem("median"));
+		statistics.addItem(getDocItem("quartiles"));
+		statistics.addItem(getDocItem("quantile"));
+		statistics.addItem(getDocItem("standard-deviation"));
+
+		final DocSection algo = new DocSection("Algorithms", "math.algo");
+		all.addSection(algo);
+		algo.addItem(getDocItem("math/softmax"));
 
 		return section;
 	}

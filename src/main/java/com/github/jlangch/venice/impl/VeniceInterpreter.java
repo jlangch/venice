@@ -325,8 +325,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		//     VeniceInterpreter::loadModule(..)
 		setMacroExpandOnLoad(macroExpandOnLoad, env);
 
-		// load core module
+		// load core modules
 		loadModule("core", env, loadedModules);
+		loadModule("math", env, loadedModules);
 		
 		// security: seal system namespaces (Namespaces::SYSTEM_NAMESPACES) - no further changes allowed!
 		sealedSystemNS.set(true);

@@ -739,12 +739,9 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(sin x)")
-					.doc("sin x")
+					.doc("Returns the trigonometric sine of an angle given in radians")
 					.examples(
-						"(sin 1)",
-						"(sin 1.23)",
-						"(sin 1.23M)")
-					.seeAlso("cos", "tan")
+						"(sin (/ math/PI 3.0))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -762,11 +759,9 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(cos x)")
-					.doc("cos x")
+					.doc("Returns the trigonometric cosine of an angle given in radians")
 					.examples(
-						"(cos 1)",
-						"(cos 1.23)",
-						"(cos 1.23M)")
+						"(cos (/ math/PI 3.0))")
 					.seeAlso("sin", "tan")
 					.build()
 		) {
@@ -785,11 +780,9 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(tan x)")
-					.doc("tan x")
+					.doc("Returns the trigonometric tangent of an angle given in radians")
 					.examples(
-						"(tan 1)",
-						"(tan 1.23)",
-						"(tan 1.23M)")
+						"(tan (/ math/PI 3.0))")
 					.seeAlso("sin", "cos")
 					.build()
 		) {
@@ -797,6 +790,72 @@ public class MathFunctions {
 				ArityExceptions.assertArity(this, args, 1);
 
 				return new VncDouble(Math.tan(VncDouble.of(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction asin =
+		new VncFunction(
+				"asin",
+				VncFunction
+					.meta()
+					.arglists("(asin x)")
+					.doc("Returns the arc sine of a value; the returned angle is "
+							+ "in the range `-pi/2` through `pi/2`")
+					.examples(
+						"(asin 0.8660254037844386)")
+					.seeAlso("sin", "acos", "atan")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				return new VncDouble(Math.asin(VncDouble.of(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction acos =
+		new VncFunction(
+				"acos",
+				VncFunction
+					.meta()
+					.arglists("(acos x)")
+					.doc("Returns the arc cosine of a value; the returned angle is "
+							+ "in the range `0.0` through `pi`")
+					.examples(
+						"(acos 0.5)")
+					.seeAlso("cos", "asin", "atan")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				return new VncDouble(Math.acos(VncDouble.of(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction atan =
+		new VncFunction(
+				"atan",
+				VncFunction
+					.meta()
+					.arglists("(atan x)")
+					.doc("Returns the arc tangent of a value; the returned angle is "
+							+ "in the range `-pi/2` through `pi/2`.")
+					.examples(
+						"(atan 1.7320508075688767)")
+					.seeAlso("tan", "asin", "acos")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				return new VncDouble(Math.atan(VncDouble.of(args.first()).getValue()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -1748,12 +1807,12 @@ public class MathFunctions {
 
 	public static VncFunction softmax =
 		new VncFunction(
-				"softmax",
+				"math/softmax",
 				VncFunction
 					.meta()
-					.arglists("(softmax coll)")
+					.arglists("(math/softmax coll)")
 					.doc("Softmax algorithm")
-					.examples("(softmax [3.2 1.3 0.2 0.8])")
+					.examples("(math/softmax [3.2 1.3 0.2 0.8])")
 					.seeAlso()
 					.build()
 		) {
@@ -1875,9 +1934,13 @@ public class MathFunctions {
 					
 					.add(to_radians)
 					.add(to_degrees)
+					
 					.add(sin)
 					.add(cos)
 					.add(tan)
+					.add(asin)
+					.add(acos)
+					.add(atan)
 					.add(exp)
 					.add(log)
 					.add(log10)

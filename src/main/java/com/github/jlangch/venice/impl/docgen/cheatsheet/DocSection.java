@@ -88,7 +88,7 @@ public class DocSection {
 		}
 	}
 	
-	public void addLiteralIem(final String name, final String text, final String id) {
+	public void addLiteralItem(final String name, final String text, final String id) {
 		final DocSection s = new DocSection(name, id);
 		addSection(s);
 		s.addItem(new DocItem(text, null));

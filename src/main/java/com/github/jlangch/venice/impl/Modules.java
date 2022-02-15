@@ -62,6 +62,7 @@ public class Modules {
 							"jackson", 
 							"java", 
 							"kira", 
+							"math", 
 							"maven", 
 							"mercator", 
 							"parsatron",
