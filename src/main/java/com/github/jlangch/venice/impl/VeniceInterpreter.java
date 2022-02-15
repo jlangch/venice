@@ -289,8 +289,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		
 		for(Map.Entry<VncVal,VncVal> e: Functions.functions.entrySet()) {
 			final VncSymbol sym = (VncSymbol)e.getKey();
-			final VncFunction fn = (VncFunction)e.getValue();			
-			env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
+			final VncVal val = e.getValue();			
+			if (val instanceof VncFunction) {
+				final VncFunction fn = (VncFunction)e.getValue();			
+				env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
+			}
+			else {
+				env.setGlobal(new Var(sym, val, true));
+			}
 		}
 
 		// set Venice version
@@ -327,7 +333,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 		// load core modules
 		loadModule("core", env, loadedModules);
-		loadModule("math", env, loadedModules);
 		
 		// security: seal system namespaces (Namespaces::SYSTEM_NAMESPACES) - no further changes allowed!
 		sealedSystemNS.set(true);

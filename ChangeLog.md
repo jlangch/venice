@@ -13,7 +13,8 @@ and this project adheres to
 
 ### Added
 
-- function `exp`
+- math functions `exp`, `asin`, `acos`, `atan`
+- improvements to documentation
 
 
 

@@ -39,6 +39,20 @@ import com.github.jlangch.venice.VncException;
 public class MathFunctionsTest {
 
 	@Test
+	public void test_E() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Math.E, (Double)venice.eval("math/E"), 0.00001D);
+	}
+
+	@Test
+	public void test_PI() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Math.PI, (Double)venice.eval("math/PI"), 0.00001D);
+	}
+
+	@Test
 	public void test_abs() {
 		final Venice venice = new Venice();
 

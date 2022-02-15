@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
@@ -1919,7 +1920,10 @@ public class MathFunctions {
 	public static Map<VncVal, VncVal> ns =
 			new VncHashMap
 					.Builder()
-					
+
+					.put(new VncSymbol("math", "E", null), new VncDouble(Math.E))
+					.put(new VncSymbol("math", "PI", null), new VncDouble(Math.PI))
+
 					.add(add)
 					.add(subtract)
 					.add(multiply)

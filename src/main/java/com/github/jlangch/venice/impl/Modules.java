@@ -83,6 +83,7 @@ public class Modules {
 			Collections.unmodifiableSet(
 				new HashSet<>(
 					Arrays.asList(
+							new VncKeyword("math"), 
 							new VncKeyword("str"), 
 							new VncKeyword("regex"), 
 							new VncKeyword("time"), 
