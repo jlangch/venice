@@ -1060,7 +1060,10 @@ public class DocGenerator {
 		arithmetic.addItem(getDocItem("exp"));
 		arithmetic.addItem(getDocItem("log"));
 		arithmetic.addItem(getDocItem("log10"));
-		arithmetic.addItem(getDocItem("digits"));
+
+		final DocSection util = new DocSection("Util", "math.util");
+		all.addSection(util);
+		util.addItem(getDocItem("digits"));
 
 		final DocSection random = new DocSection("Random", "math.random");
 		all.addSection(random);
