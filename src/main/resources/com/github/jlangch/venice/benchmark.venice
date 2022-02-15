@@ -101,7 +101,7 @@
 
 
 (defn bench/stats [samples]
-  (let [q (quartiles samples)
+  (let [q (math/quartiles samples)
         q1 (first q)
         q2 (second q)
         q3 (third q)
@@ -117,10 +117,10 @@
        :iqr iqr
        :outlier-low outlier-low
        :outlier-high outlier-high
-       :lower-quantile (quantile 0.025 samples)
-       :higher-quantile (quantile 0.975 samples)
+       :lower-quantile (math/quantile 0.025 samples)
+       :higher-quantile (math/quantile 0.975 samples)
        :outliers-cnt (- (count samples) (count cleaned-samples))
-       :standard-deviation (standard-deviation :sample cleaned-samples) }))
+       :standard-deviation (math/standard-deviation :sample cleaned-samples) }))
 
 
 (defn bench/print-stats [stats]

@@ -194,36 +194,36 @@
 
 
 (defn spherical-x-axis [longitude]
-  (* (to-radians longitude) earth-radius-major))
+  (* (math/to-radians longitude) earth-radius-major))
 
 
 (defn spherical-y-axis [latitude]
-  (-<> (to-radians (limit latitude latitude-range))
+  (-<> (math/to-radians (limit latitude latitude-range))
        (/ <> 2.0)
        (+ <> (/ pi 4.0))
-       (tan <>)
+       (math/tan <>)
        (log <>)
        (* <> earth-radius-major)))
 
 
 (defn elliptical-x-axis [longitude]
-  (* (to-radians longitude) earth-radius-major))
+  (* (math/to-radians longitude) earth-radius-major))
 
 
 (defn elliptical-y-axis [latitude]
   (let [latitude-radians
-            (to-radians (limit latitude latitude-range))
+            (math/to-radians (limit latitude latitude-range))
         earth-dimensional-rate-normalized
             (- 1.0  (square (/ earth-radius-minor earth-radius-major)))
         latitude-on-earth-proj
             (* (sqrt earth-dimensional-rate-normalized)
-               (sin latitude-radians))
+               (math/sin latitude-radians))
         latitude-on-earth-proj
             (pow (/ (- 1.0 latitude-on-earth-proj)
                     (+ 1.0 latitude-on-earth-proj))
                  (* 0.5 (sqrt earth-dimensional-rate-normalized)))
         latitude-on-earth-proj-normalized
-            (/ (tan (* 0.5 (- (* pi 0.5) latitude-radians)))
+            (/ (math/tan (* 0.5 (- (* pi 0.5) latitude-radians)))
                latitude-on-earth-proj)]
       (* -1.0 earth-radius-major (log latitude-on-earth-proj-normalized))))
 

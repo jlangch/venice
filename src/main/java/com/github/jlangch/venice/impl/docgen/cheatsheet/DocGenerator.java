@@ -1070,22 +1070,22 @@ public class DocGenerator {
 		
 		final DocSection trigonometry = new DocSection("Trigonometry", "math.trigonometry");
 		all.addSection(trigonometry);
-		trigonometry.addItem(getDocItem("to-radians"));
-		trigonometry.addItem(getDocItem("to-degrees"));
-		trigonometry.addItem(getDocItem("sin"));
-		trigonometry.addItem(getDocItem("cos"));
-		trigonometry.addItem(getDocItem("tan"));
-		trigonometry.addItem(getDocItem("asin"));
-		trigonometry.addItem(getDocItem("acos"));
-		trigonometry.addItem(getDocItem("atan"));
+		trigonometry.addItem(getDocItem("math/to-radians"));
+		trigonometry.addItem(getDocItem("math/to-degrees"));
+		trigonometry.addItem(getDocItem("math/sin"));
+		trigonometry.addItem(getDocItem("math/cos"));
+		trigonometry.addItem(getDocItem("math/tan"));
+		trigonometry.addItem(getDocItem("math/asin"));
+		trigonometry.addItem(getDocItem("math/acos"));
+		trigonometry.addItem(getDocItem("math/atan"));
 		
 		final DocSection statistics = new DocSection("Statistics", "math.statistics");
 		all.addSection(statistics);
-		statistics.addItem(getDocItem("mean"));
-		statistics.addItem(getDocItem("median"));
-		statistics.addItem(getDocItem("quartiles"));
-		statistics.addItem(getDocItem("quantile"));
-		statistics.addItem(getDocItem("standard-deviation"));
+		statistics.addItem(getDocItem("math/mean"));
+		statistics.addItem(getDocItem("math/median"));
+		statistics.addItem(getDocItem("math/quartiles"));
+		statistics.addItem(getDocItem("math/quantile"));
+		statistics.addItem(getDocItem("math/standard-deviation"));
 
 		final DocSection algo = new DocSection("Algorithms", "math.algo");
 		all.addSection(algo);

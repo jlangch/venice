@@ -736,13 +736,14 @@ public class MathFunctions {
 
 	public static VncFunction sin =
 		new VncFunction(
-				"sin",
+				"math/sin",
 				VncFunction
 					.meta()
-					.arglists("(sin x)")
+					.arglists("(math/sin x)")
 					.doc("Returns the trigonometric sine of an angle given in radians")
 					.examples(
-						"(sin (/ math/PI 3.0))")
+						"(math/sin (/ math/PI 3.0))")
+					.seeAlso("math/cos", "math/tan")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -756,14 +757,14 @@ public class MathFunctions {
 
 	public static VncFunction cos =
 		new VncFunction(
-				"cos",
+				"math/cos",
 				VncFunction
 					.meta()
-					.arglists("(cos x)")
+					.arglists("(math/cos x)")
 					.doc("Returns the trigonometric cosine of an angle given in radians")
 					.examples(
-						"(cos (/ math/PI 3.0))")
-					.seeAlso("sin", "tan")
+						"(math/cos (/ math/PI 3.0))")
+					.seeAlso("math/sin", "math/tan")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -777,14 +778,14 @@ public class MathFunctions {
 
 	public static VncFunction tan =
 		new VncFunction(
-				"tan",
+				"math/tan",
 				VncFunction
 					.meta()
-					.arglists("(tan x)")
+					.arglists("(math/tan x)")
 					.doc("Returns the trigonometric tangent of an angle given in radians")
 					.examples(
-						"(tan (/ math/PI 3.0))")
-					.seeAlso("sin", "cos")
+						"(math/tan (/ math/PI 3.0))")
+					.seeAlso("math/sin", "math/cos")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -798,15 +799,15 @@ public class MathFunctions {
 
 	public static VncFunction asin =
 		new VncFunction(
-				"asin",
+				"math/asin",
 				VncFunction
 					.meta()
-					.arglists("(asin x)")
+					.arglists("(math/asin x)")
 					.doc("Returns the arc sine of a value; the returned angle is "
 							+ "in the range `-pi/2` through `pi/2`")
 					.examples(
-						"(asin 0.8660254037844386)")
-					.seeAlso("sin", "acos", "atan")
+						"(math/asin 0.8660254037844386)")
+					.seeAlso("math/sin", "math/acos", "math/atan")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -820,15 +821,15 @@ public class MathFunctions {
 
 	public static VncFunction acos =
 		new VncFunction(
-				"acos",
+				"math/acos",
 				VncFunction
 					.meta()
-					.arglists("(acos x)")
+					.arglists("(math/acos x)")
 					.doc("Returns the arc cosine of a value; the returned angle is "
 							+ "in the range `0.0` through `pi`")
 					.examples(
-						"(acos 0.5)")
-					.seeAlso("cos", "asin", "atan")
+						"(math/acos 0.5)")
+					.seeAlso("math/cos", "math/asin", "math/atan")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -842,15 +843,15 @@ public class MathFunctions {
 
 	public static VncFunction atan =
 		new VncFunction(
-				"atan",
+				"math/atan",
 				VncFunction
 					.meta()
-					.arglists("(atan x)")
+					.arglists("(math/atan x)")
 					.doc("Returns the arc tangent of a value; the returned angle is "
 							+ "in the range `-pi/2` through `pi/2`.")
 					.examples(
-						"(atan 1.7320508075688767)")
-					.seeAlso("tan", "asin", "acos")
+						"(math/atan 1.7320508075688767)")
+					.seeAlso("math/tan", "math/asin", "math/acos")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -864,19 +865,19 @@ public class MathFunctions {
 
 	public static VncFunction to_radians =
 		new VncFunction(
-				"to-radians",
+				"math/to-radians",
 				VncFunction
 					.meta()
-					.arglists("(to-radians x)")
+					.arglists("(math/to-radians x)")
 					.doc(
 						"Converts an angle measured in degrees to an approximately equivalent " +
 						"angle measured in radians. The conversion from degrees to radians " +
 						"is generally inexact.")
 					.examples(
-						"(to-radians 90)",
-						"(to-radians 90.0)",
-						"(to-radians 90.0M)")
-					.seeAlso("to-degrees")
+						"(math/to-radians 90)",
+						"(math/to-radians 90.0)",
+						"(math/to-radians 90.0M)")
+					.seeAlso("math/to-degrees")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -890,20 +891,20 @@ public class MathFunctions {
 
 	public static VncFunction to_degrees =
 		new VncFunction(
-				"to-degrees",
+				"math/to-degrees",
 				VncFunction
 					.meta()
-					.arglists("(to-degrees x)")
+					.arglists("(math/to-degrees x)")
 					.doc(
 						"Converts an angle measured in radians to an approximately equivalent " +
 						"angle measured in degrees. The conversion from radians to degrees is " +
 						"generally inexact; users should not expect (cos (to-radians 90.0)) " +
 						"to exactly equal 0.0")
 					.examples(
-						"(to-degrees 3)",
-						"(to-degrees 3.1415926)",
-						"(to-degrees 3.1415926M)")
-					.seeAlso("to-radians")
+						"(math/to-degrees 3)",
+						"(math/to-degrees 3.1415926)",
+						"(math/to-degrees 3.1415926M)")
+					.seeAlso("math/to-radians")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1061,16 +1062,16 @@ public class MathFunctions {
 
 	public static VncFunction mean =
 		new VncFunction(
-				"mean",
+				"math/mean",
 				VncFunction
 					.meta()
-					.arglists("(mean x)", "(mean x y)", "(mean x y & more)")
+					.arglists("(math/mean x)", "(math/mean x y)", "(math/mean x y & more)")
 					.doc("Returns the mean value of the values")
 					.examples(
-						"(mean 10 20 30)",
-						"(mean 1.4 3.6)",
-						"(mean 2.8M 6.4M)")
-					.seeAlso("median", "standard-deviation", "quantile", "quartiles")
+						"(math/mean 10 20 30)",
+						"(math/mean 1.4 3.6)",
+						"(math/mean 2.8M 6.4M)")
+					.seeAlso("math/median", "math/standard-deviation", "math/quantile", "math/quartiles")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1093,20 +1094,20 @@ public class MathFunctions {
 
 	public static VncFunction standard_deviation =
 		new VncFunction(
-				"standard-deviation",
+				"math/standard-deviation",
 				VncFunction
 					.meta()
 					.arglists(
-						"(standard-deviation type coll)")
+						"(math/standard-deviation type coll)")
 					.doc(
 						"Returns the standard deviation of the values for data sample " +
 						"type `:population` or `:sample`.")
 					.examples(
-						"(standard-deviation :sample '(10 8 30 22 15))",
-						"(standard-deviation :population '(10 8 30 22 15))",
-						"(standard-deviation :sample '(1.4 3.6 7.8 9.0 2.2))",
-						"(standard-deviation :sample '(2.8M 6.4M 2.0M 4.4M))")
-					.seeAlso("mean", "median", "quantile", "quartiles")
+						"(math/standard-deviation :sample '(10 8 30 22 15))",
+						"(math/standard-deviation :population '(10 8 30 22 15))",
+						"(math/standard-deviation :sample '(1.4 3.6 7.8 9.0 2.2))",
+						"(math/standard-deviation :sample '(2.8M 6.4M 2.0M 4.4M))")
+					.seeAlso("math/mean", "math/median", "math/quantile", "math/quartiles")
 					.build()
 		) {
 		    // see: https://www.calculator.net/standard-deviation-calculator.html
@@ -1140,19 +1141,19 @@ public class MathFunctions {
 
 	public static VncFunction median =
 		new VncFunction(
-				"median",
+				"math/median",
 				VncFunction
 					.meta()
 					.arglists(
-						"(median coll)")
+						"(math/median coll)")
 					.doc(
 						"Returns the median of the values")
 					.examples(
-						"(median '(3 1 2))",
-						"(median '(3 2 1 4))",
-						"(median '(3.6 1.4 4.8))",
-						"(median '(3.6M 1.4M 4.8M))")
-					.seeAlso("mean", "standard-deviation", "quantile", "quartiles")
+						"(math/median '(3 1 2))",
+						"(math/median '(3 2 1 4))",
+						"(math/median '(3.6 1.4 4.8))",
+						"(math/median '(3.6M 1.4M 4.8M))")
+					.seeAlso("math/mean", "math/standard-deviation", "math/quantile", "math/quartiles")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1175,17 +1176,17 @@ public class MathFunctions {
 		// http://web.mnstate.edu/peil/MDEV102/U4/S36/S363.html
 
 		new VncFunction(
-				"quartiles",
+				"math/quartiles",
 				VncFunction
 					.meta()
 					.arglists(
-						"(quartiles coll)")
+						"(math/quartiles coll)")
 					.doc(
 						"Returns the quartiles (1st, 2nd, and 3rd) of the values")
 					.examples(
-						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
-						"(quartiles '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
-					.seeAlso("mean", "median", "standard-deviation", "quantile")
+						"(math/quartiles '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
+						"(math/quartiles '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
+					.seeAlso("math/mean", "math/median", "math/standard-deviation", "math/quantile")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1213,17 +1214,17 @@ public class MathFunctions {
 
 	public static VncFunction quantile =
 		new VncFunction(
-				"quantile",
+				"math/quantile",
 				VncFunction
 					.meta()
 					.arglists(
-						"(quantile q coll)")
+						"(math/quantile q coll)")
 					.doc(
 						"Returns the quantile [0.0 .. 1.0] of the values")
 					.examples(
-						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
-						"(quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
-					.seeAlso("mean", "median", "standard-deviation", "quartiles")
+						"(math/quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 13, 18))",
+						"(math/quantile 0.5 '(3, 7, 8, 5, 12, 14, 21, 15, 18, 14))")
+					.seeAlso("math/mean", "math/median", "math/standard-deviation", "math/quartiles")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
