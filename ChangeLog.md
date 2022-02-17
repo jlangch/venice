@@ -14,6 +14,7 @@ and this project adheres to
 ### Added
 
 - math functions `exp`, `asin`, `acos`, `atan`
+- functions `nan?` and `infinite?` for double values
 - improvements to documentation
 
 

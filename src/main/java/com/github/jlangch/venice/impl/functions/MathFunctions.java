@@ -370,6 +370,66 @@ public class MathFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction nan_Q =
+		new VncFunction(
+				"nan?",
+				VncFunction
+					.meta()
+					.arglists("(nan? x)")
+					.doc("Returns true if x is a NaN else false")
+					.examples(
+						"(nan? 0.0)",
+						"(nan? (sqrt -1))")
+					.seeAlso("infinite?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal arg = args.first();
+				if (arg instanceof VncDouble) {
+					return VncBoolean.of(((VncDouble)arg).getValue().isNaN());
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'nan?'",
+							Types.getType(arg)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction infinite_Q =
+		new VncFunction(
+				"infinite?",
+				VncFunction
+					.meta()
+					.arglists("(infinite? x)")
+					.doc("Returns true if x is infinite else false")
+					.examples(
+						"(infinite? 1.0E300)",
+						"(infinite? (* 1.0E300 1.0E100))")
+					.seeAlso("nan?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal arg = args.first();
+				if (arg instanceof VncDouble) {
+					return VncBoolean.of(((VncDouble)arg).getValue().isInfinite());
+				}
+				else {
+					throw new VncException(String.format(
+							"Invalid argument type %s while calling function 'infinite?'",
+							Types.getType(arg)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction max =
 		new VncFunction(
 				"max",
@@ -1980,6 +2040,8 @@ public class MathFunctions {
 					.add(neg_Q)
 					.add(even_Q)
 					.add(odd_Q)
+					.add(nan_Q)
+					.add(infinite_Q)
 
 					.add(rand_long)
 					.add(rand_double)

@@ -974,10 +974,27 @@ public class MathFunctionsTest {
 	}	
 
 	@Test
+	public void test_nanQ() {
+		final Venice venice = new Venice();
+		
+		assertFalse((Boolean)venice.eval("(nan? 0.0)"));
+		assertTrue((Boolean)venice.eval("(nan? (sqrt -1))"));
+	}
+
+	@Test
+	public void test_infiniteQ() {
+		final Venice venice = new Venice();
+		
+		assertFalse((Boolean)venice.eval("(infinite? 1.0E300)"));
+		assertTrue((Boolean)venice.eval("(infinite? (* 1.0E300 1.0E100))"));
+	}
+
+	@Test
 	public void test_exp() {
 		final Venice venice = new Venice();
 		
 		assertEquals(22026.465794806718D, (Double)venice.eval("(exp 10.0)"), 0.000000000001D);
+		assertEquals(22026.465794806718D, (Double)venice.eval("(exp 10.0M)"), 0.000000000001D);
 	}
 
 	@Test
@@ -985,6 +1002,7 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertEquals(2.325324579963535D, (Double)venice.eval("(log 10.23)"), 0.0000000000000001D);
+		assertEquals(2.325324579963535D, (Double)venice.eval("(log 10.23M)"), 0.0000000000000001D);
 	}
 
 	@Test
@@ -992,6 +1010,47 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertEquals(1.0098756337121602D, (Double)venice.eval("(log10 10.23)"), 0.0000000000000001D);
+		assertEquals(1.0098756337121602D, (Double)venice.eval("(log10 10.23M)"), 0.0000000000000001D);
+	}
+
+	@Test
+	public void test_sin() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Math.sin(0.0D), (Double)venice.eval("(math/sin 0.0)"), 0.000000000001D);
+		assertEquals(0.0D, (Double)venice.eval("(math/sin math/PI)"), 0.000000000001D);
+		assertEquals(1.0D, (Double)venice.eval("(math/sin (/ math/PI 2.0))"), 0.000000000001D);
+		assertEquals(0.5877852522924731D, (Double)venice.eval("(math/sin (* math/PI 0.2))"), 0.000000000001D);
+	}
+
+	@Test
+	public void test_cos() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Math.cos(0.0D), (Double)venice.eval("(math/cos 0.0)"), 0.000000000001D);
+		assertEquals(-1.0D, (Double)venice.eval("(math/cos math/PI)"), 0.000000000001D);
+		assertEquals(0.0D, (Double)venice.eval("(math/cos (/ math/PI 2.0))"), 0.000000000001D);
+		assertEquals(0.8090169943749475, (Double)venice.eval("(math/cos (* math/PI 0.2))"), 0.000000000001D);
+	}
+
+	@Test
+	public void test_tan() {
+		final Venice venice = new Venice();
+		
+		assertEquals(0.0D, (Double)venice.eval("(math/tan 0.0)"), 0.000000000001D);
+		assertEquals(0.0D, (Double)venice.eval("(math/tan math/PI)"), 0.000000000001D);
+		assertEquals(0.0D, (Double)venice.eval("(math/tan (* -1.0 math/PI))"), 0.000000000001D);
+		assertEquals(0.7265425280053609, (Double)venice.eval("(math/tan (* math/PI 0.2))"), 0.000000000001D);
+	}
+
+	@Test
+	public void test_asin() {
+		final Venice venice = new Venice();
+		
+		assertEquals(Math.asin(0.0D), (Double)venice.eval("(math/asin 0.0)"), 0.000000000001D);
+		assertEquals(Double.NaN, (Double)venice.eval("(math/asin math/PI)"), 0.000000000001D);
+		assertEquals(Double.NaN, (Double)venice.eval("(math/asin (/ math/PI 2.0))"), 0.000000000001D);
+		assertEquals(0.6793899267509509, (Double)venice.eval("(math/asin (* math/PI 0.2))"), 0.000000000001D);
 	}
 
 }

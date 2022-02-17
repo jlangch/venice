@@ -390,6 +390,11 @@ public class DocGenerator {
 		test.addItem(getDocItem("double?"));
 		test.addItem(getDocItem("decimal?"));
 
+		final DocSection nan = new DocSection("Nan/Infinite", "primitives.nan");
+		numbers.addSection(nan);
+		nan.addItem(getDocItem("nan?"));
+		nan.addItem(getDocItem("infinite?"));
+
 		final DocSection bigdecimal = new DocSection("BigDecimal", "primitives.bigdecimal");
 		numbers.addSection(bigdecimal);
 		bigdecimal.addItem(getDocItem("dec/add"));
