@@ -53,6 +53,13 @@ public class MathFunctionsTest {
 	}
 
 	@Test
+	public void test_c() {
+		final Venice venice = new Venice();
+		
+		assertEquals(299792.458D, (Double)venice.eval("math/c"), 0.001D);
+	}
+
+	@Test
 	public void test_abs() {
 		final Venice venice = new Venice();
 
@@ -965,5 +972,26 @@ public class MathFunctionsTest {
 		assertTrue((Boolean)venice.eval("(zero? 0N)"));
 		assertFalse((Boolean)venice.eval("(zero? 3N)"));
 	}	
+
+	@Test
+	public void test_exp() {
+		final Venice venice = new Venice();
+		
+		assertEquals(22026.465794806718D, (Double)venice.eval("(exp 10.0)"), 0.000000000001D);
+	}
+
+	@Test
+	public void test_log() {
+		final Venice venice = new Venice();
+		
+		assertEquals(2.325324579963535D, (Double)venice.eval("(log 10.23)"), 0.0000000000000001D);
+	}
+
+	@Test
+	public void test_log10() {
+		final Venice venice = new Venice();
+		
+		assertEquals(1.0098756337121602D, (Double)venice.eval("(log10 10.23)"), 0.0000000000000001D);
+	}
 
 }

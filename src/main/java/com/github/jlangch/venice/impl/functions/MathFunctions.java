@@ -1922,8 +1922,14 @@ public class MathFunctions {
 			new VncHashMap
 					.Builder()
 
-					.put(new VncSymbol("math", "E", null), new VncDouble(Math.E))
 					.put(new VncSymbol("math", "PI", null), new VncDouble(Math.PI))
+					
+					// Euler's number
+					.put(new VncSymbol("math", "E", null), new VncDouble(Math.E))
+					
+					// Speed of light km/s
+					.put(new VncSymbol("math", "c", null), new VncDouble(299792.458D))
+								 
 
 					.add(add)
 					.add(subtract)
