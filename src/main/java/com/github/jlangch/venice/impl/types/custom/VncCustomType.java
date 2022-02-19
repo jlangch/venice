@@ -268,7 +268,8 @@ public class VncCustomType extends VncMap {
 		return fn == null
 				? VncOrderedMap
 					.of(new VncKeyword(":custom-type*"), type) 
-					.putAll(values).toString()
+					.putAll(values)
+					.toString()
 				: customToString(fn);
 	}
 
@@ -279,7 +280,8 @@ public class VncCustomType extends VncMap {
 		return fn == null
 				? VncOrderedMap
 					.of(new VncKeyword(":custom-type*"), type) 
-					.putAll(values).toString(print_readably)
+					.putAll(values)
+					.toString(print_readably)
 				: customToString(fn);
 	}
 	
