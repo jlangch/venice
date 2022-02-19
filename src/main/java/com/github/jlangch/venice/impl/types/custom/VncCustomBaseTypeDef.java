@@ -1,7 +1,10 @@
 package com.github.jlangch.venice.impl.types.custom;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
@@ -59,9 +62,18 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 	public String toString(final boolean print_readably) {
 		return toString();
 	}
+
+	public void setCustomToStringFn(final VncFunction fn) {
+		customToStringFn.set(fn);
+	}
+
+	public VncFunction getCustomToStringFn() {
+		return customToStringFn.get();
+	}
 	
 	
 	private static final long serialVersionUID = -1639883423759533879L;
 	
 	private final VncKeyword type;
+	private final AtomicReference<VncFunction> customToStringFn = new AtomicReference<>();
 }

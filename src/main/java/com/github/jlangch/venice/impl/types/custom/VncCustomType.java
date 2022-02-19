@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -264,7 +263,7 @@ public class VncCustomType extends VncMap {
 
 	@Override 
 	public String toString() {
-		final VncFunction fn = customToStringFn.get();
+		final VncFunction fn = typeDef.getCustomToStringFn();
 		
 		return fn == null
 				? VncOrderedMap
@@ -275,27 +274,18 @@ public class VncCustomType extends VncMap {
 
 	@Override
 	public String toString(final boolean print_readably) {
-		final VncFunction fn = customToStringFn.get();
+		final VncFunction fn = typeDef.getCustomToStringFn();
 		
 		return fn == null
 				? VncOrderedMap
 					.of(new VncKeyword(":custom-type*"), type) 
 					.putAll(values).toString(print_readably)
-					: customToString(fn);
-	}
-
-	public void setCustomToStringFn(final VncFunction fn) {
-		customToStringFn.set(fn);
+				: customToString(fn);
 	}
 	
 	private String customToString(final VncFunction fn) {
-		final VncVal s = fn.apply(VncList.empty());
-		if (s == Constants.Nil) {
-			return null;
-		}
-		else {
-			return s.toString();
-		}
+		final VncVal s = fn.apply(VncList.of(this));
+		return s == Constants.Nil ? null : s.toString();
 	}
 
 	
@@ -306,5 +296,4 @@ public class VncCustomType extends VncMap {
 	private final VncKeyword type;
 	private final VncCustomTypeDef typeDef;
 	private final VncMap values;
-	private final AtomicReference<VncFunction> customToStringFn = new AtomicReference<>();
 }

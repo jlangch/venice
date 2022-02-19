@@ -68,6 +68,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
+import com.github.jlangch.venice.impl.types.custom.VncCustomBaseTypeDef;
 import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -595,7 +596,7 @@ public class SpecialFormsHandler {
 		
 		final VncProtocol protocol = (VncProtocol)p;		
 		final VncList fnSpecList = args.slice(2);
-
+		final boolean isObjectProtocol = protocol.getName().equals(new VncSymbol("Object"));
 
 		for(VncVal fnSpec : fnSpecList.getJavaList()) {
 			if (!Types.isVncList(fnSpec)) {
@@ -607,7 +608,25 @@ public class SpecialFormsHandler {
 			}
 			
 			// (foo [x] nil)
-			extendFnSpec(type, (VncList)fnSpec, protocol, env);
+			VncFunction fn = extendFnSpec(type, (VncList)fnSpec, protocol, env);
+			
+			// Handle 'Object' protocol 'toString' function for custom types
+			if (isObjectProtocol) {
+				VncVal fnName = ((VncList)fnSpec).first();
+				if (fnName instanceof VncSymbol && ((VncSymbol)fnName).getSimpleName().equals("toString")) {
+					final VncKeyword qualifiedType = type.hasNamespace() 
+														? type 
+														: type.withNamespace(Namespaces.getCurrentNS());
+			
+					final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
+					if (typeDef instanceof VncCustomBaseTypeDef) {
+						final VncCustomBaseTypeDef customBaseTypeDef = (VncCustomBaseTypeDef)typeDef;
+	
+						// register custom 'toSTring' function with the custom type definition
+						customBaseTypeDef.setCustomToStringFn(fn);
+					}
+				}
+			}
 		}
 		
 		protocol.register(type);
@@ -1538,7 +1557,7 @@ public class SpecialFormsHandler {
 								fnName.getMeta()));
 	}
 
-	private void extendFnSpec(
+	private VncFunction extendFnSpec(
 			final VncKeyword type,
 			final VncList fnSpec,
 			final VncProtocol protocol,
@@ -1576,6 +1595,8 @@ public class SpecialFormsHandler {
 		
 		// Register the function for the type on the protocol
 		((VncProtocolFunction)protocolFn).register(type, fn);
+		
+		return fn;
 	}
 
 	private static boolean isNonEmptySequence(final VncVal x) {
