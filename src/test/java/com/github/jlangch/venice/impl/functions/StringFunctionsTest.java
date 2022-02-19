@@ -70,25 +70,37 @@ public class StringFunctionsTest {
 	public void test_str_format() {
 		final Venice venice = new Venice();
 		
-		Locale.setDefault(new Locale("de", "CH")); // Java 11
-		
-		assertEquals(":        ab:", venice.eval("(str/format \":%10s:\" \"ab\")"));
-		assertEquals(":ab        :", venice.eval("(str/format \":%-10s:\" \"ab\")"));
-		assertEquals("1.4500", venice.eval("(str/format \"%.4f\" 1.45)"));
-		assertEquals("0012", venice.eval("(str/format \"%04d\" 12)"));
-		assertEquals("0012::0034", venice.eval("(str/format \"%04d::%04d\" 12 34)"));
+		final Locale old = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("de", "CH")); // Java 11
+			
+			assertEquals(":        ab:", venice.eval("(str/format \":%10s:\" \"ab\")"));
+			assertEquals(":ab        :", venice.eval("(str/format \":%-10s:\" \"ab\")"));
+			assertEquals("1.4500", venice.eval("(str/format \"%.4f\" 1.45)"));
+			assertEquals("0012", venice.eval("(str/format \"%04d\" 12)"));
+			assertEquals("0012::0034", venice.eval("(str/format \"%04d::%04d\" 12 34)"));
+		}
+		finally {
+			Locale.setDefault(old);
+		}
 	}
 
 	@Test
 	public void test_str_format_with_local() {
 		final Venice venice = new Venice();
 		
-		Locale.setDefault(new Locale("de", "CH")); // Java 11
-		
-		assertEquals("1,4500", venice.eval("(str/format (. :java.util.Locale :new \"de\" \"DE\") \"%.4f\" 1.45)"));
-		assertEquals("1,4500", venice.eval("(str/format (. :java.util.Locale :GERMANY) \"%.4f\" 1.45)"));
-		assertEquals("1,4500", venice.eval("(str/format [ \"de\" ] \"%.4f\" 1.45)"));
-		assertEquals("1,4500", venice.eval("(str/format [ \"de\" \"DE\" ] \"%.4f\" 1.45)"));
+		final Locale old = Locale.getDefault();
+		try {
+			Locale.setDefault(new Locale("de", "CH")); // Java 11
+			
+			assertEquals("1,4500", venice.eval("(str/format (. :java.util.Locale :new \"de\" \"DE\") \"%.4f\" 1.45)"));
+			assertEquals("1,4500", venice.eval("(str/format (. :java.util.Locale :GERMANY) \"%.4f\" 1.45)"));
+			assertEquals("1,4500", venice.eval("(str/format [ \"de\" ] \"%.4f\" 1.45)"));
+			assertEquals("1,4500", venice.eval("(str/format [ \"de\" \"DE\" ] \"%.4f\" 1.45)"));
+		}
+		finally {
+			Locale.setDefault(old);
+		}
 	}
 
 	@Test

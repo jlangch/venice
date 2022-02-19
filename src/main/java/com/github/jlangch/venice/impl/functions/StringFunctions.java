@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
@@ -973,18 +974,23 @@ public class StringFunctions {
 						"(str/format [ \"de\" \"DE\"] \"value: %,d\" 2345000)")
 					.build()
 		) {
-			public VncVal apply(final VncList args) {
-				if (Types.isVncString(args.first())) {
-					final VncString fmt = (VncString)args.first();
-					final VncList fmtArgs = args.rest();
-					return new VncString(String.format(fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
-				}
-				else {
-					final Locale locale = toLocale(args.first());
-					final VncString fmt = (VncString)args.second();
-					final VncList fmtArgs = args.slice(2);
-					return new VncString(String.format(locale, fmt.getValue(), toJavaObjects(fmtArgs).toArray()));
-				}
+			public VncVal apply(final VncList args_) {
+				final Locale locale = Types.isVncString(args_.first()) ? null : toLocale(args_.first());				
+				final VncList args = locale == null ? args_ : args_.rest();
+								
+				final VncString fmt = Coerce.toVncString(args.first());
+				
+				final List<Object> params = args.rest()
+												.stream()
+												.map(v -> v instanceof VncNumber || v instanceof VncBoolean
+														    ? v.convertToJavaObject()
+														    : v.toString(false))
+												.collect(Collectors.toList());
+
+				return new VncString(String.format(
+										locale == null ? Locale.getDefault() : locale, 
+										fmt.getValue(), 
+										params.toArray()));
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -2023,13 +2029,6 @@ public class StringFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
-
-	private static List<Object> toJavaObjects(final VncList list) {
-		return list
-				.stream()
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toList());
-	}
 
 	private static Locale toLocale(final VncVal locale) {
 		if (Types.isVncJavaObject(locale, Locale.class)) {
