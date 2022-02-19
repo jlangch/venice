@@ -128,7 +128,7 @@ resulting value will not comply with the custom type's rules anymore.
 
 **Equality:**
 
-`deftype` already implements type-and-value-based equality.
+`deftype` already implements type and value-based equality.
 
 ```clojure
 (do
