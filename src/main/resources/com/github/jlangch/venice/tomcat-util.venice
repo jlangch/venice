@@ -180,7 +180,18 @@
   rm-pid-file [tc-home]
 
   (validate-installed tc-home)
-  (io/delete-file (io/file tc-home "bin/catalina.pid")))
+  (io/delete-file (get-pid-file tc-home)))
+
+
+(defn
+  ^{ :arglists '("(has-pid-file? tc-home)")
+     :doc "Returns true if the PID file 'catalina.pid' exists otherwise false."
+     :examples '("(tc-util/has-pid-file? \"/Users/tools/apache-tomcat-9.0.26\")") }
+
+  has-pid-file? [tc-home]
+
+  (validate-installed tc-home)
+  (io/exists-file? (get-pid-file tc-home)))
 
 
 (defn
@@ -432,7 +443,7 @@
 
   (validate-installed tc-home)
   (when (running? tc-home)
-    (throw (ex :VncException 
+    (throw (ex :VncException
                "Tomcat is running. Please stop it before uninstalling!")))
   (io/delete-file-tree tc-home))
 
