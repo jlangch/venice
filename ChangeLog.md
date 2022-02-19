@@ -15,6 +15,7 @@ and this project adheres to
 
 - math functions `exp`, `asin`, `acos`, `atan`
 - functions `nan?` and `infinite?` for double values
+- Object protocol to support customized toString conversion for custom datatypes
 - improvements to documentation
 
 
