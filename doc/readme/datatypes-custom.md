@@ -159,7 +159,7 @@ All Custom types support out-of-the-box  _toString_  conversion:
   ; => {:custom-type* :user/complex :real 2 :imaginary 3}
 ```
 
-The core  _Object_  protocol
+The predefined core  _Object_  protocol
 
 ```clojure
 (defprotocol Object
