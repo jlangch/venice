@@ -1087,7 +1087,7 @@
 
 
 (defprotocol Object
-    (toString [self] (str self)))
+  (toString [self] (. self :toString)))
 
 
 (defn

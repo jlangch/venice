@@ -25,11 +25,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
@@ -261,16 +264,38 @@ public class VncCustomType extends VncMap {
 
 	@Override 
 	public String toString() {
-		return VncOrderedMap
-				.of(new VncKeyword(":custom-type*"), type) 
-				.putAll(values).toString();
+		final VncFunction fn = customToStringFn.get();
+		
+		return fn == null
+				? VncOrderedMap
+					.of(new VncKeyword(":custom-type*"), type) 
+					.putAll(values).toString()
+				: customToString(fn);
 	}
 
 	@Override
 	public String toString(final boolean print_readably) {
-		return VncOrderedMap
-				.of(new VncKeyword(":custom-type*"), type) 
-				.putAll(values).toString(print_readably);
+		final VncFunction fn = customToStringFn.get();
+		
+		return fn == null
+				? VncOrderedMap
+					.of(new VncKeyword(":custom-type*"), type) 
+					.putAll(values).toString(print_readably)
+					: customToString(fn);
+	}
+
+	public void setCustomToStringFn(final VncFunction fn) {
+		customToStringFn.set(fn);
+	}
+	
+	private String customToString(final VncFunction fn) {
+		final VncVal s = fn.apply(VncList.empty());
+		if (s == Constants.Nil) {
+			return null;
+		}
+		else {
+			return s.toString();
+		}
 	}
 
 	
@@ -281,4 +306,5 @@ public class VncCustomType extends VncMap {
 	private final VncKeyword type;
 	private final VncCustomTypeDef typeDef;
 	private final VncMap values;
+	private final AtomicReference<VncFunction> customToStringFn = new AtomicReference<>();
 }
