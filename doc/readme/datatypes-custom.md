@@ -126,7 +126,7 @@ _Note:_ `dissoc` on custom types will turn the custom type back into a standard 
 resulting value will not comply with the custom type's rules anymore.
 
 
-Equality:
+**Equality:**
 
 `deftype` already implements type-and-value-based equality.
 
@@ -141,6 +141,49 @@ Equality:
   (== (complex. 1 1) (complex. 1 1))  ; => true
   (== (complex. 1 1) (complex. 1 2))  ; => false
   (== (complex. 1 1) 100))            ; => false
+```
+
+
+
+**ToString conversion:**
+
+All Custom types support out-of-the-box  _toString_  conversion:
+
+ ```clojure
+(do
+  (deftype :complex [real      :long
+                     imaginary :long?])
+                     
+  (println (complex. 2 3)))
+  
+  ; => {:custom-type* :user/complex :real 2 :imaginary 3}
+```
+
+The core  _Object_  protocol
+
+```clojure
+(defprotocol Object
+  (toString [self] (. self :toString)))
+```
+
+can be used to customize the  _toString_  conversion:
+
+```clojure
+(do
+  (defn format [cplx]
+     (let [re (:real cplx)
+           im (:imaginary cplx)]
+       (str/format "(%s %s %si)" 
+                    re
+                    (if (neg? im) "-" "+")
+                    (abs im))))  
+  
+  (deftype :complex [real :long, imaginary :long]
+     Object
+       (toString [self] (format self)))
+       
+  (println (complex. 1 2))      ; => (1 + 2i)
+  (println (complex. 1 -2)))    ; => (1 - 2i)
 ```
 
 
