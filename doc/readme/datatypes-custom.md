@@ -306,7 +306,7 @@ Equality:
 
   (deftype-or :card-type :mastercard :visa)
 
-  (deftype :credit-card [type    :card-type 
+  (deftype :credit-card [type    :card-type
                          number  :card-number])
 
   (deftype :check [number :check-number])
@@ -325,6 +325,21 @@ Equality:
 
 
   ; ---------------------------------------------------------
+  ; use the Object protocol to customize toString
+  ; ---------------------------------------------------------
+  (extend :foo/credit-card core/Object
+    (toString [this] (str/format "%s '%s'",
+                                 (:type this)
+                                 (:number this))))
+
+  (extend :foo/payment core/Object
+    (toString [this] (str/format "%s %s by %s",
+                                 (:amount this)
+                                 (:currency this)
+                                 (:method this))))
+
+
+  ; ---------------------------------------------------------
   ; build a credit card payment
   ; ---------------------------------------------------------
   (def payment (payment.
@@ -335,16 +350,13 @@ Equality:
                               (card-type. :mastercard)
                               (card-number. "0800-0000-0000-0000")))))
 
+
   ; ---------------------------------------------------------
   ; print the payment
   ; ---------------------------------------------------------
-  (println (str/format "Payment: %s %s by %s '%s'"
-                       (:amount payment)
-                       (:currency payment)
-                       (-> payment :method :type)
-                       (-> payment :method :number)))
-            
-  ; => "Payment: 2000.00 CHF by mastercard '0800-0000-0000-0000'"  
+  (println "Payment:" payment)
+
+  ; => "Payment: 2000.00 CHF by mastercard '0800-0000-0000-0000'"
 )
 ```
 
