@@ -1086,7 +1086,28 @@
       (fn [] (do ~@body))))
 
 
-(defprotocol Object
+(defprotocol
+  ^{ :doc """
+          Defines to protocol to customize the `toString` function of
+          custom datatypes.
+
+          ```
+          (defprotocol Object
+            (toString [self] (. self :toString)))
+          ```
+          """
+     :examples '(
+         """
+         (do
+           (deftype :complex [re :long, im :long]
+             Object
+               (toString [this] (str/format "[%s %s]" (:re this) (:im this))))
+
+           (println (complex. 1 2)))
+         """ ) }
+
+  Object
+
   (toString [self] (. self :toString)))
 
 
