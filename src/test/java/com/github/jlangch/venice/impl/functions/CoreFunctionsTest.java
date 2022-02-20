@@ -2480,6 +2480,10 @@ public class CoreFunctionsTest {
 
 		assertTrue((Boolean)venice.eval("(< 2 3 4 5 6 7 8 9)"));
 
+		assertTrue((Boolean)venice.eval("(let [x 5] (< 0 x 9))"));
+		assertFalse((Boolean)venice.eval("(let [x 0] (< 0 x 9))"));
+		assertFalse((Boolean)venice.eval("(let [x 9] (< 0 x 9))"));
+
 		// Double
 		assertTrue((Boolean)venice.eval("(< 2.0 3.0)"));
 		assertFalse((Boolean)venice.eval("(< 2.0 2.0)"));
@@ -2493,6 +2497,8 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(< 2.0 3N)"));
 		assertFalse((Boolean)venice.eval("(< 2.0 2N)"));
 		assertFalse((Boolean)venice.eval("(< 2.0 1N)"));
+		
+		assertTrue((Boolean)venice.eval("(let [x 5.0] (< 0.0 x 9.0))"));
 
 		// Decimal
 		assertTrue((Boolean)venice.eval("(< 2.0M 3.0M)"));
@@ -2508,6 +2514,10 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(< 2.0M 2N)"));
 		assertFalse((Boolean)venice.eval("(< 2.0M 1N)"));
 
+		assertTrue((Boolean)venice.eval("(let [x 5.0M] (< 0.0M x 9.0M))"));
+		assertFalse((Boolean)venice.eval("(let [x 0.0M] (< 0.0M x 9.0M))"));
+		assertFalse((Boolean)venice.eval("(let [x 9.0M] (< 0.0M x 9.0M))"));
+
 		// BigInteger
 		assertTrue((Boolean)venice.eval("(< 2N 3N)"));
 		assertFalse((Boolean)venice.eval("(< 2N 2N)"));
@@ -2521,6 +2531,10 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(< 2N 3.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2N 2.0M)"));
 		assertFalse((Boolean)venice.eval("(< 2N 1.0M)"));
+
+		assertTrue((Boolean)venice.eval("(let [x 5N] (< 0N x 9N))"));
+		assertFalse((Boolean)venice.eval("(let [x 0N] (< 0N x 9N))"));
+		assertFalse((Boolean)venice.eval("(let [x 9N] (< 0N x 9N))"));
 	}
 
 	@Test
@@ -2547,6 +2561,12 @@ public class CoreFunctionsTest {
 		assertFalse((Boolean)venice.eval("(<= 2 3 2)"));
 
 		assertTrue((Boolean)venice.eval("(<= 2 3 4 5 6 7 8 9)"));
+		
+		assertTrue((Boolean)venice.eval("(let [x 1] (<= 1 x 8))"));
+		assertTrue((Boolean)venice.eval("(let [x 5] (<= 1 x 8))"));
+		assertTrue((Boolean)venice.eval("(let [x 8] (<= 1 x 8))"));
+		assertFalse((Boolean)venice.eval("(let [x 0] (<= 1 x 8))"));
+		assertFalse((Boolean)venice.eval("(let [x 9] (<= 1 x 8))"));
 
 		// Double
 		assertTrue((Boolean)venice.eval("(<= 2.0 3.0)"));
@@ -2561,6 +2581,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2.0 3N)"));
 		assertTrue((Boolean)venice.eval("(<= 2.0 2N)"));
 		assertFalse((Boolean)venice.eval("(<= 2.0 1N)"));
+		
+		assertTrue((Boolean)venice.eval("(let [x 1.0] (<= 1.0 x 8.0))"));
+		assertTrue((Boolean)venice.eval("(let [x 5.0] (<= 1.0 x 8.0))"));
+		assertTrue((Boolean)venice.eval("(let [x 8.0] (<= 1.0 x 8.0))"));
+		assertFalse((Boolean)venice.eval("(let [x 0.0] (<= 1.0 x 8.0))"));
+		assertFalse((Boolean)venice.eval("(let [x 9.0] (<= 1.0 x 8.0))"));
 
 		// Decimal
 		assertTrue((Boolean)venice.eval("(<= 2.0M 3.0M)"));
@@ -2576,6 +2602,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2.0M 2N)"));
 		assertFalse((Boolean)venice.eval("(<= 2.0M 1N)"));
 		
+		assertTrue((Boolean)venice.eval("(let [x 1.0M] (<= 1.0M x 8.0M))"));
+		assertTrue((Boolean)venice.eval("(let [x 5.0M] (<= 1.0M x 8.0M))"));
+		assertTrue((Boolean)venice.eval("(let [x 8.0M] (<= 1.0M x 8.0M))"));
+		assertFalse((Boolean)venice.eval("(let [x 0.0M] (<= 1.0M x 8.0M))"));
+		assertFalse((Boolean)venice.eval("(let [x 9.0M] (<= 1.0M x 8.0M))"));
+		
 		// BigInteger
 		assertTrue((Boolean)venice.eval("(<= 2N 3N)"));
 		assertTrue((Boolean)venice.eval("(<= 2N 2N)"));
@@ -2589,6 +2621,12 @@ public class CoreFunctionsTest {
 		assertTrue((Boolean)venice.eval("(<= 2N 3.0M)"));
 		assertTrue((Boolean)venice.eval("(<= 2N 2.0M)"));
 		assertFalse((Boolean)venice.eval("(<= 2N 1.0M)"));
+		
+		assertTrue((Boolean)venice.eval("(let [x 1N] (<= 1N x 8N))"));
+		assertTrue((Boolean)venice.eval("(let [x 5N] (<= 1N x 8N))"));
+		assertTrue((Boolean)venice.eval("(let [x 8N] (<= 1N x 8N))"));
+		assertFalse((Boolean)venice.eval("(let [x 0N] (<= 1N x 8N))"));
+		assertFalse((Boolean)venice.eval("(let [x 9N] (<= 1N x 8N))"));
 	}
 
 	@Test

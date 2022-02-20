@@ -1093,7 +1093,13 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(< x y)", "(< x y & more)")
 					.doc("Returns true if the numbers are in monotonically increasing order, otherwise false.")
-					.examples("(< 2 3)", "(< 2 3.0)", "(< 2 3.0M)", "(< 2 3 4 5 6 7)")
+					.examples(
+						"(< 2 3)", 
+						"(< 2 3.0)", 
+						"(< 2 3.0M)", 
+						"(< 2 3 4 5 6 7)",
+						"(let [x 10] \n" +
+						"  (< 0 x 100)) ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1142,7 +1148,14 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(<= x y)", "(<= x y & more)")
 					.doc("Returns true if the numbers are in monotonically non-decreasing order, otherwise false.")
-					.examples("(<= 2 3)", "(<= 3 3)", "(<= 2 3.0)", "(<= 2 3.0M)", "(<= 2 3 4 5 6 7)")
+					.examples(
+						"(<= 2 3)", 
+						"(<= 3 3)", 
+						"(<= 2 3.0)", 
+						"(<= 2 3.0M)", 
+						"(<= 2 3 4 5 6 7)",
+						"(let [x 10] \n" +
+						"  (<= 0 x 100)) ")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1191,7 +1204,12 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(> x y)", "(> x y & more)")
 					.doc("Returns true if the numbers are in monotonically decreasing order, otherwise false.")
-					.examples("(> 3 2)", "(> 3 3)", "(> 3.0 2)", "(> 3.0M 2)", "(> 7 6 5 4 3 2)")
+					.examples(
+						"(> 3 2)", 
+						"(> 3 3)", 
+						"(> 3.0 2)", 
+						"(> 3.0M 2)", 
+						"(> 7 6 5 4 3 2)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1240,7 +1258,12 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(>= x y)", "(>= x y & more)")
 					.doc("Returns true if the numbers are in monotonically non-increasing order, otherwise false.")
-					.examples("(>= 3 2)", "(>= 3 3)", "(>= 3.0 2)", "(>= 3.0M 2)", "(>= 7 6 5 4 3 2)")
+					.examples(
+						"(>= 3 2)", 
+						"(>= 3 3)", 
+						"(>= 3.0 2)", 
+						"(>= 3.0M 2)", 
+						"(>= 7 6 5 4 3 2)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
