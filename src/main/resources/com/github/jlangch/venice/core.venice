@@ -1088,8 +1088,10 @@
 
 (defprotocol
   ^{ :doc """
-          Defines to protocol to customize the `toString` function of
+          Defines a protocol to customize the `toString` function of
           custom datatypes.
+
+          Definition:
 
           ```
           (defprotocol Object
@@ -1097,14 +1099,15 @@
           ```
           """
      :examples '(
-         """
-         (do
-           (deftype :complex [re :long, im :long]
-             Object
-               (toString [this] (str/format "[%s %s]" (:re this) (:im this))))
+          """
+          (do
+            (deftype :complex [re :long, im :long]
+              Object
+                (toString [this] (str/format "[%s %s]" (:re this) (:im this))))
 
-           (println (complex. 1 2)))
-         """ ) }
+            (println (complex. 1 2)))
+          """ )
+     :see-also '("deftype") }
 
   Object
 
