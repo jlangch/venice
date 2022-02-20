@@ -49,6 +49,7 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
@@ -180,6 +181,7 @@ public class DocGenerator {
 		functions.addSection(new DocSection("Transducers", "transducers"));
 		functions.addSection(new DocSection("Namespaces", "namespace"));
 		functions.addSection(new DocSection("Types", "types"));
+		functions.addSection(new DocSection("Protocols", "protocols"));
 		functions.addSection(new DocSection("Exceptions", "exceptions"));
 		content.add(functions);
 		
@@ -267,6 +269,7 @@ public class DocGenerator {
 				getSpecialFormsSection(),
 				getExceptionsSection(),
 				getTypesSection(),
+				getProtocolsSection(),
 				getNamespaceSection(),
 				getJavaInteropSection(),
 				getReplSection(),
@@ -1420,6 +1423,18 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getProtocolsSection() {
+		final DocSection section = new DocSection("Protocols", "protocols");
+
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection core = new DocSection("Core", "protocols.core");
+		all.addSection(core);		
+		core.addItem(getDocItem("Object"));
+		
+		return section;
+	}
 	private DocSection getTransducersSection() {
 		final DocSection section = new DocSection("Transducers", "transducers");
 
@@ -2673,34 +2688,61 @@ public class DocGenerator {
 	}
 
 	private DocItem getDocItem_(final String name, final boolean runExamples, final boolean catchEx) {
-		final VncFunction fn = findFunction(name);
+		final VncProtocol crossRefProtocol = findProtocol(name);
+		if (crossRefProtocol != null) {
+			final String fnDescr = crossRefProtocol.getDoc() == Constants.Nil 
+							? "" 
+							: ((VncString)crossRefProtocol.getDoc()).getValue();
 
-		if (fn != null) {
-			final String fnDescr = fn.getDoc() == Constants.Nil 
-										? "" 
-										: ((VncString)fn.getDoc()).getValue();
-			
 			final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
 			
 			final String descrXmlStyled = MARKDOWN_FN_DESCR
-											? Markdown.parse(fnDescr).renderToHtml()
-											: null;
+									? Markdown.parse(fnDescr).renderToHtml()
+									: null;
 			
 			return new DocItem(
-					name, 
-					toStringList(fn.getArgLists(), name, ":arglists"), 
-					descr,
-					descrXmlStyled,
-					runExamples(
-							name, 
-							toStringList(fn.getExamples(), name, ":examples"), 
-							runExamples, 
-							catchEx),
-					createCrossRefs(name, fn),
-					id(name));
+						name, 
+						new ArrayList<>(), 
+						descr,
+						descrXmlStyled,
+						runExamples(
+								name, 
+								toStringList(crossRefProtocol.getExamples(), name, ":examples"), 
+								runExamples, 
+								catchEx),
+						createCrossRefs(name, crossRefProtocol.getSeeAlso()),
+						id(name));
+			
 		}
 		else {
-			throw new RuntimeException(String.format("Unknown doc function %s", name));
+			final VncFunction fn = findFunction(name);	
+			if (fn != null) {
+				final String fnDescr = fn.getDoc() == Constants.Nil 
+											? "" 
+											: ((VncString)fn.getDoc()).getValue();
+				
+				final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
+				
+				final String descrXmlStyled = MARKDOWN_FN_DESCR
+												? Markdown.parse(fnDescr).renderToHtml()
+												: null;
+				
+				return new DocItem(
+							name, 
+							toStringList(fn.getArgLists(), name, ":arglists"), 
+							descr,
+							descrXmlStyled,
+							runExamples(
+									name, 
+									toStringList(fn.getExamples(), name, ":examples"), 
+									runExamples, 
+									catchEx),
+							createCrossRefs(name, fn.getSeeAlso()),
+							id(name));
+			}
+			else {
+				throw new RuntimeException(String.format("Unknown doc function %s", name));
+			}
 		}
 	}
 
@@ -2802,29 +2844,46 @@ public class DocGenerator {
 		return getFunction(name);
 	}
 	
-	private List<CrossRef> createCrossRefs(final String parentName, final VncFunction fn) {
+	private VncProtocol findProtocol(final String name) {
+		final VncVal val = env.getOrNil(new VncSymbol(name));
+		return val instanceof VncProtocol ? (VncProtocol)val : null;
+	}
+	
+	private List<CrossRef> createCrossRefs(final String parentName, final VncList seeAlso) {
 		final List<CrossRef> crossRefs = new ArrayList<>();
 		
-		final VncList seeAlso = fn.getSeeAlso();
 		seeAlso.forEach(v -> {
 			final String crossRefFnName = ((VncString)v).getValue();
 			
-			final VncFunction crossRefFn = findFunction(crossRefFnName);
-			if (crossRefFn != null) {
-				String doc = crossRefFn.getDoc() == Constants.Nil 
+			final VncProtocol crossRefProtocol = findProtocol(crossRefFnName);
+			if (crossRefProtocol != null) {
+				String doc = crossRefProtocol.getDoc() == Constants.Nil 
 								? null 
-								: ((VncString)crossRefFn.getDoc()).getValue();
-				
+								: ((VncString)crossRefProtocol.getDoc()).getValue();
+		
 				if (doc != null) {
 					crossRefs.add(
 						createCrossRef(crossRefFnName, getCrossRefDescr(doc)));
-				}
+				}			
 			}
 			else {
-				throw new RuntimeException(String.format(
-							"Missing cross reference function %s -> %s",
-							parentName,
-							crossRefFnName));
+				final VncFunction crossRefFn = findFunction(crossRefFnName);
+				if (crossRefFn != null) {
+					String doc = crossRefFn.getDoc() == Constants.Nil 
+									? null 
+									: ((VncString)crossRefFn.getDoc()).getValue();
+					
+					if (doc != null) {
+						crossRefs.add(
+							createCrossRef(crossRefFnName, getCrossRefDescr(doc)));
+					}
+				}
+				else {
+					throw new RuntimeException(String.format(
+								"Missing cross reference function %s -> %s",
+								parentName,
+								crossRefFnName));
+				}
 			}
 		});
 

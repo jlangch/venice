@@ -30,6 +30,7 @@ import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
@@ -114,6 +115,18 @@ public class VncProtocol extends VncVal {
 	@Override 
 	public String toString(final boolean print_readably) {
 		return name.toString(print_readably);
+	}
+	
+	public VncVal getDoc() { 
+		return getMetaVal(MetaUtil.DOC); 
+	}
+	
+	public VncList getExamples() { 
+		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
+	}
+	
+	public VncList getSeeAlso() { 
+		return (VncList)getMetaVal(MetaUtil.SEE_ALSO, VncList.empty());
 	}
 
 	

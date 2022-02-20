@@ -675,7 +675,7 @@ public class SpecialFormsDoc {
 )
 					.seeAlso(
 						"deftype?", "deftype-of", "deftype-or", ".:", 
-						"deftype-describe", "assoc", "dissoc")
+						"deftype-describe", "Object", "assoc", "dissoc")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
