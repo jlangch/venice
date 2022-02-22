@@ -170,17 +170,15 @@ can be used to customize the  _toString_  conversion:
 
 ```clojure
 (do
+  (deftype :complex [real :long, imaginary :long]
+    Object
+      (toString [self] (format self)))
+
   (defn format [cplx]
      (let [re (:real cplx)
-           im (:imaginary cplx)]
-       (str/format "(%s %s %si)" 
-                    re
-                    (if (neg? im) "-" "+")
-                    (abs im))))  
-  
-  (deftype :complex [real :long, imaginary :long]
-     Object
-       (toString [self] (format self)))
+           im (:imaginary cplx)
+           op (if (neg? im) "-" "+")]
+       (str/format "(%s %s %si)" re op (abs im))))  
        
   (println (complex. 1 2))      ; => (1 + 2i)
   (println (complex. 1 -2)))    ; => (1 - 2i)
