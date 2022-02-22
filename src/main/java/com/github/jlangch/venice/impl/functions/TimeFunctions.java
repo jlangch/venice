@@ -72,7 +72,11 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/date)", "(time/date x)")
-					.doc("Creates a new date. A date is represented by 'java.util.Date'")
+					.doc(
+						"Creates a new date of type 'java.util.Date'. \n" +
+						"x can be a long representing milliseconds since the epoch, " +
+						"a 'java.time.LocalDate', a 'java.time.LocalDateTime', " +
+						"or a 'java.time.ZonedDateTime'")
 					.examples("(time/date)")
 					.build()
 		) {
@@ -120,7 +124,7 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/date? date)")
-					.doc("Returns true if date is a date else false")
+					.doc("Returns true if date is a 'java.util.Date' else false")
 					.examples("(time/date? (time/date))")
 					.build()
 		) {
@@ -225,7 +229,7 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/local-date? date)")
-					.doc("Returns true if date is a locale date else false")
+					.doc("Returns true if date is a locale date ('java.time.LocalDate') else false")
 					.examples("(time/local-date? (time/local-date))")
 					.build()
 		) {
@@ -388,7 +392,7 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/local-date-time? date)")
-					.doc("Returns true if date is a local-date-time else false")
+					.doc("Returns true if date is a local-date-time  ('java.time.LocalDateTime') else false")
 					.examples("(time/local-date-time? (time/local-date-time))")
 					.build()
 		) {
@@ -577,7 +581,7 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/zoned-date-time? date)")
-					.doc("Returns true if date is a zoned-date-time else false")
+					.doc("Returns true if date is a zoned-date-time ('java.time.ZonedDateTime') else false")
 					.examples("(time/zoned-date-time? (time/zoned-date-time))")
 					.build()
 		) {
