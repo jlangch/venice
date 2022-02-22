@@ -1631,7 +1631,13 @@ public class TimeFunctions {
 						"              (time/local-date 2018 8 20))",
 						"(time/within? (time/local-date 2018 8 20) \n" +
 						"              (time/local-date 2018 8 10) \n" +
-						"              nil)")
+						"              nil)",
+						"(time/within? (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+						"              (time/local-date-time \"2010-01-01T10:00:00.000\") \n" +
+						"              (time/local-date-time \"2020-01-01T10:00:00.000\"))",
+						"(time/within? (time/zoned-date-time \"2010-01-01T10:00:00.000+01:00\") \n" +
+						"              (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
+						"              (time/zoned-date-time \"2020-01-01T10:00:00.000+01:00\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
