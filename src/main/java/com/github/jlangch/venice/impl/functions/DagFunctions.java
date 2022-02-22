@@ -173,7 +173,7 @@ public class DagFunctions {
 				VncFunction
 					.meta()
 					.arglists("(topological-sort dag)")
-					.doc("Topological sort of a DAG")
+					.doc("Topological sort of a DAG using [Kahn's algorithm](https://en.wikipedia.org/wiki/Topological_sorting)")
 					.examples(
 						"(dag/topological-sort (dag/dag [\"A\" \"B\"] [\"B\" \"C\"]))",
 						"(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
