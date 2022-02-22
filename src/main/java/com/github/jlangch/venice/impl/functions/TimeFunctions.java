@@ -629,33 +629,52 @@ public class TimeFunctions {
 				"time/after?",
 				VncFunction
 					.meta()
-					.arglists("(time/after? date1 date2)")
-					.doc("Returns true if date1 is after date2 else false")
+					.arglists(
+						"(time/after? date1 date2)",
+						"(time/after? date1 date2 & more)")
+					.doc(
+						"Returns true if all dates are ordered from the latest to the earliest " +
+						"(same semantics as `>`)")
 					.examples(
-						"(time/after? (time/local-date) (time/minus (time/local-date) :days 2))")
+						"(time/after? (time/local-date 2019 1 1) \n" +
+						"             (time/local-date 2018 1 1))",
+						"(time/after? (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+						"             (time/local-date-time \"2018-01-01T10:00:00.000\"))",
+						"(time/after? (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
+						"             (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
-				final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
-				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
-
-				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return VncBoolean.of(((ZonedDateTime)date1).isAfter((ZonedDateTime)date2));
+				boolean after = true;
+				
+				VncVal d1 = args.first();
+				for(VncVal d2 : args.rest()) {
+					final Object date1 = Coerce.toVncJavaObject(d1).getDelegate();
+					final Object date2 = Coerce.toVncJavaObject(d2).getDelegate();
+	
+					if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
+						after = after && ((ZonedDateTime)date1).isAfter((ZonedDateTime)date2);
+					}
+					else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
+						after = after && ((LocalDateTime)date1).isAfter((LocalDateTime)date2);
+					}
+					else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
+						after = after && ((LocalDate)date1).isAfter((LocalDate)date2);
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'time/after?' does not allow %s %s as date1 / date2 parameter",
+								Types.getType(args.first()),
+								Types.getType(args.second())));
+					}
+					
+					if (!after) break;
+					d1 = d2;
 				}
-				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return VncBoolean.of(((LocalDateTime)date1).isAfter((LocalDateTime)date2));
-				}
-				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return VncBoolean.of(((LocalDate)date1).isAfter((LocalDate)date2));
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'time/after?' does not allow %s %s as date1 / date2 parameter",
-							Types.getType(args.first()),
-							Types.getType(args.second())));
-				}
+				
+				return VncBoolean.of(after);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -667,9 +686,15 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/not-after? date1 date2)")
-					.doc("Returns true if date1 is not-after date2 else false")
+					.doc(
+						"Returns true if date1 is not-after date2 else false (same semantics as `<=`)")
 					.examples(
-						"(time/not-after? (time/local-date) (time/minus (time/local-date) :days 2))")
+						"(time/not-after? (time/local-date 2018 1 1) \n" +
+						"                 (time/local-date 2019 1 1))",
+						"(time/not-after? (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+						"                 (time/local-date-time \"2019-01-01T10:00:00.000\"))",
+						"(time/not-after? (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\") \n" +
+						"                 (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -703,33 +728,52 @@ public class TimeFunctions {
 				"time/before?",
 				VncFunction
 					.meta()
-					.arglists("(time/before? date1 date2)")
-					.doc("Returns true if date1 is before date2 else false")
+					.arglists(
+						"(time/before? date1 date2)",
+						"(time/before? date1 date2 & more)")
+					.doc(
+						"Returns true if all dates are ordered from the earliest to the latest " +
+						"(same semantics as `<`)")
 					.examples(
-						"(time/before? (time/local-date) (time/minus (time/local-date) :days 2))")
+						"(time/before? (time/local-date 2018 1 1) \n" +
+						"              (time/local-date 2019 1 1))",
+						"(time/before? (time/local-date-time \"2018-01-01T10:00:00.000\") \n" +
+						"              (time/local-date-time \"2019-01-01T10:00:00.000\"))",
+						"(time/before? (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\") \n" +
+						"              (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-				ArityExceptions.assertArity(this, args, 2);
+				ArityExceptions.assertMinArity(this, args, 2);
 
-				final Object date1 = Coerce.toVncJavaObject(args.first()).getDelegate();
-				final Object date2 = Coerce.toVncJavaObject(args.second()).getDelegate();
+				boolean before = true;
+				
+				VncVal d1 = args.first();
+				for(VncVal d2 : args.rest()) {
+					final Object date1 = Coerce.toVncJavaObject(d1).getDelegate();
+					final Object date2 = Coerce.toVncJavaObject(d2).getDelegate();
 
-				if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
-					return VncBoolean.of(((ZonedDateTime)date1).isBefore((ZonedDateTime)date2));
+					if (date1 instanceof ZonedDateTime && date2 instanceof ZonedDateTime) {
+						before = before && ((ZonedDateTime)date1).isBefore((ZonedDateTime)date2);
+					}
+					else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
+						before = before && ((LocalDateTime)date1).isBefore((LocalDateTime)date2);
+					}
+					else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
+						before = before && ((LocalDate)date1).isBefore((LocalDate)date2);
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'time/before?' does not allow %s, %s as date parameter",
+								Types.getType(d1),
+								Types.getType(d2)));
+					}
+					
+					if (!before) break;
+					d1 = d2;
 				}
-				else if (date1 instanceof LocalDateTime && date2 instanceof LocalDateTime) {
-					return VncBoolean.of(((LocalDateTime)date1).isBefore((LocalDateTime)date2));
-				}
-				else if (date1 instanceof LocalDate && date2 instanceof LocalDate) {
-					return VncBoolean.of(((LocalDate)date1).isBefore((LocalDate)date2));
-				}
-				else {
-					throw new VncException(String.format(
-							"Function 'time/before?' does not allow %s %s as date1 / date2 parameter",
-							Types.getType(args.first()),
-							Types.getType(args.second())));
-				}
+				
+				return VncBoolean.of(before);
 			}
 
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -741,9 +785,14 @@ public class TimeFunctions {
 				VncFunction
 					.meta()
 					.arglists("(time/not-before? date1 date2)")
-					.doc("Returns true if date1 is not-before date2 else false")
+					.doc("Returns true if date1 is not-before date2 else false (same semantics as `>=`)")
 					.examples(
-						"(time/not-before? (time/local-date) (time/minus (time/local-date) :days 2))")
+						"(time/not-before? (time/local-date 2019 1 1) \n" +
+						"                  (time/local-date 2019 1 1))",
+						"(time/not-before? (time/local-date-time \"2019-01-01T10:00:00.000\") \n" +
+						"                  (time/local-date-time \"2018-01-01T10:00:00.000\"))",
+						"(time/not-before? (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
+						"                  (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1572,10 +1621,17 @@ public class TimeFunctions {
 					.doc(
 						"Returns true if the date is after or equal to the start and is before or equal to the end. " +
 						"All three dates must be of the same type. The start and end date may each be nil meaning " +
-						"start is -infinity and end is +infinity.")
+						"start is -infinity and end is +infinity. (same semantics as `start <= date <= end`)")
 					.examples(
-						"(time/within? (time/local-date 2018 8 4) (time/local-date 2018 8 1) (time/local-date 2018 8 31))",
-						"(time/within? (time/local-date 2018 7 4) (time/local-date 2018 8 1) (time/local-date 2018 8 31))")
+						"(time/within? (time/local-date 2018 8 15) \n" +
+						"              (time/local-date 2018 8 10) \n" +
+						"              (time/local-date 2018 8 20))",
+						"(time/within? (time/local-date 2018 8 25) \n" +
+						"              (time/local-date 2018 8 10) \n" +
+						"              (time/local-date 2018 8 20))",
+						"(time/within? (time/local-date 2018 8 20) \n" +
+						"              (time/local-date 2018 8 10) \n" +
+						"              nil)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
