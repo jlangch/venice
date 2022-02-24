@@ -243,18 +243,52 @@ Vectors, maps, sets, and keywords are functions too.
 
 ## Partial Functions
 
-A partial function creates a new function by holding one or
-more parameters constant:
+_In computer science, partial application (or partial function application) refers to the process of fixing a number of arguments to a function, producing another function of smaller arity._
+
 
 ```clojure
 (do
-  (def mul2 (partial * 2))
-  (mul2 4))  ;; => 8
+  (defn add [x y] (+ x y))
+  
+  (def add2 (partial add 2))
+  (def add3 (partial add 3))
+  
+  (add2 4)   ;; => 6
+  (add3 4))  ;; => 7
 ```
 
+
+### Using functions with fewer arguments than they can normally take
+
+If we did need to call `add` with fewer than the required arguments, for example 
+if we are mapping `add` over a vector, then we can use `partial` to help us call 
+the `add` function with the right number of arguments:
+
 ```clojure
-(map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
+(map (partial add2) [1 2 3 4])  ;; => (3 4 5 6)
 ```
+
+In this case the _partial function_ prevents us from writing an explicit anonymous
+function like `#(add 2 %)` in `(map #(add 2 %) [1 2 3 4])`
+
+
+### Using functions with more arguments than they can normally take
+
+The `reduce` function can only work on a single collection as an argument (or a value 
+and a collection), so an error occurs if you wish to reduce over multiple collections.
+
+```clojure
+(reduce + [1 2 3 4])  ;; => 10
+```
+
+This returns an error due to invalid arguments:
+
+```clojure
+(reduce + [1 2 3 4] [5 6 7 8])  ;; error
+```
+
+However, by using `partial` we can take one collection at once and return the result
+of reduce on each of those collections:
 
 ```clojure
 (map (partial reduce +) [[1 2 3 4] [5 6 7 8]])  ;; => (10 26)
