@@ -299,7 +299,7 @@ of reduce on each of those collections:
 ## Function Composition
 
 Creates a new function composed of one or more functions. The composed
-functions are executed form right to left.
+functions are executed from right to left.
 
 `(comp not zero?)` is equivalent to `(fn [x] (not (zero? x))`
 
