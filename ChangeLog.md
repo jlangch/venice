@@ -18,6 +18,10 @@ and this project adheres to
 - `Object` protocol to support customized toString conversion for custom datatypes
 - improvements to documentation
 
+### Changed
+
+- shadow gradle build plugin to version 7.1.2
+
 
 
 ## [1.10.7] - 2022-02-01
