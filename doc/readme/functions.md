@@ -247,8 +247,19 @@ A partial function creates a new function by holding one or
 more parameters constant:
 
 ```clojure
+(do
+  (def mul2 (partial * 2))
+  (mul2 4))  ;; => 8
+```
+
+```clojure
 (map (partial * 2) [1 2 3 4])  ;; => (2 4 6 8)
 ```
+
+```clojure
+(map (partial reduce +) [[1 2 3 4] [5 6 7 8]])  ;; => (10 26)
+```
+
 
 
 ## Function Composition
