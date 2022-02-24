@@ -21,6 +21,7 @@ and this project adheres to
 ### Changed
 
 - shadow gradle build plugin to version 7.1.2
+- junit-jupiter unit test libs to version 5.8.2
 
 
 

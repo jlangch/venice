@@ -638,8 +638,8 @@ dependencies {
     jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.32'
 
     // Unit tests
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation 'org.xhtmlrenderer:flying-saucer-core:9.1.22'
     testImplementation 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22'
     testImplementation 'com.github.librepdf:openpdf:1.3.26'
