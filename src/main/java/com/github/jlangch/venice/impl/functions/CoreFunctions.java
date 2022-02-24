@@ -6683,6 +6683,7 @@ public class CoreFunctions {
 					.examples(
 						"((partial * 2) 3)",
 						"(map (partial * 2) [1 2 3 4])",
+						"(map (partial reduce +) [[1 2 3 4] [5 6 7 8]])",
 						"(do \n" +
 						"   (def hundred-times (partial * 100)) \n" +
 						"   (hundred-times 5))")
