@@ -24,6 +24,7 @@
 ;;;; See: http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html
 ;;;;
 ;;;; http://leonardoborges.com/writings/2012/11/30/monads-in-small-bites-part-i-functors/
+;;;; https://hackernoon.com/9-functional-programming-concepts-everyone-should-know-uy503u21
 ;;;;
 ;;;; Fluokitten:
 ;;;;    https://fluokitten.uncomplicate.org/articles/functors_applicatives_monads_in_pictures.html
@@ -53,6 +54,12 @@
 ;;
 ;; A Functor is any type that defines how fmap applies to it.
 ;;
+;; Functors are just abstractions that wrap a value in a context and allow
+;; mappings over this value. Mapping means applying a function to a value to
+;; get another value.
+;; Functors facilitate function composition. They are agnostic of the type
+;; inside them so transformation functions can be applied sequentially.
+;;
 ;; The types nil, just, list, set, map vector, atom, volatile, and
 ;; function are functors.
 ;; When fmap is used on a function, it's just doing function composition!
@@ -66,12 +73,24 @@
 ;;                  (fmap f functor) == functor
 ;;            2) Functors must preserve composition:
 ;;                  fmap (f . g) == fmap f . fmap g
-;;                  (fmap (comp f g) functor) == ((comp (partial fmap f) (partial fam/fmap g)) functor)
+;;                  (fmap (comp f g) functor) == ((comp (partial fmap f) (partial fmap g)) functor)
 ;;
-;; example:   (fmap (partial + 3) (just 2))  ; => (just 5)
-;;            (fmap (partial + 3) nil)       ; => nil
-;;            (fmap (partial + 3) [2 4 6])   ; => [5 7 9]
-;;            ((fmap (partial + 1) (partial * 2)) 4)
+;; example:   (fmap (partial + 3) (just 2))                  ; => (just 5)
+;;            (fmap (partial + 3) nil)                       ; => nil
+;;            (fmap (partial + 3) [2 4 6])                   ; => [5 7 9]
+;;            ((fmap (partial + 1) (partial * 2)) 4)         ; => 9
+;;            (->> (just 2)
+;;                 (fam/fmap (partial + 3))
+;;                 (fam/fmap (partial * 2)))                 ; => (just 10)
+;;
+;; functors preserve identity:
+;;            (fmap identity (just 5))                       ; => (just 5)
+;;
+;; functors preserve composition:
+;;            (fmap (comp (partial + 1) (partial * 2))
+;;                  (just 2))                                ; => (just 5)
+;;            ((comp (partial fmap (partial + 1))
+;;                   (partial fmap (partial * 2))) (just 2)) ; => (just 5)
 ;; -----------------------------------------------------------------------------
 
 (defmulti fmap (fn [f functor] (fam/box-type functor)))
@@ -118,7 +137,8 @@
 ;;
 ;; fapply:        takes an applicative and a functor and returns a functor
 ;;
-;; example:       (fapply (just (partial + 3)) (just 2))   ; => (just 5)
+;; example:       (fapply (just (partial + 3)) (just 2))       ; => (just 5)
+;;                (fapply (just (partial + 3)) [1 2 3 4])      ; => [4 5 6 7]
 ;;                (fapply [(partial * 2) (partial + 3)] [1 2]) ; => [2 4 4 5]
 ;; -----------------------------------------------------------------------------
 
@@ -154,7 +174,7 @@
 ;; monads:   applying a function that returns a wrapped value, to a wrapped
 ;;           value using bind
 ;;
-;; bind:     takes a monad and a function that returns a monad and returns a
+;; bind:     takes a monad and a function that returns a monad. bind returns a
 ;;           monad
 ;;
 ;; example:  (defn half [x] (if (even? x) (just (/ x 2)) nil)))
@@ -162,7 +182,7 @@
 ;;           (bind (just 3) half)             ; => nil
 ;;           (bind (just 4) half)             ; => (just 2)
 ;;           (bind nil half)                  ; => nil
-;;           (bind (just 64) half half halfd) ; => (just 8)
+;;           (bind (just 64) half half half)  ; => (just 8)
 ;;           (bind (just 20) half half half)  ; => nil
 ;; -----------------------------------------------------------------------------
 
