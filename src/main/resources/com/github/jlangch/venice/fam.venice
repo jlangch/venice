@@ -80,8 +80,8 @@
 ;;            (fmap (partial + 3) [2 4 6])                   ; => [5 7 9]
 ;;            ((fmap (partial + 1) (partial * 2)) 4)         ; => 9
 ;;            (->> (just 2)
-;;                 (fam/fmap (partial + 3))
-;;                 (fam/fmap (partial * 2)))                 ; => (just 10)
+;;                 (fmap (partial + 3))
+;;                 (fmap (partial * 2)))                     ; => (just 10)
 ;;
 ;; functors preserve identity:
 ;;            (fmap identity (just 5))                       ; => (just 5)
@@ -129,7 +129,7 @@
 ;; -----------------------------------------------------------------------------
 ;; Applicatives (Applicative Functor)
 ;;
-;; A Applicative is any type that defines how fapply applies to it.
+;; An applicative is any type that defines how fapply applies to it.
 ;;
 ;; the types nil, just, list, vector, atom, volatile are applicatives
 ;;
