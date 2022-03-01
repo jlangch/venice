@@ -160,7 +160,7 @@
   (defn view-chart! [file] (sh/open file))
 
   (defn save-chart! [chart file dpi]
-    (println "Saving chart ~{file}")
+    (println (str (ansi/ansi (ansi/fg-color 235)) "Saving chart ~{file}"))
     (xchart/write-to-file chart :png dpi file)
     file)
 
