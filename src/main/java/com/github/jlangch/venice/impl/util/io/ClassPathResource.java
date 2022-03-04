@@ -120,12 +120,26 @@ public class ClassPathResource {
 
 	public String getResourceAsString(final String charsetName) {		
 		try(InputStream is = getInputStream()) {
-			return new String(IOStreamUtil.copyIStoByteArray(is), charsetName);
+			if (is == null) {
+				throw new RuntimeException(String.format("Classpath resource %s not found", path));
+			}
+			else {
+				return new String(IOStreamUtil.copyIStoByteArray(is), charsetName);
+			}
+		}
+		catch(RuntimeException ex) {
+			if (ex.getMessage().startsWith("Classpath resource ")) {
+				throw ex;
+			}
+			else {
+				throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
+			}
 		}
 		catch(Exception ex) {
 			throw new RuntimeException(String.format("Failed to load classpath resource '%s'", path), ex);
 		}
 	}
+	
 	
 	private final String path;
 	private final ClassLoader classLoader;

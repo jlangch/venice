@@ -47,8 +47,7 @@ public class ModuleLoader {
 		try {
 			return modules.computeIfAbsent(
 					name, 
-					k -> new ClassPathResource(getVeniceBasePath() + k)
-								.getResourceAsString("UTF-8"));
+					k -> loadFromClasspathAsString(getVeniceBasePath() + k));
 		}
 		catch(Exception ex) {
 			throw new VncException(String.format(
@@ -69,7 +68,7 @@ public class ModuleLoader {
 		try {
 			return classpathFiles.computeIfAbsent(
 					file, 
-					k -> new ClassPathResource(file).getResourceAsString("UTF-8"));
+					k -> loadFromClasspathAsString(file));
 		}
 		catch(Exception ex) {
 			throw new VncException(String.format(
@@ -128,6 +127,10 @@ public class ModuleLoader {
 		return externalFiles.get(file);
 	}
 
+	
+	private static String loadFromClasspathAsString(final String path) {
+		return new ClassPathResource(path).getResourceAsString("UTF-8");
+	}
 	
 	
 	private static final Map<String,String> modules = new ConcurrentHashMap<>();
