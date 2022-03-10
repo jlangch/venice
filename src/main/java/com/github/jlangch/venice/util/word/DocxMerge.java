@@ -11,10 +11,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
 import org.docx4j.dml.CTBlip;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.docx4j.openpackaging.parts.Part;
 import org.docx4j.openpackaging.parts.PartName;
@@ -148,7 +145,7 @@ public class DocxMerge {
 		return mergeBody(WordprocessingMLPackage.load(f));
 	}
 
-	public DocxMerge mergeBody(final WordprocessingMLPackage d) throws Docx4JException, JAXBException {
+	public DocxMerge mergeBody(final WordprocessingMLPackage d) throws Exception {
 		if (d == null) {
 			throw new IllegalArgumentException("A WordprocessingMLPackage d must not be null!");
 		}
