@@ -247,7 +247,6 @@ sourceSets {
     main {
         java {
             srcDirs = ['src/main/java']
-            // exclude 'com/github/jlangch/venice/util/word/**'
         }
         resources {
             srcDirs = ['src/main/resources',
