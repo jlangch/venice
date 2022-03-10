@@ -241,6 +241,7 @@ sourceSets {
     main {
         java {
             srcDirs = ['src/main/java']
+            exclude 'com/github/jlangch/venice/util/word/**'
         }
         resources {
             srcDirs = ['src/main/resources',
@@ -663,11 +664,11 @@ dependencies {
     compileOnly 'org.apache.poi:poi-ooxml-schemas:4.1.2'
     
     // MS Word support
-    compileOnly 'org.wickedsource.docx-stamper:docx-stamper:1.4.0'
-    compileOnly 'commons-io:commons-io:2.5'
-    compileOnly 'org.javassist:javassist:3.21.0-GA'
-    compileOnly 'org.springframework:spring-expression:4.3.6.RELEASE'
-    compileOnly 'org.docx4j:docx4j-core:8.3.4'
+//    compileOnly 'org.wickedsource.docx-stamper:docx-stamper:1.4.0'
+//    compileOnly 'commons-io:commons-io:2.5'
+//    compileOnly 'org.javassist:javassist:3.21.0-GA'
+//    compileOnly 'org.springframework:spring-expression:4.3.6.RELEASE'
+//    compileOnly 'org.docx4j:docx4j-core:8.3.4'
         
     // Java Microbenchmark
     compileOnly 'org.openjdk.jmh:jmh-core:1.32'
