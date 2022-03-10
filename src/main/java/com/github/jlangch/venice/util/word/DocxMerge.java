@@ -6,7 +6,6 @@ import static org.docx4j.openpackaging.parts.relationships.RelationshipsPart.Add
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -25,7 +24,7 @@ import org.docx4j.relationships.Relationship;
 	
 public class DocxMerge {
 
-	public static DocxMerge of(final byte[] mainDoc) throws Docx4JException, IOException {
+	public static DocxMerge of(final byte[] mainDoc) throws Exception {
 		if (mainDoc == null) {
 			throw new IllegalArgumentException("A mainDoc must not be null!");
 		}
@@ -35,7 +34,7 @@ public class DocxMerge {
 		}
 	}
 
-	public static DocxMerge of(final ByteBuffer mainDoc) throws Docx4JException, IOException {
+	public static DocxMerge of(final ByteBuffer mainDoc) throws Exception {
 		if (mainDoc == null) {
 			throw new IllegalArgumentException("A mainDoc must not be null!");
 		}
@@ -43,7 +42,7 @@ public class DocxMerge {
 		return of(mainDoc.array());
 	}
 
-	public static DocxMerge of(final InputStream mainDocIs) throws Docx4JException {
+	public static DocxMerge of(final InputStream mainDocIs) throws Exception {
 		if (mainDocIs == null) {
 			throw new IllegalArgumentException("A mainDocIs must not be null!");
 		}
@@ -59,7 +58,7 @@ public class DocxMerge {
 		}
 	}
 
-	public static DocxMerge of(final File mainDocFile) throws Docx4JException {
+	public static DocxMerge of(final File mainDocFile) throws Exception {
 		if (mainDocFile == null) {
 			throw new IllegalArgumentException("A mainDocFile must not be null!");
 		}
@@ -78,7 +77,7 @@ public class DocxMerge {
 	}
 	
 
-	public byte[] saveToBytes() throws Docx4JException, IOException {
+	public byte[] saveToBytes() throws Exception {
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			mainDoc.save(os);
 			os.close();
@@ -86,11 +85,11 @@ public class DocxMerge {
 		}
 	}
 
-	public ByteBuffer saveToByteBuffer() throws Docx4JException, IOException {
+	public ByteBuffer saveToByteBuffer() throws Exception {
 		return ByteBuffer.wrap(saveToBytes());
 	}
 
-	public void saveTo(final File file) throws Docx4JException {
+	public void saveTo(final File file) throws Exception {
 		if (file == null) {
 			throw new IllegalArgumentException("A file must not be null!");
 		}
@@ -98,7 +97,7 @@ public class DocxMerge {
 		mainDoc.save(file);
 	}
 	
-	public void saveTo(final OutputStream os) throws Docx4JException {
+	public void saveTo(final OutputStream os) throws Exception {
 		if (os == null) {
 			throw new IllegalArgumentException("An os must not be null!");
 		}
@@ -115,7 +114,7 @@ public class DocxMerge {
 	}
 
 	
-	public DocxMerge mergeBody(final byte[] data) throws Docx4JException, JAXBException, IOException {
+	public DocxMerge mergeBody(final byte[] data) throws Exception {
 		if (data == null) {
 			throw new IllegalArgumentException("A data must not be null!");
 		}
@@ -125,7 +124,7 @@ public class DocxMerge {
 		}
 	}
 	
-	public DocxMerge mergeBody(final InputStream is) throws Docx4JException, JAXBException {
+	public DocxMerge mergeBody(final InputStream is) throws Exception {
 		if (is == null) {
 			throw new IllegalArgumentException("An is must not be null!");
 		}
@@ -141,7 +140,7 @@ public class DocxMerge {
 		}
 	}
 
-	public DocxMerge mergeBody(final File f) throws Docx4JException, JAXBException {
+	public DocxMerge mergeBody(final File f) throws Exception {
 		if (f == null) {
 			throw new IllegalArgumentException("A file f must not be null!");
 		}
@@ -165,7 +164,7 @@ public class DocxMerge {
 		return this;
 	}
 
-	public DocxMerge mergeBodyWithBlip(final byte[] data) throws Docx4JException, JAXBException, IOException {
+	public DocxMerge mergeBodyWithBlip(final byte[] data) throws Exception {
 		if (data == null) {
 			throw new IllegalArgumentException("A data must not be null!");
 		}
@@ -175,7 +174,7 @@ public class DocxMerge {
 		}
 	}
 	
-	public DocxMerge mergeBodyWithBlip(final InputStream is) throws Docx4JException, JAXBException {
+	public DocxMerge mergeBodyWithBlip(final InputStream is) throws Exception {
 		if (is == null) {
 			throw new IllegalArgumentException("An is must not be null!");
 		}
@@ -191,7 +190,7 @@ public class DocxMerge {
 		}
 	}
 
-	public DocxMerge mergeBodyWithBlip(final File f) throws Docx4JException, JAXBException {
+	public DocxMerge mergeBodyWithBlip(final File f) throws Exception {
 		if (f == null) {
 			throw new IllegalArgumentException("A file f must not be null!");
 		}
@@ -199,7 +198,7 @@ public class DocxMerge {
 		return mergeBodyWithBlip(WordprocessingMLPackage.load(f));
 	}
 	
-	public DocxMerge mergeBodyWithBlip(final WordprocessingMLPackage e) throws Docx4JException, JAXBException {
+	public DocxMerge mergeBodyWithBlip(final WordprocessingMLPackage e) throws Exception {
 		if (e == null) {
 			throw new IllegalArgumentException("A WordprocessingMLPackage e must not be null!");
 		}

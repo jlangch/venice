@@ -4,14 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
-
-import javax.xml.bind.JAXBException;
 
 import org.docx4j.dml.CTBlip;
 import org.docx4j.dml.CTNonVisualDrawingProps;
@@ -128,7 +125,7 @@ public class DocxImageReplacer {
 	public DocxImageReplacer replaceEmbeddedImageReferencedByImageName(
 			final String imageName,
 			final File img
-	) throws Docx4JException, JAXBException, FileNotFoundException {
+	) throws Exception {
 		if (imageName == null) {
 			throw new IllegalArgumentException("An imageName must not be null!");
 		}
@@ -149,7 +146,7 @@ public class DocxImageReplacer {
 	public DocxImageReplacer replaceEmbeddedImageReferencedByImageName(
 			final String imageName,
 			final byte[] img
-	) throws Docx4JException, JAXBException, IOException {
+	) throws Exception {
 		if (imageName == null) {
 			throw new IllegalArgumentException("An imageName must not be null!");
 		}
@@ -172,7 +169,7 @@ public class DocxImageReplacer {
 	public DocxImageReplacer replaceEmbeddedImageReferencedByImageName(
 			final String imageName,
 			final InputStream img
-	) throws Docx4JException, JAXBException, FileNotFoundException {
+	) throws Exception {
 		if (imageName == null) {
 			throw new IllegalArgumentException("An imageName must not be null!");
 		}
@@ -193,7 +190,7 @@ public class DocxImageReplacer {
 	public DocxImageReplacer replaceEmbeddedImageReferencedByImageDescr(
 			final String imgDescr,
 			final File img
-	) throws Docx4JException, JAXBException, FileNotFoundException {
+	) throws Exception {
 		if (imgDescr == null) {
 			throw new IllegalArgumentException("An imgDescr must not be null!");
 		}
@@ -214,7 +211,7 @@ public class DocxImageReplacer {
 	public DocxImageReplacer replaceEmbeddedImageReferencedByImageDescr(
 			final String imgDescr,
 			final byte[] img
-	) throws Docx4JException, JAXBException, FileNotFoundException {
+	) throws Exception {
 		if (imgDescr == null) {
 			throw new IllegalArgumentException("An imgDescr must not be null!");
 		}
@@ -235,7 +232,7 @@ public class DocxImageReplacer {
 	public DocxImageReplacer replaceEmbeddedImageReferencedByImageDescr(
 			final String imgDescr,
 			final InputStream imgIS
-	) throws Docx4JException, JAXBException, FileNotFoundException {
+	) throws Exception {
 		if (imgDescr == null) {
 			throw new IllegalArgumentException("An imgDescr must not be null!");
 		}
@@ -263,7 +260,7 @@ public class DocxImageReplacer {
 
 	private String findImageEmbedIdByImageName(
 			final String imgName
-	) throws Docx4JException, JAXBException {
+	) throws Exception {
 		final List<Object> drawings = mainDoc.getMainDocumentPart()
 											 .getJAXBNodesViaXPath(
 												   String.format("//wp:docPr[@name=\"%s\"]", imgName),
@@ -273,7 +270,7 @@ public class DocxImageReplacer {
 
 	private String findImageEmbedIdByImageDescr(
 			final String imgDescr
-	) throws Docx4JException, JAXBException {
+	) throws Exception {
 		final List<Object> drawings = mainDoc.getMainDocumentPart()
 									  		 .getJAXBNodesViaXPath(
 												   String.format("//wp:docPr[@descr=\"%s\"]", imgDescr),
@@ -285,7 +282,7 @@ public class DocxImageReplacer {
 	private DocxImageReplacer replaceEmbeddedImage(
 			final String embedId,
 			final InputStream imgIS
-	) throws Docx4JException, JAXBException, FileNotFoundException {
+	) throws Exception {
 		final Relationship rel = findRelationshipById(embedId);
 		if (rel == null) {
 			throw new VncException(String.format(
