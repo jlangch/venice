@@ -161,8 +161,8 @@ def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
 // Detect Java 8 or 11
 def java8 = JavaVersion.current() == JavaVersion.VERSION_1_8
 def java11 = JavaVersion.current() >= JavaVersion.VERSION_11
-println "Java 8: ${java8}"
-println "Java 11+: ${java11}"
+println "Gradle running on Java 8: ${java8}"
+println "Gradle running on Java 11: ${java11}"
 
 def getCheckedOutGitCommitHash() {
     def takeFromHash = 12
@@ -247,7 +247,7 @@ sourceSets {
     main {
         java {
             srcDirs = ['src/main/java']
-            exclude 'com/github/jlangch/venice/util/word/**'
+            // exclude 'com/github/jlangch/venice/util/word/**'
         }
         resources {
             srcDirs = ['src/main/resources',
@@ -670,14 +670,18 @@ dependencies {
     compileOnly 'org.apache.poi:poi-ooxml-schemas:4.1.2'
     
     // MS Word support
-//    compileOnly 'org.wickedsource.docx-stamper:docx-stamper:1.4.0'
-//    compileOnly 'commons-io:commons-io:2.5'
-//    compileOnly 'org.javassist:javassist:3.21.0-GA'
-//    compileOnly 'org.springframework:spring-expression:4.3.6.RELEASE'
-//    compileOnly 'org.docx4j:docx4j-core:8.3.4'   // Java 8
-//    compileOnly 'org.docx4j:docx4j-core:11.4.5'  // Java 11+
-//    compileOnly 'javax.xml.bind:jaxb-api:2.3.1'  // Java 11+
-        
+    compileOnly 'org.wickedsource.docx-stamper:docx-stamper:1.4.0'
+    compileOnly 'commons-io:commons-io:2.5'
+    compileOnly 'org.javassist:javassist:3.21.0-GA'
+    compileOnly 'org.springframework:spring-expression:4.3.6.RELEASE'   
+    if (java8) {
+        compileOnly 'org.docx4j:docx4j-core:8.3.4'   // Java 8
+    }
+    else {
+        compileOnly 'org.docx4j:docx4j-core:11.4.5'  // Java 11+
+        compileOnly 'javax.xml.bind:jaxb-api:2.3.1'  // Java 11+
+    }
+           
     // Java Microbenchmark
     compileOnly 'org.openjdk.jmh:jmh-core:1.32'
     compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.32'
