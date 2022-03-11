@@ -38,8 +38,8 @@
                    "javax.annotation:javax.annotation-api:1.3.2",
                    "org.xhtmlrenderer:flying-saucer-core:9.1.22",
                    "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22",
-                   "com.github.librepdf:openpdf:1.3.26",
-                   "com.github.librepdf:pdf-toolbox:1.3.26" ],
+                   "com.github.librepdf:openpdf:1.3.27",
+                   "com.github.librepdf:pdf-toolbox:1.3.27" ],
     "optional": [ ]
   },
 
