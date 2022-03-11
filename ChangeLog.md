@@ -15,6 +15,9 @@ and this project adheres to
 
 - ...
 
+### Updated dependencies:
+
+- Bump openpdf from 1.3.26 to 1.3.27
 
 
 ## [1.10.8] - 2022-03-02
@@ -28,7 +31,7 @@ and this project adheres to
 
 ### Changed
 
-- shadow gradle build plugin to version 7.1.2
+- gradle build shadow plugin to version 7.1.2
 - junit-jupiter unit test libs to version 5.8.2
 
 
