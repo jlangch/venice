@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -29,7 +28,7 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 public class DocxImageReplacer {
 	
-	public static DocxImageReplacer of(final byte[] mainDoc) throws Docx4JException, IOException {
+	public static DocxImageReplacer of(final byte[] mainDoc) throws Exception {
 		if (mainDoc == null) {
 			throw new IllegalArgumentException("A mainDoc must not be null!");
 		}
@@ -39,7 +38,7 @@ public class DocxImageReplacer {
 		}
 	}
 	
-	public static DocxImageReplacer of(final ByteBuffer mainDoc) throws Docx4JException, IOException {
+	public static DocxImageReplacer of(final ByteBuffer mainDoc) throws Exception {
 		if (mainDoc == null) {
 			throw new IllegalArgumentException("A mainDoc must not be null!");
 		}
@@ -47,7 +46,7 @@ public class DocxImageReplacer {
 		return of(mainDoc.array());
 	}
 
-	public static DocxImageReplacer of(final InputStream mainDocIs) throws Docx4JException {
+	public static DocxImageReplacer of(final InputStream mainDocIs) throws Exception {
 		if (mainDocIs == null) {
 			throw new IllegalArgumentException("A mainDocIs must not be null!");
 		}
@@ -63,7 +62,7 @@ public class DocxImageReplacer {
 		}
 	}
 
-	public static DocxImageReplacer of(final File mainDocFile) throws Docx4JException {
+	public static DocxImageReplacer of(final File mainDocFile) throws Exception {
 		if (mainDocFile == null) {
 			throw new IllegalArgumentException("A mainDocFile must not be null!");
 		}
@@ -86,7 +85,7 @@ public class DocxImageReplacer {
 	}
 	
 
-	public byte[] saveToBytes() throws Docx4JException, IOException {
+	public byte[] saveToBytes() throws Exception {
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			mainDoc.save(os);
 			os.close();
@@ -94,7 +93,7 @@ public class DocxImageReplacer {
 		}
 	}
 
-	public ByteBuffer saveToByteBuffer() throws Docx4JException, IOException {
+	public ByteBuffer saveToByteBuffer() throws Exception {
 		return ByteBuffer.wrap(saveToBytes());
 	}
 
@@ -106,7 +105,7 @@ public class DocxImageReplacer {
 		mainDoc.save(file);
 	}
 	
-	public void saveTo(final OutputStream os) throws Docx4JException, IOException {
+	public void saveTo(final OutputStream os) throws Exception {
 		if (os == null) {
 			throw new IllegalArgumentException("An os must not be null!");
 		}

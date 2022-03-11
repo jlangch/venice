@@ -39,7 +39,7 @@ public class Stamper {
 			return os.toByteArray();
 		}
 		catch(Exception ex) {
-			throw new VncException("Failed stamp a Docx", ex);
+			throw new VncException("Failed to stamp a docx document", ex);
 		}
 	}
 
