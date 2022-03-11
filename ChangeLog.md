@@ -34,9 +34,9 @@ and this project adheres to
 ### Updated dependencies:
 
 - Bump jline3 from 3.20.0 to 3.21.0
-- Bump gradle com.github.johnrengelman.shadow plugin from 7.1.0 to 7.1.2
-- Bump junit-jupiter-api junit lib from 5.7.0 to 5.8.2
-- Bump junit-jupiter-engine junit lib from 5.7.0 to 5.8.2
+- Bump com.github.johnrengelman.shadow gradle plugin from 7.1.0 to 7.1.2
+- Bump junit-jupiter-api from 5.7.0 to 5.8.2
+- Bump junit-jupiter-engine from 5.7.0 to 5.8.2
 
 
 
