@@ -133,7 +133,7 @@ public class Namespaces {
 					Arrays.asList(
 							"local",
 							"core", "cidr", "csv", "io", "json", "math", "pdf", "sh", "str", "regex", "time", "repl",							
-							"crypt", "xml", "bench", "excel", "component", "dag",
+							"crypt", "xml", "bench", "docx", "excel", "component", "dag",
 							"test", "shell",
 							"xchart", "kira", "parsatron",
 							"tc", "ring", 

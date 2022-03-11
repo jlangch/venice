@@ -52,6 +52,7 @@ public class Modules {
 							"component", 
 							"crypt", 
 							"dag", 
+							"docx", 
 							"excel", 
 							"esr", 
 							"fam", 
