@@ -37,6 +37,7 @@ and this project adheres to
 - Bump com.github.johnrengelman.shadow gradle plugin from 7.1.0 to 7.1.2
 - Bump junit-jupiter-api from 5.7.0 to 5.8.2
 - Bump junit-jupiter-engine from 5.7.0 to 5.8.2
+- Bump gradle from 7.2 to 7.4.1
 
 
 
