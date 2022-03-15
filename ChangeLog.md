@@ -18,6 +18,7 @@ and this project adheres to
 ### Updated dependencies:
 
 - Bump openpdf from 1.3.26 to 1.3.27
+- Bump gradle from 7.2 to 7.4.1
 
 
 
@@ -30,14 +31,12 @@ and this project adheres to
 - `Object` protocol to support customized toString conversion for custom datatypes
 - improvements to documentation
 
-
 ### Updated dependencies:
 
 - Bump jline3 from 3.20.0 to 3.21.0
 - Bump com.github.johnrengelman.shadow gradle plugin from 7.1.0 to 7.1.2
 - Bump junit-jupiter-api from 5.7.0 to 5.8.2
 - Bump junit-jupiter-engine from 5.7.0 to 5.8.2
-- Bump gradle from 7.2 to 7.4.1
 
 
 
