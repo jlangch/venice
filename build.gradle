@@ -151,6 +151,26 @@ plugins {
 }
 
 
+ext {
+    commonsIo_Version = '2.6'
+    docx4j_Version_Java8 = '8.3.4'
+    docx4j_Version_Java11 = '11.4.5'
+    docxStamper_Version = '1.4.0'
+    flyingSaucer_Version = '9.1.22'
+    javassist_Version = '3.28.0-GA'
+    jaxb_Version = '2.3.1'
+    jmh_Version = '1.32'
+    jline_Version = '3.21.0'
+    jupiter_Version = '5.8.2'
+    openpdf_Version = '1.3.27'
+    poi_Version = '4.1.2'
+    servletApi_Version = '4.0.1'
+    springExpression_Version = '5.2.0.RELEASE'   
+    vavr_Version = '0.10.4'
+    xchart_Version = '3.8.1'
+}
+
+
 def group = 'com.github.jlangch'
 
 def version_regex = '[0-9]+[.][0-9]+[.][0-9]+(-SNAPSHOT)?'
@@ -638,57 +658,55 @@ dependencies {
     // JMH (the Java Microbenchmark Harness) has been added to the JDK 
     // starting with JDK 12; for earlier versions, the dependencies 
     // have to be added explicitly.
+    // See: https://gitlab.com/barfuin/jmh-gradle-example
     jmhImplementation project
-    jmhImplementation 'io.vavr:vavr:0.10.4'
-    jmhImplementation 'org.openjdk.jmh:jmh-core:1.32'
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.32'
+    jmhImplementation "io.vavr:vavr:${vavr_Version}"
+    jmhImplementation "org.openjdk.jmh:jmh-core:${jmh_Version}"
+    jmhAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
+            
+    compileOnly "org.openjdk.jmh:jmh-core:${jmh_Version}"
+    compileOnly "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
+
 
     // Unit tests
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation 'org.xhtmlrenderer:flying-saucer-core:9.1.22'
-    testImplementation 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22'
-    testImplementation 'com.github.librepdf:openpdf:1.3.27'
-    testImplementation 'org.knowm.xchart:xchart:3.8.1'
-    testImplementation 'org.apache.poi:poi:4.1.2'
-    testImplementation 'org.apache.poi:poi-ooxml:4.1.2'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiter_Version}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:${jupiter_Version}"
+    testImplementation "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
+    testImplementation "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
+    testImplementation "com.github.librepdf:openpdf:${openpdf_Version}"
+    testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
+    testImplementation "org.apache.poi:poi:${poi_Version}"
+    testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
 
-    // JMH (the Java Microbenchmark Harness)
-    compileOnly 'org.openjdk.jmh:jmh-core:1.32'
-    compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.32'
 
     // Cheatsheet generation
-    compileOnly 'org.xhtmlrenderer:flying-saucer-core:9.1.22'
-    compileOnly 'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22'
-    compileOnly 'com.github.librepdf:openpdf:1.3.27'
-    compileOnly 'org.knowm.xchart:xchart:3.8.1'
+    compileOnly "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
+    compileOnly "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
+    compileOnly "com.github.librepdf:openpdf:${openpdf_Version}"
+    compileOnly "org.knowm.xchart:xchart:${xchart_Version}"
     
     // MS Excel support
-    compileOnly 'org.apache.poi:poi:4.1.2'
-    compileOnly 'org.apache.poi:poi-ooxml:4.1.2'
-    compileOnly 'org.apache.poi:poi-ooxml-schemas:4.1.2'
+    compileOnly "org.apache.poi:poi:${poi_Version}"
+    compileOnly "org.apache.poi:poi-ooxml:${poi_Version}"
+    compileOnly "org.apache.poi:poi-ooxml-schemas:${poi_Version}"
     
     // MS Word support
-    compileOnly 'org.wickedsource.docx-stamper:docx-stamper:1.4.0'
-    compileOnly 'commons-io:commons-io:2.6'
-    compileOnly 'org.javassist:javassist:3.28.0-GA'
-    compileOnly 'org.springframework:spring-expression:5.2.0.RELEASE'   
+    compileOnly "org.wickedsource.docx-stamper:docx-stamper:${docxStamper_Version}"
+    compileOnly "commons-io:commons-io:${commonsIo_Version}"
+    compileOnly "org.javassist:javassist:${javassist_Version}"
+    compileOnly "org.springframework:spring-expression:${springExpression_Version}"   
     if (java8) {
-        compileOnly 'org.docx4j:docx4j-core:8.3.4'   // Java 8
+        compileOnly "org.docx4j:docx4j-core:${docx4j_Version_Java8}"   // Java 8
     }
     else {
-        compileOnly 'org.docx4j:docx4j-core:11.4.5'  // Java 11+
-        compileOnly 'javax.xml.bind:jaxb-api:2.3.1'  // Java 11+
+        compileOnly "org.docx4j:docx4j-core:${docx4j_Version_Java11}"  // Java 11+
+        compileOnly "javax.xml.bind:jaxb-api:${jaxb_Version}"          // Java 11+
     }
-           
-    // Java Microbenchmark
-    compileOnly 'org.openjdk.jmh:jmh-core:1.32'
-    compileOnly 'org.openjdk.jmh:jmh-generator-annprocess:1.32'
 
     // WebApp support
-    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly "javax.servlet:javax.servlet-api:${servletApi_Version}"
       
     // runtime dependencies (repackaged)
-    implementation 'io.vavr:vavr:0.10.4'
-    implementation 'org.jline:jline:3.21.0'
+    implementation "io.vavr:vavr:${vavr_Version}"
+    implementation "org.jline:jline:${jline_Version}"
 }
