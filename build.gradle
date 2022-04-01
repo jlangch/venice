@@ -342,6 +342,7 @@ publishing {
         venicePublication(MavenPublication) {
             groupId = 'com.github.jlangch'
             artifactId = 'venice'
+            version = "${project.version}"
             
             artifact sourcesJar 
             artifact javadocJar 

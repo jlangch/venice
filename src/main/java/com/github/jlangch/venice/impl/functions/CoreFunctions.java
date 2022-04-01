@@ -3946,6 +3946,40 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction select_keys =
+		new VncFunction(
+				"select-keys",
+				VncFunction
+					.meta()
+					.arglists("(select-keys map keyseq)")
+					.doc(
+						"Returns a map containing only those entries in map whose key is in keys")
+					.examples(
+						"(select-keys {:a 1 :b 2} [:a])",
+						"(select-keys {:a 1 :b 2} [:a :c])",
+						"(select-keys {:a 1 :b 2 :c 3} [:a :c])")
+					.seeAlso("keys", "entries", "map")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				final VncMap map = Coerce.toVncMap(args.first());
+				final VncSequence keyseq = Coerce.toVncSequence(args.second());
+
+				VncMap newMap = map.emptyWithMeta();
+				for(VncVal k : keyseq.getJavaList()) {
+					if (VncBoolean.isTrue(map.containsKey(k))) {
+						newMap = newMap.assoc(k, map.get(k));
+					}
+				}
+				
+				return newMap;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction entries =
 		new VncFunction(
 				"entries",
@@ -8102,6 +8136,7 @@ public class CoreFunctions {
 				.add(val)
 				.add(vals)
 				.add(entries)
+				.add(select_keys)
 				.add(update)
 				.add(update_BANG)
 				.add(update_in)

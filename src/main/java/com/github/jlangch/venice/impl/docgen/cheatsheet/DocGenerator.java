@@ -854,6 +854,7 @@ public class DocGenerator {
 		map_modify.addItem(getDocItem("map-invert"));
 		map_modify.addItem(getDocItem("map-keys"));
 		map_modify.addItem(getDocItem("map-vals"));
+		map_modify.addItem(getDocItem("select-keys"));
 
 		final DocSection map_entries = new DocSection("Entries", "collections.maps.entries");
 		maps.addSection(map_entries);

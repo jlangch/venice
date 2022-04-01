@@ -3665,6 +3665,24 @@ public class CoreFunctionsTest {
 	}
 
 	@Test
+	public void test_select_keys() {
+		final Venice venice = new Venice();
+
+		assertEquals(
+				"{:a 1}", 
+				venice.eval("(pr-str (select-keys {:a 1 :b 2} [:a]))"));
+
+		assertEquals(
+				"{:a 1}", 
+				venice.eval("(pr-str (select-keys {:a 1 :b 2} [:a :c]))"));
+
+		assertEquals(
+				"{:a 1 :c 3}", 
+				venice.eval("(pr-str (select-keys {:a 1 :b 2 :c 3} [:a :c]))"));
+	}
+
+
+	@Test
 	public void test_seq() {
 		final Venice venice = new Venice();
 

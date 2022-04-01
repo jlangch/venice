@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- math functions `select-keys`
 
 ### Updated dependencies:
 
