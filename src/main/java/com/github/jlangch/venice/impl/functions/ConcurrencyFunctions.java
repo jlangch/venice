@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
@@ -49,6 +50,7 @@ import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.IDeref;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -60,8 +62,10 @@ import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.VncVolatile;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
 import com.github.jlangch.venice.impl.types.util.Coerce;
@@ -2856,7 +2860,133 @@ public class ConcurrencyFunctions {
 		};
 
 
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Parallel processing
+	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction pmap =
+		new VncFunction(
+				"pmap",
+				VncFunction
+					.meta()
+					.arglists("(pmap f coll)", "(pmap f coll & colls)")
+					.doc(
+						"Like map, except f is applied in parallel. Only useful for " +
+						"computationally intensive functions where the time of f " +
+						"dominates the coordination overhead.")
+					.examples(
+						";; With `pmap`, the total elapsed time is just over 2 seconds:\n" +
+						"(do                                          \n" +
+						"  (defn long-running-job [n]                 \n" +
+						"    (sleep 2000)  ; wait for 2 seconds       \n" +
+						"    (+ n 10))                                \n" +
+						"  (time (pmap long-running-job (range 4))))   ",
+						";; With `map`, the total elapsed time is roughly 4 * 2 seconds:\n" +
+						"(do                                          \n" +
+						"  (defn long-running-job [n]                 \n" +
+						"    (sleep 2000)  ; wait for 2 seconds       \n" +
+						"    (+ n 10))                                \n" +
+						"  (time (map long-running-job (range 4))))  ")
+					.seeAlso("pcalls", "map")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+
+//					  ([f coll]
+//							   (let [n (+ 2 (.. Runtime getRuntime availableProcessors))
+//							         rets (map #(future (f %)) coll)
+//							         step (fn step [[x & xs :as vs] fs]
+//							                (lazy-seq
+//							                 (if-let [s (seq fs)]
+//							                   (cons (deref x) (step xs (rest s)))
+//							                   (map deref vs))))]
+//							     (step rets (drop n rets))))
+//
+//					  ([f coll & colls]
+//					   (let [step (fn step [cs]
+//					                (lazy-seq
+//					                 (let [ss (map seq cs)]
+//					                   (when (every? identity ss)
+//					                     (cons (map first ss) (step (map rest ss)))))))]
+//					     (pmap #(apply f %) (step (cons coll colls))))))
+
+				ArityExceptions.assertMinArity(this, args, 2);
+
+				// TODO: implement pvalues and pcalls!
+				
+				if (args.size() == 2) {
+					if (args.second() == Nil) {
+						return VncList.empty();
+					}
+					
+					final IVncFunction fn = Coerce.toIVncFunction(args.first());
+					final VncSequence seq = VncSequence.coerceToSequence(args.second());
+					
+					VncLazySeq lazySeq = VncLazySeq
+											.ofAll(seq, Nil)
+											.map(v -> future.applyOf(
+														VncFunction.of(() -> fn.applyOf(v))));
+					
+					// parallelization
+					final int n = 2 + Runtime.getRuntime().availableProcessors();
+					
+					VncList result = VncList.empty();
+					while(true) {
+						final VncLazySeq part = lazySeq.take(n);
+						if (part.isEmpty()) {
+							break;
+						}
+
+						lazySeq = lazySeq.drop(n);
+						
+						final VncList partialRes = part.realize()
+													   .map(v -> deref.applyOf(v));
+						
+						result = result.addAllAtEnd(partialRes);
+					}
+					return result;
+				}
+				else {
+					final VncFunction fn = Coerce.toVncFunction(args.first());
+					final VncList listsOfSeqs = removeNilValues((VncList)args.rest());
+
+					throw new VncException("pmap: type %s not yet implemented for multiple collections");
+				}
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction pcalls =
+		new VncFunction(
+				"pcalls",
+				VncFunction
+					.meta()
+					.arglists("(pcalls & fns)")
+					.doc(
+						"Executes the no-arg fns in parallel, returning a lazy sequence " +
+						"of their values")
+					.examples(
+						"(pcalls #(+ 1 2) #(+ 2 3) #(+ 3 4))")
+					.seeAlso("pmap")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertMinArity(this, args, 1);
+				
+				VncList pmapArgs = VncList.empty();
+				pmapArgs = pmapArgs.addAtEnd(VncFunction.of((VncList x) -> ((VncFunction)(x.first())).apply(VncList.empty())));
+				pmapArgs = pmapArgs.addAtEnd(args.map(f -> Coerce.toVncFunction(f)));
+
+				return pmap.apply(pmapArgs);
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// Utils
 	///////////////////////////////////////////////////////////////////////////
@@ -3038,6 +3168,10 @@ public class ConcurrencyFunctions {
 					.add(thread_local_Q)
 					.add(thread_local_clear)
 					.add(thread_local_map)
+					
+					.add(pmap)
+					.add(pcalls)
+					
 					.toMap();	
 	
 	

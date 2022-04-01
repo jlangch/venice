@@ -194,6 +194,7 @@ public class DocGenerator {
 		concurrency.addSection(new DocSection("Scheduler", "concurrency.scheduler"));
 		concurrency.addSection(new DocSection("Locking", "concurrency.locking"));
 		concurrency.addSection(new DocSection("Volatiles", "concurrency.volatiles"));
+		concurrency.addSection(new DocSection("Parallel", "concurrency.parallel"));
 		content.add(concurrency);
 		
 		final DocSection threads = new DocSection("Threads", "concurrency.threads");
@@ -1604,6 +1605,11 @@ public class DocGenerator {
 		threads.addItem(getDocItem("thread-daemon?"));
 		threads.addItem(getDocItem("thread-interrupted?"));
 		threads.addItem(getDocItem("thread-interrupted"));
+
+		final DocSection parallel = new DocSection("Parallel", "concurrency.parallel");
+		all.addSection(parallel);
+		parallel.addItem(getDocItem("pmap"));
+		parallel.addItem(getDocItem("pcalls"));
 
 		return section;
 	}

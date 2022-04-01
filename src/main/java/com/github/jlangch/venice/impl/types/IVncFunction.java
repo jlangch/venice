@@ -29,7 +29,11 @@ public interface IVncFunction {
 	VncList getArgLists();
 
 	VncVal apply(VncList args);
-	
+
+	default VncVal applyOf(final VncVal... mvs) {
+		return apply(VncList.of(mvs));
+	}
+
 	default boolean isAnonymous() { 
 		return true; 
 	}

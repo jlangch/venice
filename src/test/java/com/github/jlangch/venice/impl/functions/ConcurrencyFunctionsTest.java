@@ -693,6 +693,23 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_pmap() {
+		final Venice venice = new Venice();
+
+		assertEquals("()", venice.eval("(pr-str (pmap inc nil))"));
+		assertEquals("()", venice.eval("(pr-str (pmap inc []))"));
+		assertEquals("(2 3 4 5 6 7)", venice.eval("(pr-str (pmap inc [1 2 3 4 5 6]))"));
+	}
+
+	@Test
+	public void test_pcalls() {
+		final Venice venice = new Venice();
+
+		assertEquals("(3)", venice.eval("(pr-str (pcalls #(+ 1 2)))"));
+		assertEquals("(3 5 7)", venice.eval("(pr-str (pcalls #(+ 1 2) #(+ 2 3) #(+ 3 4)))"));
+	}
+
+	@Test
 	public void test_promise_1() {
 		final Venice venice = new Venice();
 

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -114,6 +115,16 @@ public abstract class VncFunction
 			@Override
 			public VncVal apply(final VncList args) {
 				return fn.get();
+			}
+			private static final long serialVersionUID = 1L;
+		};
+	}
+	
+	public static VncFunction of(final Function<VncList,VncVal> fn) {
+		return new VncFunction(createAnonymousFuncName()) {
+			@Override
+			public VncVal apply(final VncList args) {
+				return fn.apply(args);
 			}
 			private static final long serialVersionUID = 1L;
 		};
